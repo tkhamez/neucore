@@ -1,0 +1,4 @@
+name: Doctrim Migrations
+migrations_namespace: Brave\Core\Migrations
+table_name: doctrine_migration_versions
+migrations_directory: src/classes/Brave/Core/Migrations/

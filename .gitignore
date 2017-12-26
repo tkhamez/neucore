@@ -1,0 +1,13 @@
+# app
+/.env
+/var/cache/*
+!/var/cache/.gitkeep
+/var/logs/*
+!/var/logs/.gitkeep
+/vendor/
+/web/node_modules/
+
+# eclipse
+/.buildpath
+/.project
+/.settings

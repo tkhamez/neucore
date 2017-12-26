@@ -1,0 +1,8 @@
+<!DOCTYPE xml>
+<phpunit bootstrap="vendor/autoload.php">
+	<testsuites>
+		<testsuite name="SlimSkeleton">
+			<directory>src/tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

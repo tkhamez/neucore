@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title '' %} - Slim Skeleton</title>
+
+        <link rel="stylesheet" href="/node_modules/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+
+        <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
+        <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+        <script src="/js/BraveCore.js"></script>
+
+    </head>
+    <body class="brave-core container-fluid">
+        {% block content %}{% endblock %}
+    </body>
+</html>

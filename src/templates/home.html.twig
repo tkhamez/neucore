@@ -1,0 +1,30 @@
+{% extends "layout.html.twig" %}
+
+{% block title 'Home' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col">
+
+            <h1>
+                <i class="fa fa-space-shuttle" aria-hidden="true"></i>
+                Slim Skeleton
+            </h1>
+
+            {% if name %}
+                <h2>7o {{ name }}!</h2>
+            {% else %}
+                <p><a href="/Brave">Say hello</a></p>
+            {% endif %}
+
+            <!--
+                base_url(): {{ base_url() }}
+                path_for('home'): {{ path_for('home') }}
+                is_current_path('home'): {{ is_current_path('home', {'name': name}) }}
+             -->
+
+        </div>
+    </div>
+
+{% endblock %}
