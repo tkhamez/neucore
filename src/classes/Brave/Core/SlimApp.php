@@ -4,6 +4,9 @@ namespace Brave\Core;
 use DI\Bridge\Slim\App;
 use DI\ContainerBuilder;
 
+/**
+ * Extends DI\Bridge\Slim to configure it.
+ */
 class SlimApp extends App
 {
 	private $settings;

@@ -1,10 +1,13 @@
 <?php
-namespace Brave\Core\Handlers;
+namespace Brave\Slim\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Extends Slim's error handler to add a logger.
+ */
 class PhpError extends \Slim\Handlers\PhpError
 {
     protected $logger;

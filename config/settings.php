@@ -8,17 +8,12 @@ return [
     'settings.httpVersion' => '1.1',
     'settings.responseChunkSize' => 4096,
     'settings.outputBuffering' => 'append',
-    'settings.determineRouteBeforeAppMiddleware' => false,
+    'settings.determineRouteBeforeAppMiddleware' => true,
     'settings.displayErrorDetails' => false,
-    'settings.addContentLengthHeader' => false, // Allow the web server to send the content-length header
+    'settings.addContentLengthHeader' => false,
     'settings.routerCacheFile' => false,
 
     'config' => [
-
-        'twig' => [
-            'template_path' => Application::ROOT_DIR . '/src/templates/',
-            'cache' => Application::ROOT_DIR . '/var/cache/twig'
-        ],
 
         'monolog' => [
             'name' => 'app',
@@ -35,8 +30,18 @@ return [
                 'proxy_dir' =>  Application::ROOT_DIR . '/var/cache/proxies'
             ],
             'connection' => [
-                'url' => getenv('DATABASE_URL')
+                'url' => getenv('BRAVECORE_DATABASE_URL')
             ]
+        ],
+
+        'CORS' => [
+            'allow_origin' => []
+        ],
+
+        'eve' => [
+            'client_id' => getenv('BRAVECORE_EVE_CLIENT_ID'),
+            'secret_key' => getenv('BRAVECORE_EVE_SECRET_KEY'),
+            'callback_url' => getenv('BRAVECORE_EVE_CALLBACK_URL'),
         ]
     ],
 ];
