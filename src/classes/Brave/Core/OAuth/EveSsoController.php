@@ -48,7 +48,7 @@ class EveSsoController
         }
 
         $token = $this->sso->requestToken($request->getQueryParam('code', ''));
-        if ($token === null) {
+        if ($token === null || ! isset($token['access_token'])) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request token error',
@@ -57,7 +57,7 @@ class EveSsoController
         }
 
         $verify = $this->sso->requestVerify($token['access_token']);
-        if ($verify === null) {
+        if ($verify === null|| ! isset($verify['CharacterID'])) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request verify error',
@@ -68,7 +68,7 @@ class EveSsoController
         // If any scopes were requested, this must also be stored in the database:
         // $token['access_token'], $token['expires_in'], $token['refresh_token']
         // and we would need a method in the EveSsoService class to resfresh the access token,
-        // and a method in UserAuthService to update the user with the new token.
+        // and a method (in UserAuthService?) to update the user with the new token.
 
         $success = $auth->authenticate($verify['CharacterID'], $verify['CharacterName']);
 

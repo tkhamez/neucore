@@ -80,9 +80,7 @@ class UserAuthService implements RoleProviderInterface
 
             // first login, create user
 
-            $userRole = $this->roleRepository->findBy([
-                'name' => 'role.user'
-            ]);
+            $userRole = $this->roleRepository->findBy(['name' => 'role.user']);
             if (count($userRole) !== 1) {
                 $this->log->critical('Role "role.user" not found.');
                 return false;
@@ -93,16 +91,17 @@ class UserAuthService implements RoleProviderInterface
             $user->setName($characterName);
             $user->addRole($userRole[0]);
 
-            try {
-                $this->em->persist($user);
-                $this->em->flush();
-            } catch (\Exception $e) {
-                $this->log->critical($e->getMessage());
-                return false;
-            }
-
         } else {
             $user = $users[0];
+            $user->setName($characterName);
+        }
+
+        try {
+            $this->em->persist($user);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage());
+            return false;
         }
 
         $this->session->set('user_id', $user->getId());

@@ -8,11 +8,11 @@ namespace Brave\Core\Entity;
 class App implements \JsonSerializable
 {
 
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue
-	 */
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /**

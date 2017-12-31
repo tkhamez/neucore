@@ -8,11 +8,11 @@ namespace Brave\Core\Entity;
 class User implements \JsonSerializable
 {
 
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue
-	 */
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /**
@@ -22,25 +22,25 @@ class User implements \JsonSerializable
      */
     private $roles;
 
-	/**
-	 * Eve character ID
-	 *
-	 * This is a Long value from the Eve API.
-	 *
-	 * @Column(type="bigint", name="character_id", unique=true)
-	 */
+    /**
+     * Eve character ID
+     *
+     * This is a Long value from the Eve API.
+     *
+     * @Column(type="bigint", name="character_id", unique=true)
+     */
     private $characterId;
 
-	/**
-	 * @Column(type="string", length=255)
-	 */
+    /**
+     * @Column(type="string", length=255)
+     */
     private $name;
 
-	/**
-	 * @ManyToMany(targetEntity="Group", inversedBy="users")
-	 * @JoinTable(name="users_groups")
+    /**
+     * @ManyToMany(targetEntity="Group", inversedBy="users")
+     * @JoinTable(name="users_groups")
      * @var \Doctrine\Common\Collections\Collection
-	 */
+     */
     private $groups;
 
     /**
@@ -54,6 +54,7 @@ class User implements \JsonSerializable
         $arr = [
             'characterId' => $this->characterId,
             'name' => $this->name,
+            'roles' => $this->roles->toArray(),
             'groups' => $this->groups->toArray(),
         ];
 

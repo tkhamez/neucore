@@ -7,20 +7,20 @@ namespace Brave\Core\Entity;
  * @Entity(repositoryClass="Brave\Core\Entity\RoleRepository")
  * @Table(name="roles")
  */
-class Role
+class Role implements \JsonSerializable
 {
 
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue
-	 * @var integer
-	 */
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     * @var integer
+     */
     private $id;
 
-	/**
-	 * @ManyToMany(targetEntity="User", mappedBy="roles")
-	 */
+    /**
+     * @ManyToMany(targetEntity="User", mappedBy="roles")
+     */
     private $users;
 
     /**
@@ -33,6 +33,17 @@ class Role
      * @var string
      */
     private $name;
+
+    /**
+     * Contains only information that is of interest for clients.
+     *
+     * {@inheritDoc}
+     * @see \JsonSerializable::jsonSerialize()
+     */
+    public function jsonSerialize()
+    {
+        return $this->name;
+    }
 
     /**
      * Constructor

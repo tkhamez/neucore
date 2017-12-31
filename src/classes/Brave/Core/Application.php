@@ -113,13 +113,13 @@ class Application
             );
         }
 
-        if ($_SERVER['BRAVECORE_APP_ENV'] !== 'prod') {
-            $this->env = Application::ENV_DEV;
+        if ($_SERVER['BRAVECORE_APP_ENV'] === self::ENV_PROD) {
+            $this->env = self::ENV_PROD;
         } else {
-            $this->env = Application::ENV_PROD;
+            $this->env = self::ENV_DEV;
         }
 
-        $this->settings = require Application::ROOT_DIR . '/config/settings.php';
+        $this->settings = require self::ROOT_DIR . '/config/settings.php';
 
         if (PHP_SAPI === 'cli') {
             $cli = require self::ROOT_DIR . '/config/settings_cli.php';
@@ -258,7 +258,7 @@ class Application
             return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
         });
 
-        // eve soo service
+        // EVE SSO service
         $container->set(EveSsoService::class, new EveSsoService(
             $container->get('config')['eve'], new Client(), $container->get(LoggerInterface::class)
         ));

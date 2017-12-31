@@ -69,7 +69,7 @@
             get: function(url, callback) {
                 // "withCredentials" is only needed if frontend and backend are on different hosts.
                 // Also make sure to send a "Accept: application/json" header to get errors in json format
-                // (defaults does that by default).
+                // (vue-resource does that by default).
                 this.$http.get(url, { withCredentials: true }).then(response => {
                     handleResult(response);
                 }, response => {

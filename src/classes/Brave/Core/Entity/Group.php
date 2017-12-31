@@ -10,29 +10,29 @@ namespace Brave\Core\Entity;
 class Group implements \JsonSerializable
 {
 
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue
-	 */
-	private $id;
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    private $id;
 
-	/**
-	 * @Column(type="string", unique=true, length=64)
-	 */
-	private $name;
+    /**
+     * @Column(type="string", unique=true, length=64)
+     */
+    private $name;
 
-	/**
-	 * @ManyToMany(targetEntity="User", mappedBy="groups")
-	 */
-	private $users;
+    /**
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     */
+    private $users;
 
-	/**
+    /**
      * Contains only information that is of interest for clients.
-	 *
-	 * {@inheritDoc}
-	 * @see \JsonSerializable::jsonSerialize()
-	 */
+     *
+     * {@inheritDoc}
+     * @see \JsonSerializable::jsonSerialize()
+     */
     public function jsonSerialize()
     {
         return $this->name;

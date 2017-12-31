@@ -5,6 +5,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Stuff necessary for EVE SSO.
+ *
+ * https://eveonline-third-party-documentation.readthedocs.io/en/latest/sso/index.html
+ */
 class EveSsoService
 {
 
@@ -64,9 +69,9 @@ class EveSsoService
             "code" => $code
         ];
 
-        $encodedAuth = $this->config['client_id'] .':'. $this->config['secret_key'];
+        $encodedAuth = base64_encode($this->config['client_id'] .':'. $this->config['secret_key']);
         $headers = [
-            'Authorization' => 'Basic ' . base64_encode($encodedAuth),
+            'Authorization' => 'Basic ' . $encodedAuth,
             #'Content-Type' => 'application/x-www-form-urlencoded',
         ];
 

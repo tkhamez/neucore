@@ -6,7 +6,7 @@ namespace Brave\Slim\Session;
  *
  * Can be instantiated before the session is started as long
  * as it is instantiated again when the session is active
- * (which is done in Brave\Slim\Session\NonBlockingSession).
+ * (which is done in NonBlockingSessionMiddleware).
  */
 class SessionData
 {
