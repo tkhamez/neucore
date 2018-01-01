@@ -1,12 +1,13 @@
 <?php
-namespace Brave\Core\OAuth;
+namespace Brave\Core\Api\User;
 
+use Brave\Core\Service\EveSsoService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
 use Slim\Http\Response;
 use Slim\Http\Request;
 
-class EveSsoController
+class AuthController
 {
 
     private $session;
@@ -92,7 +93,7 @@ class EveSsoController
         if ($success) {
             $this->session->set('auth_result', [
                 'success' => true,
-                'message' => null
+                'message' => ''
             ]);
         } else {
             $this->session->set('auth_result', [

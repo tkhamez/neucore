@@ -1,10 +1,10 @@
 <?php
-namespace Brave\Core\Api\User\Controller;
+namespace Brave\Core\Api\User;
 
 use Slim\Http\Response;
 use Brave\Core\Service\UserAuthService;
 
-class UserInfo
+class InfoController
 {
 
     /**

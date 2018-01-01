@@ -1,11 +1,11 @@
 <?php
 namespace Brave\Core;
 
-use Brave\Core\Api\App\Controller\AppInfo;
-use Brave\Core\Api\User\Controller\UserInfo;
-use Brave\Core\OAuth\EveSsoController;
-use Brave\Core\OAuth\EveSsoService;
+use Brave\Core\Api\App\InfoController as AppInfoController;
+use Brave\Core\Api\User\AuthController;
+use Brave\Core\Api\User\InfoController as UserInfoController;
 use Brave\Core\Service\AppAuthService;
+use Brave\Core\Service\EveSsoService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -54,14 +54,15 @@ use Whoops\Run;
  *         securityDefinition="Bearer",
  *         type="apiKey",
  *         name="Authorization",
- *         in="header"
+ *         in="header",
+ *         description="Example: Bearer ABC"
  *     ),
  *     @SWG\SecurityScheme(
  *         securityDefinition="Session",
  *         type="apiKey",
- *         name="Set-Cookie",
+ *         name="Cookie",
  *         in="header",
- *         description="Cookie name is BCSESS"
+ *         description="Example: BCSESS=123"
  *     )
  * )
  * @SWG\Tag(
@@ -345,18 +346,18 @@ class Application
     private function routes(App $app)
     {
         $app->group('/api/app', function () use ($app) {
-            $app->get('/info', AppInfo::class)->setName('api_app_info');
+            $app->get('/info', AppInfoController::class)->setName('api_app_info');
         });
 
         $app->group('/api/user', function () use ($app) {
             $app->group('/auth', function () use ($app) {
-                $app->get('/login', EveSsoController::class . '::login')->setName('api_user_auth_login');
-                $app->get('/callback', EveSsoController::class . '::callback')->setName('api_user_auth_callback');
-                $app->get('/result', EveSsoController::class . '::result')->setName('api_user_auth_result');
-                $app->get('/logout', EveSsoController::class . '::logout')->setName('api_user_auth_logout');
+                $app->get('/login', AuthController::class . '::login')->setName('api_user_auth_login');
+                $app->get('/callback', AuthController::class . '::callback')->setName('api_user_auth_callback');
+                $app->get('/result', AuthController::class . '::result')->setName('api_user_auth_result');
+                $app->get('/logout', AuthController::class . '::logout')->setName('api_user_auth_logout');
             });
 
-            $app->get('/info', UserInfo::class)->setName('api_user_info');
+            $app->get('/info', UserInfoController::class)->setName('api_user_info');
         });
     }
 }

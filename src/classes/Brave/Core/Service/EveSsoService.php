@@ -1,5 +1,5 @@
 <?php
-namespace Brave\Core\OAuth;
+namespace Brave\Core\Service;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;

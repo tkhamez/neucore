@@ -1,11 +1,11 @@
 <?php
-namespace Brave\Core\Api\App\Controller;
+namespace Brave\Core\Api\App;
 
 use Brave\Core\Service\AppAuthService;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
-class AppInfo
+class InfoController
 {
 
     /**

@@ -1,0 +1,3 @@
+
+Generate swagger.json
+$ vendor/bin/swagger --bootstrap config/swagger.php --exclude bin,config,docs,var,vendor,web --output web
