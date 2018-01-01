@@ -19,6 +19,23 @@ class EveSsoController
         $this->sso = $sso;
     }
 
+    /**
+     * @SWG\Get(
+     *     path="/user/auth/login",
+     *     summary="EVE SSO login URL",
+     *     tags={"SSO"},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The EVE SSO login URL",
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="oauth_url",
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function login(Request $request, Response $response)
     {
         $oauthState = uniqid();
@@ -87,6 +104,28 @@ class EveSsoController
         return $response->withRedirect($redirectUrl);
     }
 
+    /**
+     *
+     * @SWG\Get(
+     *     path="/user/auth/result",
+     *     summary="SSO result",
+     *     tags={"SSO"},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The SSO result",
+     *         @SWG\Schema(
+     *             @SWG\Property(
+     *                 property="success",
+     *                 type="boolean"
+     *             ),
+     *             @SWG\Property(
+     *                 property="message",
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function result(Response $response)
     {
         $result = $this->session->get('auth_result');
@@ -95,6 +134,22 @@ class EveSsoController
         return $response->withJson($result);
     }
 
+    /**
+     * @SWG\Get(
+     *     path="/user/auth/logout",
+     *     summary="User logout",
+     *     tags={"SSO"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Nothing is returned"
+     *     ),
+     *     @SWG\Response(
+     *         response="401",
+     *         description="If not authenticated"
+     *     )
+     * )
+     */
     public function logout(Response $response)
     {
         $this->session->clear();

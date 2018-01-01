@@ -2,6 +2,7 @@
 namespace Brave\Core\Entity;
 
 /**
+ * @SWG\Definition(definition="User")
  * @Entity(repositoryClass="Brave\Core\Entity\UserRepository")
  * @Table(name="users")
  */
@@ -16,30 +17,36 @@ class User implements \JsonSerializable
     private $id;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     * @SWG\Property(type="array", @SWG\Items(type="string"))
      * @ManyToMany(targetEntity="Role", inversedBy="users")
      * @JoinTable(name="users_roles")
-     * @var \Doctrine\Common\Collections\Collection
      */
     private $roles;
 
     /**
      * Eve character ID
      *
-     * This is a Long value from the Eve API.
-     *
+     * @var int
+     * @SWG\Property(format="int64")
      * @Column(type="bigint", name="character_id", unique=true)
      */
     private $characterId;
 
     /**
+     * Eve character name
+     *
+     * @var string
+     * @SWG\Property()
      * @Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     * @SWG\Property(type="array", @SWG\Items(type="string"))
      * @ManyToMany(targetEntity="Group", inversedBy="users")
      * @JoinTable(name="users_groups")
-     * @var \Doctrine\Common\Collections\Collection
      */
     private $groups;
 

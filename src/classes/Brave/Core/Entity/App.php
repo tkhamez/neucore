@@ -2,6 +2,7 @@
 namespace Brave\Core\Entity;
 
 /**
+ * @SWG\Definition(definition="App")
  * @Entity(repositoryClass="Brave\Core\Entity\AppRepository")
  * @Table(name="apps")
  */
@@ -9,6 +10,10 @@ class App implements \JsonSerializable
 {
 
     /**
+     * App ID
+     *
+     * @var int
+     * @SWG\Property()
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -28,6 +33,10 @@ class App implements \JsonSerializable
     private $secret;
 
     /**
+     * App name
+     *
+     * @var string
+     * @SWG\Property()
      * @Column(type="string", length=255)
      */
     private $name;

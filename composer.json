@@ -10,7 +10,8 @@
         "symfony/console": "^4.0",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "zircote/swagger-php": "^2.0"
     },
     "autoload": {
         "psr-4": { "": "src/classes/" }
@@ -33,7 +34,8 @@
         ],
         "compile": [
             "doctrine orm:generate-proxies",
-            "doctrine-migrations migrations:migrate --no-interaction"
+            "doctrine-migrations migrations:migrate --no-interaction",
+            "swagger --bootstrap config/swagger.php --exclude bin,config,docs,var,vendor,web --output web"
         ],
         "clean": "rm -R var/cache/*",
         "test": "phpunit",

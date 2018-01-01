@@ -41,6 +41,41 @@ use Whoops\Run;
 
 /**
  * App bootstrapping
+ *
+ * @SWG\Swagger(
+ *     schemes={"https"},
+ *     host=BRAVE_CORE_API_HOST,
+ *     basePath="/api",
+ *     @SWG\Info(
+ *       title="Brave Collective Core Services API",
+ *       version="0.1"
+ *     ),
+ *     @SWG\SecurityScheme(
+ *         securityDefinition="Bearer",
+ *         type="apiKey",
+ *         name="Authorization",
+ *         in="header"
+ *     ),
+ *     @SWG\SecurityScheme(
+ *         securityDefinition="Session",
+ *         type="apiKey",
+ *         name="Set-Cookie",
+ *         in="header",
+ *         description="Cookie name is BCSESS"
+ *     )
+ * )
+ * @SWG\Tag(
+ *     name="SSO",
+ *     description="EVE SSO login.",
+ * )
+ * @SWG\Tag(
+ *     name="User",
+ *     description="API for the frond-end.",
+ * )
+ * @SWG\Tag(
+ *     name="App",
+ *     description="API for apps.",
+ * )
  */
 class Application
 {
@@ -138,12 +173,17 @@ class Application
         return $this->settings;
     }
 
+    public function getEnv(): string
+    {
+        $this->settings();
+
+        return $this->env;
+    }
+
     /**
      * Creates the Slim app (for unit tests)
-     *
-     * @return App
      */
-    public function getApp(bool $withMiddleware)
+    public function getApp(bool $withMiddleware): App
     {
         $app = $this->app();
 
@@ -202,11 +242,7 @@ class Application
         $console->run();
     }
 
-    /**
-     *
-     * @return App
-     */
-    private function app()
+    private function app(): App
     {
         $this->settings();
 
@@ -224,8 +260,6 @@ class Application
 
     /**
      * Set up dependencies and error handling
-     *
-     * @param Container $container
      */
     private function dependencies(Container $container)
     {

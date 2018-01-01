@@ -6,6 +6,7 @@
 !/var/logs/.gitkeep
 /vendor/
 /web/node_modules/
+/web/swagger.json
 
 # eclipse
 /.buildpath
