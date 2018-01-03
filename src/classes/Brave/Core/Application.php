@@ -5,7 +5,6 @@ use Brave\Core\Api\App\InfoController as AppInfoController;
 use Brave\Core\Api\User\AuthController;
 use Brave\Core\Api\User\InfoController as UserInfoController;
 use Brave\Core\Service\AppAuthService;
-use Brave\Core\Service\EveSsoService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -20,7 +19,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
 
-use GuzzleHttp\Client;
+use League\OAuth2\Client\Provider\GenericProvider;
 
 use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
@@ -44,7 +43,6 @@ use Whoops\Run;
  *
  * @SWG\Swagger(
  *     schemes={"https"},
- *     host=BRAVE_CORE_API_HOST,
  *     basePath="/api",
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
@@ -293,10 +291,15 @@ class Application
             return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
         });
 
-        // EVE SSO service
-        $container->set(EveSsoService::class, new EveSsoService(
-            $container->get('config')['eve'], new Client(), $container->get(LoggerInterface::class)
-        ));
+        // EVE OAuth
+        $container->set(GenericProvider::class, new GenericProvider([
+            'clientId'                => $container->get('config')['eve']['client_id'],
+            'clientSecret'            => $container->get('config')['eve']['secret_key'],
+            'redirectUri'             => $container->get('config')['eve']['callback_url'],
+            'urlAuthorize'            => 'https://login.eveonline.com/oauth/authorize',
+            'urlAccessToken'          => 'https://login.eveonline.com/oauth/token',
+            'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
+        ]));
 
         // error handling
         ini_set('display_errors', 0);

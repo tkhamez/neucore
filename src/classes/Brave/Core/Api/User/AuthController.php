@@ -1,9 +1,10 @@
 <?php
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Service\EveSsoService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
+use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
 use Slim\Http\Request;
 
@@ -14,10 +15,13 @@ class AuthController
 
     private $sso;
 
-    public function __construct(SessionData $session, EveSsoService $sso)
+    private $log;
+
+    public function __construct(SessionData $session, GenericProvider $sso, LoggerInterface $log)
     {
         $this->session = $session;
         $this->sso = $sso;
+        $this->log = $log;
     }
 
     /**
@@ -25,6 +29,12 @@ class AuthController
      *     path="/user/auth/login",
      *     summary="EVE SSO login URL",
      *     tags={"SSO"},
+     *     @SWG\Parameter(
+     *         name="redirect_url",
+     *         in="query",
+     *         description="URL for redirect after EVE login.",
+     *         type="string"
+     *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="The EVE SSO login URL",
@@ -39,11 +49,14 @@ class AuthController
      */
     public function login(Request $request, Response $response)
     {
-        $oauthState = uniqid();
+        $scopes = [];
+        $options = [
+            'scope' => implode(' ', $scopes)
+        ];
 
-        $url = $this->sso->getLoginUrl($oauthState);
+        $url = $this->sso->getAuthorizationUrl($options);
 
-        $this->session->set('auth_state', $oauthState);
+        $this->session->set('auth_state', $this->sso->getState());
         $this->session->set('auth_redirect_url', $request->getQueryParam('redirect_url'));
 
         return $response->withJson(['oauth_url' => $url]);
@@ -65,8 +78,12 @@ class AuthController
             return $response->withRedirect($redirectUrl);
         }
 
-        $token = $this->sso->requestToken($request->getQueryParam('code', ''));
-        if ($token === null || ! isset($token['access_token'])) {
+        try {
+            $token = $this->sso->getAccessToken('authorization_code', [
+                'code' => $request->getQueryParam('code', '')
+            ]);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request token error',
@@ -74,8 +91,15 @@ class AuthController
             return $response->withRedirect($redirectUrl);
         }
 
-        $verify = $this->sso->requestVerify($token['access_token']);
-        if ($verify === null|| ! isset($verify['CharacterID'])) {
+        $resourceOwner = null;
+        try {
+            $resourceOwner = $this->sso->getResourceOwner($token);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+        }
+        
+        $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;
+        if (! is_array($verify) || ! isset($verify['CharacterID'])) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request verify error',
@@ -84,9 +108,8 @@ class AuthController
         }
 
         // If any scopes were requested, this must also be stored in the database:
-        // $token['access_token'], $token['expires_in'], $token['refresh_token']
-        // and we would need a method in the EveSsoService class to resfresh the access token,
-        // and a method (in UserAuthService?) to update the user with the new token.
+        // $token->getToken(), $token->getExpires(), $token->getRefreshToken()
+        // and we would need a method (in UserAuthService?) to update the user with the new token.
 
         $success = $auth->authenticate($verify['CharacterID'], $verify['CharacterName']);
 
