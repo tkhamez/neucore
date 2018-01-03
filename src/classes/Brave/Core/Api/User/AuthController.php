@@ -57,7 +57,7 @@ class AuthController
         $url = $this->sso->getAuthorizationUrl($options);
 
         $this->session->set('auth_state', $this->sso->getState());
-        $this->session->set('auth_redirect_url', $request->getQueryParam('redirect_url'));
+        $this->session->set('auth_redirect_url', $request->getQueryParam('redirect_url', '/'));
 
         return $response->withJson(['oauth_url' => $url]);
     }
@@ -97,7 +97,7 @@ class AuthController
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
         }
-        
+
         $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;
         if (! is_array($verify) || ! isset($verify['CharacterID'])) {
             $this->session->set('auth_result', [
