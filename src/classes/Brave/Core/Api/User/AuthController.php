@@ -136,7 +136,7 @@ class AuthController
      *     tags={"SSO"},
      *     @SWG\Response(
      *         response="200",
-     *         description="The SSO result",
+     *         description="Result of last SSO attempt or null",
      *         @SWG\Schema(
      *             @SWG\Property(
      *                 property="success",
@@ -153,7 +153,6 @@ class AuthController
     public function result(Response $response)
     {
         $result = $this->session->get('auth_result');
-        $this->session->delete('auth_result');
 
         return $response->withJson($result);
     }

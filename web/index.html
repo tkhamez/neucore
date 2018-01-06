@@ -7,6 +7,14 @@
     <script src="/node_modules/vue-resource/dist/vue-resource.js"></script>
 </head>
 <body>
+
+    <div>
+        <a href="/api" style="text-decoration: none;">{ Swagger UI }</a>
+        <br><br>
+    </div>
+
+    <h2>Login example</h2>
+
     <div id="app">
         <button v-on:click="getUser">1. GET user info</button>
         <button v-on:click="getLogin">2. GET sso login url, you can provide a redirect url</button>
@@ -52,7 +60,7 @@
                 this.get(appBaseUrl + '/api/user/info');
             },
             getLogin: function() {
-                var redirectPath = clientBaseUrl + '/index.html#' + appBaseUrl + '/api/user/auth/result';
+                var redirectPath = clientBaseUrl + '/#' + appBaseUrl + '/api/user/auth/result';
                 var url = appBaseUrl + '/api/user/auth/login?redirect_url=' + encodeURIComponent(redirectPath);
                 this.get(url, function(response) {
                     app.oauthUrl = response.body.oauth_url;

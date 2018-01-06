@@ -4,7 +4,9 @@ namespace Brave\Core\Service;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\AppRepository;
 use Brave\Slim\Role\RoleProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Provides methods to authenticate and get an external app.
@@ -17,15 +19,21 @@ class AppAuthService implements RoleProviderInterface
 
     private $appRepository;
 
+    private $em;
+
+    private $log;
+
     /**
      *
      * @var App
      */
     private $app;
 
-    public function __construct(AppRepository $appRepository)
+    public function __construct(AppRepository $appRepository, EntityManagerInterface $em, LoggerInterface $log)
     {
         $this->appRepository = $appRepository;
+        $this->em = $em;
+        $this->log = $log;
     }
 
     /**
@@ -91,6 +99,18 @@ class AppAuthService implements RoleProviderInterface
         /* @var $app \Brave\Core\Entity\App */
         $app = $this->appRepository->find($appId);
         if ($app !== null && password_verify($secret, $app->getSecret())) {
+
+            // upgrade hash if needed
+            if (password_needs_rehash($app->getSecret(), PASSWORD_DEFAULT)) {
+                $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+                try {
+                    $this->em->persist($app);
+                    $this->em->flush();
+                } catch (\Exception $e) {
+                    $this->log->critical($e->getMessage());
+                }
+            }
+
             $this->app = $app;
         }
     }

@@ -25,12 +25,14 @@ class NonBlockingSessionMiddleware
      *
      * Available options (all optional):
      * name <string>: the session name
+     * secure <bool>: session.cookie_secure option runtime configuration
      * route_blocking_pattern <array>: patterns of routes that allow writing to the session
      * route_include_pattern <array>: only start sessions for this routes, matched by "starts-with"
      *
      * Example
      * [
      *      'name' => 'MY_SESS',
+     *      'secure' => true,
      *      'route_include_pattern' => ['/path/one'],
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
@@ -92,9 +94,10 @@ class NonBlockingSessionMiddleware
             session_name($this->options['name']);
         }
 
-        ini_set('session.cookie_httponly', 1);
-
-        session_start();
+        session_start([
+            'cookie_httponly' => true,
+            'cookie_secure' => $this->options['secure']
+        ]);
     }
 
     private function isReadOnly(Route $route = null)

@@ -9,17 +9,17 @@ use DI\ContainerBuilder;
  */
 class SlimApp extends App
 {
-	private $settings;
+    private $settings;
 
-	public function __construct(array $settings)
-	{
-		$this->settings = $settings;
+    public function __construct(array $settings)
+    {
+        $this->settings = $settings;
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	protected function configureContainer(ContainerBuilder $builder)
-	{
-		$builder->addDefinitions($this->settings);
-	}
+    protected function configureContainer(ContainerBuilder $builder)
+    {
+        $builder->addDefinitions($this->settings);
+    }
 }

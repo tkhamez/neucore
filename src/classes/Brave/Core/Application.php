@@ -45,7 +45,7 @@ use Whoops\Run;
  *     schemes={"https"},
  *     basePath="/api",
  *     @SWG\Info(
- *       title="Brave Collective Core Services API",
+ *       title="Brave Collective Core Services Prototype API",
  *       version="0.1"
  *     ),
  *     @SWG\SecurityScheme(
@@ -334,11 +334,11 @@ class Application
 
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',
+            'secure' => $this->env === self::ENV_PROD,
             'route_include_pattern' => ['/api/user'],
             'route_blocking_pattern' => [
                 '/api/user/auth/login',
                 '/api/user/auth/callback',
-                '/api/user/auth/result',
                 '/api/user/auth/logout'
             ],
         ]));

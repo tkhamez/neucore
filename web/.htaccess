@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteCond %{REQUEST_URI} ^/api$
+    RewriteRule ^ api.html [QSA,L]
+
     RewriteCond %{REQUEST_URI} !^/$
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ app.php [QSA,L]
