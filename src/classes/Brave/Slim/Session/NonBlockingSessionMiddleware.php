@@ -96,7 +96,7 @@ class NonBlockingSessionMiddleware
 
         session_start([
             'cookie_httponly' => true,
-            'cookie_secure' => $this->options['secure']
+            'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true
         ]);
     }
 
