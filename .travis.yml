@@ -1,0 +1,27 @@
+language: php
+
+php:
+  - '7.1'
+
+services:
+  - mysql
+
+env:
+  global:
+    - BRAVECORE_APP_ENV=prod
+    - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
+    - BRAVECORE_EVE_CLIENT_ID=123
+    - BRAVECORE_EVE_SECRET_KEY=abc
+    - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
+
+before_install:
+  - echo yes | pecl install apcu-5.1.9
+  - phpenv config-add travis.ini
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
+
+install:
+  - composer install
+  - composer compile
+
+script: ./vendor/bin/phpunit
+
