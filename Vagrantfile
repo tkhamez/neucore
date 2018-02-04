@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.network "forwarded_port", guest: 443, host: 443
 
-	config.vm.synced_folder "./", "/home/vagrant/brvneucore"
+	config.vm.synced_folder "./", "/var/www/bravecore"
 	config.vm.network :private_network, ip: "192.168.121.4"
 	
 	# run setup script as root
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
 		# TODO should pass password in via env
 		mysql -e "GRANT ALL PRIVILEGES ON core.* TO core@localhost IDENTIFIED BY 'braveineve'"
 
-		cp ./brvneucore/apache2/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
+		cp /var/www/bravecore/apache2/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
 
 		a2enmod rewrite
 		a2enmod ssl
@@ -52,8 +52,8 @@ Vagrant.configure("2") do |config|
 		a2enmod proxy_fcgi setenvif
 		a2enconf php7.1-fpm
 
-		chmod 0777 /home/vagrant/brvneucore/var/logs
-		chmod 0777 /home/vagrant/brvneucore/var/cache
+		chmod 0777 /var/www/bravecore/var/logs
+		chmod 0777 /var/www/bravecore/var/cache
 
 		systemctl reload apache2
 
@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "up", type: "shell", run: "always", privileged: false, inline: <<-SHELL
 		echo "starting server"
 
-		cd ./brvneucore
+		cd /var/www/bravecore
 
 		if [ ! -f .env ]; then
 			echo '.env not setup'
