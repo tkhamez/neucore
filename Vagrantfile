@@ -73,7 +73,8 @@ Vagrant.configure("2") do |config|
 		vendor/bin/doctrine-migrations migrations:migrate
 		composer compile
 		
-		echo server up at https://localhost:8080
+		echo server up at https://localhost
+		
 
 	SHELL
 end
