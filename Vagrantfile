@@ -45,6 +45,7 @@ Vagrant.configure("2") do |config|
 
 		cp ./brvneucore/apache2/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
 
+		a2enmod rewrite
 		a2enmod ssl
 		a2ensite default-ssl
 		a2ensite 010-bravecore
