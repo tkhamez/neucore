@@ -57,6 +57,11 @@ Vagrant.configure("2") do |config|
 
 		systemctl reload apache2
 
+		# setup frontend stuff
+
+		cd /var/www/bravecore/frontend
+		su vagrant -c 'npm i'
+
 	SHELL
 
 	# run the server as an unprivileged user
@@ -71,13 +76,17 @@ Vagrant.configure("2") do |config|
 		fi
 		composer install
 		vendor/bin/doctrine-migrations migrations:migrate
-		composer compile
+		vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output web
 		
+		su vagrant -c 'npm run build'
+
 		echo
-		echo ---------------------------------------
-		echo -- server up at https://localhost
-		echo ---------------------------------------
-		
+		echo ------------------------------------
+		echo -- server up at https://localhost --
+		echo ------------------------------------
+		echo For frontend rebuilding:
+		echo you can either run npm run watch from the /frontend directory, or
+		echo run it inside the vm: vagrant ssh -c 'cd /var/www/bravecore/frontend && npm run watch'
 
 	SHELL
 end

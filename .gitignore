@@ -13,3 +13,5 @@
 /.project
 /.settings
 /.vagrant
+
+npm-debug.log*

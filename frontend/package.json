@@ -4,7 +4,7 @@
   "scripts": {
     "build": "webpack -d",
     "watch": "webpack -dw",
-    "build:prod": "NODE_ENV=production webpack",
+    "build:prod": "webpack",
     "check": "tslint . && tsc --noEmit"
   },
   "dependencies": {
