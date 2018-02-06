@@ -20,7 +20,12 @@ Vagrant.configure("2") do |config|
 		usermod -a -G www-data vagrant
 
 		apt update
-		apt install curl git -y
+		apt install -y curl git
+
+		# setup swagger codegen
+		apt install -y openjdk-8-jre-headless
+		su vagrant -c 'mkdir ~/bin && cd ~/bin && wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.2.1/swagger-codegen-cli-2.2.1.jar -q -O swagger-codegen.jar'
+
 		# setup php + composer
 		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-libsodium php-dom php-sqlite3 php-apcu
 
@@ -77,6 +82,8 @@ Vagrant.configure("2") do |config|
 		composer install
 		vendor/bin/doctrine-migrations migrations:migrate
 		vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output web
+
+		# su vagrant -c 'java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/api/gen'
 		
 		su vagrant -c 'npm run build'
 
