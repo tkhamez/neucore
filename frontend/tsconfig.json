@@ -7,6 +7,9 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "experimentalDecorators": true,
-    "sourceMap": true
-  }
+    "sourceMap": true,
+  },
+  "exclude": [
+    "swagger"
+  ]
 }

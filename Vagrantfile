@@ -62,10 +62,11 @@ Vagrant.configure("2") do |config|
 
 		systemctl reload apache2
 
-		# setup frontend stuff
+		# setup frontend stuff		
+		su vagrant -c 'cd /var/www/bravecore/frontend npm i'
 
-		cd /var/www/bravecore/frontend
-		su vagrant -c 'npm i'
+		su vagrant -c 'cd /var/www/bravecore/ java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/swagger'
+		cd frontend/swagger && npm i
 
 	SHELL
 
@@ -83,8 +84,8 @@ Vagrant.configure("2") do |config|
 		vendor/bin/doctrine-migrations migrations:migrate
 		vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output web
 
-		java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/api/gen
-		cd frontend/api/gen && npm i
+		java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/swagger
+		cd frontend/swagger && npm i
 		
 		
 		cd /var/www/bravecore/frontend && npm run build
