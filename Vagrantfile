@@ -83,9 +83,11 @@ Vagrant.configure("2") do |config|
 		vendor/bin/doctrine-migrations migrations:migrate
 		vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output web
 
-		# su vagrant -c 'java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/api/gen'
+		java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/api/gen
+		cd frontend/api/gen && npm i
 		
-		su vagrant -c 'npm run build'
+		
+		cd /var/www/bravecore/frontend && npm run build
 
 		echo
 		echo ------------------------------------
