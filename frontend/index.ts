@@ -1,7 +1,6 @@
 
 import Vue from 'vue';
 import HelloComponent from './components/Hello.vue';
-import 'vue-material/dist/vue-material.min.css';
 
 new Vue({
 	el: '#content',
