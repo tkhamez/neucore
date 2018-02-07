@@ -31,4 +31,4 @@ install:
 script:
   - ./vendor/bin/phpunit
   - npm --prefix frontend run check
-  - npm --prefix frontend run build:prod
+  - cd frontend && npm run build:prod
