@@ -5,7 +5,8 @@
 				<span class="md-title">My Title</span>
 			</md-app-toolbar>
 			<md-app-content>
-				<login-component/>
+				<user-component v-if="user"/>
+				<login-component v-else/>
 			</md-app-content>
 		</md-app>
 	</div>
@@ -18,6 +19,7 @@
 <script lang="ts">
 import Vue from "vue";
 import LoginComponent from "./Login.vue";
+import UserComponent from "./User.vue";
 
 export default Vue.extend({
   props: [],
@@ -26,9 +28,15 @@ export default Vue.extend({
   },
   created() {},
   methods: {},
-  computed: {},
+  computed: {
+    user() {
+      console.log(this.$store.state);
+      return this.$store.state.user;
+    }
+  },
   components: {
-    LoginComponent
+    LoginComponent,
+    UserComponent
   }
 });
 </script>

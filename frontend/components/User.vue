@@ -1,13 +1,13 @@
 
 <template>
     <div>
-
+      {{ user }}
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { User } from "../api";
+// import { User } from "../api";
 
 // TODO load user from vuex state
 export default Vue.extend({
@@ -17,7 +17,11 @@ export default Vue.extend({
   },
   created() {},
   methods: {},
-  computed: {}
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  }
 });
 </script>
 

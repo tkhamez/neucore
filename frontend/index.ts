@@ -12,19 +12,23 @@ Vue.use(Vuex);
 Vue.use(VueMaterial);
 
 interface RootState {
-	user?: User;
+	user: User | undefined;
 }
 
-const store: StoreOptions<RootState> = {
+const store = new Vuex.Store<RootState>({
 	state: {
 		// defaults
+		user: undefined,
 	},
-};
+	mutations: {
+		login(state, user: User) {
+			state.user = user;
+		}
+	}
+});
 
-export default new Vuex.Store<RootState>(store);
 
-
-new Vue({
+(window as any).instance = new Vue({
 	el: '#content',
 	template: `
 		<index-component/>
@@ -37,6 +41,7 @@ new Vue({
 		this.getUser();
 
 	},
+	store,
 	methods: {
 		async getUser() {
 			const apiKey = Cookies.get('apiKey');
@@ -44,9 +49,9 @@ new Vue({
 				return;
 			}
 
-			const userApi = new UserApi((url, init) => fetch(url, { ...init, headers: { ...init.headers, Authorization: apiKey } }));
+			const userApi = new UserApi((url, init) => fetch(url, { ...init, headers: { ...init.headers, Authorization: `Bearer: ${apiKey}` } }));
 			const user = await userApi.userInfoGet();
-			this.$store.commit('user', user);
+			this.$store.commit('login', user);
 		}
 	}
 });
