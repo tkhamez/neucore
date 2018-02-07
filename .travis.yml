@@ -18,7 +18,7 @@ before_install:
   - echo yes | pecl install apcu-5.1.9
   - phpenv config-add travis.ini
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
-  - wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/3.0.0-rc0/swagger-codegen-cli-3.0.0-rc0.jar -q -O swagger-codegen.jar
+  - wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar -q -O swagger-codegen.jar
 
 install:
   - composer install
