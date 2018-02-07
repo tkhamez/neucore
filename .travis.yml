@@ -29,7 +29,6 @@ install:
   - ls frontend
   - ls frontend/swagger
   - ls frontend/swagger/dist/
-  - cp frontend/swagger/dist/api* frontend/ # travis acts weird with symlinks?
 
 
 script:
