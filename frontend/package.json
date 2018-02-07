@@ -5,7 +5,7 @@
     "build": "webpack -d",
     "watch": "webpack -dw",
     "build:prod": "webpack",
-    "check": "tslint . && tsc --noEmit"
+    "check": "tslint -p . && tsc --noEmit"
   },
   "dependencies": {
     "@types/js-cookie": "^2.1.0",
