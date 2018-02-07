@@ -19,15 +19,8 @@ export default Vue.extend({
     this.fetchUser();
   },
   methods: {
-    async fetchUser(): Promise<User | null> {
-      try {
-        const user = await userApi.userInfoGet();
-        console.log("user", user);
-        return user;
-      } catch (err) {
-        // handle case the user is not logged in
-        return null;
-      }
+    fetchUser(): Promise<User> {
+      return userApi.userInfoGet();
     }
   },
   computed: {}
