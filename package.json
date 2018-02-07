@@ -1,4 +1,5 @@
 {
     "name": "brvneucore-heroku",
-    "private": true
+    "private": true,
+    "dependencies": {}
 }

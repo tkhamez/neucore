@@ -1,10 +1,9 @@
 
 import Vue from 'vue';
-import Vuex, { StoreOptions } from 'vuex';
+import Vuex from 'vuex';
 import IndexComponent from './components/Index.vue';
 import VueMaterial from 'vue-material';
 import { UserApi, User } from './api';
-import * as Cookies from 'js-cookie';
 
 // const userApi = new UserApi({});
 
@@ -44,7 +43,7 @@ const store = new Vuex.Store<RootState>({
 	store,
 	methods: {
 		async getUser() {
-			const apiKey = Cookies.get('apiKey');
+			const apiKey = ''; // TODO api stuff
 			if (!apiKey) {
 				return;
 			}
