@@ -20,6 +20,7 @@
 import Vue from "vue";
 import LoginComponent from "./Login.vue";
 import UserComponent from "./User.vue";
+import { User } from "../api";
 
 export default Vue.extend({
   props: [],
@@ -29,8 +30,7 @@ export default Vue.extend({
   created() {},
   methods: {},
   computed: {
-    user() {
-      console.log(this.$store.state);
+    user(): User {
       return this.$store.state.user;
     }
   },

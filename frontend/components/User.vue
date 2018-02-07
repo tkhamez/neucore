@@ -7,9 +7,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-// import { User } from "../api";
+import { User } from "../api";
 
-// TODO load user from vuex state
 export default Vue.extend({
   props: [],
   data() {
@@ -18,7 +17,7 @@ export default Vue.extend({
   created() {},
   methods: {},
   computed: {
-    user() {
+    user(): User {
       return this.$store.state.user;
     }
   }
