@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
 
 		# setup swagger codegen
 		apt install -y openjdk-8-jre-headless
-		su vagrant -c 'mkdir ~/bin && cd ~/bin && wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/3.0.0-rc0/swagger-codegen-cli-3.0.0-rc0.jar -q -O swagger-codegen.jar'
+		su vagrant -c 'mkdir ~/bin && cd ~/bin && wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar -q -O swagger-codegen.jar'
 
 		# setup php + composer
 		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-libsodium php-dom php-sqlite3 php-apcu

@@ -23,7 +23,7 @@ before_install:
 install:
   - composer install
   - composer compile
-  - java -jar swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/swagger
+  - java -jar swagger-codegen.jar generate -c frontend/swagger-options.json -i web/swagger.json -l typescript-fetch -o frontend/swagger
   - npm --prefix frontend/swagger i
   - npm --prefix frontend i
   - ls frontend
