@@ -26,8 +26,10 @@ install:
   - java -jar swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/swagger
   - npm --prefix frontend/swagger i
   - npm --prefix frontend i
+  - cp frontend/swagger/dist/api* frontend/ # travis acts weird with symlinks?
 
 
 script:
   - ./vendor/bin/phpunit
   - npm --prefix frontend run check
+  - npm --prefix frontend run build:prod
