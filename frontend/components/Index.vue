@@ -5,6 +5,7 @@
 				<span class="md-title">My Title</span>
 			</md-app-toolbar>
 			<md-app-content>
+        <!-- TODO should have a loading spinner while we attempt to fetch user, if we have an authorization header -->
 				<user-component v-if="user"/>
 				<login-component v-else/>
 			</md-app-content>
