@@ -7,22 +7,16 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { UserApi, User } from "../api";
-const userApi = new UserApi();
+import { User } from "../api";
 
+// TODO load user from vuex state
 export default Vue.extend({
   props: [],
   data() {
     return {};
   },
-  created() {
-    this.fetchUser();
-  },
-  methods: {
-    fetchUser(): Promise<User> {
-      return userApi.userInfoGet();
-    }
-  },
+  created() {},
+  methods: {},
   computed: {}
 });
 </script>

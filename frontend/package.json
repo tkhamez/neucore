@@ -8,8 +8,10 @@
     "check": "tslint . && tsc --noEmit"
   },
   "dependencies": {
+    "@types/js-cookie": "^2.1.0",
     "chai": "^4.1.2",
     "css-loader": "^0.28.9",
+    "js-cookie": "^2.2.0",
     "mocha": "^5.0.0",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
@@ -21,6 +23,7 @@
     "vue-loader": "^14.1.1",
     "vue-material": "^1.0.0-beta-8",
     "vue-template-compiler": "^2.5.13",
+    "vuex": "^3.0.1",
     "webpack": "^3.10.0"
   }
 }
