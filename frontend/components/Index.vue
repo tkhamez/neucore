@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO make this pretty -->
 	<div class="page-container">
 		<md-app>
 			<md-app-toolbar class="md-primary">
