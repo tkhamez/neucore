@@ -4,6 +4,8 @@
 
 - `vagrant up`
 - browse to https://localhost
+- If the vagrant file changes, run `vagrant provision` to update the VM.
+- `vagrant destroy` will completely remove the VM.
 
 ## Local dev Requirements
 

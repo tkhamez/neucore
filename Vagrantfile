@@ -63,9 +63,9 @@ Vagrant.configure("2") do |config|
 		systemctl reload apache2
 
 		# setup frontend stuff		
-		su vagrant -c 'cd /var/www/bravecore/frontend npm i'
+		su vagrant -c 'cd /var/www/bravecore/frontend  && npm i'
 
-		su vagrant -c 'cd /var/www/bravecore/ java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/swagger'
+		su vagrant -c 'cd /var/www/bravecore/ && java -jar ~/bin/swagger-codegen.jar generate -i web/swagger.json -l typescript-fetch -o frontend/swagger'
 		cd frontend/swagger && npm i
 
 	SHELL

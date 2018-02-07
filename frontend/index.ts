@@ -1,20 +1,18 @@
 
 import Vue from 'vue';
-import HelloComponent from './components/Hello.vue';
-import UserComponent from './components/User.vue';
+import IndexComponent from './components/Index.vue';
+import VueMaterial from 'vue-material';
 
+Vue.use(VueMaterial);
 new Vue({
 	el: '#content',
 	template: `
 	<div>
-		Name: <input v-model="name" type="text">
-		<hello-component :name="name" :initialEnthusiasm="5" />
-		<user-component/>
+		<index-component/>
 	</div>
 	`,
 	data: { name: 'Brave Vue' },
 	components: {
-		HelloComponent,
-		UserComponent
+		IndexComponent,
 	}
 });
