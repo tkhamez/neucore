@@ -48,7 +48,7 @@ const store = new Vuex.Store<RootState>({
 				return;
 			}
 
-			const userApi = new UserApi((url, init) => fetch(url, { ...init, headers: { ...init.headers, Authorization: `Bearer: ${apiKey}` } }));
+			const userApi = new UserApi((url: string, init?: any) => fetch(url, { ...init, headers: { ...init.headers, Authorization: `Bearer: ${apiKey}` } }));
 			const user = await userApi.userInfoGet();
 			this.$store.commit('login', user);
 		}
