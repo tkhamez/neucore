@@ -16,8 +16,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { SSOApi } from "../api";
-const SSO = new SSOApi();
+import { userAuthLoginGet } from "../api";
 
 export default Vue.extend({
   props: [],
@@ -27,11 +26,7 @@ export default Vue.extend({
     };
   },
   async created() {
-    // TODO should get callback URL from environment
-    const { oauth_url } = await SSO.userAuthLoginGet({
-      redirectUrl: "https://localhost/api/user/auth/result"
-    });
-    this.loginRedirect = oauth_url;
+    this.loginRedirect = await userAuthLoginGet();
   },
   methods: {},
   computed: {}

@@ -3,24 +3,59 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import IndexComponent from './components/Index.vue';
 import VueMaterial from 'vue-material';
-import { UserApi, User } from './api';
-
-// const userApi = new UserApi({});
+import { userInfoGet } from './api';
 
 Vue.use(Vuex);
 Vue.use(VueMaterial);
 
 interface RootState {
 	user: User | undefined;
+	allUsers: User[];
 }
 
-const store = new Vuex.Store<RootState>({
-	state: {
-		// defaults
-		user: undefined,
+const state: RootState = {
+	user: undefined,
+	allUsers: []
+};
+// */
+/*
+
+// mock state
+const state: RootState = {
+	user: {
+		characterId: 1234,
+		name: 'foobar',
+		groups: ['fc', 'cap']
 	},
+	allUsers: [
+		{
+			characterId: 12,
+			name: 'foobar1',
+			groups: []
+		},
+		{
+			characterId: 128,
+			name: 'foobar2',
+			groups: ['fc']
+		},
+		{
+			characterId: 126,
+			name: 'foobar45',
+			groups: ['cap']
+		},
+		{
+			characterId: 125,
+			name: 'foobar3',
+			groups: ['fc']
+		},
+	]
+};
+*/
+
+const store = new Vuex.Store<RootState>({
+	state,
 	mutations: {
-		login(state, user: User) {
+		login(state: RootState, user: User) {
 			state.user = user;
 		}
 	}
@@ -43,13 +78,7 @@ const store = new Vuex.Store<RootState>({
 	store,
 	methods: {
 		async getUser() {
-			const apiKey = ''; // TODO api stuff
-			if (!apiKey) {
-				return;
-			}
-
-			const userApi = new UserApi((url: string, init?: any) => fetch(url, { ...init, headers: { ...init.headers, Authorization: `Bearer: ${apiKey}` } }));
-			const user = await userApi.userInfoGet();
+			const user = await userInfoGet();
 			this.$store.commit('login', user);
 		}
 	}
