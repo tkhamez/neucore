@@ -1,7 +1,7 @@
 <template>
 	<div class="page-container">
 		<md-app>
-			<md-app-toolbar class="md-primary">
+			<md-app-toolbar class="md-primary md-elevation-10">
 				<div class="md-toolbar-row">
 					<div class="md-toolbar-section-start">
 						<span class="md-title">Brave Core</span>
