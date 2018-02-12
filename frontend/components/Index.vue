@@ -22,7 +22,20 @@
 </template>
 
 <style lang="scss" scoped>
+@import "~vue-material/dist/theme/engine"; // Import theme engine
+@include md-register-theme("default", (
+	primary: rgb(27, 123, 164),
+	theme: dark
+));
+@import "~vue-material/dist/theme/all"; // apply theme
 
+.page-container {
+  display: flex;
+  flex: 1;
+}
+.md-app {
+  flex: 1;
+}
 </style>
 
 <script lang="ts">
