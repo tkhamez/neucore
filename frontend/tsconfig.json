@@ -8,8 +8,5 @@
     "noImplicitReturns": true,
     "experimentalDecorators": true,
     "sourceMap": true
-  },
-  "exclude": [
-    "swagger"
-  ]
+  }
 }
