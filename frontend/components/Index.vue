@@ -1,13 +1,20 @@
 <template>
-  <!-- TODO make this pretty -->
+	<!-- TODO make this pretty -->
 	<div class="page-container">
 		<md-app>
 			<md-app-toolbar class="md-primary">
-				<span class="md-title">My Title</span>
+				<div class="md-toolbar-row">
+					<div class="md-toolbar-section-start">
+						<span class="md-title">Brave Core</span>
+					</div>
+					<div class="md-toolbar-section-end">
+						<md-button class="md-accent" v-on:click="logout">Logout</md-button>
+					</div>
+				</div>
 			</md-app-toolbar>
 			<md-app-content>
-        <!-- TODO should have a loading spinner while we attempt to fetch user, if we have an authorization header -->
-				<user-component v-if="user"/>
+				<!-- TODO should have a loading spinner while we attempt to fetch user, if we have an authorization header -->
+				<home-component v-if="user"/>
 				<login-component v-else/>
 			</md-app-content>
 		</md-app>
@@ -21,7 +28,8 @@
 <script lang="ts">
 import Vue from "vue";
 import LoginComponent from "./Login.vue";
-import UserComponent from "./User.vue";
+import HomeComponent from "./Home.vue";
+import { userLogout } from "../api";
 
 export default Vue.extend({
   props: [],
@@ -29,7 +37,12 @@ export default Vue.extend({
     return {};
   },
   created() {},
-  methods: {},
+  methods: {
+    logout: async () => {
+      await userLogout();
+      location.reload();
+    }
+  },
   computed: {
     user(): User {
       return this.$store.state.user;
@@ -37,7 +50,7 @@ export default Vue.extend({
   },
   components: {
     LoginComponent,
-    UserComponent
+    HomeComponent
   }
 });
 </script>

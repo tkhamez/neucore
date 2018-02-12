@@ -9,17 +9,13 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  props: [],
+  props: ["user"],
   data() {
     return {};
   },
   created() {},
   methods: {},
-  computed: {
-    user(): User {
-      return this.$store.state.user;
-    }
-  }
+  computed: {}
 });
 </script>
 

@@ -1,13 +1,11 @@
 <template>
 	<md-card md-with-hover>
-		<md-ripple>
-			<md-card-content>
-				<a v-bind:href="loginRedirect">
-					<img src='/images/EVE_SSO_Login_Buttons_Large_Black.png'>
-				</a>
-			</md-card-content>
-		</md-ripple>
-	</md-card>
+    <md-card-content>
+      <a v-bind:href="loginRedirect">
+        <img src='/images/EVE_SSO_Login_Buttons_Large_Black.png'>
+      </a>
+    </md-card-content>
+  </md-card>
 </template>
 
 <style lang="scss" scoped>
