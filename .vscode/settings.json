@@ -4,5 +4,6 @@
 	"git.enableSmartCommit": true,
 	"editor.renderWhitespace": "all",
 	"editor.multiCursorModifier": "ctrlCmd",
-	"tslint.autoFixOnSave": true
+	"tslint.autoFixOnSave": true,
+	"files.insertFinalNewline": true
 }
