@@ -5,9 +5,11 @@
 				 <user-component :user="user"/>
 			</md-card-content>
 		</md-card>
+		<!-- TODO ability to add new groups -->
 		<template v-for="group in groups">
 			<group-component :group="group" :user="user"/>
 		</template>
+		<!-- TODO ability to create new apps -->
 	</div>
 </template>
 

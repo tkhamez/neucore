@@ -1,4 +1,10 @@
 <template>
+	<!--
+		TODO:
+			should re-use User component for the list of users in a group
+			should be able to change roles for users (if you have permission)
+			should be able to remove users
+		-->
 	<md-card md-card class="group md-elevation-6">
 		<md-table v-model="members">
 			<md-table-toolbar>
@@ -40,6 +46,7 @@ export default Vue.extend({
   created() {},
   methods: {
     async addUser(): Promise<void> {
+      // TODO commit new user to vuex
       console.log("foobar");
     }
   },
