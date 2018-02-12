@@ -14,14 +14,6 @@ class HomepageTest extends BaseTestCase
         $this->assertEquals(401, $response->getStatusCode());
     }
 
-    public function testLoginRedirect()
-    {
-        $response = $this->runApp('GET', '/api/user/auth/login');
-        echo $response->getBody();
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-
     /**
      * Test that a route won't accept a post request
      */
