@@ -39,7 +39,6 @@ class AuthController
      *         response="200",
      *         description="The EVE SSO login URL",
      *         @SWG\Schema(
-     *             required={"oauth_url"},
      *             @SWG\Property(
      *                 property="oauth_url",
      *                 type="string"
