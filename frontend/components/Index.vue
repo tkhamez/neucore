@@ -7,7 +7,7 @@
 						<span class="md-title">Brave Core</span>
 					</div>
 					<div class="md-toolbar-section-end">
-						<md-button class="md-accent" v-on:click="logout">Logout</md-button>
+						<md-button class="md-accent" v-if="user" v-on:click="logout">Logout</md-button>
 					</div>
 				</div>
 			</md-app-toolbar>
