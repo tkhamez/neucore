@@ -1,4 +1,4 @@
-# app
+# backend
 /.env
 /var/cache/*
 !/var/cache/.gitkeep
@@ -8,11 +8,14 @@
 /web/node_modules/
 /web/swagger.json
 
-# eclipse
+# vagrant
+/.vagrant
+
+# frontend
+npm-debug.log*
+
+# IDEs
 /.buildpath
 /.project
 /.settings
-
-# netbeans
 /nbproject
-

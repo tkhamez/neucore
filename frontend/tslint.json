@@ -1,0 +1,21 @@
+{
+    "defaultSeverity": "error",
+    "jsRules": {},
+    "rules": {
+        "no-console": false,
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "no-eval": true,
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "indent": [
+            true,
+            "tabs"
+        ]
+    },
+    "rulesDirectory": []
+}

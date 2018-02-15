@@ -1,11 +1,25 @@
 # Installation
 
-## Requirements
+## Vagrant Requirements
+
+- `vagrant up`
+- browse to https://localhost
+- If the vagrant file changes, run `vagrant provision` to update the VM.
+- `vagrant destroy` will completely remove the VM.
+
+## Local dev Requirements
 
 - PHP with Composer
 - Node.js + npm
 - MySQL/MariaDB
 - Apache (dev should also works with PHP's build-in server)
+
+## EVE API setup
+
+- visit https://developers.eveonline.com/applications
+- create a new application (eg: brvneucore-dev)
+- TODO document list of required permissions here for authentication & api access
+- set the callback to https://localhost/api/user/auth/callback
 
 ## Install dev
 
