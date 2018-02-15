@@ -11,9 +11,9 @@ class InfoController
     /**
      * @SWG\Get(
      *     path="/app/info",
-     *     summary="Show app information",
+     *     summary="Show app information. Role needed: role.app",
      *     tags={"App"},
-     *     security={{"Bearer"={"role.app"}}},
+     *     security={{"Bearer"={}}},
      *     @SWG\Response(
      *         response="200",
      *         description="The app information",

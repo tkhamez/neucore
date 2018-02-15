@@ -35,12 +35,19 @@
     }],
     "scripts": {
        "post-install-cmd": [
-            "npm install --prefix web"
+            "cd web && npm install",
+            "cd frontend && npm install"
+        ],
+        "compile-dev": [
+            "doctrine-migrations migrations:migrate --no-interaction",
+            "swagger --exclude bin,config,docs,var,vendor,web --output web",
+            "cd frontend && npm run build"
         ],
         "compile": [
             "doctrine orm:generate-proxies",
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,docs,var,vendor,web --output web"
+            "swagger --exclude bin,config,docs,var,vendor,web --output web",
+            "cd frontend && npm run build:prod"
         ],
         "clean": "rm -R var/cache/*",
         "test": "phpunit",

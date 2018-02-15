@@ -4,5 +4,6 @@
 
 https://brvneucore.herokuapp.com
 
-see /docs
+API: https://brvneucore.herokuapp.com/api
 
+see /docs
