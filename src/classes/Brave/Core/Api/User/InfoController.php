@@ -12,7 +12,7 @@ class InfoController
      *     path="/user/info",
      *     summary="Show current logged in user information",
      *     tags={"User"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={"role.user"}}},
      *     @SWG\Response(
      *         response="200",
      *         description="The user information",

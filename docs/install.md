@@ -17,6 +17,14 @@ chmod 0777 var/cache
 chmod 0777 var/logs
 composer install
 vendor/bin/doctrine-migrations migrations:migrate
+vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output web
+```
+
+Frontend:
+```
+cd frontend
+npm i
+npm run build
 ```
 
 ## Install prod
@@ -29,6 +37,13 @@ Execute:
 ```
 composer install --no-dev --optimize-autoloader --no-interaction
 composer compile --no-dev --no-interaction
+```
+
+Frontend:
+```
+cd frontend
+npm i
+npm run build:prod
 ```
 
 ## Heroku

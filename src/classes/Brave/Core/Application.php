@@ -64,10 +64,6 @@ use Whoops\Run;
  *     )
  * )
  * @SWG\Tag(
- *     name="SSO",
- *     description="EVE SSO login.",
- * )
- * @SWG\Tag(
  *     name="User",
  *     description="API for the frond-end.",
  * )

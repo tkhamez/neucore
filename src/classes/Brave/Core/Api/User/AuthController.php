@@ -28,7 +28,7 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/login",
      *     summary="EVE SSO login URL",
-     *     tags={"SSO"},
+     *     tags={"User"},
      *     @SWG\Parameter(
      *         name="redirect_url",
      *         in="query",
@@ -133,7 +133,7 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/result",
      *     summary="SSO result",
-     *     tags={"SSO"},
+     *     tags={"User"},
      *     @SWG\Response(
      *         response="200",
      *         description="Result of last SSO attempt or null",
@@ -161,8 +161,8 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/logout",
      *     summary="User logout",
-     *     tags={"SSO"},
-     *     security={{"Session"={}}},
+     *     tags={"User"},
+     *     security={{"Session"={"role.user"}}},
      *     @SWG\Response(
      *         response="200",
      *         description="Nothing is returned"

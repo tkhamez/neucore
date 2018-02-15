@@ -11,7 +11,8 @@
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
         "league/oauth2-client": "^2.2",
-        "zircote/swagger-php": "^2.0"
+        "zircote/swagger-php": "^2.0",
+        "tkhamez/swagger-eve-php": "^0.7.5"
     },
     "autoload": {
         "psr-4": { "": "src/classes/" }
@@ -28,6 +29,10 @@
             "Tests\\": "src/tests/"
         }
     },
+    "repositories": [{
+        "type": "git",
+        "url": "https://github.com/tkhamez/swagger-eve-php.git"
+    }],
     "scripts": {
        "post-install-cmd": [
             "npm install --prefix web"

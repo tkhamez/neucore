@@ -13,7 +13,7 @@ class InfoController
      *     path="/app/info",
      *     summary="Show app information",
      *     tags={"App"},
-     *     security={{"Bearer"={}}},
+     *     security={{"Bearer"={"role.app"}}},
      *     @SWG\Response(
      *         response="200",
      *         description="The app information",
