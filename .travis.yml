@@ -2,6 +2,7 @@ language: php
 
 php:
   - '7.1'
+  - '7.2'
 
 services:
   - mysql
@@ -21,11 +22,8 @@ before_install:
 
 install:
   - composer install
-  - composer compile
-  - npm --prefix frontend i
-
+  - composer compile-dev
 
 script:
   - ./vendor/bin/phpunit
   - npm --prefix frontend run check
-  - npm --prefix frontend run build:prod

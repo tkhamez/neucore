@@ -8,11 +8,6 @@
 </head>
 <body>
 
-    <div>
-        <a href="/api" style="text-decoration: none;">{ Swagger UI }</a>
-        <br><br>
-    </div>
-
     <h2>Login example</h2>
 
     <div id="app">
@@ -60,7 +55,7 @@
                 this.get(appBaseUrl + '/api/user/info');
             },
             getLogin: function() {
-                var redirectPath = clientBaseUrl + '/#' + appBaseUrl + '/api/user/auth/result';
+                var redirectPath = clientBaseUrl + '/login-example.html#' + appBaseUrl + '/api/user/auth/result';
                 var url = appBaseUrl + '/api/user/auth/login?redirect_url=' + encodeURIComponent(redirectPath);
                 this.get(url, function(response) {
                     app.oauthUrl = response.body.oauth_url;
