@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.synced_folder "./", "/var/www/bravecore"
 	config.vm.network :private_network, ip: "192.168.121.4"
-	
+
 	# run setup script as root
 	config.vm.provision "shell", inline: <<-SHELL
 		export DEBIAN_FRONTEND=noninteractive
@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
 		apt install -y curl git
 
 		# setup php + composer
-		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-libsodium php-dom php-sqlite3 php-apcu
+		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-dom php-apcu php-curl
 
 		php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
 
@@ -53,13 +53,8 @@ Vagrant.configure("2") do |config|
 		a2enmod proxy_fcgi setenvif
 		a2enconf php7.1-fpm
 
-		chmod 0777 /var/www/bravecore/var/logs
-		chmod 0777 /var/www/bravecore/var/cache
 
 		systemctl reload apache2
-
-		# setup frontend stuff		
-		su vagrant -c 'cd /var/www/bravecore/frontend  && npm i'
 
 	SHELL
 
@@ -69,16 +64,13 @@ Vagrant.configure("2") do |config|
 
 		cd /var/www/bravecore
 
-		if [ ! -f .env ]; then
-			echo '.env not setup'
+		if [ ! -f backend/.env ]; then
+			echo 'backend/.env not setup'
 			exit
 		fi
-		composer install
-		vendor/bin/doctrine-migrations migrations:migrate
-		vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output web
 
-		
-		cd /var/www/bravecore/frontend && npm run build
+		# Install dependencies and build backend and frontend:
+		./install.sh
 
 		echo
 		echo ------------------------------------

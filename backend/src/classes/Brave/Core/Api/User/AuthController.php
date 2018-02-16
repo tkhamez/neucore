@@ -32,7 +32,7 @@ class AuthController
      *     @SWG\Parameter(
      *         name="redirect_url",
      *         in="query",
-     *         description="URL for redirect after EVE login.",
+     *         description="Optional URL for redirect after EVE login.",
      *         type="string"
      *     ),
      *     @SWG\Response(

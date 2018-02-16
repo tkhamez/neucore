@@ -2,6 +2,12 @@
 
 ## Vagrant Requirements
 
+For synced folder with NFS (instead of rsync), install nfs-kernel-server and edit Vagrantfile:
+```
+- config.vm.synced_folder "./", "/var/www/bravecore"
++ config.vm.synced_folder "./", "/var/www/bravecore", :nfs => true
+```
+
 - `vagrant up`
 - browse to https://localhost
 - If the vagrant file changes, run `vagrant provision` to update the VM.
@@ -9,10 +15,12 @@
 
 ## Local dev Requirements
 
-- PHP with Composer
+- PHP with Composer (see Vagrantfile necessary additional extensions)
 - Node.js + npm
 - MySQL/MariaDB
 - Apache (dev should also works with PHP's build-in server)
+
+Set the webserver's document root to the "web" directory.
 
 ## EVE API setup
 
@@ -25,21 +33,10 @@
 
 Copy `.env.dist` file to `.env` and adjust values.
 
-Execute:
+Install dependencies and build backend and frontend:
 ```
-chmod 0777 var/cache
-chmod 0777 var/logs
-composer install
-composer compile-dev
+./install.sh
 ```
-
-Note
-`composer install` also executes:
-- `cd web && npm install`
-- `cd frontend && npm install`
-
-`composer compile-dev` also executes:
-- `cd frontend && npm run build`
 
 ## Install prod
 
@@ -49,14 +46,13 @@ Make sure that the webserver can write in var/logs and var/cache.
 
 Execute:
 ```
-composer install --no-dev --optimize-autoloader --no-interaction
-composer compile --no-dev --no-interaction
+./install.sh prod
 ```
 
 ## Heroku
 
-To deploy to Heroku, add buildpacks first:
+To deploy to Heroku, add buildpacks in this order:
 ```
+heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
-heroku buildpacks:add --index 1 heroku/nodejs
 ```

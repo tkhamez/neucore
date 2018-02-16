@@ -1,0 +1,3 @@
+
+Generate swagger.json
+$ vendor/bin/swagger --exclude bin,config,docs,var,vendor,web --output ../web

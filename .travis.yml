@@ -21,8 +21,7 @@ before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
 
 install:
-  - composer install
-  - composer compile-dev
+  - ./install.sh
 
 script:
   - ./vendor/bin/phpunit

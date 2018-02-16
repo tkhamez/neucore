@@ -1,4 +1,5 @@
 {
     "name": "brvneucore-heroku",
+    "description": "For Heroku to recognizes a Node.js application.",
     "private": true
 }

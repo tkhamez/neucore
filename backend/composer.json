@@ -1,0 +1,55 @@
+{
+    "name": "brv/neucore",
+    "type": "project",
+    "require": {
+        "php-64bit": "^7.1.0",
+        "ext-pdo_mysql": "*",
+        "ext-zip": "*",
+        "ext-mbstring": "*",
+        "ext-intl": "*",
+        "ext-dom": "*",
+        "ext-apcu": "*",
+        "ext-curl": "*",
+        "slim/slim": "^3.1",
+        "php-di/slim-bridge": "^1.1",
+        "monolog/monolog": "^1.17",
+        "symfony/console": "^4.0",
+        "doctrine/orm": "^2.6",
+        "doctrine/migrations": "^1.6",
+        "league/oauth2-client": "^2.2",
+        "zircote/swagger-php": "^2.0",
+        "tkhamez/swagger-eve-php": "^0.7.5"
+    },
+    "autoload": {
+        "psr-4": { "": "src/classes/" }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0",
+        "filp/whoops": "^2.1",
+        "symfony/dotenv": "^4.0",
+        "symfony/var-dumper": "^4.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "src/tests/"
+        }
+    },
+    "repositories": [{
+        "type": "git",
+        "url": "https://github.com/tkhamez/swagger-eve-php.git"
+    }],
+    "scripts": {
+        "compile:dev": [
+            "doctrine-migrations migrations:migrate --no-interaction",
+            "swagger --exclude bin,config,docs,var,vendor,web --output ../web"
+        ],
+        "compile": [
+            "doctrine orm:generate-proxies",
+            "doctrine-migrations migrations:migrate --no-interaction",
+            "swagger --exclude bin,config,docs,var,vendor,web --output ../web"
+        ],
+        "clean": "rm -R var/cache/*",
+        "test": "phpunit",
+        "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"
+    }
+}

@@ -1,12 +1,5 @@
 # backend
-/.env
-/var/cache/*
-!/var/cache/.gitkeep
-/var/logs/*
-!/var/logs/.gitkeep
 /vendor/
-/web/node_modules/
-/web/swagger.json
 
 # vagrant
 /.vagrant
