@@ -41,8 +41,10 @@ Vagrant.configure("2") do |config|
 		service mysql start
 
 		mysql -e 'CREATE DATABASE IF NOT EXISTS core'
+        mysql -e 'CREATE DATABASE IF NOT EXISTS core_test'
 		# TODO should pass password in via env
 		mysql -e "GRANT ALL PRIVILEGES ON core.* TO core@localhost IDENTIFIED BY 'braveineve'"
+        mysql -e "GRANT ALL PRIVILEGES ON core_test.* TO core@localhost IDENTIFIED BY 'braveineve'"
 
 		cp /var/www/bravecore/config/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
 
@@ -52,7 +54,6 @@ Vagrant.configure("2") do |config|
 		a2ensite 010-bravecore
 		a2enmod proxy_fcgi setenvif
 		a2enconf php7.1-fpm
-
 
 		systemctl reload apache2
 

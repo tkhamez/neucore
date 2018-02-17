@@ -177,6 +177,10 @@ class AuthController
     {
         $this->session->clear();
 
+        if (session_id() !== '') {
+            session_regenerate_id(true);
+        }
+
         return $response;
     }
 }

@@ -1,9 +1,6 @@
 <?php
 namespace Brave\Core;
 
-use Brave\Core\Api\App\InfoController as AppInfoController;
-use Brave\Core\Api\User\AuthController;
-use Brave\Core\Api\User\InfoController as UserInfoController;
 use Brave\Core\Service\AppAuthService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
@@ -122,9 +119,10 @@ class Application
      * BRAVECORE_APP_ENV does not exist and the composer package symfony/dotenv is available.
      * Both should only be true for the development environment.
      *
+     * @param bool $includeTestSettings Optionally load settings from settings_tests.php for unit tests
      * @return array
      */
-    public function settings()
+    public function settings($includeTestSettings = false)
     {
         if ($this->settings !== null) {
             return $this->settings;
@@ -165,6 +163,11 @@ class Application
             $this->settings = array_replace_recursive($this->settings, $dev);
         }
 
+        if ($includeTestSettings) {
+            $test = include Application::ROOT_DIR . '/config/settings_tests.php';
+            $this->settings = array_replace_recursive($this->settings, $test);
+        }
+
         return $this->settings;
     }
 
@@ -178,14 +181,12 @@ class Application
     /**
      * Creates the Slim app (for unit tests)
      */
-    public function getApp(bool $withMiddleware): App
+    public function getApp(): App
     {
         $app = $this->app();
 
         $this->dependencies($app->getContainer());
-        if ($withMiddleware) {
-            $this->middleware($app);
-        }
+        $this->middleware($app);
         $this->routes($app);
 
         return $app;
@@ -315,15 +316,8 @@ class Application
 
         // Add middleware, last added are executed first.
 
-        $app->add(new SecureRouteMiddleware([
-            // add necessary exceptions to /api/user route
-            '/api/user/auth/login' => ['role.anonymous', 'role.user'],
-            '/api/user/auth/callback' => ['role.anonymous', 'role.user'],
-            '/api/user/auth/result' => ['role.anonymous', 'role.user'],
-
-            '/api/user' => ['role.user'],
-            '/api/app' => ['role.app']
-        ]));
+        $security = include self::ROOT_DIR . '/config/security.php';
+        $app->add(new SecureRouteMiddleware($security));
 
         $app->add(new AuthRoleMiddleware($c->get(AppAuthService::class), ['route_pattern' => ['/api/app']]));
         $app->add(new AuthRoleMiddleware($c->get(UserAuthService::class), ['route_pattern' => ['/api/user']]));
@@ -344,19 +338,22 @@ class Application
 
     private function routes(App $app)
     {
-        $app->group('/api/app', function () use ($app) {
-            $app->get('/info', AppInfoController::class)->setName('api_app_info');
-        });
+        $routes = include self::ROOT_DIR . '/config/routes.php';
 
-        $app->group('/api/user', function () use ($app) {
-            $app->group('/auth', function () use ($app) {
-                $app->get('/login', AuthController::class . '::login')->setName('api_user_auth_login');
-                $app->get('/callback', AuthController::class . '::callback')->setName('api_user_auth_callback');
-                $app->get('/result', AuthController::class . '::result')->setName('api_user_auth_result');
-                $app->get('/logout', AuthController::class . '::logout')->setName('api_user_auth_logout');
-            });
+        foreach ($routes as $route => $conf) {
+            if (is_array($conf[0])) { // e. g. ['GET', 'POST']
+                $app->map($conf[0], $route, $conf[1])->setName($conf[2]);
 
-            $app->get('/info', UserInfoController::class)->setName('api_user_info');
-        });
+            } elseif ($conf[0] === 'GET') {
+                $app->get($route, $conf[1])->setName($conf[2]);
+
+            } elseif ($conf[0] === 'POST') {
+                $app->post($route, $conf[1])->setName($conf[2]);
+
+            } else {
+                // add as needed:
+                // put, delete, options, patch, any
+            }
+        }
     }
 }

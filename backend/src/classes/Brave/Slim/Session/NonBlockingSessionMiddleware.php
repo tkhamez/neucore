@@ -50,7 +50,8 @@ class NonBlockingSessionMiddleware
         }
 
         if (PHP_SAPI === 'cli') {
-            $_SESSION = array();
+            // allow unit tests to inject values to the session
+            $_SESSION = isset($_SESSION) ? $_SESSION : array();
         } else {
             $this->start();
         }

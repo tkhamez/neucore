@@ -6,7 +6,7 @@ namespace Brave\Slim\Session;
  *
  * Can be instantiated before the session is started as long
  * as it is instantiated again when the session is active
- * (which is done in NonBlockingSessionMiddleware).
+ * (which is done in the NonBlockingSessionMiddleware class).
  */
 class SessionData
 {
@@ -109,7 +109,6 @@ class SessionData
         }
 
         self::$sess = [];
-        session_regenerate_id(true);
 
         return $this;
     }

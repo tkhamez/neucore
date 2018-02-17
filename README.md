@@ -46,7 +46,7 @@ Install dependencies and build backend and frontend:
 ./install.sh
 ```
 
-## Install prod
+### Install prod
 
 Set the required environment variables, see in file `.env.dist`
 

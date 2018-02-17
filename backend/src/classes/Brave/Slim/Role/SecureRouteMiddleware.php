@@ -10,7 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * It loads the roles from the request attribute named "roles"
  * (an array with string values, e. g. ['role.one', 'role.two']).
  *
- * The role attribute is provided by the RoleAuthMiddleware class.
+ * The role attribute is provided by the AuthRoleMiddleware class.
+ * If it is missing, all routes are allowed.
  */
 class SecureRouteMiddleware
 {

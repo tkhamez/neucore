@@ -59,7 +59,7 @@ class User implements \JsonSerializable
     public function jsonSerialize()
     {
         $arr = [
-            'characterId' => $this->characterId,
+            'characterId' => (int) $this->characterId,
             'name' => $this->name,
             'roles' => $this->roles->toArray(),
             'groups' => $this->groups->toArray(),

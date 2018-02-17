@@ -35,7 +35,7 @@ return [
         ],
 
         'CORS' => [
-            'allow_origin' => []
+            'allow_origin' => [] // e. g. https://frontend.domain.tld
         ],
 
         'eve' => [
