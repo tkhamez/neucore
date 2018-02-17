@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
 		# TODO should pass password in via env
 		mysql -e "GRANT ALL PRIVILEGES ON core.* TO core@localhost IDENTIFIED BY 'braveineve'"
 
-		cp /var/www/bravecore/apache2/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
+		cp /var/www/bravecore/config/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
 
 		a2enmod rewrite
 		a2enmod ssl

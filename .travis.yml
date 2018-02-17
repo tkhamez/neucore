@@ -20,7 +20,7 @@ env:
     - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
 
 before_install:
-  - phpenv config-add travis.ini
+  - phpenv config-add config/travis.ini
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
 
 install:
