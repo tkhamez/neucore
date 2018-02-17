@@ -28,5 +28,4 @@ script:
   - cd .. && npm --prefix frontend run check
 
 after_success:
-  - travis_retry cd backend && ./vendor/bin/php-coveralls -v
   - bash <(curl -s https://codecov.io/bash)

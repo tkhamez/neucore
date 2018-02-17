@@ -1,6 +1,7 @@
 # Brave Collective Core Services Prototype
 
 [![Build Status](https://api.travis-ci.org/tkhamez/brvneucore.svg?branch=master)](https://travis-ci.org/tkhamez/brvneucore)
+[![codecov](https://codecov.io/gh/tkhamez/brvneucore/branch/master/graph/badge.svg)](https://codecov.io/gh/tkhamez/brvneucore)
 
 https://brvneucore.herokuapp.com
 
