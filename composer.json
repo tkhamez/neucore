@@ -1,6 +1,6 @@
 {
     "name": "brv/neucore-heroku",
-    "description": "Only for Heroku to setup the PHP environment and install the backend and frontend..",
+    "description": "Only for Heroku to setup the PHP environment and install the backend and frontend.",
     "require": {
         "php": "^7.1.0",
         "ext-pdo_mysql": "*",

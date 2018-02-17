@@ -43,12 +43,12 @@
     "scripts": {
         "compile:dev": [
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,docs,var,vendor,web --output ../web"
+            "swagger --exclude bin,config,docs,var,vendor --output ../web"
         ],
         "compile": [
             "doctrine orm:generate-proxies",
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,docs,var,vendor,web --output ../web"
+            "swagger --exclude bin,config,docs,var,vendor --output ../web"
         ],
         "clean": "rm -R var/cache/*",
         "test": "phpunit",
