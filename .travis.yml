@@ -26,3 +26,7 @@ install:
 script:
   - cd backend && ./vendor/bin/phpunit
   - cd .. && npm --prefix frontend run check
+
+after_success:
+  - travis_retry vendor/bin/php-coveralls -v
+  - bash <(curl -s https://codecov.io/bash)

@@ -36,12 +36,12 @@ class AuthTest extends BaseTestCase
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
         $_SESSION = ['auth_state' => $state];
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state);
+        $response = $this->runApp('GET', '/api/user/auth/callback?state=INVALID'); // fail early
         $this->assertSame(302, $response->getStatusCode());
 
         $sess = new SessionData();
         $this->assertSame(null, $sess->get('auth_state')); // test that it was deleted
-        $this->assertSame(['success' => false, 'message' => 'request token error'], $sess->get('auth_result'));
+        $this->assertSame(['success' => false, 'message' => 'OAuth state mismatch'], $sess->get('auth_result'));
     }
 
     public function testGetResult()
