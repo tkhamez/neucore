@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
 		apt install -y curl git
 
 		# setup php + composer
-		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-dom php-apcu php-curl
+		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-dom php-apcu php-curl php-xdebug
 
 		php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
 
