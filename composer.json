@@ -8,7 +8,6 @@
         "ext-mbstring": "*",
         "ext-intl": "*",
         "ext-dom": "*",
-        "ext-apcu": "*",
         "ext-curl": "*"
     },
     "scripts": {

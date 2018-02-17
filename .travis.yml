@@ -3,6 +3,10 @@ language: php
 php:
   - '7.1'
   - '7.2'
+  
+matrix:
+  allow_failures:
+  - php: 7.2
 
 services:
   - mysql
@@ -16,7 +20,6 @@ env:
     - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
 
 before_install:
-  - echo yes | pecl install apcu-5.1.9
   - phpenv config-add travis.ini
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
 
@@ -24,5 +27,5 @@ install:
   - ./install.sh
 
 script:
-  - ./vendor/bin/phpunit
-  - npm --prefix frontend run check
+  - cd backend && ./vendor/bin/phpunit
+  - cd .. && npm --prefix frontend run check

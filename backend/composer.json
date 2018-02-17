@@ -8,7 +8,6 @@
         "ext-mbstring": "*",
         "ext-intl": "*",
         "ext-dom": "*",
-        "ext-apcu": "*",
         "ext-curl": "*",
         "slim/slim": "^3.1",
         "php-di/slim-bridge": "^1.1",
@@ -19,6 +18,9 @@
         "league/oauth2-client": "^2.2",
         "zircote/swagger-php": "^2.0",
         "tkhamez/swagger-eve-php": "^0.7.5"
+    },
+    "suggest": {
+        "ext-apcu": "*"
     },
     "autoload": {
         "psr-4": { "": "src/classes/" }
