@@ -15,7 +15,7 @@ For synced folder with NFS (instead of rsync), install nfs-kernel-server and edi
 
 ## Local dev Requirements
 
-- PHP with Composer (see Vagrantfile necessary additional extensions)
+- PHP with Composer (see Vagrantfile for necessary additional extensions)
 - Node.js + npm
 - MySQL/MariaDB
 - Apache (dev should also works with PHP's build-in server)
