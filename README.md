@@ -40,7 +40,7 @@ Set the webserver's document root to the "web" directory.
 
 ### Install dev
 
-Copy `.env.dist` file to `.env` and adjust values.
+Copy `backend/.env.dist` file to `backend/.env` and adjust values.
 
 Install dependencies and build backend and frontend:
 ```
@@ -49,7 +49,7 @@ Install dependencies and build backend and frontend:
 
 ### Install prod
 
-Set the required environment variables, see in file `.env.dist`
+Set the required environment variables, see in file `backend/.env.dist`
 
 Make sure that the webserver can write in var/logs and var/cache.
 
