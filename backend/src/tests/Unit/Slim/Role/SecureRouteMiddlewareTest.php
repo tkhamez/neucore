@@ -49,7 +49,7 @@ class SecureRouteMiddlewareTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testMatchesFirstAllowedPath()
+    public function testMatchesFirstFoundPath()
     {
         $conf = ['/p1' => ['role1'], '/p1/p2' => ['role2']];
         $response = $this->invokeMiddleware($conf, '/p1/p2', ['role1'], true);

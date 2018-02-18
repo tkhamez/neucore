@@ -64,9 +64,6 @@ class SecureRouteMiddleware
                 }
                 break;
             }
-            if ($allowed !== null) {
-                break;
-            }
         }
 
         if ($allowed === false) {

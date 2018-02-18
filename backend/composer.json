@@ -52,6 +52,7 @@
         ],
         "clean": "rm -R var/cache/*",
         "test": "phpunit",
+        "test:cov": "phpunit --coverage-html var/phpunit",
         "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"
     }
 }
