@@ -66,8 +66,8 @@ Vagrant.configure("2") do |config|
 		cd /var/www/bravecore
 
 		if [ ! -f backend/.env ]; then
-			echo 'backend/.env not setup'
-			exit
+		    cp backend/.env.dist backend/.env
+			echo 'backend/.env created'
 		fi
 
 		# Install dependencies and build backend and frontend:

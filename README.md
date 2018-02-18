@@ -22,6 +22,16 @@ For synced folder with NFS (instead of rsync), install nfs-kernel-server and edi
 - If the vagrant file changes, run `vagrant provision` to update the VM.
 - `vagrant destroy` will completely remove the VM.
 
+The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
+The values for the EVE application must be adjusted.
+
+### EVE API setup
+
+- visit https://developers.eveonline.com/applications
+- create a new application (eg: brvneucore-dev)
+- TODO document list of required permissions here for authentication & api access
+- set the callback to https://localhost/api/user/auth/callback
+
 ### Local dev Requirements
 
 - PHP with Composer (see Vagrantfile for necessary additional extensions)
@@ -30,13 +40,6 @@ For synced folder with NFS (instead of rsync), install nfs-kernel-server and edi
 - Apache (dev should also works with PHP's build-in server)
 
 Set the webserver's document root to the "web" directory.
-
-### EVE API setup
-
-- visit https://developers.eveonline.com/applications
-- create a new application (eg: brvneucore-dev)
-- TODO document list of required permissions here for authentication & api access
-- set the callback to https://localhost/api/user/auth/callback
 
 ### Install dev
 
