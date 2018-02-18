@@ -54,7 +54,7 @@ Install dependencies and build backend and frontend:
 
 Set the required environment variables, see in file `backend/.env.dist`
 
-Make sure that the webserver can write in var/logs and var/cache.
+Make sure that the webserver can write in backend/var/logs and backend/var/cache.
 
 Execute:
 ```
