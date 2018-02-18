@@ -3,8 +3,6 @@
 if [ "$1" = "prod" ]
 then
     cd backend
-    chmod 0777 var/cache
-    chmod 0777 var/logs
     composer install --no-dev --optimize-autoloader --no-interaction
     composer compile --no-dev --no-interaction
 
@@ -17,6 +15,8 @@ then
 
 else
     cd backend
+    chmod 0777 var/cache
+    chmod 0777 var/logs
     composer install
     composer compile:dev
 
