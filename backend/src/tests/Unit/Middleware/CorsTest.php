@@ -2,31 +2,44 @@
 namespace Tests\Unit\Middleware;
 
 use Brave\Middleware\Cors;
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Slim\Http\Environment;
+use Psr\Http\Message\ServerRequestInterface;
 
 class CorsTest extends \PHPUnit\Framework\TestCase
 {
 
-    public function testInvoke()
+    public function testAddsHeader()
     {
-        $origin = 'https://frontend.domain.tld';
+        $req = $this->createMock(ServerRequestInterface::class);
+        $req->method('getHeader')->willReturn(['https://domain.tld']);
 
-        $req = Request::createFromEnvironment(Environment::mock());
-        $req = $req->withHeader('HTTP_ORIGIN', $origin);
         $res = new Response();
         $next = function($req, $res) {
             return $res;
         };
 
-        $cors = new Cors([$origin]);
+        $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
         $response = $cors($req, $res, $next);
 
         $headers = $response->getHeaders();
         $this->assertSame([
-            'Access-Control-Allow-Origin' => [$origin],
+            'Access-Control-Allow-Origin' => ['https://domain.tld'],
             'Access-Control-Allow-Credentials' => ['true'],
         ], $headers);
+    }
+
+    public function testDoesNotAddHeader()
+    {
+        $req = $this->createMock(ServerRequestInterface::class);
+        $req->method('getHeader')->willReturn(['http://domain.tld']);
+
+        $res = new Response();
+        $next = function($req, $res) {
+            return $res;
+        };
+
+        $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
+        $response = $cors($req, $res, $next);
+
+        $this->assertSame([], $response->getHeaders());
     }
 }

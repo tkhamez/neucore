@@ -71,7 +71,7 @@ class Helper
         $em = $this->getEm();
 
         $role = new Role();
-        $role->setName('role.user');
+        $role->setName('user');
         $em->persist($role);
 
         $user = new User();
@@ -90,7 +90,7 @@ class Helper
         $em = $this->getEm();
 
         $role = new Role();
-        $role->setName('role.app');
+        $role->setName('app');
         $em->persist($role);
 
         $app = new App();

@@ -31,7 +31,7 @@ class InfoTest extends BaseTestCase
         $this->assertSame([
             'characterId' => 123456,
             'name' => 'Test User',
-            'roles' => ['role.user'],
+            'roles' => ['user'],
             'groups' => []
         ], $this->parseJsonBody($response));
     }

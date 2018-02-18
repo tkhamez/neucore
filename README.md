@@ -68,3 +68,7 @@ To deploy to Heroku, add buildpacks in this order:
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
 ```
+
+Please note that this application uses the standard file storage for it's session,
+Heroku deletes these files periodically (TODO add PDO session handler).
+

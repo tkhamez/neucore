@@ -10,7 +10,7 @@ class InfoController
     /**
      * @SWG\Get(
      *     path="/user/info",
-     *     summary="Show current logged in user information. Role needed: role.user",
+     *     summary="Show current logged in user information. Needs role: user",
      *     tags={"User"},
      *     security={{"Session"={}}},
      *     @SWG\Response(

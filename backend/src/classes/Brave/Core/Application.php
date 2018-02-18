@@ -122,7 +122,7 @@ class Application
      * @param bool $includeTestSettings Optionally load settings from settings_tests.php for unit tests
      * @return array
      */
-    public function settings($includeTestSettings = false)
+    public function settings($includeTestSettings = false): array
     {
         if ($this->settings !== null) {
             return $this->settings;
@@ -171,6 +171,10 @@ class Application
         return $this->settings;
     }
 
+    /**
+     *
+     * @return string
+     */
     public function getEnv(): string
     {
         $this->settings();
@@ -180,6 +184,8 @@ class Application
 
     /**
      * Creates the Slim app (for unit tests)
+     *
+     * @return App
      */
     public function getApp(): App
     {
@@ -194,6 +200,8 @@ class Application
 
     /**
      * Run the web application.
+     *
+     * @return void
      */
     public function run()
     {
@@ -214,6 +222,8 @@ class Application
 
     /**
      * Run the console application.
+     *
+     * @return void
      */
     public function runConsole()
     {
@@ -342,13 +352,13 @@ class Application
 
         foreach ($routes as $route => $conf) {
             if (is_array($conf[0])) { // e. g. ['GET', 'POST']
-                $app->map($conf[0], $route, $conf[1])->setName($conf[2]);
+                $app->map($conf[0], $route, $conf[1]);
 
             } elseif ($conf[0] === 'GET') {
-                $app->get($route, $conf[1])->setName($conf[2]);
+                $app->get($route, $conf[1]);
 
             } elseif ($conf[0] === 'POST') {
-                $app->post($route, $conf[1])->setName($conf[2]);
+                $app->post($route, $conf[1]);
 
             } else {
                 // add as needed:

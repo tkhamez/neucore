@@ -12,7 +12,7 @@ use Slim\Route;
  * with string values, e. g. ['role.one', 'role.two'].
  *
  * Roles are loaded from a RoleProviderInterface object. If that
- * does not return any roles, the role "role.anonymous" is added.
+ * does not return any roles, the role "anonymous" is added.
  */
 class AuthRoleMiddleware
 {
@@ -27,7 +27,7 @@ class AuthRoleMiddleware
      * route_pattern: only authenticate for this routes, matched by "starts-with"
      *
      * Example:
-     * ['route_pattern' => ['/path/one', '/path/two']
+     * ['route_pattern' => ['/path/one', '/path/two']]
      */
     public function __construct(RoleProviderInterface $roleService, array $options = [])
     {
@@ -35,6 +35,13 @@ class AuthRoleMiddleware
         $this->options = $options;
     }
 
+    /**
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param callable $next
+     * @return ResponseInterface
+     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         if (! $this->shouldAuthenticate($request->getAttribute('route'))) {
@@ -44,7 +51,7 @@ class AuthRoleMiddleware
         $roles = $this->roleService->getRoles($request);
         if (count($roles) === 0) {
             // no authenticated roles, add anonymous role
-            $roles[] = 'role.anonymous';
+            $roles[] = 'anonymous';
         }
 
         $request = $request->withAttribute('roles', $roles);
@@ -52,12 +59,11 @@ class AuthRoleMiddleware
         return $next($request, $response);
     }
 
-    public function shouldAuthenticate(Route $route = null)
+    private function shouldAuthenticate(Route $route = null)
     {
-        if (isset($this->options['route_pattern']) && is_array($this->options['route_pattern'])) {
-            if ($route === null) {
-                return false;
-            }
+        if (isset($this->options['route_pattern']) && is_array($this->options['route_pattern']) &&
+            count($this->options['route_pattern']) > 0 && $route !== null
+        ) {
             $routePattern = $route->getPattern();
             foreach ($this->options['route_pattern'] as $includePattern) {
                 if (strpos($routePattern, $includePattern) === 0) {
@@ -66,6 +72,6 @@ class AuthRoleMiddleware
             }
             return false;
         }
-        return true;
+        return false;
     }
 }

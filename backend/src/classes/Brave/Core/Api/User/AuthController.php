@@ -160,9 +160,9 @@ class AuthController
     /**
      * @SWG\Get(
      *     path="/user/auth/logout",
-     *     summary="User logout. Role needed: role.user",
+     *     summary="User logout. Needs role: user",
      *     tags={"User"},
-     *     security={{"Session"={"role.user"}}},
+     *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
      *         description="Nothing is returned"

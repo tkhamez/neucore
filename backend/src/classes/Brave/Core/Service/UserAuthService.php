@@ -80,9 +80,9 @@ class UserAuthService implements RoleProviderInterface
 
             // first login, create user
 
-            $userRole = $this->roleRepository->findBy(['name' => 'role.user']);
+            $userRole = $this->roleRepository->findBy(['name' => 'user']);
             if (count($userRole) !== 1) {
-                $this->log->critical('Role "role.user" not found.');
+                $this->log->critical('Role "user" not found.');
                 return false;
             }
 
