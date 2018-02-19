@@ -90,7 +90,9 @@ class NonBlockingSessionMiddleware
 
     private function start()
     {
-        if (isset($this->options['name'])) {
+        // since PHP 7.2: Warning: session_name(): Cannot change session name when session is active,
+        // so don't do this for CLI
+        if (isset($this->options['name']) && PHP_SAPI !== 'cli') {
             session_name($this->options['name']);
         }
 
