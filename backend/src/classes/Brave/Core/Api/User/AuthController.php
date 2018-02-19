@@ -177,7 +177,7 @@ class AuthController
     {
         $this->session->clear();
 
-        if (session_id() !== '') {
+        if (session_id() !== '') { // there's no session for unit tests
             session_regenerate_id(true);
         }
 

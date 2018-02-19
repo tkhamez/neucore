@@ -8,6 +8,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src/classes</directory>
+            <exclude>
+                <directory>./src/classes/Brave/Core/Migrations</directory>
+            </exclude>
         </whitelist>
     </filter>
     <logging>

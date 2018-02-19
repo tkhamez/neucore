@@ -26,13 +26,15 @@ class NonBlockingSessionMiddleware
      * Available options (all optional):
      * name <string>: the session name
      * secure <bool>: session.cookie_secure option runtime configuration
-     * route_blocking_pattern <array>: patterns of routes that allow writing to the session
-     * route_include_pattern <array>: only start sessions for this routes, matched by "starts-with"
+     * lifetime: lifetime in seconds
+     * route_blocking_pattern <array>: patterns of routes that allow writing to the session, exact match
+     * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with"
      *
      * Example
      * [
-     *      'name' => 'MY_SESS',
+     *      'cc' => 'MY_SESS',
      *      'secure' => true,
+            'lifetime' => 1440,
      *      'route_include_pattern' => ['/path/one'],
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
@@ -45,33 +47,30 @@ class NonBlockingSessionMiddleware
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         // check if session should be started
-        if (! $this->startSession($request->getAttribute('route'))) {
+        if (! $this->shouldStartSession($request->getAttribute('route'))) {
             return $next($request, $response);
         }
 
-        if (PHP_SAPI === 'cli') {
-            // allow unit tests to inject values to the session
-            $_SESSION = isset($_SESSION) ? $_SESSION : array();
-        } else {
-            $this->start();
-        }
+        $this->start();
 
         $readOnly = $this->isReadOnly($request->getAttribute('route'));
 
         (new SessionData())->setReadOnly($readOnly);
 
-        if ($readOnly && PHP_SAPI !== 'cli') {
+        if ($readOnly) {
             $this->close();
         }
 
         return $next($request, $response);
     }
 
-    private function startSession(Route $route = null)
+    private function shouldStartSession(Route $route = null)
     {
         $start = false;
 
-        if (isset($this->options['route_include_pattern']) && is_array($this->options['route_include_pattern'])) {
+        if (isset($this->options['route_include_pattern']) &&
+            is_array($this->options['route_include_pattern'])
+        ) {
             if ($route === null) {
                 return false;
             }
@@ -95,10 +94,21 @@ class NonBlockingSessionMiddleware
             session_name($this->options['name']);
         }
 
-        session_start([
-            'cookie_httponly' => true,
-            'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true
-        ]);
+        session_set_cookie_params(
+            isset($this->options['lifetime']) ? (int) $this->options['lifetime'] : 1440, // lifetime
+            '/', // path
+            '', // domain
+            isset($this->options['secure']) ? (bool) $this->options['secure'] : true, // secure
+            true // httponly
+        );
+
+        if (PHP_SAPI === 'cli') {
+            // allow unit tests to inject values in the session
+            $_SESSION = isset($_SESSION) ? $_SESSION : array();
+
+        } else {
+            session_start();
+        }
     }
 
     private function isReadOnly(Route $route = null)
@@ -109,7 +119,9 @@ class NonBlockingSessionMiddleware
         }
 
         $readOnly = true;
-        if (isset($this->options['route_blocking_pattern']) && is_array($this->options['route_blocking_pattern'])) {
+        if (isset($this->options['route_blocking_pattern']) &&
+            is_array($this->options['route_blocking_pattern'])
+        ) {
             foreach ($this->options['route_blocking_pattern'] as $blockingPattern) {
                 if ($blockingPattern === $routePattern) {
                     $readOnly = false;
