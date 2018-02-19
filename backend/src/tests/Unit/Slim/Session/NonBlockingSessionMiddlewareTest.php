@@ -13,7 +13,6 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        session_name('PHPSESSID');
         unset($_SESSION);
     }
 
@@ -67,35 +66,6 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue(isset($_SESSION));
         $this->assertFalse((new SessionData())->isReadOnly());
-    }
-
-    public function testWithDefaultOptions()
-    {
-        $this->invokeMiddleware('/sess/set', [], true);
-
-        $this->assertTrue(isset($_SESSION));
-        $this->assertTrue((new SessionData())->isReadOnly());
-        $this->assertTrue(session_get_cookie_params()['httponly']);
-        $this->assertSame('PHPSESSID', session_name());
-        $this->assertTrue(session_get_cookie_params()['secure']);
-        $this->assertSame(1440, session_get_cookie_params()['lifetime']);
-    }
-
-    public function testWithCustomOptions()
-    {
-        $conf = [
-            'name' => 'TEST_SESS',
-            'secure' => false,
-            'lifetime' => 3600,
-        ];
-        $this->invokeMiddleware('/sess/set', $conf, true);
-
-        // since PHP 7.2: Warning: session_name(): Cannot change session name when session is active,
-        // so, can't test this
-        //$this->assertSame('TEST_SESS', session_name());
-
-        $this->assertFalse(session_get_cookie_params()['secure']);
-        $this->assertSame(3600, session_get_cookie_params()['lifetime']);
     }
 
     private function invokeMiddleware($path, $conf, $addRoute)

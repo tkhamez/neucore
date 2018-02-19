@@ -13,6 +13,10 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'sess');
         $rp->setAccessible(true);
         $rp->setValue(null);
+
+        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'readOnly');
+        $rp->setAccessible(true);
+        $rp->setValue(true);
     }
 
     public function testConstructWithSession()

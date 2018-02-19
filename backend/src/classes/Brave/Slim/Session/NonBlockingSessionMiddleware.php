@@ -90,19 +90,25 @@ class NonBlockingSessionMiddleware
 
     private function start()
     {
-        // since PHP 7.2: Warning: session_name(): Cannot change session name when session is active,
-        // so don't do this for CLI
-        if (isset($this->options['name']) && PHP_SAPI !== 'cli') {
-            session_name($this->options['name']);
-        }
+        if (PHP_SAPI !== 'cli') {
 
-        session_set_cookie_params(
-            isset($this->options['lifetime']) ? (int) $this->options['lifetime'] : 1440, // lifetime
-            '/', // path
-            '', // domain
-            isset($this->options['secure']) ? (bool) $this->options['secure'] : true, // secure
-            true // httponly
-        );
+            // since PHP 7.2:
+            // - Warning: session_name(): Cannot change session name when session is active,
+            // - Message: session_set_cookie_params(): Cannot change session cookie parameters when headers already sent
+            // so no unit tests for this
+
+            if (isset($this->options['name'])) {
+                session_name($this->options['name']);
+            }
+
+            session_set_cookie_params(
+                isset($this->options['lifetime']) ? (int) $this->options['lifetime'] : 1440, // lifetime
+                '/', // path
+                '', // domain
+                isset($this->options['secure']) ? (bool) $this->options['secure'] : true, // secure
+                true // httponly
+            );
+        }
 
         if (PHP_SAPI === 'cli') {
             // allow unit tests to inject values in the session
