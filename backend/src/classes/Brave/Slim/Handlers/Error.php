@@ -21,7 +21,7 @@ class Error extends \Slim\Handlers\Error
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Exception $exception)
     {
-        $this->logger->critical($exception->getMessage());
+        $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
         return parent::__invoke($request, $response, $exception);
     }

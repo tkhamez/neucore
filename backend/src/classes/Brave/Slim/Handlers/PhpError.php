@@ -21,7 +21,7 @@ class PhpError extends \Slim\Handlers\PhpError
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Throwable $error)
     {
-        $this->logger->critical($error->getMessage());
+        $this->logger->critical($error->getMessage(), ['exception' => $error]);
 
         return parent::__invoke($request, $response, $error);
     }

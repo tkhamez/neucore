@@ -12,7 +12,7 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['https://domain.tld']);
 
-        $res = new Response();
+        $res = new CorsResponse();
         $next = function($req, $res) {
             return $res;
         };
@@ -32,7 +32,7 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['http://domain.tld']);
 
-        $res = new Response();
+        $res = new CorsResponse();
         $next = function($req, $res) {
             return $res;
         };

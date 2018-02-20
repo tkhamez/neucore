@@ -32,6 +32,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Dotenv\Dotenv;
 
+use Whoops\Handler\JsonResponseHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -259,7 +260,7 @@ class Application
         }
 
         // Instantiate the app
-        $app = new SlimApp($this->settings);
+        $app = new SlimApp($this->settings, $this->env);
 
         return $app;
     }
@@ -280,24 +281,6 @@ class Application
             return EntityManager::create($conf['connection'], $config);
         });
 
-        // Monolog
-        $container->set(LoggerInterface::class, function (ContainerInterface $c) {
-            $conf = $c->get('config')['monolog'];
-            $logger = new Logger($conf['name']);
-            $logger->pushHandler(new StreamHandler($conf['path'], $conf['level']));
-            return $logger;
-        });
-
-        // extend Slim's error handler
-        $container->set('errorHandler', function ($c) {
-            return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-        });
-
-        // extend Slim's php error handler
-        $container->set('phpErrorHandler', function ($c) {
-            return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-        });
-
         // EVE OAuth
         $container->set(GenericProvider::class, new GenericProvider([
             'clientId'                => $container->get('config')['eve']['client_id'],
@@ -308,14 +291,39 @@ class Application
             'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
         ]));
 
+        // Monolog
+        $container->set(LoggerInterface::class, function (ContainerInterface $c) {
+            $conf = $c->get('config')['monolog'];
+            $logger = new Logger($conf['name']);
+            $logger->pushHandler(new StreamHandler($conf['path'], $conf['level']));
+            return $logger;
+        });
+
+        // extend Slim's error and php error handler for prod env
+        // (Slim's error handling is diabled in \Brave\Core\SlimApp for dev env, instead Whoops is used, see below)
+        if ($this->env !== self::ENV_DEV) {
+            $container->set('errorHandler', function ($c) {
+                return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+            });
+            $container->set('phpErrorHandler', function ($c) {
+                return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+            });
+        }
+
         // error handling
         ini_set('display_errors', 0);
+        ini_set('log_errors', 0); // all errors are logged with Monolog
         error_reporting(E_ALL);
         if ($this->env === self::ENV_DEV) {
             $whoops = new Run();
-            $whoops->pushHandler(new PrettyPageHandler());
+            if (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
+                $whoops->pushHandler((new JsonResponseHandler())->addTraceToOutput(true));
+            } else {
+                $whoops->pushHandler(new PrettyPageHandler());
+            }
             $whoops->register();
         } else {
+            // prod env: logs errors that are not converted to exceptions by Slim
             ErrorHandler::register($container->get(LoggerInterface::class));
         }
     }

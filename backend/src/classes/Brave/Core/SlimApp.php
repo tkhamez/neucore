@@ -1,25 +1,37 @@
 <?php
 namespace Brave\Core;
 
-use DI\Bridge\Slim\App;
 use DI\ContainerBuilder;
 
 /**
- * Extends DI\Bridge\Slim to configure it.
+ * Slim application configured with PHP-DI.
+ *
+ * @see \DI\Bridge\Slim\App
  */
-class SlimApp extends App
+class SlimApp extends \Slim\App
 {
     private $settings;
 
-    public function __construct(array $settings)
+    public function __construct(array $settings, $env)
     {
-        $this->settings = $settings;
+        $containerBuilder = new ContainerBuilder;
 
-        parent::__construct();
-    }
+        $reflector = new \ReflectionClass('DI\Bridge\Slim\App');
+        $pathToConig = dirname($reflector->getFileName());
+        $bridgeConfig = include $pathToConig . '/config.php';
 
-    protected function configureContainer(ContainerBuilder $builder)
-    {
-        $builder->addDefinitions($this->settings);
+        if ($env === Application::ENV_DEV) {
+            // disable Slim’s error handling (cannot unset them from DI\Container)
+            // https://www.slimframework.com/docs/v3/handlers/error.html
+            unset($bridgeConfig['errorHandler']);
+            unset($bridgeConfig['phpErrorHandler']);
+        }
+
+        $containerBuilder->addDefinitions($bridgeConfig);
+        $containerBuilder->addDefinitions($settings);
+
+        $container = $containerBuilder->build();
+
+        parent::__construct($container);
     }
 }
