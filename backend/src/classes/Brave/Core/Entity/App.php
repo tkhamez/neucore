@@ -21,9 +21,9 @@ class App implements \JsonSerializable
     private $id;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
      * @ManyToMany(targetEntity="Role", inversedBy="apps")
      * @JoinTable(name="apps_roles")
-     * @var \Doctrine\Common\Collections\Collection
      */
     private $roles;
 

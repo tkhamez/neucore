@@ -83,7 +83,7 @@ class AuthController
                 'code' => $request->getQueryParam('code', '')
             ]);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage());
+            $this->log->error($e->getMessage(), ['exception' => $e]);
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request token error',
@@ -95,7 +95,7 @@ class AuthController
         try {
             $resourceOwner = $this->sso->getResourceOwner($token);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage());
+            $this->log->error($e->getMessage(), ['exception' => $e]);
         }
 
         $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;

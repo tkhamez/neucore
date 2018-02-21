@@ -107,7 +107,7 @@ class AppAuthService implements RoleProviderInterface
                     $this->em->persist($app);
                     $this->em->flush();
                 } catch (\Exception $e) {
-                    $this->log->critical($e->getMessage());
+                    $this->log->critical($e->getMessage(), ['exception' => $e]);
                 }
             }
 

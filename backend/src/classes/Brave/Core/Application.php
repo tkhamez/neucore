@@ -31,6 +31,7 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
 use Whoops\Handler\JsonResponseHandler;
 use Whoops\Handler\PrettyPageHandler;
@@ -280,6 +281,12 @@ class Application
             );
             return EntityManager::create($conf['connection'], $config);
         });
+
+        // register pdo session handler
+        /* @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html */
+        $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
+        $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
+        session_set_save_handler($sessionHandler, true);
 
         // EVE OAuth
         $container->set(GenericProvider::class, new GenericProvider([

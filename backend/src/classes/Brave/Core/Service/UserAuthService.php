@@ -82,7 +82,7 @@ class UserAuthService implements RoleProviderInterface
 
             $userRole = $this->roleRepository->findBy(['name' => 'user']);
             if (count($userRole) !== 1) {
-                $this->log->critical('Role "user" not found.');
+                $this->log->critical('UserAuthService::authenticate(): Role "user" not found.');
                 return false;
             }
 
@@ -100,7 +100,7 @@ class UserAuthService implements RoleProviderInterface
             $this->em->persist($user);
             $this->em->flush();
         } catch (\Exception $e) {
-            $this->log->critical($e->getMessage());
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
             return false;
         }
 
