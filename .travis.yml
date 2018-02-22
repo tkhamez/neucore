@@ -16,6 +16,10 @@ env:
     - BRAVECORE_EVE_SECRET_KEY=abc
     - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
 
+matrix:
+  allow_failures:
+  - php: '7.2'
+
 before_install:
   - phpenv config-add config/travis.ini
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
