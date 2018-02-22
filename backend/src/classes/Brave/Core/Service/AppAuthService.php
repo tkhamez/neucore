@@ -83,7 +83,7 @@ class AppAuthService implements RoleProviderInterface
             return;
         }
 
-        $tokenDecoded = base64_decode($token);
+        $tokenDecoded = base64_decode($token, true);
         if ($tokenDecoded === false) {
             return;
         }

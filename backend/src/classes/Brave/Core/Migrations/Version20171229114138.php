@@ -33,7 +33,7 @@ class Version20171229114138 extends AbstractMigration
         $this->addSql('INSERT INTO roles (id, name) VALUES (1, "role.user")');
         $this->addSql('INSERT INTO roles (id, name) VALUES (2, "role.app")');
 
-        $secret = password_hash("my awesome secret", PASSWORD_BCRYPT);
+        $secret = password_hash("my awesome secret", PASSWORD_DEFAULT);
         $this->addSql('INSERT INTO apps (id, secret, name) VALUES (1, :secret, "Example App")', array('secret' => $secret));
 
         $this->addSql('INSERT INTO apps_roles (app_id, role_id) VALUES (1, 2)');

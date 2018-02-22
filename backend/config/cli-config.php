@@ -12,7 +12,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$settings = (new Application())->settings();
+$settings = (new Application())->loadSettings();
 $conf = $settings['config']['doctrine'];
 
 $config = Setup::createAnnotationMetadataConfiguration(

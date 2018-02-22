@@ -11,6 +11,7 @@ use Brave\Slim\Role\SecureRouteMiddleware;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
 
 use DI\Container;
+use DI\ContainerBuilder;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -124,7 +125,7 @@ class Application
      * @param bool $includeTestSettings Optionally load settings from settings_tests.php for unit tests
      * @return array
      */
-    public function settings($includeTestSettings = false): array
+    public function loadSettings($includeTestSettings = false): array
     {
         if ($this->settings !== null) {
             return $this->settings;
@@ -179,23 +180,38 @@ class Application
      */
     public function getEnv(): string
     {
-        $this->settings();
+        $this->loadSettings();
 
         return $this->env;
     }
 
     /**
-     * Creates the Slim app (for unit tests)
+     * Creates the Slim app
      *
+     * @param bool $setupRoutes Optional, defaults to true
      * @return App
      */
-    public function getApp(): App
+    public function getApp($setupRoutes = true): App
     {
-        $app = $this->app();
+        $this->loadSettings();
 
-        $this->dependencies($app->getContainer());
+        if ($this->env === self::ENV_DEV) {
+            umask(0000);
+        } else {
+            umask(0002);
+        }
+
+        $container = $this->buildContainer();
+        $app = new App($container);
+
+        $this->dependencies($container);
+        $this->sessionHandler($container);
+        $this->errorHandling($container);
         $this->middleware($app);
-        $this->routes($app);
+
+        if ($setupRoutes) {
+            $this->routes($app);
+        }
 
         return $app;
     }
@@ -207,19 +223,7 @@ class Application
      */
     public function run()
     {
-        $app = $this->app();
-
-        // Set up dependencies
-        $this->dependencies($app->getContainer());
-
-        // Register middleware
-        $this->middleware($app);
-
-        // Register routes
-        $this->routes($app);
-
-        // Run app
-        $app->run();
+        $this->getApp()->run();
     }
 
     /**
@@ -231,13 +235,9 @@ class Application
     {
         set_time_limit(0);
 
-        $app = $this->app();
-
-        $this->dependencies($app->getContainer());
-        $this->middleware($app);
+        $app = $this->getApp(false);
 
         $console = new ConsoleApplication();
-
         $console->register('my-command')
             ->setDefinition(array(
                 // new InputOption('some-option', null, InputOption::VALUE_NONE, 'Some help'),
@@ -250,24 +250,32 @@ class Application
         $console->run();
     }
 
-    private function app(): App
+    private function buildContainer(): Container
     {
-        $this->settings();
+        // include config.php from php-di/slim-bridge
+        $reflector = new \ReflectionClass('DI\Bridge\Slim\App');
+        $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
 
-        if ($this->env === self::ENV_DEV) {
-            umask(0000);
-        } else {
-            umask(0002);
+        // Disable Slim’s error handling for dev env.
+        // see also https://www.slimframework.com/docs/v3/handlers/error.html
+        if ($this->env === Application::ENV_DEV) {
+            // Values cannot be unset from the DI\Container,
+            // so it has to be done before it is build.
+            unset($bridgeConfig['errorHandler']);
+            unset($bridgeConfig['phpErrorHandler']);
         }
 
-        // Instantiate the app
-        $app = new SlimApp($this->settings, $this->env);
+        $containerBuilder = new ContainerBuilder();
+        $containerBuilder->addDefinitions($bridgeConfig);
+        $containerBuilder->addDefinitions($this->settings);
 
-        return $app;
+        $container = $containerBuilder->build();
+
+        return $container;
     }
 
     /**
-     * Set up dependencies and error handling
+     * Add dependencies to DI container, setup session handler.
      */
     private function dependencies(Container $container)
     {
@@ -281,12 +289,6 @@ class Application
             );
             return EntityManager::create($conf['connection'], $config);
         });
-
-        // register pdo session handler
-        /* @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html */
-        $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
-        $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
-        session_set_save_handler($sessionHandler, true);
 
         // EVE OAuth
         $container->set(GenericProvider::class, new GenericProvider([
@@ -305,9 +307,39 @@ class Application
             $logger->pushHandler(new StreamHandler($conf['path'], $conf['level']));
             return $logger;
         });
+    }
 
-        // extend Slim's error and php error handler for prod env
-        // (Slim's error handling is diabled in \Brave\Core\SlimApp for dev env, instead Whoops is used, see below)
+    /**
+     * Register pdo session handler.
+     *
+     * (not for CLI)
+     *
+     * @param Container $container
+     * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
+     */
+    private function sessionHandler(Container $container)
+    {
+        if (PHP_SAPI === 'cli') {
+            // PHP 7.2 for unit tests:
+            // session_set_save_handler(): Cannot change save handler when headers already sent
+            return;
+        }
+
+        $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
+        $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
+        session_set_save_handler($sessionHandler, true);
+    }
+
+    /**
+     * Setup error handling.
+     *
+     * @param Container $container
+     */
+    private function errorHandling(Container $container)
+    {
+        // Extend Slim's error and php error handler for prod env.
+        // Slim's error handling is not added to the container in
+        // self::buildContainer() for dev env, instead Whoops is used (see below)
         if ($this->env !== self::ENV_DEV) {
             $container->set('errorHandler', function ($c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
@@ -317,10 +349,11 @@ class Application
             });
         }
 
-        // error handling
+        // php settings
         ini_set('display_errors', 0);
         ini_set('log_errors', 0); // all errors are logged with Monolog
         error_reporting(E_ALL);
+
         if ($this->env === self::ENV_DEV) {
             $whoops = new Run();
             if (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
@@ -329,6 +362,7 @@ class Application
                 $whoops->pushHandler(new PrettyPageHandler());
             }
             $whoops->register();
+
         } else {
             // prod env: logs errors that are not converted to exceptions by Slim
             ErrorHandler::register($container->get(LoggerInterface::class));

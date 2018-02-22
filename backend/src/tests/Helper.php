@@ -25,10 +25,23 @@ class Helper
         'Brave\Core\Entity\User',
     ];
 
+    public function resetSessionData()
+    {
+        unset($_SESSION);
+
+        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'sess');
+        $rp->setAccessible(true);
+        $rp->setValue(null);
+
+        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'readOnly');
+        $rp->setAccessible(true);
+        $rp->setValue(true);
+    }
+
     public function getEm()
     {
         if (self::$em === null) {
-            $settings = (new Application())->settings(true);
+            $settings = (new Application())->loadSettings(true);
 
             $config = Setup::createAnnotationMetadataConfiguration(
                 $settings['config']['doctrine']['meta']['entity_path'],
@@ -66,38 +79,71 @@ class Helper
         }
     }
 
-    public function addStandardUser()
+    /**
+     *
+     * @param array $roles
+     * @return \Brave\Core\Entity\Role[]
+     */
+    public function addRoles($roles)
     {
         $em = $this->getEm();
 
-        $role = new Role();
-        $role->setName('user');
-        $em->persist($role);
+        $roleEntities = [];
+        foreach ($roles as $roleName) {
+            $role = new Role();
+            $role->setName($roleName);
+            $em->persist($role);
+            $roleEntities[] = $role;
+        }
+        $em->flush();
+
+        return $roleEntities;
+    }
+
+    /**
+     *
+     * @param string $name
+     * @param int $charId
+     * @param array $roles
+     * @return number
+     */
+    public function addUser($name, $charId, $roles)
+    {
+        $em = $this->getEm();
 
         $user = new User();
-        $user->setCharacterId(123456);
-        $user->setName('Test User');
-        $user->addRole($role);
+        $user->setCharacterId($charId);
+        $user->setName($name);
         $em->persist($user);
+
+        foreach ($this->addRoles($roles) as $role) {
+            $user->addRole($role);
+        }
 
         $em->flush();
 
         return $user->getId();
     }
 
-    public function addStandardApp()
+    /**
+     *
+     * @param string $name
+     * @param string $secret
+     * @param array $roles
+     * @return number
+     */
+    public function addApp($name, $secret, $roles)
     {
         $em = $this->getEm();
 
-        $role = new Role();
-        $role->setName('app');
-        $em->persist($role);
-
         $app = new App();
-        $app->setName('Test App');
-        $app->setSecret(password_hash('boring-test-secret', PASSWORD_DEFAULT));
-        $app->addRole($role);
+        $app->setName($name);
+        $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
         $em->persist($app);
+
+        foreach ($this->addRoles($roles) as $role) {
+            $app->addRole($role);
+        }
 
         $em->flush();
 

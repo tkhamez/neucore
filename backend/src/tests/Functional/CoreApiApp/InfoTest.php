@@ -17,7 +17,7 @@ class InfoTest extends BaseTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $aid = $h->addStandardApp();
+        $aid = $h->addApp('Test App', 'boring-test-secret', ['app']);
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':boring-test-secret')];
         $response = $this->runApp('GET', '/api/app/info', null, $headers);

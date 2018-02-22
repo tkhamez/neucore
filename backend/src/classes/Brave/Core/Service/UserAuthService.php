@@ -37,14 +37,15 @@ class UserAuthService implements RoleProviderInterface
      */
     private $user;
 
-    public function __construct(SessionData $session, UserRepository $user, RoleRepository $role,
+    public function __construct(SessionData $session,
+        UserRepository $userRepository, RoleRepository $roleRepository,
         EntityManagerInterface $em, LoggerInterface $log)
     {
         $this->log = $log;
         $this->session = $session;
         $this->em = $em;
-        $this->userRepository = $user;
-        $this->roleRepository = $role;
+        $this->userRepository = $userRepository;
+        $this->roleRepository = $roleRepository;
     }
 
     /**
@@ -52,7 +53,7 @@ class UserAuthService implements RoleProviderInterface
      * {@inheritdoc}
      * @see \Brave\Slim\Role\RoleProviderInterface::getRoles()
      */
-    public function getRoles(ServerRequestInterface $request): array
+    public function getRoles(ServerRequestInterface $request = null): array
     {
         $this->getUser();
 
@@ -64,6 +65,19 @@ class UserAuthService implements RoleProviderInterface
         }
 
         return $roles;
+    }
+
+    /**
+     *
+     * @return NULL|\Brave\Core\Entity\User
+     */
+    public function getUser()
+    {
+        if ($this->user === null) {
+            $this->loadUser();
+        }
+
+        return $this->user;
     }
 
     /**
@@ -107,19 +121,6 @@ class UserAuthService implements RoleProviderInterface
         $this->session->set('user_id', $user->getId());
 
         return true;
-    }
-
-    /**
-     *
-     * @return NULL|\Brave\Core\Entity\User
-     */
-    public function getUser()
-    {
-        if ($this->user === null) {
-            $this->loadUser();
-        }
-
-        return $this->user;
     }
 
     private function loadUser()

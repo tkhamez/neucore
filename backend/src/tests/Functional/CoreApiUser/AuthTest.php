@@ -62,7 +62,7 @@ class AuthTest extends BaseTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $uid = $h->addStandardUser();
+        $uid = $h->addUser('Test User', 123456, ['user']);
         $this->loginUser($uid);
 
         $response = $this->runApp('GET', '/api/user/auth/logout');

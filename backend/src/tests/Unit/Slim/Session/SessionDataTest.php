@@ -2,21 +2,14 @@
 namespace Tests\Unit\Slim\Session;
 
 use Brave\Slim\Session\SessionData;
+use Tests\Helper;
 
 class SessionDataTest extends \PHPUnit\Framework\TestCase
 {
 
     public function setUp()
     {
-        unset($_SESSION);
-
-        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'sess');
-        $rp->setAccessible(true);
-        $rp->setValue(null);
-
-        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'readOnly');
-        $rp->setAccessible(true);
-        $rp->setValue(true);
+        (new Helper())->resetSessionData();
     }
 
     public function testConstructWithSession()

@@ -49,7 +49,7 @@ class BaseTestCase extends \PHPUnit\Framework\TestCase
 
         // create app with test settings
         $app = new Application();
-        $app->settings(true);
+        $app->loadSettings(true);
         $slimApp = $app->getApp();
 
         // Process the application
