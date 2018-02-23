@@ -19,9 +19,11 @@ class BaseTestCase extends \PHPUnit\Framework\TestCase
      * @param string $requestUri the request URI
      * @param array|object|null $requestData the request data
      * @param array|null $header
+     * @param array|null $mocks key/value paris for the dependency injection container
      * @return \Slim\Http\Response
      */
-    protected function runApp($requestMethod, $requestUri, $requestData = null, array $headers = null)
+    protected function runApp($requestMethod, $requestUri,
+        $requestData = null, array $headers = null, array $mocks = [])
     {
         // Create a mock environment for testing with
         $environment = Environment::mock([
@@ -51,6 +53,10 @@ class BaseTestCase extends \PHPUnit\Framework\TestCase
         $app = new Application();
         $app->loadSettings(true);
         $slimApp = $app->getApp();
+
+        foreach ($mocks as $class => $obj) {
+            $slimApp->getContainer()->set($class, $obj);
+        }
 
         // Process the application
         $response = $slimApp->process($request, $response);

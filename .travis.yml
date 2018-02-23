@@ -17,6 +17,7 @@ env:
     - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
 
 matrix:
+  fast_finish: true
   allow_failures:
   - php: '7.2'
 
