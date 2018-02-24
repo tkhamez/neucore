@@ -12,27 +12,23 @@ use Tests\Helper;
 class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
 {
 
-    private static $appId;
-
     /**
      * @var AppAuthService
      */
     private $service;
 
-    public static function setUpBeforeClass()
-    {
-        $h = new Helper();
-        $h->emptyDb();
-        self::$appId = $h->addApp('Test App', 'my-test-secret', ['app']);
-    }
+    /**
+     * @var AppAuthService
+     */
+    private $repo;
 
     public function setUp()
     {
         $log = new Logger('test');
         $em = (new Helper())->getEm();
-        $repo = new AppRepository($em);
+        $this->repo = new AppRepository($em);
 
-        $this->service = new AppAuthService($repo, $em, $log);
+        $this->service = new AppAuthService($this->repo, $em, $log);
     }
 
     public function testGetRolesNoAuth()
@@ -45,9 +41,13 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testGetRoles()
     {
+        $h = new Helper();
+        $h->emptyDb();
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app']);
+
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
-        $req->method('getHeader')->willReturn(['Bearer '.base64_encode(self::$appId.':my-test-secret')]);
+        $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);
 
         $roles = $this->service->getRoles($req);
 
@@ -84,20 +84,41 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
-        $req->method('getHeader')->willReturn(['Bearer '.base64_encode(self::$appId.':invalid-secret')]);
+        $req->method('getHeader')->willReturn(['Bearer '.base64_encode('1:invalid-secret')]);
 
         $this->assertNull($this->service->getApp($req));
     }
 
     public function testGetApp()
     {
+        $h = new Helper();
+        $h->emptyDb();
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app']);
+
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
-        $req->method('getHeader')->willReturn(['Bearer '.base64_encode(self::$appId.':my-test-secret')]);
+        $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);
 
         $app = $this->service->getApp($req);
 
-        $this->assertSame(self::$appId, $app->getId());
+        $this->assertSame($appId, $app->getId());
         $this->assertSame('Test App', $app->getName());
+    }
+
+    public function testGetAppAuthenticateUpgradesPasswordHash()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app'], 'md5');
+
+        $req = $this->createMock(ServerRequestInterface::class);
+        $req->method('hasHeader')->willReturn(true);
+        $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);
+
+        $oldHash = $this->repo->find($appId)->getSecret();
+        $newHash = $this->service->getApp($req)->getSecret();
+
+        $this->assertStringStartsWith('$1$', $oldHash);
+        $this->assertStringStartsNotWith('$1$', $newHash);
     }
 }

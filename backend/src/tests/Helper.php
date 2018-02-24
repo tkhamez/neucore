@@ -130,15 +130,18 @@ class Helper
      * @param string $name
      * @param string $secret
      * @param array $roles
+     * @param mixed $hash PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())
      * @return number
      */
-    public function addApp($name, $secret, $roles)
+    public function addApp($name, $secret, $roles, $hashAlgo = PASSWORD_DEFAULT)
     {
+        $hash = $hashAlgo === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, PASSWORD_DEFAULT);
+
         $em = $this->getEm();
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+        $app->setSecret($hash);
         $em->persist($app);
 
         foreach ($this->addRoles($roles) as $role) {
