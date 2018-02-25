@@ -45,7 +45,7 @@ class App implements \JsonSerializable
     private $roles;
 
     /**
-     * Member of groups.
+     * Groups the app can see.
      *
      * @ManyToMany(targetEntity="Group", inversedBy="apps")
      * @OrderBy({"name" = "ASC"})

@@ -40,7 +40,7 @@ class Player implements \JsonSerializable
     private $roles;
 
     /**
-     * Member of groups.
+     * Group memership.
      *
      * @SWG\Property(type="array", @SWG\Items(type="string"))
      * @ManyToMany(targetEntity="Group", inversedBy="players")
@@ -68,7 +68,7 @@ class Player implements \JsonSerializable
     private $managerGroups;
 
     /**
-     * Manager of groups.
+     * Manager of apps.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/App"))
      * @ManyToMany(targetEntity="App", mappedBy="managers")
