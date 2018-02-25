@@ -107,15 +107,15 @@ class AuthTest extends BaseTestCase
     {
         (new Helper())->emptyDb();
 
-        $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
+        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $_SESSION = ['auth_state' => $state];
 
         $sso = $this->createMock(GenericProvider::class);
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
-        $sso->method('getResourceOwner')->willReturn($ro);
 
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
-        $_SESSION = ['auth_state' => $state];
+        $ro = $this->createMock(ResourceOwnerInterface::class);
+        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
+        $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => $sso
@@ -134,15 +134,15 @@ class AuthTest extends BaseTestCase
         $h->emptyDb();
         $h->addRoles(['user']);
 
-        $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
+        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $_SESSION = ['auth_state' => $state];
 
         $sso = $this->createMock(GenericProvider::class);
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
-        $sso->method('getResourceOwner')->willReturn($ro);
 
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
-        $_SESSION = ['auth_state' => $state];
+        $ro = $this->createMock(ResourceOwnerInterface::class);
+        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
+        $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => $sso
@@ -171,8 +171,8 @@ class AuthTest extends BaseTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $uid = $h->addUser('Test User', 123456, ['user']);
-        $this->loginUser($uid);
+        $h->addCharacterMain('Test User', 123456, ['user']);
+        $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/auth/logout');
         $this->assertSame(200, $response->getStatusCode());

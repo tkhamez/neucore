@@ -22,17 +22,21 @@ class InfoTest extends BaseTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $uid = $h->addUser('Test User', 123456, ['user']);
-        $this->loginUser($uid);
+        $h->addCharacterMain('Test User', 123456, ['user', 'admin'], ['group1', 'another-group']);
+        $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/info');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            'characterId' => 123456,
             'name' => 'Test User',
-            'roles' => ['user'],
-            'groups' => []
+            'roles' => ['admin', 'user'],
+            'groups' => ['another-group', 'group1'],
+            'characters' => [
+                ['id' => 123456, 'name' => 'Test User', 'main' => true],
+            ],
+            'managerGroups' => [],
+            'managerApps' => [],
         ], $this->parseJsonBody($response));
     }
 }

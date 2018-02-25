@@ -6,9 +6,11 @@ use Brave\Core\Application;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\User;
 use Brave\Core\Entity\App;
+use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Player;
+use Brave\Core\Entity\Role;
 
 class Helper
 {
@@ -20,9 +22,10 @@ class Helper
 
     private $entities = [
         'Brave\Core\Entity\App',
+        'Brave\Core\Entity\Character',
         'Brave\Core\Entity\Group',
+        'Brave\Core\Entity\Player',
         'Brave\Core\Entity\Role',
-        'Brave\Core\Entity\User',
     ];
 
     public function resetSessionData()
@@ -102,27 +105,56 @@ class Helper
 
     /**
      *
+     * @param array $groups
+     * @return \Brave\Core\Entity\Group[]
+     */
+    public function addGroups($groups)
+    {
+        $em = $this->getEm();
+
+        $groupEntities = [];
+        foreach ($groups as $groupName) {
+            $group = new Group();
+            $group->setName($groupName);
+            $em->persist($group);
+            $groupEntities[] = $group;
+        }
+        $em->flush();
+
+        return $groupEntities;
+    }
+
+    /**
+     *
      * @param string $name
      * @param int $charId
      * @param array $roles
      * @return number
      */
-    public function addUser($name, $charId, $roles)
+    public function addCharacterMain(string $name, int $charId, array $roles, array $groups = [])
     {
         $em = $this->getEm();
 
-        $user = new User();
-        $user->setCharacterId($charId);
-        $user->setName($name);
-        $em->persist($user);
+        $player = new Player();
+        $player->setName($name);
+        $em->persist($player);
+
+        $char = new Character();
+        $char->setId($charId);
+        $char->setName($name);
+        $char->setMain(true);
+        $char->setPlayer($player);
+        $em->persist($char);
 
         foreach ($this->addRoles($roles) as $role) {
-            $user->addRole($role);
+            $player->addRole($role);
+        }
+
+        foreach ($this->addGroups($groups) as $group) {
+            $player->addGroup($group);
         }
 
         $em->flush();
-
-        return $user->getId();
     }
 
     /**
@@ -133,7 +165,7 @@ class Helper
      * @param mixed $hash PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())
      * @return number
      */
-    public function addApp($name, $secret, $roles, $hashAlgo = PASSWORD_DEFAULT)
+    public function addApp(string $name, string $secret, array $roles, $hashAlgo = PASSWORD_DEFAULT)
     {
         $hash = $hashAlgo === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, PASSWORD_DEFAULT);
 

@@ -3,6 +3,7 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\AppRepository;
 use Brave\Core\Service\AppAuthService;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Environment;
@@ -25,6 +26,7 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $log = new Logger('test');
+        $log->pushHandler(new StreamHandler('php://stderr'));
         $em = (new Helper())->getEm();
         $this->repo = new AppRepository($em);
 

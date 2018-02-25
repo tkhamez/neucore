@@ -74,6 +74,6 @@ class BaseTestCase extends \PHPUnit\Framework\TestCase
 
     protected function loginUser($id)
     {
-        $_SESSION['user_id'] = $id;
+        $_SESSION['character_id'] = $id;
     }
 }

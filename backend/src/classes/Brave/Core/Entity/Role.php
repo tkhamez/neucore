@@ -2,7 +2,7 @@
 namespace Brave\Core\Entity;
 
 /**
- * Roles that are used to determined users permission in this app.
+ * Roles are used to determined player permissions.
  *
  * @Entity(repositoryClass="Brave\Core\Entity\RoleRepository")
  * @Table(name="roles")
@@ -19,20 +19,24 @@ class Role implements \JsonSerializable
     private $id;
 
     /**
-     * @ManyToMany(targetEntity="User", mappedBy="roles")
-     */
-    private $users;
-
-    /**
-     * @ManyToMany(targetEntity="App", mappedBy="apps")
-     */
-    private $apps;
-
-    /**
      * @Column(type="string", unique=true, length=64)
      * @var string
      */
     private $name;
+
+    /**
+     * @ManyToMany(targetEntity="Player", mappedBy="players")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $players;
+
+    /**
+     * @ManyToMany(targetEntity="App", mappedBy="apps")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $apps;
 
     /**
      * Contains only information that is of interest for clients.
@@ -50,7 +54,7 @@ class Role implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->players = new \Doctrine\Common\Collections\ArrayCollection();
         $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -89,39 +93,39 @@ class Role implements \JsonSerializable
     }
 
     /**
-     * Add user.
+     * Add player.
      *
-     * @param \Brave\Core\Entity\User $user
+     * @param \Brave\Core\Entity\Player $player
      *
      * @return Role
      */
-    public function addUser(\Brave\Core\Entity\User $user)
+    public function addPlayer(\Brave\Core\Entity\Player $player)
     {
-        $this->users[] = $user;
+        $this->players[] = $player;
 
         return $this;
     }
 
     /**
-     * Remove user.
+     * Remove player.
      *
-     * @param \Brave\Core\Entity\User $user
+     * @param \Brave\Core\Entity\Player $player
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeUser(\Brave\Core\Entity\User $user)
+    public function removePlayer(\Brave\Core\Entity\Player $player)
     {
-        return $this->users->removeElement($user);
+        return $this->players->removeElement($player);
     }
 
     /**
-     * Get users.
+     * Get players.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getUsers()
+    public function getPlayers()
     {
-        return $this->users;
+        return $this->players;
     }
 
     /**

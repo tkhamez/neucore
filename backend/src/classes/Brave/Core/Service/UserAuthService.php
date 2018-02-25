@@ -2,8 +2,9 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\RoleRepository;
-use Brave\Core\Entity\User;
-use Brave\Core\Entity\UserRepository;
+use Brave\Core\Entity\Character;
+use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Entity\Player;
 use Brave\Slim\Role\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,14 +17,14 @@ use Psr\Log\LoggerInterface;
  * A user is identified by it's Eve character ID and is
  * created in the database if it does not already exist already.
  *
- * After that, the session variable "user_id" identifies the user.
+ * After that, the session variable "character_id" identifies the user.
  */
 class UserAuthService implements RoleProviderInterface
 {
 
     private $session;
 
-    private $userRepository;
+    private $characterRepository;
 
     private $roleRepository;
 
@@ -33,18 +34,18 @@ class UserAuthService implements RoleProviderInterface
 
     /**
      *
-     * @var User
+     * @var Character
      */
     private $user;
 
     public function __construct(SessionData $session,
-        UserRepository $userRepository, RoleRepository $roleRepository,
+        CharacterRepository $characterRepository, RoleRepository $roleRepository,
         EntityManagerInterface $em, LoggerInterface $log)
     {
         $this->log = $log;
         $this->session = $session;
         $this->em = $em;
-        $this->userRepository = $userRepository;
+        $this->characterRepository = $characterRepository;
         $this->roleRepository = $roleRepository;
     }
 
@@ -58,8 +59,8 @@ class UserAuthService implements RoleProviderInterface
         $this->getUser();
 
         $roles = [];
-        if ($this->user !== null) {
-            foreach ($this->user->getRoles() as $role) {
+        if ($this->user !== null && $this->user->getPlayer() !== null) {
+            foreach ($this->user->getPlayer()->getRoles() as $role) {
                 $roles[] = $role->getName();
             }
         }
@@ -69,7 +70,7 @@ class UserAuthService implements RoleProviderInterface
 
     /**
      *
-     * @return NULL|\Brave\Core\Entity\User
+     * @return NULL|\Brave\Core\Entity\Character
      */
     public function getUser()
     {
@@ -88,9 +89,10 @@ class UserAuthService implements RoleProviderInterface
      */
     public function authenticate(int $characterId, string $characterName)
     {
-        $users = $this->userRepository->findBy(['characterId' => $characterId]);
+        /* @var $user Character */
+        $user = $this->characterRepository->find($characterId);
 
-        if (count($users) === 0) {
+        if ($user === null) {
 
             // first login, create user
 
@@ -100,17 +102,26 @@ class UserAuthService implements RoleProviderInterface
                 return false;
             }
 
-            $user = new User();
-            $user->setCharacterId($characterId);
+            $player = new Player();
+            $player->setName($characterName);
+            $player->addRole($userRole[0]);
+
+            $user = new Character();
+            $user->setId($characterId);
             $user->setName($characterName);
-            $user->addRole($userRole[0]);
+            $user->setMain(true);
+            $user->setPlayer($player);
 
         } else {
-            $user = $users[0];
+            $player = $user->getPlayer();
             $user->setName($characterName);
+            if ($user->getMain()) {
+                $player->setName($characterName);
+            }
         }
 
         try {
+            $this->em->persist($player);
             $this->em->persist($user);
             $this->em->flush();
         } catch (\Exception $e) {
@@ -118,16 +129,16 @@ class UserAuthService implements RoleProviderInterface
             return false;
         }
 
-        $this->session->set('user_id', $user->getId());
+        $this->session->set('character_id', $user->getId());
 
         return true;
     }
 
     private function loadUser()
     {
-        $userId = $this->session->get('user_id');
+        $userId = $this->session->get('character_id');
         if ($userId !== null) {
-            $this->user = $this->userRepository->find($userId);
+            $this->user = $this->characterRepository->find($userId);
         }
     }
 }

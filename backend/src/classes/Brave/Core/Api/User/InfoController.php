@@ -10,13 +10,13 @@ class InfoController
     /**
      * @SWG\Get(
      *     path="/user/info",
-     *     summary="Show current logged in user information. Needs role: user",
+     *     summary="Show current logged in player information. Needs role: user",
      *     tags={"User"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="The user information",
-     *         @SWG\Schema(ref="#/definitions/User")
+     *         description="The player information",
+     *         @SWG\Schema(ref="#/definitions/Player")
      *     ),
      *     @SWG\Response(
      *         response="401",
@@ -26,6 +26,8 @@ class InfoController
      */
     public function __invoke(Response $response, UserAuthService $uas)
     {
-        return $response->withJson($uas->getUser());
+        $player = $uas->getUser() ? $uas->getUser()->getPlayer() : null;
+
+        return $response->withJson($player);
     }
 }

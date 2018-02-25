@@ -12,34 +12,54 @@ class App implements \JsonSerializable
     /**
      * App ID
      *
-     * @var int
      * @SWG\Property()
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
+     * @var int
      */
     private $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     * @ManyToMany(targetEntity="Role", inversedBy="apps")
-     * @JoinTable(name="apps_roles")
+     * App name
+     *
+     * @SWG\Property()
+     * @Column(type="string", length=255)
+     * @var string
      */
-    private $roles;
+    private $name;
 
     /**
      * @Column(type="string", length=255)
+     * @var string
      */
     private $secret;
 
     /**
-     * App name
+     * Roles for authorization.
      *
-     * @var string
-     * @SWG\Property()
-     * @Column(type="string", length=255)
+     * @ManyToMany(targetEntity="Role", inversedBy="apps")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
      */
-    private $name;
+    private $roles;
+
+    /**
+     * Member of groups.
+     *
+     * @ManyToMany(targetEntity="Group", inversedBy="apps")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $groups;
+
+    /**
+     * @ManyToMany(targetEntity="Player", inversedBy="managerApps")
+     * @JoinTable(name="app_manager")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $managers;
 
     /**
      * Contains only information that is of interest for clients.
@@ -63,6 +83,8 @@ class App implements \JsonSerializable
     public function __construct()
     {
         $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -73,6 +95,54 @@ class App implements \JsonSerializable
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     * @return App
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set secret.
+     *
+     * @param string $secret
+     *
+     * @return App
+     */
+    public function setSecret($secret)
+    {
+        $this->secret = $secret;
+
+        return $this;
+    }
+
+    /**
+     * Get secret.
+     *
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->secret;
     }
 
     /**
@@ -104,7 +174,7 @@ class App implements \JsonSerializable
     /**
      * Get roles.
      *
-     * @return \Brave\Core\Entity\Role[]
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRoles()
     {
@@ -112,50 +182,74 @@ class App implements \JsonSerializable
     }
 
     /**
-     * Set secret.
+     * Add group.
      *
-     * @param string $secret
+     * @param \Brave\Core\Entity\Group $group
      *
      * @return App
      */
-    public function setSecret($secret)
+    public function addGroup(\Brave\Core\Entity\Group $group)
     {
-        $this->secret = $secret;
+        $this->groups[] = $group;
 
         return $this;
     }
 
     /**
-     * Get secret.
+     * Remove group.
      *
-     * @return string
+     * @param \Brave\Core\Entity\Group $group
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function getSecret()
+    public function removeGroup(\Brave\Core\Entity\Group $group)
     {
-        return $this->secret;
+        return $this->groups->removeElement($group);
     }
 
     /**
-     * Set name.
+     * Get groups.
      *
-     * @param string $name
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * Add manager.
+     *
+     * @param \Brave\Core\Entity\Player $manager
      *
      * @return App
      */
-    public function setName($name)
+    public function addManager(\Brave\Core\Entity\Player $manager)
     {
-        $this->name = $name;
+        $this->managers[] = $manager;
 
         return $this;
     }
 
     /**
-     * Get name.
+     * Remove manager.
      *
-     * @return string
+     * @param \Brave\Core\Entity\Player $manager
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function getName()
+    public function removeManager(\Brave\Core\Entity\Player $manager)
     {
-        return $this->name;
+        return $this->managers->removeElement($manager);
+    }
+
+    /**
+     * Get managers.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getManagers()
+    {
+        return $this->managers;
     }
 }
