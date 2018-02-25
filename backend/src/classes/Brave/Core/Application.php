@@ -34,6 +34,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
+use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -113,6 +114,13 @@ class Application
     private $env;
 
     /**
+     * Indicates if the app is running from a functional (integration) test.
+     *
+     * @var bool
+     */
+    private $unitTest;
+
+    /**
      * Loads settings based on environment.
      *
      * Development or production environment is determined by
@@ -122,14 +130,16 @@ class Application
      * BRAVECORE_APP_ENV does not exist and the composer package symfony/dotenv is available.
      * Both should only be true for the development environment.
      *
-     * @param bool $includeTestSettings Optionally load settings from settings_tests.php for unit tests
+     * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
      * @return array
      */
-    public function loadSettings($includeTestSettings = false): array
+    public function loadSettings($unitTest = false): array
     {
         if ($this->settings !== null) {
             return $this->settings;
         }
+
+        $this->unitTest = $unitTest;
 
         // Load env vars from file, the check is to ensure we don't use .env in production
         if (! isset($_SERVER['BRAVECORE_APP_ENV']) && class_exists(Dotenv::class)) {
@@ -166,7 +176,7 @@ class Application
             $this->settings = array_replace_recursive($this->settings, $dev);
         }
 
-        if ($includeTestSettings) {
+        if ($this->unitTest) {
             $test = include Application::ROOT_DIR . '/config/settings_tests.php';
             $this->settings = array_replace_recursive($this->settings, $test);
         }
@@ -175,23 +185,13 @@ class Application
     }
 
     /**
-     *
-     * @return string
-     */
-    public function getEnv(): string
-    {
-        $this->loadSettings();
-
-        return $this->env;
-    }
-
-    /**
      * Creates the Slim app
      *
-     * @param bool $setupRoutes Optional, defaults to true
+     * @param bool $withMiddleware Optional, defaults to true
+     * @param bool $withRoutes Optional, defaults to true
      * @return App
      */
-    public function getApp($setupRoutes = true): App
+    public function getApp($withMiddleware = true, $withRoutes = true): App
     {
         $this->loadSettings();
 
@@ -207,13 +207,40 @@ class Application
         $this->dependencies($container);
         $this->sessionHandler($container);
         $this->errorHandling($container);
-        $this->middleware($app);
 
-        if ($setupRoutes) {
+        if ($withMiddleware) {
+            $this->addMiddleware($app);
+        }
+
+        if ($withRoutes) {
             $this->routes($app);
         }
 
         return $app;
+    }
+
+    /**
+     * Creates the Symfony console app.
+     *
+     * @return ConsoleApplication
+     */
+    public function getConsoleApp()
+    {
+        set_time_limit(0);
+
+        $app = $this->getApp(true, false); // with middleware, without routes
+
+        $console = new ConsoleApplication();
+        $console->register('my-command')
+        ->setDefinition(array(
+            // new InputOption('some-option', null, InputOption::VALUE_NONE, 'Some help'),
+        ))
+        ->setDescription('My command description')
+        ->setCode(function(InputInterface $input, OutputInterface $output) use ($app) {
+            $output->writeln('All done.');
+        });
+
+        return $console;
     }
 
     /**
@@ -233,21 +260,33 @@ class Application
      */
     public function runConsole()
     {
-        set_time_limit(0);
+        $this->getConsoleApp()->run();
+    }
 
-        $app = $this->getApp(false);
+    public function addMiddleware(App $app)
+    {
+        $c = $app->getContainer();
 
-        $console = new ConsoleApplication();
-        $console->register('my-command')
-            ->setDefinition(array(
-                // new InputOption('some-option', null, InputOption::VALUE_NONE, 'Some help'),
-            ))
-            ->setDescription('My command description')
-            ->setCode(function(InputInterface $input, OutputInterface $output) use ($app) {
-                // do something
-            });
+        // Add middleware, last added are executed first.
 
-        $console->run();
+        $security = include self::ROOT_DIR . '/config/security.php';
+        $app->add(new SecureRouteMiddleware($security));
+
+        $app->add(new AuthRoleMiddleware($c->get(AppAuthService::class), ['route_pattern' => ['/api/app']]));
+        $app->add(new AuthRoleMiddleware($c->get(UserAuthService::class), ['route_pattern' => ['/api/user']]));
+
+        $app->add(new NonBlockingSessionMiddleware([
+            'name' => 'BCSESS',
+            'secure' => $this->env === self::ENV_PROD,
+            'route_include_pattern' => ['/api/user'],
+            'route_blocking_pattern' => [
+                '/api/user/auth/login',
+                '/api/user/auth/callback',
+                '/api/user/auth/logout'
+            ],
+        ]));
+
+        $app->add(new Cors($c->get('config')['CORS']['allow_origin']));
     }
 
     private function buildContainer(): Container
@@ -280,7 +319,7 @@ class Application
     private function dependencies(Container $container)
     {
         // Doctrine
-        $container->set(EntityManagerInterface::class, function ($c) {
+        $container->set(EntityManagerInterface::class, function(ContainerInterface $c) {
             $conf = $c->get('config')['doctrine'];
             $config = Setup::createAnnotationMetadataConfiguration(
                 $conf['meta']['entity_path'],
@@ -301,7 +340,7 @@ class Application
         ]));
 
         // Monolog
-        $container->set(LoggerInterface::class, function (ContainerInterface $c) {
+        $container->set(LoggerInterface::class, function(ContainerInterface $c) {
             $conf = $c->get('config')['monolog'];
             $logger = new Logger($conf['name']);
             $logger->pushHandler(new StreamHandler($conf['path'], $conf['level']));
@@ -337,24 +376,27 @@ class Application
      */
     private function errorHandling(Container $container)
     {
-        // Extend Slim's error and php error handler for prod env.
-        // Slim's error handling is not added to the container in
-        // self::buildContainer() for dev env, instead Whoops is used (see below)
-        if ($this->env !== self::ENV_DEV) {
+        // php settings
+        ini_set('display_errors', 0);
+        ini_set('log_errors', 0); // all errors are logged with Monolog
+        error_reporting(E_ALL);
+
+        if ($this->env === self::ENV_PROD) {
+            // Extend Slim's error and php error handler.
             $container->set('errorHandler', function ($c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             });
             $container->set('phpErrorHandler', function ($c) {
                 return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             });
-        }
 
-        // php settings
-        ini_set('display_errors', 0);
-        ini_set('log_errors', 0); // all errors are logged with Monolog
-        error_reporting(E_ALL);
+            // logs errors that are not converted to exceptions by Slim
+            ErrorHandler::register($container->get(LoggerInterface::class));
 
-        if ($this->env === self::ENV_DEV) {
+        } else { // self::ENV_DEV
+
+            // Slim's error handling is not added to the container in
+            // self::buildContainer() for dev env, instead we use Whoops
             $whoops = new Run();
             if (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
                 $whoops->pushHandler((new JsonResponseHandler())->addTraceToOutput(true));
@@ -362,37 +404,7 @@ class Application
                 $whoops->pushHandler(new PrettyPageHandler());
             }
             $whoops->register();
-
-        } else {
-            // prod env: logs errors that are not converted to exceptions by Slim
-            ErrorHandler::register($container->get(LoggerInterface::class));
         }
-    }
-
-    private function middleware(App $app)
-    {
-        $c = $app->getContainer();
-
-        // Add middleware, last added are executed first.
-
-        $security = include self::ROOT_DIR . '/config/security.php';
-        $app->add(new SecureRouteMiddleware($security));
-
-        $app->add(new AuthRoleMiddleware($c->get(AppAuthService::class), ['route_pattern' => ['/api/app']]));
-        $app->add(new AuthRoleMiddleware($c->get(UserAuthService::class), ['route_pattern' => ['/api/user']]));
-
-        $app->add(new NonBlockingSessionMiddleware([
-            'name' => 'BCSESS',
-            'secure' => $this->env === self::ENV_PROD,
-            'route_include_pattern' => ['/api/user'],
-            'route_blocking_pattern' => [
-                '/api/user/auth/login',
-                '/api/user/auth/callback',
-                '/api/user/auth/logout'
-            ],
-        ]));
-
-        $app->add(new Cors($c->get('config')['CORS']['allow_origin']));
     }
 
     private function routes(App $app)

@@ -1,10 +1,10 @@
 <?php
-namespace Tests\Functional\CoreApiUser;
+namespace Tests\Functional\Core\ApiUser;
 
-use Tests\Functional\BaseTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
-class InfoTest extends BaseTestCase
+class InfoTest extends WebTestCase
 {
 
     public function setUp()

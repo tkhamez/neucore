@@ -1,10 +1,10 @@
 <?php
-namespace Tests\Functional\CoreApiApp;
+namespace Tests\Functional\Core\ApiApp;
 
-use Tests\Functional\BaseTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
-class InfoTest extends BaseTestCase
+class InfoTest extends WebTestCase
 {
 
     public function testGetInfo401()

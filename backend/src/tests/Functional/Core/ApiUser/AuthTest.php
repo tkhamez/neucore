@@ -1,14 +1,17 @@
 <?php
-namespace Tests\Functional\CoreApiUser;
+namespace Tests\Functional\Core\ApiUser;
 
-use Tests\Functional\BaseTestCase;
 use Brave\Slim\Session\SessionData;
-use Tests\Helper;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use Monolog\Logger;
+use Monolog\Handler\TestHandler;
+use Psr\Log\LoggerInterface;
+use Tests\Functional\WebTestCase;
+use Tests\Helper;
 
-class AuthTest extends BaseTestCase
+class AuthTest extends WebTestCase
 {
 
     public function setUp()
@@ -55,8 +58,12 @@ class AuthTest extends BaseTestCase
         $sso = $this->createMock(GenericProvider::class);
         $sso->method('getAccessToken')->will($this->throwException(new \Exception));
 
+        $log = new Logger('ignore');
+        $log->pushHandler(new TestHandler());
+
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
+            LoggerInterface::class => $log
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -73,8 +80,12 @@ class AuthTest extends BaseTestCase
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
         $sso->method('getResourceOwner')->will($this->throwException(new \Exception));
 
+        $log = new Logger('ignore');
+        $log->pushHandler(new TestHandler());
+
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
+            LoggerInterface::class => $log
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -117,8 +128,12 @@ class AuthTest extends BaseTestCase
         $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
         $sso->method('getResourceOwner')->willReturn($ro);
 
+        $log = new Logger('ignore');
+        $log->pushHandler(new TestHandler());
+
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
+            LoggerInterface::class => $log
         ]);
         $this->assertSame(302, $response->getStatusCode());
 

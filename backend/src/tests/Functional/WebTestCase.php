@@ -9,7 +9,7 @@ use Slim\Http\Environment;
 /**
  * Runs the application.
  */
-class BaseTestCase extends \PHPUnit\Framework\TestCase
+class WebTestCase extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -49,14 +49,18 @@ class BaseTestCase extends \PHPUnit\Framework\TestCase
         // Set up a response object
         $response = new Response();
 
-        // create app with test settings
+        // create app with test settings and without middleware
         $app = new Application();
         $app->loadSettings(true);
-        $slimApp = $app->getApp();
+        $slimApp = $app->getApp(false);
 
+        // change dependencies in container
         foreach ($mocks as $class => $obj) {
             $slimApp->getContainer()->set($class, $obj);
         }
+
+        // add middleware (gets objects from container)
+        $app->addMiddleware($slimApp);
 
         // Process the application
         $response = $slimApp->process($request, $response);
