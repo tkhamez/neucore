@@ -20,8 +20,8 @@ class InfoController
      *         @SWG\Schema(ref="#/definitions/App")
      *     ),
      *     @SWG\Response(
-     *         response="401",
-     *         description="If not authenticated"
+     *         response="403",
+     *         description="If not authorized"
      *     )
      * )
      */

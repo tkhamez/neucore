@@ -3,7 +3,10 @@ namespace Brave\Core\Entity;
 
 /**
  *
- * @SWG\Definition(definition="Player")
+ * @SWG\Definition(
+ *     definition="Player",
+ *     required={"name", "roles", "groups", "characters", "managerGroups", "managerApps"}
+ * )
  * @Entity(repositoryClass="Brave\Core\Entity\PlayerRepository")
  * @Table(name="players")
  */

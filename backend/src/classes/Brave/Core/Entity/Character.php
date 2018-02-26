@@ -6,7 +6,10 @@ namespace Brave\Core\Entity;
  *
  * This is the user that logs in via EVE SSO.
  *
- * @SWG\Definition(definition="Character")
+ * @SWG\Definition(
+ *     definition="Character",
+ *     required={"id", "name", "main"}
+ * )
  * @Entity(repositoryClass="Brave\Core\Entity\CharacterRepository")
  * @Table(name="characters")
  */

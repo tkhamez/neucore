@@ -39,6 +39,8 @@ class AuthController
      *         response="200",
      *         description="The EVE SSO login URL",
      *         @SWG\Schema(
+     *             title="SSOLogin",
+     *             required={"oauth_url"},
      *             @SWG\Property(
      *                 property="oauth_url",
      *                 type="string"
@@ -136,8 +138,10 @@ class AuthController
      *     tags={"User"},
      *     @SWG\Response(
      *         response="200",
-     *         description="Result of last SSO attempt or null",
+     *         description="Result of last SSO attempt",
      *         @SWG\Schema(
+     *             title="SSOLoginResult",
+     *             required={"success", "message"},
      *             @SWG\Property(
      *                 property="success",
      *                 type="boolean"
@@ -154,7 +158,12 @@ class AuthController
     {
         $result = $this->session->get('auth_result');
 
-        return $response->withJson($result);
+        $default = [
+            'success' => false,
+            'message' => 'No login attempt recorded.',
+        ];
+
+        return $response->withJson($result ?: $default);
     }
 
     /**
@@ -168,8 +177,8 @@ class AuthController
      *         description="Nothing is returned"
      *     ),
      *     @SWG\Response(
-     *         response="401",
-     *         description="If not authenticated"
+     *         response="403",
+     *         description="If not authorized"
      *     )
      * )
      */

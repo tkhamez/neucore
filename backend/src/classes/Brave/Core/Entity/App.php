@@ -2,7 +2,10 @@
 namespace Brave\Core\Entity;
 
 /**
- * @SWG\Definition(definition="App")
+ * @SWG\Definition(
+ *     definition="App",
+ *     required={"id", "name"}
+ * )
  * @Entity(repositoryClass="Brave\Core\Entity\AppRepository")
  * @Table(name="apps")
  */

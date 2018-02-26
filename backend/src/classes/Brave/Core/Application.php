@@ -34,7 +34,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
-use Whoops\Handler\Handler;
 use Whoops\Handler\JsonResponseHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -228,6 +227,7 @@ class Application
     {
         set_time_limit(0);
 
+        /* @var $app App */
         $app = $this->getApp(true, false); // with middleware, without routes
 
         $console = new ConsoleApplication();
@@ -278,6 +278,7 @@ class Application
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',
             'secure' => $this->env === self::ENV_PROD,
+            'lifetime' => 0,
             'route_include_pattern' => ['/api/user'],
             'route_blocking_pattern' => [
                 '/api/user/auth/login',

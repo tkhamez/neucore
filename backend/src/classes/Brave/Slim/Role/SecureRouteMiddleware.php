@@ -5,7 +5,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Denies access to a route if the required role is missing.
+ * Denies access to a route if the required role is missing (403).
  *
  * It loads the roles from the request attribute named "roles"
  * (an array with string values, e. g. ['role.one', 'role.two']).
@@ -67,7 +67,7 @@ class SecureRouteMiddleware
         }
 
         if ($allowed === false) {
-            return $response->withStatus(401);
+            return $response->withStatus(403);
         }
 
         return $next($request, $response);

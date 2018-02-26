@@ -12,10 +12,10 @@ class InfoTest extends WebTestCase
         $_SESSION = null;
     }
 
-    public function testGetInfo401()
+    public function testGetInfo403()
     {
         $response = $this->runApp('GET', '/api/user/info');
-        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function testGetInfo200()

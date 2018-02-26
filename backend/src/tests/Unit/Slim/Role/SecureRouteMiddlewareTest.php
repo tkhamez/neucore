@@ -23,7 +23,7 @@ class SecureRouteMiddlewareTest extends \PHPUnit\Framework\TestCase
         $conf = ['/secured' => ['role1']];
         $response = $this->invokeMiddleware($conf, '/secured', null, true);
 
-        $this->assertSame(401, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testDenyProtected()
@@ -31,7 +31,7 @@ class SecureRouteMiddlewareTest extends \PHPUnit\Framework\TestCase
         $conf = ['/secured' => ['role1', 'role2']];
         $response = $this->invokeMiddleware($conf, '/secured', ['role3', 'role4'], true);
 
-        $this->assertSame(401, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testAllowProtected()
@@ -57,7 +57,7 @@ class SecureRouteMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $conf = ['/p1/p2' => ['role2'], '/p1' => ['role1']];
         $response = $this->invokeMiddleware($conf, '/p1/p2', ['role1'], true);
-        $this->assertSame(401, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     private function invokeMiddleware($conf, $path, $roles, $addRoute)

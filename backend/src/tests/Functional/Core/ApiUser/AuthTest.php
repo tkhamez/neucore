@@ -173,13 +173,16 @@ class AuthTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/auth/result');
         $this->assertSame(200, $response->getStatusCode());
 
-        $this->assertNull($this->parseJsonBody($response));
+        $this->assertSame(
+            ['success' => false, 'message' => 'No login attempt recorded.'],
+            $this->parseJsonBody($response)
+        );
     }
 
-    public function testGetLogout401()
+    public function testGetLogout403()
     {
         $response = $this->runApp('GET', '/api/user/auth/logout');
-        $this->assertSame(401, $response->getStatusCode());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testGetLogout200()
