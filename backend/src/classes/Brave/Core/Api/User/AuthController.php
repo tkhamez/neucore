@@ -51,7 +51,7 @@ class AuthController
      */
     public function login(Request $request, Response $response)
     {
-        $scopes = [];
+        $scopes = ['publicData'];
         $options = [
             'scope' => implode(' ', $scopes)
         ];
@@ -109,11 +109,14 @@ class AuthController
             return $response->withRedirect($redirectUrl);
         }
 
-        // If any scopes were requested, this must also be stored in the database:
-        // $token->getToken(), $token->getExpires(), $token->getRefreshToken()
-        // and we would need a method (in UserAuthService?) to update the user with the new token.
-
-        $success = $auth->authenticate($verify['CharacterID'], $verify['CharacterName']);
+        $success = $auth->authenticate(
+            $verify['CharacterID'],
+            $verify['CharacterName'],
+            $verify['CharacterOwnerHash'],
+            $token->getToken(),
+            $token->getExpires(),
+            $token->getRefreshToken()
+        );
 
         if ($success) {
             $this->session->set('auth_result', [

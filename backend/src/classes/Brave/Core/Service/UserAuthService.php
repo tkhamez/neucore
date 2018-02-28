@@ -85,9 +85,14 @@ class UserAuthService implements RoleProviderInterface
      *
      * @param int $characterId
      * @param string $characterName
+     * @param string $characterOwnerHash
+     * @param string $accessToken
+     * @param int $expires
+     * @param string $refreshToken
      * @return boolean
      */
-    public function authenticate(int $characterId, string $characterName)
+    public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
+        string $accessToken, int $expires, string $refreshToken)
     {
         /* @var $user Character */
         $user = $this->characterRepository->find($characterId);
@@ -108,17 +113,21 @@ class UserAuthService implements RoleProviderInterface
 
             $user = new Character();
             $user->setId($characterId);
-            $user->setName($characterName);
             $user->setMain(true);
             $user->setPlayer($player);
 
         } else {
             $player = $user->getPlayer();
-            $user->setName($characterName);
             if ($user->getMain()) {
                 $player->setName($characterName);
             }
         }
+
+        $user->setName($characterName);
+        $user->setCharacterOwnerHash($characterOwnerHash); # TODO react to change
+        $user->setAccessToken($accessToken);
+        $user->setExpires($expires);
+        $user->setRefreshToken($refreshToken);
 
         try {
             $this->em->persist($player);

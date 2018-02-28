@@ -29,7 +29,8 @@ The values for the EVE application must be adjusted.
 
 - visit https://developers.eveonline.com/applications
 - create a new application (eg: brvneucore-dev)
-- TODO document list of required permissions here for authentication & api access
+- Connection Type: "Authentication & API Access", add these Scopes:
+  - publicData
 - set the callback to https://localhost/api/user/auth/callback
 
 ### Local dev Requirements

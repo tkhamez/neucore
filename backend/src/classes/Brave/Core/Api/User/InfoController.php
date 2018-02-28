@@ -1,8 +1,9 @@
 <?php
 namespace Brave\Core\Api\User;
 
-use Slim\Http\Response;
+use Brave\Core\Service\EveService;
 use Brave\Core\Service\UserAuthService;
+use Slim\Http\Response;
 
 class InfoController
 {
@@ -24,9 +25,29 @@ class InfoController
      *     )
      * )
      */
-    public function __invoke(Response $response, UserAuthService $uas)
+    public function __invoke(Response $response, UserAuthService $uas, EveService $es)
     {
-        $player = $uas->getUser() ? $uas->getUser()->getPlayer() : null;
+        $char = $uas->getUser();
+
+        if (! $char) {
+            // should never happen because middleware already returned a 403
+            return $response->withJson(null);
+        }
+
+
+        // TODO just an example, remove
+        $token = $es->getToken();
+        $apiInstance = new \Swagger\Client\Api\CharacterApi(null,
+            \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($token));
+        try {
+            $result = $apiInstance->getCharactersCharacterId($char->getId());
+            #print_r($result);
+        } catch (\Exception $e) {
+            #echo 'Exception when calling CharacterApi->getCharactersCharacterIdStats: ', $e->getMessage(), PHP_EOL;
+        }
+
+
+        $player = $char ? $char->getPlayer() : null;
 
         return $response->withJson($player);
     }

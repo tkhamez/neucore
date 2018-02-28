@@ -28,6 +28,13 @@ class Character implements \JsonSerializable
     private $id;
 
     /**
+     *
+     * @Column(type="text", length=65535, name="character_owner_hash")
+     * @var string
+     */
+    private $characterOwnerHash;
+
+    /**
      * EVE character name
      *
      * @SWG\Property()
@@ -43,6 +50,26 @@ class Character implements \JsonSerializable
      * @var bool
      */
     private $main;
+
+    /**
+     * @Column(type="text", length=65535, name="access_token")
+     * @var string
+     */
+    private $accessToken;
+
+    /**
+     * Unix timestamp when access token expires.
+     *
+     * @Column(type="integer")
+     * @var int
+     */
+    private $expires;
+
+    /**
+     * @Column(type="text", length=65535, name="refresh_token")
+     * @var string
+     */
+    private $refreshToken;
 
     /**
      * @ManyToOne(targetEntity="Player", inversedBy="characters")
@@ -137,6 +164,102 @@ class Character implements \JsonSerializable
     public function getMain()
     {
         return $this->main;
+    }
+
+    /**
+     * Set characterOwnerHash.
+     *
+     * @param string $characterOwnerHash
+     *
+     * @return Character
+     */
+    public function setCharacterOwnerHash($characterOwnerHash)
+    {
+        $this->characterOwnerHash = $characterOwnerHash;
+
+        return $this;
+    }
+
+    /**
+     * Get characterOwnerHash.
+     *
+     * @return string
+     */
+    public function getCharacterOwnerHash()
+    {
+        return $this->characterOwnerHash;
+    }
+
+    /**
+     * Set accessToken.
+     *
+     * @param string $accessToken
+     *
+     * @return Character
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
+     * Get accessToken.
+     *
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * Set expires.
+     *
+     * @param int $expires
+     *
+     * @return Character
+     */
+    public function setExpires($expires)
+    {
+        $this->expires = $expires;
+
+        return $this;
+    }
+
+    /**
+     * Get expires.
+     *
+     * @return int
+     */
+    public function getExpires()
+    {
+        return $this->expires;
+    }
+
+    /**
+     * Set refreshToken.
+     *
+     * @param string $refreshToken
+     *
+     * @return Character
+     */
+    public function setRefreshToken($refreshToken)
+    {
+        $this->refreshToken = $refreshToken;
+
+        return $this;
+    }
+
+    /**
+     * Get refreshToken.
+     *
+     * @return string
+     */
+    public function getRefreshToken()
+    {
+        return $this->refreshToken;
     }
 
     /**
