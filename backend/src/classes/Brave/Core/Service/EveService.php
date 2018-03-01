@@ -4,6 +4,7 @@ namespace Brave\Core\Service;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Configuration;
 
 /**
  * ESI related functionality.
@@ -24,11 +25,7 @@ class EveService
         $this->log = $log;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getToken()
+    public function getToken(): string
     {
         $token = "";
 
@@ -44,17 +41,36 @@ class EveService
                 'refresh_token' => $char->getRefreshToken(),
                 'expires' => $char->getExpires()
             ]);
-            $newAccessToken = null;
-            if ($existingToken->hasExpired()) {
-                $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
-                    'refresh_token' => $existingToken->getRefreshToken()
-                ]);
-            }
-            $token = $newAccessToken ? $newAccessToken->getToken() : $existingToken->getToken();
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
+            return $token;
         }
 
-        return $token;
+        $newAccessToken = null;
+        if ($existingToken->getExpires()) {
+            if ($existingToken->hasExpired()) {
+                try {
+                    $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
+                        'refresh_token' => $existingToken->getRefreshToken()
+                    ]);
+                } catch (\Exception $e) {
+                    $this->log->error($e->getMessage(), ['exception' => $e]);
+                }
+            }
+        }
+
+        if ($newAccessToken) {
+            $this->uas->updateAccessToken($newAccessToken->getToken(), $newAccessToken->getExpires());
+        }
+
+        return $newAccessToken ? $newAccessToken->getToken() : $existingToken->getToken();
+    }
+
+    public function getConfiguration(): Configuration
+    {
+        $conf = Configuration::getDefaultConfiguration();
+        $conf->setAccessToken($this->getToken());
+
+        return $conf;
     }
 }

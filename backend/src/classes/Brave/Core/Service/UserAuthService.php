@@ -92,7 +92,7 @@ class UserAuthService implements RoleProviderInterface
      * @return boolean
      */
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
-        string $accessToken, int $expires, string $refreshToken)
+        string $accessToken, int $expires = null, string $refreshToken = null)
     {
         /* @var $user Character */
         $user = $this->characterRepository->find($characterId);
@@ -138,9 +138,30 @@ class UserAuthService implements RoleProviderInterface
             return false;
         }
 
-        $this->session->set('character_id', $user->getId());
+        $this->user = $user;
+        $this->session->set('character_id', $this->user->getId());
 
         return true;
+    }
+
+    public function updateAccessToken($accessToken, $expires)
+    {
+        $this->loadUser();
+
+        if ($this->user === null) {
+            $this->log->error('UserAuthService::updateAccessToken(): User not found.');
+            return;
+        }
+
+        $this->user->setAccessToken($accessToken);
+        $this->user->setExpires($expires);
+
+        try {
+            $this->em->persist($this->user);
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        }
     }
 
     private function loadUser()

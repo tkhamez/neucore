@@ -125,7 +125,7 @@ class AuthTest extends WebTestCase
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
 
         $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
+        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na', 'CharacterOwnerHash' => 'a']);
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $log = new Logger('ignore');
@@ -156,7 +156,7 @@ class AuthTest extends WebTestCase
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
 
         $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na']);
+        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na', 'CharacterOwnerHash' => 'a']);
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [

@@ -101,7 +101,11 @@ class AuthController
         }
 
         $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;
-        if (! is_array($verify) || ! isset($verify['CharacterID'])) {
+        if (! is_array($verify) ||
+            ! isset($verify['CharacterID']) ||
+            ! isset($verify['CharacterName']) ||
+            ! isset($verify['CharacterOwnerHash'])
+        ) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request verify error',

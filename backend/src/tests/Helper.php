@@ -129,7 +129,7 @@ class Helper
      * @param string $name
      * @param int $charId
      * @param array $roles
-     * @return number
+     * @return Character
      */
     public function addCharacterMain(string $name, int $charId, array $roles, array $groups = [])
     {
@@ -143,6 +143,10 @@ class Helper
         $char->setId($charId);
         $char->setName($name);
         $char->setMain(true);
+        $char->setCharacterOwnerHash('123');
+        $char->setAccessToken('abc');
+        $char->setExpires(123456);
+        $char->setRefreshToken('def');
         $char->setPlayer($player);
         $em->persist($char);
 
@@ -155,6 +159,8 @@ class Helper
         }
 
         $em->flush();
+
+        return $char;
     }
 
     /**
@@ -163,7 +169,7 @@ class Helper
      * @param string $secret
      * @param array $roles
      * @param mixed $hash PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())
-     * @return number
+     * @return App
      */
     public function addApp(string $name, string $secret, array $roles, $hashAlgo = PASSWORD_DEFAULT)
     {
@@ -182,6 +188,6 @@ class Helper
 
         $em->flush();
 
-        return $app->getId();
+        return $app;
     }
 }

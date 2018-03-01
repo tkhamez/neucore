@@ -45,7 +45,7 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $appId = $h->addApp('Test App', 'my-test-secret', ['app']);
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
@@ -95,7 +95,7 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $appId = $h->addApp('Test App', 'my-test-secret', ['app']);
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
@@ -111,7 +111,7 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $appId = $h->addApp('Test App', 'my-test-secret', ['app'], 'md5');
+        $appId = $h->addApp('Test App', 'my-test-secret', ['app'], 'md5')->getId();
 
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);

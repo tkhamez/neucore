@@ -195,9 +195,9 @@ class Application
         $this->loadSettings();
 
         if ($this->env === self::ENV_DEV) {
-            umask(0000);
+            umask(0000); // 666/777
         } else {
-            umask(0002);
+            umask(0002); // 664/775
         }
 
         $container = $this->buildContainer();

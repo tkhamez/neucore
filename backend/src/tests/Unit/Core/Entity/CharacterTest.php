@@ -49,4 +49,32 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $char->setPlayer($player);
         $this->assertSame($player, $char->getPlayer());
     }
+
+    public function testSetGetCharacterOwnerHash()
+    {
+        $char = new Character();
+        $char->setCharacterOwnerHash('abc');
+        $this->assertSame('abc', $char->getCharacterOwnerHash());
+    }
+
+    public function testSetGetAccessToken()
+    {
+        $char = new Character();
+        $char->setAccessToken('123');
+        $this->assertSame('123', $char->getAccessToken());
+    }
+
+    public function testSetGetExpires()
+    {
+        $char = new Character();
+        $char->setExpires(456);
+        $this->assertSame(456, $char->getExpires());
+    }
+
+    public function testSetGetRefreshToken()
+    {
+        $char = new Character();
+        $char->setRefreshToken('dfg');
+        $this->assertSame('dfg', $char->getRefreshToken());
+    }
 }

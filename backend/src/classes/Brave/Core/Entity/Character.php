@@ -46,7 +46,7 @@ class Character implements \JsonSerializable
     /**
      *
      * @SWG\Property()
-     * @Column(type="boolean", nullable=false)
+     * @Column(type="boolean")
      * @var bool
      */
     private $main;
@@ -60,13 +60,13 @@ class Character implements \JsonSerializable
     /**
      * Unix timestamp when access token expires.
      *
-     * @Column(type="integer")
+     * @Column(type="integer", nullable=true)
      * @var int
      */
     private $expires;
 
     /**
-     * @Column(type="text", length=65535, name="refresh_token")
+     * @Column(type="text", length=65535, name="refresh_token", nullable=true)
      * @var string
      */
     private $refreshToken;

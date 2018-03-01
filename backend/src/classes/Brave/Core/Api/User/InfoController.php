@@ -35,20 +35,16 @@ class InfoController
         }
 
 
-        // TODO just an example, remove
-        $token = $es->getToken();
-        $apiInstance = new \Swagger\Client\Api\CharacterApi(null,
-            \Swagger\Client\Configuration::getDefaultConfiguration()->setAccessToken($token));
-        try {
-            $result = $apiInstance->getCharactersCharacterId($char->getId());
-            #print_r($result);
-        } catch (\Exception $e) {
-            #echo 'Exception when calling CharacterApi->getCharactersCharacterIdStats: ', $e->getMessage(), PHP_EOL;
-        }
+        // example
+//         $apiInstance = new \Swagger\Client\Api\CharacterApi(null, $es->getConfiguration());
+//         try {
+//             $result = $apiInstance->getCharactersCharacterId($char->getId());
+//             print_r($result);
+//         } catch (\Exception $e) {
+//             echo 'Exception when calling CharacterApi->getCharactersCharacterId: ', $e->getMessage(), PHP_EOL;
+//         }
 
 
-        $player = $char ? $char->getPlayer() : null;
-
-        return $response->withJson($player);
+        return $response->withJson($char->getPlayer());
     }
 }
