@@ -26,7 +26,6 @@ class NonBlockingSessionMiddleware
      * Available options (all optional):
      * name <string>: the session name
      * secure <bool>: session.cookie_secure option runtime configuration
-     * lifetime: lifetime in seconds
      * route_blocking_pattern <array>: patterns of routes that allow writing to the session, exact match
      * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with"
      *
@@ -34,7 +33,6 @@ class NonBlockingSessionMiddleware
      * [
      *      'cc' => 'MY_SESS',
      *      'secure' => true,
-            'lifetime' => 1440,
      *      'route_include_pattern' => ['/path/one'],
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
@@ -92,30 +90,23 @@ class NonBlockingSessionMiddleware
     {
         if (PHP_SAPI !== 'cli') {
 
-            // since PHP 7.2:
-            // - Warning: session_name(): Cannot change session name when session is active,
-            // - Message: session_set_cookie_params(): Cannot change session cookie parameters when headers already sent
-            // so no unit tests for this
+            // since PHP 7.2 this emits warnings during unit tests, so no unit tests for this.
 
             if (isset($this->options['name'])) {
                 session_name($this->options['name']);
             }
 
-            session_set_cookie_params(
-                isset($this->options['lifetime']) ? (int) $this->options['lifetime'] : 1440, // lifetime
-                '/', // path
-                '', // domain
-                isset($this->options['secure']) ? (bool) $this->options['secure'] : true, // secure
-                true // httponly
-            );
-        }
-
-        if (PHP_SAPI === 'cli') {
-            // allow unit tests to inject values in the session
-            $_SESSION = isset($_SESSION) ? $_SESSION : array();
+            session_start([
+                'cookie_lifetime' => 0,
+                'cookie_path' => '/',
+                'cookie_domain' => '',
+                'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true,
+                'cookie_httponly' => true,
+            ]);
 
         } else {
-            session_start();
+            // allow unit tests to inject values in the session
+            $_SESSION = isset($_SESSION) ? $_SESSION : array();
         }
     }
 

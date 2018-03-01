@@ -42,6 +42,10 @@ return [
             'client_id' => getenv('BRAVECORE_EVE_CLIENT_ID'),
             'secret_key' => getenv('BRAVECORE_EVE_SECRET_KEY'),
             'callback_url' => getenv('BRAVECORE_EVE_CALLBACK_URL'),
+        ],
+
+        'session' => [
+            'gc_maxlifetime' => 72000 // 20 hours,
         ]
     ],
 ];

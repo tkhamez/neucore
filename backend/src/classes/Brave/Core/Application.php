@@ -278,7 +278,6 @@ class Application
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',
             'secure' => $this->env === self::ENV_PROD,
-            'lifetime' => 0,
             'route_include_pattern' => ['/api/user'],
             'route_blocking_pattern' => [
                 '/api/user/auth/login',
@@ -364,6 +363,8 @@ class Application
             // session_set_save_handler(): Cannot change save handler when headers already sent
             return;
         }
+
+        ini_set('session.gc_maxlifetime', $container->get('config')['session']['gc_maxlifetime']);
 
         $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
