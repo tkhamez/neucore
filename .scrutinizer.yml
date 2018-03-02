@@ -1,5 +1,5 @@
 build:
-    project_setup:
+    dependencies:
         before:
             - "cd backend"
     nodes:
