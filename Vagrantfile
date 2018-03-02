@@ -1,7 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-
 # Only tested with Vagrant + libvirtd
 
 Vagrant.configure("2") do |config|
@@ -24,16 +23,11 @@ Vagrant.configure("2") do |config|
 
 		# setup php + composer
 		apt install -y php php-fpm php-mysql php-zip php-mbstring php-intl php-dom php-apcu php-curl php-xdebug
+        apt install -y composer
 
-		php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');"
-
-		php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
-
-		# setup node
-		apt install -y nodejs npm
-
-		# install apache
-		apt install apache2 -y
+		# setup node (version in Ubuntu does not yet support package-lock.json)
+        curl -sL https://deb.nodesource.com/setup_8.x | bash -
+        apt-get install -y nodejs
 
 		# setup mysql
 		apt install mariadb-server -y
@@ -45,6 +39,9 @@ Vagrant.configure("2") do |config|
 		# TODO should pass password in via env
 		mysql -e "GRANT ALL PRIVILEGES ON core.* TO core@localhost IDENTIFIED BY 'braveineve'"
         mysql -e "GRANT ALL PRIVILEGES ON core_test.* TO core@localhost IDENTIFIED BY 'braveineve'"
+
+        # install apache
+        apt install apache2 -y
 
 		cp /var/www/bravecore/config/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
 

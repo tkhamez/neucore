@@ -15,7 +15,6 @@ then
 
 else
     cd backend
-    chmod 0777 var/cache
     chmod 0777 var/logs
     composer install
     composer compile:dev
@@ -27,3 +26,4 @@ else
     npm install
     npm run build
 fi
+

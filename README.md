@@ -2,6 +2,7 @@
 
 [![Build Status](https://api.travis-ci.org/tkhamez/brvneucore.svg?branch=master)](https://travis-ci.org/tkhamez/brvneucore)
 [![codecov](https://codecov.io/gh/tkhamez/brvneucore/branch/master/graph/badge.svg)](https://codecov.io/gh/tkhamez/brvneucore)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/tkhamez/brvneucore/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/tkhamez/brvneucore/?branch=master)
 
 https://brvneucore.herokuapp.com
 
@@ -55,7 +56,7 @@ Install dependencies and build backend and frontend:
 
 Set the required environment variables, see in file `backend/.env.dist`
 
-Make sure that the webserver can write in `backend/var/logs` and `backend/var/cache`.
+Make sure that the webserver can write in `backend/var/logs`.
 
 Execute:
 ```
@@ -69,3 +70,5 @@ To deploy to Heroku, add buildpacks in this order:
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
 ```
+
+Logs are streamed to `stderr`, not written to files.

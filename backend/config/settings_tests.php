@@ -1,4 +1,8 @@
 <?php
+/**
+ *  Test settings, loaded additionally to settings_dev.php
+ */
+
 return [
     'config' => [
         'monolog' => [

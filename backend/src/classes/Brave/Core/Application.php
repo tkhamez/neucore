@@ -1,6 +1,7 @@
 <?php
 namespace Brave\Core;
 
+use Brave\Core\Command\Sample;
 use Brave\Core\Service\AppAuthService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
@@ -29,8 +30,6 @@ use Psr\Log\LoggerInterface;
 use Slim\App;
 
 use Symfony\Component\Console\Application as ConsoleApplication;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
@@ -106,18 +105,11 @@ class Application
     /**
      * The current environment.
      *
-     * self::PROD or self::DEV
+     * self::ENV_PROD or self::ENV_DEV
      *
      * @var string
      */
     private $env;
-
-    /**
-     * Indicates if the app is running from a functional (integration) test.
-     *
-     * @var bool
-     */
-    private $unitTest;
 
     /**
      * Loads settings based on environment.
@@ -137,8 +129,6 @@ class Application
         if ($this->settings !== null) {
             return $this->settings;
         }
-
-        $this->unitTest = $unitTest;
 
         // Load env vars from file, the check is to ensure we don't use .env in production
         if (! isset($_SERVER['BRAVECORE_APP_ENV']) && class_exists(Dotenv::class)) {
@@ -175,7 +165,7 @@ class Application
             $this->settings = array_replace_recursive($this->settings, $dev);
         }
 
-        if ($this->unitTest) {
+        if ($unitTest) {
             $test = include Application::ROOT_DIR . '/config/settings_tests.php';
             $this->settings = array_replace_recursive($this->settings, $test);
         }
@@ -193,12 +183,6 @@ class Application
     public function getApp($withMiddleware = true, $withRoutes = true): App
     {
         $this->loadSettings();
-
-        if ($this->env === self::ENV_DEV) {
-            umask(0000); // 666/777
-        } else {
-            umask(0002); // 664/775
-        }
 
         $container = $this->buildContainer();
         $app = new App($container);
@@ -227,42 +211,20 @@ class Application
     {
         set_time_limit(0);
 
-        /* @var $app App */
         $app = $this->getApp(true, false); // with middleware, without routes
+        $c = $app->getContainer();
 
         $console = new ConsoleApplication();
-        $console->register('my-command')
-        ->setDefinition(array(
-            // new InputOption('some-option', null, InputOption::VALUE_NONE, 'Some help'),
-        ))
-        ->setDescription('My command description')
-        ->setCode(function(InputInterface $input, OutputInterface $output) use ($app) {
-            $output->writeln('All done.');
-        });
+        $console->add(new Sample($c->get(LoggerInterface::class)));
 
         return $console;
     }
 
     /**
-     * Run the web application.
      *
+     * @param App $app
      * @return void
      */
-    public function run()
-    {
-        $this->getApp()->run();
-    }
-
-    /**
-     * Run the console application.
-     *
-     * @return void
-     */
-    public function runConsole()
-    {
-        $this->getConsoleApp()->run();
-    }
-
     public function addMiddleware(App $app)
     {
         $c = $app->getContainer();
@@ -315,6 +277,8 @@ class Application
 
     /**
      * Add dependencies to DI container, setup session handler.
+     *
+     * @return void
      */
     private function dependencies(Container $container)
     {
@@ -354,6 +318,7 @@ class Application
      * (not for CLI)
      *
      * @param Container $container
+     * @return void
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
     private function sessionHandler(Container $container)
@@ -375,6 +340,7 @@ class Application
      * Setup error handling.
      *
      * @param Container $container
+     * @return void
      */
     private function errorHandling(Container $container)
     {
@@ -409,6 +375,11 @@ class Application
         }
     }
 
+    /**
+     *
+     * @param App $app
+     * @return void
+     */
     private function routes(App $app)
     {
         $routes = include self::ROOT_DIR . '/config/routes.php';

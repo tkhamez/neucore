@@ -1,10 +1,10 @@
 <?php
-namespace Tests\Functional\Core;
+namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ApplicationTest extends \PHPUnit\Framework\TestCase
+class SampleTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testRunConsole()
@@ -12,13 +12,15 @@ class ApplicationTest extends \PHPUnit\Framework\TestCase
         $app = new Application();
         $console = $app->getConsoleApp();
 
-        $command = $console->find('my-command');
+        $command = $console->find('sample');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command' => $command->getName()
+            'command' => $command->getName(),
+            'arg' => 'a1',
+            '--opt' => 'o1',
         ]);
         $output = $commandTester->getDisplay();
 
-        $this->assertSame("All done.\n", $output);
+        $this->assertSame("Sample command with arg: a1, opt: o1 done.\n", $output);
     }
 }

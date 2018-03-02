@@ -1,5 +1,5 @@
 {
-    "name": "brvneucore",
+    "name": "brvneucore-api",
     "private": true,
     "dependencies": {
         "swagger-ui-dist": "^3.8.1",

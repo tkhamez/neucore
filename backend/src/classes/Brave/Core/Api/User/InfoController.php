@@ -29,12 +29,6 @@ class InfoController
     {
         $char = $uas->getUser();
 
-        if (! $char) {
-            // should never happen because middleware already returned a 403
-            return $response->withJson(null);
-        }
-
-
         // example
 //         $apiInstance = new \Swagger\Client\Api\CharacterApi(null, $es->getConfiguration());
 //         try {

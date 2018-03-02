@@ -4,4 +4,5 @@ use Brave\Core\Application;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-(new Application())->runConsole();
+// Run the console application.
+(new Application())->getConsoleApp()->run();

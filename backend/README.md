@@ -7,7 +7,13 @@ with the [PHP-DI container](http://php-di.org/).
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
 
-## Commands
+## Command-Line App
+
+```
+bin/console
+```
+
+## Other Commands
 
 ### Unit Tests
 
@@ -16,33 +22,39 @@ Run tests:
 vendor/bin/phpunit
 ```
 
+Or use composer, with or without coverage report:
+```
+composer test:cov
+composer test
+```
+
 ### Doctrine
 
-Generate constructor, getters and setters
+Generate constructor, getters and setters:
 ```
 vendor/bin/doctrine orm:generate-entities src/classes
 ```
 
-Generate repository classes
+Generate repository classes:
 ```
 vendor/bin/doctrine orm:generate-repositories src/classes
 ```
 
-Apply migrations
-```
-vendor/bin/doctrine-migrations migrations:migrate
-```
-
-Generate migration by comparing the current database to the mapping information
+Generate migration by comparing the current database to the mapping information:
 ```
 vendor/bin/doctrine-migrations migrations:diff
 ```
 
+Apply migrations:
+```
+vendor/bin/doctrine-migrations migrations:migrate
+```
+
 ### Swagger
 
-Generate swagger.json
+Generate swagger.json:
 ```
-vendor/bin/swagger --exclude bin,config,docs,var,vendor --output ../web
+vendor/bin/swagger --exclude bin,config,var,vendor --output ../web
 ```
 
 ## App Auth
@@ -56,3 +68,4 @@ Example:
 ```
 curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://brave.core.tld/api/app/info
 ```
+

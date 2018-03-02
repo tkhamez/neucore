@@ -47,15 +47,13 @@ class EveService
         }
 
         $newAccessToken = null;
-        if ($existingToken->getExpires()) {
-            if ($existingToken->hasExpired()) {
-                try {
-                    $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
-                        'refresh_token' => $existingToken->getRefreshToken()
-                    ]);
-                } catch (\Exception $e) {
-                    $this->log->error($e->getMessage(), ['exception' => $e]);
-                }
+        if ($existingToken->getExpires() && $existingToken->hasExpired()) {
+            try {
+                $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
+                    'refresh_token' => $existingToken->getRefreshToken()
+                ]);
+            } catch (\Exception $e) {
+                $this->log->error($e->getMessage(), ['exception' => $e]);
             }
         }
 

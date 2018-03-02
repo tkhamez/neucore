@@ -19,7 +19,7 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-  - php: '7.2'
+    - php: '7.2'
 
 before_install:
   - phpenv config-add config/travis.ini

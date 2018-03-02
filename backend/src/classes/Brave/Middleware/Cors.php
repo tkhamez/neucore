@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * CORS headers.
  *
  * Checks HTTP_ORIGIN request header and if it matches one of the allow
- * origins, adds Access-Control-Allow-* header to the response.
+ * origins, adds Access-Control-Allow-* headers to the response.
  */
 class Cors
 {

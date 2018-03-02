@@ -45,7 +45,7 @@ return [
         ],
 
         'session' => [
-            'gc_maxlifetime' => 72000 // 20 hours,
+            'gc_maxlifetime' => 7200 // 2 hours
         ]
     ],
 ];

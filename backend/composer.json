@@ -44,14 +44,13 @@
     "scripts": {
         "compile:dev": [
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,docs,var,vendor --output ../web"
+            "swagger --exclude bin,config,var,vendor --output ../web"
         ],
         "compile": [
             "doctrine orm:generate-proxies",
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,docs,var,vendor --output ../web"
+            "swagger --exclude bin,config,var,vendor --output ../web"
         ],
-        "clean": "rm -R var/cache/*",
         "test": "phpunit",
         "test:cov": "phpunit --coverage-html var/phpunit",
         "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"

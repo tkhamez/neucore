@@ -69,6 +69,11 @@ class AppAuthService implements RoleProviderInterface
         return $this->app;
     }
 
+    /**
+     *
+     * @param ServerRequestInterface $request
+     * @return void
+     */
     private function authenticate(ServerRequestInterface $request)
     {
         $token = null;

@@ -42,6 +42,13 @@ class NonBlockingSessionMiddleware
         $this->options = $options;
     }
 
+    /**
+     *
+     * @param ServerRequestInterface $req
+     * @param ResponseInterface $res
+     * @param callable $next
+     * @return ResponseInterface
+     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         // check if session should be started
@@ -62,7 +69,7 @@ class NonBlockingSessionMiddleware
         return $next($request, $response);
     }
 
-    private function shouldStartSession(Route $route = null)
+    private function shouldStartSession(Route $route = null): bool
     {
         $start = false;
 
@@ -86,6 +93,9 @@ class NonBlockingSessionMiddleware
         return $start;
     }
 
+    /**
+     * @return void
+     */
     private function start()
     {
         if (PHP_SAPI !== 'cli') {
@@ -110,7 +120,7 @@ class NonBlockingSessionMiddleware
         }
     }
 
-    private function isReadOnly(Route $route = null)
+    private function isReadOnly(Route $route = null): bool
     {
         $routePattern = $route !== null ? $route->getPattern() : null;
         if ($routePattern === null) {
@@ -132,6 +142,9 @@ class NonBlockingSessionMiddleware
         return $readOnly;
     }
 
+    /**
+     * @return void
+     */
     private function close()
     {
         session_write_close();

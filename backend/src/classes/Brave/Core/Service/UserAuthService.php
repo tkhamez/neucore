@@ -144,7 +144,13 @@ class UserAuthService implements RoleProviderInterface
         return true;
     }
 
-    public function updateAccessToken($accessToken, $expires)
+    /**
+     *
+     * @param string $accessToken
+     * @param int $expires
+     * @return void
+     */
+    public function updateAccessToken(string $accessToken, int $expires)
     {
         $this->loadUser();
 
@@ -164,6 +170,9 @@ class UserAuthService implements RoleProviderInterface
         }
     }
 
+    /**
+     * @return void
+     */
     private function loadUser()
     {
         $userId = $this->session->get('character_id');
