@@ -13,6 +13,11 @@ build:
                     -
                         command: phpcs-run
                         use_website_config: true
+                    -
+                        command: 'vendor/bin/phpunit --coverage-clover=var/logs/clover.xml'
+                        coverage:
+                            file: 'var/logs/clover.xml'
+                            format: 'clover'
             environment:
                 php: 7.1.12
 checks:
