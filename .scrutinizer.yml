@@ -1,7 +1,9 @@
 build:
-    dependencies:
-        before:
-            - "cd backend"
+    dependencies: 
+        override:
+            - cd backend
+            - composer install --ignore-platform-reqs --no-interaction --no-scripts
+
     nodes:
         analysis:
             project_setup:
@@ -21,4 +23,5 @@ coding_style:
     php: {  }
 filter: {  }
 tools:
-    external_code_coverage: true
+    external_code_coverage:
+        timeout: 1800    # Timeout in seconds.
