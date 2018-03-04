@@ -26,4 +26,3 @@ else
     npm install
     npm run build
 fi
-

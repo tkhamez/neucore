@@ -76,14 +76,7 @@ class AppAuthService implements RoleProviderInterface
      */
     private function authenticate(ServerRequestInterface $request)
     {
-        $token = null;
-        if ($request->hasHeader('Authorization')) {
-            $header = $request->getHeader('Authorization')[0];
-            $matches = [];
-            if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
-                $token = $matches[1];
-            }
-        }
+        $token = $this->findToken($request);
         if ($token === null) {
             return;
         }
@@ -104,19 +97,43 @@ class AppAuthService implements RoleProviderInterface
         /* @var $app \Brave\Core\Entity\App */
         $app = $this->appRepository->find($appId);
         if ($app !== null && password_verify($secret, $app->getSecret())) {
-
-            // upgrade hash if needed
-            if (password_needs_rehash($app->getSecret(), PASSWORD_DEFAULT)) {
-                $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
-                try {
-                    $this->em->persist($app);
-                    $this->em->flush();
-                } catch (\Exception $e) {
-                    $this->log->critical($e->getMessage(), ['exception' => $e]);
-                }
-            }
-
             $this->app = $app;
+            $this->upgradeHash($secret);
+        }
+    }
+
+    /**
+     *
+     * @param ServerRequestInterface $request
+     * @return NULL|string
+     */
+    private function findToken(ServerRequestInterface $request)
+    {
+        $token = null;
+        if ($request->hasHeader('Authorization')) {
+            $header = $request->getHeader('Authorization')[0];
+            $matches = [];
+            if (preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
+                $token = $matches[1];
+            }
+        }
+
+        return $token;
+    }
+
+    /**
+     * upgrade hash if needed
+     */
+    private function upgradeHash(string $secret)
+    {
+        if (password_needs_rehash($this->app->getSecret(), PASSWORD_DEFAULT)) {
+            $this->app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+            try {
+                $this->em->persist($this->app);
+                $this->em->flush();
+            } catch (\Exception $e) {
+                $this->log->critical($e->getMessage(), ['exception' => $e]);
+            }
         }
     }
 }

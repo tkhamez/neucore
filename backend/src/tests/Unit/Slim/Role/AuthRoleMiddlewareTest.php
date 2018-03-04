@@ -14,7 +14,7 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testAddsRolesForPaths()
     {
         $test = $this;
-        $next = function($req, $res) use ($test)  {
+        $next = function($req) use ($test)  {
             $test->assertSame(['r1', 'r2'], $req->getAttribute('roles'));
         };
 
@@ -25,7 +25,7 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testAddsRoleAnonymous()
     {
         $test = $this;
-        $next = function($req, $res) use ($test)  {
+        $next = function($req) use ($test)  {
             $test->assertSame(['anonymous'], $req->getAttribute('roles'));
         };
 
@@ -35,7 +35,7 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testDoesNotAddRolesForOtherPaths()
     {
         $test = $this;
-        $next = function($req, $res) use ($test)  {
+        $next = function($req) use ($test)  {
             $test->assertNull($req->getAttribute('roles'));
         };
 
@@ -46,7 +46,7 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testDoesNotAddRolesWithoutPattern()
     {
         $test = $this;
-        $next = function($req, $res) use ($test)  {
+        $next = function($req) use ($test)  {
             $test->assertNull($req->getAttribute('roles'));
         };
 
@@ -57,7 +57,7 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testDoesNotAddRolesWithoutRouteAttribute()
     {
         $test = $this;
-        $next = function($req, $res) use ($test)  {
+        $next = function($req) use ($test)  {
             $test->assertNull($req->getAttribute('roles'));
         };
 

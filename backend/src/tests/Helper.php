@@ -60,7 +60,7 @@ class Helper
 
     public function updateDbSchema()
     {
-        $em = self::getEm();
+        $em = $this->getEm();
 
         $classes = [];
         foreach ($this->entities as $entity) {
@@ -73,7 +73,7 @@ class Helper
 
     public function emptyDb()
     {
-        $em = self::getEm();
+        $em = $this->getEm();
         $connection = $em->getConnection();
 
         foreach ($this->entities as $entity) {

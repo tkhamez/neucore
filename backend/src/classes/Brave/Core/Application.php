@@ -306,6 +306,12 @@ class Application
         // Monolog
         $container->set(LoggerInterface::class, function(ContainerInterface $c) {
             $conf = $c->get('config')['monolog'];
+            if (strpos($conf['path'], 'php://') === false) {
+                $dir = realpath(dirname($conf['path']));
+                if (! is_writable($dir)) {
+                    throw new \Exception('The log directory ' . $dir . ' must be writable by the webserver.');
+                }
+            }
             $logger = new Logger($conf['name']);
             $logger->pushHandler(new StreamHandler($conf['path'], $conf['level']));
             return $logger;

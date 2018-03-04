@@ -3,6 +3,7 @@
     "description": "For Heroku to setup the PHP environment and install the backend and frontend.",
     "require": {
         "php": "^7.1.0",
+        "ext-zend-opcache": "*",
         "ext-pdo_mysql": "*",
         "ext-zip": "*",
         "ext-mbstring": "*",

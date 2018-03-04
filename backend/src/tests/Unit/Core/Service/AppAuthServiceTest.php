@@ -19,7 +19,7 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
     private $service;
 
     /**
-     * @var AppAuthService
+     * @var AppRepository
      */
     private $repo;
 

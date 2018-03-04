@@ -12,7 +12,7 @@ API: https://brvneucore.herokuapp.com/api
 
 ### Vagrant Requirements
 
-For synced folder with NFS (instead of rsync), install nfs-kernel-server and edit Vagrantfile:
+For synced folder with NFS (instead of rsync), install `nfs-kernel-server` and edit Vagrantfile:
 ```
 - config.vm.synced_folder "./", "/var/www/bravecore"
 + config.vm.synced_folder "./", "/var/www/bravecore", :nfs => true
@@ -39,9 +39,7 @@ The values for the EVE application must be adjusted.
 - PHP with Composer (see Vagrantfile for necessary additional extensions)
 - Node.js + npm
 - MySQL/MariaDB
-- Apache (dev should also works with PHP's build-in server)
-
-Set the webserver's document root to the "web" directory.
+- Apache (dev should also works with PHP's build-in server). Set the document root to the "web" directory.
 
 ### Install dev
 
@@ -54,7 +52,7 @@ Install dependencies and build backend and frontend:
 
 ### Install prod
 
-Set the required environment variables, see in file `backend/.env.dist`
+Set the required environment variables, see in file `backend/.env.dist`.
 
 Make sure that the webserver can write in `backend/var/logs`.
 

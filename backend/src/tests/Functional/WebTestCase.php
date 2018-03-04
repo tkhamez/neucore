@@ -55,8 +55,10 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         $slimApp = $app->getApp(false);
 
         // change dependencies in container
+        /* @var $c \DI\Container */
+        $c = $slimApp->getContainer();
         foreach ($mocks as $class => $obj) {
-            $slimApp->getContainer()->set($class, $obj);
+            $c->set($class, $obj);
         }
 
         // add middleware (gets objects from container)
