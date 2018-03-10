@@ -4,7 +4,7 @@ namespace Brave\Core\Service;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Configuration;
+use Swagger\Client\Eve\Configuration;
 
 /**
  * ESI related functionality.
