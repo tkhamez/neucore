@@ -3,6 +3,8 @@
 [![Build Status](https://api.travis-ci.org/tkhamez/brvneucore.svg?branch=master)](https://travis-ci.org/tkhamez/brvneucore)
 [![codecov](https://codecov.io/gh/tkhamez/brvneucore/branch/master/graph/badge.svg)](https://codecov.io/gh/tkhamez/brvneucore)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/tkhamez/brvneucore/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/tkhamez/brvneucore/?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/maintainability)](https://codeclimate.com/github/tkhamez/brvneucore/maintainability)
+
 
 https://brvneucore.herokuapp.com
 
