@@ -41,7 +41,8 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover backend/var/logs/clover.xml
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - mkdir backend/coverage && cp backend/var/logs/clover.xml backend/coverage/clover.xml
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter -p backend after-build --exit-code $TRAVIS_TEST_RESULT; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
