@@ -341,17 +341,20 @@ class Application
      */
     private function sessionHandler(Container $container)
     {
+        if (PHP_SAPI !== 'cli') {
+            // PHP 7.2 for unit tests:
+            // "ini_set(): Headers already sent. You cannot change the session module's ini settings at this time"
+            // session_set_save_handler(): Cannot change save handler when headers already sent
+
+            return;
+        }
+
         ini_set('session.gc_maxlifetime', $container->get('config')['session']['gc_maxlifetime']);
 
         $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
 
-        if (PHP_SAPI !== 'cli') {
-            // PHP 7.2 for unit tests:
-            // session_set_save_handler(): Cannot change save handler when headers already sent
-
-            session_set_save_handler($sessionHandler, true);
-        }
+        session_set_save_handler($sessionHandler, true);
     }
 
     /**
