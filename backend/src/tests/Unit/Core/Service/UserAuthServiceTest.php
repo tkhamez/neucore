@@ -136,35 +136,4 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(456, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
     }
-
-    public function testUpdateAccessTokenNoUser()
-    {
-        $this->log->popHandler();
-        $this->log->pushHandler(new TestHandler());
-
-        $this->service->updateAccessToken('new-token', 456789);
-
-        $this->assertSame(
-            'UserAuthService::updateAccessToken(): User not found.',
-            $this->log->getHandlers()[0]->getRecords()[0]['message']
-        );
-    }
-
-    public function testUpdateAccessToken()
-    {
-        $h = new Helper();
-        $h->emptyDb();
-        (new SessionData())->setReadOnly(false);
-        $this->service->authenticate(9013, 'Test User Changed Name', 'coh', 'token');
-
-        $char = $this->service->getUser();
-
-        $oldToken = $char->getAccessToken();
-        $oldExpires = $char->getExpires();
-
-        $this->service->updateAccessToken('new-token', 456789);
-
-        $this->assertNotSame($char->getAccessToken(), $oldToken);
-        $this->assertNotSame($char->getExpires(), $oldExpires);
-    }
 }

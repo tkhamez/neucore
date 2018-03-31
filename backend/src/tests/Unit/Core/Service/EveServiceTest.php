@@ -1,23 +1,21 @@
 <?php
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\EveService;
-use Brave\Core\Service\UserAuthService;
-use Brave\Slim\Session\SessionData;
+use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use League\OAuth2\Client\Provider\GenericProvider;
-use Tests\Helper;
-use Monolog\Handler\TestHandler;
 use League\OAuth2\Client\Token\AccessToken;
+use Tests\Helper;
+use Brave\Core\Entity\Character;
+use Brave\Core\Entity\CharacterRepository;
 
 class EveServiceTest extends \PHPUnit\Framework\TestCase
 {
 
-    private $log;
+    private $em;
 
-    private $uas;
+    private $log;
 
     private $oauth;
 
@@ -32,33 +30,28 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $h = new Helper();
-        $em = $h->getEm();
-
-        #$h->resetSessionData();
-        $_SESSION = [];
-        $ses = new SessionData();
-        $ses->setReadOnly(false);
-
-        $cr = new CharacterRepository($em);
-        $rr = new RoleRepository($em);
+        $this->em = (new Helper())->getEm();
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
-        $this->uas = new UserAuthService($ses, $cr, $rr, $em, $this->log);
         $this->oauth = $this->createMock(GenericProvider::class);
-        $this->es = new EveService($this->oauth, $this->uas, $this->log);
+        $this->es = new EveService($this->oauth, $this->em, $this->log);
     }
 
     public function testGetTokenNoUser()
     {
         $this->assertSame("", $this->es->getToken());
+
+        $this->assertSame(
+            'EveService::getToken: Character not set.',
+            $this->log->getHandlers()[0]->getRecords()[0]['message']
+        );
     }
 
-    public function testGetTokenExistingException()
+    public function testGetTokenNoExistingTokenException()
     {
-        $this->uas->authenticate(111, 'one', 'coh', '');
+        $this->es->setCharacter(new Character());
         $this->es->getToken();
 
         $this->assertSame(
@@ -67,17 +60,21 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testGetTokenNewException()
+    public function testGetTokenNewTokenException()
     {
         $this->oauth->method('getAccessToken')->will($this->throwException(new \Exception('test e')));
 
-        $this->uas->authenticate(111, 'one', 'coh', 'at', 1349067601); // 2012-10-01 + 1
+        $c = new Character();
+        $c->setAccessToken('at');
+        $c->setExpires(1349067601); // 2012-10-01 + 1
+        $this->es->setCharacter($c);
+
         $this->es->getToken();
 
         $this->assertSame('test e', $this->log->getHandlers()[0]->getRecords()[0]['message']);
     }
 
-    public function testGetTokenWithRefresh()
+    public function testGetTokenNewTokenUpdateDatabase()
     {
         $this->oauth->method('getAccessToken')->willReturn(new AccessToken([
             'access_token' => 'new-token',
@@ -85,21 +82,45 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
             'expires' => 1519933900, // 03/01/2018 @ 7:51pm (UTC)
         ]));
 
-        $this->uas->authenticate(111, 'one', 'coh', 'old-token', 1519933545); // 03/01/2018 @ 7:45pm (UTC)
+        $c = new Character();
+        $c->setId(123);
+        $c->setName('n');
+        $c->setMain(true);
+        $c->setCharacterOwnerHash('coh');
+        $c->setAccessToken('old-token');
+        $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
+        // don't save to DB to be able to test that getToken() will save it.
+
+        $this->es->setCharacter($c);
+
         $this->es->getToken();
+        $this->em->flush();
 
         $this->assertSame('new-token', $this->es->getToken());
+        $this->assertSame('new-token', $c->getAccessToken());
+
+        $charFromDB = (new CharacterRepository($this->em))->find(123);
+        $this->assertSame('new-token', $charFromDB->getAccessToken());
+
+        $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));
     }
 
     public function testGetTokenNoRefresh()
     {
-        $this->uas->authenticate(111, 'one', 'coh', 'old-token', time() + 10000);
+        $c = new Character();
+        $c->setAccessToken('old-token');
+        $c->setExpires(time() + 10000);
+        $this->es->setCharacter($c);
+
         $this->assertSame('old-token', $this->es->getToken());
     }
 
     public function testGetConfiguration()
     {
-        $this->uas->authenticate(111, 'one', 'coh', 'old-token', time() + 10000);
+        $c = new Character();
+        $c->setAccessToken('old-token');
+        $c->setExpires(time() + 10000);
+        $this->es->setCharacter($c);
 
         $conf = $this->es->getConfiguration();
 

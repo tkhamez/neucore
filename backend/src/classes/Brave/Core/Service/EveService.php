@@ -1,6 +1,8 @@
 <?php
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\Character;
+use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
@@ -14,32 +16,38 @@ class EveService
 
     private $oauth;
 
-    private $uas;
+    private $em;
 
     private $log;
 
-    public function __construct(GenericProvider $oauth, UserAuthService $uas, LoggerInterface $log)
+    private $character;
+
+    public function __construct(GenericProvider $oauth, EntityManagerInterface $em, LoggerInterface $log)
     {
         $this->oauth = $oauth;
-        $this->uas = $uas;
+        $this->em = $em;
         $this->log = $log;
+    }
+
+    public function setCharacter(Character $character)
+    {
+        $this->character = $character;
     }
 
     public function getToken(): string
     {
         $token = "";
 
-        $char = $this->uas->getUser();
-
-        if ($char === null) {
+        if ($this->character === null) {
+            $this->log->error('EveService::getToken: Character not set.');
             return $token;
         }
 
         try {
             $existingToken = new AccessToken([
-                'access_token' => $char->getAccessToken(),
-                'refresh_token' => $char->getRefreshToken(),
-                'expires' => $char->getExpires()
+                'access_token' => $this->character->getAccessToken(),
+                'refresh_token' => $this->character->getRefreshToken(),
+                'expires' => $this->character->getExpires()
             ]);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
@@ -58,7 +66,14 @@ class EveService
         }
 
         if ($newAccessToken) {
-            $this->uas->updateAccessToken($newAccessToken->getToken(), $newAccessToken->getExpires());
+            $this->character->setAccessToken($newAccessToken->getToken());
+            $this->character->setExpires($newAccessToken->getExpires());
+            try {
+                $this->em->persist($this->character);
+                $this->em->flush();
+            } catch (\Exception $e) {
+                $this->log->critical($e->getMessage(), ['exception' => $e]);
+            }
         }
 
         return $newAccessToken ? $newAccessToken->getToken() : $existingToken->getToken();

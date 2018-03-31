@@ -2,7 +2,9 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\Sample;
+use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Service\AppAuthService;
+use Brave\Core\Service\EveService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -111,6 +113,12 @@ class Application
      */
     private $env;
 
+    public function __construct()
+    {
+        // set timezone - also used by Doctrine for dates/times in the database
+        date_default_timezone_set('UTC');
+    }
+
     /**
      * Loads settings based on environment.
      *
@@ -215,7 +223,11 @@ class Application
         $c = $app->getContainer();
 
         $console = new ConsoleApplication();
-        $console->add(new Sample($c->get(LoggerInterface::class)));
+        $console->add(new Sample(
+            $c->get(LoggerInterface::class),
+            $c->get(CharacterRepository::class),
+            $c->get(EveService::class)
+        ));
 
         return $console;
     }
@@ -261,7 +273,7 @@ class Application
         // see also https://www.slimframework.com/docs/v3/handlers/error.html
         if ($this->env === Application::ENV_DEV) {
             // Values cannot be unset from the DI\Container,
-            // so it has to be done before it is build.
+            // so it must be done in the configuration before it is built.
             unset($bridgeConfig['errorHandler']);
             unset($bridgeConfig['phpErrorHandler']);
         }
@@ -276,7 +288,7 @@ class Application
     }
 
     /**
-     * Add dependencies to DI container, setup session handler.
+     * Add dependencies to DI container.
      *
      * @return void
      */
@@ -329,17 +341,17 @@ class Application
      */
     private function sessionHandler(Container $container)
     {
-        if (PHP_SAPI === 'cli') {
-            // PHP 7.2 for unit tests:
-            // session_set_save_handler(): Cannot change save handler when headers already sent
-            return;
-        }
-
         ini_set('session.gc_maxlifetime', $container->get('config')['session']['gc_maxlifetime']);
 
         $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
-        session_set_save_handler($sessionHandler, true);
+
+        if (PHP_SAPI !== 'cli') {
+            // PHP 7.2 for unit tests:
+            // session_set_save_handler(): Cannot change save handler when headers already sent
+
+            session_set_save_handler($sessionHandler, true);
+        }
     }
 
     /**
@@ -407,3 +419,4 @@ class Application
         }
     }
 }
+

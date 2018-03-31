@@ -145,32 +145,6 @@ class UserAuthService implements RoleProviderInterface
     }
 
     /**
-     *
-     * @param string $accessToken
-     * @param int $expires
-     * @return void
-     */
-    public function updateAccessToken(string $accessToken, int $expires)
-    {
-        $this->loadUser();
-
-        if ($this->user === null) {
-            $this->log->error('UserAuthService::updateAccessToken(): User not found.');
-            return;
-        }
-
-        $this->user->setAccessToken($accessToken);
-        $this->user->setExpires($expires);
-
-        try {
-            $this->em->persist($this->user);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-        }
-    }
-
-    /**
      * @return void
      */
     private function loadUser()

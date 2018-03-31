@@ -1,7 +1,6 @@
 <?php
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Service\EveService;
 use Brave\Core\Service\UserAuthService;
 use Slim\Http\Response;
 
@@ -25,19 +24,9 @@ class InfoController
      *     )
      * )
      */
-    public function __invoke(Response $response, UserAuthService $uas, EveService $es)
+    public function __invoke(Response $response, UserAuthService $uas)
     {
         $char = $uas->getUser();
-
-        // example
-//         $apiInstance = new \Swagger\Client\Api\CharacterApi(null, $es->getConfiguration());
-//         try {
-//             $result = $apiInstance->getCharactersCharacterId($char->getId());
-//             print_r($result);
-//         } catch (\Exception $e) {
-//             echo 'Exception when calling CharacterApi->getCharactersCharacterId: ', $e->getMessage(), PHP_EOL;
-//         }
-
 
         return $response->withJson($char->getPlayer());
     }
