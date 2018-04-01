@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
 	config.vm.hostname = "brvneucore"
 	config.vm.box = "generic/ubuntu1710"
 
-	config.vm.network "forwarded_port", guest: 443, host: 443
+	config.vm.network "forwarded_port", guest: 443, host: 8443
 
 	config.vm.synced_folder "./", "/var/www/bravecore"
 	config.vm.network :private_network, ip: "192.168.121.4"
@@ -70,7 +70,7 @@ Vagrant.configure("2") do |config|
 
 		echo
 		echo ------------------------------------
-		echo -- server up at https://localhost --
+		echo -- server up at https://localhost:8443 --
 		echo ------------------------------------
 		echo For frontend rebuilding:
 		echo you can either run npm run watch from the /frontend directory, or
