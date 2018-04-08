@@ -37,6 +37,46 @@ class AuthTest extends WebTestCase
         $this->assertSame(32, strlen($sess->get('auth_state')));
     }
 
+    public function testGetLoginAuthenticated()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('U2', 2, ['user']);
+        $this->loginUser(2);
+
+        $response = $this->runApp('GET', '/api/user/auth/login');
+        $this->assertSame(['oauth_url' => ''], $this->parseJsonBody($response));
+    }
+
+    public function testGetLoginAlt()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('User 1', 456, ['user'], ['group-1']);
+        $this->loginUser(456);
+
+        $redirect = '/index.html#auth-alt';
+        $response = $this->runApp('GET', '/api/user/auth/login-alt?redirect_url='.urlencode($redirect));
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $this->assertSame(1, count($body));
+        $this->assertContains('https://login.eveonline.com', $body['oauth_url']);
+
+        $sess = new SessionData();
+        $this->assertSame($redirect, $sess->get('auth_redirect_url'));
+        $this->assertSame('t', substr($sess->get('auth_state'), 0, 1));
+        $this->assertSame(33, strlen($sess->get('auth_state')));
+    }
+
+    public function testGetLoginAlt403()
+    {
+        $response = $this->runApp('GET', '/api/user/auth/login-alt');
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
     public function testGetCallbackStateError()
     {
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
@@ -165,7 +205,37 @@ class AuthTest extends WebTestCase
         $this->assertSame(302, $response->getStatusCode());
 
         $sess = new SessionData();
-        $this->assertSame(['success' => true, 'message' => ''], $sess->get('auth_result'));
+        $this->assertSame(['success' => true, 'message' => 'Login successful.'], $sess->get('auth_result'));
+    }
+
+    public function testGetCallbackAltLogin()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+
+        $h->addCharacterMain('User1', 654, ['user'], ['group1']);
+        $this->loginUser(654);
+
+        $state = 'td2c55ec4cfefe6224a500f4127bcee31';
+        $_SESSION['auth_state'] = $state;
+
+        $sso = $this->createMock(GenericProvider::class);
+        $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 'tk']));
+
+        $ro = $this->createMock(ResourceOwnerInterface::class);
+        $ro->method('toArray')->willReturn(['CharacterID' => 3, 'CharacterName' => 'N3', 'CharacterOwnerHash' => 'hs']);
+        $sso->method('getResourceOwner')->willReturn($ro);
+
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+            GenericProvider::class => $sso
+        ]);
+        $this->assertSame(302, $response->getStatusCode());
+
+        $sess = new SessionData();
+        $this->assertSame(
+            ['success' => true, 'message' => 'Character added to player account.'],
+            $sess->get('auth_result')
+        );
     }
 
     public function testGetResult()
@@ -177,6 +247,28 @@ class AuthTest extends WebTestCase
             ['success' => false, 'message' => 'No login attempt recorded.'],
             $this->parseJsonBody($response)
         );
+    }
+
+    public function testGetCharacter()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('User1', 654, ['user'], ['group1']);
+        $this->loginUser(654);
+
+        $response = $this->runApp('GET', '/api/user/auth/character');
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertSame(
+            ['id' => 654, 'name' => 'User1', 'main' => true],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testGetCharacter403()
+    {
+        $response = $this->runApp('GET', '/api/user/auth/character');
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testGetLogout403()

@@ -121,7 +121,7 @@ class Role implements \JsonSerializable
     /**
      * Get players.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Player[]
      */
     public function getPlayers()
     {
@@ -157,7 +157,7 @@ class Role implements \JsonSerializable
     /**
      * Get apps.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return App[]
      */
     public function getApps()
     {

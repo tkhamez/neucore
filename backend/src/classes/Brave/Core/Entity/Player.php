@@ -175,7 +175,7 @@ class Player implements \JsonSerializable
     /**
      * Get roles.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Role[]
      */
     public function getRoles()
     {
@@ -211,7 +211,7 @@ class Player implements \JsonSerializable
     /**
      * Get groups.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Group[]
      */
     public function getGroups()
     {
@@ -247,7 +247,7 @@ class Player implements \JsonSerializable
     /**
      * Get characters.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Character[]
      */
     public function getCharacters()
     {
@@ -283,7 +283,7 @@ class Player implements \JsonSerializable
     /**
      * Get managerGroups.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Group[]
      */
     public function getManagerGroups()
     {
@@ -319,7 +319,7 @@ class Player implements \JsonSerializable
     /**
      * Get managerApps.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return App[]
      */
     public function getManagerApps()
     {

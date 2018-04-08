@@ -11,6 +11,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
+use Brave\Core\Entity\RoleRepository;
 
 class Helper
 {
@@ -23,8 +24,8 @@ class Helper
     private $entities = [
         'Brave\Core\Entity\App',
         'Brave\Core\Entity\Character',
-        'Brave\Core\Entity\Group',
         'Brave\Core\Entity\Player',
+        'Brave\Core\Entity\Group',
         'Brave\Core\Entity\Role',
     ];
 
@@ -74,12 +75,13 @@ class Helper
     public function emptyDb()
     {
         $em = $this->getEm();
-        $connection = $em->getConnection();
+        $qb = $em->createQueryBuilder();
 
         foreach ($this->entities as $entity) {
-            $class = $em->getClassMetadata($entity);
-            $connection->query('DELETE FROM ' . $class->getTableName());
+            $qb->delete($entity)->getQuery()->execute();
         }
+
+        $em->clear();
     }
 
     /**
@@ -90,12 +92,18 @@ class Helper
     public function addRoles($roles)
     {
         $em = $this->getEm();
+        $rr = new RoleRepository($em);
 
         $roleEntities = [];
         foreach ($roles as $roleName) {
-            $role = new Role();
-            $role->setName($roleName);
-            $em->persist($role);
+            $roles = $rr->findByName($roleName);
+            if (isset($roles[0])) {
+                $role = $roles[0];
+            } else {
+                $role = new Role();
+                $role->setName($roleName);
+                $em->persist($role);
+            }
             $roleEntities[] = $role;
         }
         $em->flush();
@@ -137,7 +145,6 @@ class Helper
 
         $player = new Player();
         $player->setName($name);
-        $em->persist($player);
 
         $char = new Character();
         $char->setId($charId);
@@ -147,8 +154,9 @@ class Helper
         $char->setAccessToken('abc');
         $char->setExpires(123456);
         $char->setRefreshToken('def');
+
         $char->setPlayer($player);
-        $em->persist($char);
+        $player->addCharacter($char);
 
         foreach ($this->addRoles($roles) as $role) {
             $player->addRole($role);
@@ -158,6 +166,8 @@ class Helper
             $player->addGroup($group);
         }
 
+        $em->persist($player);
+        $em->persist($char);
         $em->flush();
 
         return $char;

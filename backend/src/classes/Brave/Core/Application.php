@@ -255,6 +255,7 @@ class Application
             'route_include_pattern' => ['/api/user'],
             'route_blocking_pattern' => [
                 '/api/user/auth/login',
+                '/api/user/auth/login-alt',
                 '/api/user/auth/callback',
                 '/api/user/auth/logout'
             ],

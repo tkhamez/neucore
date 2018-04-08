@@ -130,7 +130,7 @@ class Group implements \JsonSerializable
     /**
      * Get players.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Player[]
      */
     public function getPlayers()
     {
@@ -166,7 +166,7 @@ class Group implements \JsonSerializable
     /**
      * Get apps.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return App[]
      */
     public function getApps()
     {
@@ -202,7 +202,7 @@ class Group implements \JsonSerializable
     /**
      * Get managers.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Player[]
      */
     public function getManagers()
     {

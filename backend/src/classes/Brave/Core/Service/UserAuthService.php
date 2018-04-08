@@ -69,6 +69,7 @@ class UserAuthService implements RoleProviderInterface
     }
 
     /**
+     * Loads and returns current logged in user from the database.
      *
      * @return NULL|\Brave\Core\Entity\Character
      */
@@ -92,12 +93,10 @@ class UserAuthService implements RoleProviderInterface
      * @return boolean
      */
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
-        string $accessToken, int $expires = null, string $refreshToken = null)
+        string $accessToken, int $expires = null, string $refreshToken = null): bool
     {
-        /* @var $user Character */
-        $user = $this->characterRepository->find($characterId);
-
-        if ($user === null) {
+        $char = $this->characterRepository->find($characterId);
+        if ($char === null) {
 
             // first login, create user
 
@@ -111,35 +110,91 @@ class UserAuthService implements RoleProviderInterface
             $player->setName($characterName);
             $player->addRole($userRole[0]);
 
-            $user = new Character();
-            $user->setId($characterId);
-            $user->setMain(true);
-            $user->setPlayer($player);
+            $char = new Character();
+            $char->setId($characterId);
+            $char->setMain(true);
+            $char->setPlayer($player);
 
         } else {
-            $player = $user->getPlayer();
-            if ($user->getMain()) {
+            $player = $char->getPlayer();
+            if ($char->getMain()) {
                 $player->setName($characterName);
             }
         }
 
-        $user->setName($characterName);
-        $user->setCharacterOwnerHash($characterOwnerHash); # TODO react to change
-        $user->setAccessToken($accessToken);
-        $user->setExpires($expires);
-        $user->setRefreshToken($refreshToken);
+        // update user
+        $char->setName($characterName);
+        $char->setCharacterOwnerHash($characterOwnerHash); # TODO react to change
+        $char->setAccessToken($accessToken);
+        $char->setExpires($expires);
+        $char->setRefreshToken($refreshToken);
 
         try {
-            $this->em->persist($player);
-            $this->em->persist($user);
+            $this->em->persist($player); // necessary for new player
+            $this->em->persist($char);
             $this->em->flush();
         } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
             return false;
         }
 
-        $this->user = $user;
+        $this->user = $char;
         $this->session->set('character_id', $this->user->getId());
+
+        return true;
+    }
+
+    public function addAlt(int $characterId, string $characterName, string $characterOwnerHash,
+        string $accessToken, int $expires = null, string $refreshToken = null): bool
+    {
+        $this->getUser();
+
+        // check if logged in
+        if ($this->user === null || $this->user->getPlayer() === null) {
+            return false;
+        }
+
+        $player = $this->user->getPlayer();
+
+        // check if the character was already registered,
+        // if yes, move it to this player account, otherwise create it
+        $alt = $this->characterRepository->find($characterId);
+        if ($alt !== null) {
+
+            // check if new alt is the currently logged in user
+            if ($alt->getId() === $this->user->getId()) {
+                return true;
+            }
+
+            // check if new alt is on another player account
+            $oldPlayer = $alt->getPlayer();
+            if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
+                $oldPlayer->removeCharacter($alt);
+                $alt->setPlayer(null);
+            }
+
+        } else {
+            $alt = new Character();
+            $alt->setId($characterId);
+        }
+
+        $player->addCharacter($alt);
+        $alt->setPlayer($player);
+
+        $alt->setMain(false);
+        $alt->setName($characterName);
+        $alt->setCharacterOwnerHash($characterOwnerHash);
+        $alt->setAccessToken($accessToken);
+        $alt->setExpires($expires);
+        $alt->setRefreshToken($refreshToken);
+
+        try {
+            $this->em->persist($alt); // necessary for new character
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            return false;
+        }
 
         return true;
     }

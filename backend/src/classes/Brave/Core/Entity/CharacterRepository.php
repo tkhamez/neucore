@@ -18,4 +18,15 @@ class CharacterRepository extends \Doctrine\ORM\EntityRepository
     {
         parent::__construct($em, $em->getMetadataFactory()->getMetadataFor(Character::class));
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::find()
+     * @return \Brave\Core\Entity\Character
+     */
+    public function find($id, $lockMode = null, $lockVersion = null)
+    {
+        return parent::find($id, $lockMode, $lockVersion);
+    }
 }

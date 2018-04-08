@@ -29,7 +29,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
 
         $h->resetSessionData();
-        $_SESSION = []; // "start" session for SessionData object
+        $_SESSION = []; // "start" session for SessionData object and reset data
 
         $this->log = new Logger('test');
         $this->log->pushHandler(new StreamHandler('php://stderr'));
@@ -104,6 +104,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($result);
         $this->assertSame('New User', $user->getName());
         $this->assertSame(888, $user->getId());
+        $this->assertTrue($user->getMain());
         $this->assertSame('coh', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame(123456, $user->getExpires());
@@ -135,5 +136,77 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame(456, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
+    }
+
+    public function testAddAlt()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $_SESSION['character_id'] = 100;
+        $main = $h->addCharacterMain('Main', 100, ['user']);
+        $player = $main->getPlayer();
+
+        $this->assertSame(1, count($player->getCharacters()));
+
+        $result = $this->service->addAlt(101, 'Alt 1', 'hash', 'tk', 123456789, 'rf');
+        $this->assertTrue($result);
+
+        $chars = $player->getCharacters();
+        $this->assertSame(2, count($chars));
+
+        $this->assertSame(101, $chars[1]->getId());
+        $this->assertSame('Alt 1', $chars[1]->getName());
+        $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
+        $this->assertSame('tk', $chars[1]->getAccessToken());
+        $this->assertSame(123456789, $chars[1]->getExpires());
+        $this->assertSame('rf', $chars[1]->getRefreshToken());
+        $this->assertFalse($chars[1]->getMain());
+    }
+
+    public function testAddAltExistingChar()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $_SESSION['character_id'] = 100;
+        $main1 = $h->addCharacterMain('Main1', 100, ['user']);
+        $main2 = $h->addCharacterMain('Main2', 200, ['user']);
+
+        $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'tk', 123456789, 'rf');
+        $this->assertTrue($result);
+
+        $chars = $main1->getPlayer()->getCharacters();
+        $this->assertSame(2, count($chars));
+
+        $this->assertSame($main2, $chars[1]);
+        $this->assertSame('Main2 renamed', $chars[1]->getName());
+        $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
+        $this->assertSame('tk', $chars[1]->getAccessToken());
+        $this->assertSame(123456789, $chars[1]->getExpires());
+        $this->assertSame('rf', $chars[1]->getRefreshToken());
+    }
+
+    public function testAddAltLoggedInChar()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $_SESSION['character_id'] = 100;
+        $main = $h->addCharacterMain('Main1', 100, ['user']);
+
+        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', 'tk');
+        $this->assertTrue($result);
+
+        $chars = $main->getPlayer()->getCharacters();
+        $this->assertSame(1, count($chars));
+        $this->assertSame('Main1', $chars[0]->getName()); // not changed
+    }
+
+    public function testAddAltNotAuthenticated()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('Main1', 100, ['user']);
+
+        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', 'tk');
+        $this->assertFalse($result);
     }
 }

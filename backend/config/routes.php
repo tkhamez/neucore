@@ -6,10 +6,12 @@ use Brave\Core\Api\User\InfoController as UserInfoController;
 
 return [
 
-    '/api/user/auth/login' =>       ['GET', AuthController::class.'::login'],
-    '/api/user/auth/callback' =>    ['GET', AuthController::class.'::callback'],
-    '/api/user/auth/result' =>      ['GET', AuthController::class.'::result'],
-    '/api/user/auth/logout' =>      ['GET', AuthController::class.'::logout'],
+    '/api/user/auth/login' =>       ['GET', AuthController::class . '::login'],
+    '/api/user/auth/login-alt' =>   ['GET', AuthController::class . '::loginAlt'],
+    '/api/user/auth/callback' =>    ['GET', AuthController::class . '::callback'],
+    '/api/user/auth/result' =>      ['GET', AuthController::class . '::result'],
+    '/api/user/auth/character' =>   ['GET', AuthController::class . '::character'],
+    '/api/user/auth/logout' =>      ['GET', AuthController::class . '::logout'],
 
     '/api/user/info' => ['GET', UserInfoController::class],
 

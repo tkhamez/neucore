@@ -26,8 +26,6 @@ class InfoController
      */
     public function __invoke(Response $response, UserAuthService $uas)
     {
-        $char = $uas->getUser();
-
-        return $response->withJson($char->getPlayer());
+        return $response->withJson($uas->getUser()->getPlayer());
     }
 }

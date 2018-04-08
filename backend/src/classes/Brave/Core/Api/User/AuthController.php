@@ -17,6 +17,13 @@ class AuthController
 
     private $log;
 
+    /**
+     * Scopes for EVE SSO login.
+     *
+     * @var array
+     */
+    private $scopes = ['publicData'];
+
     public function __construct(SessionData $session, GenericProvider $sso, LoggerInterface $log)
     {
         $this->session = $session;
@@ -37,7 +44,7 @@ class AuthController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The EVE SSO login URL",
+     *         description="The EVE SSO login URL. URL will be empty if user is already logged in",
      *         @SWG\Schema(
      *             title="SSOLogin",
      *             required={"oauth_url"},
@@ -49,19 +56,48 @@ class AuthController
      *     )
      * )
      */
-    public function login(Request $request, Response $response)
+    public function login(Request $request, Response $response, UserAuthService $auth)
     {
-        $scopes = ['publicData'];
-        $options = [
-            'scope' => implode(' ', $scopes)
-        ];
+        // return empty string if already logged in
+        if (in_array('user', $auth->getRoles($request))) {
+            return $response->withJson(['oauth_url' => '']);
+        }
 
-        $url = $this->sso->getAuthorizationUrl($options);
+        return $response->withJson(['oauth_url' => $this->buildLoginUrl($request, false)]);
+    }
 
-        $this->session->set('auth_state', $this->sso->getState());
-        $this->session->set('auth_redirect_url', $request->getQueryParam('redirect_url', '/'));
-
-        return $response->withJson(['oauth_url' => $url]);
+    /**
+     * @SWG\Get(
+     *     path="/user/auth/login-alt",
+     *     summary="EVE SSO login URL to add additional characters to an account. Needs role: user",
+     *     tags={"User"},
+     *     @SWG\Parameter(
+     *         name="redirect_url",
+     *         in="query",
+     *         description="Optional URL for redirect after EVE login.",
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The EVE SSO login URL",
+     *         @SWG\Schema(
+     *             title="SSOLogin",
+     *             required={"oauth_url"},
+     *             @SWG\Property(
+     *                 property="oauth_url",
+     *                 type="string"
+     *             )
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="If not authorized"
+     *     )
+     * )
+     */
+    public function loginAlt(Request $request, Response $response)
+    {
+        return $response->withJson(['oauth_url' => $this->buildLoginUrl($request, true)]);
     }
 
     public function callback(Request $request, Response $response, UserAuthService $auth)
@@ -113,19 +149,33 @@ class AuthController
             return $response->withRedirect($redirectUrl);
         }
 
-        $success = $auth->authenticate(
-            $verify['CharacterID'],
-            $verify['CharacterName'],
-            $verify['CharacterOwnerHash'],
-            $token->getToken(),
-            $token->getExpires(),
-            $token->getRefreshToken()
-        );
+        // normal or alt login?
+        $alt = $state{0} === 't'; // see buildLoginUrl()
+
+        if ($alt) {
+            $success = $auth->addAlt(
+                $verify['CharacterID'],
+                $verify['CharacterName'],
+                $verify['CharacterOwnerHash'],
+                $token->getToken(),
+                $token->getExpires(),
+                $token->getRefreshToken()
+            );
+        } else {
+            $success = $auth->authenticate(
+                $verify['CharacterID'],
+                $verify['CharacterName'],
+                $verify['CharacterOwnerHash'],
+                $token->getToken(),
+                $token->getExpires(),
+                $token->getRefreshToken()
+            );
+        }
 
         if ($success) {
             $this->session->set('auth_result', [
                 'success' => true,
-                'message' => ''
+                'message' => $alt ? 'Character added to player account.' : 'Login successful.'
             ]);
         } else {
             $this->session->set('auth_result', [
@@ -175,6 +225,28 @@ class AuthController
 
     /**
      * @SWG\Get(
+     *     path="/user/auth/character",
+     *     summary="Returns the logged in EVE character. Needs role: user",
+     *     tags={"User"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The logged in EVE character",
+     *         @SWG\Schema(ref="#/definitions/Character")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="If not authorized"
+     *     )
+     * )
+     */
+    public function character(Response $response, UserAuthService $uas)
+    {
+        return $response->withJson($uas->getUser());
+    }
+
+    /**
+     * @SWG\Get(
      *     path="/user/auth/logout",
      *     summary="User logout. Needs role: user",
      *     tags={"User"},
@@ -198,5 +270,24 @@ class AuthController
         }
 
         return $response;
+    }
+
+    private function buildLoginUrl(Request $request, bool $altLogin): string
+    {
+        // "t" is used in the callback to identify an alt login request
+        // (t is not a valid HEX value, the rest of the state is HEX)
+        $statePrefix = $altLogin ? 't' : '';
+
+        $options = [
+            'scope' => implode(' ', $this->scopes),
+            'state' => $statePrefix . bin2hex(random_bytes(16)),
+        ];
+
+        $url = $this->sso->getAuthorizationUrl($options);
+
+        $this->session->set('auth_state', $this->sso->getState());
+        $this->session->set('auth_redirect_url', $request->getQueryParam('redirect_url', '/'));
+
+        return $url;
     }
 }

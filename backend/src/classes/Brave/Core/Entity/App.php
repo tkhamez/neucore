@@ -177,7 +177,7 @@ class App implements \JsonSerializable
     /**
      * Get roles.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Role[]
      */
     public function getRoles()
     {
@@ -213,7 +213,7 @@ class App implements \JsonSerializable
     /**
      * Get groups.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Group[]
      */
     public function getGroups()
     {
@@ -249,7 +249,7 @@ class App implements \JsonSerializable
     /**
      * Get managers.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Player[]
      */
     public function getManagers()
     {
