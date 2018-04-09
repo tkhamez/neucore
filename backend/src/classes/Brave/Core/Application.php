@@ -70,7 +70,7 @@ use Whoops\Run;
  * )
  * @SWG\Tag(
  *     name="App",
- *     description="API for apps.",
+ *     description="API for 3rd party apps.",
  * )
  */
 class Application
