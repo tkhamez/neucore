@@ -1,10 +1,11 @@
 <?php
+
 namespace Brave\Core\Service;
 
-use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RoleRepository;
 use Brave\Slim\Role\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +22,6 @@ use Psr\Log\LoggerInterface;
  */
 class UserAuthService implements RoleProviderInterface
 {
-
     private $session;
 
     private $characterRepository;
@@ -33,7 +33,6 @@ class UserAuthService implements RoleProviderInterface
     private $log;
 
     /**
-     *
      * @var Character
      */
     private $user;
@@ -50,8 +49,8 @@ class UserAuthService implements RoleProviderInterface
     }
 
     /**
-     *
      * {@inheritdoc}
+     *
      * @see \Brave\Slim\Role\RoleProviderInterface::getRoles()
      */
     public function getRoles(ServerRequestInterface $request = null): array
@@ -71,7 +70,7 @@ class UserAuthService implements RoleProviderInterface
     /**
      * Loads and returns current logged in user from the database.
      *
-     * @return NULL|\Brave\Core\Entity\Character
+     * @return null|\Brave\Core\Entity\Character
      */
     public function getUser()
     {
@@ -83,14 +82,14 @@ class UserAuthService implements RoleProviderInterface
     }
 
     /**
-     *
-     * @param int $characterId
+     * @param int    $characterId
      * @param string $characterName
      * @param string $characterOwnerHash
      * @param string $accessToken
-     * @param int $expires
+     * @param int    $expires
      * @param string $refreshToken
-     * @return boolean
+     *
+     * @return bool
      */
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
         string $accessToken, int $expires = null, string $refreshToken = null): bool
@@ -103,6 +102,7 @@ class UserAuthService implements RoleProviderInterface
             $userRole = $this->roleRepository->findBy(['name' => 'user']);
             if (count($userRole) !== 1) {
                 $this->log->critical('UserAuthService::authenticate(): Role "user" not found.');
+
                 return false;
             }
 
@@ -114,7 +114,6 @@ class UserAuthService implements RoleProviderInterface
             $char->setId($characterId);
             $char->setMain(true);
             $char->setPlayer($player);
-
         } else {
             $player = $char->getPlayer();
             if ($char->getMain()) {
@@ -124,7 +123,7 @@ class UserAuthService implements RoleProviderInterface
 
         // update user
         $char->setName($characterName);
-        $char->setCharacterOwnerHash($characterOwnerHash); # TODO react to change
+        $char->setCharacterOwnerHash($characterOwnerHash); // TODO react to change
         $char->setAccessToken($accessToken);
         $char->setExpires($expires);
         $char->setRefreshToken($refreshToken);
@@ -135,6 +134,7 @@ class UserAuthService implements RoleProviderInterface
             $this->em->flush();
         } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
+
             return false;
         }
 
@@ -172,7 +172,6 @@ class UserAuthService implements RoleProviderInterface
                 $oldPlayer->removeCharacter($alt);
                 $alt->setPlayer(null);
             }
-
         } else {
             $alt = new Character();
             $alt->setId($characterId);
@@ -193,6 +192,7 @@ class UserAuthService implements RoleProviderInterface
             $this->em->flush();
         } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
+
             return false;
         }
 

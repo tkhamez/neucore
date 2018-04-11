@@ -1,8 +1,8 @@
 <?php
+
 namespace Brave\Core\Entity;
 
 /**
- *
  * @SWG\Definition(
  *     definition="Player",
  *     required={"name", "roles", "groups", "characters", "managerGroups", "managerApps"}
@@ -12,22 +12,23 @@ namespace Brave\Core\Entity;
  */
 class Player implements \JsonSerializable
 {
-
     /**
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     * @var integer
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * A name for the player
+     * A name for the player.
      *
      * This is the EVE character name of the main atm.
      *
      * @SWG\Property()
      * @Column(type="string", length=255)
+     *
      * @var string
      */
     private $name;
@@ -38,6 +39,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(type="string"))
      * @ManyToMany(targetEntity="Role", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $roles;
@@ -48,6 +50,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(type="string"))
      * @ManyToMany(targetEntity="Group", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $groups;
@@ -56,6 +59,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Character"))
      * @OneToMany(targetEntity="Character", mappedBy="player")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $characters;
@@ -66,6 +70,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(type="string"))
      * @ManyToMany(targetEntity="Group", mappedBy="managers")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $managerGroups;
@@ -76,6 +81,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/App"))
      * @ManyToMany(targetEntity="App", mappedBy="managers")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $managerApps;
@@ -83,25 +89,26 @@ class Player implements \JsonSerializable
     /**
      * Contains only information that is of interest for clients.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
      * @see \JsonSerializable::jsonSerialize()
      */
     public function jsonSerialize()
     {
         $arr = [
-            'name' => $this->name,
-            'roles' => $this->roles->toArray(),
-            'groups' => $this->groups->toArray(),
-            'characters' => $this->characters->toArray(),
+            'name'          => $this->name,
+            'roles'         => $this->roles->toArray(),
+            'groups'        => $this->groups->toArray(),
+            'characters'    => $this->characters->toArray(),
             'managerGroups' => $this->managerGroups->toArray(),
-            'managerApps' => $this->managerApps->toArray(),
+            'managerApps'   => $this->managerApps->toArray(),
         ];
 
         return $arr;
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -165,7 +172,7 @@ class Player implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Role $role
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeRole(\Brave\Core\Entity\Role $role)
     {
@@ -201,7 +208,7 @@ class Player implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Group $group
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeGroup(\Brave\Core\Entity\Group $group)
     {
@@ -237,7 +244,7 @@ class Player implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Character $character
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeCharacter(\Brave\Core\Entity\Character $character)
     {
@@ -273,7 +280,7 @@ class Player implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Group $managerGroup
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeManagerGroup(\Brave\Core\Entity\Group $managerGroup)
     {
@@ -309,7 +316,7 @@ class Player implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\App $managerApp
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeManagerApp(\Brave\Core\Entity\App $managerApp)
     {

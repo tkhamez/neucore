@@ -1,16 +1,16 @@
 <?php
+
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Response;
 use Slim\Http\Request;
+use Slim\Http\Response;
 
 class AuthController
 {
-
     private $session;
 
     private $sso;
@@ -113,12 +113,13 @@ class AuthController
                 'success' => false,
                 'message' => 'OAuth state mismatch',
             ]);
+
             return $response->withRedirect($redirectUrl);
         }
 
         try {
             $token = $this->sso->getAccessToken('authorization_code', [
-                'code' => $request->getQueryParam('code', '')
+                'code' => $request->getQueryParam('code', ''),
             ]);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
@@ -126,10 +127,12 @@ class AuthController
                 'success' => false,
                 'message' => 'request token error',
             ]);
+
             return $response->withRedirect($redirectUrl);
         }
 
         $resourceOwner = null;
+
         try {
             $resourceOwner = $this->sso->getResourceOwner($token);
         } catch (\Exception $e) {
@@ -137,20 +140,21 @@ class AuthController
         }
 
         $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;
-        if (! is_array($verify) ||
-            ! isset($verify['CharacterID']) ||
-            ! isset($verify['CharacterName']) ||
-            ! isset($verify['CharacterOwnerHash'])
+        if (!is_array($verify) ||
+            !isset($verify['CharacterID']) ||
+            !isset($verify['CharacterName']) ||
+            !isset($verify['CharacterOwnerHash'])
         ) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'request verify error',
             ]);
+
             return $response->withRedirect($redirectUrl);
         }
 
         // normal or alt login?
-        $alt = $state{0} === 't'; // see buildLoginUrl()
+        $alt = $state[0] === 't'; // see buildLoginUrl()
 
         if ($alt) {
             $success = $auth->addAlt(
@@ -175,12 +179,12 @@ class AuthController
         if ($success) {
             $this->session->set('auth_result', [
                 'success' => true,
-                'message' => $alt ? 'Character added to player account.' : 'Login successful.'
+                'message' => $alt ? 'Character added to player account.' : 'Login successful.',
             ]);
         } else {
             $this->session->set('auth_result', [
                 'success' => false,
-                'message' => 'Could not authenticate user.'
+                'message' => 'Could not authenticate user.',
             ]);
         }
 
@@ -188,7 +192,6 @@ class AuthController
     }
 
     /**
-     *
      * @SWG\Get(
      *     path="/user/auth/result",
      *     summary="SSO result",
@@ -280,7 +283,7 @@ class AuthController
 
         $options = [
             'scope' => implode(' ', $this->scopes),
-            'state' => $statePrefix . bin2hex(random_bytes(16)),
+            'state' => $statePrefix.bin2hex(random_bytes(16)),
         ];
 
         $url = $this->sso->getAuthorizationUrl($options);

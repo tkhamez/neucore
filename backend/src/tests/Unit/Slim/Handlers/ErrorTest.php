@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Slim\Handlers;
 
 use Brave\Slim\Handlers\Error;
@@ -8,9 +9,8 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class ErrorTest extends  \PHPUnit\Framework\TestCase
+class ErrorTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testInvoke()
     {
         $logger = new Logger('test');

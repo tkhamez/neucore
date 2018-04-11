@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\App;
@@ -7,7 +8,6 @@ use Brave\Core\Entity\Player;
 
 class GroupTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $group = new Group();
@@ -18,7 +18,7 @@ class GroupTest extends \PHPUnit\Framework\TestCase
 
     public function testGetId()
     {
-        $this->assertNull((new Group)->getId());
+        $this->assertNull((new Group())->getId());
     }
 
     public function testSetGetName()

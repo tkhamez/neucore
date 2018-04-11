@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Slim\Role;
 
 use Psr\Http\Message\ResponseInterface;
@@ -16,15 +17,13 @@ use Slim\Route;
  */
 class AuthRoleMiddleware
 {
-
     private $roleService;
 
     private $options;
 
     /**
-     *
      * Available options (all optional):
-     * route_pattern: only authenticate for this routes, matched by "starts-with"
+     * route_pattern: only authenticate for this routes, matched by "starts-with".
      *
      * Example:
      * ['route_pattern' => ['/path/one', '/path/two']]
@@ -36,15 +35,15 @@ class AuthRoleMiddleware
     }
 
     /**
-     *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $next
+     * @param ResponseInterface      $response
+     * @param callable               $next
+     *
      * @return ResponseInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
-        if (! $this->shouldAuthenticate($request->getAttribute('route'))) {
+        if (!$this->shouldAuthenticate($request->getAttribute('route'))) {
             return $next($request, $response);
         }
 
@@ -70,8 +69,10 @@ class AuthRoleMiddleware
                     return true;
                 }
             }
+
             return false;
         }
+
         return false;
     }
 }

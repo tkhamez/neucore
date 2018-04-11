@@ -1,8 +1,7 @@
 <?php
 /**
- * Required configuration for vendor/bin/doctrine
+ * Required configuration for vendor/bin/doctrine.
  */
-
 use Brave\Core\Application;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\EntityManager;
@@ -10,7 +9,7 @@ use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\ORM\Tools\Setup;
 use Symfony\Component\Console\Helper\HelperSet;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $settings = (new Application())->loadSettings();
 $conf = $settings['config']['doctrine'];
@@ -24,7 +23,7 @@ $config = Setup::createAnnotationMetadataConfiguration(
 $em = EntityManager::create($conf['connection'], $config);
 
 /* @var $helpers HelperSet */
-$helpers = new HelperSet(array(
+$helpers = new HelperSet([
     'db' => new ConnectionHelper($em->getConnection()),
-    'em' => new EntityManagerHelper($em)
-));
+    'em' => new EntityManagerHelper($em),
+]);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\App;
@@ -8,21 +9,20 @@ use Brave\Core\Entity\Role;
 
 class AppTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $app = new App();
         $app->setName('test app');
 
         $this->assertSame([
-            'id' => null,
+            'id'   => null,
             'name' => 'test app',
         ], json_decode(json_encode($app), true));
     }
 
     public function testGetId()
     {
-        $this->assertNull((new App)->getId());
+        $this->assertNull((new App())->getId());
     }
 
     public function testSetGetName()

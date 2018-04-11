@@ -1,25 +1,26 @@
 <?php
+
 namespace Tests\Functional;
 
 use Brave\Core\Application;
+use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Environment;
 
 /**
  * Runs the application.
  */
 class WebTestCase extends \PHPUnit\Framework\TestCase
 {
-
     /**
-     * Process the application given a request method and URI
+     * Process the application given a request method and URI.
      *
-     * @param string $requestMethod the request method (e.g. GET, POST, etc.)
-     * @param string $requestUri the request URI
-     * @param array|object|null $requestData the request data
-     * @param array|null $header
-     * @param array|null $mocks key/value paris for the dependency injection container
+     * @param string            $requestMethod the request method (e.g. GET, POST, etc.)
+     * @param string            $requestUri    the request URI
+     * @param array|object|null $requestData   the request data
+     * @param array|null        $header
+     * @param array|null        $mocks         key/value paris for the dependency injection container
+     *
      * @return \Slim\Http\Response
      */
     protected function runApp($requestMethod, $requestUri,
@@ -28,7 +29,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         // Create a mock environment for testing with
         $environment = Environment::mock([
             'REQUEST_METHOD' => $requestMethod,
-            'REQUEST_URI' => $requestUri
+            'REQUEST_URI'    => $requestUri,
         ]);
 
         // Set up a request object based on the environment

@@ -1,19 +1,18 @@
 <?php
+
 namespace Brave\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Service\EveService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 
 class Sample extends Command
 {
-
     /**
-     *
      * @var LoggerInterface
      */
     private $log;
@@ -54,9 +53,10 @@ class Sample extends Command
             $char = $chars[0];
             $this->es->setCharacter($char);
             $apiInstance = new \Swagger\Client\Eve\Api\CharacterApi(null, $this->es->getConfiguration());
+
             try {
                 $result = $apiInstance->getCharactersCharacterId($char->getId());
-                #print_r($result);
+                //print_r($result);
             } catch (\Exception $e) {
                 $this->log->error(
                     'Exception when calling CharacterApi->getCharactersCharacterId',
@@ -65,6 +65,6 @@ class Sample extends Command
             }
         }
 
-        $output->writeln('Sample command with arg: ' . $arg . ', opt: ' . $opt . ' done.');
+        $output->writeln('Sample command with arg: '.$arg.', opt: '.$opt.' done.');
     }
 }

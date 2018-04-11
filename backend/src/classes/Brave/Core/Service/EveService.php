@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
@@ -13,7 +14,6 @@ use Swagger\Client\Eve\Configuration;
  */
 class EveService
 {
-
     private $oauth;
 
     private $em;
@@ -36,21 +36,23 @@ class EveService
 
     public function getToken(): string
     {
-        $token = "";
+        $token = '';
 
         if ($this->character === null) {
             $this->log->error('EveService::getToken: Character not set.');
+
             return $token;
         }
 
         try {
             $existingToken = new AccessToken([
-                'access_token' => $this->character->getAccessToken(),
+                'access_token'  => $this->character->getAccessToken(),
                 'refresh_token' => $this->character->getRefreshToken(),
-                'expires' => $this->character->getExpires()
+                'expires'       => $this->character->getExpires(),
             ]);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
+
             return $token;
         }
 
@@ -58,7 +60,7 @@ class EveService
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {
             try {
                 $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
-                    'refresh_token' => $existingToken->getRefreshToken()
+                    'refresh_token' => $existingToken->getRefreshToken(),
                 ]);
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), ['exception' => $e]);
@@ -68,6 +70,7 @@ class EveService
         if ($newAccessToken) {
             $this->character->setAccessToken($newAccessToken->getToken());
             $this->character->setExpires($newAccessToken->getExpires());
+
             try {
                 $this->em->persist($this->character);
                 $this->em->flush();

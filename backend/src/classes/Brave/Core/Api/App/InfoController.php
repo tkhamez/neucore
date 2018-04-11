@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Api\App;
 
 use Brave\Core\Service\AppAuthService;
@@ -7,7 +8,6 @@ use Slim\Http\Response;
 
 class InfoController
 {
-
     /**
      * @SWG\Get(
      *     path="/app/info",

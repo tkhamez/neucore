@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Character;
@@ -6,7 +7,6 @@ use Brave\Core\Entity\Player;
 
 class CharacterTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $char = new Character();
@@ -15,7 +15,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $char->setMain(false);
 
         $this->assertSame([
-            'id' => 123,
+            'id'   => 123,
             'name' => 'test char',
             'main' => false,
         ], json_decode(json_encode($char), true));

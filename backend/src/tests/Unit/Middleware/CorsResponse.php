@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
@@ -14,10 +15,12 @@ class CorsResponse implements ResponseInterface
     }
 
     public function withStatus($code, $reasonPhrase = '')
-    {}
+    {
+    }
 
     public function hasHeader($name)
-    {}
+    {
+    }
 
     public function getHeaders()
     {
@@ -25,40 +28,50 @@ class CorsResponse implements ResponseInterface
     }
 
     public function getBody()
-    {}
+    {
+    }
 
     public function withProtocolVersion($version)
-    {}
+    {
+    }
 
     public function withoutHeader($name)
-    {}
+    {
+    }
 
     public function getHeaderLine($name)
-    {}
+    {
+    }
 
     public function withHeader($name, $value)
     {
         $headers = $this->headers;
         $headers[$name][] = $value;
 
-        return new CorsResponse($headers);
+        return new self($headers);
     }
 
     public function withBody(StreamInterface $body)
-    {}
+    {
+    }
 
     public function getReasonPhrase()
-    {}
+    {
+    }
 
     public function getHeader($name)
-    {}
+    {
+    }
 
     public function getProtocolVersion()
-    {}
+    {
+    }
 
     public function getStatusCode()
-    {}
+    {
+    }
 
     public function withAddedHeader($name, $value)
-    {}
+    {
+    }
 }

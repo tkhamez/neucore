@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Service\UserAuthService;
@@ -6,7 +7,6 @@ use Slim\Http\Response;
 
 class InfoController
 {
-
     /**
      * @SWG\Get(
      *     path="/user/info",

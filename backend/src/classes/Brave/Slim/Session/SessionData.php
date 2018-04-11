@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Slim\Session;
 
 /**
@@ -32,7 +33,6 @@ class SessionData
     }
 
     /**
-     *
      * @return array|null
      */
     public function getAll()
@@ -44,8 +44,10 @@ class SessionData
      * Get a session variable.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @throws \RuntimeException If session is not started
+     *
      * @return mixed
      */
     public function get($key, $default = null)
@@ -53,6 +55,7 @@ class SessionData
         if (self::$sess === null) {
             throw new \RuntimeException('Session not started.');
         }
+
         return array_key_exists($key, self::$sess) ? self::$sess[$key] : $default;
     }
 
@@ -60,8 +63,10 @@ class SessionData
      * Set a session variable.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @throws \RuntimeException If session is read-only
+     *
      * @return $this
      */
     public function set($key, $value)
@@ -79,7 +84,9 @@ class SessionData
      * Delete a session variable.
      *
      * @param string $key
+     *
      * @throws \RuntimeException If session is read-only
+     *
      * @return $this
      */
     public function delete($key)
@@ -100,6 +107,7 @@ class SessionData
      * and delete the old associated session file.
      *
      * @throws \RuntimeException If session is read-only
+     *
      * @return $this
      */
     public function clear()

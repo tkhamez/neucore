@@ -3,7 +3,7 @@
 namespace Brave\Core\Entity;
 
 /**
- * Session
+ * Session.
  *
  * Only used to generate the database schema for the PdoSessionHandler.
  *

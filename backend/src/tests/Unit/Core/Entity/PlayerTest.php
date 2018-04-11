@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\App;
@@ -9,7 +10,6 @@ use Brave\Core\Entity\Role;
 
 class PlayerTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $a1 = (new App())->setName('app-one');
@@ -35,15 +35,15 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $play->addManagerApp($a1);
 
         $this->assertSame([
-            'name' => 'test user',
-            'roles' => ['rname', 'role2'],
-            'groups' => ['gname', 'group2'],
+            'name'       => 'test user',
+            'roles'      => ['rname', 'role2'],
+            'groups'     => ['gname', 'group2'],
             'characters' => [
                 ['id' => 123, 'name' => 'eve one', 'main' => true],
                 ['id' => 234, 'name' => 'eve two', 'main' => false],
             ],
             'managerGroups' => ['gname'],
-            'managerApps' => [['id' => null, 'name' => 'app-one']],
+            'managerApps'   => [['id' => null, 'name' => 'app-one']],
         ], json_decode(json_encode($play), true));
     }
 
@@ -54,7 +54,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
     public function testSetGetName()
     {
-        $play= new Player();
+        $play = new Player();
         $play->setName('nam');
         $this->assertSame('nam', $play->getName());
     }
