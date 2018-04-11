@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     'settings.displayErrorDetails' => true,
@@ -8,6 +9,6 @@ return [
             'meta' => [
                 'dev_mode' => true,
             ],
-        ]
+        ],
     ],
 ];

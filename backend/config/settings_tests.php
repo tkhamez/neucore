@@ -1,6 +1,6 @@
 <?php
 /**
- *  Test settings, loaded additionally to settings_dev.php
+ *  Test settings, loaded additionally to settings_dev.php.
  */
 
 return [
@@ -10,7 +10,7 @@ return [
         ],
         'doctrine' => [
             'connection' => [
-                'url' => getenv('BRAVECORE_TEST_DATABASE_URL')
+                'url' => getenv('BRAVECORE_TEST_DATABASE_URL'),
             ],
         ],
     ],

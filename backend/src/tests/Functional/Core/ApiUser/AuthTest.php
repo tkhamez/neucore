@@ -1,19 +1,19 @@
 <?php
+
 namespace Tests\Functional\Core\ApiUser;
 
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use Monolog\Logger;
+use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
 class AuthTest extends WebTestCase
 {
-
     public function setUp()
     {
         $_SESSION = null;
@@ -96,14 +96,14 @@ class AuthTest extends WebTestCase
         $_SESSION = ['auth_state' => $state];
 
         $sso = $this->createMock(GenericProvider::class);
-        $sso->method('getAccessToken')->will($this->throwException(new \Exception));
+        $sso->method('getAccessToken')->will($this->throwException(new \Exception()));
 
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => $sso,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -118,14 +118,14 @@ class AuthTest extends WebTestCase
 
         $sso = $this->createMock(GenericProvider::class);
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
-        $sso->method('getResourceOwner')->will($this->throwException(new \Exception));
+        $sso->method('getResourceOwner')->will($this->throwException(new \Exception()));
 
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => $sso,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -146,7 +146,7 @@ class AuthTest extends WebTestCase
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -173,7 +173,7 @@ class AuthTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => $sso,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -200,7 +200,7 @@ class AuthTest extends WebTestCase
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -227,7 +227,7 @@ class AuthTest extends WebTestCase
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
         ]);
         $this->assertSame(302, $response->getStatusCode());
 

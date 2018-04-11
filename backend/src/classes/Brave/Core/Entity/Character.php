@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Entity;
 
 /**
@@ -15,44 +16,46 @@ namespace Brave\Core\Entity;
  */
 class Character implements \JsonSerializable
 {
-
     /**
-     * EVE character ID
+     * EVE character ID.
      *
      * @SWG\Property(format="int64")
      * @Id
      * @Column(type="bigint")
      * @NONE
-     * @var integer
+     *
+     * @var int
      */
     private $id;
 
     /**
-     *
      * @Column(type="text", length=65535, name="character_owner_hash")
+     *
      * @var string
      */
     private $characterOwnerHash;
 
     /**
-     * EVE character name
+     * EVE character name.
      *
      * @SWG\Property()
      * @Column(type="string", length=255)
+     *
      * @var string
      */
     private $name;
 
     /**
-     *
      * @SWG\Property()
      * @Column(type="boolean")
+     *
      * @var bool
      */
     private $main;
 
     /**
      * @Column(type="text", length=65535, name="access_token")
+     *
      * @var string
      */
     private $accessToken;
@@ -61,18 +64,21 @@ class Character implements \JsonSerializable
      * Unix timestamp when access token expires.
      *
      * @Column(type="integer", nullable=true)
+     *
      * @var int
      */
     private $expires;
 
     /**
      * @Column(type="text", length=65535, name="refresh_token", nullable=true)
+     *
      * @var string
      */
     private $refreshToken;
 
     /**
      * @ManyToOne(targetEntity="Player", inversedBy="characters")
+     *
      * @var Player
      */
     private $player;
@@ -80,15 +86,16 @@ class Character implements \JsonSerializable
     /**
      * Contains only information that is of interest for clients.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
      * @see \JsonSerializable::jsonSerialize()
      */
     public function jsonSerialize()
     {
         $arr = [
-            'id' => (int) $this->id,
+            'id'   => (int) $this->id,
             'name' => $this->name,
-            'main' => $this->main
+            'main' => $this->main,
         ];
 
         return $arr;

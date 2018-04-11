@@ -3,19 +3,18 @@
 namespace Tests;
 
 use Brave\Core\Application;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\RoleRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\Setup;
 
 class Helper
 {
-
     /**
      * @var EntityManager
      */
@@ -85,8 +84,8 @@ class Helper
     }
 
     /**
-     *
      * @param array $roles
+     *
      * @return \Brave\Core\Entity\Role[]
      */
     public function addRoles($roles)
@@ -112,8 +111,8 @@ class Helper
     }
 
     /**
-     *
      * @param array $groups
+     *
      * @return \Brave\Core\Entity\Group[]
      */
     public function addGroups($groups)
@@ -133,10 +132,10 @@ class Helper
     }
 
     /**
-     *
      * @param string $name
-     * @param int $charId
-     * @param array $roles
+     * @param int    $charId
+     * @param array  $roles
+     *
      * @return Character
      */
     public function addCharacterMain(string $name, int $charId, array $roles, array $groups = [])
@@ -174,11 +173,11 @@ class Helper
     }
 
     /**
-     *
      * @param string $name
      * @param string $secret
-     * @param array $roles
-     * @param mixed $hash PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())
+     * @param array  $roles
+     * @param mixed  $hash   PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())
+     *
      * @return App
      */
     public function addApp(string $name, string $secret, array $roles, $hashAlgo = PASSWORD_DEFAULT)

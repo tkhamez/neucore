@@ -1,18 +1,18 @@
 <?php
+
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Service\EveService;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
-use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Token\AccessToken;
-use Tests\Helper;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Service\EveService;
+use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Token\AccessToken;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use Tests\Helper;
 
 class EveServiceTest extends \PHPUnit\Framework\TestCase
 {
-
     private $em;
 
     private $log;
@@ -41,7 +41,7 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testGetTokenNoUser()
     {
-        $this->assertSame("", $this->es->getToken());
+        $this->assertSame('', $this->es->getToken());
 
         $this->assertSame(
             'EveService::getToken: Character not set.',
@@ -77,9 +77,9 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetTokenNewTokenUpdateDatabase()
     {
         $this->oauth->method('getAccessToken')->willReturn(new AccessToken([
-            'access_token' => 'new-token',
+            'access_token'  => 'new-token',
             'refresh_token' => '',
-            'expires' => 1519933900, // 03/01/2018 @ 7:51pm (UTC)
+            'expires'       => 1519933900, // 03/01/2018 @ 7:51pm (UTC)
         ]));
 
         $c = new Character();

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Functional\Core\ApiApp;
 
 use Tests\Functional\WebTestCase;
@@ -6,7 +7,6 @@ use Tests\Helper;
 
 class InfoTest extends WebTestCase
 {
-
     public function testGetInfo403()
     {
         $response = $this->runApp('GET', '/api/app/info');
@@ -24,7 +24,7 @@ class InfoTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            'id' => $aid,
+            'id'   => $aid,
             'name' => 'Test App',
         ], $this->parseJsonBody($response));
     }

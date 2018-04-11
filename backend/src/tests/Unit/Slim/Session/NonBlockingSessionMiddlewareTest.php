@@ -1,16 +1,16 @@
 <?php
+
 namespace Tests\Unit\Slim\Session;
 
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
 use Brave\Slim\Session\SessionData;
-use Slim\Route;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Route;
 
 class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 {
-
     public function setUp()
     {
         unset($_SESSION);
@@ -19,7 +19,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testShouldNotStart()
     {
         $conf = [
-            'route_include_pattern' => ['/sess'],
+            'route_include_pattern'  => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
         $this->invokeMiddleware('/nosess', $conf, true);
@@ -47,7 +47,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testStartReadOnly()
     {
         $conf = [
-            'route_include_pattern' => ['/sess'],
+            'route_include_pattern'  => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
         $this->invokeMiddleware('/sess', $conf, true);
@@ -59,7 +59,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testStartWritable()
     {
         $conf = [
-            'route_include_pattern' => ['/sess'],
+            'route_include_pattern'  => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
         $this->invokeMiddleware('/sess/set', $conf, true);
@@ -80,7 +80,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $nbs = new NonBlockingSessionMiddleware($conf);
 
-        $next = function($req, $res) {
+        $next = function ($req, $res) {
             return $res;
         };
 

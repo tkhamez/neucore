@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Slim\Role;
 
 use Psr\Http\Message\ResponseInterface;
@@ -15,11 +16,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SecureRouteMiddleware
 {
-
     private $secured;
 
     /**
-     *
      * First match will be used.
      *
      * Keys are route pattern, matched by "starts-with".
@@ -37,10 +36,10 @@ class SecureRouteMiddleware
     }
 
     /**
-     *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $next
+     * @param ResponseInterface      $response
+     * @param callable               $next
+     *
      * @return ResponseInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)

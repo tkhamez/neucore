@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Entity;
 
 /**
@@ -9,17 +10,18 @@ namespace Brave\Core\Entity;
  */
 class Group implements \JsonSerializable
 {
-
     /**
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     * @var integer
+     *
+     * @var int
      */
     private $id;
 
     /**
      * @Column(type="string", unique=true, length=64)
+     *
      * @var string
      */
     private $name;
@@ -27,6 +29,7 @@ class Group implements \JsonSerializable
     /**
      * @ManyToMany(targetEntity="Player", mappedBy="players")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $players;
@@ -34,6 +37,7 @@ class Group implements \JsonSerializable
     /**
      * @ManyToMany(targetEntity="App", mappedBy="apps")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $apps;
@@ -42,6 +46,7 @@ class Group implements \JsonSerializable
      * @ManyToMany(targetEntity="Player", inversedBy="managerGroups")
      * @JoinTable(name="group_manager")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $managers;
@@ -49,7 +54,8 @@ class Group implements \JsonSerializable
     /**
      * Contains only information that is of interest for clients.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
      * @see \JsonSerializable::jsonSerialize()
      */
     public function jsonSerialize()
@@ -58,7 +64,7 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -120,7 +126,7 @@ class Group implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Player $player
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removePlayer(\Brave\Core\Entity\Player $player)
     {
@@ -156,7 +162,7 @@ class Group implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\App $app
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeApp(\Brave\Core\Entity\App $app)
     {
@@ -192,7 +198,7 @@ class Group implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Player $manager
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeManager(\Brave\Core\Entity\Player $manager)
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Slim\Session;
 
 use Psr\Http\Message\ResponseInterface;
@@ -18,16 +19,14 @@ use Slim\Route;
  */
 class NonBlockingSessionMiddleware
 {
-
     private $options;
 
     /**
-     *
      * Available options (all optional):
      * name <string>: the session name
      * secure <bool>: session.cookie_secure option runtime configuration
      * route_blocking_pattern <array>: patterns of routes that allow writing to the session, exact match
-     * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with"
+     * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with".
      *
      * Example
      * [
@@ -43,16 +42,16 @@ class NonBlockingSessionMiddleware
     }
 
     /**
-     *
      * @param ServerRequestInterface $req
-     * @param ResponseInterface $res
-     * @param callable $next
+     * @param ResponseInterface      $res
+     * @param callable               $next
+     *
      * @return ResponseInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         // check if session should be started
-        if (! $this->shouldStartSession($request->getAttribute('route'))) {
+        if (!$this->shouldStartSession($request->getAttribute('route'))) {
             return $next($request, $response);
         }
 
@@ -108,15 +107,14 @@ class NonBlockingSessionMiddleware
 
             session_start([
                 'cookie_lifetime' => 0,
-                'cookie_path' => '/',
-                'cookie_domain' => '',
-                'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true,
+                'cookie_path'     => '/',
+                'cookie_domain'   => '',
+                'cookie_secure'   => isset($this->options['secure']) ? (bool) $this->options['secure'] : true,
                 'cookie_httponly' => true,
             ]);
-
         } else {
             // allow unit tests to inject values in the session
-            $_SESSION = isset($_SESSION) ? $_SESSION : array();
+            $_SESSION = isset($_SESSION) ? $_SESSION : [];
         }
     }
 

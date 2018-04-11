@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\App;
@@ -16,7 +17,6 @@ use Psr\Log\LoggerInterface;
  */
 class AppAuthService implements RoleProviderInterface
 {
-
     private $appRepository;
 
     private $em;
@@ -24,7 +24,6 @@ class AppAuthService implements RoleProviderInterface
     private $log;
 
     /**
-     *
      * @var App
      */
     private $app;
@@ -37,8 +36,8 @@ class AppAuthService implements RoleProviderInterface
     }
 
     /**
+     * {@inheritdoc}
      *
-     * {@inheritDoc}
      * @see \Brave\Slim\Role\RoleProviderInterface::getRoles()
      */
     public function getRoles(ServerRequestInterface $request): array
@@ -56,9 +55,9 @@ class AppAuthService implements RoleProviderInterface
     }
 
     /**
-     *
      * @param ServerRequestInterface $request
-     * @return NULL|\Brave\Core\Entity\App
+     *
+     * @return null|\Brave\Core\Entity\App
      */
     public function getApp(ServerRequestInterface $request)
     {
@@ -70,8 +69,8 @@ class AppAuthService implements RoleProviderInterface
     }
 
     /**
-     *
      * @param ServerRequestInterface $request
+     *
      * @return void
      */
     private function authenticate(ServerRequestInterface $request)
@@ -87,7 +86,7 @@ class AppAuthService implements RoleProviderInterface
         }
 
         $tokenParts = explode(':', $tokenDecoded);
-        if (! isset($tokenParts[1])) {
+        if (!isset($tokenParts[1])) {
             return;
         }
 
@@ -103,9 +102,9 @@ class AppAuthService implements RoleProviderInterface
     }
 
     /**
-     *
      * @param ServerRequestInterface $request
-     * @return NULL|string
+     *
+     * @return null|string
      */
     private function findToken(ServerRequestInterface $request)
     {
@@ -122,12 +121,13 @@ class AppAuthService implements RoleProviderInterface
     }
 
     /**
-     * upgrade hash if needed
+     * upgrade hash if needed.
      */
     private function upgradeHash(string $secret)
     {
         if (password_needs_rehash($this->app->getSecret(), PASSWORD_DEFAULT)) {
             $this->app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+
             try {
                 $this->em->persist($this->app);
                 $this->em->flush();

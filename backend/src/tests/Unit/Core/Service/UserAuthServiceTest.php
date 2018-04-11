@@ -1,9 +1,10 @@
 <?php
+
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Service\UserAuthService;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
@@ -12,7 +13,6 @@ use Tests\Helper;
 
 class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
 {
-
     private $log;
 
     /**

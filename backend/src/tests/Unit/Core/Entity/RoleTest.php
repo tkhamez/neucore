@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\App;
@@ -7,7 +8,6 @@ use Brave\Core\Entity\Role;
 
 class RoleTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $role = new Role();
@@ -18,7 +18,7 @@ class RoleTest extends \PHPUnit\Framework\TestCase
 
     public function testGetId()
     {
-        $this->assertNull((new Role)->getId());
+        $this->assertNull((new Role())->getId());
     }
 
     public function testSetGetName()

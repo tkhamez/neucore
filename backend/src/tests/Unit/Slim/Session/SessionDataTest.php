@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Slim\Session;
 
 use Brave\Slim\Session\SessionData;
@@ -6,7 +7,6 @@ use Tests\Helper;
 
 class SessionDataTest extends \PHPUnit\Framework\TestCase
 {
-
     public function setUp()
     {
         (new Helper())->resetSessionData();
@@ -107,6 +107,7 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $sd->getAll());
         $this->assertSame($sd, $ret);
     }
+
     public function testSuperglobalIsReference()
     {
         $_SESSION = []; // "start" session
@@ -121,5 +122,4 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $sd->set('k2', 'v2');
         $this->assertSame($_SESSION, $sd->getAll());
     }
-
 }

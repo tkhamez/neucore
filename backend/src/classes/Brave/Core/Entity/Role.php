@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Core\Entity;
 
 /**
@@ -9,17 +10,18 @@ namespace Brave\Core\Entity;
  */
 class Role implements \JsonSerializable
 {
-
     /**
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     * @var integer
+     *
+     * @var int
      */
     private $id;
 
     /**
      * @Column(type="string", unique=true, length=64)
+     *
      * @var string
      */
     private $name;
@@ -27,6 +29,7 @@ class Role implements \JsonSerializable
     /**
      * @ManyToMany(targetEntity="Player", mappedBy="players")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $players;
@@ -34,6 +37,7 @@ class Role implements \JsonSerializable
     /**
      * @ManyToMany(targetEntity="App", mappedBy="apps")
      * @OrderBy({"name" = "ASC"})
+     *
      * @var \Doctrine\Common\Collections\Collection
      */
     private $apps;
@@ -41,7 +45,8 @@ class Role implements \JsonSerializable
     /**
      * Contains only information that is of interest for clients.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
      * @see \JsonSerializable::jsonSerialize()
      */
     public function jsonSerialize()
@@ -50,7 +55,7 @@ class Role implements \JsonSerializable
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -111,7 +116,7 @@ class Role implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\Player $player
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removePlayer(\Brave\Core\Entity\Player $player)
     {
@@ -147,7 +152,7 @@ class Role implements \JsonSerializable
      *
      * @param \Brave\Core\Entity\App $app
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeApp(\Brave\Core\Entity\App $app)
     {

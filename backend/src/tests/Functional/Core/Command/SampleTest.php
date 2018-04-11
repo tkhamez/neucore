@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Application;
@@ -6,7 +7,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class SampleTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testRunConsole()
     {
         $app = new Application();
@@ -16,8 +16,8 @@ class SampleTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            'arg' => 'a1',
-            '--opt' => 'o1',
+            'arg'     => 'a1',
+            '--opt'   => 'o1',
         ]);
         $output = $commandTester->getDisplay();
 

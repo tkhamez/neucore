@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\CharacterRepository;
@@ -6,7 +7,6 @@ use Tests\Helper;
 
 class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testConstruct()
     {
         $em = (new Helper())->getEm();

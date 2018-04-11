@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\AppRepository;
@@ -12,7 +13,6 @@ use Tests\Helper;
 
 class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
 {
-
     /**
      * @var AppAuthService
      */

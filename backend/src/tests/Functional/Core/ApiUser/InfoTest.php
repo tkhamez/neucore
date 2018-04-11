@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Functional\Core\ApiUser;
 
 use Tests\Functional\WebTestCase;
@@ -6,7 +7,6 @@ use Tests\Helper;
 
 class InfoTest extends WebTestCase
 {
-
     public function setUp()
     {
         $_SESSION = null;
@@ -29,14 +29,14 @@ class InfoTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            'name' => 'Test User',
-            'roles' => ['admin', 'user'],
-            'groups' => ['another-group', 'group1'],
+            'name'       => 'Test User',
+            'roles'      => ['admin', 'user'],
+            'groups'     => ['another-group', 'group1'],
             'characters' => [
                 ['id' => 123456, 'name' => 'Test User', 'main' => true],
             ],
             'managerGroups' => [],
-            'managerApps' => [],
+            'managerApps'   => [],
         ], $this->parseJsonBody($response));
     }
 }

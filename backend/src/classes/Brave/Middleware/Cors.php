@@ -1,4 +1,5 @@
 <?php
+
 namespace Brave\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
@@ -12,12 +13,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Cors
 {
-
     private $allowOrigin;
 
     /**
-     *
-     * Option (required): allowed origins
+     * Option (required): allowed origins.
      *
      * Example:
      * ['https://frontend.domain.tld']
@@ -28,10 +27,10 @@ class Cors
     }
 
     /**
-     *
      * @param ServerRequestInterface $req
-     * @param ResponseInterface $res
-     * @param callable $next
+     * @param ResponseInterface      $res
+     * @param callable               $next
+     *
      * @return ResponseInterface
      */
     public function __invoke(ServerRequestInterface $req, ResponseInterface $res, callable $next)
@@ -42,9 +41,8 @@ class Cors
         if ($origin !== null && in_array($origin, $this->allowOrigin)) {
             $response = $response
                 ->withHeader('Access-Control-Allow-Origin', $origin)
-                #->withHeader('Access-Control-Allow-Headers', 'Authorization')
-                ->withHeader('Access-Control-Allow-Credentials', 'true')
-            ;
+                //->withHeader('Access-Control-Allow-Headers', 'Authorization')
+                ->withHeader('Access-Control-Allow-Credentials', 'true');
         }
 
         return $response;
