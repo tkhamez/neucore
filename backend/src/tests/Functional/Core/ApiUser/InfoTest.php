@@ -22,13 +22,14 @@ class InfoTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Test User', 123456, ['user', 'admin'], ['group1', 'another-group']);
+        $char = $h->addCharacterMain('Test User', 123456, ['user', 'admin'], ['group1', 'another-group']);
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/info');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
+            'id' => $char->getPlayer()->getId(),
             'name' => 'Test User',
             'roles' => ['admin', 'user'],
             'groups' => ['another-group', 'group1'],

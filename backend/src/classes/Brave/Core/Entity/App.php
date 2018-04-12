@@ -181,7 +181,7 @@ class App implements \JsonSerializable
      */
     public function getRoles()
     {
-        return $this->roles;
+        return $this->roles->toArray();
     }
 
     /**
@@ -217,7 +217,7 @@ class App implements \JsonSerializable
      */
     public function getGroups()
     {
-        return $this->groups;
+        return $this->groups->toArray();
     }
 
     /**
@@ -253,6 +253,6 @@ class App implements \JsonSerializable
      */
     public function getManagers()
     {
-        return $this->managers;
+        return $this->managers->toArray();
     }
 }

@@ -94,7 +94,6 @@ class AppAuthService implements RoleProviderInterface
         $appId = $tokenParts[0];
         $secret = $tokenParts[1];
 
-        /* @var $app \Brave\Core\Entity\App */
         $app = $this->appRepository->find($appId);
         if ($app !== null && password_verify($secret, $app->getSecret())) {
             $this->app = $app;

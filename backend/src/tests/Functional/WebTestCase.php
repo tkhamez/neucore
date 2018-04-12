@@ -5,6 +5,7 @@ use Brave\Core\Application;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Environment;
+use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Runs the application.
@@ -69,6 +70,20 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
 
         // Return the response
         return $response;
+    }
+
+    protected function runConsoleApp($name, $input)
+    {
+        $app = new Application();
+        $app->loadSettings(true);
+
+        $console = $app->getConsoleApp();
+
+        $command = $console->find($name);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute($input);
+
+        return $commandTester->getDisplay();
     }
 
     protected function parseJsonBody(\Slim\Http\Response $response, $assoc = true)

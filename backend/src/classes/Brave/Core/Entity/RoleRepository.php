@@ -18,4 +18,26 @@ class RoleRepository extends \Doctrine\ORM\EntityRepository
     {
         parent::__construct($em, $em->getMetadataFactory()->getMetadataFor(Role::class));
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findOneBy()
+     * @return \Brave\Core\Entity\Role|null
+     */
+    public function findOneBy(array $criteria, array $orderBy = null)
+    {
+        return parent::findOneBy($criteria, $orderBy);
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findBy()
+     * @return \Brave\Core\Entity\Role[]
+     */
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    {
+        return parent::findBy($criteria, $orderBy, $limit, $offset);
+    }
 }

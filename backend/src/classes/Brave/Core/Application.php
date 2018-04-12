@@ -1,8 +1,10 @@
 <?php
 namespace Brave\Core;
 
+use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\Sample;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuthService;
 use Brave\Core\Service\EveService;
 use Brave\Core\Service\UserAuthService;
@@ -38,6 +40,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Whoops\Handler\JsonResponseHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
+use Whoops\Handler\PlainTextHandler;
 
 /**
  * App bootstrapping
@@ -46,7 +49,7 @@ use Whoops\Run;
  *     schemes={"https"},
  *     basePath="/api",
  *     @SWG\Info(
- *       title="Brave Collective Core Services Prototype API",
+ *       title="Brave Collective Core Services API",
  *       version="0.1"
  *     ),
  *     @SWG\SecurityScheme(
@@ -223,8 +226,15 @@ class Application
         $c = $app->getContainer();
 
         $console = new ConsoleApplication();
+
+        $console->add(new MakeAdmin(
+            $c->get(CharacterRepository::class),
+            $c->get(RoleRepository::class),
+            $c->get(EntityManagerInterface::class),
+            $c->get(LoggerInterface::class)
+        ));
+
         $console->add(new Sample(
-            $c->get(LoggerInterface::class),
             $c->get(CharacterRepository::class),
             $c->get(EveService::class)
         ));
@@ -367,8 +377,8 @@ class Application
     private function errorHandling(Container $container)
     {
         // php settings
-        ini_set('display_errors', 0);
-        ini_set('log_errors', 0); // all errors are logged with Monolog
+        ini_set('display_errors', 0); // all errors are shown with whoops in dev mode
+        ini_set('log_errors', 0); // all errors are logged with Monolog in prod mode
         error_reporting(E_ALL);
 
         if ($this->env === self::ENV_PROD) {
@@ -384,11 +394,12 @@ class Application
             ErrorHandler::register($container->get(LoggerInterface::class));
 
         } else { // self::ENV_DEV
-
             // Slim's error handling is not added to the container in
             // self::buildContainer() for dev env, instead we use Whoops
             $whoops = new Run();
-            if (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
+            if (PHP_SAPI === 'cli') {
+                $whoops->pushHandler(new PlainTextHandler());
+            } elseif (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
                 $whoops->pushHandler((new JsonResponseHandler())->addTraceToOutput(true));
             } else {
                 $whoops->pushHandler(new PrettyPageHandler());
@@ -416,11 +427,16 @@ class Application
             } elseif ($conf[0] === 'POST') {
                 $app->post($route, $conf[1]);
 
+            } elseif ($conf[0] === 'DELETE') {
+                $app->delete($route, $conf[1]);
+
+            } elseif ($conf[0] === 'PUT') {
+                $app->put($route, $conf[1]);
+
             } else {
                 // add as needed:
-                // put, delete, options, patch, any
+                // options, patch, any
             }
         }
     }
 }
-

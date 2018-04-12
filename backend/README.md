@@ -9,9 +9,21 @@ with the [PHP-DI container](http://php-di.org/).
 
 ## Command-Line App
 
+The console application is available at
 ```
 bin/console
 ```
+
+### Making yourself an admin
+
+Login with your EVE character to create an account. Then execute this command,
+replace the ID 1234 with your EVE character ID.
+
+```
+bin/console make-admin 1234
+```
+
+This will add all available roles to your player account.
 
 ## Other Commands
 

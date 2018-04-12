@@ -34,15 +34,15 @@ class RoleTest extends \PHPUnit\Framework\TestCase
         $p1 = new Player();
         $p2 = new Player();
 
-        $this->assertSame([], $role->getPlayers()->toArray());
+        $this->assertSame([], $role->getPlayers());
 
         $role->addPlayer($p1);
         $role->addPlayer($p2);
-        $this->assertSame([$p1, $p2], $role->getPlayers()->toArray());
+        $this->assertSame([$p1, $p2], $role->getPlayers());
 
         $role->removePlayer($p2);
         $role->removePlayer($p1);
-        $this->assertSame([], $role->getPlayers()->toArray());
+        $this->assertSame([], $role->getPlayers());
     }
 
     public function testAddGetRemoveApp()
@@ -51,13 +51,13 @@ class RoleTest extends \PHPUnit\Framework\TestCase
         $a1 = new App();
         $a2 = new App();
 
-        $this->assertSame([], $role->getApps()->toArray());
+        $this->assertSame([], $role->getApps());
 
         $role->addApp($a1);
         $role->addApp($a2);
-        $this->assertSame([$a1, $a2], $role->getApps()->toArray());
+        $this->assertSame([$a1, $a2], $role->getApps());
 
         $role->removeApp($a2);
-        $this->assertSame([$a1], $role->getApps()->toArray());
+        $this->assertSame([$a1], $role->getApps());
     }
 }

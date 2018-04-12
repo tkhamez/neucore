@@ -15,12 +15,12 @@ class InfoController
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="The player information",
+     *         description="The player information.",
      *         @SWG\Schema(ref="#/definitions/Player")
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="If not authorized"
+     *         description="Not authorized."
      *     )
      * )
      */

@@ -17,7 +17,7 @@ class Character implements \JsonSerializable
 {
 
     /**
-     * EVE character ID
+     * EVE character ID.
      *
      * @SWG\Property(format="int64")
      * @Id
@@ -35,7 +35,7 @@ class Character implements \JsonSerializable
     private $characterOwnerHash;
 
     /**
-     * EVE character name
+     * EVE character name.
      *
      * @SWG\Property()
      * @Column(type="string", length=255)

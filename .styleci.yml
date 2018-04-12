@@ -1,0 +1,8 @@
+php:
+  preset: psr2
+  risky: false
+  finder:
+    name: "*.php"
+js: false
+ts: false
+css: false

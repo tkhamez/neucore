@@ -20,10 +20,9 @@ class CharacterRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     *
      * {@inheritDoc}
      * @see \Doctrine\ORM\EntityRepository::find()
-     * @return \Brave\Core\Entity\Character
+     * @return \Brave\Core\Entity\Character|null
      */
     public function find($id, $lockMode = null, $lockVersion = null)
     {

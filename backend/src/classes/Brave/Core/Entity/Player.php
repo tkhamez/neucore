@@ -5,8 +5,9 @@ namespace Brave\Core\Entity;
  *
  * @SWG\Definition(
  *     definition="Player",
- *     required={"name", "roles", "groups", "characters", "managerGroups", "managerApps"}
+ *     required={"id", "name", "roles", "groups", "characters", "managerGroups", "managerApps"}
  * )
+ *
  * @Entity(repositoryClass="Brave\Core\Entity\PlayerRepository")
  * @Table(name="players")
  */
@@ -14,6 +15,7 @@ class Player implements \JsonSerializable
 {
 
     /**
+     * @SWG\Property()
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -22,9 +24,9 @@ class Player implements \JsonSerializable
     private $id;
 
     /**
-     * A name for the player
+     * A name for the player.
      *
-     * This is the EVE character name of the main atm.
+     * This is the EVE character name of the main character.
      *
      * @SWG\Property()
      * @Column(type="string", length=255)
@@ -89,12 +91,13 @@ class Player implements \JsonSerializable
     public function jsonSerialize()
     {
         $arr = [
+            'id' => $this->id,
             'name' => $this->name,
-            'roles' => $this->roles->toArray(),
-            'groups' => $this->groups->toArray(),
-            'characters' => $this->characters->toArray(),
-            'managerGroups' => $this->managerGroups->toArray(),
-            'managerApps' => $this->managerApps->toArray(),
+            'roles' => $this->getRoles(),
+            'groups' => $this->getGroups(),
+            'characters' => $this->getCharacters(),
+            'managerGroups' => $this->getManagerGroups(),
+            'managerApps' => $this->getManagerApps(),
         ];
 
         return $arr;
@@ -179,7 +182,21 @@ class Player implements \JsonSerializable
      */
     public function getRoles()
     {
-        return $this->roles;
+        return $this->roles->toArray();
+    }
+
+    /**
+     *
+     * @return string[]
+     */
+    public function getRoleNames()
+    {
+        $names = [];
+        foreach ($this->getRoles() as $role) {
+            $names[] = $role->getName();
+        }
+
+        return $names;
     }
 
     /**
@@ -215,7 +232,7 @@ class Player implements \JsonSerializable
      */
     public function getGroups()
     {
-        return $this->groups;
+        return $this->groups->toArray();
     }
 
     /**
@@ -251,7 +268,7 @@ class Player implements \JsonSerializable
      */
     public function getCharacters()
     {
-        return $this->characters;
+        return $this->characters->toArray();
     }
 
     /**
@@ -287,7 +304,7 @@ class Player implements \JsonSerializable
      */
     public function getManagerGroups()
     {
-        return $this->managerGroups;
+        return $this->managerGroups->toArray();
     }
 
     /**
@@ -323,6 +340,6 @@ class Player implements \JsonSerializable
      */
     public function getManagerApps()
     {
-        return $this->managerApps;
+        return $this->managerApps->toArray();
     }
 }

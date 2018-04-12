@@ -125,7 +125,7 @@ class Role implements \JsonSerializable
      */
     public function getPlayers()
     {
-        return $this->players;
+        return $this->players->toArray();
     }
 
     /**
@@ -161,6 +161,6 @@ class Role implements \JsonSerializable
      */
     public function getApps()
     {
-        return $this->apps;
+        return $this->apps->toArray();
     }
 }

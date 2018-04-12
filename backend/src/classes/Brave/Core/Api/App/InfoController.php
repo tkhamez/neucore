@@ -21,7 +21,7 @@ class InfoController
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="If not authorized"
+     *         description="Not authorized."
      *     )
      * )
      */

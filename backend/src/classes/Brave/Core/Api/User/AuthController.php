@@ -5,9 +5,32 @@ use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Response;
 use Slim\Http\Request;
+use Slim\Http\Response;
 
+/**
+ *
+ * @SWG\Definition(
+ *     definition="SSOLogin",
+ *     required={"oauthUrl"},
+ *     @SWG\Property(
+ *         property="oauthUrl",
+ *         type="string"
+ *     )
+ * )
+ * @SWG\Definition(
+ *     definition="SSOLoginResult",
+ *     required={"success", "message"},
+ *     @SWG\Property(
+ *         property="success",
+ *         type="boolean"
+ *     ),
+ *     @SWG\Property(
+ *         property="message",
+ *         type="string"
+ *     )
+ * )
+ */
 class AuthController
 {
 
@@ -34,7 +57,7 @@ class AuthController
     /**
      * @SWG\Get(
      *     path="/user/auth/login",
-     *     summary="EVE SSO login URL",
+     *     summary="EVE SSO login URL.",
      *     tags={"User"},
      *     @SWG\Parameter(
      *         name="redirect_url",
@@ -44,15 +67,8 @@ class AuthController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The EVE SSO login URL. URL will be empty if user is already logged in",
-     *         @SWG\Schema(
-     *             title="SSOLogin",
-     *             required={"oauth_url"},
-     *             @SWG\Property(
-     *                 property="oauth_url",
-     *                 type="string"
-     *             )
-     *         )
+     *         description="The EVE SSO login URL. URL will be empty if user is already logged in.",
+     *         @SWG\Schema(ref="#/definitions/SSOLogin")
      *     )
      * )
      */
@@ -79,19 +95,12 @@ class AuthController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The EVE SSO login URL",
-     *         @SWG\Schema(
-     *             title="SSOLogin",
-     *             required={"oauth_url"},
-     *             @SWG\Property(
-     *                 property="oauth_url",
-     *                 type="string"
-     *             )
-     *         )
+     *         description="The EVE SSO login URL.",
+     *         @SWG\Schema(ref="#/definitions/SSOLogin")
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="If not authorized"
+     *         description="Not authorized."
      *     )
      * )
      */
@@ -191,23 +200,12 @@ class AuthController
      *
      * @SWG\Get(
      *     path="/user/auth/result",
-     *     summary="SSO result",
+     *     summary="Result of last SSO attempt.",
      *     tags={"User"},
      *     @SWG\Response(
      *         response="200",
-     *         description="Result of last SSO attempt",
-     *         @SWG\Schema(
-     *             title="SSOLoginResult",
-     *             required={"success", "message"},
-     *             @SWG\Property(
-     *                 property="success",
-     *                 type="boolean"
-     *             ),
-     *             @SWG\Property(
-     *                 property="message",
-     *                 type="string"
-     *             )
-     *         )
+     *         description="The result.",
+     *         @SWG\Schema(ref="#/definitions/SSOLoginResult")
      *     )
      * )
      */
@@ -231,12 +229,12 @@ class AuthController
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="The logged in EVE character",
+     *         description="The logged in EVE character.",
      *         @SWG\Schema(ref="#/definitions/Character")
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="If not authorized"
+     *         description="Not authorized"
      *     )
      * )
      */
@@ -253,11 +251,11 @@ class AuthController
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="Nothing is returned"
+     *         description="Nothing is returned."
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="If not authorized"
+     *         description="Not authorized."
      *     )
      * )
      */

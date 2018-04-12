@@ -45,14 +45,14 @@ class AppTest extends \PHPUnit\Framework\TestCase
         $r1 = new Role();
         $r2 = new Role();
 
-        $this->assertSame([], $app->getRoles()->toArray());
+        $this->assertSame([], $app->getRoles());
 
         $app->addRole($r1);
         $app->addRole($r2);
-        $this->assertSame([$r1, $r2], $app->getRoles()->toArray());
+        $this->assertSame([$r1, $r2], $app->getRoles());
 
         $app->removeRole($r2);
-        $this->assertSame([$r1], $app->getRoles()->toArray());
+        $this->assertSame([$r1], $app->getRoles());
     }
 
     public function testAddGetRemoveGroup()
@@ -61,14 +61,14 @@ class AppTest extends \PHPUnit\Framework\TestCase
         $g1 = new Group();
         $g2 = new Group();
 
-        $this->assertSame([], $app->getGroups()->toArray());
+        $this->assertSame([], $app->getGroups());
 
         $app->addGroup($g1);
         $app->addGroup($g2);
-        $this->assertSame([$g1, $g2], $app->getGroups()->toArray());
+        $this->assertSame([$g1, $g2], $app->getGroups());
 
         $app->removeGroup($g2);
-        $this->assertSame([$g1], $app->getGroups()->toArray());
+        $this->assertSame([$g1], $app->getGroups());
     }
 
     public function testAddGetRemoveManager()
@@ -77,13 +77,13 @@ class AppTest extends \PHPUnit\Framework\TestCase
         $p1 = new Player();
         $p2 = new Player();
 
-        $this->assertSame([], $app->getManagers()->toArray());
+        $this->assertSame([], $app->getManagers());
 
         $app->addManager($p1);
         $app->addManager($p2);
-        $this->assertSame([$p1, $p2], $app->getManagers()->toArray());
+        $this->assertSame([$p1, $p2], $app->getManagers());
 
         $app->removeManager($p2);
-        $this->assertSame([$p1], $app->getManagers()->toArray());
+        $this->assertSame([$p1], $app->getManagers());
     }
 }

@@ -3,15 +3,20 @@
 [![Build Status](https://api.travis-ci.org/tkhamez/brvneucore.svg?branch=master)](https://travis-ci.org/tkhamez/brvneucore)
 [![codecov](https://codecov.io/gh/tkhamez/brvneucore/branch/master/graph/badge.svg)](https://codecov.io/gh/tkhamez/brvneucore)
 [![Maintainability](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/maintainability)](https://codeclimate.com/github/tkhamez/brvneucore/maintainability)
+[![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 
 https://brvneucore.herokuapp.com
 
 API: https://brvneucore.herokuapp.com/api
 
-## Objectives
+## General
 
-- Manage Brave-specific groups for players.
+Objectives
+- Manage alliance specific groups for players.
 - Provide an API for authorized third-party applications to query these groups.
+
+This project consists of two applications, the back-end and the front-end.
+See the [**front-end**](frontend/README.md) and [**back-end**](backend/README.md) Readme for more.
 
 ## Installation
 
@@ -21,7 +26,7 @@ API: https://brvneucore.herokuapp.com/api
 - create a new application (eg: brvneucore-dev)
 - Connection Type: "Authentication & API Access", add these Scopes:
   - publicData
-- set the callback to https://localhost/api/user/auth/callback
+- set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
 
 ### Vagrant Requirements
 
@@ -90,4 +95,3 @@ If a character to be added to an account already belongs to another account, it 
 removed from that account and added to the current account. This can happen, for example,
 if someone has accidentally created two accounts by logging in with an alt that has not
 yet been added to the main account.
-

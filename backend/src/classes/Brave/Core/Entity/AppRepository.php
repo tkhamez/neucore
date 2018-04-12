@@ -18,4 +18,15 @@ class AppRepository extends \Doctrine\ORM\EntityRepository
     {
         parent::__construct($em, $em->getMetadataFactory()->getMetadataFor(App::class));
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::find()
+     * @return \Brave\Core\Entity\App|null
+     */
+    public function find($id, $lockMode = null, $lockVersion = null)
+    {
+        return parent::find($id, $lockMode, $lockVersion);
+    }
 }

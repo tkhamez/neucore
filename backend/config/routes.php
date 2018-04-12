@@ -3,6 +3,8 @@
 use Brave\Core\Api\App\InfoController as AppInfoController;
 use Brave\Core\Api\User\AuthController;
 use Brave\Core\Api\User\InfoController as UserInfoController;
+use Brave\Core\Api\User\PlayerController;
+use Brave\Core\Api\User\RoleController;
 
 return [
 
@@ -13,7 +15,14 @@ return [
     '/api/user/auth/character' =>   ['GET', AuthController::class . '::character'],
     '/api/user/auth/logout' =>      ['GET', AuthController::class . '::logout'],
 
+    '/api/user/player/list' =>      ['GET', PlayerController::class . '::list'],
+
+    '/api/user/role/list' =>          ['GET', RoleController::class . '::listRoles'],
+    '/api/user/role/list-player' =>   ['GET', RoleController::class . '::listRolesOfPlayer'],
+    '/api/user/role/add-player' =>    ['PUT', RoleController::class . '::addRoleToPlayer'],
+    '/api/user/role/remove-player' => ['PUT', RoleController::class . '::removeRoleFromPlayer'],
+
     '/api/user/info' => ['GET', UserInfoController::class],
 
-    '/api/app/info' => ['GET', AppInfoController::class],
+    '/api/app/info' =>  ['GET', AppInfoController::class],
 ];

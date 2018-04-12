@@ -134,7 +134,7 @@ class Group implements \JsonSerializable
      */
     public function getPlayers()
     {
-        return $this->players;
+        return $this->players->toArray();
     }
 
     /**
@@ -170,7 +170,7 @@ class Group implements \JsonSerializable
      */
     public function getApps()
     {
-        return $this->apps;
+        return $this->apps->toArray();
     }
 
     /**
@@ -206,6 +206,6 @@ class Group implements \JsonSerializable
      */
     public function getManagers()
     {
-        return $this->managers;
+        return $this->managers->toArray();
     }
 }
