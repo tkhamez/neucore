@@ -21,11 +21,14 @@ use Slim\Http\Response;
 class PlayerController
 {
 
-    private $response;
+    private $res;
 
-    public function __construct(Response $res)
+    private $pr;
+
+    public function __construct(Response $response, PlayerRepository $pr)
     {
-        $this->response = $res;
+        $this->res = $response;
+        $this->pr = $pr;
     }
 
     /**
@@ -56,6 +59,45 @@ class PlayerController
             ];
         }
 
-        return $this->response->withJson($ret);
+        return $this->res->withJson($ret);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/{id}/roles",
+     *     summary="List all roles of one player. Needs role: user-admin",
+     *     tags={"User"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of roles.",
+     *         @SWG\Schema(ref="#/definitions/RoleList")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="If player was not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function listRoles($id)
+    {
+        $player = $this->pr->find($id);
+
+        if ($player) {
+            return $this->res->withJson($player->getRoles());
+        } else {
+            return $this->res->withStatus(404);
+        }
     }
 }

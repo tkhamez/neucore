@@ -16,14 +16,14 @@ return [
     '/api/user/auth/character' =>   ['GET', AuthController::class . '::character'],
     '/api/user/auth/logout' =>      ['GET', AuthController::class . '::logout'],
 
-    '/api/user/player/list' =>      ['GET', PlayerController::class . '::list'],
+    '/api/user/player/list' =>          ['GET', PlayerController::class . '::list'],
+    '/api/user/player/{id}/roles' =>    ['GET', PlayerController::class . '::listRoles'],
 
     '/api/user/group/list' =>       ['GET',    GroupController::class . '::list'],
     '/api/user/group/create' =>     ['POST',   GroupController::class . '::create'],
     '/api/user/group/rename' =>     ['PUT',    GroupController::class . '::rename'],
     '/api/user/group/delete' =>     ['DELETE', GroupController::class . '::delete'],
 
-    '/api/user/role/list-player' =>   ['GET', RoleController::class . '::listRolesOfPlayer'],
     '/api/user/role/add-player' =>    ['PUT', RoleController::class . '::addRoleToPlayer'],
     '/api/user/role/remove-player' => ['PUT', RoleController::class . '::removeRoleFromPlayer'],
 

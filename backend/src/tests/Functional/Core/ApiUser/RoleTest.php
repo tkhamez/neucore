@@ -17,44 +17,6 @@ class RoleTest extends WebTestCase
         $_SESSION = null;
     }
 
-    public function testListRolesOfPlayer403()
-    {
-        $response = $this->runApp('GET', '/api/user/role/list-player');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testListRolesOfPlayer400()
-    {
-        $this->setupDb();
-        $this->loginUser(12);
-
-        $response = $this->runApp('GET', '/api/user/role/list-player');
-        $this->assertEquals(400, $response->getStatusCode());
-    }
-
-    public function testListRolesOfPlayer404()
-    {
-        $this->setupDb();
-        $this->loginUser(12);
-
-        $response = $this->runApp('GET', '/api/user/role/list-player?id=12');
-        $this->assertEquals(404, $response->getStatusCode());
-    }
-
-    public function testListRolesOfPlayer200()
-    {
-        $this->setupDb();
-        $this->loginUser(12);
-
-        $response = $this->runApp('GET', '/api/user/role/list-player?id='.$this->pid);
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertSame(
-            [Roles::APP_ADMIN, Roles::USER, Roles::USER_ADMIN],
-            $this->parseJsonBody($response)
-        );
-    }
-
     public function testAddRoleToPlayer403()
     {
         $response = $this->runApp('PUT', '/api/user/role/add-player');
