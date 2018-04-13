@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Migrations;
 
+use Brave\Core\Roles;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
@@ -12,11 +13,11 @@ class Version20180410183906 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
-        $this->addSql('INSERT INTO roles (id, name) VALUES (3, "user-admin")');
-        $this->addSql('INSERT INTO roles (id, name) VALUES (4, "group-admin")');
-        $this->addSql('INSERT INTO roles (id, name) VALUES (5, "group-manager")');
-        $this->addSql('INSERT INTO roles (id, name) VALUES (6, "app-admin")');
-        $this->addSql('INSERT INTO roles (id, name) VALUES (7, "app-manager")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (3, "'.Roles::USER_ADMIN.'")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (4, "'.Roles::GROUP_ADMIN.'")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (5, "'.Roles::GROUP_MANAGER.'")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (6, "'.Roles::APP_ADMIN.'")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (7, "'.Roles::APP_MANAGER.'")');
     }
 
     public function down(Schema $schema)

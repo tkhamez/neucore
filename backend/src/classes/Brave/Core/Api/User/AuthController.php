@@ -1,6 +1,7 @@
 <?php
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Roles;
 use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -75,7 +76,7 @@ class AuthController
     public function login(Request $request, Response $response, UserAuthService $auth)
     {
         // return empty string if already logged in
-        if (in_array('user', $auth->getRoles($request))) {
+        if (in_array(Roles::USER, $auth->getRoles($request))) {
             return $response->withJson(['oauth_url' => '']);
         }
 

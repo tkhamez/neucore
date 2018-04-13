@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Unit\Slim\Role;
 
+use Brave\Core\Roles;
 use Brave\Slim\Role\AuthRoleMiddleware;
 use Brave\Slim\Role\RoleProviderInterface;
 use Slim\Http\Environment;
@@ -26,7 +27,7 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     {
         $test = $this;
         $next = function($req) use ($test)  {
-            $test->assertSame(['anonymous'], $req->getAttribute('roles'));
+            $test->assertSame([Roles::ANONYMOUS], $req->getAttribute('roles'));
         };
 
         $this->invokeMiddleware('/path1', ['/path1'], [], $next, true);

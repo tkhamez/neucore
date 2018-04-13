@@ -5,6 +5,7 @@ use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\Player;
+use Brave\Core\Roles;
 use Brave\Slim\Role\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManagerInterface;
@@ -100,9 +101,9 @@ class UserAuthService implements RoleProviderInterface
 
             // first login, create user
 
-            $userRole = $this->roleRepository->findBy(['name' => 'user']);
+            $userRole = $this->roleRepository->findBy(['name' => Roles::USER]);
             if (count($userRole) !== 1) {
-                $this->log->critical('UserAuthService::authenticate(): Role "user" not found.');
+                $this->log->critical('UserAuthService::authenticate(): Role "'.Roles::USER.'" not found.');
                 return false;
             }
 

@@ -62,21 +62,32 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
     public function testAddGetRemoveRole()
     {
-        $play = new Player();
+        $player = new Player();
         $r1 = new Role();
         $r2 = new Role();
         $r1->setName('n1');
         $r2->setName('n2');
 
-        $this->assertSame([], $play->getRoles());
+        $this->assertSame([], $player->getRoles());
 
-        $play->addRole($r1);
-        $play->addRole($r2);
-        $this->assertSame([$r1, $r2], $play->getRoles());
-        $this->assertSame(['n1', 'n2'], $play->getRoleNames());
+        $player->addRole($r1);
+        $player->addRole($r2);
+        $this->assertSame([$r1, $r2], $player->getRoles());
+        $this->assertSame(['n1', 'n2'], $player->getRoleNames());
 
-        $play->removeRole($r2);
-        $this->assertSame([$r1], $play->getRoles());
+        $player->removeRole($r2);
+        $this->assertSame([$r1], $player->getRoles());
+    }
+
+    public function testHasRole()
+    {
+        $player = new Player();
+        $role = new Role();
+        $role->setName('role1');
+        $player->addRole($role);
+
+        $this->assertTrue($player->hasRole('role1'));
+        $this->assertFalse($player->hasRole('role2'));
     }
 
     public function testAddGetRemoveGroup()

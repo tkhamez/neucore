@@ -3,6 +3,7 @@ namespace Brave\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Roles;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,10 +54,15 @@ class MakeAdmin extends Command
 
         $player = $char->getPlayer();
 
-        $hasRoles = $player->getRoleNames();
-        $newRoles = ['app-admin', 'app-manager', 'group-admin', 'group-manager', 'user-admin'];
+        $newRoles = [
+            Roles::APP_ADMIN,
+            Roles::APP_MANAGER,
+            Roles::GROUP_ADMIN,
+            Roles::GROUP_MANAGER,
+            Roles::USER_ADMIN
+        ];
         foreach ($this->rr->findBy(['name' => $newRoles]) as $newRole) {
-            if (! in_array($newRole->getName(), $hasRoles)) {
+            if (! $player->hasRole($newRole->getName())) {
                 $player->addRole($newRole);
             }
         }

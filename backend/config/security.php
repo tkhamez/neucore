@@ -1,5 +1,7 @@
 <?php
 
+use Brave\Core\Roles;
+
 /**
  * Required roles for routes.
  *
@@ -7,16 +9,16 @@
  */
 return [
     // add necessary exceptions to /api/user/auth routes
-    '/api/user/auth/login-alt' =>   ['user'],
-    '/api/user/auth/login' =>       ['anonymous', 'user'],
-    '/api/user/auth/callback' =>    ['anonymous', 'user'],
-    '/api/user/auth/result' =>      ['anonymous', 'user'],
+    '/api/user/auth/login-alt' =>   [Roles::USER],
+    '/api/user/auth/login' =>       [Roles::ANONYMOUS, Roles::USER],
+    '/api/user/auth/callback' =>    [Roles::ANONYMOUS, Roles::USER],
+    '/api/user/auth/result' =>      [Roles::ANONYMOUS, Roles::USER],
 
-    '/api/user/player/list' =>      ['user-admin'],
+    '/api/user/player/list' =>      [Roles::USER_ADMIN],
 
-    '/api/user/role' =>             ['user-admin'],
+    '/api/user/role' =>             [Roles::USER_ADMIN],
 
-    '/api/user' =>  ['user'],
+    '/api/user' =>  [Roles::USER],
 
-    '/api/app' =>   ['app']
+    '/api/app' =>   [Roles::APP]
 ];

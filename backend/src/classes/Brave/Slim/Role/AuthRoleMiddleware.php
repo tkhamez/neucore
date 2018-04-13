@@ -12,10 +12,12 @@ use Slim\Route;
  * with string values, e. g. ['role.one', 'role.two'].
  *
  * Roles are loaded from a RoleProviderInterface object. If that
- * does not return any roles, the role "anonymous" is added.
+ * does not return any roles, the role AuthRoleMiddleware::ROLE_ANONYMOUS is added.
  */
 class AuthRoleMiddleware
 {
+
+    const ROLE_ANONYMOUS = 'anonymous';
 
     private $roleService;
 
@@ -51,7 +53,7 @@ class AuthRoleMiddleware
         $roles = $this->roleService->getRoles($request);
         if (count($roles) === 0) {
             // no authenticated roles, add anonymous role
-            $roles[] = 'anonymous';
+            $roles[] = self::ROLE_ANONYMOUS;
         }
 
         $request = $request->withAttribute('roles', $roles);

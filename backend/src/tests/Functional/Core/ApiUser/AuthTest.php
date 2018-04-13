@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Functional\Core\ApiUser;
 
+use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
@@ -41,7 +42,7 @@ class AuthTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('U2', 2, ['user']);
+        $h->addCharacterMain('U2', 2, [Roles::USER]);
         $this->loginUser(2);
 
         $response = $this->runApp('GET', '/api/user/auth/login');
@@ -52,7 +53,7 @@ class AuthTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('User 1', 456, ['user'], ['group-1']);
+        $h->addCharacterMain('User 1', 456, [Roles::USER], ['group-1']);
         $this->loginUser(456);
 
         $redirect = '/index.html#auth-alt';
@@ -187,7 +188,7 @@ class AuthTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles(['user']);
+        $h->addRoles([Roles::USER]);
 
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
         $_SESSION = ['auth_state' => $state];
@@ -213,7 +214,7 @@ class AuthTest extends WebTestCase
         $h = new Helper();
         $h->emptyDb();
 
-        $h->addCharacterMain('User1', 654, ['user'], ['group1']);
+        $h->addCharacterMain('User1', 654, [Roles::USER], ['group1']);
         $this->loginUser(654);
 
         $state = 'td2c55ec4cfefe6224a500f4127bcee31';
@@ -253,7 +254,7 @@ class AuthTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('User1', 654, ['user'], ['group1']);
+        $h->addCharacterMain('User1', 654, [Roles::USER], ['group1']);
         $this->loginUser(654);
 
         $response = $this->runApp('GET', '/api/user/auth/character');
@@ -281,7 +282,7 @@ class AuthTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Test User', 123456, ['user']);
+        $h->addCharacterMain('Test User', 123456, [Roles::USER]);
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/auth/logout');

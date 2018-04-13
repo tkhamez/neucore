@@ -72,12 +72,10 @@ class App implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $arr = [
+        return [
             'id' => $this->id,
             'name' => $this->name,
         ];
-
-        return $arr;
     }
 
     /**

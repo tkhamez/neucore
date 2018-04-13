@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Functional\Core\ApiUser;
 
+use Brave\Core\Roles;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -22,7 +23,7 @@ class InfoTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $char = $h->addCharacterMain('Test User', 123456, ['user', 'admin'], ['group1', 'another-group']);
+        $char = $h->addCharacterMain('Test User', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/info');
@@ -31,7 +32,7 @@ class InfoTest extends WebTestCase
         $this->assertSame([
             'id' => $char->getPlayer()->getId(),
             'name' => 'Test User',
-            'roles' => ['admin', 'user'],
+            'roles' => [Roles::USER, Roles::USER_ADMIN],
             'groups' => ['another-group', 'group1'],
             'characters' => [
                 ['id' => 123456, 'name' => 'Test User', 'main' => true],

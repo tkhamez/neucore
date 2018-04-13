@@ -1,9 +1,10 @@
 <?php
 namespace Tests\Functional\Core\Command;
 
+use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Roles;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
-use Brave\Core\Entity\CharacterRepository;
 
 class MakeAdminTest extends WebTestCase
 {
@@ -15,8 +16,15 @@ class MakeAdminTest extends WebTestCase
         $h = new Helper();
         $h->emptyDb();
 
-        $h->addRoles(['app', 'app-admin', 'app-manager', 'group-admin', 'group-manager', 'user-admin']);
-        $h->addCharacterMain('Admin', 1234, ['user', 'user-admin']);
+        $h->addRoles([
+            Roles::APP,
+            Roles::APP_ADMIN,
+            Roles::APP_MANAGER,
+            Roles::GROUP_ADMIN,
+            Roles::GROUP_MANAGER,
+            Roles::USER_ADMIN
+        ]);
+        $h->addCharacterMain('Admin', 1234, [Roles::USER, Roles::APP_ADMIN]);
 
         self::$em = $h->getEm();
     }
@@ -28,7 +36,14 @@ class MakeAdminTest extends WebTestCase
 
         $this->assertSame('Added all applicable roles to the player account "Admin"'."\n", $output);
 
-        $expected = ['app-admin', 'app-manager', 'group-admin', 'group-manager', 'user', 'user-admin'];
+        $expected = [
+            Roles::APP_ADMIN,
+            Roles::APP_MANAGER,
+            Roles::GROUP_ADMIN,
+            Roles::GROUP_MANAGER,
+            Roles::USER,
+            Roles::USER_ADMIN
+        ];
         $actual = (new CharacterRepository(self::$em))->find(1234)->getPlayer()->getRoleNames();
         $this->assertSame($expected, $actual);
     }

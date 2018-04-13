@@ -90,7 +90,7 @@ class Player implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $arr = [
+        return [
             'id' => $this->id,
             'name' => $this->name,
             'roles' => $this->getRoles(),
@@ -99,8 +99,6 @@ class Player implements \JsonSerializable
             'managerGroups' => $this->getManagerGroups(),
             'managerApps' => $this->getManagerApps(),
         ];
-
-        return $arr;
     }
 
     /**
@@ -197,6 +195,16 @@ class Player implements \JsonSerializable
         }
 
         return $names;
+    }
+
+    /**
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function hasRole($name)
+    {
+        return in_array($name, $this->getRoleNames());
     }
 
     /**

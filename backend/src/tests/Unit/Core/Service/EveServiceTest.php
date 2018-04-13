@@ -1,14 +1,15 @@
 <?php
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\Character;
+use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Roles;
 use Brave\Core\Service\EveService;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\CharacterRepository;
 
 class EveServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -25,7 +26,7 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles(['user']);
+        $h->addRoles([Roles::USER]);
     }
 
     public function setUp()

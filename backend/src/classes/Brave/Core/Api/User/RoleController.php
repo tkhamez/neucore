@@ -1,12 +1,13 @@
 <?php
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Roles;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
 use Slim\Http\Request;
-use Brave\Core\Entity\PlayerRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Brave\Core\Entity\RoleRepository;
 
 /**
  *
@@ -31,7 +32,13 @@ class RoleController
 
     private $em;
 
-    private $availableRoles = ['app-admin', 'app-manager', 'group-admin', 'group-manager', 'user-admin'];
+    private $availableRoles = [
+        Roles::APP_ADMIN,
+        Roles::APP_MANAGER,
+        Roles::GROUP_ADMIN,
+        Roles::GROUP_MANAGER,
+        Roles::USER_ADMIN
+    ];
 
     public function __construct(Response $res, LoggerInterface $log,
         PlayerRepository $pr, RoleRepository $rr, EntityManagerInterface $em)
@@ -161,7 +168,7 @@ class RoleController
             return $this->res->withStatus(404);
         }
 
-        if (! in_array($role->getName(), $player->getRoleNames())) {
+        if (! $player->hasRole($role->getName())) {
             $player->addRole($role);
         }
 

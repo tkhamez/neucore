@@ -85,13 +85,11 @@ class Character implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $arr = [
+        return [
             'id' => (int) $this->id,
             'name' => $this->name,
             'main' => $this->main
         ];
-
-        return $arr;
     }
 
     /**

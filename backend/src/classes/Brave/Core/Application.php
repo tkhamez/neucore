@@ -293,9 +293,7 @@ class Application
         $containerBuilder->addDefinitions($bridgeConfig);
         $containerBuilder->addDefinitions($this->settings);
 
-        $container = $containerBuilder->build();
-
-        return $container;
+        return $containerBuilder->build();
     }
 
     /**

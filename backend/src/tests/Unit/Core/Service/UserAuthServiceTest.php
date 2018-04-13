@@ -1,9 +1,10 @@
 <?php
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Service\UserAuthService;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Roles;
+use Brave\Core\Service\UserAuthService;
 use Brave\Slim\Session\SessionData;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
@@ -50,12 +51,12 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Test User', 9013, ['user', 'test-role']);
+        $h->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
         $_SESSION['character_id'] = 9013;
 
         $roles = $this->service->getRoles();
 
-        $this->assertSame(['user', 'test-role'], $roles);
+        $this->assertSame([Roles::USER, Roles::GROUP_MANAGER], $roles);
     }
 
     public function testGetUserNoAuth()
@@ -68,7 +69,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Test User', 9013, ['user', 'test-role']);
+        $h->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
         $_SESSION['character_id'] = 9013;
 
         $user = $this->service->getUser();
@@ -84,7 +85,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', 'token'));
         $this->assertSame(
-            'UserAuthService::authenticate(): Role "user" not found.',
+            'UserAuthService::authenticate(): Role "'.Roles::USER.'" not found.',
             $this->log->getHandlers()[0]->getRecords()[0]['message']
         );
     }
@@ -93,7 +94,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles(['user']);
+        $h->addRoles([Roles::USER]);
         (new SessionData())->setReadOnly(false);
 
         $this->assertFalse(isset($_SESSION['character_id']));
@@ -110,7 +111,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(123456, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertSame($_SESSION['character_id'], $user->getId());
-        $this->assertSame(['user'], $this->service->getRoles());
+        $this->assertSame([Roles::USER], $this->service->getRoles());
     }
 
     public function testAuthenticateExistingUser()
@@ -118,7 +119,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
         $h->emptyDb();
         (new SessionData())->setReadOnly(false);
-        $char = $h->addCharacterMain('Test User', 9013, ['user', 'test-role']);
+        $char = $h->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
 
         $this->assertSame('123', $char->getCharacterOwnerHash());
         $this->assertSame('abc', $char->getAccessToken());
@@ -143,7 +144,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
         $h->emptyDb();
         $_SESSION['character_id'] = 100;
-        $main = $h->addCharacterMain('Main', 100, ['user']);
+        $main = $h->addCharacterMain('Main', 100, [Roles::USER]);
         $player = $main->getPlayer();
 
         $this->assertSame(1, count($player->getCharacters()));
@@ -168,8 +169,8 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
         $h->emptyDb();
         $_SESSION['character_id'] = 100;
-        $main1 = $h->addCharacterMain('Main1', 100, ['user']);
-        $main2 = $h->addCharacterMain('Main2', 200, ['user']);
+        $main1 = $h->addCharacterMain('Main1', 100, [Roles::USER]);
+        $main2 = $h->addCharacterMain('Main2', 200, [Roles::USER]);
 
         $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'tk', 123456789, 'rf');
         $this->assertTrue($result);
@@ -190,7 +191,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
         $h->emptyDb();
         $_SESSION['character_id'] = 100;
-        $main = $h->addCharacterMain('Main1', 100, ['user']);
+        $main = $h->addCharacterMain('Main1', 100, [Roles::USER]);
 
         $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', 'tk');
         $this->assertTrue($result);
@@ -204,7 +205,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Main1', 100, ['user']);
+        $h->addCharacterMain('Main1', 100, [Roles::USER]);
 
         $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', 'tk');
         $this->assertFalse($result);

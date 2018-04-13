@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Functional\Core\ApiUser;
 
+use Brave\Core\Roles;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -22,8 +23,8 @@ class PlayerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $admin = $h->addCharacterMain('Admin', 12, ['user-admin']);
-        $user = $h->addCharacterMain('User', 45, ['user']);
+        $admin = $h->addCharacterMain('Admin', 12, [Roles::USER_ADMIN]);
+        $user = $h->addCharacterMain('User', 45, [Roles::USER]);
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/list');
