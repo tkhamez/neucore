@@ -11,13 +11,6 @@ use Slim\Http\Request;
 
 /**
  *
- * @SWG\Definition(
- *     definition="RoleList",
- *     type="array",
- *     @SWG\Items(
- *         type="string",
- *     )
- * )
  */
 class RoleController
 {
@@ -48,34 +41,6 @@ class RoleController
         $this->pr = $pr;
         $this->rr = $rr;
         $this->em = $em;
-    }
-
-    /**
-     * @SWG\Get(
-     *     path="/user/role/list",
-     *     summary="List available roles. Needs role: user-admin",
-     *     tags={"User"},
-     *     security={{"Session"={}}},
-     *     @SWG\Response(
-     *         response="200",
-     *         description="List of roles.",
-     *         @SWG\Schema(ref="#/definitions/RoleList")
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function listRoles()
-    {
-        $available = [];
-
-        foreach ($this->rr->findBy(['name' => $this->availableRoles]) as $role) {
-            $available[] = $role->getName();
-        }
-
-        return $this->res->withJson($available);
     }
 
     /**
@@ -143,10 +108,11 @@ class RoleController
      *         in="query",
      *         required=true,
      *         description="Name of the role.",
-     *         type="string"
+     *         type="string",
+     *         enum={"app-admin","app-manager","group-admin","group-manager", "user-admin"}
      *     ),
      *     @SWG\Response(
-     *         response="200",
+     *         response="204",
      *         description="Role added."
      *     ),
      *     @SWG\Response(
@@ -179,7 +145,7 @@ class RoleController
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withStatus(200);
+        return $this->res->withStatus(204);
     }
 
     /**
@@ -200,10 +166,11 @@ class RoleController
      *         in="query",
      *         required=true,
      *         description="Name of the role.",
-     *         type="string"
+     *         type="string",
+     *         enum={"app-admin","app-manager","group-admin","group-manager", "user-admin"}
      *     ),
      *     @SWG\Response(
-     *         response="200",
+     *         response="204",
      *         description="Role removed."
      *     ),
      *     @SWG\Response(
@@ -234,6 +201,6 @@ class RoleController
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withStatus(200);
+        return $this->res->withStatus(204);
     }
 }

@@ -52,6 +52,11 @@ Generate repository classes:
 vendor/bin/doctrine orm:generate-repositories src/classes
 ```
 
+Validate the mapping files
+```
+vendor/bin/doctrine orm:validate-schema
+```
+
 Generate migration by comparing the current database to the mapping information:
 ```
 vendor/bin/doctrine-migrations migrations:diff

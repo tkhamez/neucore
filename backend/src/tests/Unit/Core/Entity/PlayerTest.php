@@ -38,12 +38,15 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
             'id' => null,
             'name' => 'test user',
             'roles' => ['rname', 'role2'],
-            'groups' => ['gname', 'group2'],
+            'groups' => [
+                ['id' => null, 'name' => 'gname'],
+                ['id' => null, 'name' => 'group2']
+            ],
             'characters' => [
                 ['id' => 123, 'name' => 'eve one', 'main' => true],
                 ['id' => 234, 'name' => 'eve two', 'main' => false],
             ],
-            'managerGroups' => ['gname'],
+            'managerGroups' => [['id' => null, 'name' => 'gname']],
             'managerApps' => [['id' => null, 'name' => 'app-one']],
         ], json_decode(json_encode($play), true));
     }

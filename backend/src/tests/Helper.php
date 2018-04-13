@@ -12,6 +12,7 @@ use Brave\Core\Entity\RoleRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
+use Brave\Core\Entity\GroupRepository;
 
 class Helper
 {
@@ -96,10 +97,8 @@ class Helper
 
         $roleEntities = [];
         foreach ($roles as $roleName) {
-            $roles = $rr->findByName($roleName);
-            if (isset($roles[0])) {
-                $role = $roles[0];
-            } else {
+            $role = $rr->findOneBy(['name' => $roleName]);
+            if ($role === null) {
                 $role = new Role();
                 $role->setName($roleName);
                 $em->persist($role);
@@ -119,12 +118,16 @@ class Helper
     public function addGroups($groups)
     {
         $em = $this->getEm();
+        $gr = new GroupRepository($em);
 
         $groupEntities = [];
         foreach ($groups as $groupName) {
-            $group = new Group();
-            $group->setName($groupName);
-            $em->persist($group);
+            $group = $gr->findOneBy(['name' => $groupName]);
+            if ($group === null) {
+                $group = new Group();
+                $group->setName($groupName);
+                $em->persist($group);
+            }
             $groupEntities[] = $group;
         }
         $em->flush();

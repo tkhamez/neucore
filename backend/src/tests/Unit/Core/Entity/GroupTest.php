@@ -13,7 +13,10 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $group = new Group();
         $group->setName('g.name');
 
-        $this->assertSame('g.name', json_decode(json_encode($group), true));
+        $this->assertSame(
+            ['id' => null, 'name' => 'g.name'],
+            json_decode(json_encode($group), true)
+        );
     }
 
     public function testGetId()

@@ -23,7 +23,8 @@ class InfoTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $char = $h->addCharacterMain('Test User', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
+        $groups = $h->addGroups(['group1', 'another-group']);
+        $char = $h->addCharacterMain('TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/info');
@@ -31,11 +32,14 @@ class InfoTest extends WebTestCase
 
         $this->assertSame([
             'id' => $char->getPlayer()->getId(),
-            'name' => 'Test User',
+            'name' => 'TUser',
             'roles' => [Roles::USER, Roles::USER_ADMIN],
-            'groups' => ['another-group', 'group1'],
+            'groups' => [
+                ['id' => $groups[1]->getId(), 'name' => 'another-group'],
+                ['id' => $groups[0]->getId(), 'name' => 'group1']
+            ],
             'characters' => [
-                ['id' => 123456, 'name' => 'Test User', 'main' => true],
+                ['id' => 123456, 'name' => 'TUser', 'main' => true],
             ],
             'managerGroups' => [],
             'managerApps' => [],

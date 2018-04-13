@@ -251,8 +251,8 @@ class AuthController
      *     tags={"User"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
-     *         response="200",
-     *         description="Nothing is returned."
+     *         response="204",
+     *         description="User was logged out."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -268,7 +268,7 @@ class AuthController
             session_regenerate_id(true);
         }
 
-        return $response;
+        return $response->withStatus(204);
     }
 
     private function buildLoginUrl(Request $request, bool $altLogin): string

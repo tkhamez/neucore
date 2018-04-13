@@ -278,7 +278,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function testGetLogout200()
+    public function testGetLogout204()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -286,6 +286,6 @@ class AuthTest extends WebTestCase
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/auth/logout');
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(204, $response->getStatusCode());
     }
 }

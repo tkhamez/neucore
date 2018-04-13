@@ -17,26 +17,6 @@ class RoleTest extends WebTestCase
         $_SESSION = null;
     }
 
-    public function testListRoles403()
-    {
-        $response = $this->runApp('GET', '/api/user/role/list');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testListRoles200()
-    {
-        $this->setupDb();
-        $this->loginUser(12);
-
-        $response = $this->runApp('GET', '/api/user/role/list');
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertSame(
-            [Roles::APP_ADMIN, Roles::APP_MANAGER, Roles::GROUP_ADMIN, Roles::GROUP_MANAGER, Roles::USER_ADMIN],
-            $this->parseJsonBody($response)
-        );
-    }
-
     public function testListRolesOfPlayer403()
     {
         $response = $this->runApp('GET', '/api/user/role/list-player');
@@ -45,6 +25,7 @@ class RoleTest extends WebTestCase
 
     public function testListRolesOfPlayer400()
     {
+        $this->setupDb();
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/role/list-player');
@@ -53,6 +34,7 @@ class RoleTest extends WebTestCase
 
     public function testListRolesOfPlayer404()
     {
+        $this->setupDb();
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/role/list-player?id=12');
@@ -98,15 +80,15 @@ class RoleTest extends WebTestCase
 
     }
 
-    public function testAddRoleToPlayer200()
+    public function testAddRoleToPlayer204()
     {
         $this->setupDb();
         $this->loginUser(12);
 
         $response1 = $this->runApp('PUT', '/api/user/role/add-player?role='.Roles::APP_MANAGER.'&player='.$this->pid);
         $response2 = $this->runApp('PUT', '/api/user/role/add-player?role='.Roles::APP_MANAGER.'&player='.$this->pid);
-        $this->assertEquals(200, $response1->getStatusCode());
-        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();
 
@@ -141,15 +123,15 @@ class RoleTest extends WebTestCase
         $this->assertEquals(404, $response4->getStatusCode());
     }
 
-    public function testRemoveRoleFromPlayer200()
+    public function testRemoveRoleFromPlayer204()
     {
         $this->setupDb();
         $this->loginUser(12);
 
         $response1 = $this->runApp('PUT', '/api/user/role/remove-player?role='.Roles::APP_ADMIN.'&player='.$this->pid);
         $response2 = $this->runApp('PUT', '/api/user/role/remove-player?role='.Roles::APP_ADMIN.'&player='.$this->pid);
-        $this->assertEquals(200, $response1->getStatusCode());
-        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();
 

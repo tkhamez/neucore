@@ -2,6 +2,7 @@
 
 use Brave\Core\Api\App\InfoController as AppInfoController;
 use Brave\Core\Api\User\AuthController;
+use Brave\Core\Api\User\GroupController;
 use Brave\Core\Api\User\InfoController as UserInfoController;
 use Brave\Core\Api\User\PlayerController;
 use Brave\Core\Api\User\RoleController;
@@ -17,7 +18,11 @@ return [
 
     '/api/user/player/list' =>      ['GET', PlayerController::class . '::list'],
 
-    '/api/user/role/list' =>          ['GET', RoleController::class . '::listRoles'],
+    '/api/user/group/list' =>       ['GET',    GroupController::class . '::list'],
+    '/api/user/group/create' =>     ['POST',   GroupController::class . '::create'],
+    '/api/user/group/rename' =>     ['PUT',    GroupController::class . '::rename'],
+    '/api/user/group/delete' =>     ['DELETE', GroupController::class . '::delete'],
+
     '/api/user/role/list-player' =>   ['GET', RoleController::class . '::listRolesOfPlayer'],
     '/api/user/role/add-player' =>    ['PUT', RoleController::class . '::addRoleToPlayer'],
     '/api/user/role/remove-player' => ['PUT', RoleController::class . '::removeRoleFromPlayer'],

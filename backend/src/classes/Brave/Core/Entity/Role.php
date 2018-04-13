@@ -19,20 +19,22 @@ class Role implements \JsonSerializable
     private $id;
 
     /**
+     * Role name.
+     *
      * @Column(type="string", unique=true, length=64)
      * @var string
      */
     private $name;
 
     /**
-     * @ManyToMany(targetEntity="Player", mappedBy="players")
+     * @ManyToMany(targetEntity="Player", mappedBy="roles")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
     private $players;
 
     /**
-     * @ManyToMany(targetEntity="App", mappedBy="apps")
+     * @ManyToMany(targetEntity="App", mappedBy="roles")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */

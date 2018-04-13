@@ -37,7 +37,7 @@ class Player implements \JsonSerializable
     /**
      * Roles for authorization.
      *
-     * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @SWG\Property(ref="#/definitions/RoleList")
      * @ManyToMany(targetEntity="Role", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
@@ -47,7 +47,7 @@ class Player implements \JsonSerializable
     /**
      * Group memership.
      *
-     * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
@@ -65,7 +65,7 @@ class Player implements \JsonSerializable
     /**
      * Manager of groups.
      *
-     * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", mappedBy="managers")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection

@@ -18,4 +18,26 @@ class GroupRepository extends \Doctrine\ORM\EntityRepository
     {
         parent::__construct($em, $em->getMetadataFactory()->getMetadataFor(Group::class));
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::find()
+     * @return \Brave\Core\Entity\Group|null
+     */
+    public function find($id, $lockMode = null, $lockVersion = null)
+    {
+        return parent::find($id, $lockMode, $lockVersion);
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findOneBy()
+     * @return \Brave\Core\Entity\Group|null
+     */
+    public function findOneBy(array $criteria, array $orderBy = null)
+    {
+        return parent::findOneBy($criteria, $orderBy);
+    }
 }

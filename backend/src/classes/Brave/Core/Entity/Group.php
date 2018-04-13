@@ -4,6 +4,10 @@ namespace Brave\Core\Entity;
 /**
  * Groups for third party apps.
  *
+ * @SWG\Definition(
+ *     definition="Group",
+ *     required={"id", "name"}
+ * )
  * @Entity(repositoryClass="Brave\Core\Entity\GroupRepository")
  * @Table(name="groups")
  */
@@ -11,6 +15,9 @@ class Group implements \JsonSerializable
 {
 
     /**
+     * Group ID.
+     *
+     * @SWG\Property()
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -19,20 +26,23 @@ class Group implements \JsonSerializable
     private $id;
 
     /**
+     * Group name.
+     *
+     * @SWG\Property()
      * @Column(type="string", unique=true, length=64)
      * @var string
      */
     private $name;
 
     /**
-     * @ManyToMany(targetEntity="Player", mappedBy="players")
+     * @ManyToMany(targetEntity="Player", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
     private $players;
 
     /**
-     * @ManyToMany(targetEntity="App", mappedBy="apps")
+     * @ManyToMany(targetEntity="App", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
@@ -54,7 +64,10 @@ class Group implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->name;
+        return [
+            'id' => $this->id,
+            'name' => $this->name
+        ];
     }
 
     /**

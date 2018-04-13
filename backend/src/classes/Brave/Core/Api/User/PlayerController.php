@@ -16,6 +16,7 @@ use Slim\Http\Response;
  *         @SWG\Property(property="name", type="string")
  *     )
  * )
+ *
  */
 class PlayerController
 {
@@ -35,7 +36,7 @@ class PlayerController
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="Array of players, ordered by name.",
+     *         description="List of players, ordered by name.",
      *         @SWG\Schema(ref="#/definitions/PlayerList")
      *     ),
      *     @SWG\Response(
