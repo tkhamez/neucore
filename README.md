@@ -37,7 +37,7 @@ For synced folder with NFS (instead of rsync), install `nfs-kernel-server` and e
 ```
 
 - `vagrant up`
-- browse to https://localhost
+- browse to https://localhost:8443
 - If the vagrant file changes, run `vagrant provision` to update the VM.
 - `vagrant destroy` will completely remove the VM.
 
@@ -49,7 +49,7 @@ The values for the EVE application must be adjusted.
 - PHP with Composer (see Vagrantfile for necessary additional extensions)
 - Node.js + npm
 - MySQL/MariaDB
-- Apache (dev should also works with PHP's build-in server). Set the document root to the "web" directory.
+- Apache, set the document root to the "web" directory.
 
 ### Install dev
 
