@@ -88,6 +88,7 @@ class AuthController
      *     path="/user/auth/login-alt",
      *     summary="EVE SSO login URL to add additional characters to an account. Needs role: user",
      *     tags={"User"},
+     *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="redirect_url",
      *         in="query",
