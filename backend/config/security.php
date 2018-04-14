@@ -16,10 +16,9 @@ return [
 
     '/api/user/group' =>    [Roles::GROUP_ADMIN],
 
-    '/api/user/player' =>   [Roles::USER_ADMIN],
-    '/api/user/role' =>     [Roles::USER_ADMIN],
+    '/api/user/player/list-group-manager' =>    [Roles::GROUP_ADMIN],
+    '/api/user/player' =>                       [Roles::USER_ADMIN],
 
     '/api/user' =>  [Roles::USER],
-
     '/api/app' =>   [Roles::APP]
 ];

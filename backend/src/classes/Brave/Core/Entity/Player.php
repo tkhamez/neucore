@@ -45,7 +45,7 @@ class Player implements \JsonSerializable
     private $roles;
 
     /**
-     * Group memership.
+     * Group membership.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", inversedBy="players")
