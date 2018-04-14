@@ -5,6 +5,9 @@ use Brave\Core\Roles;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\PlayerRepository;
+use Monolog\Handler\TestHandler;
+use Psr\Log\LoggerInterface;
+use Monolog\Logger;
 
 class PlayerTest extends WebTestCase
 {
@@ -45,6 +48,28 @@ class PlayerTest extends WebTestCase
     {
         $response = $this->runApp('GET', '/api/user/player/list-group-manager');
         $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testListGroupManager200NoGroup()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('Admin', 12, [Roles::GROUP_ADMIN]);
+        $this->loginUser(12);
+
+        $log = new Logger('test');
+        $log->pushHandler(new TestHandler());
+
+        $response = $this->runApp('GET', '/api/user/player/list-group-manager', null, null, [
+            LoggerInterface::class => $log
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response));
+        $this->assertSame(
+            'PlayerController->listGroupManager(): Role group-manager not found in.',
+            $log->getHandlers()[0]->getRecords()[0]['message']
+        );
     }
 
     public function testListGroupManager200()

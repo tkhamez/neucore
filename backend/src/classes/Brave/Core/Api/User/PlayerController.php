@@ -107,7 +107,7 @@ class PlayerController
 
         $role = $this->rr->findOneBy(['name' => Roles::GROUP_MANAGER]);
         if ($role === null) {
-            $this->log->critical('PlayerController->listGroupManager(): Role group-manager not found in');
+            $this->log->critical('PlayerController->listGroupManager(): Role group-manager not found in.');
             return $this->res->withJson($ret);
         }
 
