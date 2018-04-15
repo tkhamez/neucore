@@ -7,13 +7,13 @@ use Brave\Core\Api\User\PlayerController;
 
 return [
 
-    '/api/user/auth/login-url'     => ['GET', AuthController::class.'::loginUrl'],
-    '/api/user/auth/login-alt-url' => ['GET', AuthController::class.'::loginAltUrl'],
-    '/api/user/auth/callback'      => ['GET', AuthController::class.'::callback'],
-    '/api/user/auth/result'        => ['GET', AuthController::class.'::result'],
-    '/api/user/auth/character'     => ['GET', AuthController::class.'::character'],
-    '/api/user/auth/player'        => ['GET', AuthController::class.'::player'],
-    '/api/user/auth/logout'        => ['GET', AuthController::class.'::logout'],
+    '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
+    '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
+    '/api/user/auth/callback'      => ['GET',  AuthController::class.'::callback'],
+    '/api/user/auth/result'        => ['GET',  AuthController::class.'::result'],
+    '/api/user/auth/character'     => ['GET',  AuthController::class.'::character'],
+    '/api/user/auth/player'        => ['GET',  AuthController::class.'::player'],
+    '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],
 
     '/api/user/group/list-all'            => ['GET',    GroupController::class.'::listAll'],
     '/api/user/group/create'              => ['POST',   GroupController::class.'::create'],

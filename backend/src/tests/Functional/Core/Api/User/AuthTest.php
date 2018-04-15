@@ -19,7 +19,7 @@ class AuthTest extends WebTestCase
         $_SESSION = null;
     }
 
-    public function testGetLogin200()
+    public function testLoginUrl200()
     {
         $redirect = '/index.html#auth';
         $response = $this->runApp('GET', '/api/user/auth/login-url?redirect='.urlencode($redirect));
@@ -36,7 +36,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(32, strlen($sess->get('auth_state')));
     }
 
-    public function testGetLogin204()
+    public function testLoginUrl204()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -48,7 +48,7 @@ class AuthTest extends WebTestCase
         $this->assertSame('', $response->getBody()->__toString());
     }
 
-    public function testGetLoginAlt200()
+    public function testLoginAltUrl200()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -70,13 +70,13 @@ class AuthTest extends WebTestCase
         $this->assertSame(33, strlen($sess->get('auth_state')));
     }
 
-    public function testGetLoginAlt403()
+    public function testLoginAltUrl403()
     {
         $response = $this->runApp('GET', '/api/user/auth/login-alt-url');
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function testGetCallbackStateError()
+    public function testCallbackStateError()
     {
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
         $_SESSION = ['auth_state' => $state];
@@ -89,7 +89,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(['success' => false, 'message' => 'OAuth state mismatch'], $sess->get('auth_result'));
     }
 
-    public function testGetCallbackAccessTokenException()
+    public function testCallbackAccessTokenException()
     {
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
         $_SESSION = ['auth_state' => $state];
@@ -110,7 +110,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(['success' => false, 'message' => 'request token error'], $sess->get('auth_result'));
     }
 
-    public function testGetCallbackResourceOwnerException()
+    public function testCallbackResourceOwnerException()
     {
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
         $_SESSION = ['auth_state' => $state];
@@ -132,7 +132,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(['success' => false, 'message' => 'request verify error'], $sess->get('auth_result'));
     }
 
-    public function testGetCallbackResourceOwnerError()
+    public function testCallbackResourceOwnerError()
     {
         $state = 'd2c55ec4cfefe6224a500f4127bcee31';
         $_SESSION = ['auth_state' => $state];
@@ -153,7 +153,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(['success' => false, 'message' => 'request verify error'], $sess->get('auth_result'));
     }
 
-    public function testGetCallbackAuthError()
+    public function testCallbackAuthError()
     {
         (new Helper())->emptyDb();
 
@@ -182,7 +182,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(['success' => false, 'message' => 'Could not authenticate user.'], $sess->get('auth_result'));
     }
 
-    public function testGetCallback()
+    public function testCallback()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -207,7 +207,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(['success' => true, 'message' => 'Login successful.'], $sess->get('auth_result'));
     }
 
-    public function testGetCallbackAltLogin()
+    public function testCallbackAltLogin()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -237,7 +237,7 @@ class AuthTest extends WebTestCase
         );
     }
 
-    public function testGetResult()
+    public function testResult()
     {
         $response = $this->runApp('GET', '/api/user/auth/result');
         $this->assertSame(200, $response->getStatusCode());
@@ -248,7 +248,7 @@ class AuthTest extends WebTestCase
         );
     }
 
-    public function testGetCharacter()
+    public function testCharacter()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -264,7 +264,7 @@ class AuthTest extends WebTestCase
         );
     }
 
-    public function testGetCharacter403()
+    public function testCharacter403()
     {
         $response = $this->runApp('GET', '/api/user/auth/character');
         $this->assertSame(403, $response->getStatusCode());
@@ -303,20 +303,20 @@ class AuthTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testGetLogout403()
+    public function testLogout403()
     {
-        $response = $this->runApp('GET', '/api/user/auth/logout');
+        $response = $this->runApp('POST', '/api/user/auth/logout');
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function testGetLogout204()
+    public function testLogout204()
     {
         $h = new Helper();
         $h->emptyDb();
         $h->addCharacterMain('Test User', 123456, [Roles::USER]);
         $this->loginUser(123456);
 
-        $response = $this->runApp('GET', '/api/user/auth/logout');
+        $response = $this->runApp('POST', '/api/user/auth/logout');
         $this->assertSame(204, $response->getStatusCode());
     }
 }

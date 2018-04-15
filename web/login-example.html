@@ -11,12 +11,12 @@
     <h2>Login example</h2>
 
     <div id="app">
-        <button v-on:click="getUser">1. GET user info</button>
-        <button v-on:click="getLogin">2. GET sso login url, you can provide a redirect url</button>
-        <button v-on:click="redirect">3. redirect to sso login url</button>
-        <button v-on:click="getUser"> 1. </button>
+        <button v-on:click="getLogin">GET sso login url, you can provide a redirect url</button>
+        <button v-on:click="redirect">redirect to sso login url</button>
         &nbsp;
-        <button v-on:click="logout">4. logout</button>
+        <button v-on:click="getUser">GET user info</button>
+        &nbsp;
+        <button v-on:click="logout">POST logout</button>
 
         <br>
         status:<br>
@@ -52,13 +52,13 @@
         },
         methods: {
             getUser: function() {
-                this.get(appBaseUrl + '/api/user/info');
+                this.get(appBaseUrl + '/api/user/auth/character');
             },
             getLogin: function() {
                 var redirectPath = clientBaseUrl + '/login-example.html#' + appBaseUrl + '/api/user/auth/result';
-                var url = appBaseUrl + '/api/user/auth/login?redirect_url=' + encodeURIComponent(redirectPath);
+                var url = appBaseUrl + '/api/user/auth/login-url?redirect=' + encodeURIComponent(redirectPath);
                 this.get(url, function(response) {
-                    app.oauthUrl = response.body.oauth_url;
+                    app.oauthUrl = response.body;
                 });
             },
             redirect: function() {
@@ -67,25 +67,32 @@
                 }
             },
             logout: function() {
-                this.get(appBaseUrl + '/api/user/auth/logout');
+                this.post(appBaseUrl + '/api/user/auth/logout');
             },
             get: function(url, callback) {
                 // "withCredentials" is only needed if frontend and backend are on different hosts.
                 // Also make sure to send a "Accept: application/json" header to get errors in json format
                 // (vue-resource does that by default).
                 this.$http.get(url, { withCredentials: true }).then(response => {
-                    handleResult(response);
+                	this.handleResult(response, callback);
                 }, response => {
-                    handleResult(response);
+                    this.handleResult(response, callback);
                 });
-                var handleResult = function(response) {
-                    app.status = response.status;
-                    app.statusText = response.statusText;
-                    app.headers = response.headers;
-                    app.body = response.body || response.bodyText;
-                    if (callback) {
-                        callback(response);
-                    }
+            },
+            post: function(url) {
+            	this.$http.post(url, { withCredentials: true }).then(response => {
+                	this.handleResult(response);
+                }, response => {
+                    this.handleResult(response);
+                });
+            },
+            handleResult: function(response, callback) {
+                app.status = response.status;
+                app.statusText = response.statusText;
+                app.headers = response.headers;
+                app.body = response.body || response.bodyText;
+                if (callback) {
+                    callback(response);
                 }
             }
         }

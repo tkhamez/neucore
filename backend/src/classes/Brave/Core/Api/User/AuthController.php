@@ -280,7 +280,7 @@ class AuthController
     }
 
     /**
-     * @SWG\Get(
+     * @SWG\Post(
      *     path="/user/auth/logout",
      *     operationId="logout",
      *     summary="User logout. Needs role: user",
