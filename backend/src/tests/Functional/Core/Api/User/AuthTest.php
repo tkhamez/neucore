@@ -14,7 +14,6 @@ use Tests\Helper;
 
 class AuthTest extends WebTestCase
 {
-
     public function setUp()
     {
         $_SESSION = null;

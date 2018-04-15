@@ -31,7 +31,6 @@ use Slim\Http\Response;
  */
 class AuthController
 {
-
     private $res;
 
     private $session;

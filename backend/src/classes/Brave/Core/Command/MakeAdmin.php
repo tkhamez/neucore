@@ -13,7 +13,6 @@ use Psr\Log\LoggerInterface;
 
 class MakeAdmin extends Command
 {
-
     private $cr;
 
     private $rr;

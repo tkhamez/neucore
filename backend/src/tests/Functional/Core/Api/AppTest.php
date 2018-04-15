@@ -6,7 +6,6 @@ use Tests\Helper;
 
 class AppTest extends WebTestCase
 {
-
     public function testGetInfo403()
     {
         $response = $this->runApp('GET', '/api/app/info');

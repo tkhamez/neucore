@@ -9,7 +9,6 @@ use Brave\Core\Entity\Role;
 
 class PlayerTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $a1 = (new App())->setName('app-one');

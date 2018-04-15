@@ -14,10 +14,12 @@ class CorsResponse implements ResponseInterface
     }
 
     public function withStatus($code, $reasonPhrase = '')
-    {}
+    {
+    }
 
     public function hasHeader($name)
-    {}
+    {
+    }
 
     public function getHeaders()
     {
@@ -25,16 +27,20 @@ class CorsResponse implements ResponseInterface
     }
 
     public function getBody()
-    {}
+    {
+    }
 
     public function withProtocolVersion($version)
-    {}
+    {
+    }
 
     public function withoutHeader($name)
-    {}
+    {
+    }
 
     public function getHeaderLine($name)
-    {}
+    {
+    }
 
     public function withHeader($name, $value)
     {
@@ -45,20 +51,26 @@ class CorsResponse implements ResponseInterface
     }
 
     public function withBody(StreamInterface $body)
-    {}
+    {
+    }
 
     public function getReasonPhrase()
-    {}
+    {
+    }
 
     public function getHeader($name)
-    {}
+    {
+    }
 
     public function getProtocolVersion()
-    {}
+    {
+    }
 
     public function getStatusCode()
-    {}
+    {
+    }
 
     public function withAddedHeader($name, $value)
-    {}
+    {
+    }
 }

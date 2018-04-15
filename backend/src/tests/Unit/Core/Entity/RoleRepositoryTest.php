@@ -6,7 +6,6 @@ use Tests\Helper;
 
 class RoleRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testConstruct()
     {
         $em = (new Helper())->getEm();

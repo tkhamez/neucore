@@ -13,7 +13,6 @@ use Tests\Helper;
 
 class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
 {
-
     private $log;
 
     /**

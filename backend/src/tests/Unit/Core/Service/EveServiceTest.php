@@ -13,7 +13,6 @@ use Tests\Helper;
 
 class EveServiceTest extends \PHPUnit\Framework\TestCase
 {
-
     private $em;
 
     private $log;

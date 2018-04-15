@@ -15,7 +15,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SecureRouteMiddleware
 {
-
     private $secured;
 
     /**

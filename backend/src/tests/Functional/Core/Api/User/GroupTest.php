@@ -284,7 +284,7 @@ class GroupTest extends WebTestCase
         foreach ($player->getManagerGroups() as $mg) {
             $actual[] = $mg->getId();
         }
-        $this->assertSame([],$actual);
+        $this->assertSame([], $actual);
     }
 
     private function setupDb()

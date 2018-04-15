@@ -17,7 +17,6 @@ use Slim\Http\Response;
  */
 class PlayerController
 {
-
     private $res;
 
     private $log;

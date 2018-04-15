@@ -8,7 +8,6 @@ use Brave\Core\Entity\Role;
 
 class AppTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $app = new App();

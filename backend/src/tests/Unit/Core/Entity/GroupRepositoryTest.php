@@ -6,7 +6,6 @@ use Tests\Helper;
 
 class GroupRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testConstruct()
     {
         $em = (new Helper())->getEm();

@@ -13,7 +13,6 @@ use Swagger\Client\Eve\Configuration;
  */
 class EveService
 {
-
     private $oauth;
 
     private $em;
