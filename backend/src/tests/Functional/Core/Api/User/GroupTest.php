@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Functional\Core\ApiUser;
+namespace Tests\Functional\Core\Api\User;
 
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -7,6 +7,7 @@ use Brave\Core\Roles;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Entity\Player;
 
 class GroupTest extends WebTestCase
 {
@@ -31,7 +32,7 @@ class GroupTest extends WebTestCase
 
     public function testList403()
     {
-        $response = $this->runApp('GET', '/api/user/group/list');
+        $response = $this->runApp('GET', '/api/user/group/list-all');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -40,7 +41,7 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/group/list');
+        $response = $this->runApp('GET', '/api/user/group/list-all');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -60,8 +61,20 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('POST', '/api/user/group/create');
-        $this->assertEquals(400, $response->getStatusCode());
+        $response1 = $this->runApp('POST', '/api/user/group/create');
+        $this->assertEquals(400, $response1->getStatusCode());
+
+        $response2 = $this->runApp('POST', '/api/user/group/create', ['name' => 'in va lid']);
+        $this->assertEquals(400, $response2->getStatusCode());
+    }
+
+    public function testCreate409()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('POST', '/api/user/group/create', ['name' => 'group-one']);
+        $this->assertEquals(409, $response->getStatusCode());
     }
 
     public function testCreate200()
@@ -99,8 +112,22 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => ' ']);
-        $this->assertEquals(400, $response->getStatusCode());
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => '']);
+        $this->assertEquals(400, $response1->getStatusCode());
+
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'in va lid']);
+        $this->assertEquals(400, $response2->getStatusCode());
+    }
+
+    public function testRename409()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $this->helper->addGroups(['group-two']);
+
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'group-two']);
+        $this->assertEquals(409, $response->getStatusCode());
     }
 
     public function testRename200()
@@ -108,12 +135,19 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'new-name']);
-        $this->assertEquals(200, $response->getStatusCode());
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'group-one']);
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'new-name']);
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response2->getStatusCode());
+
+        $this->assertSame(
+            ['id' => $this->gid, 'name' => 'group-one'],
+            $this->parseJsonBody($response1)
+        );
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'new-name'],
-            $this->parseJsonBody($response)
+            $this->parseJsonBody($response2)
         );
 
         $renamed = $this->gr->findOneBy(['name' => 'new-name']);
@@ -149,6 +183,35 @@ class GroupTest extends WebTestCase
         $this->assertNull($deleted);
     }
 
+    public function testManager403()
+    {
+        $response = $this->runApp('GET', '/api/user/group/1/manager');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testManager404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/group/'.($this->gid + 1).'/manager');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testManager200()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/manager');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $this->pid, 'name' => 'Admin']],
+            $this->parseJsonBody($response)
+            );
+    }
+
     public function testAddManager403()
     {
         $response = $this->runApp('PUT', '/api/user/group/69/add-manager');
@@ -172,17 +235,24 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager', ['player' => $this->pid]);
-        $this->assertEquals(204, $response->getStatusCode());
+        $player = new Player();
+        $player->setName('Manager');
+        $this->em->persist($player);
+        $this->em->flush();
+
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager', ['player' => $this->pid]);
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager', ['player' => $player->getId()]);
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();
 
-        $player = (new PlayerRepository($this->em))->find($this->pid);
         $actual = [];
-        foreach ($player->getManagerGroups() as $mg) {
+        $group = (new GroupRepository($this->em))->find($this->gid);
+        foreach ($group->getManagers() as $mg) {
             $actual[] = $mg->getId();
         }
-        $this->assertSame([$this->gid],$actual);
+        $this->assertSame([$this->pid, $player->getId()], $actual);
     }
 
     public function testRemoveManager403()
@@ -206,12 +276,6 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $group = (new GroupRepository($this->em))->find($this->gid);
-        $player = (new PlayerRepository($this->em))->find($this->pid);
-        $group->addManager($player);
-        $this->em->flush();
-        $this->em->clear();
-
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager', ['player' => $this->pid]);
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -232,5 +296,8 @@ class GroupTest extends WebTestCase
 
         $char = $this->helper->addCharacterMain('Admin', 8, [Roles::USER, Roles::GROUP_ADMIN], ['group-one']);
         $this->pid = $char->getPlayer()->getId();
+
+        $g[0]->addManager($char->getPlayer());
+        $this->em->flush();
     }
 }

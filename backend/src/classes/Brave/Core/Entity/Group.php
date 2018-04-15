@@ -26,9 +26,9 @@ class Group implements \JsonSerializable
     private $id;
 
     /**
-     * Group name.
+     * A unique group name.
      *
-     * @SWG\Property()
+     * @SWG\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
      * @Column(type="string", unique=true, length=64)
      * @var string
      */

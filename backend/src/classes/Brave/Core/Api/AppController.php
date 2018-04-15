@@ -1,16 +1,24 @@
 <?php
-namespace Brave\Core\Api\App;
+namespace Brave\Core\Api;
 
 use Brave\Core\Service\AppAuthService;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
-class InfoController
+/**
+ *
+ * @SWG\Tag(
+ *     name="App",
+ *     description="API for 3rd party apps.",
+ * )
+ */
+class AppController
 {
 
     /**
      * @SWG\Get(
      *     path="/app/info",
+     *     operationId="info",
      *     summary="Show app information. Needs role: app",
      *     tags={"App"},
      *     security={{"Bearer"={}}},
@@ -25,7 +33,7 @@ class InfoController
      *     )
      * )
      */
-    public function __invoke(ServerRequestInterface $request, Response $response, AppAuthService $aap)
+    public function info(ServerRequestInterface $request, Response $response, AppAuthService $aap)
     {
         return $response->withJson($aap->getApp($request));
     }

@@ -26,7 +26,7 @@ class App implements \JsonSerializable
     /**
      * App name
      *
-     * @SWG\Property()
+     * @SWG\Property(maxLength=255)
      * @Column(type="string", length=255)
      * @var string
      */

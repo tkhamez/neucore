@@ -10,16 +10,9 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
- *
- * @SWG\Definition(
- *     definition="PlayerList",
- *     type="array",
- *     @SWG\Items(
- *         type="object",
- *         required={"id", "name"},
- *         @SWG\Property(property="id", type="integer"),
- *         @SWG\Property(property="name", type="string")
- *     )
+ * @SWG\Tag(
+ *     name="Player",
+ *     description="Player management."
  * )
  */
 class PlayerController
@@ -55,14 +48,15 @@ class PlayerController
 
     /**
      * @SWG\Get(
-     *     path="/user/player/list",
+     *     path="/user/player/list-all",
+     *     operationId="listAll",
      *     summary="Lists all players. Needs role: user-admin",
-     *     tags={"User"},
+     *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="List of players, ordered by name.",
-     *         @SWG\Schema(ref="#/definitions/PlayerList")
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -70,7 +64,7 @@ class PlayerController
      *     )
      * )
      */
-    public function list()
+    public function listAll()
     {
         $ret = [];
 
@@ -87,13 +81,14 @@ class PlayerController
     /**
      * @SWG\Get(
      *     path="/user/player/list-group-manager",
+     *     operationId="listGroupManager",
      *     summary="Lists all players with the role group-manger. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="List of players with role group-manger, ordered by name.",
-     *         @SWG\Schema(ref="#/definitions/PlayerList")
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -124,8 +119,9 @@ class PlayerController
     /**
      * @SWG\Get(
      *     path="/user/player/{id}/roles",
+     *     operationId="roles",
      *     summary="List all roles of one player. Needs role: user-admin",
-     *     tags={"User"},
+     *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -137,7 +133,7 @@ class PlayerController
      *     @SWG\Response(
      *         response="200",
      *         description="List of roles.",
-     *         @SWG\Schema(ref="#/definitions/RoleList")
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Role"))
      *     ),
      *     @SWG\Response(
      *         response="404",
@@ -149,7 +145,7 @@ class PlayerController
      *     )
      * )
      */
-    public function listRoles($id)
+    public function roles($id)
     {
         $player = $this->pr->find((int) $id);
 
@@ -163,8 +159,9 @@ class PlayerController
     /**
      * @SWG\Put(
      *     path="/user/player/{id}/add-role",
+     *     operationId="addRole",
      *     summary="Adds a role to the player. Needs role: user-admin",
-     *     tags={"User"},
+     *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -222,8 +219,9 @@ class PlayerController
     /**
      * @SWG\Put(
      *     path="/user/player/{id}/remove-role",
+     *     operationId="removeRole",
      *     summary="Removes a role from a player. Needs role: user-admin",
-     *     tags={"User"},
+     *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",

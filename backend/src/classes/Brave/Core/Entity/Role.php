@@ -4,6 +4,12 @@ namespace Brave\Core\Entity;
 /**
  * Roles are used to determined player permissions.
  *
+ * @SWG\Definition(
+ *     definition="Role",
+ *     type="string",
+ *     enum={"app-admin", "app-manager", "group-admin", "group-manager", "user", "user-admin"})
+ * )
+ *
  * @Entity(repositoryClass="Brave\Core\Entity\RoleRepository")
  * @Table(name="roles")
  */
@@ -23,6 +29,7 @@ class Role implements \JsonSerializable
      *
      * @Column(type="string", unique=true, length=64)
      * @var string
+     * @see \Brave\Core\Roles
      */
     private $name;
 

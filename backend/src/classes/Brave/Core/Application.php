@@ -67,14 +67,6 @@ use Whoops\Handler\PlainTextHandler;
  *         description="Example: BCSESS=123"
  *     )
  * )
- * @SWG\Tag(
- *     name="User",
- *     description="API for the frond-end.",
- * )
- * @SWG\Tag(
- *     name="App",
- *     description="API for 3rd party apps.",
- * )
  */
 class Application
 {
@@ -264,8 +256,8 @@ class Application
             'secure' => $this->env === self::ENV_PROD,
             'route_include_pattern' => ['/api/user'],
             'route_blocking_pattern' => [
-                '/api/user/auth/login',
-                '/api/user/auth/login-alt',
+                '/api/user/auth/login-url',
+                '/api/user/auth/login-alt-url',
                 '/api/user/auth/callback',
                 '/api/user/auth/logout'
             ],

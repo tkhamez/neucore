@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Functional\Core\ApiUser;
+namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
@@ -20,36 +20,36 @@ class AuthTest extends WebTestCase
         $_SESSION = null;
     }
 
-    public function testGetLogin()
+    public function testGetLogin200()
     {
         $redirect = '/index.html#auth';
-        $response = $this->runApp('GET', '/api/user/auth/login?redirect_url='.urlencode($redirect));
+        $response = $this->runApp('GET', '/api/user/auth/login-url?redirect='.urlencode($redirect));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(['application/json;charset=utf-8'], $response->getHeader('Content-Type'));
 
         $body = $this->parseJsonBody($response);
 
-        $this->assertSame(1, count($body));
-        $this->assertContains('https://login.eveonline.com', $body['oauth_url']);
+        $this->assertContains('https://login.eveonline.com', $body);
 
         $sess = new SessionData();
-        $this->assertSame($redirect, $sess->get('auth_redirect_url'));
+        $this->assertSame($redirect, $sess->get('auth_redirect'));
         $this->assertSame(32, strlen($sess->get('auth_state')));
     }
 
-    public function testGetLoginAuthenticated()
+    public function testGetLogin204()
     {
         $h = new Helper();
         $h->emptyDb();
         $h->addCharacterMain('U2', 2, [Roles::USER]);
         $this->loginUser(2);
 
-        $response = $this->runApp('GET', '/api/user/auth/login');
-        $this->assertSame(['oauth_url' => ''], $this->parseJsonBody($response));
+        $response = $this->runApp('GET', '/api/user/auth/login-url');
+        $this->assertSame(204, $response->getStatusCode());
+        $this->assertSame('', $response->getBody()->__toString());
     }
 
-    public function testGetLoginAlt()
+    public function testGetLoginAlt200()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -57,24 +57,24 @@ class AuthTest extends WebTestCase
         $this->loginUser(456);
 
         $redirect = '/index.html#auth-alt';
-        $response = $this->runApp('GET', '/api/user/auth/login-alt?redirect_url='.urlencode($redirect));
+        $response = $this->runApp('GET', '/api/user/auth/login-alt-url?redirect='.urlencode($redirect));
 
         $this->assertSame(200, $response->getStatusCode());
 
         $body = $this->parseJsonBody($response);
 
         $this->assertSame(1, count($body));
-        $this->assertContains('https://login.eveonline.com', $body['oauth_url']);
+        $this->assertContains('https://login.eveonline.com', $body);
 
         $sess = new SessionData();
-        $this->assertSame($redirect, $sess->get('auth_redirect_url'));
+        $this->assertSame($redirect, $sess->get('auth_redirect'));
         $this->assertSame('t', substr($sess->get('auth_state'), 0, 1));
         $this->assertSame(33, strlen($sess->get('auth_state')));
     }
 
     public function testGetLoginAlt403()
     {
-        $response = $this->runApp('GET', '/api/user/auth/login-alt');
+        $response = $this->runApp('GET', '/api/user/auth/login-alt-url');
         $this->assertSame(403, $response->getStatusCode());
     }
 
@@ -270,6 +270,39 @@ class AuthTest extends WebTestCase
     {
         $response = $this->runApp('GET', '/api/user/auth/character');
         $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testPlayer403()
+    {
+        $response = $this->runApp('GET', '/api/user/auth/player');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testPlayer200()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $groups = $h->addGroups(['group1', 'another-group']);
+        $char = $h->addCharacterMain('TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
+        $this->loginUser(123456);
+
+        $response = $this->runApp('GET', '/api/user/auth/player');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            'id' => $char->getPlayer()->getId(),
+            'name' => 'TUser',
+            'roles' => [Roles::USER, Roles::USER_ADMIN],
+            'groups' => [
+                ['id' => $groups[1]->getId(), 'name' => 'another-group'],
+                ['id' => $groups[0]->getId(), 'name' => 'group1']
+            ],
+            'characters' => [
+                ['id' => 123456, 'name' => 'TUser', 'main' => true],
+            ],
+            'managerGroups' => [],
+            'managerApps' => [],
+        ], $this->parseJsonBody($response));
     }
 
     public function testGetLogout403()

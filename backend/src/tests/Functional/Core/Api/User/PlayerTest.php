@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Functional\Core\ApiUser;
+namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Roles;
 use Tests\Functional\WebTestCase;
@@ -23,7 +23,7 @@ class PlayerTest extends WebTestCase
 
     public function testList403()
     {
-        $response = $this->runApp('GET', '/api/user/player/list');
+        $response = $this->runApp('GET', '/api/user/player/list-all');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -35,7 +35,7 @@ class PlayerTest extends WebTestCase
         $user = $h->addCharacterMain('User', 45, [Roles::USER]);
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/list');
+        $response = $this->runApp('GET', '/api/user/player/list-all');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
@@ -89,13 +89,13 @@ class PlayerTest extends WebTestCase
         );
     }
 
-    public function testListRoles403()
+    public function testRoles403()
     {
         $response = $this->runApp('GET', '/api/user/player/1/roles');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testListRoles404()
+    public function testRoles404()
     {
         $this->setupDb();
         $this->loginUser(12);
@@ -104,7 +104,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testListRoles200()
+    public function testRoles200()
     {
         $this->setupDb();
         $this->loginUser(12);

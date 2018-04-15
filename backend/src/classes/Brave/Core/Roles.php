@@ -3,18 +3,6 @@ namespace Brave\Core;
 
 use Brave\Slim\Role\AuthRoleMiddleware;
 
-/**
- *
- * @SWG\Definition(
- *     definition="RoleList",
- *     type="array",
- *     @SWG\Items(
- *         type="string",
- *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user", "user-admin"})
- *     )
- * )
- *
- */
 class Roles
 {
     /**

@@ -9,6 +9,12 @@ use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+/**
+ * @SWG\Tag(
+ *     name="Group",
+ *     description="Group management."
+ * )
+ */
 class GroupController
 {
 
@@ -22,6 +28,8 @@ class GroupController
 
     private $em;
 
+    private $namePattern = "/^[-._a-zA-Z0-9]+$/";
+
     public function __construct(Response $res, LoggerInterface $log,
         GroupRepository $gr, PlayerRepository $pr, EntityManagerInterface $em)
     {
@@ -34,9 +42,10 @@ class GroupController
 
     /**
      * @SWG\Get(
-     *     path="/user/group/list",
+     *     path="/user/group/list-all",
+     *     operationId="listAll",
      *     summary="Lists all groups. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
@@ -49,7 +58,7 @@ class GroupController
      *     )
      * )
      */
-    public function list()
+    public function listAll()
     {
         return $this->res->withJson($this->gr->findAll());
     }
@@ -57,24 +66,31 @@ class GroupController
     /**
      * @SWG\Post(
      *     path="/user/group/create",
+     *     operationId="create",
      *     summary="Create a group. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="name",
      *         in="formData",
      *         required=true,
      *         description="Name of the group.",
-     *         type="string"
+     *         type="string",
+     *         maxLength=64,
+     *         pattern="^[-._a-zA-Z0-9]+$"
      *     ),
      *     @SWG\Response(
-     *         response="200",
-     *         description="The created group.",
+     *         response="201",
+     *         description="The new group.",
      *         @SWG\Schema(ref="#/definitions/Group")
      *     ),
      *     @SWG\Response(
      *         response="400",
-     *         description="If parameter is missing."
+     *         description="Group name is invalid."
+     *     ),
+     *     @SWG\Response(
+     *         response="409",
+     *         description="A group with this name already exists."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -84,9 +100,13 @@ class GroupController
      */
     public function create(Request $request)
     {
-        $name = trim($request->getParam('name', ''));
-        if ($name === '') {
+        $name = $request->getParam('name', '');
+        if (! preg_match($this->namePattern, $name)) {
             return $this->res->withStatus(400);
+        }
+
+        if ($this->otherGroupExists($name)) {
+            return $this->res->withStatus(409);
         }
 
         $group = new Group();
@@ -106,8 +126,9 @@ class GroupController
     /**
      * @SWG\Put(
      *     path="/user/group/{id}/rename",
+     *     operationId="rename",
      *     summary="Renames a group. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -121,7 +142,9 @@ class GroupController
      *         in="formData",
      *         required=true,
      *         description="New name for the group.",
-     *         type="string"
+     *         type="string",
+     *         maxLength=64,
+     *         pattern="^[-._a-zA-Z0-9]+$"
      *     ),
      *     @SWG\Response(
      *         response="200",
@@ -133,6 +156,14 @@ class GroupController
      *         description="Group not found."
      *     ),
      *     @SWG\Response(
+     *         response="400",
+     *         description="Group name is invalid."
+     *     ),
+     *     @SWG\Response(
+     *         response="409",
+     *         description="A group with this name already exists."
+     *     ),
+     *     @SWG\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -140,14 +171,18 @@ class GroupController
      */
     public function rename($id, Request $request)
     {
-        $name = trim($request->getParam('name', ''));
-        if ($name === '') {
-            return $this->res->withStatus(400);
-        }
-
         $group = $this->gr->find($id);
         if ($group === null) {
             return $this->res->withStatus(404);
+        }
+
+        $name = $request->getParam('name', '');
+        if (! preg_match($this->namePattern, $name)) {
+            return $this->res->withStatus(400);
+        }
+
+        if ($this->otherGroupExists($name, $group->getId())) {
+            return $this->res->withStatus(409);
         }
 
         $group->setName($name);
@@ -164,8 +199,9 @@ class GroupController
     /**
      * @SWG\Delete(
      *     path="/user/group/{id}/delete",
+     *     operationId="delete",
      *     summary="Delete a group. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -180,7 +216,7 @@ class GroupController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="If the group was not found."
+     *         description="Group not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -207,10 +243,59 @@ class GroupController
     }
 
     /**
+     * @SWG\Get(
+     *     path="/user/group/{id}/manager",
+     *     operationId="manager",
+     *     summary="List all managers of a group. Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="group ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function manager($id)
+    {
+        $ret = [];
+
+        $group = $this->gr->find($id);
+        if ($group === null) {
+            return $this->res->withStatus(404);
+        }
+
+        foreach ($group->getManagers() as $player) {
+            $ret[] = [
+                'id' => $player->getId(),
+                'name' => $player->getName()
+            ];
+        }
+
+        return $this->res->withJson($ret);
+    }
+
+    /**
      * @SWG\Put(
      *     path="/user/group/{id}/add-manager",
+     *     operationId="addManager",
      *     summary="Assigns a player as manager to a group. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -270,8 +355,9 @@ class GroupController
     /**
      * @SWG\Put(
      *     path="/user/group/{id}/remove-manager",
+     *     operationId="removeManager",
      *     summary="Removes a manager (player) from a group. Needs role: group-admin",
-     *     tags={"User"},
+     *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -320,5 +406,27 @@ class GroupController
         }
 
         return $this->res->withStatus(204);
+    }
+
+    /**
+     * Retruns true if another group with that name already exists.
+     *
+     * @param string $name Group name.
+     * @param int $id Group ID.
+     * @return boolean
+     */
+    private function otherGroupExists(string $name, int $id = null): bool
+    {
+        $group = $this->gr->findOneBy(['name' => $name]);
+
+        if ($group === null) {
+            return false;
+        }
+
+        if ($group->getId() === $id) {
+            return false;
+        }
+
+        return true;
     }
 }

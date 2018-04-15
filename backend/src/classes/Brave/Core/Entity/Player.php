@@ -5,7 +5,7 @@ namespace Brave\Core\Entity;
  *
  * @SWG\Definition(
  *     definition="Player",
- *     required={"id", "name", "roles", "groups", "characters", "managerGroups", "managerApps"}
+ *     required={"id", "name"}
  * )
  *
  * @Entity(repositoryClass="Brave\Core\Entity\PlayerRepository")
@@ -37,7 +37,7 @@ class Player implements \JsonSerializable
     /**
      * Roles for authorization.
      *
-     * @SWG\Property(ref="#/definitions/RoleList")
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
      * @ManyToMany(targetEntity="Role", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
