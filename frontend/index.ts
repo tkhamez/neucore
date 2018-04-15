@@ -89,7 +89,7 @@ const groups: Group[] = groupNames.map((name) => {
 });
 
 const state: RootState = {
-	user: allUsers[0],
+	user: undefined,
 	allUsers,
 	groups,
 };

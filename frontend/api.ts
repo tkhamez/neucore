@@ -1,15 +1,12 @@
 import axios from 'axios';
 
 interface AuthLoginOpts {
-	redirect_url?: string;
+	redirect?: string;
 }
 
-interface AuthLoginResp {
-	oauth_url: string;
-}
 export async function userAuthLoginGet(params?: AuthLoginOpts): Promise<string> {
-	const resp = await axios.get<AuthLoginResp>('/api/user/auth/login', { params });
-	return resp.data.oauth_url;
+	const resp = await axios.get<string>('/api/user/auth/login-url', { params });
+	return resp.data;
 }
 
 export async function userInfoGet(): Promise<User> {
