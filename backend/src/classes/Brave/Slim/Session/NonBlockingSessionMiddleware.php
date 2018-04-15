@@ -18,7 +18,6 @@ use Slim\Route;
  */
 class NonBlockingSessionMiddleware
 {
-
     private $options;
 
     /**
@@ -113,7 +112,6 @@ class NonBlockingSessionMiddleware
                 'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true,
                 'cookie_httponly' => true,
             ]);
-
         } else {
             // allow unit tests to inject values in the session
             $_SESSION = isset($_SESSION) ? $_SESSION : array();

@@ -22,7 +22,6 @@ use Psr\Log\LoggerInterface;
  */
 class UserAuthService implements RoleProviderInterface
 {
-
     private $session;
 
     private $characterRepository;
@@ -115,7 +114,6 @@ class UserAuthService implements RoleProviderInterface
             $char->setId($characterId);
             $char->setMain(true);
             $char->setPlayer($player);
-
         } else {
             $player = $char->getPlayer();
             if ($char->getMain()) {
@@ -173,7 +171,6 @@ class UserAuthService implements RoleProviderInterface
                 $oldPlayer->removeCharacter($alt);
                 $alt->setPlayer(null);
             }
-
         } else {
             $alt = new Character();
             $alt->setId($characterId);

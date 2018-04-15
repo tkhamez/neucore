@@ -6,7 +6,6 @@ use Brave\Core\Entity\Player;
 
 class CharacterTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $char = new Character();

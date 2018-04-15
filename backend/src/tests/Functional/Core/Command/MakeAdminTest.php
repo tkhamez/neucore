@@ -8,7 +8,6 @@ use Tests\Functional\WebTestCase;
 
 class MakeAdminTest extends WebTestCase
 {
-
     private static $em;
 
     public static function setUpBeforeClass()

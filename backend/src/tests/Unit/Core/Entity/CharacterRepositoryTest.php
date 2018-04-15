@@ -6,7 +6,6 @@ use Tests\Helper;
 
 class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testConstruct()
     {
         $em = (new Helper())->getEm();

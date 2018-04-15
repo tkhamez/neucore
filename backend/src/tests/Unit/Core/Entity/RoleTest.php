@@ -7,7 +7,6 @@ use Brave\Core\Entity\Role;
 
 class RoleTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $role = new Role();

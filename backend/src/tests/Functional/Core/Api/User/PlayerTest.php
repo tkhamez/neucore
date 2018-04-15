@@ -11,7 +11,6 @@ use Monolog\Logger;
 
 class PlayerTest extends WebTestCase
 {
-
     private $em;
 
     private $pid;

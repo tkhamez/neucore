@@ -16,7 +16,6 @@ use Slim\Route;
  */
 class AuthRoleMiddleware
 {
-
     const ROLE_ANONYMOUS = 'anonymous';
 
     private $roleService;

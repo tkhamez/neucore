@@ -16,7 +16,6 @@ use Psr\Log\LoggerInterface;
  */
 class AppAuthService implements RoleProviderInterface
 {
-
     private $appRepository;
 
     private $em;

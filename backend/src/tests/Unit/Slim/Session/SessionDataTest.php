@@ -6,7 +6,6 @@ use Tests\Helper;
 
 class SessionDataTest extends \PHPUnit\Framework\TestCase
 {
-
     public function setUp()
     {
         (new Helper())->resetSessionData();
@@ -121,5 +120,4 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $sd->set('k2', 'v2');
         $this->assertSame($_SESSION, $sd->getAll());
     }
-
 }

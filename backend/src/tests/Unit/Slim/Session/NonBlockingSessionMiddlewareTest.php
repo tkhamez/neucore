@@ -10,7 +10,6 @@ use Slim\Http\Response;
 
 class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 {
-
     public function setUp()
     {
         unset($_SESSION);
@@ -80,7 +79,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $nbs = new NonBlockingSessionMiddleware($conf);
 
-        $next = function($req, $res) {
+        $next = function ($req, $res) {
             return $res;
         };
 

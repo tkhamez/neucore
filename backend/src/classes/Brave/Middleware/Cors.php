@@ -12,7 +12,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Cors
 {
-
     private $allowOrigin;
 
     /**

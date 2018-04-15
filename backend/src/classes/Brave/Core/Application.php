@@ -157,7 +157,6 @@ class Application
         if (PHP_SAPI === 'cli') {
             $cli = require self::ROOT_DIR . '/config/settings_cli.php';
             $this->settings = array_replace_recursive($this->settings, $cli);
-
         } elseif (strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
             $heroku = require self::ROOT_DIR . '/config/settings_heroku.php';
             $this->settings = array_replace_recursive($this->settings, $heroku);
@@ -296,7 +295,7 @@ class Application
     private function dependencies(Container $container)
     {
         // Doctrine
-        $container->set(EntityManagerInterface::class, function(ContainerInterface $c) {
+        $container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
             $conf = $c->get('config')['doctrine'];
             $config = Setup::createAnnotationMetadataConfiguration(
                 $conf['meta']['entity_path'],
@@ -317,7 +316,7 @@ class Application
         ]));
 
         // Monolog
-        $container->set(LoggerInterface::class, function(ContainerInterface $c) {
+        $container->set(LoggerInterface::class, function (ContainerInterface $c) {
             $conf = $c->get('config')['monolog'];
             if (strpos($conf['path'], 'php://') === false) {
                 $dir = realpath(dirname($conf['path']));
@@ -382,7 +381,6 @@ class Application
 
             // logs errors that are not converted to exceptions by Slim
             ErrorHandler::register($container->get(LoggerInterface::class));
-
         } else { // self::ENV_DEV
             // Slim's error handling is not added to the container in
             // self::buildContainer() for dev env, instead we use Whoops
@@ -410,19 +408,14 @@ class Application
         foreach ($routes as $route => $conf) {
             if (is_array($conf[0])) { // e. g. ['GET', 'POST']
                 $app->map($conf[0], $route, $conf[1]);
-
             } elseif ($conf[0] === 'GET') {
                 $app->get($route, $conf[1]);
-
             } elseif ($conf[0] === 'POST') {
                 $app->post($route, $conf[1]);
-
             } elseif ($conf[0] === 'DELETE') {
                 $app->delete($route, $conf[1]);
-
             } elseif ($conf[0] === 'PUT') {
                 $app->put($route, $conf[1]);
-
             } else {
                 // add as needed:
                 // options, patch, any

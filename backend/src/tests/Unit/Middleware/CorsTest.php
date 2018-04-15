@@ -6,14 +6,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class CorsTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testAddsHeader()
     {
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['https://domain.tld']);
 
         $res = new CorsResponse();
-        $next = function($req, $res) {
+        $next = function ($req, $res) {
             return $res;
         };
 
@@ -33,7 +32,7 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req->method('getHeader')->willReturn(['http://domain.tld']);
 
         $res = new CorsResponse();
-        $next = function($req, $res) {
+        $next = function ($req, $res) {
             return $res;
         };
 

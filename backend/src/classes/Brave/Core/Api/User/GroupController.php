@@ -17,7 +17,6 @@ use Slim\Http\Response;
  */
 class GroupController
 {
-
     private $res;
 
     private $log;
@@ -115,7 +114,7 @@ class GroupController
         try {
             $this->em->persist($group);
             $this->em->flush();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
             return $this->res->withStatus(500);
         }
@@ -188,7 +187,7 @@ class GroupController
         $group->setName($name);
         try {
             $this->em->flush();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
             return $this->res->withStatus(500);
         }
@@ -234,7 +233,7 @@ class GroupController
         try {
             $this->em->remove($group);
             $this->em->flush();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
             return $this->res->withStatus(500);
         }

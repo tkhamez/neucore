@@ -7,7 +7,6 @@ use Brave\Core\Entity\Player;
 
 class GroupTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testJsonSerialize()
     {
         $group = new Group();

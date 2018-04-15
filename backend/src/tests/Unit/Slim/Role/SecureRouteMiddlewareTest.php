@@ -9,7 +9,6 @@ use Slim\Route;
 
 class SecureRouteMiddlewareTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testAllowProtectedWithoutRoute()
     {
         $conf = ['/secured' => ['role1']];
@@ -73,7 +72,7 @@ class SecureRouteMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $sec = new SecureRouteMiddleware($conf);
 
-        $next = function($req, $res) {
+        $next = function ($req, $res) {
             return $res;
         };
 
