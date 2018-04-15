@@ -62,7 +62,6 @@ class AuthTest extends WebTestCase
 
         $body = $this->parseJsonBody($response);
 
-        $this->assertSame(1, count($body));
         $this->assertContains('https://login.eveonline.com', $body);
 
         $sess = new SessionData();
