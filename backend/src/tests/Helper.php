@@ -6,13 +6,13 @@ use Brave\Core\Application;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\RoleRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
-use Brave\Core\Entity\GroupRepository;
 
 class Helper
 {

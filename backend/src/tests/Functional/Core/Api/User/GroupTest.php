@@ -248,7 +248,7 @@ class GroupTest extends WebTestCase
         $this->em->clear();
 
         $actual = [];
-        $group = (new GroupRepository($this->em))->find($this->gid);
+        $group = $this->gr->find($this->gid);
         foreach ($group->getManagers() as $mg) {
             $actual[] = $mg->getId();
         }

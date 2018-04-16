@@ -79,6 +79,32 @@ class PlayerController
 
     /**
      * @SWG\Get(
+     *     path="/user/player/app-managers",
+     *     operationId="appManagers",
+     *     summary="List all players with the role app-manger.",
+     *     description="Needs role: app-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function appManagers()
+    {
+        $ret = $this->getManagers(Roles::APP_MANAGER);
+
+        return $this->res->withJson($ret);
+    }
+
+    /**
+     * @SWG\Get(
      *     path="/user/player/group-managers",
      *     operationId="groupManagers",
      *     summary="List all players with the role group-manger.",
@@ -98,20 +124,7 @@ class PlayerController
      */
     public function groupManagers()
     {
-        $ret = [];
-
-        $role = $this->rr->findOneBy(['name' => Roles::GROUP_MANAGER]);
-        if ($role === null) {
-            $this->log->critical('PlayerController->listGroupManager(): Role group-manager not found in.');
-            return $this->res->withJson($ret);
-        }
-
-        foreach ($role->getPlayers() as $player) {
-            $ret[] = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
-        }
+        $ret = $this->getManagers(Roles::GROUP_MANAGER);
 
         return $this->res->withJson($ret);
     }
@@ -273,5 +286,25 @@ class PlayerController
         }
 
         return $this->res->withStatus(204);
+    }
+
+    private function getManagers($roleName)
+    {
+        $ret = [];
+
+        $role = $this->rr->findOneBy(['name' => $roleName]);
+        if ($role === null) {
+            $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
+            return $ret;
+        }
+
+        foreach ($role->getPlayers() as $player) {
+            $ret[] = [
+                'id' => $player->getId(),
+                'name' => $player->getName()
+            ];
+        }
+
+        return $ret;
     }
 }

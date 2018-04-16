@@ -1,11 +1,23 @@
 <?php
 
 use Brave\Core\Api\AppController;
+use Brave\Core\Api\User\ApplicationController;
 use Brave\Core\Api\User\AuthController;
 use Brave\Core\Api\User\GroupController;
 use Brave\Core\Api\User\PlayerController;
 
 return [
+
+    '/api/user/application/all'                          => ['GET',    ApplicationController::class.'::all'],
+    '/api/user/application/create'                       => ['POST',   ApplicationController::class.'::create'],
+    '/api/user/application/{id}/rename'                  => ['PUT',    ApplicationController::class.'::rename'],
+    '/api/user/application/{id}/delete'                  => ['DELETE', ApplicationController::class.'::delete'],
+    '/api/user/application/{id}/groups'                  => ['GET',    ApplicationController::class.'::groups'],
+    '/api/user/application/{id}/add-group/{gid}'         => ['PUT',    ApplicationController::class.'::addGroup'],
+    '/api/user/application/{id}/remove-group/{gid}'      => ['PUT',    ApplicationController::class.'::removeGroup'],
+    '/api/user/application/{id}/managers'                => ['GET',    ApplicationController::class.'::managers'],
+    '/api/user/application/{id}/add-manager/{player}'    => ['PUT',    ApplicationController::class.'::addManager'],
+    '/api/user/application/{id}/remove-manager/{player}' => ['PUT',    ApplicationController::class.'::removeManager'],
 
     '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
     '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
@@ -24,6 +36,7 @@ return [
     '/api/user/group/{id}/remove-manager/{player}' => ['PUT',    GroupController::class.'::removeManager'],
 
     '/api/user/player/all'                     => ['GET', PlayerController::class.'::all'],
+    '/api/user/player/app-managers'            => ['GET', PlayerController::class.'::appManagers'],
     '/api/user/player/group-managers'          => ['GET', PlayerController::class.'::groupManagers'],
     '/api/user/player/{id}/roles'              => ['GET', PlayerController::class.'::roles'],
     '/api/user/player/{id}/add-role/{name}'    => ['PUT', PlayerController::class.'::addRole'],

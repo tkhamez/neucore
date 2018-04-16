@@ -44,7 +44,7 @@ class GroupController
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
-     *     description="Needs role: group-admin",
+     *     description="Needs role: group-admin or app-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -259,7 +259,7 @@ class GroupController
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="group ID.",
+     *         description="Group ID.",
      *         type="integer"
      *     ),
      *     @SWG\Response(

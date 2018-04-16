@@ -66,7 +66,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response));
         $this->assertSame(
-            'PlayerController->listGroupManager(): Role group-manager not found in.',
+            'PlayerController->getManagers(): role "group-manager" not found.',
             $log->getHandlers()[0]->getRecords()[0]['message']
         );
     }
@@ -80,6 +80,51 @@ class PlayerTest extends WebTestCase
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/group-managers');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $manager->getPlayer()->getId(), 'name' => 'Manager']],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testAppManagers403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/app-managers');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAppManagers200NoGroup()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('Admin', 12, [Roles::APP_ADMIN]);
+        $this->loginUser(12);
+
+        $log = new Logger('test');
+        $log->pushHandler(new TestHandler());
+
+        $response = $this->runApp('GET', '/api/user/player/app-managers', null, null, [
+            LoggerInterface::class => $log
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response));
+        $this->assertSame(
+            'PlayerController->getManagers(): role "app-manager" not found.',
+            $log->getHandlers()[0]->getRecords()[0]['message']
+        );
+    }
+
+    public function testAppManagers200()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('Admin', 12, [Roles::APP_ADMIN]);
+        $manager = $h->addCharacterMain('Manager', 45, [Roles::APP_MANAGER]);
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/app-managers');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
