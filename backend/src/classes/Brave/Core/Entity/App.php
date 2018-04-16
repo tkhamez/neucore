@@ -125,7 +125,7 @@ class App implements \JsonSerializable
     /**
      * Set secret.
      *
-     * @param string $secret
+     * @param string $secret The hashed string, *not* the plain text password.
      *
      * @return App
      */
@@ -252,5 +252,19 @@ class App implements \JsonSerializable
     public function getManagers()
     {
         return $this->managers->toArray();
+    }
+
+    public function isManager(Player $player): bool
+    {
+        $isManager = false;
+
+        foreach ($this->getManagers() as $m) {
+            if ($m->getId() === $player->getId()) {
+                $isManager = true;
+                break;
+            }
+        }
+
+        return $isManager;
     }
 }

@@ -29,4 +29,15 @@ class AppRepository extends \Doctrine\ORM\EntityRepository
     {
         return parent::find($id, $lockMode, $lockVersion);
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findOneBy()
+     * @return \Brave\Core\Entity\App|null
+     */
+    public function findOneBy(array $criteria, array $orderBy = null)
+    {
+        return parent::findOneBy($criteria, $orderBy);
+    }
 }

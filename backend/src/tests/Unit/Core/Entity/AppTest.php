@@ -34,8 +34,9 @@ class AppTest extends \PHPUnit\Framework\TestCase
     public function testSetGetSecret()
     {
         $app = new App();
-        $app->setSecret('sec');
-        $this->assertSame('sec', $app->getSecret());
+        $pw = password_hash('00h', PASSWORD_DEFAULT);
+        $app->setSecret($pw);
+        $this->assertSame($pw, $app->getSecret());
     }
 
     public function testAddGetRemoveRole()
@@ -84,5 +85,27 @@ class AppTest extends \PHPUnit\Framework\TestCase
 
         $app->removeManager($p2);
         $this->assertSame([$p1], $app->getManagers());
+    }
+
+    public function testIsManager()
+    {
+        $app = new App();
+        $pl1 = new Player();
+        $pl2 = new Player();
+
+        $c1 = new \ReflectionClass($pl1);
+        $p1 = $c1->getProperty("id");
+        $p1->setAccessible(true);
+        $p1->setValue($pl1, 1);
+
+        $c2 = new \ReflectionClass($pl2);
+        $p2 = $c2->getProperty("id");
+        $p2->setAccessible(true);
+        $p2->setValue($pl2, 2);
+
+        $app->addManager($pl1);
+
+        $this->assertTrue($app->isManager($pl1));
+        $this->assertFalse($app->isManager($pl2));
     }
 }

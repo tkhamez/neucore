@@ -18,6 +18,7 @@ return [
     '/api/user/application/{id}/managers'                => ['GET',    ApplicationController::class.'::managers'],
     '/api/user/application/{id}/add-manager/{player}'    => ['PUT',    ApplicationController::class.'::addManager'],
     '/api/user/application/{id}/remove-manager/{player}' => ['PUT',    ApplicationController::class.'::removeManager'],
+    '/api/user/application/{id}/change-secret'           => ['PUT',    ApplicationController::class.'::changeSecret'],
 
     '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
     '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
@@ -43,5 +44,4 @@ return [
     '/api/user/player/{id}/remove-role/{name}' => ['PUT', PlayerController::class.'::removeRole'],
 
     '/api/app/info/v1' => ['GET', AppController::class.'::infoV1'],
-    '/api/app/info/v2' => ['GET', AppController::class.'::infoV2'],
 ];

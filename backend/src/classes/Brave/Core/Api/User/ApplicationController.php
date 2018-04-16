@@ -5,6 +5,7 @@ use Brave\Core\Entity\App;
 use Brave\Core\Entity\AppRepository;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Service\UserAuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
@@ -22,6 +23,8 @@ class ApplicationController
 
     private $log;
 
+    private $uas;
+
     private $ar;
 
     private $pr;
@@ -30,11 +33,12 @@ class ApplicationController
 
     private $em;
 
-    public function __construct(Response $res, LoggerInterface $log,
+    public function __construct(Response $res, LoggerInterface $log, UserAuthService $uas,
         AppRepository $ar, GroupRepository $gr, PlayerRepository $pr, EntityManagerInterface $em)
     {
-        $this->log = $log;
         $this->res = $res;
+        $this->log = $log;
+        $this->uas = $uas;
         $this->ar = $ar;
         $this->pr = $pr;
         $this->gr = $gr;
@@ -106,7 +110,7 @@ class ApplicationController
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret(bin2hex(random_bytes(32)));
+        $app->setSecret(password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT));
 
         try {
             $this->em->persist($app);
@@ -565,6 +569,65 @@ class ApplicationController
         }
 
         return $this->res->withStatus(204);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/application/{id}/change-secret",
+     *     operationId="changeSecret",
+     *     summary="Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
+     *     description="Needs role: app-manager",
+     *     tags={"Application"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the app.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The new secret.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="App not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function changeSecret($id)
+    {
+        $app = $this->ar->find((int) $id);
+
+        if ($app === null) {
+            return $this->res->withStatus(404);
+        }
+
+        // check if logged in user is manager
+        $user = $this->uas->getUser();
+        $player = $user->getPlayer();
+
+        if (! $app->isManager($player)) {
+            return $this->res->withStatus(403);
+        }
+
+        $secret = bin2hex(random_bytes(32));
+        $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            return $this->res->withStatus(500);
+        }
+
+        return $this->res->withJson($secret);
     }
 
     private function sanitize($name)
