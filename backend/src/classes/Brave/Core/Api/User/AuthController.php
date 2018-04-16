@@ -260,7 +260,7 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/player",
      *     operationId="player",
-     *     summary="Show current logged in player information. Needs role: user",
+     *     summary="Returns the logged in player with all properties. Needs role: user",
      *     tags={"Auth"},
      *     security={{"Session"={}}},
      *     @SWG\Response(

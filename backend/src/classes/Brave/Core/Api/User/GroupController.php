@@ -41,9 +41,9 @@ class GroupController
 
     /**
      * @SWG\Get(
-     *     path="/user/group/list-all",
-     *     operationId="listAll",
-     *     summary="Lists all groups. Needs role: group-admin",
+     *     path="/user/group/all",
+     *     operationId="all",
+     *     summary="List all groups. Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -57,7 +57,7 @@ class GroupController
      *     )
      * )
      */
-    public function listAll()
+    public function all()
     {
         return $this->res->withJson($this->gr->findAll());
     }
@@ -126,7 +126,7 @@ class GroupController
      * @SWG\Put(
      *     path="/user/group/{id}/rename",
      *     operationId="rename",
-     *     summary="Renames a group. Needs role: group-admin",
+     *     summary="Rename a group. Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -243,8 +243,8 @@ class GroupController
 
     /**
      * @SWG\Get(
-     *     path="/user/group/{id}/manager",
-     *     operationId="manager",
+     *     path="/user/group/{id}/managers",
+     *     operationId="managers",
      *     summary="List all managers of a group. Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
@@ -270,7 +270,7 @@ class GroupController
      *     )
      * )
      */
-    public function manager($id)
+    public function managers($id)
     {
         $ret = [];
 
@@ -293,7 +293,7 @@ class GroupController
      * @SWG\Put(
      *     path="/user/group/{id}/add-manager",
      *     operationId="addManager",
-     *     summary="Assigns a player as manager to a group. Needs role: group-admin",
+     *     summary="Assign a player as manager to a group. Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -355,7 +355,7 @@ class GroupController
      * @SWG\Put(
      *     path="/user/group/{id}/remove-manager",
      *     operationId="removeManager",
-     *     summary="Removes a manager (player) from a group. Needs role: group-admin",
+     *     summary="Remove a manager (player) from a group. Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(

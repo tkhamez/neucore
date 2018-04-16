@@ -47,9 +47,9 @@ class PlayerController
 
     /**
      * @SWG\Get(
-     *     path="/user/player/list-all",
-     *     operationId="listAll",
-     *     summary="Lists all players. Needs role: user-admin",
+     *     path="/user/player/all",
+     *     operationId="all",
+     *     summary="List all players. Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -63,7 +63,7 @@ class PlayerController
      *     )
      * )
      */
-    public function listAll()
+    public function all()
     {
         $ret = [];
 
@@ -79,9 +79,9 @@ class PlayerController
 
     /**
      * @SWG\Get(
-     *     path="/user/player/list-group-manager",
-     *     operationId="listGroupManager",
-     *     summary="Lists all players with the role group-manger. Needs role: group-admin",
+     *     path="/user/player/group-managers",
+     *     operationId="groupManagers",
+     *     summary="List all players with the role group-manger. Needs role: group-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -95,7 +95,7 @@ class PlayerController
      *     )
      * )
      */
-    public function listGroupManager()
+    public function groupManagers()
     {
         $ret = [];
 
@@ -159,7 +159,7 @@ class PlayerController
      * @SWG\Put(
      *     path="/user/player/{id}/add-role",
      *     operationId="addRole",
-     *     summary="Adds a role to the player. Needs role: user-admin",
+     *     summary="Add a role to the player. Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -219,7 +219,7 @@ class PlayerController
      * @SWG\Put(
      *     path="/user/player/{id}/remove-role",
      *     operationId="removeRole",
-     *     summary="Removes a role from a player. Needs role: user-admin",
+     *     summary="Remove a role from a player. Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(

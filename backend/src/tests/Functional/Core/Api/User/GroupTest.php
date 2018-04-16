@@ -30,18 +30,18 @@ class GroupTest extends WebTestCase
         $this->gr = new GroupRepository($this->em);
     }
 
-    public function testList403()
+    public function testAll403()
     {
-        $response = $this->runApp('GET', '/api/user/group/list-all');
+        $response = $this->runApp('GET', '/api/user/group/all');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testList200()
+    public function testAll200()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/group/list-all');
+        $response = $this->runApp('GET', '/api/user/group/all');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -183,27 +183,27 @@ class GroupTest extends WebTestCase
         $this->assertNull($deleted);
     }
 
-    public function testManager403()
+    public function testManagers403()
     {
-        $response = $this->runApp('GET', '/api/user/group/1/manager');
+        $response = $this->runApp('GET', '/api/user/group/1/managers');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testManager404()
+    public function testManagers404()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/group/'.($this->gid + 1).'/manager');
+        $response = $this->runApp('GET', '/api/user/group/'.($this->gid + 1).'/managers');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testManager200()
+    public function testManagers200()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/manager');
+        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/managers');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(

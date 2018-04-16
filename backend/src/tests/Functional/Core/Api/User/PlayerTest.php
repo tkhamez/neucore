@@ -20,13 +20,13 @@ class PlayerTest extends WebTestCase
         $_SESSION = null;
     }
 
-    public function testList403()
+    public function testAll403()
     {
-        $response = $this->runApp('GET', '/api/user/player/list-all');
+        $response = $this->runApp('GET', '/api/user/player/all');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testList200()
+    public function testAll200()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -34,7 +34,7 @@ class PlayerTest extends WebTestCase
         $user = $h->addCharacterMain('User', 45, [Roles::USER]);
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/list-all');
+        $response = $this->runApp('GET', '/api/user/player/all');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
@@ -43,13 +43,13 @@ class PlayerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testListGroupManager403()
+    public function testGroupManagers403()
     {
-        $response = $this->runApp('GET', '/api/user/player/list-group-manager');
+        $response = $this->runApp('GET', '/api/user/player/group-managers');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testListGroupManager200NoGroup()
+    public function testGroupManagers200NoGroup()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -59,7 +59,7 @@ class PlayerTest extends WebTestCase
         $log = new Logger('test');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/api/user/player/list-group-manager', null, null, [
+        $response = $this->runApp('GET', '/api/user/player/group-managers', null, null, [
             LoggerInterface::class => $log
         ]);
 
@@ -71,7 +71,7 @@ class PlayerTest extends WebTestCase
         );
     }
 
-    public function testListGroupManager200()
+    public function testGroupManagers200()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -79,7 +79,7 @@ class PlayerTest extends WebTestCase
         $manager = $h->addCharacterMain('Manager', 45, [Roles::GROUP_MANAGER]);
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/list-group-manager');
+        $response = $this->runApp('GET', '/api/user/player/group-managers');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
