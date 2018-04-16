@@ -119,7 +119,7 @@ class PlayerTest extends WebTestCase
 
     public function testAddRole403()
     {
-        $response = $this->runApp('PUT', '/api/user/player/101/add-role');
+        $response = $this->runApp('PUT', '/api/user/player/101/add-role/r');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -128,12 +128,12 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/101/add-role');
-        $response2 = $this->runApp('PUT', '/api/user/player/101/add-role?role='.Roles::APP_MANAGER);
-        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/add-role?role=role');
+        $response1 = $this->runApp('PUT', '/api/user/player/101/add-role/r');
+        $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Roles::APP_MANAGER);
+        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/add-role/role');
 
         // app is a valid role, just not for users
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/add-role?role='.Roles::APP);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/add-role/'.Roles::APP);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -146,8 +146,8 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/'.($this->pid).'/add-role?role='.Roles::APP_MANAGER);
-        $response2 = $this->runApp('PUT', '/api/user/player/'.($this->pid).'/add-role?role='.Roles::APP_MANAGER);
+        $response1 = $this->runApp('PUT', '/api/user/player/'.($this->pid).'/add-role/'.Roles::APP_MANAGER);
+        $response2 = $this->runApp('PUT', '/api/user/player/'.($this->pid).'/add-role/'.Roles::APP_MANAGER);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -162,7 +162,7 @@ class PlayerTest extends WebTestCase
 
     public function testRemoveRole403()
     {
-        $response = $this->runApp('PUT', '/api/user/player/101/remove-role');
+        $response = $this->runApp('PUT', '/api/user/player/101/remove-role/r');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -171,12 +171,12 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/101/remove-role?role=a');
-        $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role?role='.Roles::APP_MANAGER);
-        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role?role=a');
+        $response1 = $this->runApp('PUT', '/api/user/player/101/remove-role/a');
+        $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Roles::APP_MANAGER);
+        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/a');
 
         // user is a valid role, but may not be removed
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role?role='.Roles::USER);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/'.Roles::USER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -189,8 +189,8 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role?role='.Roles::APP_ADMIN);
-        $response2 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role?role='.Roles::APP_ADMIN);
+        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/'.Roles::APP_ADMIN);
+        $response2 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/'.Roles::APP_ADMIN);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 

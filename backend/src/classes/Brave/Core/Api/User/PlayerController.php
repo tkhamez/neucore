@@ -6,7 +6,6 @@ use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
@@ -49,7 +48,8 @@ class PlayerController
      * @SWG\Get(
      *     path="/user/player/all",
      *     operationId="all",
-     *     summary="List all players. Needs role: user-admin",
+     *     summary="List all players.",
+     *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -81,7 +81,8 @@ class PlayerController
      * @SWG\Get(
      *     path="/user/player/group-managers",
      *     operationId="groupManagers",
-     *     summary="List all players with the role group-manger. Needs role: group-admin",
+     *     summary="List all players with the role group-manger.",
+     *     description="Needs role: group-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -119,7 +120,8 @@ class PlayerController
      * @SWG\Get(
      *     path="/user/player/{id}/roles",
      *     operationId="roles",
-     *     summary="List all roles of one player. Needs role: user-admin",
+     *     summary="List all roles of one player.",
+     *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -157,9 +159,10 @@ class PlayerController
 
     /**
      * @SWG\Put(
-     *     path="/user/player/{id}/add-role",
+     *     path="/user/player/{id}/add-role/{name}",
      *     operationId="addRole",
-     *     summary="Add a role to the player. Needs role: user-admin",
+     *     summary="Add a role to the player.",
+     *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -170,8 +173,8 @@ class PlayerController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="role",
-     *         in="formData",
+     *         name="name",
+     *         in="path",
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
@@ -191,11 +194,10 @@ class PlayerController
      *     )
      * )
      */
-    public function addRole($id, Request $request)
+    public function addRole($id, $name)
     {
         $player = $this->pr->find((int) $id);
-
-        $role = $this->rr->findOneBy(['name' => $request->getParam('role', '')]);
+        $role = $this->rr->findOneBy(['name' => $name]);
 
         if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
             return $this->res->withStatus(404);
@@ -217,9 +219,10 @@ class PlayerController
 
     /**
      * @SWG\Put(
-     *     path="/user/player/{id}/remove-role",
+     *     path="/user/player/{id}/remove-role/{name}",
      *     operationId="removeRole",
-     *     summary="Remove a role from a player. Needs role: user-admin",
+     *     summary="Remove a role from a player.",
+     *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -230,8 +233,8 @@ class PlayerController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="role",
-     *         in="formData",
+     *         name="name",
+     *         in="path",
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
@@ -251,10 +254,10 @@ class PlayerController
      *     )
      * )
      */
-    public function removeRole($id, Request $request)
+    public function removeRole($id, $name)
     {
         $player = $this->pr->find((int) $id);
-        $role = $this->rr->findOneBy(['name' => $request->getParam('role', '')]);
+        $role = $this->rr->findOneBy(['name' => $name]);
 
         if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
             return $this->res->withStatus(404);

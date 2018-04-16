@@ -214,7 +214,7 @@ class GroupTest extends WebTestCase
 
     public function testAddManager403()
     {
-        $response = $this->runApp('PUT', '/api/user/group/69/add-manager');
+        $response = $this->runApp('PUT', '/api/user/group/69/add-manager/1');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -223,8 +223,8 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager', ['player' => $this->pid + 1]);
-        $response2 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 1).'/add-manager', ['player' => $this->pid]);
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.($this->pid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 1).'/add-manager/'.$this->pid);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -240,8 +240,8 @@ class GroupTest extends WebTestCase
         $this->em->persist($player);
         $this->em->flush();
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager', ['player' => $this->pid]);
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager', ['player' => $player->getId()]);
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.$this->pid);
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.$player->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -257,7 +257,7 @@ class GroupTest extends WebTestCase
 
     public function testRemoveManager403()
     {
-        $response = $this->runApp('PUT', '/api/user/group/69/remove-manager');
+        $response = $this->runApp('PUT', '/api/user/group/69/remove-manager/1');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -266,8 +266,8 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 1).'/remove-manager', ['player' => $this->pid]);
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager', ['player' => ($this->pid + 1)]);
+        $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 1).'/remove-manager/'.$this->pid);
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.($this->pid + 1));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -276,7 +276,7 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager', ['player' => $this->pid]);
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());
 
         $player = (new PlayerRepository($this->em))->find($this->pid);

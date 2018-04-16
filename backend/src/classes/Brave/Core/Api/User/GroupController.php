@@ -43,7 +43,8 @@ class GroupController
      * @SWG\Get(
      *     path="/user/group/all",
      *     operationId="all",
-     *     summary="List all groups. Needs role: group-admin",
+     *     summary="List all groups.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -66,9 +67,11 @@ class GroupController
      * @SWG\Post(
      *     path="/user/group/create",
      *     operationId="create",
-     *     summary="Create a group. Needs role: group-admin",
+     *     summary="Create a group.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
+     *     consumes={"application/x-www-form-urlencoded"},
      *     @SWG\Parameter(
      *         name="name",
      *         in="formData",
@@ -126,9 +129,11 @@ class GroupController
      * @SWG\Put(
      *     path="/user/group/{id}/rename",
      *     operationId="rename",
-     *     summary="Rename a group. Needs role: group-admin",
+     *     summary="Rename a group.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
+     *     consumes={"application/x-www-form-urlencoded"},
      *     @SWG\Parameter(
      *         name="id",
      *         in="path",
@@ -199,7 +204,8 @@ class GroupController
      * @SWG\Delete(
      *     path="/user/group/{id}/delete",
      *     operationId="delete",
-     *     summary="Delete a group. Needs role: group-admin",
+     *     summary="Delete a group.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -245,7 +251,8 @@ class GroupController
      * @SWG\Get(
      *     path="/user/group/{id}/managers",
      *     operationId="managers",
-     *     summary="List all managers of a group. Needs role: group-admin",
+     *     summary="List all managers of a group.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -291,9 +298,10 @@ class GroupController
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/add-manager",
+     *     path="/user/group/{id}/add-manager/{player}",
      *     operationId="addManager",
-     *     summary="Assign a player as manager to a group. Needs role: group-admin",
+     *     summary="Assign a player as manager to a group.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -305,7 +313,7 @@ class GroupController
      *     ),
      *     @SWG\Parameter(
      *         name="player",
-     *         in="formData",
+     *         in="path",
      *         required=true,
      *         description="ID of the player.",
      *         type="integer"
@@ -324,10 +332,10 @@ class GroupController
      *     )
      * )
      */
-    public function addManager($id, Request $request)
+    public function addManager($id, $player)
     {
         $group = $this->gr->find((int) $id);
-        $player = $this->pr->find((int) $request->getParam('player', 0));
+        $player = $this->pr->find((int) $player);
 
         if ($group === null || $player === null) {
             return $this->res->withStatus(404);
@@ -353,9 +361,10 @@ class GroupController
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/remove-manager",
+     *     path="/user/group/{id}/remove-manager/{player}",
      *     operationId="removeManager",
-     *     summary="Remove a manager (player) from a group. Needs role: group-admin",
+     *     summary="Remove a manager (player) from a group.",
+     *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -367,7 +376,7 @@ class GroupController
      *     ),
      *     @SWG\Parameter(
      *         name="player",
-     *         in="formData",
+     *         in="path",
      *         required=true,
      *         description="ID of the player.",
      *         type="integer"
@@ -386,10 +395,10 @@ class GroupController
      *     )
      * )
      */
-    public function removeManager($id, Request $request)
+    public function removeManager($id, $player)
     {
         $group = $this->gr->find((int) $id);
-        $player = $this->pr->find((int) $request->getParam('player', 0));
+        $player = $this->pr->find((int) $player);
 
         if ($group === null || $player === null) {
             return $this->res->withStatus(404);

@@ -95,7 +95,8 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/login-alt-url",
      *     operationId="loginAltUrl",
-     *     summary="EVE SSO login URL to add additional characters to an account. Needs role: user",
+     *     summary="EVE SSO login URL to add additional characters to an account.",
+     *     description="Needs role: user",
      *     tags={"Auth"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -237,7 +238,8 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/character",
      *     operationId="character",
-     *     summary="Returns the logged in EVE character. Needs role: user",
+     *     summary="Returns the logged in EVE character.",
+     *     description="Needs role: user",
      *     tags={"Auth"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -260,7 +262,8 @@ class AuthController
      * @SWG\Get(
      *     path="/user/auth/player",
      *     operationId="player",
-     *     summary="Returns the logged in player with all properties. Needs role: user",
+     *     summary="Returns the logged in player with all properties.",
+     *     description="Needs role: user",
      *     tags={"Auth"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -283,7 +286,8 @@ class AuthController
      * @SWG\Post(
      *     path="/user/auth/logout",
      *     operationId="logout",
-     *     summary="User logout. Needs role: user",
+     *     summary="User logout.",
+     *     description="Needs role: user",
      *     tags={"Auth"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
