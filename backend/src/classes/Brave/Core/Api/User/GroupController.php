@@ -3,6 +3,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,19 +24,25 @@ class GroupController
 
     private $gr;
 
-    private $pr;
-
     private $em;
 
     private $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
-    public function __construct(Response $res, LoggerInterface $log,
-        GroupRepository $gr, PlayerRepository $pr, EntityManagerInterface $em)
+    /**
+     * @var Group
+     */
+    private $group;
+
+    /**
+     * @var Player
+     */
+    private $player;
+
+    public function __construct(Response $res, LoggerInterface $log, GroupRepository $gr, EntityManagerInterface $em)
     {
         $this->log = $log;
         $this->res = $res;
         $this->gr = $gr;
-        $this->pr = $pr;
         $this->em = $em;
     }
 
@@ -175,8 +182,7 @@ class GroupController
      */
     public function rename($id, Request $request)
     {
-        $group = $this->gr->find($id);
-        if ($group === null) {
+        if (! $this->findGroup($id)) {
             return $this->res->withStatus(404);
         }
 
@@ -185,11 +191,11 @@ class GroupController
             return $this->res->withStatus(400);
         }
 
-        if ($this->otherGroupExists($name, $group->getId())) {
+        if ($this->otherGroupExists($name, $this->group->getId())) {
             return $this->res->withStatus(409);
         }
 
-        $group->setName($name);
+        $this->group->setName($name);
         try {
             $this->em->flush();
         } catch (\Exception $e) {
@@ -197,7 +203,7 @@ class GroupController
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withJson($group);
+        return $this->res->withJson($this->group);
     }
 
     /**
@@ -231,13 +237,12 @@ class GroupController
      */
     public function delete($id)
     {
-        $group = $this->gr->find($id);
-        if ($group === null) {
+        if (! $this->findGroup($id)) {
             return $this->res->withStatus(404);
         }
 
         try {
-            $this->em->remove($group);
+            $this->em->remove($this->group);
             $this->em->flush();
         } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
@@ -279,14 +284,12 @@ class GroupController
      */
     public function managers($id)
     {
-        $ret = [];
-
-        $group = $this->gr->find($id);
-        if ($group === null) {
+        if (! $this->findGroup($id)) {
             return $this->res->withStatus(404);
         }
 
-        foreach ($group->getManagers() as $player) {
+        $ret = [];
+        foreach ($this->group->getManagers() as $player) {
             $ret[] = [
                 'id' => $player->getId(),
                 'name' => $player->getName()
@@ -332,21 +335,18 @@ class GroupController
      *     )
      * )
      */
-    public function addManager($id, $player)
+    public function addManager($id, $player, PlayerRepository $pr)
     {
-        $group = $this->gr->find((int) $id);
-        $player = $this->pr->find((int) $player);
-
-        if ($group === null || $player === null) {
+        if (! $this->findGroupAndPlayer($id, $player, $pr)) {
             return $this->res->withStatus(404);
         }
 
         $isManager = [];
-        foreach ($player->getManagerGroups() as $mg) {
+        foreach ($this->player->getManagerGroups() as $mg) {
             $isManager[] = $mg->getId();
         }
-        if (! in_array($group->getId(), $isManager)) {
-            $group->addManager($player);
+        if (! in_array($this->group->getId(), $isManager)) {
+            $this->group->addManager($this->player);
         }
 
         try {
@@ -395,16 +395,13 @@ class GroupController
      *     )
      * )
      */
-    public function removeManager($id, $player)
+    public function removeManager($id, $player, PlayerRepository $pr)
     {
-        $group = $this->gr->find((int) $id);
-        $player = $this->pr->find((int) $player);
-
-        if ($group === null || $player === null) {
+        if (! $this->findGroupAndPlayer($id, $player, $pr)) {
             return $this->res->withStatus(404);
         }
 
-        $group->removeManager($player);
+        $this->group->removeManager($this->player);
 
         try {
             $this->em->flush();
@@ -432,6 +429,28 @@ class GroupController
         }
 
         if ($group->getId() === $id) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function findGroup($id)
+    {
+        $this->group = $this->gr->find($id);
+        if ($this->group === null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function findGroupAndPlayer($id, $player, PlayerRepository $pr)
+    {
+        $this->group = $this->gr->find((int) $id);
+        $this->player = $pr->find((int) $player);
+
+        if ($this->group === null || $this->player === null) {
             return false;
         }
 

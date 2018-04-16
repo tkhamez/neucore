@@ -3,7 +3,9 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\AppRepository;
+use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Service\UserAuthService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,25 +25,30 @@ class ApplicationController
 
     private $log;
 
-    private $uas;
-
     private $ar;
-
-    private $pr;
-
-    private $gr;
 
     private $em;
 
-    public function __construct(Response $res, LoggerInterface $log, UserAuthService $uas,
-        AppRepository $ar, GroupRepository $gr, PlayerRepository $pr, EntityManagerInterface $em)
+    /**
+     * @var App
+     */
+    private $app;
+
+    /**
+     * @var Player
+     */
+    private $player;
+
+    /**
+     * @var Group
+     */
+    private $group;
+
+    public function __construct(Response $res, LoggerInterface $log, AppRepository $ar, EntityManagerInterface $em)
     {
         $this->res = $res;
         $this->log = $log;
-        $this->uas = $uas;
         $this->ar = $ar;
-        $this->pr = $pr;
-        $this->gr = $gr;
         $this->em = $em;
     }
 
@@ -321,21 +328,18 @@ class ApplicationController
      *     )
      * )
      */
-    public function addManager($id, $player)
+    public function addManager($id, $player, PlayerRepository $pr)
     {
-        $app = $this->ar->find((int) $id);
-        $player = $this->pr->find((int) $player);
-
-        if ($app === null || $player === null) {
+        if (! $this->findAppAndPlayer($id, $player, $pr)) {
             return $this->res->withStatus(404);
         }
 
         $isManager = [];
-        foreach ($app->getManagers() as $mg) {
+        foreach ($this->app->getManagers() as $mg) {
             $isManager[] = $mg->getId();
         }
-        if (! in_array($player->getId(), $isManager)) {
-            $app->addManager($player);
+        if (! in_array($this->player->getId(), $isManager)) {
+            $this->app->addManager($this->player);
         }
 
         try {
@@ -384,16 +388,13 @@ class ApplicationController
      *     )
      * )
      */
-    public function removeManager($id, $player)
+    public function removeManager($id, $player, PlayerRepository $pr)
     {
-        $app = $this->ar->find((int) $id);
-        $player = $this->pr->find((int) $player);
-
-        if ($app === null || $player === null) {
+        if (! $this->findAppAndPlayer($id, $player, $pr)) {
             return $this->res->withStatus(404);
         }
 
-        $app->removeManager($player);
+        $this->app->removeManager($this->player);
 
         try {
             $this->em->flush();
@@ -487,21 +488,18 @@ class ApplicationController
      *     )
      * )
      */
-    public function addGroup($id, $gid)
+    public function addGroup($id, $gid, GroupRepository $gr)
     {
-        $app = $this->ar->find((int) $id);
-        $group = $this->gr->find((int) $gid);
-
-        if ($app === null || $group === null) {
+        if (! $this->findAppAndGroup($id, $gid, $gr)) {
             return $this->res->withStatus(404);
         }
 
         $hasGroups = [];
-        foreach ($app->getGroups() as $gp) {
+        foreach ($this->app->getGroups() as $gp) {
             $hasGroups[] = $gp->getId();
         }
-        if (! in_array($group->getId(), $hasGroups)) {
-            $app->addGroup($group);
+        if (! in_array($this->group->getId(), $hasGroups)) {
+            $this->app->addGroup($this->group);
         }
 
         try {
@@ -550,16 +548,13 @@ class ApplicationController
      *     )
      * )
      */
-    public function removeGroup($id, $gid)
+    public function removeGroup($id, $gid, GroupRepository $gr)
     {
-        $app = $this->ar->find((int) $id);
-        $group = $this->gr->find((int) $gid);
-
-        if ($app === null || $group === null) {
+        if (! $this->findAppAndGroup($id, $gid, $gr)) {
             return $this->res->withStatus(404);
         }
 
-        $app->removeGroup($group);
+        $this->app->removeGroup($this->group);
 
         try {
             $this->em->flush();
@@ -601,18 +596,15 @@ class ApplicationController
      *     )
      * )
      */
-    public function changeSecret($id)
+    public function changeSecret($id, UserAuthService $uas)
     {
         $app = $this->ar->find((int) $id);
-
         if ($app === null) {
             return $this->res->withStatus(404);
         }
 
         // check if logged in user is manager
-        $user = $this->uas->getUser();
-        $player = $user->getPlayer();
-
+        $player = $uas->getUser()->getPlayer();
         if (! $app->isManager($player)) {
             return $this->res->withStatus(403);
         }
@@ -628,6 +620,31 @@ class ApplicationController
         }
 
         return $this->res->withJson($secret);
+    }
+
+    private function findAppAndPlayer($id, $player, PlayerRepository $pr)
+    {
+        $this->app = $this->ar->find((int) $id);
+        $this->player = $pr->find((int) $player);
+
+        if ($this->app === null || $this->player === null) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private function findAppAndGroup($id, $gid, GroupRepository $gr)
+    {
+        $this->app = $this->ar->find((int) $id);
+        $this->group = $gr->find((int) $gid);
+
+        if ($this->app === null || $this->group === null) {
+            return false;
+        }
+
+        return true;
     }
 
     private function sanitize($name)
