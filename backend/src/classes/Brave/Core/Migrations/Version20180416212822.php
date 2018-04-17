@@ -11,7 +11,6 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20180416212822 extends AbstractMigration
 {
-
     public function up(Schema $schema)
     {
         $this->addSql('DELETE FROM apps WHERE id = :id', array('id' => 1));

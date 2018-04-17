@@ -30,6 +30,22 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('nam', $group->getName());
     }
 
+    public function testAddGetRemoveApplicant()
+    {
+        $group = new Group();
+        $a1 = new Player();
+        $a2 = new Player();
+
+        $this->assertSame([], $group->getApplicants());
+
+        $group->addApplicant($a1);
+        $group->addApplicant($a2);
+        $this->assertSame([$a1, $a2], $group->getApplicants());
+
+        $group->removeApplicant($a2);
+        $this->assertSame([$a1], $group->getApplicants());
+    }
+
     public function testAddGetRemovePlayer()
     {
         $group = new Group();
@@ -47,6 +63,22 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $group->getPlayers());
     }
 
+    public function testAddGetRemoveManager()
+    {
+        $group = new Group();
+        $p1 = new Player();
+        $p2 = new Player();
+
+        $this->assertSame([], $group->getManagers());
+
+        $group->addManager($p1);
+        $group->addManager($p2);
+        $this->assertSame([$p1, $p2], $group->getManagers());
+
+        $group->removeManager($p2);
+        $this->assertSame([$p1], $group->getManagers());
+    }
+
     public function testAddGetRemoveApp()
     {
         $group = new Group();
@@ -62,21 +94,5 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $group->removeApp($a2);
         $group->removeApp($a1);
         $this->assertSame([], $group->getApps());
-    }
-
-    public function testAddGetRemoveManager()
-    {
-        $group = new Group();
-        $p1 = new Player();
-        $p2 = new Player();
-
-        $this->assertSame([], $group->getManagers());
-
-        $group->addManager($p1);
-        $group->addManager($p2);
-        $this->assertSame([$p1, $p2], $group->getManagers());
-
-        $group->removeManager($p2);
-        $this->assertSame([$p1], $group->getManagers());
     }
 }

@@ -1,8 +1,10 @@
 <?php
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Service\UserAuthService;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -24,6 +26,10 @@ class PlayerController
 
     private $rr;
 
+    private $gr;
+
+    private $uas;
+
     private $em;
 
     private $availableRoles = [
@@ -35,12 +41,15 @@ class PlayerController
     ];
 
     public function __construct(Response $response, LoggerInterface $log,
-        PlayerRepository $pr, RoleRepository $rr, EntityManagerInterface $em)
+        PlayerRepository $pr, RoleRepository $rr, GroupRepository $gr,
+        UserAuthService $uas, EntityManagerInterface $em)
     {
         $this->res = $response;
         $this->log = $log;
         $this->pr = $pr;
         $this->rr = $rr;
+        $this->gr = $gr;
+        $this->uas = $uas;
         $this->em = $em;
     }
 
@@ -75,6 +84,108 @@ class PlayerController
         }
 
         return $this->res->withJson($ret);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/player/add-application/{group}",
+     *     operationId="applyGroup",
+     *     summary="Submit a group application.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="group",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Application submitted."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function addApplication($group)
+    {
+        return $this->addOrRemoveGroupToFrom('add', 'Application', $group);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/player/remove-application/{group}",
+     *     operationId="cancelApplication",
+     *     summary="Cancel a group application.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="group",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Application canceled."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function removeApplication($group)
+    {
+        return $this->addOrRemoveGroupToFrom('remove', 'Application', $group);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/player/remove-group/{group}",
+     *     operationId="leaveGroup",
+     *     summary="Leave a group.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="group",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Group left."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function removeGroup($group)
+    {
+        return $this->addOrRemoveGroupToFrom('remove', 'Group', $group);
     }
 
     /**
@@ -220,10 +331,7 @@ class PlayerController
             $player->addRole($role);
         }
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -278,10 +386,7 @@ class PlayerController
 
         $player->removeRole($role);
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -306,5 +411,52 @@ class PlayerController
         }
 
         return $ret;
+    }
+
+    private function addOrRemoveGroupToFrom($action, $entity, $groupId)
+    {
+        $group = $this->gr->find((int) $groupId);
+        if ($group === null) {
+            return $this->res->withStatus(404);
+        }
+
+        $player = $this->uas->getUser()->getPlayer();
+
+        if ($action === 'add' && $entity === 'Application') {
+            $hasApplied = false;
+            foreach ($player->getApplications() as $applic) {
+                if ($group->getId() === $applic->getId()) {
+                    $hasApplied = true;
+                    break;
+                }
+            }
+            if (! $hasApplied) {
+                $player->addApplication($group);
+            }
+
+        } elseif ($action === 'remove' && $entity === 'Application') {
+            $player->removeApplication($group);
+
+        } elseif ($action === 'remove' && $entity === 'Group') {
+            $player->removeGroup($group);
+        }
+
+        if (! $this->flush()) {
+            return $this->res->withStatus(500);
+        }
+
+        return $this->res->withStatus(204);
+    }
+
+    private function flush()
+    {
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            return false;
+        }
+
+        return true;
     }
 }

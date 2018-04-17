@@ -35,18 +35,20 @@ class Group implements \JsonSerializable
     private $name;
 
     /**
+     * @ManyToMany(targetEntity="Player", mappedBy="applications")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $applicants;
+
+    /**
+     * Group members.
+     *
      * @ManyToMany(targetEntity="Player", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
     private $players;
-
-    /**
-     * @ManyToMany(targetEntity="App", mappedBy="groups")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $apps;
 
     /**
      * @ManyToMany(targetEntity="Player", inversedBy="managerGroups")
@@ -55,6 +57,13 @@ class Group implements \JsonSerializable
      * @var \Doctrine\Common\Collections\Collection
      */
     private $managers;
+
+    /**
+     * @ManyToMany(targetEntity="App", mappedBy="groups")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $apps;
 
     /**
      * Contains only information that is of interest for clients.
@@ -75,9 +84,10 @@ class Group implements \JsonSerializable
      */
     public function __construct()
     {
+        $this->applicants = new \Doctrine\Common\Collections\ArrayCollection();
         $this->players = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -112,6 +122,42 @@ class Group implements \JsonSerializable
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Add applicant.
+     *
+     * @param \Brave\Core\Entity\Player $applicant
+     *
+     * @return Group
+     */
+    public function addApplicant(\Brave\Core\Entity\Player $applicant)
+    {
+        $this->applicants[] = $applicant;
+
+        return $this;
+    }
+
+    /**
+     * Remove applicant.
+     *
+     * @param \Brave\Core\Entity\Player $applicant
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeApplicant(\Brave\Core\Entity\Player $applicant)
+    {
+        return $this->applicants->removeElement($applicant);
+    }
+
+    /**
+     * Get applicants.
+     *
+     * @return Player[]
+     */
+    public function getApplicants()
+    {
+        return $this->applicants->toArray();
     }
 
     /**
@@ -151,42 +197,6 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Add app.
-     *
-     * @param \Brave\Core\Entity\App $app
-     *
-     * @return Group
-     */
-    public function addApp(\Brave\Core\Entity\App $app)
-    {
-        $this->apps[] = $app;
-
-        return $this;
-    }
-
-    /**
-     * Remove app.
-     *
-     * @param \Brave\Core\Entity\App $app
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeApp(\Brave\Core\Entity\App $app)
-    {
-        return $this->apps->removeElement($app);
-    }
-
-    /**
-     * Get apps.
-     *
-     * @return App[]
-     */
-    public function getApps()
-    {
-        return $this->apps->toArray();
-    }
-
-    /**
      * Add manager.
      *
      * @param \Brave\Core\Entity\Player $manager
@@ -220,5 +230,41 @@ class Group implements \JsonSerializable
     public function getManagers()
     {
         return $this->managers->toArray();
+    }
+
+    /**
+     * Add app.
+     *
+     * @param \Brave\Core\Entity\App $app
+     *
+     * @return Group
+     */
+    public function addApp(\Brave\Core\Entity\App $app)
+    {
+        $this->apps[] = $app;
+
+        return $this;
+    }
+
+    /**
+     * Remove app.
+     *
+     * @param \Brave\Core\Entity\App $app
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeApp(\Brave\Core\Entity\App $app)
+    {
+        return $this->apps->removeElement($app);
+    }
+
+    /**
+     * Get apps.
+     *
+     * @return App[]
+     */
+    public function getApps()
+    {
+        return $this->apps->toArray();
     }
 }

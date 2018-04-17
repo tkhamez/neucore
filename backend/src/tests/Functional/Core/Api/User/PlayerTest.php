@@ -43,6 +43,51 @@ class PlayerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
+    public function testAddApplication403()
+    {
+
+    }
+
+    public function testAddApplication404()
+    {
+
+    }
+
+    public function testAddApplication204()
+    {
+
+    }
+
+    public function testRemoveApplication403()
+    {
+
+    }
+
+    public function testRemoveApplication404()
+    {
+
+    }
+
+    public function testRemoveApplication204()
+    {
+
+    }
+
+    public function testRemoveGroup403()
+    {
+
+    }
+
+    public function testRemoveGroup404()
+    {
+
+    }
+
+    public function testRemoveGroup204()
+    {
+
+    }
+
     public function testGroupManagers403()
     {
         $response = $this->runApp('GET', '/api/user/player/group-managers');

@@ -291,12 +291,13 @@ class AuthTest extends WebTestCase
             'id' => $char->getPlayer()->getId(),
             'name' => 'TUser',
             'roles' => [Roles::USER, Roles::USER_ADMIN],
+            'characters' => [
+                ['id' => 123456, 'name' => 'TUser', 'main' => true],
+            ],
+            'applications' => [],
             'groups' => [
                 ['id' => $groups[1]->getId(), 'name' => 'another-group'],
                 ['id' => $groups[0]->getId(), 'name' => 'group1']
-            ],
-            'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true],
             ],
             'managerGroups' => [],
             'managerApps' => [],

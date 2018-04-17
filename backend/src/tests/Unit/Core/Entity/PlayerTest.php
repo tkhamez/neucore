@@ -16,7 +16,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $g2 = (new Group())->setName('group2');
         $play = new Player();
         $play->setName('test user');
-        $play->addGroup($g1);
+        $play->addApplication($g1);
         $play->addGroup($g2);
         $play->addRole((new Role())->setName('rname'));
         $play->addRole((new Role())->setName('role2'));
@@ -37,13 +37,15 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
             'id' => null,
             'name' => 'test user',
             'roles' => ['rname', 'role2'],
-            'groups' => [
-                ['id' => null, 'name' => 'gname'],
-                ['id' => null, 'name' => 'group2']
-            ],
             'characters' => [
                 ['id' => 123, 'name' => 'eve one', 'main' => true],
                 ['id' => 234, 'name' => 'eve two', 'main' => false],
+            ],
+            'applications' => [
+                ['id' => null, 'name' => 'gname']
+            ],
+            'groups' => [
+                ['id' => null, 'name' => 'group2']
             ],
             'managerGroups' => [['id' => null, 'name' => 'gname']],
             'managerApps' => [['id' => null, 'name' => 'app-one']],
@@ -92,22 +94,6 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($player->hasRole('role2'));
     }
 
-    public function testAddGetRemoveGroup()
-    {
-        $play = new Player();
-        $g1 = new Group();
-        $g2 = new Group();
-
-        $this->assertSame([], $play->getGroups());
-
-        $play->addGroup($g1);
-        $play->addGroup($g2);
-        $this->assertSame([$g1, $g2], $play->getGroups());
-
-        $play->removeGroup($g2);
-        $this->assertSame([$g1], $play->getGroups());
-    }
-
     public function testAddGetRemoveCharacter()
     {
         $play = new Player();
@@ -122,6 +108,38 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $play->removeCharacter($c2);
         $this->assertSame([$c1], $play->getCharacters());
+    }
+
+    public function testAddGetRemoveApplication()
+    {
+        $play = new Player();
+        $a1 = new Group();
+        $a2 = new Group();
+
+        $this->assertSame([], $play->getApplications());
+
+        $play->addApplication($a1);
+        $play->addApplication($a2);
+        $this->assertSame([$a1, $a2], $play->getApplications());
+
+        $play->removeApplication($a2);
+        $this->assertSame([$a1], $play->getApplications());
+    }
+
+    public function testAddGetRemoveGroup()
+    {
+        $play = new Player();
+        $g1 = new Group();
+        $g2 = new Group();
+
+        $this->assertSame([], $play->getGroups());
+
+        $play->addGroup($g1);
+        $play->addGroup($g2);
+        $this->assertSame([$g1, $g2], $play->getGroups());
+
+        $play->removeGroup($g2);
+        $this->assertSame([$g1], $play->getGroups());
     }
 
     public function testAddGetRemoveManagerGroups()

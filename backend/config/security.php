@@ -18,12 +18,18 @@ return [
     '/api/user/auth/callback'  => [Roles::ANONYMOUS, Roles::USER],
     '/api/user/auth/result'    => [Roles::ANONYMOUS, Roles::USER],
 
-    '/api/user/group/all' => [Roles::GROUP_ADMIN, Roles::APP_ADMIN],
-    '/api/user/group'     => [Roles::GROUP_ADMIN],
+    '/api/user/group/all'                    => [Roles::USER, Roles::GROUP_ADMIN, Roles::APP_ADMIN],
+    '/api/api/user/group/{id}/applicants'    => [Roles::GROUP_MANAGER],
+    '/api/api/user/group/{id}/add-member'    => [Roles::GROUP_MANAGER],
+    '/api/api/user/group/{id}/remove-member' => [Roles::GROUP_MANAGER],
+    '/api/user/group'                        => [Roles::GROUP_ADMIN],
 
-    '/api/user/player/app-managers'   => [Roles::APP_ADMIN],
-    '/api/user/player/group-managers' => [Roles::GROUP_ADMIN],
-    '/api/user/player'                => [Roles::USER_ADMIN],
+    '/api/user/player/add-application'    => [Roles::USER],
+    '/api/user/player/remove-application' => [Roles::USER],
+    '/api/user/player/remove-group'       => [Roles::USER],
+    '/api/user/player/app-managers'       => [Roles::APP_ADMIN],
+    '/api/user/player/group-managers'     => [Roles::GROUP_ADMIN],
+    '/api/user/player'                    => [Roles::USER_ADMIN],
 
     '/api/user' => [Roles::USER],
 ];

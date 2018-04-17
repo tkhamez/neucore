@@ -287,6 +287,51 @@ class GroupTest extends WebTestCase
         $this->assertSame([], $actual);
     }
 
+    public function testApplicants403()
+    {
+        # include is-not-manager-of-group test
+    }
+
+    public function testApplicants404()
+    {
+
+    }
+
+    public function testApplicants200()
+    {
+
+    }
+
+    public function testAddMember403()
+    {
+        # include is-not-manager-of-group test
+    }
+
+    public function testAddMember404()
+    {
+
+    }
+
+    public function testAddMember204()
+    {
+
+    }
+
+    public function testRemoveMember403()
+    {
+        # include is-not-manager-of-group test
+    }
+
+    public function testRemoveMember404()
+    {
+
+    }
+
+    public function testRemoveMember204()
+    {
+
+    }
+
     private function setupDb()
     {
         $this->helper->emptyDb();
