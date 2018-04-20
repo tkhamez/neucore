@@ -21,12 +21,24 @@ use Slim\Http\Response;
  */
 class ApplicationController
 {
+    /**
+     * @var Response
+     */
     private $res;
 
+    /**
+     * @var LoggerInterface
+     */
     private $log;
 
+    /**
+     * @var AppRepository
+     */
     private $ar;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
     /**
@@ -54,7 +66,7 @@ class ApplicationController
 
     /**
      * @SWG\Get(
-     *     path="/user/application/all",
+     *     path="/user/app/all",
      *     operationId="all",
      *     summary="List all apps.",
      *     description="Needs role: app-admin",
@@ -71,14 +83,14 @@ class ApplicationController
      *     )
      * )
      */
-    public function all()
+    public function all(): Response
     {
         return $this->res->withJson($this->ar->findAll());
     }
 
     /**
      * @SWG\Post(
-     *     path="/user/application/create",
+     *     path="/user/app/create",
      *     operationId="create",
      *     summary="Create an app.",
      *     description="Needs role: app-admin<br>Generates a random secret that must be changed by an app manager.",
@@ -108,7 +120,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         $name = $this->sanitize($request->getParam('name', ''));
         if ($name === '') {
@@ -132,7 +144,7 @@ class ApplicationController
 
     /**
      * @SWG\Put(
-     *     path="/user/application/{id}/rename",
+     *     path="/user/app/{id}/rename",
      *     operationId="rename",
      *     summary="Rename an app.",
      *     description="Needs role: app-admin",
@@ -173,9 +185,9 @@ class ApplicationController
      *     )
      * )
      */
-    public function rename($id, Request $request)
+    public function rename(string $id, Request $request): Response
     {
-        $app = $this->ar->find($id);
+        $app = $this->ar->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -198,7 +210,7 @@ class ApplicationController
 
     /**
      * @SWG\Delete(
-     *     path="/user/application/{id}/delete",
+     *     path="/user/app/{id}/delete",
      *     operationId="delete",
      *     summary="Delete an app.",
      *     description="Needs role: app-admin",
@@ -225,9 +237,9 @@ class ApplicationController
      *     )
      * )
      */
-    public function delete($id)
+    public function delete(string $id): Response
     {
-        $app = $this->ar->find($id);
+        $app = $this->ar->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -245,7 +257,7 @@ class ApplicationController
 
     /**
      * @SWG\Get(
-     *     path="/user/application/{id}/managers",
+     *     path="/user/app/{id}/managers",
      *     operationId="managers",
      *     summary="List all managers of an app.",
      *     description="Needs role: app-admin",
@@ -273,11 +285,11 @@ class ApplicationController
      *     )
      * )
      */
-    public function managers($id)
+    public function managers(string $id): Response
     {
         $ret = [];
 
-        $app = $this->ar->find($id);
+        $app = $this->ar->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -294,7 +306,7 @@ class ApplicationController
 
     /**
      * @SWG\Put(
-     *     path="/user/application/{id}/add-manager/{player}",
+     *     path="/user/app/{id}/add-manager/{player}",
      *     operationId="addManager",
      *     summary="Assign a player as manager to an app.",
      *     description="Needs role: app-admin",
@@ -328,7 +340,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function addManager($id, $player, PlayerRepository $pr)
+    public function addManager(string $id, string $player, PlayerRepository $pr): Response
     {
         if (! $this->findAppAndPlayer($id, $player, $pr)) {
             return $this->res->withStatus(404);
@@ -354,7 +366,7 @@ class ApplicationController
 
     /**
      * @SWG\Put(
-     *     path="/user/application/{id}/remove-manager/{player}",
+     *     path="/user/app/{id}/remove-manager/{player}",
      *     operationId="removeManager",
      *     summary="Remove a manager (player) from an app.",
      *     description="Needs role: app-admin",
@@ -388,7 +400,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function removeManager($id, $player, PlayerRepository $pr)
+    public function removeManager(string $id, string $player, PlayerRepository $pr): Response
     {
         if (! $this->findAppAndPlayer($id, $player, $pr)) {
             return $this->res->withStatus(404);
@@ -408,7 +420,7 @@ class ApplicationController
 
     /**
      * @SWG\Get(
-     *     path="/user/application/{id}/groups",
+     *     path="/user/app/{id}/groups",
      *     operationId="groups",
      *     summary="List all groups of an app.",
      *     description="Needs role: app-admin",
@@ -436,11 +448,11 @@ class ApplicationController
      *     )
      * )
      */
-    public function groups($id)
+    public function groups(string $id): Response
     {
         $ret = [];
 
-        $app = $this->ar->find($id);
+        $app = $this->ar->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -454,7 +466,7 @@ class ApplicationController
 
     /**
      * @SWG\Put(
-     *     path="/user/application/{id}/add-group/{gid}",
+     *     path="/user/app/{id}/add-group/{gid}",
      *     operationId="addGroup",
      *     summary="Add a group to an app.",
      *     description="Needs role: app-admin",
@@ -488,7 +500,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function addGroup($id, $gid, GroupRepository $gr)
+    public function addGroup(string $id, string $gid, GroupRepository $gr): Response
     {
         if (! $this->findAppAndGroup($id, $gid, $gr)) {
             return $this->res->withStatus(404);
@@ -514,7 +526,7 @@ class ApplicationController
 
     /**
      * @SWG\Put(
-     *     path="/user/application/{id}/remove-group/{gid}",
+     *     path="/user/app/{id}/remove-group/{gid}",
      *     operationId="removeGroup",
      *     summary="Remove a group from an app.",
      *     description="Needs role: app-admin",
@@ -548,7 +560,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function removeGroup($id, $gid, GroupRepository $gr)
+    public function removeGroup(string $id, string $gid, GroupRepository $gr): Response
     {
         if (! $this->findAppAndGroup($id, $gid, $gr)) {
             return $this->res->withStatus(404);
@@ -568,7 +580,7 @@ class ApplicationController
 
     /**
      * @SWG\Put(
-     *     path="/user/application/{id}/change-secret",
+     *     path="/user/app/{id}/change-secret",
      *     operationId="changeSecret",
      *     summary="Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
      *     description="Needs role: app-manager",
@@ -596,7 +608,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function changeSecret($id, UserAuthService $uas)
+    public function changeSecret(string $id, UserAuthService $uas): Response
     {
         $app = $this->ar->find((int) $id);
         if ($app === null) {
@@ -622,7 +634,7 @@ class ApplicationController
         return $this->res->withJson($secret);
     }
 
-    private function findAppAndPlayer($id, $player, PlayerRepository $pr)
+    private function findAppAndPlayer(string $id, string $player, PlayerRepository $pr): bool
     {
         $this->app = $this->ar->find((int) $id);
         $this->player = $pr->find((int) $player);
@@ -635,7 +647,7 @@ class ApplicationController
     }
 
 
-    private function findAppAndGroup($id, $gid, GroupRepository $gr)
+    private function findAppAndGroup(string $id, string $gid, GroupRepository $gr): bool
     {
         $this->app = $this->ar->find((int) $id);
         $this->group = $gr->find((int) $gid);
@@ -647,7 +659,7 @@ class ApplicationController
         return true;
     }
 
-    private function sanitize($name)
+    private function sanitize($name): string
     {
         return str_replace(["\r", "\n"], ' ', trim($name));
     }

@@ -18,18 +18,39 @@ use Slim\Http\Response;
  */
 class PlayerController
 {
+    /**
+     * @var Response
+     */
     private $res;
 
+    /**
+     * @var LoggerInterface
+     */
     private $log;
 
+    /**
+     * @var PlayerRepository
+     */
     private $pr;
 
+    /**
+     * @var RoleRepository
+     */
     private $rr;
 
+    /**
+     * @var GroupRepository
+     */
     private $gr;
 
+    /**
+     * @var UserAuthService
+     */
     private $uas;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
     private $availableRoles = [
@@ -58,7 +79,7 @@ class PlayerController
      *     path="/user/player/all",
      *     operationId="all",
      *     summary="List all players.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-admin or group-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -72,7 +93,7 @@ class PlayerController
      *     )
      * )
      */
-    public function all()
+    public function all(): Response
     {
         $ret = [];
 
@@ -115,7 +136,7 @@ class PlayerController
      *     )
      * )
      */
-    public function addApplication($group)
+    public function addApplication(string $group): Response
     {
         return $this->addOrRemoveGroupToFrom('add', 'Application', $group);
     }
@@ -149,14 +170,14 @@ class PlayerController
      *     )
      * )
      */
-    public function removeApplication($group)
+    public function removeApplication(string $group): Response
     {
         return $this->addOrRemoveGroupToFrom('remove', 'Application', $group);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/player/remove-group/{group}",
+     *     path="/user/player/leave-group/{group}",
      *     operationId="leaveGroup",
      *     summary="Leave a group.",
      *     description="Needs role: user",
@@ -183,7 +204,7 @@ class PlayerController
      *     )
      * )
      */
-    public function removeGroup($group)
+    public function leaveGroup(string $group): Response
     {
         return $this->addOrRemoveGroupToFrom('remove', 'Group', $group);
     }
@@ -207,7 +228,7 @@ class PlayerController
      *     )
      * )
      */
-    public function appManagers()
+    public function appManagers(): Response
     {
         $ret = $this->getManagers(Roles::APP_MANAGER);
 
@@ -233,7 +254,7 @@ class PlayerController
      *     )
      * )
      */
-    public function groupManagers()
+    public function groupManagers(): Response
     {
         $ret = $this->getManagers(Roles::GROUP_MANAGER);
 
@@ -270,7 +291,7 @@ class PlayerController
      *     )
      * )
      */
-    public function roles($id)
+    public function roles(string $id): Response
     {
         $player = $this->pr->find((int) $id);
 
@@ -318,7 +339,7 @@ class PlayerController
      *     )
      * )
      */
-    public function addRole($id, $name)
+    public function addRole(string $id, string $name): Response
     {
         $player = $this->pr->find((int) $id);
         $role = $this->rr->findOneBy(['name' => $name]);
@@ -375,7 +396,7 @@ class PlayerController
      *     )
      * )
      */
-    public function removeRole($id, $name)
+    public function removeRole(string $id, string $name): Response
     {
         $player = $this->pr->find((int) $id);
         $role = $this->rr->findOneBy(['name' => $name]);
@@ -393,7 +414,7 @@ class PlayerController
         return $this->res->withStatus(204);
     }
 
-    private function getManagers($roleName)
+    private function getManagers(string $roleName): array
     {
         $ret = [];
 
@@ -413,7 +434,7 @@ class PlayerController
         return $ret;
     }
 
-    private function addOrRemoveGroupToFrom($action, $entity, $groupId)
+    private function addOrRemoveGroupToFrom(string $action, string $entity, string $groupId): Response
     {
         $group = $this->gr->find((int) $groupId);
         if ($group === null) {
@@ -433,10 +454,8 @@ class PlayerController
             if (! $hasApplied) {
                 $player->addApplication($group);
             }
-
         } elseif ($action === 'remove' && $entity === 'Application') {
             $player->removeApplication($group);
-
         } elseif ($action === 'remove' && $entity === 'Group') {
             $player->removeGroup($group);
         }
@@ -448,7 +467,7 @@ class PlayerController
         return $this->res->withStatus(204);
     }
 
-    private function flush()
+    private function flush(): bool
     {
         try {
             $this->em->flush();

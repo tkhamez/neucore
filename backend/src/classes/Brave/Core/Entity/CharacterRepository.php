@@ -28,4 +28,15 @@ class CharacterRepository extends \Doctrine\ORM\EntityRepository
     {
         return parent::find($id, $lockMode, $lockVersion);
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findBy()
+     * @return \Brave\Core\Entity\Character[]
+     */
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    {
+        return parent::findBy($criteria, $orderBy, $limit, $offset);
+    }
 }

@@ -10,8 +10,8 @@ use Brave\Core\Roles;
 return [
     '/api/app' => [Roles::APP],
 
-    '/api/user/application/{id}/change-secret' => [Roles::APP_MANAGER],
-    '/api/user/application'                    => [Roles::APP_ADMIN],
+    '/api/user/app/{id}/change-secret' => [Roles::APP_MANAGER],
+    '/api/user/app'                    => [Roles::APP_ADMIN],
 
     '/api/user/auth/login-alt' => [Roles::USER],
     '/api/user/auth/login'     => [Roles::ANONYMOUS, Roles::USER],
@@ -26,9 +26,10 @@ return [
 
     '/api/user/player/add-application'    => [Roles::USER],
     '/api/user/player/remove-application' => [Roles::USER],
-    '/api/user/player/remove-group'       => [Roles::USER],
+    '/api/user/player/leave-group'        => [Roles::USER],
     '/api/user/player/app-managers'       => [Roles::APP_ADMIN],
     '/api/user/player/group-managers'     => [Roles::GROUP_ADMIN],
+    '/api/user/player/all'                => [Roles::USER_ADMIN, Roles::GROUP_ADMIN],
     '/api/user/player'                    => [Roles::USER_ADMIN],
 
     '/api/user' => [Roles::USER],

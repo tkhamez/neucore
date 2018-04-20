@@ -43,7 +43,13 @@ class ApplicationTest extends WebTestCase
 
     public function testAll403()
     {
-        $response = $this->runApp('GET', '/api/user/application/all');
+        $response = $this->runApp('GET', '/api/user/app/all');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('GET', '/api/user/app/all');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -52,7 +58,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/application/all');
+        $response = $this->runApp('GET', '/api/user/app/all');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -63,7 +69,13 @@ class ApplicationTest extends WebTestCase
 
     public function testCreate403()
     {
-        $response = $this->runApp('POST', '/api/user/application/create');
+        $response = $this->runApp('POST', '/api/user/app/create');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('POST', '/api/user/app/create');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -72,10 +84,10 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('POST', '/api/user/application/create');
+        $response1 = $this->runApp('POST', '/api/user/app/create');
         $this->assertEquals(400, $response1->getStatusCode());
 
-        $response2 = $this->runApp('POST', '/api/user/application/create', ['name' => '']);
+        $response2 = $this->runApp('POST', '/api/user/app/create', ['name' => '']);
         $this->assertEquals(400, $response2->getStatusCode());
     }
 
@@ -84,10 +96,12 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('POST', '/api/user/application/create', ['name' => "new\napp"]);
+        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"]);
         $this->assertEquals(200, $response->getStatusCode());
 
         $na = $this->ar->findOneBy(['name' => 'new app']);
+        $this->assertNotNull($na);
+
         $this->assertSame(
             ['id' => $na->getId(), 'name' => 'new app'],
             $this->parseJsonBody($response)
@@ -98,7 +112,13 @@ class ApplicationTest extends WebTestCase
 
     public function testRename403()
     {
-        $response = $this->runApp('PUT', '/api/user/application/55/rename');
+        $response = $this->runApp('PUT', '/api/user/app/55/rename');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/55/rename');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -107,7 +127,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/rename', ['name' => "n\n a n"]);
+        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/rename', ['name' => "n\n a n"]);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -116,7 +136,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/rename', ['name' => '']);
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => '']);
         $this->assertEquals(400, $response->getStatusCode());
     }
 
@@ -125,8 +145,8 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/rename', ['name' => "n\n a n"]);
-        $response2 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/rename', ['name' => 'new name']);
+        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => "n\n a n"]);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => 'new name']);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
 
@@ -146,7 +166,13 @@ class ApplicationTest extends WebTestCase
 
     public function testDelete403()
     {
-        $response = $this->runApp('DELETE', '/api/user/application/55/delete');
+        $response = $this->runApp('DELETE', '/api/user/app/55/delete');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('DELETE', '/api/user/app/55/delete');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -155,7 +181,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('DELETE', '/api/user/application/'.($this->aid + 1).'/delete');
+        $response = $this->runApp('DELETE', '/api/user/app/'.($this->aid + 1).'/delete');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -164,7 +190,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('DELETE', '/api/user/application/'.$this->aid.'/delete');
+        $response = $this->runApp('DELETE', '/api/user/app/'.$this->aid.'/delete');
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
@@ -175,7 +201,13 @@ class ApplicationTest extends WebTestCase
 
     public function testManagers403()
     {
-        $response = $this->runApp('GET', '/api/user/application/1/managers');
+        $response = $this->runApp('GET', '/api/user/app/1/managers');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('GET', '/api/user/app/1/managers');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -184,7 +216,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/application/'.($this->aid + 1).'/managers');
+        $response = $this->runApp('GET', '/api/user/app/'.($this->aid + 1).'/managers');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -193,7 +225,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/application/'.$this->aid.'/managers');
+        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/managers');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -204,7 +236,13 @@ class ApplicationTest extends WebTestCase
 
     public function testAddManager403()
     {
-        $response = $this->runApp('PUT', '/api/user/application/59/add-manager/1');
+        $response = $this->runApp('PUT', '/api/user/app/59/add-manager/1');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/59/add-manager/1');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -213,8 +251,8 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/add-manager/'.($this->pid3 + 1));
-        $response2 = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/add-manager/'.$this->pid3);
+        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.($this->pid3 + 1));
+        $response2 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/add-manager/'.$this->pid3);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -230,8 +268,8 @@ class ApplicationTest extends WebTestCase
         $this->em->persist($player);
         $this->em->flush();
 
-        $response1 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/add-manager/'.$this->pid3);
-        $response2 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/add-manager/'.$player->getId());
+        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.$this->pid3);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.$player->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -247,7 +285,13 @@ class ApplicationTest extends WebTestCase
 
     public function testRemoveManager403()
     {
-        $response = $this->runApp('PUT', '/api/user/application/59/remove-manager/1');
+        $response = $this->runApp('PUT', '/api/user/app/59/remove-manager/1');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/59/remove-manager/1');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -256,8 +300,8 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/remove-manager/'.$this->pid3);
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/remove-manager/'.($this->pid3 + 1));
+        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-manager/'.$this->pid3);
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.($this->pid3 + 1));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -266,7 +310,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/remove-manager/'.$this->pid3);
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.$this->pid3);
         $this->assertEquals(204, $response->getStatusCode());
 
         $player = (new PlayerRepository($this->em))->find($this->pid3);
@@ -279,7 +323,13 @@ class ApplicationTest extends WebTestCase
 
     public function testGroups403()
     {
-        $response = $this->runApp('GET', '/api/user/application/1/groups');
+        $response = $this->runApp('GET', '/api/user/app/1/groups');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('GET', '/api/user/app/1/groups');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -288,7 +338,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/application/'.($this->aid + 1).'/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.($this->aid + 1).'/groups');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -297,7 +347,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/application/'.$this->aid.'/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/groups');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
@@ -308,7 +358,13 @@ class ApplicationTest extends WebTestCase
 
     public function testAddGroup403()
     {
-        $response = $this->runApp('PUT', '/api/user/application/59/add-group/1');
+        $response = $this->runApp('PUT', '/api/user/app/59/add-group/1');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/59/add-group/1');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -317,8 +373,8 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/add-group/'.($this->gid + 1));
-        $response2 = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/add-group/'.$this->gid);
+        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.($this->gid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/add-group/'.$this->gid);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -334,8 +390,8 @@ class ApplicationTest extends WebTestCase
         $this->em->persist($group);
         $this->em->flush();
 
-        $response1 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/add-group/'.$this->gid);
-        $response2 = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/add-group/'.$group->getId());
+        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.$this->gid);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.$group->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
@@ -351,7 +407,13 @@ class ApplicationTest extends WebTestCase
 
     public function testRemoveGroup403()
     {
-        $response = $this->runApp('PUT', '/api/user/application/59/remove-group/1');
+        $response = $this->runApp('PUT', '/api/user/app/59/remove-group/1');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/59/remove-group/1');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -360,8 +422,8 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/remove-group/'.$this->gid);
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/remove-group/'.($this->gid + 1));
+        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-group/'.$this->gid);
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.($this->gid + 1));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -370,7 +432,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/remove-group/'.$this->gid);
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid);
         $this->assertEquals(204, $response->getStatusCode());
 
         $group = $this->gr->find($this->gid);
@@ -383,17 +445,17 @@ class ApplicationTest extends WebTestCase
 
     public function testChangeSecret403()
     {
-        $response = $this->runApp('PUT', '/api/user/application/59/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/59/change-secret');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
 
         $this->loginUser(8); // no manager
-        $response = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/change-secret');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(9); // manager, but not of this app
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/change-secret');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -402,7 +464,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.($this->aid + 1).'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/change-secret');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -411,7 +473,7 @@ class ApplicationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10);
 
-        $response = $this->runApp('PUT', '/api/user/application/'.$this->aid.'/change-secret');
+        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/change-secret');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(64, strlen($this->parseJsonBody($response)));

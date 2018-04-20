@@ -31,14 +31,29 @@ use Slim\Http\Response;
  */
 class AuthController
 {
+    /**
+     * @var Response
+     */
     private $res;
 
+    /**
+     * @var SessionData
+     */
     private $session;
 
+    /**
+     * @var GenericProvider
+     */
     private $sso;
 
+    /**
+     * @var LoggerInterface
+     */
     private $log;
 
+    /**
+     * @var UserAuthService
+     */
     private $auth;
 
     /**
@@ -81,7 +96,7 @@ class AuthController
      *     )
      * )
      */
-    public function loginUrl(Request $request)
+    public function loginUrl(Request $request): Response
     {
         // return empty string if already logged in
         if (in_array(Roles::USER, $this->auth->getRoles($request))) {
@@ -116,12 +131,12 @@ class AuthController
      *     )
      * )
      */
-    public function loginAltUrl(Request $request)
+    public function loginAltUrl(Request $request): Response
     {
         return $this->res->withJson($this->buildLoginUrl($request, true));
     }
 
-    public function callback(Request $request)
+    public function callback(Request $request): Response
     {
         $redirectUrl = $this->session->get('auth_redirect', '/');
         $this->session->delete('auth_redirect');
@@ -222,7 +237,7 @@ class AuthController
      *     )
      * )
      */
-    public function result()
+    public function result(): Response
     {
         $result = $this->session->get('auth_result');
 
@@ -253,7 +268,7 @@ class AuthController
      *     )
      * )
      */
-    public function character()
+    public function character(): Response
     {
         return $this->res->withJson($this->auth->getUser());
     }
@@ -277,7 +292,7 @@ class AuthController
      *     )
      * )
      */
-    public function player()
+    public function player(): Response
     {
         return $this->res->withJson($this->auth->getUser()->getPlayer());
     }
@@ -300,7 +315,7 @@ class AuthController
      *     )
      * )
      */
-    public function logout()
+    public function logout(): Response
     {
         $this->session->clear();
 

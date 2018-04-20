@@ -1,140 +1,161 @@
 <?php
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Roles;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Brave\Core\Entity\PlayerRepository;
-use Monolog\Handler\TestHandler;
-use Psr\Log\LoggerInterface;
-use Monolog\Logger;
 
 class PlayerTest extends WebTestCase
 {
+    private $h;
+
     private $em;
 
-    private $pid;
+    private $mid;
+
+    private $player;
+
+    private $group;
+
+    private $pr;
 
     public function setUp()
     {
         $_SESSION = null;
+
+        $this->h = new Helper();
+        $this->em = $this->h->getEm();
+        $this->pr = new PlayerRepository($this->em);
     }
 
     public function testAll403()
     {
         $response = $this->runApp('GET', '/api/user/player/all');
         $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
+        $response = $this->runApp('GET', '/api/user/player/all');
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function testAll200()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $admin = $h->addCharacterMain('Admin', 12, [Roles::USER_ADMIN]);
-        $user = $h->addCharacterMain('User', 45, [Roles::USER]);
+        $this->setupDb();
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/all');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            ['id' => $admin->getPlayer()->getId(), 'name' => 'Admin'],
-            ['id' => $user->getPlayer()->getId(), 'name' => 'User'],
+            ['id' => $this->player->getId(), 'name' => 'Admin'],
+            ['id' => $this->mid, 'name' => 'Manager'],
         ], $this->parseJsonBody($response));
     }
 
     public function testAddApplication403()
     {
-
+        $response = $this->runApp('PUT', '/api/user/player/add-application/11');
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function testAddApplication404()
     {
+        $this->setupDb();
+        $this->loginUser(12);
 
+        $response = $this->runApp('PUT', '/api/user/player/add-application/' . ($this->group->getId() + 1));
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testAddApplication204()
     {
+        $this->setupDb();
+        $this->loginUser(12);
 
+        $response = $this->runApp('PUT', '/api/user/player/add-application/'. $this->group->getId());
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $p = $this->pr->find($this->player->getId());
+        $this->assertSame(1, count($p->getApplications()));
     }
 
     public function testRemoveApplication403()
     {
-
+        $response = $this->runApp('PUT', '/api/user/player/remove-application/11');
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function testRemoveApplication404()
     {
+        $this->setupDb();
+        $this->loginUser(12);
 
+        $response = $this->runApp('PUT', '/api/user/player/remove-application/' . ($this->group->getId() + 1));
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testRemoveApplication204()
     {
+        $this->setupDb();
+        $this->loginUser(12);
 
+        $this->player->addApplication($this->group);
+        $this->em->flush();
+
+        $response = $this->runApp('PUT', '/api/user/player/remove-application/' . $this->group->getId());
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $p = $this->pr->find($this->player->getId());
+        $this->assertSame(0, count($p->getApplications()));
     }
 
-    public function testRemoveGroup403()
+    public function testLeaveGroup403()
     {
-
-    }
-
-    public function testRemoveGroup404()
-    {
-
-    }
-
-    public function testRemoveGroup204()
-    {
-
-    }
-
-    public function testGroupManagers403()
-    {
-        $response = $this->runApp('GET', '/api/user/player/group-managers');
+        $response = $this->runApp('PUT', '/api/user/player/leave-group/11');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testGroupManagers200NoGroup()
+    public function testLeaveGroup404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Admin', 12, [Roles::GROUP_ADMIN]);
+        $this->setupDb();
         $this->loginUser(12);
 
-        $log = new Logger('test');
-        $log->pushHandler(new TestHandler());
-
-        $response = $this->runApp('GET', '/api/user/player/group-managers', null, null, [
-            LoggerInterface::class => $log
-        ]);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([], $this->parseJsonBody($response));
-        $this->assertSame(
-            'PlayerController->getManagers(): role "group-manager" not found.',
-            $log->getHandlers()[0]->getRecords()[0]['message']
-        );
+        $response = $this->runApp('PUT', '/api/user/player/leave-group/' . ($this->group->getId() + 1));
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testGroupManagers200()
+    public function testLeaveGroup204()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Admin', 12, [Roles::GROUP_ADMIN]);
-        $manager = $h->addCharacterMain('Manager', 45, [Roles::GROUP_MANAGER]);
+        $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/group-managers');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->player->addGroup($this->group);
+        $this->em->flush();
 
-        $this->assertSame(
-            [['id' => $manager->getPlayer()->getId(), 'name' => 'Manager']],
-            $this->parseJsonBody($response)
-        );
+        $response = $this->runApp('PUT', '/api/user/player/leave-group/' . $this->group->getId());
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $p = $this->pr->find($this->player->getId());
+        $this->assertSame(0, count($p->getGroups()));
     }
 
     public function testAppManagers403()
     {
+        $response = $this->runApp('GET', '/api/user/player/app-managers');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
         $response = $this->runApp('GET', '/api/user/player/app-managers');
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -163,23 +184,74 @@ class PlayerTest extends WebTestCase
 
     public function testAppManagers200()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Admin', 12, [Roles::APP_ADMIN]);
-        $manager = $h->addCharacterMain('Manager', 45, [Roles::APP_MANAGER]);
+        $this->setupDb();
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/app-managers');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $manager->getPlayer()->getId(), 'name' => 'Manager']],
+            [['id' => $this->mid, 'name' => 'Manager']],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testGroupManagers403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/group-managers');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
+        $response = $this->runApp('GET', '/api/user/player/group-managers');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testGroupManagers200NoGroup()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('Admin', 12, [Roles::GROUP_ADMIN]);
+        $this->loginUser(12);
+
+        $log = new Logger('test');
+        $log->pushHandler(new TestHandler());
+
+        $response = $this->runApp('GET', '/api/user/player/group-managers', null, null, [
+            LoggerInterface::class => $log
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response));
+        $this->assertSame(
+            'PlayerController->getManagers(): role "group-manager" not found.',
+            $log->getHandlers()[0]->getRecords()[0]['message']
+        );
+    }
+
+    public function testGroupManagers200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/group-managers');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $this->mid, 'name' => 'Manager']],
             $this->parseJsonBody($response)
         );
     }
 
     public function testRoles403()
     {
+        $response = $this->runApp('GET', '/api/user/player/1/roles');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
         $response = $this->runApp('GET', '/api/user/player/1/roles');
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -189,7 +261,7 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.($this->pid + 1).'/roles');
+        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 1).'/roles');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -198,17 +270,23 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.$this->pid.'/roles');
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/roles');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [Roles::APP_ADMIN, Roles::USER, Roles::USER_ADMIN],
+            [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             $this->parseJsonBody($response)
         );
     }
 
     public function testAddRole403()
     {
+        $response = $this->runApp('PUT', '/api/user/player/101/add-role/r');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
         $response = $this->runApp('PUT', '/api/user/player/101/add-role/r');
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -220,10 +298,10 @@ class PlayerTest extends WebTestCase
 
         $response1 = $this->runApp('PUT', '/api/user/player/101/add-role/r');
         $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Roles::APP_MANAGER);
-        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/add-role/role');
+        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/role');
 
-        // app is a valid role, just not for users
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/add-role/'.Roles::APP);
+        // app is a valid role, but not for users
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/'.Roles::APP);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -236,22 +314,28 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/'.($this->pid).'/add-role/'.Roles::APP_MANAGER);
-        $response2 = $this->runApp('PUT', '/api/user/player/'.($this->pid).'/add-role/'.Roles::APP_MANAGER);
-        $this->assertEquals(204, $response1->getStatusCode());
-        $this->assertEquals(204, $response2->getStatusCode());
+        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Roles::APP_MANAGER);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Roles::APP_MANAGER);
+        $this->assertEquals(204, $r1->getStatusCode());
+        $this->assertEquals(204, $r2->getStatusCode());
 
         $this->em->clear();
 
-        $player = (new PlayerRepository($this->em))->find($this->pid);
+        $player = (new PlayerRepository($this->em))->find($this->player->getId());
         $this->assertSame(
-            [Roles::APP_ADMIN, Roles::APP_MANAGER, Roles::USER, Roles::USER_ADMIN],
+            [Roles::APP_ADMIN, Roles::APP_MANAGER, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             $player->getRoleNames()
         );
     }
 
     public function testRemoveRole403()
     {
+        $response = $this->runApp('PUT', '/api/user/player/101/remove-role/r');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
         $response = $this->runApp('PUT', '/api/user/player/101/remove-role/r');
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -263,10 +347,10 @@ class PlayerTest extends WebTestCase
 
         $response1 = $this->runApp('PUT', '/api/user/player/101/remove-role/a');
         $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Roles::APP_MANAGER);
-        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/a');
+        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/a');
 
         // user is a valid role, but may not be removed
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/'.Roles::USER);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::USER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -279,26 +363,25 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/'.Roles::APP_ADMIN);
-        $response2 = $this->runApp('PUT', '/api/user/player/'.$this->pid.'/remove-role/'.Roles::APP_ADMIN);
-        $this->assertEquals(204, $response1->getStatusCode());
-        $this->assertEquals(204, $response2->getStatusCode());
+        $r1 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::APP_ADMIN);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::APP_ADMIN);
+        $this->assertEquals(204, $r1->getStatusCode());
+        $this->assertEquals(204, $r2->getStatusCode());
 
         $this->em->clear();
 
-        $player = (new PlayerRepository($this->em))->find($this->pid);
+        $player = (new PlayerRepository($this->em))->find($this->player->getId());
         $this->assertSame(
-            [Roles::USER, Roles::USER_ADMIN],
+            [Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             $player->getRoleNames()
-            );
+        );
     }
 
     private function setupDb()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $this->em = $h->getEm();
-        $h->addRoles([
+        $this->h->emptyDb();
+
+        $this->h->addRoles([
             Roles::USER,
             Roles::APP,
             Roles::APP_ADMIN,
@@ -307,7 +390,13 @@ class PlayerTest extends WebTestCase
             Roles::GROUP_MANAGER,
             Roles::USER_ADMIN
         ]);
-        $char = $h->addCharacterMain('Admin', 12, [Roles::USER, Roles::APP_ADMIN, Roles::USER_ADMIN]);
-        $this->pid = $char->getPlayer()->getId();
+
+        $this->group = $this->h->addGroups(['test-g'])[0];
+
+        $this->mid = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
+            ->getPlayer()->getId();
+
+        $this->player = $this->h->addCharacterMain('Admin', 12,
+            [Roles::USER, Roles::APP_ADMIN, Roles::USER_ADMIN, Roles::GROUP_ADMIN])->getPlayer();
     }
 }

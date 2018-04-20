@@ -19,18 +19,39 @@ use Slim\Http\Response;
  */
 class GroupController
 {
+    /**
+     * @var Response
+     */
     private $res;
 
+    /**
+     * @var LoggerInterface
+     */
     private $log;
 
+    /**
+     * @var GroupRepository
+     */
     private $gr;
 
+    /**
+     * @var PlayerRepository
+     */
     private $pr;
 
+    /**
+     * @var UserAuthService
+     */
     private $uas;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
+    /**
+     * @var string
+     */
     private $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
     /**
@@ -73,8 +94,10 @@ class GroupController
      *     )
      * )
      */
-    public function all()
+    public function all(): Response
     {
+        # TODO only "public" groups for normal users
+
         return $this->res->withJson($this->gr->findAll());
     }
 
@@ -115,7 +138,7 @@ class GroupController
      *     )
      * )
      */
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         $name = $request->getParam('name', '');
         if (! preg_match($this->namePattern, $name)) {
@@ -188,7 +211,7 @@ class GroupController
      *     )
      * )
      */
-    public function rename($id, Request $request)
+    public function rename(string $id, Request $request): Response
     {
         if (! $this->findGroup($id)) {
             return $this->res->withStatus(404);
@@ -243,7 +266,7 @@ class GroupController
      *     )
      * )
      */
-    public function delete($id)
+    public function delete(string $id): Response
     {
         if (! $this->findGroup($id)) {
             return $this->res->withStatus(404);
@@ -290,7 +313,7 @@ class GroupController
      *     )
      * )
      */
-    public function managers($id)
+    public function managers(string $id): Response
     {
         return $this->getPlayersFromGroup($id, 'managers', false);
     }
@@ -331,7 +354,7 @@ class GroupController
      *     )
      * )
      */
-    public function addManager($id, $player)
+    public function addManager(string $id, string $player): Response
     {
         return $this->addPlayerAs($id, $player, 'manager', false);
     }
@@ -372,7 +395,7 @@ class GroupController
      *     )
      * )
      */
-    public function removeManager($id, $player)
+    public function removeManager(string $id, string $player): Response
     {
         return $this->removePlayerFrom($id, $player, 'manager', false);
     }
@@ -407,7 +430,7 @@ class GroupController
      *     )
      * )
      */
-    public function applicants($id)
+    public function applicants(string $id): Response
     {
         return $this->getPlayersFromGroup($id, 'applicants', true);
     }
@@ -448,9 +471,9 @@ class GroupController
      *     )
      * )
      */
-    public function addMember($id, $player)
+    public function addMember(string $id, string $player): Response
     {
-        return $this->addPlayerAs($id, $player, 'player', true);
+        return $this->addPlayerAs($id, $player, 'member', true);
     }
 
     /**
@@ -489,7 +512,7 @@ class GroupController
      *     )
      * )
      */
-    public function removeMember($id, $player)
+    public function removeMember(string $id, string $player): Response
     {
         return $this->removePlayerFrom($id, $player, 'player', true);
     }
@@ -516,7 +539,7 @@ class GroupController
         return true;
     }
 
-    private function getPlayersFromGroup($groupId, $type, $onlyIfManager)
+    private function getPlayersFromGroup(string $groupId, string $type, bool $onlyIfManager): Response
     {
         if (! $this->findGroup($groupId)) {
             return $this->res->withStatus(404);
@@ -544,7 +567,7 @@ class GroupController
         return $this->res->withJson($ret);
     }
 
-    private function addPlayerAs($groupId, $playerId, $type, $onlyIfManager)
+    private function addPlayerAs(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
     {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->res->withStatus(404);
@@ -556,7 +579,7 @@ class GroupController
 
         if ($type === 'manager') {
             $hasGroups = $this->player->getManagerGroups();
-        } elseif ($type === 'player') {
+        } elseif ($type === 'member') {
             $hasGroups = $this->player->getGroups();
         }
 
@@ -570,7 +593,7 @@ class GroupController
 
         if ($add && $type === 'manager') {
             $this->group->addManager($this->player);
-        } elseif ($add && $type === 'player') {
+        } elseif ($add && $type === 'member') {
             $this->player->addGroup($this->group);
         }
 
@@ -584,9 +607,9 @@ class GroupController
         return $this->res->withStatus(204);
     }
 
-    public function removePlayerFrom($id, $player, $type, $onlyIfManager)
+    public function removePlayerFrom(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
     {
-        if (! $this->findGroupAndPlayer($id, $player)) {
+        if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->res->withStatus(404);
         }
 
@@ -610,9 +633,9 @@ class GroupController
         return $this->res->withStatus(204);
     }
 
-    private function findGroup($id)
+    private function findGroup(string $id): bool
     {
-        $this->group = $this->gr->find($id);
+        $this->group = $this->gr->find((int) $id);
         if ($this->group === null) {
             return false;
         }
@@ -620,10 +643,10 @@ class GroupController
         return true;
     }
 
-    private function findGroupAndPlayer($id, $player)
+    private function findGroupAndPlayer(string $groupId, string $playerId): bool
     {
-        $this->group = $this->gr->find((int) $id);
-        $this->player = $this->pr->find((int) $player);
+        $this->group = $this->gr->find((int) $groupId);
+        $this->player = $this->pr->find((int) $playerId);
 
         if ($this->group === null || $this->player === null) {
             return false;

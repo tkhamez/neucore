@@ -248,7 +248,13 @@ class AuthTest extends WebTestCase
         );
     }
 
-    public function testCharacter()
+    public function testCharacter403()
+    {
+        $response = $this->runApp('GET', '/api/user/auth/character');
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testCharacter200()
     {
         $h = new Helper();
         $h->emptyDb();
@@ -262,12 +268,6 @@ class AuthTest extends WebTestCase
             ['id' => 654, 'name' => 'User1', 'main' => true],
             $this->parseJsonBody($response)
         );
-    }
-
-    public function testCharacter403()
-    {
-        $response = $this->runApp('GET', '/api/user/auth/character');
-        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testPlayer403()
