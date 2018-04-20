@@ -21,7 +21,7 @@ class ApplicationController
      *     operationId="infoV1",
      *     summary="Show app information.",
      *     description="Needs role: app",
-     *     tags={"App"},
+     *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Response(
      *         response="200",

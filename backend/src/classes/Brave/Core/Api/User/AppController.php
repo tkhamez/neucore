@@ -70,7 +70,7 @@ class AppController
      *     operationId="all",
      *     summary="List all apps.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
@@ -94,7 +94,7 @@ class AppController
      *     operationId="create",
      *     summary="Create an app.",
      *     description="Needs role: app-admin<br>Generates a random secret that must be changed by an app manager.",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     consumes={"application/x-www-form-urlencoded"},
      *     @SWG\Parameter(
@@ -148,7 +148,7 @@ class AppController
      *     operationId="rename",
      *     summary="Rename an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     consumes={"application/x-www-form-urlencoded"},
      *     @SWG\Parameter(
@@ -214,7 +214,7 @@ class AppController
      *     operationId="delete",
      *     summary="Delete an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -261,7 +261,7 @@ class AppController
      *     operationId="managers",
      *     summary="List all managers of an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -310,7 +310,7 @@ class AppController
      *     operationId="addManager",
      *     summary="Assign a player as manager to an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -370,7 +370,7 @@ class AppController
      *     operationId="removeManager",
      *     summary="Remove a manager (player) from an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -424,7 +424,7 @@ class AppController
      *     operationId="groups",
      *     summary="List all groups of an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -470,7 +470,7 @@ class AppController
      *     operationId="addGroup",
      *     summary="Add a group to an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -530,7 +530,7 @@ class AppController
      *     operationId="removeGroup",
      *     summary="Remove a group from an app.",
      *     description="Needs role: app-admin",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
@@ -584,7 +584,7 @@ class AppController
      *     operationId="changeSecret",
      *     summary="Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
      *     description="Needs role: app-manager",
-     *     tags={"Application"},
+     *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
