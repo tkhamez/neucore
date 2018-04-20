@@ -1,24 +1,24 @@
 <?php
 
-use Brave\Core\Api\AppController;
-use Brave\Core\Api\User\ApplicationController;
+use Brave\Core\Api\ApplicationController;
+use Brave\Core\Api\User\AppController;
 use Brave\Core\Api\User\AuthController;
 use Brave\Core\Api\User\GroupController;
 use Brave\Core\Api\User\PlayerController;
 
 return [
 
-    '/api/user/app/all'                          => ['GET',    ApplicationController::class.'::all'],
-    '/api/user/app/create'                       => ['POST',   ApplicationController::class.'::create'],
-    '/api/user/app/{id}/rename'                  => ['PUT',    ApplicationController::class.'::rename'],
-    '/api/user/app/{id}/delete'                  => ['DELETE', ApplicationController::class.'::delete'],
-    '/api/user/app/{id}/groups'                  => ['GET',    ApplicationController::class.'::groups'],
-    '/api/user/app/{id}/add-group/{gid}'         => ['PUT',    ApplicationController::class.'::addGroup'],
-    '/api/user/app/{id}/remove-group/{gid}'      => ['PUT',    ApplicationController::class.'::removeGroup'],
-    '/api/user/app/{id}/managers'                => ['GET',    ApplicationController::class.'::managers'],
-    '/api/user/app/{id}/add-manager/{player}'    => ['PUT',    ApplicationController::class.'::addManager'],
-    '/api/user/app/{id}/remove-manager/{player}' => ['PUT',    ApplicationController::class.'::removeManager'],
-    '/api/user/app/{id}/change-secret'           => ['PUT',    ApplicationController::class.'::changeSecret'],
+    '/api/user/app/all'                          => ['GET',    AppController::class.'::all'],
+    '/api/user/app/create'                       => ['POST',   AppController::class.'::create'],
+    '/api/user/app/{id}/rename'                  => ['PUT',    AppController::class.'::rename'],
+    '/api/user/app/{id}/delete'                  => ['DELETE', AppController::class.'::delete'],
+    '/api/user/app/{id}/groups'                  => ['GET',    AppController::class.'::groups'],
+    '/api/user/app/{id}/add-group/{gid}'         => ['PUT',    AppController::class.'::addGroup'],
+    '/api/user/app/{id}/remove-group/{gid}'      => ['PUT',    AppController::class.'::removeGroup'],
+    '/api/user/app/{id}/managers'                => ['GET',    AppController::class.'::managers'],
+    '/api/user/app/{id}/add-manager/{player}'    => ['PUT',    AppController::class.'::addManager'],
+    '/api/user/app/{id}/remove-manager/{player}' => ['PUT',    AppController::class.'::removeManager'],
+    '/api/user/app/{id}/change-secret'           => ['PUT',    AppController::class.'::changeSecret'],
 
     '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
     '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
@@ -49,5 +49,5 @@ return [
     '/api/user/player/{id}/add-role/{name}'       => ['PUT', PlayerController::class.'::addRole'],
     '/api/user/player/{id}/remove-role/{name}'    => ['PUT', PlayerController::class.'::removeRole'],
 
-    '/api/app/info/v1' => ['GET', AppController::class.'::infoV1'],
+    '/api/app/info/v1' => ['GET', ApplicationController::class.'::infoV1'],
 ];

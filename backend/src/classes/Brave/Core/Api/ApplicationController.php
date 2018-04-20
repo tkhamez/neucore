@@ -8,11 +8,11 @@ use Slim\Http\Response;
 /**
  *
  * @SWG\Tag(
- *     name="App",
+ *     name="Application",
  *     description="API for 3rd party apps.",
  * )
  */
-class AppController
+class ApplicationController
 {
 
     /**

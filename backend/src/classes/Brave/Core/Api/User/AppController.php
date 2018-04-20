@@ -15,11 +15,11 @@ use Slim\Http\Response;
 
 /**
  * @SWG\Tag(
- *     name="Application",
+ *     name="App",
  *     description="Application management."
  * )
  */
-class ApplicationController
+class AppController
 {
     /**
      * @var Response

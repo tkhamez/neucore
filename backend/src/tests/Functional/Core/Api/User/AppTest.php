@@ -11,7 +11,7 @@ use Brave\Core\Entity\Player;
 use Brave\Core\Entity\AppRepository;
 use Brave\Core\Entity\App;
 
-class ApplicationTest extends WebTestCase
+class AppTest extends WebTestCase
 {
     private $helper;
 

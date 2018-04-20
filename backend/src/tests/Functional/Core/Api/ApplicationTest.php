@@ -4,7 +4,7 @@ namespace Tests\Functional\Core\Api;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
-class AppTest extends WebTestCase
+class ApplicationTest extends WebTestCase
 {
     public function testGetInfoV1403()
     {
