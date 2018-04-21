@@ -179,6 +179,30 @@ class Helper
     /**
      *
      * @param string $name
+     * @param int $charId
+     * @param Player $player
+     * @return \Brave\Core\Entity\Character
+     */
+    public function addCharacterToPlayer(string $name, int $charId, Player $player)
+    {
+        $alt = new Character();
+        $alt->setId($charId);
+        $alt->setName($name);
+        $alt->setMain(false);
+        $alt->setCharacterOwnerHash('456');
+        $alt->setAccessToken('def');
+        $alt->setPlayer($player);
+        $player->addCharacter($alt);
+
+        $this->getEm()->persist($alt);
+        $this->getEm()->flush();
+
+        return $alt;
+    }
+
+    /**
+     *
+     * @param string $name
      * @param string $secret
      * @param array $roles
      * @param mixed $hash PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())

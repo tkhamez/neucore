@@ -87,7 +87,7 @@ class Character implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => (int) $this->id,
+            'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main
         ];
@@ -114,7 +114,7 @@ class Character implements \JsonSerializable
      */
     public function getId()
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
     /**

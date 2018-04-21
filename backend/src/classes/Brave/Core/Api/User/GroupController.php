@@ -175,11 +175,8 @@ class GroupController
         $group = new Group();
         $group->setName($name);
 
-        try {
-            $this->em->persist($group);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        $this->em->persist($group);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -250,10 +247,7 @@ class GroupController
         }
 
         $this->group->setName($name);
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -305,10 +299,7 @@ class GroupController
         }
 
         $this->group->setPublic((bool) $flag);
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -350,11 +341,8 @@ class GroupController
             return $this->res->withStatus(404);
         }
 
-        try {
-            $this->em->remove($this->group);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        $this->em->remove($this->group);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -753,10 +741,7 @@ class GroupController
             $this->player->addGroup($this->group);
         }
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -781,10 +766,7 @@ class GroupController
             $this->player->removeApplication($this->group);
         }
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -829,5 +811,17 @@ class GroupController
         }
 
         return false;
+    }
+
+    private function flush(): bool
+    {
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            return false;
+        }
+
+        return true;
     }
 }

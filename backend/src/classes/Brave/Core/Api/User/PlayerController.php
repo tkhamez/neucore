@@ -211,6 +211,60 @@ class PlayerController
     }
 
     /**
+     * @SWG\Put(
+     *     path="/user/player/set-main/{character}",
+     *     operationId="setMain",
+     *     summary="Change the main character from the player account.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="character",
+     *         in="path",
+     *         required=true,
+     *         description="Character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The main character.",
+     *         @SWG\Schema(ref="#/definitions/Character")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character not found on this account."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function setMain(string $character): Response
+    {
+        $main = null;
+        $player = $this->uas->getUser()->getPlayer();
+        foreach ($player->getCharacters() as $char) {
+            if ($char->getId() === (int) $character) {
+                $char->setMain(true);
+                $main = $char;
+            } else {
+                $char->setMain(false);
+            }
+        }
+
+        if ($main === null) {
+            return $this->res->withStatus(404);
+        }
+
+        if (! $this->flush()) {
+            return $this->res->withStatus(500);
+        }
+
+        return $this->res->withJson($main);
+    }
+
+    /**
      * @SWG\Get(
      *     path="/user/player/app-managers",
      *     operationId="appManagers",
@@ -433,6 +487,47 @@ class PlayerController
         }
 
         return $ret;
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/{id}/show",
+     *     operationId="show",
+     *     summary="Show all data from a player.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The player information.",
+     *         @SWG\Schema(ref="#/definitions/Player")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Player not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function show(string $id): Response
+    {
+        $player = $this->pr->find((int) $id);
+
+        if ($player === null) {
+            return $this->res->withStatus(404);
+        }
+
+        return $this->res->withJson($player);
     }
 
     private function addOrRemoveGroupToFrom(string $action, string $entity, string $groupId): Response

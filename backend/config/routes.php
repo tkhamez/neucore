@@ -47,11 +47,13 @@ return [
     '/api/user/player/add-application/{group}'    => ['PUT', PlayerController::class.'::addApplication'],
     '/api/user/player/remove-application/{group}' => ['PUT', PlayerController::class.'::removeApplication'],
     '/api/user/player/leave-group/{group}'        => ['PUT', PlayerController::class.'::leaveGroup'],
+    '/api/user/player/set-main/{character}'       => ['PUT', PlayerController::class.'::setMain'],
     '/api/user/player/app-managers'               => ['GET', PlayerController::class.'::appManagers'],
     '/api/user/player/group-managers'             => ['GET', PlayerController::class.'::groupManagers'],
     '/api/user/player/{id}/roles'                 => ['GET', PlayerController::class.'::roles'],
     '/api/user/player/{id}/add-role/{name}'       => ['PUT', PlayerController::class.'::addRole'],
     '/api/user/player/{id}/remove-role/{name}'    => ['PUT', PlayerController::class.'::removeRole'],
+    '/api/user/player/{id}/show'                  => ['GET', PlayerController::class.'::show'],
 
     '/api/app/info/v1' => ['GET', ApplicationController::class.'::infoV1'],
 ];

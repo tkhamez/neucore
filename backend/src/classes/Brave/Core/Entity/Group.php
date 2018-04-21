@@ -57,7 +57,7 @@ class Group implements \JsonSerializable
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $players; # TODO rename to members
+    private $players;
 
     /**
      * @ManyToMany(targetEntity="Player", inversedBy="managerGroups")

@@ -148,11 +148,8 @@ class AppController
         $app->setSecret(password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT));
         $app->addRole($appRole);
 
-        try {
-            $this->em->persist($app);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        $this->em->persist($app);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -215,10 +212,7 @@ class AppController
         }
 
         $app->setName($name);
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -261,11 +255,8 @@ class AppController
             return $this->res->withStatus(404);
         }
 
-        try {
-            $this->em->remove($app);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        $this->em->remove($app);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -371,10 +362,7 @@ class AppController
             $this->app->addManager($this->player);
         }
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -425,10 +413,7 @@ class AppController
 
         $this->app->removeManager($this->player);
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -531,10 +516,7 @@ class AppController
             $this->app->addGroup($this->group);
         }
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -585,10 +567,7 @@ class AppController
 
         $this->app->removeGroup($this->group);
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -641,10 +620,7 @@ class AppController
         $secret = bin2hex(random_bytes(32));
         $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -679,5 +655,17 @@ class AppController
     private function sanitize($name): string
     {
         return str_replace(["\r", "\n"], ' ', trim($name));
+    }
+
+    private function flush(): bool
+    {
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            return false;
+        }
+
+        return true;
     }
 }

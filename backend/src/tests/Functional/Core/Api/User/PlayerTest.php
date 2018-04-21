@@ -156,6 +156,50 @@ class PlayerTest extends WebTestCase
         $this->assertSame(0, count($p->getGroups()));
     }
 
+    public function testSetMain403()
+    {
+        $response = $this->runApp('PUT', '/api/user/player/set-main/123456');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testSetMain404()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('PUT', '/api/user/player/set-main/123456');
+        $this->assertEquals(404, $response->getStatusCode());
+
+    }
+
+    public function testSetMain200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $charsBefore = $this->pr->find($this->player->getId())->getCharacters();
+        $this->assertSame(12, $charsBefore[0]->getId());
+        $this->assertSame(13, $charsBefore[1]->getId());
+        $this->assertTrue($charsBefore[0]->getMain());
+        $this->assertFalse($charsBefore[1]->getMain());
+
+        $response = $this->runApp('PUT', '/api/user/player/set-main/13');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            ['id' => 13, 'name' => 'Alt', 'main' => true],
+            $this->parseJsonBody($response)
+        );
+
+        $this->em->clear();
+
+        $charsAfter = $this->pr->find($this->player->getId())->getCharacters();
+        $this->assertSame(12, $charsAfter[0]->getId());
+        $this->assertSame(13, $charsAfter[1]->getId());
+        $this->assertFalse($charsAfter[0]->getMain());
+        $this->assertTrue($charsAfter[1]->getMain());
+    }
+
     public function testAppManagers403()
     {
         $response = $this->runApp('GET', '/api/user/player/app-managers');
@@ -385,6 +429,50 @@ class PlayerTest extends WebTestCase
         );
     }
 
+    public function testShow403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/1/show');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin
+
+        $response = $this->runApp('GET', '/api/user/player/1/show');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testShow404()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/show');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testShow200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/show');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            'id' => $this->player->getId(),
+            'name' => 'Admin',
+            'roles' => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
+            'characters' => [
+                ['id' => 12, 'name' => 'Admin', 'main' => true],
+                ['id' => 13, 'name' => 'Alt', 'main' => false],
+            ],
+            'applications' => [],
+            'groups' => [],
+            'managerGroups' => [],
+            'managerApps' => [],
+        ], $this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
         $this->h->emptyDb();
@@ -409,5 +497,7 @@ class PlayerTest extends WebTestCase
 
         $this->player = $this->h->addCharacterMain('Admin', 12,
             [Roles::USER, Roles::APP_ADMIN, Roles::USER_ADMIN, Roles::GROUP_ADMIN])->getPlayer();
+
+        $this->h->addCharacterToPlayer('Alt', 13, $this->player);
     }
 }
