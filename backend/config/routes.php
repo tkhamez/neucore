@@ -50,10 +50,11 @@ return [
     '/api/user/player/set-main/{character}'       => ['PUT', PlayerController::class.'::setMain'],
     '/api/user/player/app-managers'               => ['GET', PlayerController::class.'::appManagers'],
     '/api/user/player/group-managers'             => ['GET', PlayerController::class.'::groupManagers'],
-    '/api/user/player/{id}/roles'                 => ['GET', PlayerController::class.'::roles'],
     '/api/user/player/{id}/add-role/{name}'       => ['PUT', PlayerController::class.'::addRole'],
     '/api/user/player/{id}/remove-role/{name}'    => ['PUT', PlayerController::class.'::removeRole'],
     '/api/user/player/{id}/show'                  => ['GET', PlayerController::class.'::show'],
 
-    '/api/app/info/v1' => ['GET', ApplicationController::class.'::infoV1'],
+    '/api/app/v1/info'               => ['GET', ApplicationController::class.'::infoV1'],
+    '/api/app/v1/groups/{character}' => ['GET', ApplicationController::class.'::groupsV1'],
+    '/api/app/v1/main/{character}'   => ['GET', ApplicationController::class.'::mainV1'],
 ];

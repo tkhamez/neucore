@@ -317,47 +317,6 @@ class PlayerController
     }
 
     /**
-     * @SWG\Get(
-     *     path="/user/player/{id}/roles",
-     *     operationId="roles",
-     *     summary="List all roles of one player.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @SWG\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of player.",
-     *         type="integer"
-     *     ),
-     *     @SWG\Response(
-     *         response="200",
-     *         description="List of roles.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Role"))
-     *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="If player was not found."
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function roles(string $id): Response
-    {
-        $player = $this->pr->find((int) $id);
-
-        if ($player) {
-            return $this->res->withJson($player->getRoles());
-        } else {
-            return $this->res->withStatus(404);
-        }
-    }
-
-    /**
      * @SWG\Put(
      *     path="/user/player/{id}/add-role/{name}",
      *     operationId="addRole",

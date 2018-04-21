@@ -169,7 +169,6 @@ class PlayerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/player/set-main/123456');
         $this->assertEquals(404, $response->getStatusCode());
-
     }
 
     public function testSetMain200()
@@ -292,41 +291,6 @@ class PlayerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $this->mid, 'name' => 'Manager']],
-            $this->parseJsonBody($response)
-        );
-    }
-
-    public function testRoles403()
-    {
-        $response = $this->runApp('GET', '/api/user/player/1/roles');
-        $this->assertEquals(403, $response->getStatusCode());
-
-        $this->setupDb();
-        $this->loginUser(11); // not user-admin or group-admin
-
-        $response = $this->runApp('GET', '/api/user/player/1/roles');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testRoles404()
-    {
-        $this->setupDb();
-        $this->loginUser(12);
-
-        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/roles');
-        $this->assertEquals(404, $response->getStatusCode());
-    }
-
-    public function testRoles200()
-    {
-        $this->setupDb();
-        $this->loginUser(12);
-
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/roles');
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertSame(
-            [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             $this->parseJsonBody($response)
         );
     }

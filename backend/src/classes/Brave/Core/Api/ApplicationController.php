@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api;
 
+use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Service\AppAuthService;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
@@ -17,8 +18,30 @@ class ApplicationController
 {
 
     /**
+     * @var Response
+     */
+    private $response;
+
+    /**
+     * @var AppAuthService
+     */
+    private $appService;
+
+    /**
+     * @var CharacterRepository
+     */
+    private $charRepo;
+
+    public function __construct(Response $response, AppAuthService $aap, CharacterRepository $cr)
+    {
+        $this->response = $response;
+        $this->appService = $aap;
+        $this->charRepo = $cr;
+    }
+
+    /**
      * @SWG\Get(
-     *     path="/app/info/v1",
+     *     path="/app/v1/info",
      *     operationId="infoV1",
      *     summary="Show app information.",
      *     description="Needs role: app",
@@ -35,8 +58,117 @@ class ApplicationController
      *     )
      * )
      */
-    public function infoV1(ServerRequestInterface $request, Response $response, AppAuthService $aap)
+    public function infoV1(ServerRequestInterface $request): Response
     {
-        return $response->withJson($aap->getApp($request));
+        return $this->response->withJson($this->appService->getApp($request));
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/groups/{character}",
+     *     operationId="groupsV1",
+     *     summary="Groups to which the player belongs. Any character ID of the player account can be used.",
+     *     description="Needs role: app",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="character",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupsV1(string $character, ServerRequestInterface $request): Response
+    {
+        $char = $this->charRepo->find((int) $character);
+
+        if ($char === null) {
+            return $this->response->withStatus(404);
+        }
+
+        $playerGroups = $char->getPlayer()->getGroups();
+        $appGroups = $this->appService->getApp($request)->getGroups();
+
+        $result = [];
+        foreach ($appGroups as $appGroup) {
+            foreach ($playerGroups as $playerGroup) {
+                if ($appGroup->getId() === $playerGroup->getId()) {
+                    $result[] = $playerGroup;
+                }
+            }
+        }
+
+        return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/main/{character}",
+     *     operationId="mainV1",
+     *     summary="Returns the main character of the player account to which the character ID belongs.",
+     *     description="Needs role: app<br>It is possible that an account has no main character.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="character",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The main character",
+     *         @SWG\Schema(ref="#/definitions/Character")
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="No main character found."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function mainV1($character): Response
+    {
+        $char = $this->charRepo->find((int) $character);
+
+        if ($char === null) {
+            return $this->response->withStatus(404);
+        }
+
+        $result = null;
+        foreach ($char->getPlayer()->getCharacters() as $character) {
+            if ($character->getMain()) {
+                $result = $character;
+            }
+        }
+
+        if ($result === null) {
+            return $this->response->withStatus(204);
+        }
+
+        return $this->response->withJson($result);
     }
 }
