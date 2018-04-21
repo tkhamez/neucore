@@ -106,7 +106,7 @@ class App implements \JsonSerializable
      *
      * @return App
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -130,7 +130,7 @@ class App implements \JsonSerializable
      *
      * @return App
      */
-    public function setSecret($secret)
+    public function setSecret(string $secret)
     {
         $this->secret = $secret;
 

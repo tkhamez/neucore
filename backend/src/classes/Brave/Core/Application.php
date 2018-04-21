@@ -114,8 +114,8 @@ class Application
         // set timezone - also used by Doctrine for dates/times in the database
         date_default_timezone_set('UTC');
 
-        // set this in case an error occured before the error handling is setup
-        ini_set('error_log', Application::ROOT_DIR . '/var/logs/app.log');
+        // use this when an error occured before the error handling is setup
+        #ini_set('error_log', Application::ROOT_DIR . '/var/logs/php_error.log');
     }
 
     /**

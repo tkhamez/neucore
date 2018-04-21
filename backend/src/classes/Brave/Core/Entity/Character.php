@@ -124,7 +124,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -148,7 +148,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setMain($main)
+    public function setMain(bool $main)
     {
         $this->main = $main;
 
@@ -172,7 +172,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setCharacterOwnerHash($characterOwnerHash)
+    public function setCharacterOwnerHash(string $characterOwnerHash)
     {
         $this->characterOwnerHash = $characterOwnerHash;
 
@@ -196,7 +196,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setAccessToken($accessToken)
+    public function setAccessToken(string $accessToken)
     {
         $this->accessToken = $accessToken;
 
@@ -220,7 +220,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setExpires($expires)
+    public function setExpires(int $expires = null)
     {
         $this->expires = $expires;
 
@@ -244,7 +244,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setRefreshToken($refreshToken)
+    public function setRefreshToken(string $refreshToken = null)
     {
         $this->refreshToken = $refreshToken;
 

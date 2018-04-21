@@ -144,7 +144,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -216,7 +216,7 @@ class Player implements \JsonSerializable
      * @param string $name
      * @return boolean
      */
-    public function hasRole($name)
+    public function hasRole(string $name)
     {
         return in_array($name, $this->getRoleNames());
     }

@@ -36,6 +36,14 @@ class Group implements \JsonSerializable
     private $name;
 
     /**
+     *
+     * @SWG\Property()
+     * @Column(type="boolean")
+     * @var bool
+     */
+    private $public = false;
+
+    /**
      * @ManyToMany(targetEntity="Player", mappedBy="applications")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
@@ -49,7 +57,7 @@ class Group implements \JsonSerializable
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $players;
+    private $players; # TODO rename to members
 
     /**
      * @ManyToMany(targetEntity="Player", inversedBy="managerGroups")
@@ -76,7 +84,8 @@ class Group implements \JsonSerializable
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'name' => $this->name,
+            'public' => $this->public
         ];
     }
 
@@ -123,6 +132,30 @@ class Group implements \JsonSerializable
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set public.
+     *
+     * @param bool $public
+     *
+     * @return Group
+     */
+    public function setPublic(bool $public)
+    {
+        $this->public = $public;
+
+        return $this;
+    }
+
+    /**
+     * Get public.
+     *
+     * @return bool
+     */
+    public function getPublic()
+    {
+        return $this->public;
     }
 
     /**

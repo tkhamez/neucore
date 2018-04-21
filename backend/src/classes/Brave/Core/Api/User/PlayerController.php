@@ -437,7 +437,13 @@ class PlayerController
 
     private function addOrRemoveGroupToFrom(string $action, string $entity, string $groupId): Response
     {
-        $group = $this->gr->find((int) $groupId);
+        if ($action === 'add' && $entity === 'Application') {
+            // players can only apply to public groups
+            $criteria = ['id' => (int) $groupId, 'public' => true];
+        } else {
+            $criteria = ['id' => (int) $groupId];
+        }
+        $group = $this->gr->findOneBy($criteria);
         if ($group === null) {
             return $this->res->withStatus(404);
         }

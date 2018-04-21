@@ -40,4 +40,15 @@ class GroupRepository extends \Doctrine\ORM\EntityRepository
     {
         return parent::findOneBy($criteria, $orderBy);
     }
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findOneBy()
+     * @return \Brave\Core\Entity\Group[]
+     */
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    {
+        return parent::findBy($criteria, $orderBy, $limit, $offset);
+    }
 }

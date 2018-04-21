@@ -297,8 +297,8 @@ class AuthTest extends WebTestCase
             ],
             'applications' => [],
             'groups' => [
-                ['id' => $groups[1]->getId(), 'name' => 'another-group'],
-                ['id' => $groups[0]->getId(), 'name' => 'group1']
+                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'public' => false],
+                ['id' => $groups[0]->getId(), 'name' => 'group1', 'public' => false]
             ],
             'managerGroups' => [],
             'managerApps' => [],

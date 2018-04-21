@@ -81,7 +81,7 @@ class GroupController
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
-     *     description="Needs role: user, group-admin or app-admin",
+     *     description="Needs role: group-admin or app-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -97,9 +97,31 @@ class GroupController
      */
     public function all(): Response
     {
-        # TODO only "public" groups for normal users
+        return $this->res->withJson($this->gr->findBy([], ['name' => 'ASC']));
+    }
 
-        return $this->res->withJson($this->gr->findAll());
+    /**
+     * @SWG\Get(
+     *     path="/user/group/public",
+     *     operationId="public",
+     *     summary="List all public groups.",
+     *     description="Needs role: user",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function public(): Response
+    {
+        return $this->res->withJson($this->gr->findBy(['public' => true], ['name' => 'ASC']));
     }
 
     /**
@@ -228,6 +250,61 @@ class GroupController
         }
 
         $this->group->setName($name);
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            return $this->res->withStatus(500);
+        }
+
+        return $this->res->withJson($this->group);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/group/{id}/set-public/{flag}",
+     *     operationId="setPublic",
+     *     summary="Change visibility of a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="flag",
+     *         in="path",
+     *         required=true,
+     *         description="0 = not public, 1 = public.",
+     *         type="integer",
+     *         enum={0, 1}
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Visibility changed.",
+     *         @SWG\Schema(ref="#/definitions/Group")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function setPublic(string $id, string $flag): Response
+    {
+        if (! $this->findGroup($id)) {
+            return $this->res->withStatus(404);
+        }
+
+        $this->group->setPublic((bool) $flag);
         try {
             $this->em->flush();
         } catch (\Exception $e) {
@@ -398,7 +475,7 @@ class GroupController
      */
     public function removeManager(string $id, string $player): Response
     {
-        return $this->removePlayerFrom($id, $player, 'manager', false);
+        return $this->removePlayerFrom($id, $player, 'managers', false);
     }
 
     /**
@@ -434,6 +511,47 @@ class GroupController
     public function applicants(string $id): Response
     {
         return $this->getPlayersFromGroup($id, 'applicants', true);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/group/{id}/remove-applicant/{player}",
+     *     operationId="removeApplicant",
+     *     summary="Remove a player's request to join a group.",
+     *     description="Needs role: group-manager",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="player",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Application removed."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Player and/or group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function removeApplicant(string $id, string $player): Response
+    {
+        return $this->removePlayerFrom($id, $player, 'applications', true);
     }
 
     /**
@@ -515,7 +633,42 @@ class GroupController
      */
     public function removeMember(string $id, string $player): Response
     {
-        return $this->removePlayerFrom($id, $player, 'player', true);
+        return $this->removePlayerFrom($id, $player, 'members', true);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/group/{id}/members",
+     *     operationId="members",
+     *     summary="List all members of a group.",
+     *     description="Needs role: group-manager",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function members(string $id): Response
+    {
+        return $this->getPlayersFromGroup($id, 'members', true);
     }
 
     /**
@@ -555,6 +708,8 @@ class GroupController
             $players = $this->group->getManagers();
         } elseif ($type === 'applicants') {
             $players = $this->group->getApplicants();
+        } elseif ($type === 'members') {
+            $players = $this->group->getPlayers();
         }
 
         $ret = [];
@@ -618,10 +773,12 @@ class GroupController
             return $this->res->withStatus(403);
         }
 
-        if ($type === 'manager') {
+        if ($type === 'managers') {
             $this->group->removeManager($this->player);
-        } elseif ($type === 'player') {
+        } elseif ($type === 'members') {
             $this->player->removeGroup($this->group);
+        } elseif ($type === 'applications') {
+            $this->player->removeApplication($this->group);
         }
 
         try {

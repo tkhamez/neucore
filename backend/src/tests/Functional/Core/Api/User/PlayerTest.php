@@ -22,6 +22,8 @@ class PlayerTest extends WebTestCase
 
     private $group;
 
+    private $gPrivId;
+
     private $pr;
 
     public function setUp()
@@ -70,7 +72,10 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('PUT', '/api/user/player/add-application/' . ($this->group->getId() + 1));
+        $response = $this->runApp('PUT', '/api/user/player/add-application/' . ($this->group->getId() + 5));
+        $this->assertEquals(404, $response->getStatusCode());
+
+        $response = $this->runApp('PUT', '/api/user/player/add-application/' . $this->gPrivId);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -100,7 +105,7 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('PUT', '/api/user/player/remove-application/' . ($this->group->getId() + 1));
+        $response = $this->runApp('PUT', '/api/user/player/remove-application/' . ($this->group->getId() + 5));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -131,7 +136,7 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('PUT', '/api/user/player/leave-group/' . ($this->group->getId() + 1));
+        $response = $this->runApp('PUT', '/api/user/player/leave-group/' . ($this->group->getId() + 5));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -264,7 +269,7 @@ class PlayerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 1).'/roles');
+        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/roles');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -394,7 +399,10 @@ class PlayerTest extends WebTestCase
             Roles::USER_ADMIN
         ]);
 
-        $this->group = $this->h->addGroups(['test-g'])[0];
+        $gs = $this->h->addGroups(['test-pub', 'test-priv']);
+        $gs[0]->setPublic(true);
+        $this->group = $gs[0];
+        $this->gPrivId = $gs[1]->getId();
 
         $this->mid = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
             ->getPlayer()->getId();

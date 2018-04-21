@@ -14,7 +14,7 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $group->setName('g.name');
 
         $this->assertSame(
-            ['id' => null, 'name' => 'g.name'],
+            ['id' => null, 'name' => 'g.name', 'public' => false],
             json_decode(json_encode($group), true)
         );
     }
@@ -29,6 +29,14 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $group = new Group();
         $group->setName('nam');
         $this->assertSame('nam', $group->getName());
+    }
+
+    public function testSetGetPublic()
+    {
+        $group = new Group();
+        $this->assertFalse($group->getPublic());
+        $group->setPublic(true);
+        $this->assertTrue($group->getPublic());
     }
 
     public function testAddGetRemoveApplicant()

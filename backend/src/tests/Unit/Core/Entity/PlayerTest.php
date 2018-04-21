@@ -43,12 +43,12 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 ['id' => 234, 'name' => 'eve two', 'main' => false],
             ],
             'applications' => [
-                ['id' => null, 'name' => 'gname']
+                ['id' => null, 'name' => 'gname', 'public' => false]
             ],
             'groups' => [
-                ['id' => null, 'name' => 'group2']
+                ['id' => null, 'name' => 'group2', 'public' => false]
             ],
-            'managerGroups' => [['id' => null, 'name' => 'gname']],
+            'managerGroups' => [['id' => null, 'name' => 'gname', 'public' => false]],
             'managerApps' => [['id' => null, 'name' => 'app-one']],
         ], json_decode(json_encode($play), true));
     }
