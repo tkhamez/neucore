@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tests\Functional\Core\Api\User;
 
 use Tests\Functional\WebTestCase;
@@ -85,13 +86,13 @@ class GroupTest extends WebTestCase
         $this->assertEquals(409, $response->getStatusCode());
     }
 
-    public function testCreate200()
+    public function testCreate201()
     {
         $this->setupDb();
         $this->loginUser(8);
 
         $response = $this->runApp('POST', '/api/user/group/create', ['name' => 'new-g']);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
 
         $ng = $this->gr->findOneBy(['name' => 'new-g']);
         $this->assertSame(
@@ -425,7 +426,6 @@ class GroupTest extends WebTestCase
 
         $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 1).'/remove-member/'.($this->pid + 1));
         $this->assertEquals(404, $response3->getStatusCode());
-
     }
 
     public function testRemoveMember204()

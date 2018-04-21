@@ -1,5 +1,6 @@
 #!/usr/bin/env php
-<?php
+<?php declare(strict_types=1);
+
 use Brave\Core\Application;
 
 require_once __DIR__.'/../vendor/autoload.php';

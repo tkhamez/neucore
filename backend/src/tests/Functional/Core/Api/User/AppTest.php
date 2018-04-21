@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tests\Functional\Core\Api\User;
 
-use Tests\Functional\WebTestCase;
-use Tests\Helper;
 use Brave\Core\Roles;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Group;
@@ -10,6 +9,11 @@ use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\AppRepository;
 use Brave\Core\Entity\App;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
+use Tests\Functional\WebTestCase;
+use Tests\Helper;
 
 class AppTest extends WebTestCase
 {
@@ -91,13 +95,32 @@ class AppTest extends WebTestCase
         $this->assertEquals(400, $response2->getStatusCode());
     }
 
-    public function testCreate200()
+    public function testCreate500()
     {
         $this->setupDb();
         $this->loginUser(8);
 
+        $log = new Logger('test');
+        $log->pushHandler(new TestHandler());
+
+        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], null, [
+            LoggerInterface::class => $log
+        ]);
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(
+            'AppController->create(): Role "'.Roles::APP.'" not found.',
+            $log->getHandlers()[0]->getRecords()[0]['message']
+        );
+    }
+
+    public function testCreate201()
+    {
+        $this->setupDb();
+        $this->helper->addRoles([Roles::APP]);
+        $this->loginUser(8);
+
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
 
         $na = $this->ar->findOneBy(['name' => 'new app']);
         $this->assertNotNull($na);
@@ -108,6 +131,8 @@ class AppTest extends WebTestCase
         );
 
         $this->assertSame(60, strlen($na->getSecret())); // the hash (blowfish) is 60 chars atm, may change.
+        $this->assertSame(1, count($na->getRoles()));
+        $this->assertSame(Roles::APP, $na->getRoles()[0]->getName());
     }
 
     public function testRename403()

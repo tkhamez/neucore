@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Brave\Core\Api;
 
 use Brave\Core\Service\AppAuthService;

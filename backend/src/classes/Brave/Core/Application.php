@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Brave\Core;
 
 use Brave\Core\Command\MakeAdmin;
@@ -112,6 +113,9 @@ class Application
     {
         // set timezone - also used by Doctrine for dates/times in the database
         date_default_timezone_set('UTC');
+
+        // set this in case an error occured before the error handling is setup
+        ini_set('error_log', Application::ROOT_DIR . '/var/logs/app.log');
     }
 
     /**
@@ -190,8 +194,8 @@ class Application
         $app = new App($container);
 
         $this->dependencies($container);
-        $this->sessionHandler($container);
         $this->errorHandling($container);
+        $this->sessionHandler($container);
 
         if ($withMiddleware) {
             $this->addMiddleware($app);
@@ -276,8 +280,8 @@ class Application
         if ($this->env === Application::ENV_DEV) {
             // Values cannot be unset from the DI\Container,
             // so it must be done in the configuration before it is built.
-            unset($bridgeConfig['errorHandler']);
-            unset($bridgeConfig['phpErrorHandler']);
+            #unset($bridgeConfig['errorHandler']);
+            #unset($bridgeConfig['phpErrorHandler']);
         }
 
         $containerBuilder = new ContainerBuilder();
@@ -349,7 +353,7 @@ class Application
             return;
         }
 
-        ini_set('session.gc_maxlifetime', $container->get('config')['session']['gc_maxlifetime']);
+        ini_set('session.gc_maxlifetime', (string) $container->get('config')['session']['gc_maxlifetime']);
 
         $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
@@ -366,8 +370,8 @@ class Application
     private function errorHandling(Container $container)
     {
         // php settings
-        ini_set('display_errors', 0); // all errors are shown with whoops in dev mode
-        ini_set('log_errors', 0); // all errors are logged with Monolog in prod mode
+        ini_set('display_errors', '0'); // all errors are shown with whoops in dev mode
+        ini_set('log_errors', '0'); // all errors are logged with Monolog in prod mode
         error_reporting(E_ALL);
 
         if ($this->env === self::ENV_PROD) {
@@ -406,9 +410,7 @@ class Application
         $routes = include self::ROOT_DIR . '/config/routes.php';
 
         foreach ($routes as $route => $conf) {
-            if (is_array($conf[0])) { // e. g. ['GET', 'POST']
-                $app->map($conf[0], $route, $conf[1]);
-            } elseif ($conf[0] === 'GET') {
+            if ($conf[0] === 'GET') {
                 $app->get($route, $conf[1]);
             } elseif ($conf[0] === 'POST') {
                 $app->post($route, $conf[1]);
@@ -416,9 +418,6 @@ class Application
                 $app->delete($route, $conf[1]);
             } elseif ($conf[0] === 'PUT') {
                 $app->put($route, $conf[1]);
-            } else {
-                // add as needed:
-                // options, patch, any
             }
         }
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Brave\Core\Api\ApplicationController;
 use Brave\Core\Api\User\AppController;

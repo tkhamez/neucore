@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Group;
@@ -160,7 +161,7 @@ class GroupController
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withJson($group);
+        return $this->res->withStatus(201)->withJson($group);
     }
 
     /**

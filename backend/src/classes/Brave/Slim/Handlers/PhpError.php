@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Brave\Slim\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface;

@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tests\Unit\Slim\Handlers;
 
 use Brave\Slim\Handlers\PhpError;

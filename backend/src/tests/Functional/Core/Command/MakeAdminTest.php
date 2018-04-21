@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;

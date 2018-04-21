@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\App;
@@ -7,6 +8,8 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Roles;
 use Brave\Core\Service\UserAuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -37,6 +40,11 @@ class AppController
     private $ar;
 
     /**
+     * @var RoleRepository
+     */
+    private $rr;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
@@ -56,11 +64,13 @@ class AppController
      */
     private $group;
 
-    public function __construct(Response $res, LoggerInterface $log, AppRepository $ar, EntityManagerInterface $em)
+    public function __construct(Response $res, LoggerInterface $log, AppRepository $ar, RoleRepository $rr,
+        EntityManagerInterface $em)
     {
         $this->res = $res;
         $this->log = $log;
         $this->ar = $ar;
+        $this->rr = $rr;
         $this->em = $em;
     }
 
@@ -127,9 +137,16 @@ class AppController
             return $this->res->withStatus(400);
         }
 
+        $appRole = $this->rr->findOneBy(['name' => Roles::APP]);
+        if ($appRole === null) {
+            $this->log->critical('AppController->create(): Role "'.Roles::APP.'" not found.');
+            return $this->res->withStatus(500);
+        }
+
         $app = new App();
         $app->setName($name);
         $app->setSecret(password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT));
+        $app->addRole($appRole);
 
         try {
             $this->em->persist($app);
@@ -139,7 +156,7 @@ class AppController
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withJson($app);
+        return $this->res->withStatus(201)->withJson($app);
     }
 
     /**

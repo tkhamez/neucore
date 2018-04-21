@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\AppRepository;
