@@ -280,8 +280,8 @@ class Application
         if ($this->env === Application::ENV_DEV) {
             // Values cannot be unset from the DI\Container,
             // so it must be done in the configuration before it is built.
-            #unset($bridgeConfig['errorHandler']);
-            #unset($bridgeConfig['phpErrorHandler']);
+            unset($bridgeConfig['errorHandler']);
+            unset($bridgeConfig['phpErrorHandler']);
         }
 
         $containerBuilder = new ContainerBuilder();
