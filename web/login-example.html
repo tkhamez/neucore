@@ -3,100 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Brave Collective Core Services Prototype</title>
-    <script src="/node_modules/vue/dist/vue.js"></script>
-    <script src="/node_modules/vue-resource/dist/vue-resource.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="login-example.js"></script>
 </head>
 <body>
 
     <h2>Login example</h2>
 
     <div id="app">
-        <button v-on:click="getLogin">GET sso login url, you can provide a redirect url</button>
-        <button v-on:click="redirect">redirect to sso login url</button>
+        <button onclick="app.getLogin()">GET EVE login url</button>
+        <button onclick="app.redirect()">redirect to EVE login url</button>
         &nbsp;
-        <button v-on:click="getUser">GET user info</button>
+        <button onclick="app.getUser()">GET user info</button>
         &nbsp;
-        <button v-on:click="logout">POST logout</button>
+        <button onclick="app.logout()">POST logout</button>
 
         <br>
         status:<br>
-        <pre>{{ status }} {{ statusText }}</pre>
+        <pre id="status"></pre>
 
         body:<br>
-        <pre>{{ body }}</pre>
-
-        headers:<br>
-        <pre>{{ headers }}</pre>
+        <pre id="body"></pre>
     </div>
-
-    <script>
-
-    // Only needed if frontend and backend are on different hosts.
-    // Backend must allow the other host (config/settings.php [CORS][allow_origin]).
-    var appBaseUrl = ''; // https://backend.domain.tld
-    var clientBaseUrl = ''; // https://frontend.domain.tld
-
-    var app = new Vue({
-        el: '#app',
-        data: {
-            status: null,
-            statusText: null,
-            headers: null,
-            body: null,
-            oauthUrl: null
-        },
-        mounted: function () {
-            if (location.hash) {
-                this.get(location.hash.substr(1));
-            }
-        },
-        methods: {
-            getUser: function() {
-                this.get(appBaseUrl + '/api/user/auth/character');
-            },
-            getLogin: function() {
-                var redirectPath = clientBaseUrl + '/login-example.html#' + appBaseUrl + '/api/user/auth/result';
-                var url = appBaseUrl + '/api/user/auth/login-url?redirect=' + encodeURIComponent(redirectPath);
-                this.get(url, function(response) {
-                    app.oauthUrl = response.body;
-                });
-            },
-            redirect: function() {
-                if (app.oauthUrl) {
-                    top.location.href = app.oauthUrl;
-                }
-            },
-            logout: function() {
-                this.post(appBaseUrl + '/api/user/auth/logout');
-            },
-            get: function(url, callback) {
-                // "withCredentials" is only needed if frontend and backend are on different hosts.
-                // Also make sure to send a "Accept: application/json" header to get errors in json format
-                // (vue-resource does that by default).
-                this.$http.get(url, { withCredentials: true }).then(response => {
-                	this.handleResult(response, callback);
-                }, response => {
-                    this.handleResult(response, callback);
-                });
-            },
-            post: function(url) {
-            	this.$http.post(url, { withCredentials: true }).then(response => {
-                	this.handleResult(response);
-                }, response => {
-                    this.handleResult(response);
-                });
-            },
-            handleResult: function(response, callback) {
-                app.status = response.status;
-                app.statusText = response.statusText;
-                app.headers = response.headers;
-                app.body = response.body || response.bodyText;
-                if (callback) {
-                    callback(response);
-                }
-            }
-        }
-    });
-    </script>
 </body>
 </html>
