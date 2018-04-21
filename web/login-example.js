@@ -1,5 +1,5 @@
 window.$(function() {
-	app.ready();
+    app.ready();
 });
 
 var app = (function($) {
@@ -13,34 +13,34 @@ var app = (function($) {
 
     function fetch(url, method, callback) {
         $.ajax({
-        	method: method,
-			url: url,
-       		headers: {'Accept': 'application/json'},
-			xhrFields: {
-				// only needed if frontend and backend are on different hosts.
-				withCredentials: true
-			}
-       	}).done(function(data, statusText, jqXHR) {
-       		handleResult(jqXHR.status, statusText, data);
-       	}).fail(function(jqXHR) {
-       		handleResult(jqXHR.status, jqXHR.statusText);
-       	});
+            method: method,
+            url: url,
+               headers: {'Accept': 'application/json'},
+            xhrFields: {
+                // only needed if frontend and backend are on different hosts.
+                withCredentials: true
+            }
+           }).done(function(data, statusText, jqXHR) {
+               handleResult(jqXHR.status, statusText, data);
+           }).fail(function(jqXHR) {
+               handleResult(jqXHR.status, jqXHR.statusText);
+           });
 
         function handleResult(status, statusText, data) {
-        	$('#status').text(status + ' ' + statusText);
-   			$('#body').text(data ? JSON.stringify(data) : '');
+            $('#status').text(status + ' ' + statusText);
+               $('#body').text(data ? JSON.stringify(data) : '');
             if (callback) {
                 callback(data);
             }
         }
     }
 
-	return {
-		ready: function() {
-			if (window.location.hash) {
-				fetch(window.location.hash.substr(1));
-	        }
-		},
+    return {
+        ready: function() {
+            if (window.location.hash) {
+                fetch(window.location.hash.substr(1));
+            }
+        },
 
         getLogin: function() {
             var redirectPath = clientBaseUrl + '/login-example.html#' + appBaseUrl + '/api/user/auth/result';
@@ -52,17 +52,17 @@ var app = (function($) {
 
         redirect: function() {
             if (oauthUrl !== "") {
-            	window.top.location.href = oauthUrl;
+                window.top.location.href = oauthUrl;
             }
         },
 
-		getUser: function() {
+        getUser: function() {
             fetch(appBaseUrl + '/api/user/auth/character', 'GET');
         },
 
         logout: function() {
-        	fetch(appBaseUrl + '/api/user/auth/logout', 'POST');
+            fetch(appBaseUrl + '/api/user/auth/logout', 'POST');
         }
-	};
+    };
 })(window.$);
 
