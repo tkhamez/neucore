@@ -131,6 +131,9 @@ class ApplicationTest extends WebTestCase
         $body2 = $this->parseJsonBody($response2);
 
         $this->assertSame($body1, $body2);
-        $this->assertSame(['id' => 123, 'name' => 'C1', 'main' => true], $body1);
+        $this->assertSame(
+            ['id' => 123, 'name' => 'C1', 'main' => true, 'corporation' => null, 'alliance' => null],
+            $body1
+        );
     }
 }

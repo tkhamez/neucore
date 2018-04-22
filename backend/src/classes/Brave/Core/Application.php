@@ -7,7 +7,7 @@ use Brave\Core\Command\Sample;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuthService;
-use Brave\Core\Service\EveService;
+use Brave\Core\Service\EveTokenService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -231,7 +231,7 @@ class Application
 
         $console->add(new Sample(
             $c->get(CharacterRepository::class),
-            $c->get(EveService::class)
+            $c->get(EveTokenService::class)
         ));
 
         return $console;

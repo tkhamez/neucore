@@ -65,14 +65,14 @@ class ApplicationController
 
     /**
      * @SWG\Get(
-     *     path="/app/v1/groups/{character}",
+     *     path="/app/v1/groups/{cid}",
      *     operationId="groupsV1",
      *     summary="Groups to which the player belongs. Any character ID of the player account can be used.",
      *     description="Needs role: app",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
-     *         name="character",
+     *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
@@ -93,9 +93,9 @@ class ApplicationController
      *     )
      * )
      */
-    public function groupsV1(string $character, ServerRequestInterface $request): Response
+    public function groupsV1(string $cid, ServerRequestInterface $request): Response
     {
-        $char = $this->charRepo->find((int) $character);
+        $char = $this->charRepo->find((int) $cid);
 
         if ($char === null) {
             return $this->response->withStatus(404);
@@ -118,14 +118,14 @@ class ApplicationController
 
     /**
      * @SWG\Get(
-     *     path="/app/v1/main/{character}",
+     *     path="/app/v1/main/{cid}",
      *     operationId="mainV1",
      *     summary="Returns the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app<br>It is possible that an account has no main character.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
-     *         name="character",
+     *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
@@ -150,9 +150,9 @@ class ApplicationController
      *     )
      * )
      */
-    public function mainV1($character): Response
+    public function mainV1($cid): Response
     {
-        $char = $this->charRepo->find((int) $character);
+        $char = $this->charRepo->find((int) $cid);
 
         if ($char === null) {
             return $this->response->withStatus(404);

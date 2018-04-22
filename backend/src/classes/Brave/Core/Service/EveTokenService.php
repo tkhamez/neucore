@@ -10,9 +10,9 @@ use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Configuration;
 
 /**
- * ESI related functionality.
+ * Handles OAuth tokens for ESI.
  */
-class EveService
+class EveTokenService
 {
     private $oauth;
 
@@ -29,17 +29,48 @@ class EveService
         $this->log = $log;
     }
 
+    /**
+     * Set the character that holds the access and refresh token.
+     *
+     * The entity should already be saved to the database.
+     *
+     * @param Character $character
+     */
     public function setCharacter(Character $character)
     {
         $this->character = $character;
     }
 
+    /**
+     * Returns the configuration for the Swagger client.
+     *
+     * For requests that need an access token.
+     *
+     * @return Configuration
+     */
+    public function getConfiguration(): Configuration
+    {
+        $conf = Configuration::getDefaultConfiguration();
+        $conf->setAccessToken($this->getToken());
+
+        return $conf;
+    }
+
+    /**
+     * Returns the access token for an EVE character.
+     *
+     * If the existing token has expired, a new one is fetched with the
+     * resfresh token and saved in the database for the character.
+     *
+     * @return string
+     * @see EveTokenService::setCharacter()
+     */
     public function getToken(): string
     {
         $token = "";
 
         if ($this->character === null) {
-            $this->log->error('EveService::getToken: Character not set.');
+            $this->log->error('EveTokenService::getToken: Character not set.');
             return $token;
         }
 
@@ -69,7 +100,6 @@ class EveService
             $this->character->setAccessToken($newAccessToken->getToken());
             $this->character->setExpires($newAccessToken->getExpires());
             try {
-                $this->em->persist($this->character);
                 $this->em->flush();
             } catch (\Exception $e) {
                 $this->log->critical($e->getMessage(), ['exception' => $e]);
@@ -77,13 +107,5 @@ class EveService
         }
 
         return $newAccessToken ? $newAccessToken->getToken() : $existingToken->getToken();
-    }
-
-    public function getConfiguration(): Configuration
-    {
-        $conf = Configuration::getDefaultConfiguration();
-        $conf->setAccessToken($this->getToken());
-
-        return $conf;
     }
 }

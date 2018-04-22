@@ -314,7 +314,7 @@ class AppController
 
     /**
      * @SWG\Put(
-     *     path="/user/app/{id}/add-manager/{player}",
+     *     path="/user/app/{id}/add-manager/{pid}",
      *     operationId="addManager",
      *     summary="Assign a player as manager to an app.",
      *     description="Needs role: app-admin",
@@ -328,7 +328,7 @@ class AppController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -348,9 +348,9 @@ class AppController
      *     )
      * )
      */
-    public function addManager(string $id, string $player, PlayerRepository $pr): Response
+    public function addManager(string $id, string $pid, PlayerRepository $pr): Response
     {
-        if (! $this->findAppAndPlayer($id, $player, $pr)) {
+        if (! $this->findAppAndPlayer($id, $pid, $pr)) {
             return $this->res->withStatus(404);
         }
 
@@ -371,7 +371,7 @@ class AppController
 
     /**
      * @SWG\Put(
-     *     path="/user/app/{id}/remove-manager/{player}",
+     *     path="/user/app/{id}/remove-manager/{pid}",
      *     operationId="removeManager",
      *     summary="Remove a manager (player) from an app.",
      *     description="Needs role: app-admin",
@@ -385,7 +385,7 @@ class AppController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -405,9 +405,9 @@ class AppController
      *     )
      * )
      */
-    public function removeManager(string $id, string $player, PlayerRepository $pr): Response
+    public function removeManager(string $id, string $pid, PlayerRepository $pr): Response
     {
-        if (! $this->findAppAndPlayer($id, $player, $pr)) {
+        if (! $this->findAppAndPlayer($id, $pid, $pr)) {
             return $this->res->withStatus(404);
         }
 

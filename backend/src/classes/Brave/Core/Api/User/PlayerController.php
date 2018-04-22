@@ -110,14 +110,14 @@ class PlayerController
 
     /**
      * @SWG\Put(
-     *     path="/user/player/add-application/{group}",
+     *     path="/user/player/add-application/{gid}",
      *     operationId="applyGroup",
      *     summary="Submit a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
-     *         name="group",
+     *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
@@ -137,21 +137,21 @@ class PlayerController
      *     )
      * )
      */
-    public function addApplication(string $group): Response
+    public function addApplication(string $gid): Response
     {
-        return $this->addOrRemoveGroupToFrom('add', 'Application', $group);
+        return $this->addOrRemoveGroupToFrom('add', 'Application', $gid);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/player/remove-application/{group}",
+     *     path="/user/player/remove-application/{gid}",
      *     operationId="cancelApplication",
      *     summary="Cancel a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
-     *         name="group",
+     *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
@@ -171,21 +171,21 @@ class PlayerController
      *     )
      * )
      */
-    public function removeApplication(string $group): Response
+    public function removeApplication(string $gid): Response
     {
-        return $this->addOrRemoveGroupToFrom('remove', 'Application', $group);
+        return $this->addOrRemoveGroupToFrom('remove', 'Application', $gid);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/player/leave-group/{group}",
+     *     path="/user/player/leave-group/{gid}",
      *     operationId="leaveGroup",
      *     summary="Leave a group.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
-     *         name="group",
+     *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
@@ -205,21 +205,21 @@ class PlayerController
      *     )
      * )
      */
-    public function leaveGroup(string $group): Response
+    public function leaveGroup(string $gid): Response
     {
-        return $this->addOrRemoveGroupToFrom('remove', 'Group', $group);
+        return $this->addOrRemoveGroupToFrom('remove', 'Group', $gid);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/player/set-main/{character}",
+     *     path="/user/player/set-main/{cid}",
      *     operationId="setMain",
      *     summary="Change the main character from the player account.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
-     *         name="character",
+     *         name="cid",
      *         in="path",
      *         required=true,
      *         description="Character ID.",
@@ -240,12 +240,12 @@ class PlayerController
      *     )
      * )
      */
-    public function setMain(string $character): Response
+    public function setMain(string $cid): Response
     {
         $main = null;
         $player = $this->uas->getUser()->getPlayer();
         foreach ($player->getCharacters() as $char) {
-            if ($char->getId() === (int) $character) {
+            if ($char->getId() === (int) $cid) {
                 $char->setMain(true);
                 $main = $char;
             } else {
@@ -428,26 +428,6 @@ class PlayerController
         return $this->res->withStatus(204);
     }
 
-    private function getManagers(string $roleName): array
-    {
-        $ret = [];
-
-        $role = $this->rr->findOneBy(['name' => $roleName]);
-        if ($role === null) {
-            $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
-            return $ret;
-        }
-
-        foreach ($role->getPlayers() as $player) {
-            $ret[] = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
-        }
-
-        return $ret;
-    }
-
     /**
      * @SWG\Get(
      *     path="/user/player/{id}/show",
@@ -487,6 +467,26 @@ class PlayerController
         }
 
         return $this->res->withJson($player);
+    }
+
+    private function getManagers(string $roleName): array
+    {
+        $ret = [];
+
+        $role = $this->rr->findOneBy(['name' => $roleName]);
+        if ($role === null) {
+            $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
+            return $ret;
+        }
+
+        foreach ($role->getPlayers() as $player) {
+            $ret[] = [
+                'id' => $player->getId(),
+                'name' => $player->getName()
+            ];
+        }
+
+        return $ret;
     }
 
     private function addOrRemoveGroupToFrom(string $action, string $entity, string $groupId): Response

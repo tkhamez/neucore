@@ -620,7 +620,7 @@ class GroupTest extends WebTestCase
         $this->gid2 = $g[1]->getId();
         $g[1]->setPublic(true);
 
-        $user = $this->helper->addCharacterMain('User', 6, [Roles::USER]);
+        $this->helper->addCharacterMain('User', 6, [Roles::USER]);
 
         // group manager, but not of any group
         $user = $this->helper->addCharacterMain('Group', 7, [Roles::USER, Roles::GROUP_MANAGER], ['group-one']);

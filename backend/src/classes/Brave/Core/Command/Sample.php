@@ -3,7 +3,7 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Service\EveService;
+use Brave\Core\Service\EveTokenService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ class Sample extends Command
 
     private $es;
 
-    public function __construct(CharacterRepository $cr, EveService $es)
+    public function __construct(CharacterRepository $cr, EveTokenService $es)
     {
         parent::__construct();
 

@@ -18,6 +18,8 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'id' => 123,
             'name' => 'test char',
             'main' => false,
+            'corporation' => null,
+            'alliance' => null
         ], json_decode(json_encode($char), true));
     }
 

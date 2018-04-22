@@ -75,6 +75,15 @@ class Group implements \JsonSerializable
     private $apps;
 
     /**
+     * Corporations for automatic assignment.
+     *
+     * @ManyToMany(targetEntity="Corporation", mappedBy="groups")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $corporations;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -98,6 +107,7 @@ class Group implements \JsonSerializable
         $this->players = new \Doctrine\Common\Collections\ArrayCollection();
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->corporations = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -300,5 +310,41 @@ class Group implements \JsonSerializable
     public function getApps()
     {
         return $this->apps->toArray();
+    }
+
+    /**
+     * Add corporation.
+     *
+     * @param \Brave\Core\Entity\Corporation $corporation
+     *
+     * @return Group
+     */
+    public function addCorporation(\Brave\Core\Entity\Corporation $corporation)
+    {
+        $this->corporations[] = $corporation;
+
+        return $this;
+    }
+
+    /**
+     * Remove corporation.
+     *
+     * @param \Brave\Core\Entity\Corporation $corporation
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCorporation(\Brave\Core\Entity\Corporation $corporation)
+    {
+        return $this->corporations->removeElement($corporation);
+    }
+
+    /**
+     * Get corporations.
+     *
+     * @return Corporation[]
+     */
+    public function getCorporations()
+    {
+        return $this->corporations->toArray();
     }
 }

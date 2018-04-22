@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *
  * @SWG\Definition(
  *     definition="Character",
- *     required={"id", "name", "main"}
+ *     required={"id", "name", "main", "corporation", "alliance"}
  * )
  * @Entity(repositoryClass="Brave\Core\Entity\CharacterRepository")
  * @Table(name="characters")
@@ -79,6 +79,22 @@ class Character implements \JsonSerializable
     private $player;
 
     /**
+     *
+     * @SWG\Property(ref="#/definitions/Corporation")
+     * @ManyToOne(targetEntity="Corporation", inversedBy="characters")
+     * @var Player
+     */
+    private $corporation;
+
+    /**
+     *
+     * @SWG\Property(ref="#/definitions/Alliance")
+     * @ManyToOne(targetEntity="Alliance", inversedBy="characters")
+     * @var Player
+     */
+    private $alliance;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -89,7 +105,9 @@ class Character implements \JsonSerializable
         return [
             'id' => $this->getId(),
             'name' => $this->name,
-            'main' => $this->main
+            'main' => $this->main,
+            'corporation' => $this->corporation,
+            'alliance' => $this->alliance
         ];
     }
 
@@ -100,7 +118,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
 
@@ -114,7 +132,8 @@ class Character implements \JsonSerializable
      */
     public function getId()
     {
-        return (int) $this->id;
+        // cast to int because Doctrine creates string for type bigint
+        return $this->id !== null ? (int) $this->id : null;
     }
 
     /**
@@ -283,5 +302,53 @@ class Character implements \JsonSerializable
     public function getPlayer()
     {
         return $this->player;
+    }
+
+    /**
+     * Set corporation.
+     *
+     * @param \Brave\Core\Entity\Corporation|null $corporation
+     *
+     * @return Character
+     */
+    public function setCorporation(\Brave\Core\Entity\Corporation $corporation = null)
+    {
+        $this->corporation = $corporation;
+
+        return $this;
+    }
+
+    /**
+     * Get corporation.
+     *
+     * @return \Brave\Core\Entity\Corporation|null
+     */
+    public function getCorporation()
+    {
+        return $this->corporation;
+    }
+
+    /**
+     * Set alliance.
+     *
+     * @param \Brave\Core\Entity\Alliance|null $alliance
+     *
+     * @return Character
+     */
+    public function setAlliance(\Brave\Core\Entity\Alliance $alliance = null)
+    {
+        $this->alliance = $alliance;
+
+        return $this;
+    }
+
+    /**
+     * Get alliance.
+     *
+     * @return \Brave\Core\Entity\Alliance|null
+     */
+    public function getAlliance()
+    {
+        return $this->alliance;
     }
 }

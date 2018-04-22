@@ -5,14 +5,14 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
-use Brave\Core\Service\EveService;
+use Brave\Core\Service\EveTokenService;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
 
-class EveServiceTest extends \PHPUnit\Framework\TestCase
+class EveTokenServiceTest extends \PHPUnit\Framework\TestCase
 {
     private $em;
 
@@ -37,7 +37,7 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
         $this->log->pushHandler(new TestHandler());
 
         $this->oauth = $this->createMock(GenericProvider::class);
-        $this->es = new EveService($this->oauth, $this->em, $this->log);
+        $this->es = new EveTokenService($this->oauth, $this->em, $this->log);
     }
 
     public function testGetTokenNoUser()
@@ -45,7 +45,7 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame("", $this->es->getToken());
 
         $this->assertSame(
-            'EveService::getToken: Character not set.',
+            'EveTokenService::getToken: Character not set.',
             $this->log->getHandlers()[0]->getRecords()[0]['message']
         );
     }
@@ -90,16 +90,17 @@ class EveServiceTest extends \PHPUnit\Framework\TestCase
         $c->setCharacterOwnerHash('coh');
         $c->setAccessToken('old-token');
         $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
-        // don't save to DB to be able to test that getToken() will save it.
+
+        $this->em->persist($c);
+        $this->em->flush();
 
         $this->es->setCharacter($c);
-
         $this->es->getToken();
-        $this->em->flush();
 
         $this->assertSame('new-token', $this->es->getToken());
         $this->assertSame('new-token', $c->getAccessToken());
 
+        $this->em->clear();
         $charFromDB = (new CharacterRepository($this->em))->find(123);
         $this->assertSame('new-token', $charFromDB->getAccessToken());
 

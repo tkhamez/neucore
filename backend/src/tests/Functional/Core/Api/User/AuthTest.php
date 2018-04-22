@@ -266,7 +266,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 654, 'name' => 'User1', 'main' => true],
+            ['id' => 654, 'name' => 'User1', 'main' => true, 'corporation' => null, 'alliance' => null],
             $this->parseJsonBody($response)
         );
     }
@@ -293,7 +293,7 @@ class AuthTest extends WebTestCase
             'name' => 'TUser',
             'roles' => [Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true],
+                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'corporation' => null, 'alliance' => null],
             ],
             'applications' => [],
             'groups' => [

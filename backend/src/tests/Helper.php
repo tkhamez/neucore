@@ -28,6 +28,8 @@ class Helper
         'Brave\Core\Entity\Player',
         'Brave\Core\Entity\Group',
         'Brave\Core\Entity\Role',
+        'Brave\Core\Entity\Corporation',
+        'Brave\Core\Entity\Alliance',
     ];
 
     public function resetSessionData()

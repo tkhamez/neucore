@@ -81,7 +81,7 @@ class GroupController
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
-     *     description="Needs role: group-admin or app-admin",
+     *     description="Needs role: app-admin, group-admin or user-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -386,7 +386,7 @@ class GroupController
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/add-manager/{player}",
+     *     path="/user/group/{id}/add-manager/{pid}",
      *     operationId="addManager",
      *     summary="Assign a player as manager to a group.",
      *     description="Needs role: group-admin",
@@ -400,7 +400,7 @@ class GroupController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -420,14 +420,14 @@ class GroupController
      *     )
      * )
      */
-    public function addManager(string $id, string $player): Response
+    public function addManager(string $id, string $pid): Response
     {
-        return $this->addPlayerAs($id, $player, 'manager', false);
+        return $this->addPlayerAs($id, $pid, 'manager', false);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/remove-manager/{player}",
+     *     path="/user/group/{id}/remove-manager/{pid}",
      *     operationId="removeManager",
      *     summary="Remove a manager (player) from a group.",
      *     description="Needs role: group-admin",
@@ -441,7 +441,7 @@ class GroupController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -461,9 +461,9 @@ class GroupController
      *     )
      * )
      */
-    public function removeManager(string $id, string $player): Response
+    public function removeManager(string $id, string $pid): Response
     {
-        return $this->removePlayerFrom($id, $player, 'managers', false);
+        return $this->removePlayerFrom($id, $pid, 'managers', false);
     }
 
     /**
@@ -503,7 +503,7 @@ class GroupController
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/remove-applicant/{player}",
+     *     path="/user/group/{id}/remove-applicant/{pid}",
      *     operationId="removeApplicant",
      *     summary="Remove a player's request to join a group.",
      *     description="Needs role: group-manager",
@@ -517,7 +517,7 @@ class GroupController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -537,14 +537,14 @@ class GroupController
      *     )
      * )
      */
-    public function removeApplicant(string $id, string $player): Response
+    public function removeApplicant(string $id, string $pid): Response
     {
-        return $this->removePlayerFrom($id, $player, 'applications', true);
+        return $this->removePlayerFrom($id, $pid, 'applications', true);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/add-member/{player}",
+     *     path="/user/group/{id}/add-member/{pid}",
      *     operationId="addMember",
      *     summary="Adds a player to a group.",
      *     description="Needs role: group-manager",
@@ -558,7 +558,7 @@ class GroupController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -578,14 +578,14 @@ class GroupController
      *     )
      * )
      */
-    public function addMember(string $id, string $player): Response
+    public function addMember(string $id, string $pid): Response
     {
-        return $this->addPlayerAs($id, $player, 'member', true);
+        return $this->addPlayerAs($id, $pid, 'member', true);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/remove-member/{player}",
+     *     path="/user/group/{id}/remove-member/{pid}",
      *     operationId="removeMember",
      *     summary="Remove player from a group.",
      *     description="Needs role: group-manager",
@@ -599,7 +599,7 @@ class GroupController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="player",
+     *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
@@ -619,9 +619,9 @@ class GroupController
      *     )
      * )
      */
-    public function removeMember(string $id, string $player): Response
+    public function removeMember(string $id, string $pid): Response
     {
-        return $this->removePlayerFrom($id, $player, 'members', true);
+        return $this->removePlayerFrom($id, $pid, 'members', true);
     }
 
     /**
@@ -748,7 +748,7 @@ class GroupController
         return $this->res->withStatus(204);
     }
 
-    public function removePlayerFrom(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
+    private function removePlayerFrom(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
     {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->res->withStatus(404);
