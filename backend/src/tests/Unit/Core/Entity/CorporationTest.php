@@ -19,7 +19,8 @@ class CorporationTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([
             'id' => 123,
             'name' => 'test corp',
-            'ticker' => 'ABC'
+            'ticker' => 'ABC',
+            'alliance' => null
         ], json_decode(json_encode($corp), true));
     }
 

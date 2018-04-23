@@ -4,6 +4,7 @@ namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\Corporation;
 
 class CharacterTest extends \PHPUnit\Framework\TestCase
 {
@@ -18,8 +19,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'id' => 123,
             'name' => 'test char',
             'main' => false,
-            'corporation' => null,
-            'alliance' => null
+            'corporation' => null
         ], json_decode(json_encode($char), true));
     }
 
@@ -50,6 +50,14 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $player = new Player();
         $char->setPlayer($player);
         $this->assertSame($player, $char->getPlayer());
+    }
+
+    public function testSetGetCorporation()
+    {
+        $char = new Character();
+        $corp = new Corporation();
+        $char->setCorporation($corp);
+        $this->assertSame($corp, $char->getCorporation());
     }
 
     public function testSetGetCharacterOwnerHash()

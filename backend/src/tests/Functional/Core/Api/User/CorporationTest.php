@@ -84,9 +84,9 @@ class CorporationTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/all');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
-                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1'],
-                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2'],
-                ['id' => 333, 'name' => 'corp 3', 'ticker' => 't3']
+                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null],
+                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null],
+                ['id' => 333, 'name' => 'corp 3', 'ticker' => 't3', 'alliance' => null]
             ],
             $this->parseJsonBody($response)
         );
@@ -216,7 +216,7 @@ class CorporationTest extends WebTestCase
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertSame(
-            ['id' => 456123, 'name' => 'The Corp.', 'ticker' => '-CT-'],
+            ['id' => 456123, 'name' => 'The Corp.', 'ticker' => '-CT-', 'alliance' => null],
             $this->parseJsonBody($response)
         );
 
@@ -252,7 +252,9 @@ class CorporationTest extends WebTestCase
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertSame(
-            ['id' => 456123, 'name' => 'The Corp.', 'ticker' => '-CT-'],
+            ['id' => 456123, 'name' => 'The Corp.', 'ticker' => '-CT-', 'alliance' => [
+                'id' => 123456, 'name' => 'The Alliance.', 'ticker' => '-AT-'
+            ]],
             $this->parseJsonBody($response)
         );
 

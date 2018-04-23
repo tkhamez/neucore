@@ -9,6 +9,8 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\Alliance;
 
 class PlayerTest extends WebTestCase
 {
@@ -186,7 +188,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 13, 'name' => 'Alt', 'main' => true, 'corporation' => null, 'alliance' => null],
+            ['id' => 13, 'name' => 'Alt', 'main' => true, 'corporation' => null],
             $this->parseJsonBody($response)
         );
 
@@ -427,8 +429,12 @@ class PlayerTest extends WebTestCase
             'name' => 'Admin',
             'roles' => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 12, 'name' => 'Admin', 'main' => true, 'corporation' => null, 'alliance' => null],
-                ['id' => 13, 'name' => 'Alt', 'main' => false, 'corporation' => null, 'alliance' => null],
+                ['id' => 12, 'name' => 'Admin', 'main' => true, 'corporation' => [
+                    'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
+                        'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
+                    ]
+                ]],
+                ['id' => 13, 'name' => 'Alt', 'main' => false, 'corporation' => null],
             ],
             'applications' => [],
             'groups' => [],
@@ -459,8 +465,17 @@ class PlayerTest extends WebTestCase
         $this->mid = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
             ->getPlayer()->getId();
 
-        $this->player = $this->h->addCharacterMain('Admin', 12,
-            [Roles::USER, Roles::APP_ADMIN, Roles::USER_ADMIN, Roles::GROUP_ADMIN])->getPlayer();
+        $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
+        $corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
+
+        $char = $this->h->addCharacterMain('Admin', 12,
+            [Roles::USER, Roles::APP_ADMIN, Roles::USER_ADMIN, Roles::GROUP_ADMIN]);
+        $char->setCorporation($corp);
+        $this->player = $char->getPlayer();
+
+        $this->h->getEm()->persist($corp);
+        $this->h->getEm()->persist($alli);
+        $this->h->getEm()->flush();
 
         $this->h->addCharacterToPlayer('Alt', 13, $this->player);
     }

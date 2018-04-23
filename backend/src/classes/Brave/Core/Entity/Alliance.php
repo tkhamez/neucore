@@ -53,14 +53,6 @@ class Alliance implements \JsonSerializable
     private $corporations;
 
     /**
-     *
-     * @OneToMany(targetEntity="Character", mappedBy="alliance")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $characters;
-
-    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -80,7 +72,6 @@ class Alliance implements \JsonSerializable
     public function __construct()
     {
         $this->corporations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->characters = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -190,41 +181,5 @@ class Alliance implements \JsonSerializable
     public function getCorporations()
     {
         return $this->corporations->toArray();
-    }
-
-    /**
-     * Add character.
-     *
-     * @param \Brave\Core\Entity\Character $character
-     *
-     * @return Alliance
-     */
-    public function addCharacter(\Brave\Core\Entity\Character $character)
-    {
-        $this->characters[] = $character;
-
-        return $this;
-    }
-
-    /**
-     * Remove character.
-     *
-     * @param \Brave\Core\Entity\Character $character
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeCharacter(\Brave\Core\Entity\Character $character)
-    {
-        return $this->characters->removeElement($character);
-    }
-
-    /**
-     * Get characters.
-     *
-     * @return Character[]
-     */
-    public function getCharacters()
-    {
-        return $this->characters->toArray();
     }
 }

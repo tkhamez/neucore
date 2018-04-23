@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *
  * @SWG\Definition(
  *     definition="Character",
- *     required={"id", "name", "main", "corporation", "alliance"}
+ *     required={"id", "name", "main", "corporation"}
  * )
  * @Entity(repositoryClass="Brave\Core\Entity\CharacterRepository")
  * @Table(name="characters")
@@ -87,14 +87,6 @@ class Character implements \JsonSerializable
     private $corporation;
 
     /**
-     *
-     * @SWG\Property(ref="#/definitions/Alliance")
-     * @ManyToOne(targetEntity="Alliance", inversedBy="characters")
-     * @var Player
-     */
-    private $alliance;
-
-    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -106,8 +98,7 @@ class Character implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
-            'corporation' => $this->corporation,
-            'alliance' => $this->alliance
+            'corporation' => $this->corporation
         ];
     }
 
@@ -326,29 +317,5 @@ class Character implements \JsonSerializable
     public function getCorporation()
     {
         return $this->corporation;
-    }
-
-    /**
-     * Set alliance.
-     *
-     * @param \Brave\Core\Entity\Alliance|null $alliance
-     *
-     * @return Character
-     */
-    public function setAlliance(\Brave\Core\Entity\Alliance $alliance = null)
-    {
-        $this->alliance = $alliance;
-
-        return $this;
-    }
-
-    /**
-     * Get alliance.
-     *
-     * @return \Brave\Core\Entity\Alliance|null
-     */
-    public function getAlliance()
-    {
-        return $this->alliance;
     }
 }

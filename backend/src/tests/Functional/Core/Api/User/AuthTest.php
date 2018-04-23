@@ -2,16 +2,18 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Corporation;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use Monolog\Logger;
+use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\Functional\WebTestCase;
 
 class AuthTest extends WebTestCase
 {
@@ -266,7 +268,7 @@ class AuthTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 654, 'name' => 'User1', 'main' => true, 'corporation' => null, 'alliance' => null],
+            ['id' => 654, 'name' => 'User1', 'main' => true, 'corporation' => null],
             $this->parseJsonBody($response)
         );
     }
@@ -283,6 +285,12 @@ class AuthTest extends WebTestCase
         $h->emptyDb();
         $groups = $h->addGroups(['group1', 'another-group']);
         $char = $h->addCharacterMain('TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
+        $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
+        $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
+        $char->setCorporation($corp);
+        $h->getEm()->persist($alli);
+        $h->getEm()->persist($corp);
+        $h->getEm()->flush();
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/auth/player');
@@ -293,7 +301,11 @@ class AuthTest extends WebTestCase
             'name' => 'TUser',
             'roles' => [Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'corporation' => null, 'alliance' => null],
+                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'corporation' => [
+                    'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
+                        'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
+                    ]
+                ]],
             ],
             'applications' => [],
             'groups' => [

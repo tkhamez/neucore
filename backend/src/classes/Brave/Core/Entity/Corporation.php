@@ -46,8 +46,9 @@ class Corporation implements \JsonSerializable
 
     /**
      *
+     * @SWG\Property(ref="#/definitions/Alliance")
      * @ManyToOne(targetEntity="Alliance", inversedBy="corporations")
-     * @var Player
+     * @var Alliance
      */
     private $alliance;
 
@@ -82,7 +83,8 @@ class Corporation implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'ticker' => $this->ticker,
-            // groups are not included by default
+            'alliance' => $this->alliance,
+            // API: groups are not included by default
         ];
     }
 

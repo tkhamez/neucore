@@ -43,22 +43,6 @@ class AllianceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('ABC', $alli->getTicker());
     }
 
-    public function testAddGetRemoveCharacter()
-    {
-        $alli = new Alliance();
-        $c1 = new Character();
-        $c2 = new Character();
-
-        $this->assertSame([], $alli->getCharacters());
-
-        $alli->addCharacter($c1);
-        $alli->addCharacter($c2);
-        $this->assertSame([$c1, $c2], $alli->getCharacters());
-
-        $alli->removeCharacter($c2);
-        $this->assertSame([$c1], $alli->getCharacters());
-    }
-
     public function testAddGetRemoveCorporation()
     {
         $alli = new Alliance();

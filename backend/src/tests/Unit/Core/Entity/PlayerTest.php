@@ -31,8 +31,8 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $c2->setMain(false);
         $c1->setName('eve one');
         $c2->setName('eve two');
-        $c1->setCorporation((new Corporation())->setName('corp1')->setTicker('ABC'));
-        $c1->setAlliance((new Alliance())->setName('alli1')->setTicker('DEF'));
+        $c1->setCorporation((new Corporation())->setName('corp1')->setTicker('ABC')
+            ->setAlliance((new Alliance())->setName('alli1')->setTicker('DEF')));
         $play->addCharacter($c1);
         $play->addCharacter($c2);
         $play->addManagerGroup($g1);
@@ -43,10 +43,12 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
             'name' => 'test user',
             'roles' => ['rname', 'role2'],
             'characters' => [
-                ['id' => 123, 'name' => 'eve one', 'main' => true,
-                    'corporation' => ['id' => null, 'name' => 'corp1', 'ticker' => 'ABC'],
-                    'alliance' => ['id' => null, 'name' => 'alli1', 'ticker' => 'DEF']],
-                ['id' => 234, 'name' => 'eve two', 'main' => false, 'corporation' => null, 'alliance' => null],
+                ['id' => 123, 'name' => 'eve one', 'main' => true, 'corporation' => [
+                    'id' => null, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
+                        'id' => null, 'name' => 'alli1', 'ticker' => 'DEF'
+                    ]
+                ]],
+                ['id' => 234, 'name' => 'eve two', 'main' => false, 'corporation' => null],
             ],
             'applications' => [
                 ['id' => null, 'name' => 'gname', 'public' => false]
