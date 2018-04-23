@@ -329,6 +329,17 @@ class Player implements \JsonSerializable
         return $this->groups->toArray();
     }
 
+    public function hasGroup(Group $group): bool
+    {
+        foreach ($this->getGroups() as $g) {
+            // name is unique, id could be null, so this is easier
+            if ($g->getName() === $group->getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Add managerGroup.
      *
@@ -363,6 +374,17 @@ class Player implements \JsonSerializable
     public function getManagerGroups()
     {
         return $this->managerGroups->toArray();
+    }
+
+    public function hasManagerGroup(Group $group): bool
+    {
+        foreach ($this->getManagerGroups() as $mg) {
+            // name is unique, id could be null, so this is easier
+            if ($mg->getName() === $group->getName()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -15,7 +15,6 @@ use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 
 class EsiServiceTest extends \PHPUnit\Framework\TestCase
 {
-
     private $log;
 
     private $alliApi;

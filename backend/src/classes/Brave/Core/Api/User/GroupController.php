@@ -721,23 +721,9 @@ class GroupController
             return $this->res->withStatus(403);
         }
 
-        if ($type === 'manager') {
-            $hasGroups = $this->player->getManagerGroups();
-        } elseif ($type === 'member') {
-            $hasGroups = $this->player->getGroups();
-        }
-
-        $add = true;
-        foreach ($hasGroups as $gp) {
-            if ($gp->getId() === $this->group->getId()) {
-                $add = false;
-                break;
-            }
-        }
-
-        if ($add && $type === 'manager') {
+        if ($type === 'manager' && ! $this->player->hasManagerGroup($this->group)) {
             $this->group->addManager($this->player);
-        } elseif ($add && $type === 'member') {
+        } elseif ($type === 'member' && ! $this->player->hasGroup($this->group)) {
             $this->player->addGroup($this->group);
         }
 

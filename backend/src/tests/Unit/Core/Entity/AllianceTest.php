@@ -3,7 +3,6 @@
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 
 class AllianceTest extends \PHPUnit\Framework\TestCase

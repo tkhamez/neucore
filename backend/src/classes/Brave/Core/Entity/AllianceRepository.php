@@ -29,5 +29,4 @@ class AllianceRepository extends \Doctrine\ORM\EntityRepository
     {
         return parent::find($id, $lockMode, $lockVersion);
     }
-
 }

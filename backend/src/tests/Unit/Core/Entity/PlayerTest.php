@@ -151,6 +151,17 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$g1], $play->getGroups());
     }
 
+    public function testHasGroup()
+    {
+        $player = new Player();
+        $group1 = (new Group())->setName('g1');
+        $group2 = (new Group())->setName('g2');
+        $player->addGroup($group1);
+
+        $this->assertTrue($player->hasGroup($group1));
+        $this->assertFalse($player->hasGroup($group2));
+    }
+
     public function testAddGetRemoveManagerGroups()
     {
         $play = new Player();
@@ -165,6 +176,17 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $play->removeManagerGroup($g2);
         $this->assertSame([$g1], $play->getManagerGroups());
+    }
+
+    public function testHasManagerGroup()
+    {
+        $player = new Player();
+        $group1 = (new Group())->setName('g1');
+        $group2 = (new Group())->setName('g2');
+        $player->addManagerGroup($group1);
+
+        $this->assertTrue($player->hasManagerGroup($group1));
+        $this->assertFalse($player->hasManagerGroup($group2));
     }
 
     public function testAddGetRemoveManagerApps()
