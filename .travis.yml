@@ -42,6 +42,3 @@ after_script:
   - mkdir -p build/logs
   - cp backend/var/logs/clover.xml build/logs/clover.xml
   - if [ $(phpenv version-name) = "7.1" ]; then backend/cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT; fi
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
