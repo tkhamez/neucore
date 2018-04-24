@@ -15,6 +15,7 @@ env:
     - BRAVECORE_EVE_CLIENT_ID=123
     - BRAVECORE_EVE_SECRET_KEY=abc
     - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
+    - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
 
 matrix:
   fast_finish: true
@@ -28,9 +29,19 @@ before_install:
 install:
   - ./install.sh
 
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > backend/cc-test-reporter
+  - chmod +x backend/cc-test-reporter
+  - if [ $(phpenv version-name) = "7.1" ]; then backend/cc-test-reporter before-build; fi
+
 script:
-  - cd backend && ./vendor/bin/phpunit
-  - cd .. && npm --prefix frontend run check
+  - backend/vendor/bin/phpunit -c backend/phpunit.xml
+  - npm --prefix frontend run check
+
+after_script:
+  - mkdir -p build/logs
+  - cp backend/var/logs/clover.xml build/logs/clover.xml
+  - if [ $(phpenv version-name) = "7.1" ]; then backend/cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
