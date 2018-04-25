@@ -4,14 +4,16 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Service\EsiService;
 use Brave\Core\Service\EveTokenService;
+use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
-use Tests\Helper;
-use League\OAuth2\Client\Provider\GenericProvider;
-use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Api\AllianceApi;
+use Swagger\Client\Eve\Api\CharacterApi;
+use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
+use Tests\Helper;
 
 class EsiServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -20,6 +22,8 @@ class EsiServiceTest extends \PHPUnit\Framework\TestCase
     private $alliApi;
 
     private $corpApi;
+
+    private $charApi;
 
     private $esi;
 
@@ -36,7 +40,8 @@ class EsiServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
-        $this->esi = new EsiService($this->log, $ts, $this->alliApi, $this->corpApi);
+        $this->charApi = $this->createMock(CHaracterApi::class);
+        $this->esi = new EsiService($this->log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
     }
 
     public function testGetAllianceException404()
@@ -124,5 +129,46 @@ class EsiServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(GetCorporationsCorporationIdOk::class, $result);
         $this->assertSame('The Corp.', $result->getName());
         $this->assertSame('-HAT-', $result->getTicker());
+    }
+
+    public function testGetCharacter404()
+    {
+        $this->charApi->method('getCharactersCharacterId')->will(
+            $this->throwException(new \Exception('Not Found.', 404))
+        );
+
+        $result = $this->esi->getCharacter(123);
+
+        $this->assertNull($result);
+        $this->assertSame(404, $this->esi->getLastErrorCode());
+        $this->assertSame('Not Found.', $this->esi->getLastErrorMessage());
+        $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));
+    }
+
+    public function testGetCharacter500()
+    {
+        $this->charApi->method('getCharactersCharacterId')->will(
+            $this->throwException(new \Exception('Oops.', 500))
+        );
+
+        $result = $this->esi->getCharacter(123);
+
+        $this->assertNull($result);
+        $this->assertSame(500, $this->esi->getLastErrorCode());
+        $this->assertSame('Oops.', $this->esi->getLastErrorMessage());
+        $this->assertSame('Oops.', $this->log->getHandlers()[0]->getRecords()[0]['message']);
+    }
+
+    public function testGetCharacter()
+    {
+        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
+            'name' => 'The Char.',
+        ]));
+
+        $result = $this->esi->getCharacter(123);
+        $this->assertNull($this->esi->getLastErrorCode());
+        $this->assertNull($this->esi->getLastErrorMessage());
+        $this->assertInstanceOf(GetCharactersCharacterIdOk::class, $result);
+        $this->assertSame('The Char.', $result->getName());
     }
 }

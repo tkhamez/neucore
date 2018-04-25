@@ -8,20 +8,20 @@ use Brave\Core\Roles;
 
 class ApplicationTest extends WebTestCase
 {
-    public function testInfoV1403()
+    public function testShowV1403()
     {
-        $response = $this->runApp('GET', '/api/app/v1/info');
+        $response = $this->runApp('GET', '/api/app/v1/show');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testInfoV1200()
+    public function testShowV1200()
     {
         $h = new Helper();
         $h->emptyDb();
         $aid = $h->addApp('Test App', 'boring-test-secret', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':boring-test-secret')];
-        $response = $this->runApp('GET', '/api/app/v1/info', null, $headers);
+        $response = $this->runApp('GET', '/api/app/v1/show', null, $headers);
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([

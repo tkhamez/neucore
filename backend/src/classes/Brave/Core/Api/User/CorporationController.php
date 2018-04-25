@@ -2,11 +2,10 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -46,11 +45,6 @@ class CorporationController
     private $groupRepo;
 
     /**
-     * @var AllianceRepository
-     */
-    private $alliRepo;
-
-    /**
      * @var Corporation
      */
     private $corp;
@@ -61,13 +55,12 @@ class CorporationController
     private $group;
 
     public function __construct(Response $response, LoggerInterface $log, EntityManagerInterface $em,
-        CorporationRepository $corpRepo, AllianceRepository $alliRepo, GroupRepository $groupRepo)
+        CorporationRepository $corpRepo, GroupRepository $groupRepo)
     {
         $this->res = $response;
         $this->log = $log;
         $this->em = $em;
         $this->corpRepo = $corpRepo;
-        $this->alliRepo = $alliRepo;
         $this->groupRepo = $groupRepo;
     }
 
@@ -174,7 +167,7 @@ class CorporationController
      *     )
      * )
      */
-    public function add(string $id, EsiService $es): Response
+    public function add(string $id, EsiService $es, CharacterService $cs): Response
     {
         $corpId = (int) $id;
 
@@ -182,47 +175,16 @@ class CorporationController
             return $this->res->withStatus(409);
         }
 
-        // get corporation from ESI
-        $eveCorp = $es->getCorporation($corpId);
-        if ($eveCorp === null) {
-            $code = $es->getLastErrorCode();
-            #var_Dump($es->getLastErrorMessage());
+        // get corporation (also fetches alliance)
+        $corporation = $cs->fetchCorporation($corpId);
+        if ($corporation === null) {
+            $code = $cs->getEsiService()->getLastErrorCode();
             if ($code === 404 || $code === 400) {
                 return $this->res->withStatus($code);
             } else {
                 return $this->res->withStatus(503);
             }
         }
-
-        // find/create alliance
-        $alliId = (int) $eveCorp->getAllianceId();
-        $alliance = null;
-        if ($alliId > 0) {
-            $alliance = $this->alliRepo->find($alliId);
-            if ($alliance === null) {
-                $eveAlli = $es->getAlliance($alliId);
-                if ($eveAlli === null) {
-                    return $this->res->withStatus(503);
-                }
-
-                $alliance = new Alliance();
-                $alliance->setId($alliId);
-                $alliance->setName($eveAlli->getName());
-                $alliance->setTicker($eveAlli->getTicker());
-                $this->em->persist($alliance);
-            }
-        }
-
-        // create corp
-        $corporation = new Corporation();
-        $corporation->setId($corpId);
-        $corporation->setName($eveCorp->getName());
-        $corporation->setTicker($eveCorp->getTicker());
-        if ($alliance !== null) {
-            $corporation->setAlliance($alliance);
-            $alliance->addCorporation($corporation);
-        }
-        $this->em->persist($corporation);
 
         if (! $this->flush()) {
             return $this->res->withStatus(500);

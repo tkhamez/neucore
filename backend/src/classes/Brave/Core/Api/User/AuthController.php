@@ -251,54 +251,6 @@ class AuthController
     }
 
     /**
-     * @SWG\Get(
-     *     path="/user/auth/character",
-     *     operationId="character",
-     *     summary="Returns the logged in EVE character.",
-     *     description="Needs role: user",
-     *     tags={"Auth"},
-     *     security={{"Session"={}}},
-     *     @SWG\Response(
-     *         response="200",
-     *         description="The logged in EVE character.",
-     *         @SWG\Schema(ref="#/definitions/Character")
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized"
-     *     )
-     * )
-     */
-    public function character(): Response
-    {
-        return $this->res->withJson($this->auth->getUser());
-    }
-
-    /**
-     * @SWG\Get(
-     *     path="/user/auth/player",
-     *     operationId="player",
-     *     summary="Returns the logged in player with all properties.",
-     *     description="Needs role: user",
-     *     tags={"Auth"},
-     *     security={{"Session"={}}},
-     *     @SWG\Response(
-     *         response="200",
-     *         description="The player information.",
-     *         @SWG\Schema(ref="#/definitions/Player")
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function player(): Response
-    {
-        return $this->res->withJson($this->auth->getUser()->getPlayer());
-    }
-
-    /**
      * @SWG\Post(
      *     path="/user/auth/logout",
      *     operationId="logout",

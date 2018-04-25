@@ -41,8 +41,8 @@ class ApplicationController
 
     /**
      * @SWG\Get(
-     *     path="/app/v1/info",
-     *     operationId="infoV1",
+     *     path="/app/v1/show",
+     *     operationId="showV1",
      *     summary="Show app information.",
      *     description="Needs role: app",
      *     tags={"Application"},
@@ -58,7 +58,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function infoV1(ServerRequestInterface $request): Response
+    public function showV1(ServerRequestInterface $request): Response
     {
         return $this->response->withJson($this->appService->getApp($request));
     }

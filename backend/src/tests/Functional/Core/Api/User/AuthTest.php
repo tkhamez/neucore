@@ -2,8 +2,6 @@
 
 namespace Tests\Functional\Core\Api\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Corporation;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -249,72 +247,6 @@ class AuthTest extends WebTestCase
             ['success' => false, 'message' => 'No login attempt recorded.'],
             $this->parseJsonBody($response)
         );
-    }
-
-    public function testCharacter403()
-    {
-        $response = $this->runApp('GET', '/api/user/auth/character');
-        $this->assertSame(403, $response->getStatusCode());
-    }
-
-    public function testCharacter200()
-    {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('User1', 654, [Roles::USER], ['group1']);
-        $this->loginUser(654);
-
-        $response = $this->runApp('GET', '/api/user/auth/character');
-        $this->assertSame(200, $response->getStatusCode());
-
-        $this->assertSame(
-            ['id' => 654, 'name' => 'User1', 'main' => true, 'corporation' => null],
-            $this->parseJsonBody($response)
-        );
-    }
-
-    public function testPlayer403()
-    {
-        $response = $this->runApp('GET', '/api/user/auth/player');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testPlayer200()
-    {
-        $h = new Helper();
-        $h->emptyDb();
-        $groups = $h->addGroups(['group1', 'another-group']);
-        $char = $h->addCharacterMain('TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
-        $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
-        $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
-        $char->setCorporation($corp);
-        $h->getEm()->persist($alli);
-        $h->getEm()->persist($corp);
-        $h->getEm()->flush();
-        $this->loginUser(123456);
-
-        $response = $this->runApp('GET', '/api/user/auth/player');
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertSame([
-            'id' => $char->getPlayer()->getId(),
-            'name' => 'TUser',
-            'roles' => [Roles::USER, Roles::USER_ADMIN],
-            'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'corporation' => [
-                    'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
-                        'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
-                    ]
-                ]],
-            ],
-            'applications' => [],
-            'groups' => [
-                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'public' => false],
-                ['id' => $groups[0]->getId(), 'name' => 'group1', 'public' => false]
-            ],
-            'managerGroups' => [],
-            'managerApps' => [],
-        ], $this->parseJsonBody($response));
     }
 
     public function testLogout403()

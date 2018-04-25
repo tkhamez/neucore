@@ -13,6 +13,7 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Swagger\Client\Eve\Api\AllianceApi;
+use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
@@ -60,7 +61,8 @@ class CorporationTest extends WebTestCase
         $ts = new EveTokenService($oauth, $this->em, $log);
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
-        $this->esi = new EsiService($log, $ts, $this->alliApi, $this->corpApi);
+        $charApi = $this->createMock(CharacterApi::class);
+        $this->esi = new EsiService($log, $ts, $this->alliApi, $this->corpApi, $charApi);
     }
 
     public function testAll403()

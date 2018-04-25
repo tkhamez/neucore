@@ -3,6 +3,7 @@
 use Brave\Core\Api\ApplicationController;
 use Brave\Core\Api\User\AppController;
 use Brave\Core\Api\User\AuthController;
+use Brave\Core\Api\User\CharacterController;
 use Brave\Core\Api\User\CorporationController;
 use Brave\Core\Api\User\GroupController;
 use Brave\Core\Api\User\PlayerController;
@@ -25,9 +26,11 @@ return [
     '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
     '/api/user/auth/callback'      => ['GET',  AuthController::class.'::callback'],
     '/api/user/auth/result'        => ['GET',  AuthController::class.'::result'],
-    '/api/user/auth/character'     => ['GET',  AuthController::class.'::character'],
-    '/api/user/auth/player'        => ['GET',  AuthController::class.'::player'],
     '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],
+
+    '/api/user/character/show'        => ['GET',  CharacterController::class.'::show'],
+    '/api/user/character/player'      => ['GET',  CharacterController::class.'::player'],
+    '/api/user/character/update/{id}' => ['PUT',  CharacterController::class.'::update'],
 
     '/api/user/corporation/all'                     => ['GET',  CorporationController::class.'::all'],
     '/api/user/corporation/with-groups'             => ['GET',  CorporationController::class.'::withGroups'],
@@ -61,7 +64,7 @@ return [
     '/api/user/player/{id}/remove-role/{name}'  => ['PUT', PlayerController::class.'::removeRole'],
     '/api/user/player/{id}/show'                => ['GET', PlayerController::class.'::show'],
 
-    '/api/app/v1/info'         => ['GET', ApplicationController::class.'::infoV1'],
+    '/api/app/v1/show'         => ['GET', ApplicationController::class.'::showV1'],
     '/api/app/v1/groups/{cid}' => ['GET', ApplicationController::class.'::groupsV1'],
     '/api/app/v1/main/{cid}'   => ['GET', ApplicationController::class.'::mainV1'],
 ];

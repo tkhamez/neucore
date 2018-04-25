@@ -3,8 +3,9 @@
 namespace Brave\Core\Service;
 
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Api\AllianceApi;
+use Swagger\Client\Eve\Api\CharacterApi;
+use Swagger\Client\Eve\Api\CorporationApi;
 
 class EsiService
 {
@@ -20,14 +21,19 @@ class EsiService
     private $tokenService;
 
     /**
+     * @var AllianceApi
+     */
+    private $alliApi;
+
+    /**
      * @var CorporationApi
      */
     private $corpApi;
 
     /**
-     * @var AllianceApi
+     * @var CharacterApi
      */
-    private $alliApi;
+    private $charApi;
 
     /**
      * @var int
@@ -40,12 +46,13 @@ class EsiService
     private $lastErrorMessage;
 
     public function __construct(LoggerInterface $log, EveTokenService $ts,
-        AllianceApi $alliApi, CorporationApi $corpApi)
+        AllianceApi $alliApi, CorporationApi $corpApi, CharacterApi $charApi)
     {
         $this->log = $log;
         $this->tokenService = $ts; // not yet used (only needed for protected endpoints)
         $this->alliApi = $alliApi;
         $this->corpApi = $corpApi;
+        $this->charApi = $charApi;
     }
 
     public function getLastErrorCode()
@@ -106,5 +113,29 @@ class EsiService
         }
 
         return $corp;
+    }
+
+    /**
+     *
+     * @param int $id
+     * @return \Swagger\Client\Eve\Model\GetCharactersCharacterIdOk|null
+     */
+    public function getCharacter(int $id)
+    {
+        $this->lastErrorCode = null;
+        $this->lastErrorMessage = null;
+
+        $char = null;
+        try {
+            $char = $this->charApi->getCharactersCharacterId($id);
+        } catch (\Exception $e) {
+            $this->lastErrorCode = $e->getCode();
+            $this->lastErrorMessage = $e->getMessage();
+            if ($e->getCode() !== 404) {
+                $this->log->error($e->getMessage());
+            }
+        }
+
+        return $char;
     }
 }
