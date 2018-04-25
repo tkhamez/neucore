@@ -111,7 +111,7 @@ class PlayerController
     /**
      * @SWG\Put(
      *     path="/user/player/add-application/{gid}",
-     *     operationId="applyGroup",
+     *     operationId="addApplication",
      *     summary="Submit a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
@@ -145,7 +145,7 @@ class PlayerController
     /**
      * @SWG\Put(
      *     path="/user/player/remove-application/{gid}",
-     *     operationId="cancelApplication",
+     *     operationId="removeApplication",
      *     summary="Cancel a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},

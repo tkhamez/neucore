@@ -100,7 +100,7 @@ class CharacterController
     /**
      * @SWG\Put(
      *     path="/user/character/update/{id}",
-     *     operationId="setMain",
+     *     operationId="update",
      *     summary="Updates a character of the logged in player account with data from ESI.",
      *     description="Needs role: user",
      *     tags={"Character"},
