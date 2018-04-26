@@ -132,7 +132,7 @@ class ApplicationTest extends WebTestCase
 
         $this->assertSame($body1, $body2);
         $this->assertSame(
-            ['id' => 123, 'name' => 'C1', 'main' => true, 'corporation' => null],
+            ['id' => 123, 'name' => 'C1', 'main' => true, 'lastUpdate' => null, 'corporation' => null],
             $body1
         );
     }

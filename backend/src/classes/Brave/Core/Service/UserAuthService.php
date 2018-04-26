@@ -128,6 +128,7 @@ class UserAuthService implements RoleProviderInterface
         $char->setAccessToken($accessToken);
         $char->setExpires($expires);
         $char->setRefreshToken($refreshToken);
+        $char->setLastLogin(new \DateTime());
 
         try {
             $this->em->persist($player); // necessary for new player

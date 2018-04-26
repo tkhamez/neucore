@@ -19,6 +19,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'id' => 123,
             'name' => 'test char',
             'main' => false,
+            'lastUpdate' => null,
             'corporation' => null
         ], json_decode(json_encode($char), true));
     }
@@ -86,5 +87,29 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $char = new Character();
         $char->setRefreshToken('dfg');
         $this->assertSame('dfg', $char->getRefreshToken());
+    }
+
+    public function testSetGetLastLogin()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:35');
+
+        $char = new Character();
+        $char->setLastLogin($dt1);
+        $dt2 = $char->getLastLogin();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26 18:59:35', $dt2->format('Y-m-d H:i:s'));
+    }
+
+    public function testSetGetLastUpdate()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:36');
+
+        $char = new Character();
+        $char->setLastUpdate($dt1);
+        $dt2 = $char->getLastUpdate();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26 18:59:36', $dt2->format('Y-m-d H:i:s'));
     }
 }

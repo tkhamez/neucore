@@ -83,6 +83,7 @@ class CharacterService
             return null;
         }
         $char->setName($eveChar->getName());
+        $char->setLastUpdate(new \DateTime());
 
         // fetch corp (with alliance)
         $corpId = (int) $eveChar->getCorporationId();

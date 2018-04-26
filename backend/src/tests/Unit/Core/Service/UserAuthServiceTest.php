@@ -112,6 +112,8 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Roles::USER], $this->service->getRoles());
+        $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
+        $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
     }
 
     public function testAuthenticateExistingUser()
@@ -137,6 +139,8 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame(456, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
+        $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
+        $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
     }
 
     public function testAddAlt()

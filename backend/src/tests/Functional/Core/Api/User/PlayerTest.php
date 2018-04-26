@@ -188,7 +188,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 13, 'name' => 'Alt', 'main' => true, 'corporation' => null],
+            ['id' => 13, 'name' => 'Alt', 'main' => true, 'lastUpdate' => null, 'corporation' => null],
             $this->parseJsonBody($response)
         );
 
@@ -429,12 +429,12 @@ class PlayerTest extends WebTestCase
             'name' => 'Admin',
             'roles' => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 12, 'name' => 'Admin', 'main' => true, 'corporation' => [
+                ['id' => 12, 'name' => 'Admin', 'main' => true, 'lastUpdate' => null, 'corporation' => [
                     'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                         'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
                     ]
                 ]],
-                ['id' => 13, 'name' => 'Alt', 'main' => false, 'corporation' => null],
+                ['id' => 13, 'name' => 'Alt', 'main' => false, 'lastUpdate' => null, 'corporation' => null],
             ],
             'applications' => [],
             'groups' => [],

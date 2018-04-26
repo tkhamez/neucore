@@ -138,7 +138,9 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacterFlush()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 123, []);
+        $char = $this->testHelper->addCharacterMain('newc', 123, []);
+        $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
+        $this->em->flush();
 
         $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
             'name' => 'newc', 'corporation_id' => 234
@@ -156,6 +158,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->em->clear();
         $cDb = $this->charR->find(123);
         $this->assertSame(234, $cDb->getCorporation()->getId());
+        $this->assertSame('UTC', $cDb->getLastUpdate()->getTimezone()->getName());
+        $this->assertGreaterThan('2018-03-26 17:24:30', $cDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }
 
     public function testFetchCorporationInvalidId()

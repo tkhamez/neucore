@@ -37,7 +37,7 @@ class CharacterTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 96061222, 'name' => 'User', 'main' => true, 'corporation' => null],
+            ['id' => 96061222, 'name' => 'User', 'main' => true, 'lastUpdate' => null, 'corporation' => null],
             $this->parseJsonBody($response)
         );
     }
@@ -70,7 +70,7 @@ class CharacterTest extends WebTestCase
             'name' => 'TUser',
             'roles' => [Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'corporation' => [
+                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'lastUpdate' => null, 'corporation' => [
                     'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
                         'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
                     ]
@@ -134,12 +134,16 @@ class CharacterTest extends WebTestCase
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(
-            ['id' => 96061222, 'name' => 'Char 96061222', 'main' => true, 'corporation' => [
-                'id' => 234, 'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance' => null
-            ]],
-            $this->parseJsonBody($response)
-        );
+
+        $expected = ['id' => 96061222, 'name' => 'Char 96061222', 'main' => true, 'corporation' => [
+            'id' => 234, 'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance' => null
+        ]];
+        $actual = $this->parseJsonBody($response);
+
+        $this->assertRegExp('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/', $actual['lastUpdate']);
+        unset($actual['lastUpdate']);
+
+        $this->assertSame($expected, $actual);
     }
 
     private function setupDb()

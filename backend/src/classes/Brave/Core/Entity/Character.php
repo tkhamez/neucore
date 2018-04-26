@@ -29,13 +29,6 @@ class Character implements \JsonSerializable
     private $id;
 
     /**
-     *
-     * @Column(type="text", length=65535, name="character_owner_hash")
-     * @var string
-     */
-    private $characterOwnerHash;
-
-    /**
      * EVE character name.
      *
      * @SWG\Property()
@@ -51,6 +44,13 @@ class Character implements \JsonSerializable
      * @var bool
      */
     private $main;
+
+    /**
+     *
+     * @Column(type="text", length=65535, name="character_owner_hash")
+     * @var string
+     */
+    private $characterOwnerHash;
 
     /**
      * @Column(type="text", length=65535, name="access_token")
@@ -71,6 +71,21 @@ class Character implements \JsonSerializable
      * @var string
      */
     private $refreshToken;
+
+    /**
+     * @Column(type="datetime", name="last_login", nullable=true)
+     * @var \DateTime
+     */
+    private $lastLogin;
+
+    /**
+     * Last ESI update.
+     *
+     * @SWG\Property()
+     * @Column(type="datetime", name="last_update", nullable=true)
+     * @var \DateTime
+     */
+    private $lastUpdate;
 
     /**
      * @ManyToOne(targetEntity="Player", inversedBy="characters")
@@ -98,6 +113,7 @@ class Character implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
+            'lastUpdate' => $this->lastUpdate ? $this->lastUpdate->format('Y-m-d\TH:i:s\Z') : null,
             'corporation' => $this->corporation
         ];
     }
@@ -269,6 +285,55 @@ class Character implements \JsonSerializable
     public function getRefreshToken()
     {
         return $this->refreshToken;
+    }
+
+    /**
+     * Set lastLogin.
+     *
+     * @param \DateTime $lastLogin
+     *
+     * @return Character
+     */
+    public function setLastLogin($lastLogin)
+    {
+        $this->lastLogin = clone $lastLogin;
+
+        return $this;
+    }
+
+    /**
+     * Get lastLogin.
+     *
+     * @return \DateTime
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * Set lastUpdate.
+     *
+     * @param \DateTime $update
+     *
+     * @return Character
+     */
+    public function setLastUpdate($lastUpdate)
+    {
+
+        $this->lastUpdate = clone $lastUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdate.
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdate()
+    {
+        return $this->lastUpdate;
     }
 
     /**
