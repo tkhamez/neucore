@@ -320,7 +320,6 @@ class Character implements \JsonSerializable
      */
     public function setLastUpdate($lastUpdate)
     {
-
         $this->lastUpdate = clone $lastUpdate;
 
         return $this;

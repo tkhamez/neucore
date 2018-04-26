@@ -51,7 +51,8 @@ use Whoops\Handler\PlainTextHandler;
  *     basePath="/api",
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
- *       version="0.1"
+ *       description="Client library of Brave Collective Core Services API",
+ *       version="0.1.0"
  *     ),
  *     @SWG\SecurityScheme(
  *         securityDefinition="Bearer",
