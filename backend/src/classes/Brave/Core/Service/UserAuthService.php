@@ -84,17 +84,12 @@ class UserAuthService implements RoleProviderInterface
     }
 
     /**
+     * User login.
      *
-     * @param int $characterId
-     * @param string $characterName
-     * @param string $characterOwnerHash
-     * @param string $accessToken
-     * @param int $expires
-     * @param string $refreshToken
-     * @return boolean
+     * Creates character with player account if it is missing.
      */
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
-        string $accessToken, int $expires = null, string $refreshToken = null): bool
+        string $accessToken, string $scopes = null, int $expires = null, string $refreshToken = null): bool
     {
         $char = $this->characterRepository->find($characterId);
         if ($char === null) {
@@ -129,6 +124,7 @@ class UserAuthService implements RoleProviderInterface
         $char->setExpires($expires);
         $char->setRefreshToken($refreshToken);
         $char->setLastLogin(new \DateTime());
+        $char->setScopes($scopes);
 
         try {
             $this->em->persist($player); // necessary for new player
@@ -146,7 +142,7 @@ class UserAuthService implements RoleProviderInterface
     }
 
     public function addAlt(int $characterId, string $characterName, string $characterOwnerHash,
-        string $accessToken, int $expires = null, string $refreshToken = null): bool
+        string $accessToken, string $scopes = null, int $expires = null, string $refreshToken = null): bool
     {
         $this->getUser();
 
@@ -187,6 +183,7 @@ class UserAuthService implements RoleProviderInterface
         $alt->setAccessToken($accessToken);
         $alt->setExpires($expires);
         $alt->setRefreshToken($refreshToken);
+        $alt->setScopes($scopes);
 
         try {
             $this->em->persist($alt); // necessary for new character

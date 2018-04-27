@@ -195,6 +195,7 @@ class AuthController
                 $verify['CharacterName'],
                 $verify['CharacterOwnerHash'],
                 $token->getToken(),
+                isset($verify['Scopes']) ? $verify['Scopes'] : null,
                 $token->getExpires(),
                 $token->getRefreshToken()
             );
@@ -204,6 +205,7 @@ class AuthController
                 $verify['CharacterName'],
                 $verify['CharacterOwnerHash'],
                 $token->getToken(),
+                isset($verify['Scopes']) ? $verify['Scopes'] : null,
                 $token->getExpires(),
                 $token->getRefreshToken()
             );

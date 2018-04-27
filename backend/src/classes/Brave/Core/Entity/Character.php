@@ -73,6 +73,14 @@ class Character implements \JsonSerializable
     private $refreshToken;
 
     /**
+     * OAuth scopes.
+     *
+     * @Column(type="text", length=65535, nullable=true)
+     * @var string
+     */
+    private $scopes;
+
+    /**
      * @Column(type="datetime", name="last_login", nullable=true)
      * @var \DateTime
      */
@@ -285,6 +293,30 @@ class Character implements \JsonSerializable
     public function getRefreshToken()
     {
         return $this->refreshToken;
+    }
+
+    /**
+     * Set scopes.
+     *
+     * @param string|null $scopes
+     *
+     * @return Character
+     */
+    public function setScopes($scopes = null)
+    {
+        $this->scopes = $scopes;
+
+        return $this;
+    }
+
+    /**
+     * Get scopes.
+     *
+     * @return string|null
+     */
+    public function getScopes()
+    {
+        return $this->scopes;
     }
 
     /**

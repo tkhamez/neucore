@@ -89,6 +89,13 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('dfg', $char->getRefreshToken());
     }
 
+    public function testSetGetScopes()
+    {
+        $char = new Character();
+        $char->setScopes('esi.one esi.two');
+        $this->assertSame('esi.one esi.two', $char->getScopes());
+    }
+
     public function testSetGetLastLogin()
     {
         $dt1 = new \DateTime('2018-04-26 18:59:35');

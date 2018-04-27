@@ -99,7 +99,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse(isset($_SESSION['character_id']));
 
-        $result = $this->service->authenticate(888, 'New User', 'coh', 'token', 123456, 'refresh');
+        $result = $this->service->authenticate(888, 'New User', 'coh', 'token', 'scope1 s2', 123456, 'refresh');
         $user = $this->service->getUser();
 
         $this->assertTrue($result);
@@ -109,7 +109,8 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('coh', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame(123456, $user->getExpires());
-        $this->assertSame('refresh', $user->getRefreshToken());
+        $this->assertSame('token', $user->getAccessToken());
+        $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Roles::USER], $this->service->getRoles());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
@@ -128,7 +129,8 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(123456, $char->getExpires());
         $this->assertSame('def', $char->getRefreshToken());
 
-        $result = $this->service->authenticate(9013, 'Test User Changed Name', 'coh', 'token', 456, 'refresh');
+        $result = $this->service->authenticate(
+            9013, 'Test User Changed Name', 'coh', 'token', 'scope1 s2', 456, 'refresh');
         $user = $this->service->getUser();
 
         $this->assertTrue($result);
@@ -137,6 +139,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Test User Changed Name', $user->getName());
         $this->assertSame('coh', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
+        $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame(456, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
@@ -153,7 +156,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(1, count($player->getCharacters()));
 
-        $result = $this->service->addAlt(101, 'Alt 1', 'hash', 'tk', 123456789, 'rf');
+        $result = $this->service->addAlt(101, 'Alt 1', 'hash', 'tk', 'scope1 s2', 123456789, 'rf');
         $this->assertTrue($result);
 
         $chars = $player->getCharacters();
@@ -163,6 +166,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Alt 1', $chars[1]->getName());
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame('tk', $chars[1]->getAccessToken());
+        $this->assertSame('scope1 s2', $chars[1]->getScopes());
         $this->assertSame(123456789, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
         $this->assertFalse($chars[1]->getMain());
@@ -176,7 +180,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $main1 = $h->addCharacterMain('Main1', 100, [Roles::USER]);
         $main2 = $h->addCharacterMain('Main2', 200, [Roles::USER]);
 
-        $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'tk', 123456789, 'rf');
+        $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'tk', 'scope1 s2', 123456789, 'rf');
         $this->assertTrue($result);
 
         $chars = $main1->getPlayer()->getCharacters();
@@ -186,6 +190,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Main2 renamed', $chars[1]->getName());
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame('tk', $chars[1]->getAccessToken());
+        $this->assertSame('scope1 s2', $chars[1]->getScopes());
         $this->assertSame(123456789, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
     }
