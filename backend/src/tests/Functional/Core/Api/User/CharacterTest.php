@@ -2,8 +2,6 @@
 
 namespace Tests\Functional\Core\Api\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Corporation;
 use Brave\Core\Roles;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
@@ -40,50 +38,6 @@ class CharacterTest extends WebTestCase
             ['id' => 96061222, 'name' => 'User', 'main' => true, 'lastUpdate' => null, 'corporation' => null],
             $this->parseJsonBody($response)
         );
-    }
-
-    public function testPlayer403()
-    {
-        $response = $this->runApp('GET', '/api/user/character/player');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testPlayer200()
-    {
-        $this->helper->emptyDb();
-        $groups = $this->helper->addGroups(['group1', 'another-group']);
-        $char = $this->helper->addCharacterMain(
-            'TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
-        $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
-        $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
-        $char->setCorporation($corp);
-        $this->helper->getEm()->persist($alli);
-        $this->helper->getEm()->persist($corp);
-        $this->helper->getEm()->flush();
-        $this->loginUser(123456);
-
-        $response = $this->runApp('GET', '/api/user/character/player');
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertSame([
-            'id' => $char->getPlayer()->getId(),
-            'name' => 'TUser',
-            'roles' => [Roles::USER, Roles::USER_ADMIN],
-            'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'lastUpdate' => null, 'corporation' => [
-                    'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
-                        'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
-                    ]
-                ]],
-            ],
-            'applications' => [],
-            'groups' => [
-                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'public' => false],
-                ['id' => $groups[0]->getId(), 'name' => 'group1', 'public' => false]
-            ],
-            'managerGroups' => [],
-            'managerApps' => [],
-        ], $this->parseJsonBody($response));
     }
 
     public function testUpdate403()

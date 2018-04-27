@@ -29,6 +29,7 @@ return [
     '/api/user/group/{id}/members'          => [Roles::GROUP_MANAGER],
     '/api/user/group'                       => [Roles::GROUP_ADMIN],
 
+    '/api/user/player/show'               => [Roles::USER],
     '/api/user/player/add-application'    => [Roles::USER],
     '/api/user/player/remove-application' => [Roles::USER],
     '/api/user/player/leave-group'        => [Roles::USER],

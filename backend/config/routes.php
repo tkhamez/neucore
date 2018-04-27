@@ -29,7 +29,6 @@ return [
     '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],
 
     '/api/user/character/show'        => ['GET',  CharacterController::class.'::show'],
-    '/api/user/character/player'      => ['GET',  CharacterController::class.'::player'],
     '/api/user/character/update/{id}' => ['PUT',  CharacterController::class.'::update'],
 
     '/api/user/corporation/all'                     => ['GET',  CorporationController::class.'::all'],
@@ -54,6 +53,7 @@ return [
     '/api/user/group/{id}/members'                => ['GET',    GroupController::class.'::members'],
 
     '/api/user/player/all'                      => ['GET', PlayerController::class.'::all'],
+    '/api/user/player/show'                     => ['GET', PlayerController::class.'::show'],
     '/api/user/player/add-application/{gid}'    => ['PUT', PlayerController::class.'::addApplication'],
     '/api/user/player/remove-application/{gid}' => ['PUT', PlayerController::class.'::removeApplication'],
     '/api/user/player/leave-group/{gid}'        => ['PUT', PlayerController::class.'::leaveGroup'],
@@ -62,7 +62,7 @@ return [
     '/api/user/player/group-managers'           => ['GET', PlayerController::class.'::groupManagers'],
     '/api/user/player/{id}/add-role/{name}'     => ['PUT', PlayerController::class.'::addRole'],
     '/api/user/player/{id}/remove-role/{name}'  => ['PUT', PlayerController::class.'::removeRole'],
-    '/api/user/player/{id}/show'                => ['GET', PlayerController::class.'::show'],
+    '/api/user/player/{id}/show'                => ['GET', PlayerController::class.'::showById'],
 
     '/api/app/v1/show'         => ['GET', ApplicationController::class.'::showV1'],
     '/api/app/v1/groups/{cid}' => ['GET', ApplicationController::class.'::groupsV1'],

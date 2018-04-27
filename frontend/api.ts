@@ -10,7 +10,7 @@ export async function userAuthLoginGet(params?: AuthLoginOpts): Promise<string> 
 }
 
 export async function userInfoGet(): Promise<User> {
-	const resp = await axios.get<User>('/api/user/character/player');
+	const resp = await axios.get<User>('/api/user/player/show');
 	return resp.data;
 }
 

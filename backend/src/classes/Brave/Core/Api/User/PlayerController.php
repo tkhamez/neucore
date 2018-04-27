@@ -77,16 +77,16 @@ class PlayerController
 
     /**
      * @SWG\Get(
-     *     path="/user/player/all",
-     *     operationId="all",
-     *     summary="List all players.",
-     *     description="Needs role: user-admin or group-admin",
+     *     path="/user/player/show",
+     *     operationId="show",
+     *     summary="Returns the logged in player with all properties.",
+     *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         description="The player information.",
+     *         @SWG\Schema(ref="#/definitions/Player")
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -94,18 +94,9 @@ class PlayerController
      *     )
      * )
      */
-    public function all(): Response
+    public function show(): Response
     {
-        $ret = [];
-
-        foreach ($this->pr->findBy([], ['name' => 'ASC']) as $player) {
-            $ret[] = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
-        }
-
-        return $this->res->withJson($ret);
+        return $this->res->withJson($this->uas->getUser()->getPlayer());
     }
 
     /**
@@ -262,6 +253,39 @@ class PlayerController
         }
 
         return $this->res->withJson($main);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/all",
+     *     operationId="all",
+     *     summary="List all players.",
+     *     description="Needs role: user-admin or group-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function all(): Response
+    {
+        $ret = [];
+
+        foreach ($this->pr->findBy([], ['name' => 'ASC']) as $player) {
+            $ret[] = [
+                'id' => $player->getId(),
+                'name' => $player->getName()
+            ];
+        }
+
+        return $this->res->withJson($ret);
     }
 
     /**
@@ -431,7 +455,7 @@ class PlayerController
     /**
      * @SWG\Get(
      *     path="/user/player/{id}/show",
-     *     operationId="show",
+     *     operationId="showById",
      *     summary="Show all data from a player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
@@ -458,7 +482,7 @@ class PlayerController
      *     )
      * )
      */
-    public function show(string $id): Response
+    public function showById(string $id): Response
     {
         $player = $this->pr->find((int) $id);
 

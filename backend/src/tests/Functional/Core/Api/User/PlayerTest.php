@@ -37,29 +37,47 @@ class PlayerTest extends WebTestCase
         $this->pr = new PlayerRepository($this->em);
     }
 
-    public function testAll403()
+    public function testPlayer403()
     {
-        $response = $this->runApp('GET', '/api/user/player/all');
-        $this->assertEquals(403, $response->getStatusCode());
-
-        $this->setupDb();
-        $this->loginUser(11); // not user-admin or group-admin
-
-        $response = $this->runApp('GET', '/api/user/player/all');
+        $response = $this->runApp('GET', '/api/user/player/show');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testAll200()
+    public function testPlayer200()
     {
-        $this->setupDb();
-        $this->loginUser(12);
+        $this->h->emptyDb();
+        $groups = $this->h->addGroups(['group1', 'another-group']);
+        $char = $this->h->addCharacterMain(
+            'TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
+        $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
+        $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
+        $char->setCorporation($corp);
+        $this->h->getEm()->persist($alli);
+        $this->h->getEm()->persist($corp);
+        $this->h->getEm()->flush();
+        $this->loginUser(123456);
 
-        $response = $this->runApp('GET', '/api/user/player/all');
+        $response = $this->runApp('GET', '/api/user/player/show');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            ['id' => $this->player->getId(), 'name' => 'Admin'],
-            ['id' => $this->mid, 'name' => 'Manager'],
+            'id' => $char->getPlayer()->getId(),
+            'name' => 'TUser',
+            'roles' => [Roles::USER, Roles::USER_ADMIN],
+            'characters' => [
+                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'lastUpdate' => null, 'corporation' => [
+                    'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
+                        'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
+                    ]
+                ]],
+            ],
+            'applications' => [],
+            'groups' => [
+                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'public' => false],
+                ['id' => $groups[0]->getId(), 'name' => 'group1', 'public' => false]
+            ],
+            'managerGroups' => [],
+            'managerApps' => [],
         ], $this->parseJsonBody($response));
     }
 
@@ -199,6 +217,32 @@ class PlayerTest extends WebTestCase
         $this->assertSame(13, $charsAfter[1]->getId());
         $this->assertFalse($charsAfter[0]->getMain());
         $this->assertTrue($charsAfter[1]->getMain());
+    }
+
+    public function testAll403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/all');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin or group-admin
+
+        $response = $this->runApp('GET', '/api/user/player/all');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAll200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/all');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->player->getId(), 'name' => 'Admin'],
+            ['id' => $this->mid, 'name' => 'Manager'],
+        ], $this->parseJsonBody($response));
     }
 
     public function testAppManagers403()

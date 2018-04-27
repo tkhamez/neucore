@@ -5,7 +5,6 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiService;
 use Brave\Core\Service\UserAuthService;
-use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
 
 /**
@@ -22,11 +21,6 @@ class CharacterController
     private $res;
 
     /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var UserAuthService
      */
     private $uas;
@@ -41,10 +35,9 @@ class CharacterController
      */
     private $charService;
 
-    public function __construct(Response $response, LoggerInterface $log, UserAuthService $uas, CharacterService $cs)
+    public function __construct(Response $response, UserAuthService $uas, CharacterService $cs)
     {
         $this->res = $response;
-        $this->log = $log;
         $this->uas = $uas;
         $this->charService = $cs;
     }
@@ -71,30 +64,6 @@ class CharacterController
     public function show(): Response
     {
         return $this->res->withJson($this->uas->getUser());
-    }
-
-    /**
-     * @SWG\Get(
-     *     path="/user/character/player",
-     *     operationId="player",
-     *     summary="Returns the logged in player with all properties.",
-     *     description="Needs role: user",
-     *     tags={"Character"},
-     *     security={{"Session"={}}},
-     *     @SWG\Response(
-     *         response="200",
-     *         description="The player information.",
-     *         @SWG\Schema(ref="#/definitions/Player")
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function player(): Response
-    {
-        return $this->res->withJson($this->uas->getUser()->getPlayer());
     }
 
     /**
