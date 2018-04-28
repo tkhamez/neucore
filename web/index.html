@@ -1,23 +1,148 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-	<meta charset="UTF-8">
-	<title>Brave Collective Core Services Prototype</title>
-	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
-	<link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
+<meta charset="UTF-8">
+<title>Brave Collective Core Services</title>
+<link rel="stylesheet" href="/node_modules/bootswatch/dist/darkly/bootstrap.min.css">
+<link href="/node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
+<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/node_modules/vue/dist/vue.min.js"></script>
+<style>
+	div.alert-success {
+		position: fixed;
+		top: 50px;
+		left: 25%;
+		right: 25%;
+		z-index: 7000;
+		display: none;
+	}
+</style>
 
-	<style>
-		body {
-			display: flex;
-		}
-	</style>
 </head>
-
 <body>
-	<div id='content'></div>
+	<div id="app">
 
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+			<img src="/images/f5DnquJK_400x400.png" width="32" class="d-inline-block align-top mr-2"
+				alt="Brave Collective" title="Brave Collective">
+			Brave Collective
+			<ul class="navbar-nav mr-auto"></ul>
+			<img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
+				class="d-inline-block align-top mr-2">
+			<span class="navbar-brand" v-if="authChar">{{ authChar.name }}</span>
+			<input v-on:click="logout" v-if="authChar"
+				class="btn btn-outline-success my-2 my-sm-0"
+				type="submit" value="Sign Out" />
+		</nav>
+
+		<div class="container-fluid">
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="jumbotron">
+						<h1 class="display-3">Brave Collective Core Services</h1>
+						<div v-if="! authChar">
+							<a :href="loginUrl">
+								<img src="/images/EVE_SSO_Login_Buttons_Large_Black.png">
+							</a>
+						</div>
+						<div v-if="authChar">
+							<p class="lead">
+								This site provides access to alliance services such as Mumble, Wiki and Forum.
+							</p>
+							<hr class="my-4">
+							<p>Please add all your alts by logging in with EVE SSO.</p>
+							<p class="lead">
+								<a :href="loginAltUrl"><img src="/images/eve_sso.png"></a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div v-if="authChar">
+				<div class="row">
+					<div class="col-lg-8">
+						<h2>Characters</h2>
+						<div class="alert alert-success" role="alert">Update done.</div>
+					</div>
+					<div class="col-lg-4"></div>
+				</div>
+				<div class="row">
+					<div class="col-lg-8">
+						<div class="card-columns">
+
+							<div v-for="char in player.characters" class="card bg-light mb-3">
+								<div class="card-header">
+									<img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'">
+									{{ char.name }}
+								</div>
+								<div class="card-body">
+									<p class="card-text">
+										Corporation:
+										<span v-if="char.corporation">
+											{{ char.corporation.name }}
+										</span>
+									</p>
+									<p class="card-text">
+										Alliance:
+										<span v-if="char.corporation && char.corporation.alliance">
+											{{ char.corporation.alliance.name }}
+										</span>
+									</p>
+
+									<span v-if="char.main" class="oi oi-star text-warning mr-2" title="Main"
+										aria-hidden="true"></span>
+									<button type="button" class="btn btn-primary btn-sm"
+										v-on:click="makeMain(char.id)"
+										v-if="! char.main">Make Main</button>
+
+									<button type="button" class="btn btn-primary btn-sm"
+										v-on:click="update(char.id)">
+										<span class="oi oi-loop-circular pull-right"></span>
+										Update
+									</button>
+
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<div class="col-lg-4">
+
+						<div class="card mb-3">
+							<h3 class="card-header">Groups</h3>
+							<ul class="list-group list-group-flush">
+								<li v-for="group in player.groups" class="list-group-item">
+									{{ group.name }}
+								</li>
+							</ul>
+						</div>
+
+						<div class="card mb-3" v-if="player.managerGroups && player.managerGroups.length > 0">
+							<h3 class="card-header">Group Manager</h3>
+							<ul class="list-group list-group-flush">
+								<li v-for="mg in player.managerGroups" class="list-group-item">
+									{{ mg.name }}
+								</li>
+							</ul>
+						</div>
+
+						<div class="card mb-3" v-if="player.managerApps && player.managerApps.length > 0">
+							<h3 class="card-header">App Manager</h3>
+							<ul class="list-group list-group-flush">
+								<li v-for="ag in player.managerApps" class="list-group-item">
+									{{ ag.name }}
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="/index.js"></script>
 </body>
-<script src="/index.js"></script>
-
 </html>

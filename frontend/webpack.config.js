@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: './index.ts',
-  output: { path: path.resolve(__dirname, '../web'), filename: 'index.js' },
+  output: { path: path.resolve(__dirname, '../web'), filename: 'front.js' },
   module: {
     rules: [
       {

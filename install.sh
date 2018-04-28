@@ -8,6 +8,7 @@ then
 
     cd ../web
     npm install
+    node_modules/.bin/browserify index.src.js > index.js
 
     cd ../frontend
     npm install
@@ -21,6 +22,7 @@ else
 
     cd ../web
     npm install
+    node_modules/.bin/browserify index.src.js > index.js
 
     cd ../frontend
     npm install
