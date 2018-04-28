@@ -336,7 +336,7 @@ class Character implements \JsonSerializable
     /**
      * Get lastLogin.
      *
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getLastLogin()
     {
@@ -360,7 +360,7 @@ class Character implements \JsonSerializable
     /**
      * Get lastUpdate.
      *
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getLastUpdate()
     {

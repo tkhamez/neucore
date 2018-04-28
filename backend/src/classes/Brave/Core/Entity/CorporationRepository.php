@@ -36,8 +36,6 @@ class CorporationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getAllWithGroups()
     {
-        // TODO is there a better way?
-
         return $this->createQueryBuilder('c')
             ->join('c.groups', 'g')
             ->andWhere('g.id IS NOT NULL')

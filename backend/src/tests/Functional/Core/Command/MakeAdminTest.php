@@ -4,10 +4,10 @@ namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
+use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
-use Tests\Functional\WebTestCase;
 
-class MakeAdminTest extends WebTestCase
+class MakeAdminTest extends ConsoleTestCase
 {
     private static $em;
 

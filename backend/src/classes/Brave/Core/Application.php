@@ -3,11 +3,11 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\MakeAdmin;
-use Brave\Core\Command\Sample;
+use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuthService;
-use Brave\Core\Service\EveTokenService;
+use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\UserAuthService;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -39,9 +39,9 @@ use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
 use Whoops\Handler\JsonResponseHandler;
+use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
-use Whoops\Handler\PlainTextHandler;
 
 /**
  * App bootstrapping
@@ -212,13 +212,16 @@ class Application
     /**
      * Creates the Symfony console app.
      *
+     * @param App $app
      * @return ConsoleApplication
      */
-    public function getConsoleApp()
+    public function getConsoleApp(App $app = null): ConsoleApplication
     {
         set_time_limit(0);
 
-        $app = $this->getApp(true, false); // with middleware, without routes
+        if ($app === null) {
+            $app = $this->getApp(true, false); // with middleware, without routes
+        }
         $c = $app->getContainer();
 
         $console = new ConsoleApplication();
@@ -230,9 +233,10 @@ class Application
             $c->get(LoggerInterface::class)
         ));
 
-        $console->add(new Sample(
+        $console->add(new UpdateCharacters(
             $c->get(CharacterRepository::class),
-            $c->get(EveTokenService::class)
+            $c->get(CharacterService::class),
+            $c->get(EntityManagerInterface::class)
         ));
 
         return $console;
