@@ -74,37 +74,35 @@
 					<div class="col-lg-8">
 						<div class="card-columns">
 
-							<div v-for="char in player.characters" class="card bg-light mb-3">
+							<div v-for="char in player.characters" class="card bg-light">
 								<div class="card-header">
 									<img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'">
 									{{ char.name }}
 								</div>
 								<div class="card-body">
 									<p class="card-text">
-										Corporation:
+										<span class="text-muted">Corporation:</span>
 										<span v-if="char.corporation">
 											{{ char.corporation.name }}
 										</span>
-									</p>
-									<p class="card-text">
-										Alliance:
+										<br>
+										<span class="text-muted">Alliance:</span>
 										<span v-if="char.corporation && char.corporation.alliance">
 											{{ char.corporation.alliance.name }}
 										</span>
 									</p>
-
+								</div>
+								<div class="card-footer">
 									<span v-if="char.main" class="oi oi-star text-warning mr-2" title="Main"
 										aria-hidden="true"></span>
-									<button type="button" class="btn btn-primary btn-sm"
+									<button type="button" class="btn btn-primary btn-sm mb-1"
 										v-on:click="makeMain(char.id)"
 										v-if="! char.main">Make Main</button>
-
-									<button type="button" class="btn btn-primary btn-sm"
+									<button type="button" class="btn btn-primary btn-sm mb-1"
 										v-on:click="update(char.id)">
 										<span class="oi oi-loop-circular pull-right"></span>
 										Update
 									</button>
-
 								</div>
 							</div>
 
