@@ -29,7 +29,7 @@ return [
     '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],
 
     '/api/user/character/show'        => ['GET',  CharacterController::class.'::show'],
-    '/api/user/character/update/{id}' => ['PUT',  CharacterController::class.'::update'],
+    '/api/user/character/{id}/update' => ['PUT',  CharacterController::class.'::update'],
 
     '/api/user/corporation/all'                     => ['GET',  CorporationController::class.'::all'],
     '/api/user/corporation/with-groups'             => ['GET',  CorporationController::class.'::withGroups'],

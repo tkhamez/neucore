@@ -6,6 +6,8 @@ use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiService;
 use Brave\Core\Service\UserAuthService;
 use Slim\Http\Response;
+use Brave\Core\Roles;
+use Brave\Core\Entity\CharacterRepository;
 
 /**
  * @SWG\Tag(
@@ -35,11 +37,18 @@ class CharacterController
      */
     private $charService;
 
-    public function __construct(Response $response, UserAuthService $uas, CharacterService $cs)
+    /**
+     * @var CharacterRepository
+     */
+    private $charRepo;
+
+    public function __construct(Response $response, UserAuthService $uas, CharacterService $cs,
+        CharacterRepository $charRepo)
     {
         $this->res = $response;
         $this->uas = $uas;
         $this->charService = $cs;
+        $this->charRepo = $charRepo;
     }
 
     /**
@@ -68,10 +77,10 @@ class CharacterController
 
     /**
      * @SWG\Put(
-     *     path="/user/character/update/{id}",
+     *     path="/user/character/{id}/update",
      *     operationId="update",
      *     summary="Updates a character of the logged in player account with data from ESI.",
-     *     description="Needs role: user",
+     *     description="Needs role: user or user-admin to update any character",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -103,10 +112,15 @@ class CharacterController
     public function update(string $id): Response
     {
         $char = null;
-        foreach ($this->uas->getUser()->getPlayer()->getCharacters() as $c) {
-            if ($c->getId() === (int) $id) {
-                $char = $c;
-                break;
+        $player = $this->uas->getUser()->getPlayer();
+        if ($player->hasRole(Roles::USER_ADMIN)) {
+            $char = $this->charRepo->find((int) $id);
+        } else {
+            foreach ($this->uas->getUser()->getPlayer()->getCharacters() as $c) {
+                if ($c->getId() === (int) $id) {
+                    $char = $c;
+                    break;
+                }
             }
         }
 

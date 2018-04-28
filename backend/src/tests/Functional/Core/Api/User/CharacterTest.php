@@ -42,7 +42,7 @@ class CharacterTest extends WebTestCase
 
     public function testUpdate403()
     {
-        $response = $this->runApp('PUT', '/api/user/character/update/96061222');
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -51,7 +51,7 @@ class CharacterTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(96061222);
 
-        $response = $this->runApp('PUT', '/api/user/character/update/9');
+        $response = $this->runApp('PUT', '/api/user/character/9/update');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -61,7 +61,7 @@ class CharacterTest extends WebTestCase
         $this->loginUser(96061222);
 
         $charApi = $this->createMock(CharacterApi::class);
-        $response = $this->runApp('PUT', '/api/user/character/update/96061222', [], [], [
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             CharacterApi::class => $charApi
         ]);
 
@@ -82,7 +82,7 @@ class CharacterTest extends WebTestCase
             'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance_id' => null
         ]));
 
-        $response = $this->runApp('PUT', '/api/user/character/update/96061222', [], [], [
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             CharacterApi::class => $charApi,
             CorporationApi::class => $corpApi,
         ]);
@@ -100,9 +100,32 @@ class CharacterTest extends WebTestCase
         $this->assertSame($expected, $actual);
     }
 
+    public function testUpdate200Admin()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $charApi = $this->createMock(CharacterApi::class);
+        $charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
+            'name' => 'Char 96061222', 'corporation_id' => 234
+        ]));
+        $corpApi = $this->createMock(CorporationApi::class);
+        $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
+            'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance_id' => null
+        ]));
+
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
+            CharacterApi::class => $charApi,
+            CorporationApi::class => $corpApi,
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     private function setupDb()
     {
         $this->helper->emptyDb();
         $this->helper->addCharacterMain('User', 96061222, [Roles::USER], ['group1']);
+        $this->helper->addCharacterMain('User', 9, [Roles::USER, Roles::USER_ADMIN], ['group1']);
     }
 }
