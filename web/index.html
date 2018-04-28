@@ -1,54 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Brave Collective Core Services</title>
-<link rel="stylesheet" href="/node_modules/bootswatch/dist/darkly/bootstrap.min.css">
-<link href="/node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
-<script src="/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
-<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="/node_modules/vue/dist/vue.min.js"></script>
-<style>
-	div.alert-success {
-		position: fixed;
-		top: 50px;
-		left: 25%;
-		right: 25%;
-		z-index: 7000;
-		display: none;
-	}
-	.jumbotron {
-		min-height: 430px;
-	}
-</style>
-
+	<meta charset="UTF-8">
+	<title>Brave Collective Core Services</title>
+	<link rel="stylesheet" href="/node_modules/bootswatch/dist/darkly/bootstrap.min.css">
+	<link href="/node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+	<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
+	<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="/node_modules/vue/dist/vue.min.js"></script>
+	<style>
+		div.alert-success {
+			position: fixed;
+			top: 50px;
+			left: 25%;
+			right: 25%;
+			z-index: 7000;
+			display: none;
+		}
+		.jumbotron {
+			min-height: 430px;
+		}
+	</style>
 </head>
 <body>
 	<div id="app">
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
 			<a href="https://www.bravecollective.com/" target="_blank">
-				<img src="images/brave_32.png"
-					class="mr-2"
-					alt="Brave Collective" title="Brave Collective">
+				<img src="images/brave_32.png" class="mr-2" alt="Brave logo">
 			</a>
 			Brave Collective Core Services
 			<ul class="navbar-nav mr-auto"></ul>
 			<img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
-				class="d-inline-block align-top mr-2">
+				class="d-inline-block align-top mr-2" alt="Character Portrait">
 			<span class="navbar-brand" v-if="authChar">{{ authChar.name }}</span>
-			<input v-on:click="logout" v-if="authChar"
-				class="btn btn-outline-success" type="submit" value="Sign Out" />
+			<input v-on:click="logout" v-if="authChar" class="btn btn-outline-success" type="submit" value="Sign Out" />
 		</nav>
 
 		<div class="container-fluid">
-
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="jumbotron mt-3">
 						<a href="https://www.bravecollective.com/" target="_blank">
-							<img src="/images/brave_300.png" class="float-right">
+							<img src="/images/brave_300.png" class="float-right" alt="Brave logo">
 						</a>
 						<h1 class="display-3">BRAVE Core</h1>
 						<p class="lead">
@@ -61,14 +56,13 @@
 								Click the button below to login through <i>EVE Online SSO</i>.
 							</p>
 							<a :href="loginUrl">
-								<img src="/images/EVE_SSO_Login_Buttons_Large_Black.png">
+								<img src="/images/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
 							</a>
 							<p>
 								<br>
 								<small>
 									Learn more about the security of <i>EVE Online SSO</i> in this
-									<a href="http://community.eveonline.com/news/dev-blogs/eve-online-sso-and-what-you-need-to-know/"
-										target="_blank">
+	<a href="http://community.eveonline.com/news/dev-blogs/eve-online-sso-and-what-you-need-to-know/" target="_blank">
 									dev-blog</a> article.
 								</small>
 							</p>
@@ -78,13 +72,13 @@
 
 							<p>Please add all your alts by logging in with EVE SSO.</p>
 							<p class="lead">
-								<a :href="loginAltUrl"><img src="/images/eve_sso.png"></a>
+								<a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
 							</p>
 						</div>
 
 					</div>
 				</div>
-			</div>
+			</div> <!-- row -->
 
 			<div v-if="authChar">
 				<div class="row">
@@ -97,10 +91,10 @@
 				<div class="row">
 					<div class="col-lg-8">
 						<div class="card-columns">
-
 							<div v-for="char in player.characters" class="card bg-light">
 								<div class="card-header">
-									<img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'">
+									<img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'"
+										alt="Character Portrait">
 									{{ char.name }}
 								</div>
 								<div class="card-body">
@@ -129,11 +123,9 @@
 									</button>
 								</div>
 							</div>
-
 						</div>
 					</div>
 					<div class="col-lg-4">
-
 						<div class="card mb-3">
 							<h3 class="card-header">Groups</h3>
 							<ul class="list-group list-group-flush">
@@ -142,7 +134,6 @@
 								</li>
 							</ul>
 						</div>
-
 						<div class="card mb-3" v-if="player.managerGroups && player.managerGroups.length > 0">
 							<h3 class="card-header">Group Manager</h3>
 							<ul class="list-group list-group-flush">
@@ -151,7 +142,6 @@
 								</li>
 							</ul>
 						</div>
-
 						<div class="card mb-3" v-if="player.managerApps && player.managerApps.length > 0">
 							<h3 class="card-header">App Manager</h3>
 							<ul class="list-group list-group-flush">
@@ -161,9 +151,9 @@
 							</ul>
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
+				</div> <!-- row -->
+			</div> <!-- if authorized -->
+		</div> <!-- container -->
 	</div>
 	<script src="/index.js"></script>
 </body>
