@@ -18,6 +18,8 @@ Objectives
 This project consists of two applications, the back-end and the front-end.
 See the [**front-end**](frontend/README.md) and [**back-end**](backend/README.md) Readme for more.
 
+There is also a minimal (temporary) front-end in the [**web**](web) directory.
+
 ## Installation
 
 ### EVE API setup
