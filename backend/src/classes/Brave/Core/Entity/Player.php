@@ -38,7 +38,6 @@ class Player implements \JsonSerializable
     /**
      * Last automatic group assignment.
      *
-     * @SWG\Property()
      * @Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */

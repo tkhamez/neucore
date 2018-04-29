@@ -36,6 +36,13 @@ class AutoGroupAssignment
      */
     private $mapping;
 
+    /**
+     * All group IDs from the corporation -> group configuration.
+     *
+     * @var array
+     */
+    private $autoGroups;
+
     public function __construct(
         EntityManagerInterface $em,
         CorporationRepository $corpRepo,
@@ -48,6 +55,17 @@ class AutoGroupAssignment
         $this->playerRepo = $playerRepo;
     }
 
+    /**
+     * Add and remove groups from the player.
+     *
+     * The assignment is made on the basis of the Group -> Group configuration.
+     *
+     * Only groups belonging to a corporation will be removed if the character
+     * does not belong to that corporation.
+     *
+     * @param int $playerId
+     * @return void|\Brave\Core\Entity\Player|NULL
+     */
     public function assign(int $playerId)
     {
         $player = $this->playerRepo->find($playerId);
@@ -70,7 +88,7 @@ class AutoGroupAssignment
         }
 
         // find what to remove and what to add
-        $hasIds = $player->getGroupIds();
+        $hasIds = array_intersect($player->getGroupIds(), $this->autoGroups);
         $removeIds = array_diff($hasIds, $groupIds);
         $addIds = array_diff($groupIds, $hasIds);
 
@@ -87,9 +105,9 @@ class AutoGroupAssignment
 
         $player->setLastUpdate(new \DateTime());
 
-        $this->flush();
-
-        return $player;
+        if ($this->flush()) {
+            return $player;
+        }
     }
 
     private function loadMapping()
@@ -99,11 +117,16 @@ class AutoGroupAssignment
         }
 
         $this->mapping = [];
+        $this->autoGroups = [];
         foreach ($this->corpRepo->getAllWithGroups() as $corp) {
             $cid = $corp->getId();
             $this->mapping[$cid] = [];
             foreach ($corp->getGroups() as $group) {
-                $this->mapping[$cid][] = $group->getId();
+                $gid = $group->getId();
+                $this->mapping[$cid][] = $gid;
+                if (! in_array($gid, $this->autoGroups)) {
+                    $this->autoGroups[] = $gid;
+                }
             }
         }
     }
