@@ -6,9 +6,15 @@ use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class AutoGroupAssignment
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $log;
+
     /**
      * @var EntityManagerInterface
      */
@@ -44,11 +50,13 @@ class AutoGroupAssignment
     private $autoGroups;
 
     public function __construct(
+        LoggerInterface $log,
         EntityManagerInterface $em,
         CorporationRepository $corpRepo,
         GroupRepository $groupRepo,
         PlayerRepository $playerRepo
     ) {
+        $this->log = $log;
         $this->em = $em;
         $this->corpRepo = $corpRepo;
         $this->groupRepo = $groupRepo;
@@ -86,6 +94,7 @@ class AutoGroupAssignment
                 $groupIds = array_merge($groupIds, $this->mapping[$corpId]);
             }
         }
+        $groupIds = array_unique($groupIds);
 
         // find what to remove and what to add
         $hasIds = array_intersect($player->getGroupIds(), $this->autoGroups);

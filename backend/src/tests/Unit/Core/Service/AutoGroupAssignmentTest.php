@@ -10,6 +10,8 @@ use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Service\AutoGroupAssignment;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use Tests\Helper;
 
 class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
@@ -39,11 +41,14 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->th = new Helper();
         $this->em = $this->th->getEm();
 
+        $log = new Logger('Test');
+        $log->pushHandler(new TestHandler());
+
         $corpRepo = new CorporationRepository($this->em);
         $groupRepo = new GroupRepository($this->em);
         $this->playerRepo = new PlayerRepository($this->em);
 
-        $this->aga = new AutoGroupAssignment($this->em, $corpRepo, $groupRepo, $this->playerRepo);
+        $this->aga = new AutoGroupAssignment($log, $this->em, $corpRepo, $groupRepo, $this->playerRepo);
     }
 
     public function testAssignNotFound()
@@ -83,7 +88,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $group4 = (new Group())->setName('g4');
         $group5 = (new Group())->setName('g5');
         $corp1 = (new Corporation())->setId(1)->setName('c1')->setTicker('t1')->addGroup($group1)->addGroup($group2);
-        $corp2 = (new Corporation())->setId(2)->setName('c2')->setTicker('t2')->addGroup($group3);
+        $corp2 = (new Corporation())->setId(2)->setName('c2')->setTicker('t2')->addGroup($group1)->addGroup($group3);
         $corp3 = (new Corporation())->setId(3)->setName('c2')->setTicker('t3')->addGroup($group4);
         $player = (new Player())->setName('p')->addGroup($group4)->addGroup($group5)
             ->setLastUpdate(new \DateTime('2018-04-28 17:56:54'));
