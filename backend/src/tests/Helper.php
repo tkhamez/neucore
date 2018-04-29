@@ -3,13 +3,16 @@
 namespace Tests;
 
 use Brave\Core\Application;
+use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\RoleRepository;
+use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
@@ -23,26 +26,26 @@ class Helper
     private static $em;
 
     private $entities = [
-        'Brave\Core\Entity\App',
-        'Brave\Core\Entity\Character',
-        'Brave\Core\Entity\Player',
-        'Brave\Core\Entity\Group',
-        'Brave\Core\Entity\Role',
-        'Brave\Core\Entity\Corporation',
-        'Brave\Core\Entity\Alliance',
+        App::class,
+        Character::class,
+        Player::class,
+        Group::class,
+        Role::class,
+        Corporation::class,
+        Alliance::class,
     ];
 
     public function resetSessionData()
     {
         unset($_SESSION);
 
-        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'sess');
+        $rp = new \ReflectionProperty(SessionData::class, 'sess');
         $rp->setAccessible(true);
-        $rp->setValue(null);
+        $rp->setValue(null, null);
 
-        $rp = new \ReflectionProperty('Brave\Slim\Session\SessionData', 'readOnly');
+        $rp = new \ReflectionProperty(SessionData::class, 'readOnly');
         $rp->setAccessible(true);
-        $rp->setValue(true);
+        $rp->setValue(null, true);
     }
 
     public function getEm()

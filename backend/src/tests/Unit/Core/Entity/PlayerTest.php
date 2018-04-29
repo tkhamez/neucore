@@ -151,15 +151,59 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$g1], $play->getGroups());
     }
 
+    public function testRemoveGroupById()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $player = new Player();
+        $player->addGroup($group1);
+        $player->addGroup($group2);
+
+        $player->removeGroupById(2);
+
+        $groups = $player->getGroups();
+        $this->assertSame(1, count($groups));
+        $this->assertSame(1, $groups[0]->getId());
+    }
+
+    public function testGetGroupIds()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $player = new Player();
+        $player->addGroup($group1);
+        $player->addGroup($group2);
+
+        $this->assertSame([1, 2], $player->getGroupIds());
+    }
+
     public function testHasGroup()
     {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
         $player = new Player();
-        $group1 = (new Group())->setName('g1');
-        $group2 = (new Group())->setName('g2');
         $player->addGroup($group1);
 
-        $this->assertTrue($player->hasGroup($group1));
-        $this->assertFalse($player->hasGroup($group2));
+        $this->assertTrue($player->hasGroup($group1->getId()));
+        $this->assertFalse($player->hasGroup($group2->getId()));
     }
 
     public function testAddGetRemoveManagerGroups()

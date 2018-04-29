@@ -723,7 +723,7 @@ class GroupController
 
         if ($type === 'manager' && ! $this->player->hasManagerGroup($this->group)) {
             $this->group->addManager($this->player);
-        } elseif ($type === 'member' && ! $this->player->hasGroup($this->group)) {
+        } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
             $this->player->addGroup($this->group);
         }
 

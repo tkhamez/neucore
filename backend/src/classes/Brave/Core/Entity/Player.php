@@ -319,6 +319,16 @@ class Player implements \JsonSerializable
         return $this->groups->removeElement($group);
     }
 
+    public function removeGroupById(int $groupId): bool
+    {
+        foreach ($this->getGroups() as $group) {
+            if ($group->getId() === $groupId) {
+                return $this->groups->removeElement($group);
+            }
+        }
+        return false;
+    }
+
     /**
      * Get groups.
      *
@@ -329,11 +339,23 @@ class Player implements \JsonSerializable
         return $this->groups->toArray();
     }
 
-    public function hasGroup(Group $group): bool
+    /**
+     *
+     * @return int[]
+     */
+    public function getGroupIds()
+    {
+        $groupIds = [];
+        foreach ($this->getGroups() as $group) {
+            $groupIds[] = $group->getId();
+        }
+        return $groupIds;
+    }
+
+    public function hasGroup(int $groupId): bool
     {
         foreach ($this->getGroups() as $g) {
-            // name is unique, id could be null, so this is easier
-            if ($g->getName() === $group->getName()) {
+            if ($g->getId() === $groupId) {
                 return true;
             }
         }
