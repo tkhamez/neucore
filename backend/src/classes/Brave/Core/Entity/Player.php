@@ -36,6 +36,15 @@ class Player implements \JsonSerializable
     private $name;
 
     /**
+     * Last automatic group assignment.
+     *
+     * @SWG\Property()
+     * @Column(type="datetime", name="last_update", nullable=true)
+     * @var \DateTime
+     */
+    private $lastUpdate;
+
+    /**
      * Roles for authorization.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
@@ -159,6 +168,30 @@ class Player implements \JsonSerializable
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set lastUpdate.
+     *
+     * @param \DateTime $update
+     *
+     * @return Player
+     */
+    public function setLastUpdate($lastUpdate)
+    {
+        $this->lastUpdate = clone $lastUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdate.
+     *
+     * @return \DateTime|null
+     */
+    public function getLastUpdate()
+    {
+        return $this->lastUpdate;
     }
 
     /**

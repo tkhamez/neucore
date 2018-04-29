@@ -4,9 +4,12 @@ namespace Brave\Core;
 
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\UpdateCharacters;
+use Brave\Core\Command\UpdatePlayerGroups;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuth;
+use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
@@ -236,6 +239,12 @@ class Application
         $console->add(new UpdateCharacters(
             $c->get(CharacterRepository::class),
             $c->get(CharacterService::class),
+            $c->get(EntityManagerInterface::class)
+        ));
+
+        $console->add(new UpdatePlayerGroups(
+            $c->get(PlayerRepository::class),
+            $c->get(AutoGroupAssignment::class),
             $c->get(EntityManagerInterface::class)
         ));
 

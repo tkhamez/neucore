@@ -73,6 +73,18 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('nam', $play->getName());
     }
 
+    public function testSetGetLastUpdate()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:36');
+
+        $player = new Player();
+        $player->setLastUpdate($dt1);
+        $dt2 = $player->getLastUpdate();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
     public function testAddGetRemoveRole()
     {
         $player = new Player();

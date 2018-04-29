@@ -105,7 +105,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $dt2 = $char->getLastLogin();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26 18:59:35', $dt2->format('Y-m-d H:i:s'));
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
     }
 
     public function testSetGetLastUpdate()
@@ -117,6 +117,6 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $dt2 = $char->getLastUpdate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26 18:59:36', $dt2->format('Y-m-d H:i:s'));
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
     }
 }

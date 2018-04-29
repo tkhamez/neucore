@@ -3,13 +3,13 @@
 namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\CharacterRepository;
+use Swagger\Client\Eve\Api\CharacterApi;
+use Swagger\Client\Eve\Api\CorporationApi;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
+use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
-use Swagger\Client\Eve\Api\CorporationApi;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
-use Brave\Core\Entity\CharacterRepository;
 
 class UpdateCharactersTest extends ConsoleTestCase
 {
@@ -58,8 +58,11 @@ class UpdateCharactersTest extends ConsoleTestCase
         $actual = (new CharacterRepository($em))->findAll();
         $this->assertSame(1122, $actual[0]->getId());
         $this->assertSame(2233, $actual[1]->getId());
+        $this->assertNotNull($actual[0]->getLastUpdate());
         $this->assertNotNull($actual[1]->getLastUpdate());
         $this->assertSame(234, $actual[0]->getCorporation()->getId());
+        $this->assertSame(234, $actual[1]->getCorporation()->getId());
         $this->assertNull($actual[0]->getCorporation()->getAlliance());
+        $this->assertNull($actual[1]->getCorporation()->getAlliance());
     }
 }

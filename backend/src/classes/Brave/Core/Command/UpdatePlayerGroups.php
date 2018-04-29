@@ -2,25 +2,25 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Service\AutoGroupAssignment;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
-class UpdateCharacters extends Command
+class UpdatePlayerGroups extends Command
 {
     /**
-     * @var CharacterRepository
+     * @var PlayerRepository
      */
-    private $charRepo;
+    private $playerRepo;
 
     /**
-     * @var CharacterService
+     * @var AutoGroupAssignment
      */
-    private $charService;
+    private $autoGroup;
 
     /**
      * @var EntityManagerInterface
@@ -28,21 +28,21 @@ class UpdateCharacters extends Command
     private $em;
 
     public function __construct(
-        CharacterRepository $charRepo,
-        CharacterService $charService,
+        PlayerRepository $playerRepo,
+        AutoGroupAssignment $autoGroup,
         EntityManagerInterface $em
     ) {
         parent::__construct();
 
-        $this->charRepo = $charRepo;
-        $this->charService = $charService;
+        $this->playerRepo = $playerRepo;
+        $this->autoGroup = $autoGroup;
         $this->em = $em;
     }
 
     protected function configure()
     {
-        $this->setName('update-chars')
-            ->setDescription('Updates all characters from ESI.')
+        $this->setName('update-player-groups')
+            ->setDescription('Assigns groups to players based on corporation configuration.')
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each character update', 200);
     }
@@ -51,20 +51,20 @@ class UpdateCharacters extends Command
     {
         $sleep = (int) $input->getOption('sleep');
 
-        $charIds = [];
-        $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
-        foreach ($chars as $char) {
-            $charIds[] = $char->getId();
+        $playerIds = [];
+        $players = $this->playerRepo->findBy([], ['lastUpdate' => 'ASC']);
+        foreach ($players as $player) {
+            $playerIds[] = $player->getId();
         }
         $this->em->clear(); // detaches all objects from Doctrine
 
-        foreach ($charIds as $charId) {
-            $updatedChar = $this->charService->fetchCharacter($charId, true);
+        foreach ($playerIds as $playerId) {
+            $player = $this->autoGroup->assign($playerId);
             $this->em->clear();
-            if ($updatedChar === null) {
-                $output->writeln('Error updating ' . $charId);
+            if ($player === null) {
+                $output->writeln('Error updating ' . $playerId);
             } else {
-                $output->writeln('Updated ' . $charId);
+                $output->writeln('Updated ' . $playerId);
             }
             usleep($sleep * 1000);
         }

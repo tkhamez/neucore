@@ -60,6 +60,9 @@ class AutoGroupAssignment
         // collect group IDs
         $groupIds = [];
         foreach ($player->getCharacters() as $char) {
+            if ($char->getCorporation() === null) {
+                continue;
+            }
             $corpId = $char->getCorporation()->getId();
             if (isset($this->mapping[$corpId])) {
                 $groupIds = array_merge($groupIds, $this->mapping[$corpId]);
@@ -82,7 +85,11 @@ class AutoGroupAssignment
             $player->addGroup($addGroup);
         }
 
+        $player->setLastUpdate(new \DateTime());
+
         $this->flush();
+
+        return $player;
     }
 
     private function loadMapping()
