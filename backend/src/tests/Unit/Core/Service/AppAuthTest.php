@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\AppRepository;
-use Brave\Core\Service\AppAuthService;
+use Brave\Core\Service\AppAuth;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ServerRequestInterface;
@@ -11,11 +11,11 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Tests\Helper;
 
-class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
+class AppAuthTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
-     * @var AppAuthService
+     * @var AppAuth
      */
     private $service;
 
@@ -31,7 +31,7 @@ class AppAuthServiceTest extends \PHPUnit\Framework\TestCase
         $em = (new Helper())->getEm();
         $this->repo = new AppRepository($em);
 
-        $this->service = new AppAuthService($this->repo, $em, $log);
+        $this->service = new AppAuth($this->repo, $em, $log);
     }
 
     public function testGetRolesNoAuth()

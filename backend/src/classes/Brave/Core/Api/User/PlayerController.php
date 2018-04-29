@@ -5,7 +5,7 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
-use Brave\Core\Service\UserAuthService;
+use Brave\Core\Service\UserAuth;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -45,7 +45,7 @@ class PlayerController
     private $gr;
 
     /**
-     * @var UserAuthService
+     * @var UserAuth
      */
     private $uas;
 
@@ -64,7 +64,7 @@ class PlayerController
 
     public function __construct(Response $response, LoggerInterface $log,
         PlayerRepository $pr, RoleRepository $rr, GroupRepository $gr,
-        UserAuthService $uas, EntityManagerInterface $em)
+        UserAuth $uas, EntityManagerInterface $em)
     {
         $this->res = $response;
         $this->log = $log;

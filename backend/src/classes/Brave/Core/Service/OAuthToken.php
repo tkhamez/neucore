@@ -12,7 +12,7 @@ use Swagger\Client\Eve\Configuration;
 /**
  * Handles OAuth tokens for ESI.
  */
-class EveTokenService
+class OAuthToken
 {
     private $oauth;
 
@@ -63,14 +63,14 @@ class EveTokenService
      * resfresh token and saved in the database for the character.
      *
      * @return string
-     * @see EveTokenService::setCharacter()
+     * @see OAuthToken::setCharacter()
      */
     public function getToken(): string
     {
         $token = "";
 
         if ($this->character === null) {
-            $this->log->error('EveTokenService::getToken: Character not set.');
+            $this->log->error('OAuthToken::getToken: Character not set.');
             return $token;
         }
 

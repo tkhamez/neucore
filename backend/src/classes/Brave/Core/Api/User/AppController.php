@@ -10,7 +10,7 @@ use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
-use Brave\Core\Service\UserAuthService;
+use Brave\Core\Service\UserAuth;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
@@ -604,7 +604,7 @@ class AppController
      *     )
      * )
      */
-    public function changeSecret(string $id, UserAuthService $uas): Response
+    public function changeSecret(string $id, UserAuth $uas): Response
     {
         $app = $this->ar->find((int) $id);
         if ($app === null) {

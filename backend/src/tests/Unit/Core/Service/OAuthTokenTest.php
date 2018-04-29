@@ -5,14 +5,14 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
-use Brave\Core\Service\EveTokenService;
+use Brave\Core\Service\OAuthToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
 
-class EveTokenServiceTest extends \PHPUnit\Framework\TestCase
+class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 {
     private $em;
 
@@ -37,7 +37,7 @@ class EveTokenServiceTest extends \PHPUnit\Framework\TestCase
         $this->log->pushHandler(new TestHandler());
 
         $this->oauth = $this->createMock(GenericProvider::class);
-        $this->es = new EveTokenService($this->oauth, $this->em, $this->log);
+        $this->es = new OAuthToken($this->oauth, $this->em, $this->log);
     }
 
     public function testGetTokenNoUser()
@@ -45,7 +45,7 @@ class EveTokenServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame("", $this->es->getToken());
 
         $this->assertSame(
-            'EveTokenService::getToken: Character not set.',
+            'OAuthToken::getToken: Character not set.',
             $this->log->getHandlers()[0]->getRecords()[0]['message']
         );
     }

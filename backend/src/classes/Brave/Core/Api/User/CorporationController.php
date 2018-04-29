@@ -6,7 +6,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Service\CharacterService;
-use Brave\Core\Service\EsiService;
+use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
@@ -167,7 +167,7 @@ class CorporationController
      *     )
      * )
      */
-    public function add(string $id, EsiService $es, CharacterService $cs): Response
+    public function add(string $id, EsiApi $es, CharacterService $cs): Response
     {
         $corpId = (int) $id;
 
@@ -178,7 +178,7 @@ class CorporationController
         // get corporation (also fetches alliance)
         $corporation = $cs->fetchCorporation($corpId);
         if ($corporation === null) {
-            $code = $cs->getEsiService()->getLastErrorCode();
+            $code = $cs->getEsiApi()->getLastErrorCode();
             if ($code === 404 || $code === 400) {
                 return $this->res->withStatus($code);
             } else {

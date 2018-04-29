@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
  *
  * After that, the session variable "character_id" identifies the user.
  */
-class UserAuthService implements RoleProviderInterface
+class UserAuth implements RoleProviderInterface
 {
     private $session;
 
@@ -98,7 +98,7 @@ class UserAuthService implements RoleProviderInterface
 
             $userRole = $this->roleRepository->findBy(['name' => Roles::USER]);
             if (count($userRole) !== 1) {
-                $this->log->critical('UserAuthService::authenticate(): Role "'.Roles::USER.'" not found.');
+                $this->log->critical('UserAuth::authenticate(): Role "'.Roles::USER.'" not found.');
                 return false;
             }
 

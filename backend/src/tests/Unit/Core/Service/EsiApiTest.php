@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Service\EsiService;
-use Brave\Core\Service\EveTokenService;
+use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\OAuthToken;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -15,7 +15,7 @@ use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Helper;
 
-class EsiServiceTest extends \PHPUnit\Framework\TestCase
+class EsiApiTest extends \PHPUnit\Framework\TestCase
 {
     private $log;
 
@@ -36,12 +36,12 @@ class EsiServiceTest extends \PHPUnit\Framework\TestCase
         $this->log->pushHandler(new TestHandler());
 
         $oauth = $this->createMock(GenericProvider::class);
-        $ts = new EveTokenService($oauth, $em, $this->log);
+        $ts = new OAuthToken($oauth, $em, $this->log);
 
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
         $this->charApi = $this->createMock(CHaracterApi::class);
-        $this->esi = new EsiService($this->log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
+        $this->esi = new EsiApi($this->log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
     }
 
     public function testGetAllianceException404()

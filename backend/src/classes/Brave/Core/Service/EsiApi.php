@@ -7,7 +7,7 @@ use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 
-class EsiService
+class EsiApi
 {
 
     /**
@@ -16,7 +16,7 @@ class EsiService
     private $log;
 
     /**
-     * @var EveTokenService
+     * @var OAuthToken
      */
     private $tokenService;
 
@@ -45,7 +45,7 @@ class EsiService
      */
     private $lastErrorMessage;
 
-    public function __construct(LoggerInterface $log, EveTokenService $ts,
+    public function __construct(LoggerInterface $log, OAuthToken $ts,
         AllianceApi $alliApi, CorporationApi $corpApi, CharacterApi $charApi)
     {
         $this->log = $log;

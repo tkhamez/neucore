@@ -7,9 +7,9 @@ use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
-use Brave\Core\Service\EsiService;
 use Brave\Core\Service\CharacterService;
-use Brave\Core\Service\EveTokenService;
+use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\OAuthToken;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -50,12 +50,12 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $log->pushHandler(new TestHandler());
 
         $oauth = $this->createMock(GenericProvider::class);
-        $ts = new EveTokenService($oauth, $this->em, $log);
+        $ts = new OAuthToken($oauth, $this->em, $log);
 
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
         $this->charApi = $this->createMock(CharacterApi::class);
-        $esi = new EsiService($log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
+        $esi = new EsiApi($log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
 
         $this->ar = new AllianceRepository($this->em);
         $this->corpR = new CorporationRepository($this->em);
@@ -63,9 +63,9 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->cs = new CharacterService($esi, $this->em, $this->ar, $this->corpR, $this->charR);
     }
 
-    public function testGetEsiService()
+    public function testGetEsiApi()
     {
-        $this->assertInstanceOf(EsiService::class, $this->cs->getEsiService());
+        $this->assertInstanceOf(EsiApi::class, $this->cs->getEsiApi());
     }
 
     public function testFetchCharacterInvalidId()

@@ -3,7 +3,7 @@
 namespace Brave\Core\Api;
 
 use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Service\AppAuthService;
+use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
@@ -23,7 +23,7 @@ class ApplicationController
     private $response;
 
     /**
-     * @var AppAuthService
+     * @var AppAuth
      */
     private $appService;
 
@@ -32,7 +32,7 @@ class ApplicationController
      */
     private $charRepo;
 
-    public function __construct(Response $response, AppAuthService $aap, CharacterRepository $cr)
+    public function __construct(Response $response, AppAuth $aap, CharacterRepository $cr)
     {
         $this->response = $response;
         $this->appService = $aap;

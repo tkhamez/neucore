@@ -6,7 +6,7 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
-use Brave\Core\Service\UserAuthService;
+use Brave\Core\Service\UserAuth;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
@@ -41,7 +41,7 @@ class GroupController
     private $pr;
 
     /**
-     * @var UserAuthService
+     * @var UserAuth
      */
     private $uas;
 
@@ -66,7 +66,7 @@ class GroupController
     private $player;
 
     public function __construct(Response $res, LoggerInterface $log, GroupRepository $gr,
-        PlayerRepository $pr, UserAuthService $uas, EntityManagerInterface $em)
+        PlayerRepository $pr, UserAuth $uas, EntityManagerInterface $em)
     {
         $this->log = $log;
         $this->res = $res;

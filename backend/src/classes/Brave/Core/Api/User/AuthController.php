@@ -3,7 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Roles;
-use Brave\Core\Service\UserAuthService;
+use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
@@ -53,7 +53,7 @@ class AuthController
     private $log;
 
     /**
-     * @var UserAuthService
+     * @var UserAuth
      */
     private $auth;
 
@@ -65,7 +65,7 @@ class AuthController
     private $scopes = ['publicData'];
 
     public function __construct(Response $res, SessionData $session, GenericProvider $sso,
-        LoggerInterface $log, UserAuthService $auth)
+        LoggerInterface $log, UserAuth $auth)
     {
         $this->res = $res;
         $this->session = $session;

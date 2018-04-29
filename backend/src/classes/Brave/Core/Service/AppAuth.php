@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
  * Authentication is done via an "Authorization" request header.
  * Roles are loaded from the database.
  */
-class AppAuthService implements RoleProviderInterface
+class AppAuth implements RoleProviderInterface
 {
     private $appRepository;
 

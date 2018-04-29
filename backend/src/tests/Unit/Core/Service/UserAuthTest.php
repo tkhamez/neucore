@@ -5,19 +5,19 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
-use Brave\Core\Service\UserAuthService;
+use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
 
-class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
+class UserAuthTest extends \PHPUnit\Framework\TestCase
 {
     private $log;
 
     /**
-     * @var UserAuthService
+     * @var UserAuth
      */
     private $service;
 
@@ -38,7 +38,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
         $cr = new CharacterRepository($em);
         $rr = new RoleRepository($em);
 
-        $this->service = new UserAuthService(new SessionData(), $cr, $rr, $em, $this->log);
+        $this->service = new UserAuth(new SessionData(), $cr, $rr, $em, $this->log);
     }
 
     public function testGetRolesNoAuth()
@@ -85,7 +85,7 @@ class UserAuthServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', 'token'));
         $this->assertSame(
-            'UserAuthService::authenticate(): Role "'.Roles::USER.'" not found.',
+            'UserAuth::authenticate(): Role "'.Roles::USER.'" not found.',
             $this->log->getHandlers()[0]->getRecords()[0]['message']
         );
     }

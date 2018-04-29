@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class CharacterService
 {
     /**
-     * @var EsiService
+     * @var EsiApi
      */
     private $esi;
 
@@ -36,7 +36,7 @@ class CharacterService
      */
     private $charRepo;
 
-    public function __construct(EsiService $esi, EntityManagerInterface $em,
+    public function __construct(EsiApi $esi, EntityManagerInterface $em,
         AllianceRepository $ar, CorporationRepository $cpr, CharacterRepository $crr)
     {
         $this->esi = $esi;
@@ -48,9 +48,9 @@ class CharacterService
 
     /**
      *
-     * @return \Brave\Core\Service\EsiService
+     * @return \Brave\Core\Service\EsiApi
      */
-    public function getEsiService()
+    public function getEsiApi()
     {
         return $this->esi;
     }

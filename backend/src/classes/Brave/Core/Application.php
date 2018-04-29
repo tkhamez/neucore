@@ -6,9 +6,9 @@ use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
-use Brave\Core\Service\AppAuthService;
+use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\CharacterService;
-use Brave\Core\Service\UserAuthService;
+use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
@@ -256,8 +256,8 @@ class Application
         $security = include self::ROOT_DIR . '/config/security.php';
         $app->add(new SecureRouteMiddleware($security));
 
-        $app->add(new AuthRoleMiddleware($c->get(AppAuthService::class), ['route_pattern' => ['/api/app']]));
-        $app->add(new AuthRoleMiddleware($c->get(UserAuthService::class), ['route_pattern' => ['/api/user']]));
+        $app->add(new AuthRoleMiddleware($c->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
+        $app->add(new AuthRoleMiddleware($c->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',

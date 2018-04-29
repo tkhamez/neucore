@@ -7,8 +7,8 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\Group;
 use Brave\Core\Roles;
-use Brave\Core\Service\EveTokenService;
-use Brave\Core\Service\EsiService;
+use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\OAuthToken;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
@@ -58,11 +58,11 @@ class CorporationTest extends WebTestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
         $oauth = $this->createMock(GenericProvider::class);
-        $ts = new EveTokenService($oauth, $this->em, $log);
+        $ts = new OAuthToken($oauth, $this->em, $log);
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
         $charApi = $this->createMock(CharacterApi::class);
-        $this->esi = new EsiService($log, $ts, $this->alliApi, $this->corpApi, $charApi);
+        $this->esi = new EsiApi($log, $ts, $this->alliApi, $this->corpApi, $charApi);
     }
 
     public function testAll403()
@@ -145,13 +145,13 @@ class CorporationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiService class
+        // method is called via EsiApi class
         $this->corpApi->method('getCorporationsCorporationId')->will(
             $this->throwException(new \Exception("failed to coerce value '123456789123' into type integer", 400))
         );
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123456789123', null, null, [
-            EsiService::class => $this->esi
+            EsiApi::class => $this->esi
         ]);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -162,13 +162,13 @@ class CorporationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiService class
+        // method is called via EsiApi class
         $this->corpApi->method('getCorporationsCorporationId')->will(
             $this->throwException(new \Exception("#", 404))
         );
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123', null, null, [
-            EsiService::class => $this->esi
+            EsiApi::class => $this->esi
         ]);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -188,13 +188,13 @@ class CorporationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiService class
+        // method is called via EsiApi class
         $this->corpApi->method('getCorporationsCorporationId')->will(
             $this->throwException(new \Exception("Oops.", 503))
         );
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123', null, null, [
-            EsiService::class => $this->esi
+            EsiApi::class => $this->esi
         ]);
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -205,7 +205,7 @@ class CorporationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiService class
+        // method is called via EsiApi class
         $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
             'name' => 'The Corp.',
             'ticker' => '-CT-',
@@ -213,7 +213,7 @@ class CorporationTest extends WebTestCase
         ]));
 
         $response = $this->runApp('POST', '/api/user/corporation/add/456123', null, null, [
-            EsiService::class => $this->esi
+            EsiApi::class => $this->esi
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -237,7 +237,7 @@ class CorporationTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // methods are called via EsiService class
+        // methods are called via EsiApi class
         $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
             'name' => 'The Corp.',
             'ticker' => '-CT-',
@@ -249,7 +249,7 @@ class CorporationTest extends WebTestCase
         ]));
 
         $response = $this->runApp('POST', '/api/user/corporation/add/456123', null, null, [
-            EsiService::class => $this->esi
+            EsiApi::class => $this->esi
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());
