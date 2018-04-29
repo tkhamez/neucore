@@ -69,7 +69,7 @@ class CorporationController
      *     path="/user/corporation/all",
      *     operationId="all",
      *     summary="List all corporations.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -93,7 +93,7 @@ class CorporationController
      *     path="/user/corporation/with-groups",
      *     operationId="withGroups",
      *     summary="List all corporations that have groups assigned.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -128,7 +128,7 @@ class CorporationController
      *     path="/user/corporation/add/{id}",
      *     operationId="add",
      *     summary="Add an EVE corporation to the database.",
-     *     description="Needs role: user-admin
+     *     description="Needs role: group-admin
      *                  This makes an ESI request and adds the corporation only if it exists.
      *                  Also adds the corresponding alliance, if there is one.",
      *     tags={"Corporation"},
@@ -198,7 +198,7 @@ class CorporationController
      *     path="/user/corporation/{id}/add-group/{gid}",
      *     operationId="addGroup",
      *     summary="Add a group to the corporation.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -259,7 +259,7 @@ class CorporationController
      *     path="/user/corporation/{id}/remove-group/{gid}",
      *     operationId="removeGroup",
      *     summary="Remove a group from the corporation.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(

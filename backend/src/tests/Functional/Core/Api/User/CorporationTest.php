@@ -356,7 +356,7 @@ class CorporationTest extends WebTestCase
         $this->h->emptyDb();
 
         $this->h->addCharacterMain('User', 6, [Roles::USER]);
-        $this->h->addCharacterMain('Admin', 7, [Roles::USER, Roles::USER_ADMIN]);
+        $this->h->addCharacterMain('Admin', 7, [Roles::USER, Roles::GROUP_ADMIN]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');

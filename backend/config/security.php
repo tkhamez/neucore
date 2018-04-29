@@ -20,7 +20,7 @@ return [
 
     '/api/user/character/{id}/update' => [Roles::USER, Roles::USER_ADMIN],
 
-    '/api/user/corporation' => [Roles::USER_ADMIN],
+    '/api/user/corporation' => [Roles::GROUP_ADMIN],
 
     '/api/user/group/public'                => [Roles::USER],
     '/api/user/group/all'                   => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER_ADMIN],
