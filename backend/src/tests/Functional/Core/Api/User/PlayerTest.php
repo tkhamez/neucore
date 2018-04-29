@@ -201,6 +201,8 @@ class PlayerTest extends WebTestCase
         $this->assertSame(13, $charsBefore[1]->getId());
         $this->assertTrue($charsBefore[0]->getMain());
         $this->assertFalse($charsBefore[1]->getMain());
+        $this->assertSame('Alt', $charsBefore[1]->getName());
+        $this->assertSame('Admin', $this->player->getName());
 
         $response = $this->runApp('PUT', '/api/user/player/set-main/13');
         $this->assertEquals(200, $response->getStatusCode());
@@ -212,11 +214,13 @@ class PlayerTest extends WebTestCase
 
         $this->em->clear();
 
-        $charsAfter = $this->pr->find($this->player->getId())->getCharacters();
+        $playerAfter = $this->pr->find($this->player->getId());
+        $charsAfter = $playerAfter->getCharacters();
         $this->assertSame(12, $charsAfter[0]->getId());
         $this->assertSame(13, $charsAfter[1]->getId());
         $this->assertFalse($charsAfter[0]->getMain());
         $this->assertTrue($charsAfter[1]->getMain());
+        $this->assertSame('Alt', $playerAfter->getName());
     }
 
     public function testAll403()
