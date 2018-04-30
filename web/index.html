@@ -27,15 +27,16 @@
 	<div id="app">
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-			<a href="https://www.bravecollective.com/" target="_blank">
+			<a class="navbar-brand" href="https://www.bravecollective.com/" target="_blank"
+					title="Brave Collective: What's your fun per hour?">
 				<img src="images/brave_32.png" class="mr-2" alt="Brave logo">
+				Brave Collective
 			</a>
-			Brave Collective Core Services
 			<ul class="navbar-nav mr-auto"></ul>
 			<img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
 				class="d-inline-block align-top mr-2" alt="Character Portrait">
 			<span class="navbar-brand" v-if="authChar">{{ authChar.name }}</span>
-			<input v-on:click="logout" v-if="authChar" class="btn btn-outline-success" type="submit" value="Sign Out" />
+			<input v-on:click="logout" v-if="authChar" class="btn btn-outline-success" type="submit" value="Sign Out">
 		</nav>
 
 		<div class="container-fluid">
@@ -43,7 +44,8 @@
 				<div class="col-lg-12">
 					<div class="jumbotron mt-3">
 						<a href="https://www.bravecollective.com/" target="_blank">
-							<img src="/images/brave_300.png" class="float-right" alt="Brave logo">
+							<img src="/images/brave_300.png" class="float-right" alt="Brave logo"
+								title="Brave Collective: What's your fun per hour?">
 						</a>
 						<h1 class="display-3">BRAVE Core</h1>
 						<p class="lead">
@@ -70,7 +72,7 @@
 
 						<div v-if="authChar">
 
-							<p>Please add all your alts by logging in with EVE SSO.</p>
+							<p>Please add all your characters by logging in with EVE SSO.</p>
 							<p class="lead">
 								<a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
 							</p>
@@ -91,7 +93,7 @@
 				<div class="row">
 					<div class="col-lg-8">
 						<div class="card-columns">
-							<div v-for="char in player.characters" class="card bg-light">
+							<div v-for="char in player.characters" class="card border-secondary bg-light">
 								<div class="card-header">
 									<img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'"
 										alt="Character Portrait">
@@ -126,7 +128,7 @@
 						</div>
 					</div>
 					<div class="col-lg-4">
-						<div class="card mb-3">
+						<div class="card border-secondary mb-3">
 							<h3 class="card-header">Groups</h3>
 							<ul class="list-group list-group-flush">
 								<li v-for="group in player.groups" class="list-group-item">
@@ -134,7 +136,8 @@
 								</li>
 							</ul>
 						</div>
-						<div class="card mb-3" v-if="player.managerGroups && player.managerGroups.length > 0">
+						<div v-if="player.managerGroups && player.managerGroups.length > 0"
+								class="card border-secondary mb-3" >
 							<h3 class="card-header">Group Manager</h3>
 							<ul class="list-group list-group-flush">
 								<li v-for="mg in player.managerGroups" class="list-group-item">
@@ -142,7 +145,8 @@
 								</li>
 							</ul>
 						</div>
-						<div class="card mb-3" v-if="player.managerApps && player.managerApps.length > 0">
+						<div v-if="player.managerApps && player.managerApps.length > 0"
+								class="card border-secondary mb-3" >
 							<h3 class="card-header">App Manager</h3>
 							<ul class="list-group list-group-flush">
 								<li v-for="ag in player.managerApps" class="list-group-item">
@@ -152,7 +156,7 @@
 						</div>
 					</div>
 				</div> <!-- row -->
-			</div> <!-- if authorized -->
+			</div> <!-- if authenticated -->
 		</div> <!-- container -->
 	</div>
 	<script src="/index.js"></script>

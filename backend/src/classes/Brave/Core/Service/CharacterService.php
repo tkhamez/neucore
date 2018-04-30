@@ -8,9 +8,15 @@ use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\Corporation;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class CharacterService
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $log;
+
     /**
      * @var EsiApi
      */
@@ -36,9 +42,15 @@ class CharacterService
      */
     private $charRepo;
 
-    public function __construct(EsiApi $esi, EntityManagerInterface $em,
-        AllianceRepository $ar, CorporationRepository $cpr, CharacterRepository $crr)
-    {
+    public function __construct(
+        LoggerInterface $log,
+        EsiApi $esi,
+        EntityManagerInterface $em,
+        AllianceRepository $ar,
+        CorporationRepository $cpr,
+        CharacterRepository $crr
+    ) {
+        $this->log = $log;
         $this->esi = $esi;
         $this->em = $em;
         $this->alliRepo = $ar;

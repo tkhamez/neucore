@@ -60,7 +60,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->ar = new AllianceRepository($this->em);
         $this->corpR = new CorporationRepository($this->em);
         $this->charR = new CharacterRepository($this->em);
-        $this->cs = new CharacterService($esi, $this->em, $this->ar, $this->corpR, $this->charR);
+        $this->cs = new CharacterService($log, $esi, $this->em, $this->ar, $this->corpR, $this->charR);
     }
 
     public function testGetEsiApi()

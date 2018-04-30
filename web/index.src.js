@@ -89,8 +89,8 @@ var app = new window.Vue({
 					return;
 				}
 				app.getPlayer();
-				window.$(".alert-success").fadeTo(2000, 500).slideUp(500, function(){
-					window.$(".alert-success").slideUp(500);
+				window.$(".alert-success").fadeIn(500, function() {
+					$(this).delay(1500).slideUp(500);
 				});
 			});
 		}
