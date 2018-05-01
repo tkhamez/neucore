@@ -67,8 +67,8 @@ class ApplicationController
      * @SWG\Get(
      *     path="/app/v1/groups/{cid}",
      *     operationId="groupsV1",
-     *     summary="Returns groups to which the player belongs. Any character ID of the player account can be used.",
-     *     description="Needs role: app",
+     *     summary="Returns groups of the character's player account.",
+     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
