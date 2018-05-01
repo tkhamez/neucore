@@ -10,21 +10,42 @@
 	<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="/node_modules/vue/dist/vue.min.js"></script>
 	<style>
-		div.alert-success {
-			position: fixed;
-			top: 50px;
-			left: 25%;
-			right: 25%;
-			z-index: 7000;
-			display: none;
-		}
 		.jumbotron {
 			min-height: 430px;
+		}
+		#msg-update-done {
+			position: fixed;
+			top: 170px;
+			left: 25%;
+			right: 25%;
+			z-index: 5000;
+			display: none;
+		}
+		#loader {
+			position: fixed;
+			top: 25px;
+			left: 50%;
+		    width: 120px;
+		    height: 120px;
+		    margin-left: -60px;
+			z-index: 5000;
+		    border: 16px solid #555;
+		    border-top: 16px solid #eee;
+		    border-radius: 50%;
+		    animation: spin 2s linear infinite;
+			display: none;
+		}
+		@keyframes spin {
+		    0% { transform: rotate(0deg); }
+		    100% { transform: rotate(360deg); }
 		}
 	</style>
 </head>
 <body>
 	<div id="app">
+
+		<div class="alert alert-success" id="msg-update-done">Update done.</div>
+		<div id="loader"></div>
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
 			<a class="navbar-brand" href="https://www.bravecollective.com/" target="_blank"
@@ -86,7 +107,6 @@
 				<div class="row">
 					<div class="col-lg-8">
 						<h2>Characters</h2>
-						<div class="alert alert-success" role="alert">Update done.</div>
 					</div>
 					<div class="col-lg-4"></div>
 				</div>

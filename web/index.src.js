@@ -2,7 +2,7 @@ var SwaggerBrvneucoreJs = require('swagger-brvneucore-js'); /*jshint ignore: lin
 var defaultClient = SwaggerBrvneucoreJs.ApiClient.instance;
 defaultClient.basePath = location.protocol + "//" + location.hostname + ':' + location.port + '/api';
 
-var app = new window.Vue({
+var bravecore = new window.Vue({
 	el : '#app',
 
 	data : {
@@ -10,6 +10,7 @@ var app = new window.Vue({
 		loginAltUrl : null,
 		authChar : null,
 		player : {},
+		loadingCount: 0
 	},
 
 	mounted : function() {
@@ -20,76 +21,104 @@ var app = new window.Vue({
 	},
 
 	methods : {
+
+		loading: function (status) {
+			if (status) {
+				this.loadingCount ++;
+			} else {
+				this.loadingCount --;
+			}
+			if (this.loadingCount > 0) {
+				window.$("#loader").fadeIn();
+			} else {
+				window.$("#loader").fadeOut();
+			}
+		},
+
 		getLoginUrl : function() {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.AuthApi().loginUrl({}, function(error, data) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				app.loginUrl = data;
+				bravecore.loginUrl = data;
 			});
 		},
 
 		getLoginAltUrl : function() {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.AuthApi().loginAltUrl({}, function(error, data) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				app.loginAltUrl = data;
+				bravecore.loginAltUrl = data;
 			});
 		},
 
 		getCharacter : function() {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.CharacterApi().show(function(error, data) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
-					app.authChar = null;
+					bravecore.authChar = null;
 					return;
 				}
-				app.authChar = data;
+				bravecore.authChar = data;
 			});
 		},
 
 		getPlayer : function() {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.PlayerApi().show(function(error, data) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				app.player = data;
+				bravecore.player = data;
 			});
 		},
 
 		logout : function() {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.AuthApi().logout(function(error) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				app.getCharacter();
-				app.getLoginUrl();
+				bravecore.getCharacter();
+				bravecore.getLoginUrl();
 			});
 		},
 
 		makeMain : function(characterId) {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.PlayerApi().setMain(characterId, function(error) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				app.getPlayer();
+				bravecore.getPlayer();
 			});
 		},
 
 		update : function(characterId) {
+			this.loading(true);
 			new SwaggerBrvneucoreJs.CharacterApi().update(characterId, function(error) {
+				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				app.getPlayer();
-				window.$(".alert-success").fadeIn(500, function() {
+				bravecore.getPlayer();
+				window.$("#msg-update-done").fadeIn(500, function() {
 					window.$(this).delay(1500).slideUp(500);
 				});
 			});
