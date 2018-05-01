@@ -1,0 +1,11 @@
+build:
+    dependencies:
+        override:
+            - cd backend
+            - composer install --ignore-platform-reqs --no-interaction --no-scripts
+    tests:
+        override:
+            - php-scrutinizer-run --enable-security-analysis
+tools:
+    external_code_coverage:
+        timeout: 1800 # Timeout in seconds.

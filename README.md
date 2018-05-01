@@ -1,6 +1,7 @@
 # Brave Collective Core Services
 
 [![Build Status](https://api.travis-ci.org/tkhamez/brvneucore.svg?branch=master)](https://travis-ci.org/tkhamez/brvneucore)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/tkhamez/brvneucore/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/tkhamez/brvneucore/?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/maintainability)](https://codeclimate.com/github/tkhamez/brvneucore/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/test_coverage)](https://codeclimate.com/github/tkhamez/brvneucore/test_coverage)
 [![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)

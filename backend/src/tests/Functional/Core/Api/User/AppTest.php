@@ -325,9 +325,10 @@ class AppTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-manager/'.$this->pid3);
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.($this->pid3 + 1));
-        $this->assertEquals(404, $response->getStatusCode());
+        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-manager/'.$this->pid3);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.($this->pid3 + 1));
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
     }
 
     public function testRemoveManager204()

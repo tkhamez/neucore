@@ -105,7 +105,7 @@ class Character implements \JsonSerializable
      *
      * @SWG\Property(ref="#/definitions/Corporation")
      * @ManyToOne(targetEntity="Corporation", inversedBy="characters")
-     * @var Player
+     * @var Corporation
      */
     private $corporation;
 

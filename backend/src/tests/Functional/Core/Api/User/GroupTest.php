@@ -18,6 +18,8 @@ class GroupTest extends WebTestCase
 
     private $gr;
 
+    private $pr;
+
     private $gid;
 
     private $gid2;
@@ -375,9 +377,10 @@ class GroupTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-manager/'.$this->pid);
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.($this->pid + 1));
-        $this->assertEquals(404, $response->getStatusCode());
+        $response1 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-manager/'.$this->pid);
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.($this->pid + 1));
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
     }
 
     public function testRemoveManager204()

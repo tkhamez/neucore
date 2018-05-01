@@ -26,7 +26,7 @@ class AutoGroupAssignment
     private $corpRepo;
 
     /**
-     * @var PlayerRepository
+     * @var GroupRepository
      */
     private $groupRepo;
 
