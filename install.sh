@@ -17,7 +17,6 @@ then
 else
     cd backend
     chmod 0777 var/logs
-    chmod 0777 var/cache
     composer install
     composer compile:dev
 
