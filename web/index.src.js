@@ -90,7 +90,7 @@ var app = new window.Vue({
 				}
 				app.getPlayer();
 				window.$(".alert-success").fadeIn(500, function() {
-					$(this).delay(1500).slideUp(500);
+					window.$(this).delay(1500).slideUp(500);
 				});
 			});
 		}
