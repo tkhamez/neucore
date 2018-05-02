@@ -19,36 +19,34 @@
         "symfony/http-foundation": "^4.0",
         "league/oauth2-client": "^2.2",
         "zircote/swagger-php": "^2.0",
-        "tkhamez/swagger-eve-php": "0.7.6.2"
+        "tkhamez/swagger-eve-php": "0.7.6.2",
+
+        "filp/whoops": "^2.1",
+        "phpunit/phpunit": "^7.0",
+        "symfony/dotenv": "^4.0"
+    },
+    "require-dev": {
+        "ext-xdebug": "*"
     },
     "suggest": {
         "ext-apcu": "*"
     },
     "autoload": {
-        "psr-4": { "": "src/classes/" }
-    },
-    "require-dev": {
-        "ext-xdebug": "*",
-        "phpunit/phpunit": "^7.0",
-        "filp/whoops": "^2.1",
-        "symfony/dotenv": "^4.0",
-        "symfony/var-dumper": "^4.0"
-    },
-    "autoload-dev": {
         "psr-4": {
-            "Tests\\": "src/tests/"
-        }
+        	"": "src/classes/",
+        	"Tests\\": "src/tests/"
+    	}
     },
     "repositories": [{
         "type": "git",
         "url": "https://github.com/tkhamez/swagger-eve-php.git"
     }],
     "scripts": {
-        "compile:dev": [
+        "compile": [
             "doctrine-migrations migrations:migrate --no-interaction",
             "swagger --exclude bin,config,var,vendor --output ../web"
         ],
-        "compile": [
+        "compile:prod": [
             "doctrine orm:generate-proxies",
             "doctrine-migrations migrations:migrate --no-interaction",
             "swagger --exclude bin,config,var,vendor --output ../web"

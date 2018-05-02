@@ -4,7 +4,7 @@ if [ "$1" = "prod" ]
 then
     cd backend
     composer install --no-dev --optimize-autoloader --no-interaction
-    composer compile --no-dev --no-interaction
+    composer compile:prod --no-dev --no-interaction
 
     cd ../web
     npm install
@@ -16,9 +16,8 @@ then
 
 else
     cd backend
-    chmod 0777 var/logs
     composer install
-    composer compile:dev
+    composer compile
 
     cd ../web
     npm install

@@ -1,4 +1,4 @@
-var SwaggerBrvneucoreJs = require('swagger-brvneucore-js'); /*jshint ignore: line */
+var SwaggerBrvneucoreJs = require('swagger-brvneucore-js'); /* jshint ignore: line */
 var defaultClient = SwaggerBrvneucoreJs.ApiClient.instance;
 defaultClient.basePath = location.protocol + "//" + location.hostname + ':' + location.port + '/api';
 

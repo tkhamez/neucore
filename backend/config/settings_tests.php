@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- *  Test settings, loaded additionally to settings_dev.php
+ *  Test settings, loaded additionally to other settings files.
  */
 
 return [

@@ -118,8 +118,10 @@ class Application
         // set timezone - also used by Doctrine for dates/times in the database
         date_default_timezone_set('UTC');
 
-        // use this when an error occured before the error handling is setup
+        // use the following when an error occured before the error handling is setup
         #ini_set('error_log', Application::ROOT_DIR . '/var/logs/php_error.log');
+
+        umask(0002);
     }
 
     /**
@@ -141,8 +143,8 @@ class Application
             return $this->settings;
         }
 
-        // Load env vars from file, the check is to ensure we don't use .env in production
-        if (! isset($_SERVER['BRAVECORE_APP_ENV']) && class_exists(Dotenv::class)) {
+        // Load environment variables from file if BRAVECORE_APP_ENV env var is missing
+        if (! isset($_SERVER['BRAVECORE_APP_ENV'])) {
             (new Dotenv())->load(Application::ROOT_DIR . '/.env');
         }
 

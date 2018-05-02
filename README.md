@@ -21,6 +21,25 @@ See the [**front-end**](frontend/README.md) and [**back-end**](backend/README.md
 
 There is also a minimal (temporary) front-end in the [**web**](web) directory.
 
+### Features
+
+TODO move stuff from google doc
+
+### Player Accounts and Character Registration
+
+Each EVE character belongs to a player account, an account can have several characters.
+
+When a character logs in via EVE SSO for the first time, a new player account is created
+and that character is marked as the main character.
+
+After a successful login, additional characters (alts) can be added to the account. This
+is also done via EVE SSO.
+
+If a character to be added to an account already belongs to another account, it will be
+removed from that account and added to the current account. This can happen, for example,
+if someone has accidentally created two accounts by logging in with an alt that has not
+yet been added to the main account.
+
 ## Installation
 
 ### EVE API setup
@@ -54,25 +73,19 @@ The values for the EVE application must be adjusted.
 - MySQL/MariaDB
 - Apache, set the document root to the "web" directory.
 
-### Install dev
+### App setup
 
-Copy `backend/.env.dist` file to `backend/.env` and adjust values.
+Copy `backend/.env.dist` file to `backend/.env` and adjust values or
+set the required environment variables accordingly.
 
-Install dependencies and build backend and frontend:
-```
-./install.sh
-```
+Make sure that the web server can write in `backend/var/logs`.
 
-### Install prod
+In `dev` mode both the web server and SSH user write the same files to `backend/var/cache`,
+so make sure they can override each other's files, e. g. by putting them into each other's group
+(the app uses umask 0002 when writing files and directories).
 
-Set the required environment variables, see in file `backend/.env.dist`.
-
-Make sure that the webserver can write in `backend/var/logs`.
-
-Execute:
-```
-./install.sh prod
-```
+Then install the dependencies and build the back-end and front-end by executing:
+`./install.sh` or `./install.sh prod`.
 
 ### Heroku
 
@@ -83,18 +96,3 @@ heroku buildpacks:add heroku/php
 ```
 
 Logs are streamed to `stderr`, not written to files.
-
-## Player Accounts and Character Registration
-
-Each EVE character belongs to a player account, an account can have several characters.
-
-When a character logs in via EVE SSO for the first time, a new player account is created
-and that character is marked as the main character.
-
-After a successful login, additional characters (alts) can be added to the account. This
-is also done via EVE SSO.
-
-If a character to be added to an account already belongs to another account, it will be
-removed from that account and added to the current account. This can happen, for example,
-if someone has accidentally created two accounts by logging in with an alt that has not
-yet been added to the main account.

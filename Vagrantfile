@@ -41,6 +41,9 @@ Vagrant.configure("2") do |config|
 		# install apache
 		apt install apache2 -y
 
+		sudo usermod -a -G www-data vagrant
+		sudo usermod -a -G vagrant www-data
+
 		cp /var/www/bravecore/config/010-bravecore.vagrant.conf /etc/apache2/sites-available/010-bravecore.conf
 
 		a2enmod rewrite
@@ -66,6 +69,8 @@ Vagrant.configure("2") do |config|
 		fi
 
 		# Install dependencies and build backend and frontend:
+		chmod 0775 backend/var/logs
+		chmod 0775 backend/var/cache
 		./install.sh
 
 		echo
