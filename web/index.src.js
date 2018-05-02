@@ -18,6 +18,9 @@ var bravecore = new window.Vue({
 		this.getLoginAltUrl();
 		this.getCharacter();
 		this.getPlayer();
+		if (location.hostname === 'brvneucore.herokuapp.com') {
+			window.$('#preview').show();
+		}
 	},
 
 	methods : {

@@ -11,7 +11,22 @@
 	<script src="/node_modules/vue/dist/vue.min.js"></script>
 	<style>
 		.jumbotron {
+			position: relative;
 			min-height: 430px;
+		}
+		#preview {
+			position: absolute;
+			right: 20px;
+			font-size: 3em;
+			font-family: impact, sans-serif;
+			letter-spacing: 30px;
+			color: #dd3333;
+			text-shadow: 1px 1px black;
+			_border: 5px solid #aaa;
+			padding-left: 30px;
+			transform: rotate(10deg);
+			background-color: rgba(200, 200, 200, .5);
+			display: none;
 		}
 		#msg-update-done {
 			position: fixed;
@@ -64,6 +79,7 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="jumbotron mt-3">
+						<span id="preview">PREVIEW</span>
 						<a href="https://www.bravecollective.com/" target="_blank">
 							<img src="/images/brave_300.png" class="float-right" alt="Brave logo"
 								title="Brave Collective: What's your fun per hour?">
