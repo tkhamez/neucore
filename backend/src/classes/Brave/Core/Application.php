@@ -3,6 +3,7 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\MakeAdmin;
+use Brave\Core\Command\TokenVerify;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdatePlayerGroups;
 use Brave\Core\Entity\CharacterRepository;
@@ -11,6 +12,7 @@ use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -249,6 +251,8 @@ class Application
             $c->get(AutoGroupAssignment::class),
             $c->get(EntityManagerInterface::class)
         ));
+
+        $console->add(new TokenVerify($c->get(OAuthToken::class)));
 
         return $console;
     }

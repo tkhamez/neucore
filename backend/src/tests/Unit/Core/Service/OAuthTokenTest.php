@@ -6,11 +6,13 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
+use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
-use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
+use League\OAuth2\Client\Provider\GenericResourceOwner;
 
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 {
@@ -38,6 +40,27 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
         $this->oauth = $this->createMock(GenericProvider::class);
         $this->es = new OAuthToken($this->oauth, $this->em, $this->log);
+    }
+
+    public function testSetCharacter()
+    {
+        $this->assertAttributeSame(null, 'character', $this->es);
+
+        $c = new Character();
+        $this->es->setCharacter($c);
+        $this->assertAttributeSame($c, 'character', $this->es);
+    }
+
+    public function testGetConfiguration()
+    {
+        $c = new Character();
+        $c->setAccessToken('old-token');
+        $c->setExpires(time() + 10000);
+        $this->es->setCharacter($c);
+
+        $conf = $this->es->getConfiguration();
+
+        $this->assertSame($this->es->getToken(), $conf->getAccessToken());
     }
 
     public function testGetTokenNoUser()
@@ -117,15 +140,37 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('old-token', $this->es->getToken());
     }
 
-    public function testGetConfiguration()
+    public function testVerifyNoExistingToken()
     {
+        $this->assertNull($this->es->verify());
+    }
+
+    public function testVerify()
+    {
+        // can't really test "getAccessToken()" method here, but that is done above.
+
+        $this->oauth->method('getResourceOwner')->willReturn(new GenericResourceOwner([
+            'CharacterID' => '123',
+            'CharacterName' => 'char name',
+            'ExpiresOn' => '2018-05-03T20:27:38.7999223',
+            'CharacterOwnerHash' => 'coh',
+        ], 'id'));
+
         $c = new Character();
-        $c->setAccessToken('old-token');
-        $c->setExpires(time() + 10000);
+        $c->setAccessToken('at');
+        $c->setExpires(time() - 1800);
+        $c->setRefreshToken('rt');
+
         $this->es->setCharacter($c);
 
-        $conf = $this->es->getConfiguration();
+        $owner = $this->es->verify();
 
-        $this->assertSame($this->es->getToken(), $conf->getAccessToken());
+        $this->assertInstanceOf(ResourceOwnerInterface::class, $owner);
+        $this->assertSame([
+            'CharacterID' => '123',
+            'CharacterName' => 'char name',
+            'ExpiresOn' => '2018-05-03T20:27:38.7999223',
+            'CharacterOwnerHash' => 'coh',
+        ], $owner->toArray());
     }
 }

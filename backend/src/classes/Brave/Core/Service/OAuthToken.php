@@ -67,34 +67,12 @@ class OAuthToken
      */
     public function getToken(): string
     {
-        $token = "";
-
-        if ($this->character === null) {
-            $this->log->error('OAuthToken::getToken: Character not set.');
-            return $token;
+        $existingToken = $this->createAccessTokenFromCharacter();
+        if ($existingToken === null) {
+            return "";
         }
 
-        try {
-            $existingToken = new AccessToken([
-                'access_token' => $this->character->getAccessToken(),
-                'refresh_token' => $this->character->getRefreshToken(),
-                'expires' => $this->character->getExpires()
-            ]);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
-            return $token;
-        }
-
-        $newAccessToken = null;
-        if ($existingToken->getExpires() && $existingToken->hasExpired()) {
-            try {
-                $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
-                    'refresh_token' => $existingToken->getRefreshToken()
-                ]);
-            } catch (\Exception $e) {
-                $this->log->error($e->getMessage(), ['exception' => $e]);
-            }
-        }
+        $newAccessToken = $this->refreshAccessToken($existingToken);
 
         if ($newAccessToken) {
             $this->character->setAccessToken($newAccessToken->getToken());
@@ -107,5 +85,73 @@ class OAuthToken
         }
 
         return $newAccessToken ? $newAccessToken->getToken() : $existingToken->getToken();
+    }
+
+    /**
+     * Returns resource owner.
+     *
+     * Set a character first, it must contain a refresh token.
+     *
+     * @return void|\League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @see OAuthToken::setCharacter()
+     */
+    public function verify()
+    {
+        $existingToken = $this->createAccessTokenFromCharacter();
+        if ($existingToken === null) {
+            return;
+        }
+
+        $newAccessToken = $this->refreshAccessToken($existingToken);
+        $token = $newAccessToken ? $newAccessToken : $existingToken;
+
+        $owner = null;
+        try {
+            $owner = $this->oauth->getResourceOwner($token);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+        }
+
+        return $owner;
+    }
+
+    /**
+     * @return AccessToken|null
+     */
+    private function createAccessTokenFromCharacter()
+    {
+        if ($this->character === null) {
+            $this->log->error('OAuthToken::getToken: Character not set.');
+            return;
+        }
+
+        $token = null;
+        try {
+            $token = new AccessToken([
+                'access_token' => $this->character->getAccessToken(),
+                'refresh_token' => $this->character->getRefreshToken(),
+                'expires' => $this->character->getExpires()
+            ]);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+        }
+
+        return $token;
+    }
+
+    private function refreshAccessToken($existingToken)
+    {
+        $newAccessToken = null;
+        if ($existingToken->getExpires() && $existingToken->hasExpired()) {
+            try {
+                $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
+                    'refresh_token' => $existingToken->getRefreshToken()
+                ]);
+            } catch (\Exception $e) {
+                $this->log->error($e->getMessage(), ['exception' => $e]);
+            }
+        }
+
+        return $newAccessToken;
     }
 }
