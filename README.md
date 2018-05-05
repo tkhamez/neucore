@@ -46,8 +46,8 @@ yet been added to the main account.
 
 - visit https://developers.eveonline.com/applications
 - create a new application (eg: brvneucore-dev)
-- Connection Type: "Authentication & API Access", add these Scopes:
-  - publicData
+- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core back-end
+are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
 
 ### Vagrant Requirements
