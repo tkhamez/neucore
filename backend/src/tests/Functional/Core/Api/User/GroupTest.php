@@ -59,8 +59,8 @@ class GroupTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
             [
-                ['id' => $this->gid, 'name' => 'group-one', 'public' => false],
-                ['id' => $this->gid2, 'name' => 'group-public', 'public' => true]
+                ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE],
+                ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC]
             ],
             $this->parseJsonBody($response1)
         );
@@ -80,7 +80,7 @@ class GroupTest extends WebTestCase
         $response1 = $this->runApp('GET', '/api/user/group/public');
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
-            [['id' => $this->gid2, 'name' => 'group-public', 'public' => true]],
+            [['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC]],
             $this->parseJsonBody($response1)
         );
     }
@@ -128,7 +128,7 @@ class GroupTest extends WebTestCase
 
         $ng = $this->gr->findOneBy(['name' => 'new-g']);
         $this->assertSame(
-            ['id' => $ng->getId(), 'name' => 'new-g', 'public' => false],
+            ['id' => $ng->getId(), 'name' => 'new-g', 'visibility' => Group::VISIBILITY_PRIVATE],
             $this->parseJsonBody($response)
         );
     }
@@ -188,12 +188,12 @@ class GroupTest extends WebTestCase
         $this->assertEquals(200, $response2->getStatusCode());
 
         $this->assertSame(
-            ['id' => $this->gid, 'name' => 'group-one', 'public' => false],
+            ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE],
             $this->parseJsonBody($response1)
         );
 
         $this->assertSame(
-            ['id' => $this->gid, 'name' => 'new-name', 'public' => false],
+            ['id' => $this->gid, 'name' => 'new-name', 'visibility' => Group::VISIBILITY_PRIVATE],
             $this->parseJsonBody($response2)
         );
 
@@ -201,44 +201,44 @@ class GroupTest extends WebTestCase
         $this->assertInstanceOf(Group::class, $renamed);
     }
 
-    public function testSetPublic403()
+    public function testSetVisibility403()
     {
-        $response = $this->runApp('PUT', '/api/user/group/66/set-public/1');
+        $response = $this->runApp('PUT', '/api/user/group/66/set-visibility/public');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
         $this->loginUser(6); // not a group-admin
 
-        $response = $this->runApp('PUT', '/api/user/group/66/set-public/1');
+        $response = $this->runApp('PUT', '/api/user/group/66/set-visibility/public');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testSetPublic404()
+    public function testSetVisibility404()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/set-public/1');
+        $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/set-visibility/public');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testSetPublic200()
+    public function testSetVisibility200()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/set-public/1');
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/set-visibility/public');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => $this->gid, 'name' => 'group-one', 'public' => true],
+            ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PUBLIC],
             $this->parseJsonBody($response)
         );
 
         $this->em->clear();
 
         $changed = $this->gr->find($this->gid);
-        $this->assertTrue($changed->getPublic());
+        $this->assertSame(Group::VISIBILITY_PUBLIC, $changed->getVisibility());
     }
 
     public function testDelete403()
@@ -621,7 +621,7 @@ class GroupTest extends WebTestCase
         $g = $this->helper->addGroups(['group-one', 'group-public']);
         $this->gid = $g[0]->getId();
         $this->gid2 = $g[1]->getId();
-        $g[1]->setPublic(true);
+        $g[1]->setVisibility(Group::VISIBILITY_PUBLIC);
 
         $this->helper->addCharacterMain('User', 6, [Roles::USER]);
 

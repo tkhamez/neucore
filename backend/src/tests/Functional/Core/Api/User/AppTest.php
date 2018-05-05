@@ -377,7 +377,7 @@ class AppTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->gid, 'name' => 'group-one', 'public' => false]],
+            [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
             $this->parseJsonBody($response)
         );
     }

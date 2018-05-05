@@ -19,10 +19,19 @@ class OAuthToken
      */
     private $oauth;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
+    /**
+     * @var LoggerInterface
+     */
     private $log;
 
+    /**
+     * @var Character
+     */
     private $character;
 
     public function __construct(GenericProvider $oauth, EntityManagerInterface $em, LoggerInterface $log)

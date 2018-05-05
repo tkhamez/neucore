@@ -61,12 +61,12 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 'corporation' => null
             ]],
             'applications' => [
-                ['id' => null, 'name' => 'gname', 'public' => false]
+                ['id' => null, 'name' => 'gname', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
             'groups' => [
-                ['id' => null, 'name' => 'group2', 'public' => false]
+                ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
-            'managerGroups' => [['id' => null, 'name' => 'gname', 'public' => false]],
+            'managerGroups' => [['id' => null, 'name' => 'gname', 'visibility' => Group::VISIBILITY_PRIVATE]],
             'managerApps' => [['id' => null, 'name' => 'app-one']],
         ], json_decode(json_encode($play), true));
     }

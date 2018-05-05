@@ -121,7 +121,7 @@ class GroupController
      */
     public function public(): Response
     {
-        return $this->res->withJson($this->gr->findBy(['public' => true], ['name' => 'ASC']));
+        return $this->res->withJson($this->gr->findBy(['visibility' => Group::VISIBILITY_PUBLIC], ['name' => 'ASC']));
     }
 
     /**
@@ -256,8 +256,8 @@ class GroupController
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/set-public/{flag}",
-     *     operationId="setPublic",
+     *     path="/user/group/{id}/set-visibility/{choice}",
+     *     operationId="setVisibility",
      *     summary="Change visibility of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
@@ -270,17 +270,20 @@ class GroupController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="flag",
+     *         name="choice",
      *         in="path",
      *         required=true,
-     *         description="0 = not public, 1 = public.",
-     *         type="integer",
-     *         enum={0, 1}
+     *         type="string",
+     *         enum={"private", "public", "conditioned"}
      *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="Visibility changed.",
      *         @SWG\Schema(ref="#/definitions/Group")
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid 'choice' parameter."
      *     ),
      *     @SWG\Response(
      *         response="404",
@@ -292,13 +295,18 @@ class GroupController
      *     )
      * )
      */
-    public function setPublic(string $id, string $flag): Response
+    public function setVisibility(string $id, string $choice): Response
     {
         if (! $this->findGroup($id)) {
             return $this->res->withStatus(404);
         }
 
-        $this->group->setPublic((bool) $flag);
+        try {
+            $this->group->setVisibility($choice);
+        } catch(\Exception $e) {
+            return $this->res->withStatus(400);
+        }
+
         if (! $this->flush()) {
             return $this->res->withStatus(500);
         }

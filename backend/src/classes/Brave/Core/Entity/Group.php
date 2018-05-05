@@ -15,6 +15,12 @@ namespace Brave\Core\Entity;
 class Group implements \JsonSerializable
 {
 
+    const VISIBILITY_PRIVATE = 'private';
+
+    const VISIBILITY_PUBLIC = 'public';
+
+    const VISIBILITY_CONDITIONED = 'conditioned';
+
     /**
      * Group ID.
      *
@@ -37,11 +43,11 @@ class Group implements \JsonSerializable
 
     /**
      *
-     * @SWG\Property()
-     * @Column(type="boolean")
-     * @var bool
+     * @SWG\Property(enum={"private", "public", "conditioned"})
+     * @Column(type="string", length=16, options={"default" : "private"})
+     * @var string
      */
-    private $public = false;
+    private $visibility = self::VISIBILITY_PRIVATE;
 
     /**
      * @ManyToMany(targetEntity="Player", mappedBy="applications")
@@ -94,7 +100,7 @@ class Group implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'public' => $this->public
+            'visibility' => $this->visibility
         ];
     }
 
@@ -145,27 +151,32 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Set public.
+     * Set visibility.
      *
-     * @param bool $public
-     *
+     * @param string $visibility elf::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC or self::VISIBILITY_CONDITIONED
+     * @throws \InvalidArgumentException if parameter is invalid
      * @return Group
      */
-    public function setPublic(bool $public)
+    public function setVisibility(string $visibility)
     {
-        $this->public = $public;
+        $valid = [self::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC, self::VISIBILITY_CONDITIONED];
+        if (! in_array($visibility, $valid)) {
+            throw new \InvalidArgumentException('Parameter must be one of ' . implode(', ', $valid));
+        }
+
+        $this->visibility = $visibility;
 
         return $this;
     }
 
     /**
-     * Get public.
+     * Get visibility.
      *
-     * @return bool
+     * @return string
      */
-    public function getPublic()
+    public function getVisibility()
     {
-        return $this->public;
+        return $this->visibility;
     }
 
     /**

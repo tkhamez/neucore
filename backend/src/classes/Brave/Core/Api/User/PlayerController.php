@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
@@ -518,7 +519,7 @@ class PlayerController
     {
         if ($action === 'add' && $entity === 'Application') {
             // players can only apply to public groups
-            $criteria = ['id' => (int) $groupId, 'public' => true];
+            $criteria = ['id' => (int) $groupId, 'visibility' => Group::VISIBILITY_PUBLIC];
         } else {
             $criteria = ['id' => (int) $groupId];
         }

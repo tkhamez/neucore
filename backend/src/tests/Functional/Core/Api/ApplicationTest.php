@@ -2,9 +2,10 @@
 
 namespace Tests\Functional\Core\Api;
 
+use Brave\Core\Roles;
+use Brave\Core\Entity\Group;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Brave\Core\Roles;
 
 class ApplicationTest extends WebTestCase
 {
@@ -74,7 +75,7 @@ class ApplicationTest extends WebTestCase
         $this->assertSame($body1, $body2);
 
         $this->assertSame([
-            ['id' => $groups[1]->getId(), 'name' => 'g1', 'public' => false]
+            ['id' => $groups[1]->getId(), 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
         ], $body1);
     }
 

@@ -15,7 +15,7 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $group->setName('g.name');
 
         $this->assertSame(
-            ['id' => null, 'name' => 'g.name', 'public' => false],
+            ['id' => null, 'name' => 'g.name', 'visibility' => Group::VISIBILITY_PRIVATE],
             json_decode(json_encode($group), true)
         );
     }
@@ -32,12 +32,21 @@ class GroupTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('nam', $group->getName());
     }
 
-    public function testSetGetPublic()
+    public function testSetVisibilityException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Parameter must be one of ');
+
+        $group = new Group();
+        $group->setVisibility('invalid');
+    }
+
+    public function testSetGetVisibility()
     {
         $group = new Group();
-        $this->assertFalse($group->getPublic());
-        $group->setPublic(true);
-        $this->assertTrue($group->getPublic());
+        $this->assertsame(Group::VISIBILITY_PRIVATE, $group->getVisibility());
+        $group->setVisibility(Group::VISIBILITY_PUBLIC);
+        $this->assertsame(Group::VISIBILITY_PUBLIC, $group->getVisibility());
     }
 
     public function testAddGetRemoveApplicant()

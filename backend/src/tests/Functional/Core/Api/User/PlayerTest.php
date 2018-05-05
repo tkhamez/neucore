@@ -2,6 +2,9 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\Group;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Roles;
 use Monolog\Handler\TestHandler;
@@ -9,8 +12,6 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Alliance;
 
 class PlayerTest extends WebTestCase
 {
@@ -80,8 +81,8 @@ class PlayerTest extends WebTestCase
             ],
             'applications' => [],
             'groups' => [
-                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'public' => false],
-                ['id' => $groups[0]->getId(), 'name' => 'group1', 'public' => false]
+                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'visibility' => Group::VISIBILITY_PRIVATE],
+                ['id' => $groups[0]->getId(), 'name' => 'group1', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
             'managerGroups' => [],
             'managerApps' => [],
@@ -533,7 +534,7 @@ class PlayerTest extends WebTestCase
         ]);
 
         $gs = $this->h->addGroups(['test-pub', 'test-priv']);
-        $gs[0]->setPublic(true);
+        $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
         $this->group = $gs[0];
         $this->gPrivId = $gs[1]->getId();
 
