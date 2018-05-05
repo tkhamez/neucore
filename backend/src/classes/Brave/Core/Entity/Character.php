@@ -75,6 +75,8 @@ class Character implements \JsonSerializable
     /**
      * Shows if character's refresh token is valid or not.
      *
+     * If there is no refresh token it is considered valid.
+     *
      * @SWG\Property()
      * @Column(type="boolean", name="valid_token")
      * @var bool
@@ -302,7 +304,7 @@ class Character implements \JsonSerializable
      */
     public function getRefreshToken()
     {
-        return $this->refreshToken;
+        return (string) $this->refreshToken;
     }
 
     /**
