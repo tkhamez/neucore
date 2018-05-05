@@ -8,6 +8,7 @@ var bravecore = new window.Vue({
 	data : {
 		loginUrl : null,
 		loginAltUrl : null,
+		loginErrorMessage: '',
 		authChar : null,
 		player : {},
 		loadingCount: 0
@@ -20,6 +21,10 @@ var bravecore = new window.Vue({
 		this.getPlayer();
 		if (location.hostname === 'brvneucore.herokuapp.com') {
 			window.$('#preview').show();
+		}
+		if (location.hash === '#login' || location.hash === '#login-alt') {
+			this.getAuthResult();
+			location.hash = '';
 		}
 	},
 
@@ -40,7 +45,9 @@ var bravecore = new window.Vue({
 
 		getLoginUrl : function() {
 			this.loading(true);
-			new SwaggerBrvneucoreJs.AuthApi().loginUrl({}, function(error, data) {
+			new SwaggerBrvneucoreJs.AuthApi().loginUrl({
+				redirect: '/#login'
+			}, function(error, data) {
 				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
@@ -52,13 +59,30 @@ var bravecore = new window.Vue({
 
 		getLoginAltUrl : function() {
 			this.loading(true);
-			new SwaggerBrvneucoreJs.AuthApi().loginAltUrl({}, function(error, data) {
+			new SwaggerBrvneucoreJs.AuthApi().loginAltUrl({
+				redirect: '/#login-alt'
+			}, function(error, data) {
 				bravecore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
 				bravecore.loginAltUrl = data;
+			});
+		},
+
+		getAuthResult: function() {
+			this.loading(true);
+			new SwaggerBrvneucoreJs.AuthApi().result(function(error, data) {
+				bravecore.loading(false);
+				if (error) {
+					window.console.error(error);
+					return;
+				}
+				if (! data.success) {
+					bravecore.loginErrorMessage = data.message;
+					window.$("#msg-login-error").show();
+				}
 			});
 		},
 

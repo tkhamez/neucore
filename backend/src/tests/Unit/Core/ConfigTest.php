@@ -6,7 +6,6 @@ use Brave\Core\Config;
 
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testGet()
     {
         $c = new Config(['key' => ['vals']]);

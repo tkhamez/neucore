@@ -149,12 +149,14 @@ class AuthController
 
         // check OAuth state parameter
         if ($request->getQueryParam('state') !== $state) {
+            $this->log->debug('11');
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => 'OAuth state mismatch.',
             ]);
             return $this->res->withRedirect($redirectUrl);
         }
+        $this->log->debug('22');
 
         // get token(s)
         try {

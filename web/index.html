@@ -27,7 +27,8 @@
 			background-color: rgba(200, 200, 200, .5);
 			display: none;
 		}
-		#msg-update-done {
+		#msg-update-done,
+		#msg-login-error {
 			position: fixed;
 			top: 170px;
 			left: 25%;
@@ -59,6 +60,12 @@
 	<div id="app">
 
 		<div class="alert alert-success" id="msg-update-done">Update done.</div>
+		<div class="alert alert-danger alert-dismissible fade show" id="msg-login-error">
+			&nbsp; {{ loginErrorMessage }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
 		<div id="loader"></div>
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
