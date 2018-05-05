@@ -73,7 +73,9 @@ class AuthController
         $this->sso = $sso;
         $this->log = $log;
         $this->auth = $auth;
-        $this->scopes = isset($config->get('eve')['scopes']) ? explode(' ', $config->get('eve')['scopes']) : [];
+        $this->scopes = isset($config->get('eve')['scopes']) ?
+            explode(' ', (string) $config->get('eve')['scopes']) :
+            [];
     }
 
     /**
