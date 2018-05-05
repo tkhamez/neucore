@@ -77,7 +77,7 @@ class CharacterService
      *
      * @param int $id
      * @param bool $flush Flush changes to now to the database.
-     * @return null|\Brave\Core\Entity\Character
+     * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine EntityManager.
      */
     public function fetchCharacter(int $id, bool $flush = false)
     {
@@ -124,7 +124,7 @@ class CharacterService
      *
      * @param int $id
      * @param bool $flush Flush changes to now to the database.
-     * @return null|\Brave\Core\Entity\Corporation
+     * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine EntityManager.
      */
     public function fetchCorporation(int $id, bool $flush = false)
     {
@@ -173,7 +173,7 @@ class CharacterService
      *
      * @param int $id
      * @param bool $flush Flush changes to now to the database.
-     * @return null|\Brave\Core\Entity\Alliance
+     * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine EntityManager.
      */
     public function fetchAlliance(int $id, bool $flush = false)
     {

@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *
  * @SWG\Definition(
  *     definition="Character",
- *     required={"id", "name", "main", "corporation"}
+ *     required={"id", "name", "main", "validToken", "corporation"}
  * )
  * @Entity(repositoryClass="Brave\Core\Entity\CharacterRepository")
  * @Table(name="characters")
@@ -43,7 +43,7 @@ class Character implements \JsonSerializable
      * @Column(type="boolean")
      * @var bool
      */
-    private $main;
+    private $main = false;
 
     /**
      *
@@ -71,6 +71,15 @@ class Character implements \JsonSerializable
      * @var string
      */
     private $refreshToken;
+
+    /**
+     * Shows if character's refresh token is valid or not.
+     *
+     * @SWG\Property()
+     * @Column(type="boolean", name="valid_token")
+     * @var bool
+     */
+    private $validToken = false;
 
     /**
      * OAuth scopes.
@@ -122,6 +131,7 @@ class Character implements \JsonSerializable
             'name' => $this->name,
             'main' => $this->main,
             'lastUpdate' => $this->lastUpdate ? $this->lastUpdate->format('Y-m-d\TH:i:s\Z') : null,
+            'validToken' => $this->validToken,
             'corporation' => $this->corporation
         ];
     }
@@ -293,6 +303,30 @@ class Character implements \JsonSerializable
     public function getRefreshToken()
     {
         return $this->refreshToken;
+    }
+
+    /**
+     * Set validToken.
+     *
+     * @param bool $validToken
+     *
+     * @return Character
+     */
+    public function setValidToken($validToken)
+    {
+        $this->validToken = $validToken;
+
+        return $this;
+    }
+
+    /**
+     * Get validToken.
+     *
+     * @return bool
+     */
+    public function getValidToken()
+    {
+        return $this->validToken;
     }
 
     /**

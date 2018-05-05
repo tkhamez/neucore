@@ -3,7 +3,6 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\MakeAdmin;
-use Brave\Core\Command\TokenVerify;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdatePlayerGroups;
 use Brave\Core\Entity\CharacterRepository;
@@ -243,7 +242,9 @@ class Application
         $console->add(new UpdateCharacters(
             $c->get(CharacterRepository::class),
             $c->get(CharacterService::class),
-            $c->get(EntityManagerInterface::class)
+            $c->get(OAuthToken::class),
+            $c->get(EntityManagerInterface::class),
+            $c->get(LoggerInterface::class)
         ));
 
         $console->add(new UpdatePlayerGroups(
@@ -251,8 +252,6 @@ class Application
             $c->get(AutoGroupAssignment::class),
             $c->get(EntityManagerInterface::class)
         ));
-
-        $console->add(new TokenVerify($c->get(OAuthToken::class)));
 
         return $console;
     }

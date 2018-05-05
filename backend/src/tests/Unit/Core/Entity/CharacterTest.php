@@ -20,6 +20,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'test char',
             'main' => false,
             'lastUpdate' => null,
+            'validToken' => false,
             'corporation' => null
         ], json_decode(json_encode($char), true));
     }
@@ -41,8 +42,9 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
     public function testSetGetMain()
     {
         $char = new Character();
+        $this->assertFalse($char->getMain());
         $char->setMain(true);
-        $this->assertSame(true, $char->getMain());
+        $this->assertTrue($char->getMain());
     }
 
     public function testSetGetPlayer()
@@ -87,6 +89,14 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $char = new Character();
         $char->setRefreshToken('dfg');
         $this->assertSame('dfg', $char->getRefreshToken());
+    }
+
+    public function testSetGetValidToken()
+    {
+        $char = new Character();
+        $this->assertFalse($char->getValidToken());
+        $char->setValidToken(true);
+        $this->assertTrue($char->getValidToken());
     }
 
     public function testSetGetScopes()

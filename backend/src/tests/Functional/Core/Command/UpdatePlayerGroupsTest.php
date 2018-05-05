@@ -23,7 +23,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $p1 = (new Player())->setName('p1');
         $p2 = (new Player())->setName('p2')->addGroup($group);
         $corp = (new Corporation())->setId(1)->setName('corp')->setTicker('t')->addGroup($group);
-        $char = (new Character())->setId(1)->setName('char')->setMain(false)
+        $char = (new Character())->setId(1)->setName('char')
             ->setCharacterOwnerHash('h')->setAccessToken('t')
             ->setPlayer($p1)->setCorporation($corp);
 

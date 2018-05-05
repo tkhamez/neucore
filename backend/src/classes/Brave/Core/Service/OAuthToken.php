@@ -14,6 +14,9 @@ use Swagger\Client\Eve\Configuration;
  */
 class OAuthToken
 {
+    /**
+     * @var GenericProvider
+     */
     private $oauth;
 
     private $em;

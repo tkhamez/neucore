@@ -42,14 +42,24 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
             'id' => null,
             'name' => 'test user',
             'roles' => ['rname', 'role2'],
-            'characters' => [
-                ['id' => 123, 'name' => 'eve one', 'main' => true, 'lastUpdate' => null, 'corporation' => [
-                    'id' => null, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
-                        'id' => null, 'name' => 'alli1', 'ticker' => 'DEF'
-                    ]
-                ]],
-                ['id' => 234, 'name' => 'eve two', 'main' => false, 'lastUpdate' => null, 'corporation' => null],
-            ],
+            'characters' => [[
+                'id' => 123,
+                'name' => 'eve one',
+                'main' => true,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'corporation' => ['id' => null, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
+                    'id' => null, 'name' => 'alli1', 'ticker' => 'DEF'
+                ]]
+            ], [
+                'id' => 234,
+                'name' =>
+                'eve two',
+                'main' => false,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'corporation' => null
+            ]],
             'applications' => [
                 ['id' => null, 'name' => 'gname', 'public' => false]
             ],

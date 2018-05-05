@@ -35,7 +35,14 @@ class CharacterTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 96061222, 'name' => 'User', 'main' => true, 'lastUpdate' => null, 'corporation' => null],
+            [
+                'id' => 96061222,
+                'name' => 'User',
+                'main' => true,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'corporation' => null
+            ],
             $this->parseJsonBody($response)
         );
     }
@@ -89,9 +96,13 @@ class CharacterTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $expected = ['id' => 96061222, 'name' => 'Char 96061222', 'main' => true, 'corporation' => [
-            'id' => 234, 'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance' => null
-        ]];
+        $expected = [
+            'id' => 96061222,
+            'name' => 'Char 96061222',
+            'main' => true,
+            'validToken' => false,
+            'corporation' => ['id' => 234, 'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance' => null]
+        ];
         $actual = $this->parseJsonBody($response);
 
         $this->assertRegExp('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/', $actual['lastUpdate']);

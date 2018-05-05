@@ -65,11 +65,18 @@ class PlayerTest extends WebTestCase
             'name' => 'TUser',
             'roles' => [Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 123456, 'name' => 'TUser', 'main' => true, 'lastUpdate' => null, 'corporation' => [
-                    'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
-                        'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
+                [
+                    'id' => 123456,
+                    'name' => 'TUser',
+                    'main' => true,
+                    'lastUpdate' => null,
+                    'validToken' => false,
+                    'corporation' => [
+                        'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
+                            'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
+                        ]
                     ]
-                ]],
+                ],
             ],
             'applications' => [],
             'groups' => [
@@ -208,7 +215,13 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['id' => 13, 'name' => 'Alt', 'main' => true, 'lastUpdate' => null, 'corporation' => null],
+            ['id' => 13,
+                'name' => 'Alt',
+                'main' => true,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'corporation' => null
+            ],
             $this->parseJsonBody($response)
         );
 
@@ -477,12 +490,26 @@ class PlayerTest extends WebTestCase
             'name' => 'Admin',
             'roles' => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             'characters' => [
-                ['id' => 12, 'name' => 'Admin', 'main' => true, 'lastUpdate' => null, 'corporation' => [
-                    'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
-                        'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
+                [
+                    'id' => 12,
+                    'name' => 'Admin',
+                    'main' => true,
+                    'lastUpdate' => null,
+                    'validToken' => false,
+                    'corporation' => [
+                        'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
+                            'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
+                        ]
                     ]
-                ]],
-                ['id' => 13, 'name' => 'Alt', 'main' => false, 'lastUpdate' => null, 'corporation' => null],
+                ],
+                [
+                    'id' => 13,
+                    'name' => 'Alt',
+                    'main' => false,
+                    'lastUpdate' => null,
+                    'validToken' => false,
+                    'corporation' => null
+                ],
             ],
             'applications' => [],
             'groups' => [],
