@@ -2,6 +2,10 @@ var SwaggerBrvneucoreJs = require('swagger-brvneucore-js'); /* jshint ignore: li
 var defaultClient = SwaggerBrvneucoreJs.ApiClient.instance;
 defaultClient.basePath = location.protocol + "//" + location.hostname + ':' + location.port + '/api';
 
+window.$(function () {
+	window.$('[data-toggle="popover"]').popover();
+});
+
 var bravecore = new window.Vue({
 	el : '#app',
 

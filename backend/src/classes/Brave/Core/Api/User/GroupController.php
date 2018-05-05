@@ -303,7 +303,7 @@ class GroupController
 
         try {
             $this->group->setVisibility($choice);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $this->res->withStatus(400);
         }
 

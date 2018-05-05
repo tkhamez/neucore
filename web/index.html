@@ -67,6 +67,26 @@
 			</button>
 		</div>
 		<div id="loader"></div>
+		<div class="modal fade" id="tokenModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Invalid ESI token</h5>
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						The ESI token for this character is no longer valid.<br>
+						Please use the EVE login button and login with this character
+						again to create a new token.
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
 			<a class="navbar-brand" href="https://www.bravecollective.com/" target="_blank"
@@ -114,7 +134,6 @@
 						</div>
 
 						<div v-if="authChar">
-
 							<p>Please add all your characters by logging in with EVE SSO.</p>
 							<p class="lead">
 								<a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
@@ -157,10 +176,18 @@
 								<div class="card-footer">
 									<span v-if="char.main" class="oi oi-star text-warning mr-2" title="Main"
 										aria-hidden="true"></span>
-									<button type="button" class="btn btn-primary btn-sm mb-1"
-										v-on:click="makeMain(char.id)"
-										v-if="! char.main">Make Main</button>
-									<button type="button" class="btn btn-primary btn-sm mb-1"
+
+									<button v-if="! char.validToken" type="button" class="btn btn-danger btn-sm"
+										data-toggle="modal" data-target="#tokenModal">
+										Invalid ESI token
+									</button>
+
+									<button v-if="! char.main && char.validToken"
+										type="button" class="btn btn-primary btn-sm" v-on:click="makeMain(char.id)">
+										Make Main
+									</button>
+									<button v-if="char.validToken"
+										type="button" class="btn btn-primary btn-sm"
 										v-on:click="update(char.id)">
 										<span class="oi oi-loop-circular pull-right"></span>
 										Update

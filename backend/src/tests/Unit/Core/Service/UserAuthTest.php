@@ -112,7 +112,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('coh', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame(1525456785, $user->getExpires());
-        $this->assertSame('token', $user->getAccessToken());
+        $this->assertSame('refresh', $user->getRefreshToken());
+        $this->assertTrue($user->getValidToken());
         $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Roles::USER], $this->service->getRoles());
@@ -131,6 +132,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('abc', $char->getAccessToken());
         $this->assertSame(123456, $char->getExpires());
         $this->assertSame('def', $char->getRefreshToken());
+        $this->assertFalse($char->getValidToken());
 
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
         $result = $this->service->authenticate(9013, 'Test User Changed Name', 'coh', 'scope1 s2', $token);
@@ -145,6 +147,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame(1525456785, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
+        $this->assertTrue($char->getValidToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
         $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
     }
@@ -173,6 +176,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('scope1 s2', $chars[1]->getScopes());
         $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
+        $this->assertTrue($chars[1]->getValidToken());
         $this->assertFalse($chars[1]->getMain());
     }
 
@@ -198,6 +202,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('scope1 s2', $chars[1]->getScopes());
         $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
+        $this->assertTrue($chars[1]->getValidToken());
     }
 
     public function testAddAltLoggedInChar()

@@ -123,7 +123,10 @@ class UserAuth implements RoleProviderInterface
         $char->setCharacterOwnerHash($characterOwnerHash);
         $char->setAccessToken($token->getToken());
         $char->setExpires($token->getExpires());
-        $char->setRefreshToken($token->getRefreshToken());
+        if ((string) $token->getRefreshToken() !== '') {
+            $char->setRefreshToken($token->getRefreshToken());
+            $char->setValidToken(true);
+        }
         $char->setLastLogin(new \DateTime());
         $char->setScopes($scopes);
 
@@ -183,7 +186,10 @@ class UserAuth implements RoleProviderInterface
         $alt->setCharacterOwnerHash($characterOwnerHash);
         $alt->setAccessToken($token->getToken());
         $alt->setExpires($token->getExpires());
-        $alt->setRefreshToken($token->getRefreshToken());
+        if ((string) $token->getRefreshToken() !== '') {
+            $alt->setRefreshToken($token->getRefreshToken());
+            $alt->setValidToken(true);
+        }
         $alt->setScopes($scopes);
 
         try {

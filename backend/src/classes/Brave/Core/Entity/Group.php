@@ -14,7 +14,6 @@ namespace Brave\Core\Entity;
  */
 class Group implements \JsonSerializable
 {
-
     const VISIBILITY_PRIVATE = 'private';
 
     const VISIBILITY_PUBLIC = 'public';
