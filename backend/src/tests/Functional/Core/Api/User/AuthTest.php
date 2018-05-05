@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Config;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -87,7 +88,10 @@ class AuthTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame(null, $sess->get('auth_state')); // test that it was deleted
-        $this->assertSame(['success' => false, 'message' => 'OAuth state mismatch'], $sess->get('auth_result'));
+        $this->assertSame(
+            ['success' => false, 'message' => 'OAuth state mismatch.'],
+            $sess->get('auth_result')
+        );
     }
 
     public function testCallbackAccessTokenException()
@@ -108,7 +112,10 @@ class AuthTest extends WebTestCase
         $this->assertSame(302, $response->getStatusCode());
 
         $sess = new SessionData();
-        $this->assertSame(['success' => false, 'message' => 'request token error'], $sess->get('auth_result'));
+        $this->assertSame(
+            ['success' => false, 'message' => 'Error when requesting the token.'],
+            $sess->get('auth_result')
+        );
     }
 
     public function testCallbackResourceOwnerException()
@@ -130,7 +137,10 @@ class AuthTest extends WebTestCase
         $this->assertSame(302, $response->getStatusCode());
 
         $sess = new SessionData();
-        $this->assertSame(['success' => false, 'message' => 'request verify error'], $sess->get('auth_result'));
+        $this->assertSame(
+            ['success' => false, 'message' => 'Error obtaining Character ID.'],
+            $sess->get('auth_result')
+        );
     }
 
     public function testCallbackResourceOwnerError()
@@ -151,7 +161,52 @@ class AuthTest extends WebTestCase
         $this->assertSame(302, $response->getStatusCode());
 
         $sess = new SessionData();
-        $this->assertSame(['success' => false, 'message' => 'request verify error'], $sess->get('auth_result'));
+        $this->assertSame(
+            ['success' => false, 'message' => 'Error obtaining Character ID.'],
+            $sess->get('auth_result')
+        );
+    }
+
+    public function testCallbackScopesMismatch()
+    {
+        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+
+        $sso = $this->createMock(GenericProvider::class);
+        $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
+
+        $ro = $this->createMock(ResourceOwnerInterface::class);
+        $ro->method('toArray')
+            ->willReturn([
+                'CharacterID' => 123,
+                'CharacterName' => 'Na',
+                'CharacterOwnerHash' => 'a',
+                'Scopes' => 'have-this'
+            ]);
+        $sso->method('getResourceOwner')->willReturn($ro);
+
+        $sess = new SessionData();
+
+        // missing scope
+        $_SESSION = ['auth_state' => $state];
+        $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+            GenericProvider::class => $sso,
+            Config::class => new Config(['eve' => ['scopes' => 'dont-have-this']]),
+        ]);
+        $this->assertSame(
+            ['success' => false, 'message' => 'Required scopes do not match.'],
+            $sess->get('auth_result')
+        );
+
+        // additional scope
+        $_SESSION = ['auth_state' => $state];
+        $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+            GenericProvider::class => $sso,
+            Config::class => new Config(['eve' => ['scopes' => 'have-this and-this']]),
+        ]);
+        $this->assertSame(
+            ['success' => false, 'message' => 'Required scopes do not match.'],
+            $sess->get('auth_result')
+        );
     }
 
     public function testCallbackAuthError()
@@ -165,7 +220,13 @@ class AuthTest extends WebTestCase
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
 
         $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na', 'CharacterOwnerHash' => 'a']);
+        $ro->method('toArray')
+            ->willReturn([
+                'CharacterID' => 123,
+                'CharacterName' => 'Na',
+                'CharacterOwnerHash' => 'a',
+                'Scopes' => 'read-this'
+            ]);
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $log = new Logger('ignore');
@@ -173,14 +234,18 @@ class AuthTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => $sso,
-            LoggerInterface::class => $log
+            LoggerInterface::class => $log,
+            Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
         // fails because Role "user" is missing in database
 
         $sess = new SessionData();
-        $this->assertSame(['success' => false, 'message' => 'Could not authenticate user.'], $sess->get('auth_result'));
+        $this->assertSame(
+            ['success' => false, 'message' => 'Could not authenticate user.'],
+            $sess->get('auth_result')
+        );
     }
 
     public function testCallback()
@@ -196,11 +261,17 @@ class AuthTest extends WebTestCase
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 't']));
 
         $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 123, 'CharacterName' => 'Na', 'CharacterOwnerHash' => 'a']);
+        $ro->method('toArray')->willReturn([
+            'CharacterID' => 123,
+            'CharacterName' => 'Na',
+            'CharacterOwnerHash' => 'a',
+            'Scopes' => 'read-this and-this'
+        ]);
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
+            Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
@@ -223,11 +294,18 @@ class AuthTest extends WebTestCase
         $sso->method('getAccessToken')->willReturn(new AccessToken(['access_token' => 'tk']));
 
         $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn(['CharacterID' => 3, 'CharacterName' => 'N3', 'CharacterOwnerHash' => 'hs']);
+        $ro->method('toArray')->willReturn([
+            'CharacterID' => 3,
+            'CharacterName' => 'N3',
+            'CharacterOwnerHash' => 'hs',
+            'Scopes' => 'read-this'
+
+        ]);
         $sso->method('getResourceOwner')->willReturn($ro);
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
-            GenericProvider::class => $sso
+            GenericProvider::class => $sso,
+            Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
         ]);
         $this->assertSame(302, $response->getStatusCode());
 

@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Config;
 use Brave\Core\Roles;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
@@ -62,16 +63,17 @@ class AuthController
      *
      * @var array
      */
-    private $scopes = ['publicData'];
+    private $scopes;
 
     public function __construct(Response $res, SessionData $session, GenericProvider $sso,
-        LoggerInterface $log, UserAuth $auth)
+        LoggerInterface $log, UserAuth $auth, Config $config)
     {
         $this->res = $res;
         $this->session = $session;
         $this->sso = $sso;
         $this->log = $log;
         $this->auth = $auth;
+        $this->scopes = isset($config->get('eve')['scopes']) ? explode(' ', $config->get('eve')['scopes']) : [];
     }
 
     /**
@@ -145,14 +147,16 @@ class AuthController
         $state = $this->session->get('auth_state');
         $this->session->delete('auth_state');
 
+        // check OAuth state parameter
         if ($request->getQueryParam('state') !== $state) {
             $this->session->set('auth_result', [
                 'success' => false,
-                'message' => 'OAuth state mismatch',
+                'message' => 'OAuth state mismatch.',
             ]);
             return $this->res->withRedirect($redirectUrl);
         }
 
+        // get token(s)
         try {
             $token = $this->sso->getAccessToken('authorization_code', [
                 'code' => $request->getQueryParam('code', '')
@@ -161,11 +165,12 @@ class AuthController
             $this->log->error($e->getMessage(), ['exception' => $e]);
             $this->session->set('auth_result', [
                 'success' => false,
-                'message' => 'request token error',
+                'message' => 'Error when requesting the token.',
             ]);
             return $this->res->withRedirect($redirectUrl);
         }
 
+        // get resource owner (character ID etc.)
         $resourceOwner = null;
         try {
             $resourceOwner = $this->sso->getResourceOwner($token);
@@ -173,6 +178,7 @@ class AuthController
             $this->log->error($e->getMessage(), ['exception' => $e]);
         }
 
+        // verify result
         $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;
         if (! is_array($verify) ||
             ! isset($verify['CharacterID']) ||
@@ -181,7 +187,17 @@ class AuthController
         ) {
             $this->session->set('auth_result', [
                 'success' => false,
-                'message' => 'request verify error',
+                'message' => 'Error obtaining Character ID.',
+            ]);
+            return $this->res->withRedirect($redirectUrl);
+        }
+
+        // verify scopes (users can have manipulate the SSO URL)
+        $scopes = isset($verify['Scopes']) ? $verify['Scopes'] : '';
+        if (! $this->verifyScopes($scopes)) {
+            $this->session->set('auth_result', [
+                'success' => false,
+                'message' => 'Required scopes do not match.',
             ]);
             return $this->res->withRedirect($redirectUrl);
         }
@@ -194,20 +210,16 @@ class AuthController
                 $verify['CharacterID'],
                 $verify['CharacterName'],
                 $verify['CharacterOwnerHash'],
-                $token->getToken(),
-                isset($verify['Scopes']) ? $verify['Scopes'] : null,
-                $token->getExpires(),
-                $token->getRefreshToken()
+                $scopes,
+                $token
             );
         } else {
             $success = $this->auth->authenticate(
                 $verify['CharacterID'],
                 $verify['CharacterName'],
                 $verify['CharacterOwnerHash'],
-                $token->getToken(),
-                isset($verify['Scopes']) ? $verify['Scopes'] : null,
-                $token->getExpires(),
-                $token->getRefreshToken()
+                $scopes,
+                $token
             );
         }
 
@@ -294,5 +306,17 @@ class AuthController
         $this->session->set('auth_redirect', $request->getQueryParam('redirect', '/'));
 
         return $url;
+    }
+
+    private function verifyScopes(string $scopes): bool
+    {
+        $scopeArr = explode(' ', $scopes);
+        $diff1 = array_diff($this->scopes, $scopeArr);
+        $diff2 = array_diff($scopeArr, $this->scopes);
+
+        if (count($diff1) !== 0 || count($diff2) !== 0) {
+            return false;
+        }
+        return true;
     }
 }

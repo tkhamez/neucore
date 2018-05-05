@@ -7,6 +7,7 @@ use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
+use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -83,7 +84,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->log->popHandler();
         $this->log->pushHandler(new TestHandler());
 
-        $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', 'token'));
+        $token = new AccessToken(['access_token' => 'token']);
+        $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', '', $token));
         $this->assertSame(
             'UserAuth::authenticate(): Role "'.Roles::USER.'" not found.',
             $this->log->getHandlers()[0]->getRecords()[0]['message']
@@ -99,7 +101,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse(isset($_SESSION['character_id']));
 
-        $result = $this->service->authenticate(888, 'New User', 'coh', 'token', 'scope1 s2', 123456, 'refresh');
+        $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $result = $this->service->authenticate(888, 'New User', 'coh', 'scope1 s2', $token);
         $user = $this->service->getUser();
 
         $this->assertTrue($result);
@@ -108,7 +111,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($user->getMain());
         $this->assertSame('coh', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
-        $this->assertSame(123456, $user->getExpires());
+        $this->assertSame(1525456785, $user->getExpires());
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame($_SESSION['character_id'], $user->getId());
@@ -129,8 +132,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(123456, $char->getExpires());
         $this->assertSame('def', $char->getRefreshToken());
 
-        $result = $this->service->authenticate(
-            9013, 'Test User Changed Name', 'coh', 'token', 'scope1 s2', 456, 'refresh');
+        $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $result = $this->service->authenticate(9013, 'Test User Changed Name', 'coh', 'scope1 s2', $token);
         $user = $this->service->getUser();
 
         $this->assertTrue($result);
@@ -140,7 +143,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('coh', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame('scope1 s2', $user->getScopes());
-        $this->assertSame(456, $user->getExpires());
+        $this->assertSame(1525456785, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
         $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
@@ -156,7 +159,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(1, count($player->getCharacters()));
 
-        $result = $this->service->addAlt(101, 'Alt 1', 'hash', 'tk', 'scope1 s2', 123456789, 'rf');
+        $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
+        $result = $this->service->addAlt(101, 'Alt 1', 'hash', 'scope1 s2', $token);
         $this->assertTrue($result);
 
         $chars = $player->getCharacters();
@@ -167,7 +171,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame('tk', $chars[1]->getAccessToken());
         $this->assertSame('scope1 s2', $chars[1]->getScopes());
-        $this->assertSame(123456789, $chars[1]->getExpires());
+        $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
         $this->assertFalse($chars[1]->getMain());
     }
@@ -180,7 +184,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $main1 = $h->addCharacterMain('Main1', 100, [Roles::USER]);
         $main2 = $h->addCharacterMain('Main2', 200, [Roles::USER]);
 
-        $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'tk', 'scope1 s2', 123456789, 'rf');
+        $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
+        $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'scope1 s2', $token);
         $this->assertTrue($result);
 
         $chars = $main1->getPlayer()->getCharacters();
@@ -191,7 +196,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame('tk', $chars[1]->getAccessToken());
         $this->assertSame('scope1 s2', $chars[1]->getScopes());
-        $this->assertSame(123456789, $chars[1]->getExpires());
+        $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
     }
 
@@ -202,7 +207,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $_SESSION['character_id'] = 100;
         $main = $h->addCharacterMain('Main1', 100, [Roles::USER]);
 
-        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', 'tk');
+        $token = new AccessToken(['access_token' => 'tk']);
+        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', '', $token);
         $this->assertTrue($result);
 
         $chars = $main->getPlayer()->getCharacters();
@@ -216,7 +222,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $h->emptyDb();
         $h->addCharacterMain('Main1', 100, [Roles::USER]);
 
-        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', 'tk');
+        $token = new AccessToken(['access_token' => 'tk']);
+        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', '', $token);
         $this->assertFalse($result);
     }
 }

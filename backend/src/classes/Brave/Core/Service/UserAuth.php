@@ -2,14 +2,15 @@
 
 namespace Brave\Core\Service;
 
-use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
 use Brave\Slim\Role\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManagerInterface;
+use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
@@ -89,7 +90,7 @@ class UserAuth implements RoleProviderInterface
      * Creates character with player account if it is missing.
      */
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
-        string $accessToken, string $scopes = null, int $expires = null, string $refreshToken = null): bool
+        string $scopes, AccessToken $token): bool
     {
         $char = $this->characterRepository->find($characterId);
         if ($char === null) {
@@ -119,10 +120,10 @@ class UserAuth implements RoleProviderInterface
 
         // update user
         $char->setName($characterName);
-        $char->setCharacterOwnerHash($characterOwnerHash); # TODO react to change
-        $char->setAccessToken($accessToken);
-        $char->setExpires($expires);
-        $char->setRefreshToken($refreshToken);
+        $char->setCharacterOwnerHash($characterOwnerHash);
+        $char->setAccessToken($token->getToken());
+        $char->setExpires($token->getExpires());
+        $char->setRefreshToken($token->getRefreshToken());
         $char->setLastLogin(new \DateTime());
         $char->setScopes($scopes);
 
@@ -142,7 +143,7 @@ class UserAuth implements RoleProviderInterface
     }
 
     public function addAlt(int $characterId, string $characterName, string $characterOwnerHash,
-        string $accessToken, string $scopes = null, int $expires = null, string $refreshToken = null): bool
+        string $scopes, AccessToken $token): bool
     {
         $this->getUser();
 
@@ -180,9 +181,9 @@ class UserAuth implements RoleProviderInterface
         $alt->setMain(false);
         $alt->setName($characterName);
         $alt->setCharacterOwnerHash($characterOwnerHash);
-        $alt->setAccessToken($accessToken);
-        $alt->setExpires($expires);
-        $alt->setRefreshToken($refreshToken);
+        $alt->setAccessToken($token->getToken());
+        $alt->setExpires($token->getExpires());
+        $alt->setRefreshToken($token->getRefreshToken());
         $alt->setScopes($scopes);
 
         try {

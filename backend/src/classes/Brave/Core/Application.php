@@ -318,6 +318,10 @@ class Application
      */
     private function dependencies(Container $container)
     {
+        // Configuration class
+        $config = new Config($container->get('config'));
+        $container->set(Config::class, $config);
+
         // Doctrine
         $container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
             $conf = $c->get('config')['doctrine'];
