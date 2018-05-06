@@ -353,7 +353,7 @@ class CorporationTest extends WebTestCase
         $em = $this->h->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $res = $this->runApp('PUT','/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1, null, null, [
+        $res = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1, null, null, [
             EntityManagerInterface::class => $em,
             LoggerInterface::class => $this->log
         ]);
