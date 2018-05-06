@@ -2,7 +2,7 @@
     "name": "brv/neucore",
     "type": "project",
     "require": {
-        "php-64bit": "^7.1.0",
+        "php-64bit": "^7.1",
         "ext-zend-opcache": "*",
         "ext-pdo_mysql": "*",
         "ext-zip": "*",
@@ -18,9 +18,10 @@
         "ocramius/proxy-manager": "~2.1.0",
         "symfony/console": "^4.0",
         "symfony/http-foundation": "^4.0",
+        "symfony/yaml": "^4.0",
         "league/oauth2-client": "^2.2",
         "zircote/swagger-php": "^2.0",
-        "tkhamez/swagger-eve-php": "0.7.6.2",
+        "tkhamez/swagger-eve-php": "0.8.1.1",
 
         "filp/whoops": "^2.1",
         "phpunit/phpunit": "^7.0",
