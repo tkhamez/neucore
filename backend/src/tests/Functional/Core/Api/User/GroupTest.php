@@ -7,8 +7,13 @@ use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Roles;
+use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Logger;
+use Monolog\Handler\TestHandler;
+use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class GroupTest extends WebTestCase
 {
@@ -220,6 +225,15 @@ class GroupTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/set-visibility/public');
         $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testSetVisibility400()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/set-visibility/invalid');
+        $this->assertEquals(400, $response->getStatusCode());
     }
 
     public function testSetVisibility200()
@@ -553,6 +567,24 @@ class GroupTest extends WebTestCase
 
         $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-member/'.($this->pid + 1));
         $this->assertEquals(404, $response3->getStatusCode());
+    }
+
+    public function testRemoveMember500()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $em = $this->helper->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+
+        $log = new Logger('Test');
+        $log->pushHandler(new TestHandler());
+
+        $res = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-member/'.$this->pid2, null, null, [
+            EntityManagerInterface::class => $em,
+            LoggerInterface::class => $log
+        ]);
+        $this->assertEquals(500, $res->getStatusCode());
     }
 
     public function testRemoveMember204()

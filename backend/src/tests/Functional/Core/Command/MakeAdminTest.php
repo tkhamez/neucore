@@ -4,8 +4,13 @@ namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
+use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Logger;
+use Monolog\Handler\TestHandler;
+use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class MakeAdminTest extends ConsoleTestCase
 {
@@ -53,5 +58,22 @@ class MakeAdminTest extends ConsoleTestCase
         $output = $this->runConsoleApp('make-admin', ['id' => 5678]);
 
         $this->assertSame('Character with ID "5678" not found'."\n", $output);
+    }
+
+    public function testExecuteException()
+    {
+        $em = (new Helper())->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+
+        $log = new Logger('Test');
+        $log->pushHandler(new TestHandler());
+
+        $output = $this->runConsoleApp('make-admin', ['id' => 1234], [
+            EntityManagerInterface::class => $em,
+            LoggerInterface::class => $log
+        ]);
+
+        $this->assertSame('', $output);
+        $this->assertSame('error', $log->getHandlers()[0]->getRecords()[0]['message']);
     }
 }

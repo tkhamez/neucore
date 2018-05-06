@@ -192,6 +192,8 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $groups = $player->getGroups();
         $this->assertSame(1, count($groups));
         $this->assertSame(1, $groups[0]->getId());
+
+        $this->assertFalse($player->removeGroupById(3));
     }
 
     public function testGetGroupIds()

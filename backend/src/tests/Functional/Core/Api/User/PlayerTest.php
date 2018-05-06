@@ -7,11 +7,13 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Roles;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class PlayerTest extends WebTestCase
 {
@@ -29,6 +31,8 @@ class PlayerTest extends WebTestCase
 
     private $pr;
 
+    private $log;
+
     public function setUp()
     {
         $_SESSION = null;
@@ -36,6 +40,9 @@ class PlayerTest extends WebTestCase
         $this->h = new Helper();
         $this->em = $this->h->getEm();
         $this->pr = new PlayerRepository($this->em);
+
+        $this->log = new Logger('test');
+        $this->log->pushHandler(new TestHandler());
     }
 
     public function testPlayer403()
@@ -282,18 +289,15 @@ class PlayerTest extends WebTestCase
         $h->addCharacterMain('Admin', 12, [Roles::APP_ADMIN]);
         $this->loginUser(12);
 
-        $log = new Logger('test');
-        $log->pushHandler(new TestHandler());
-
         $response = $this->runApp('GET', '/api/user/player/app-managers', null, null, [
-            LoggerInterface::class => $log
+            LoggerInterface::class => $this->log
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response));
         $this->assertSame(
             'PlayerController->getManagers(): role "app-manager" not found.',
-            $log->getHandlers()[0]->getRecords()[0]['message']
+            $this->log->getHandlers()[0]->getRecords()[0]['message']
         );
     }
 
@@ -330,18 +334,15 @@ class PlayerTest extends WebTestCase
         $h->addCharacterMain('Admin', 12, [Roles::GROUP_ADMIN]);
         $this->loginUser(12);
 
-        $log = new Logger('test');
-        $log->pushHandler(new TestHandler());
-
         $response = $this->runApp('GET', '/api/user/player/group-managers', null, null, [
-            LoggerInterface::class => $log
+            LoggerInterface::class => $this->log
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response));
         $this->assertSame(
             'PlayerController->getManagers(): role "group-manager" not found.',
-            $log->getHandlers()[0]->getRecords()[0]['message']
+            $this->log->getHandlers()[0]->getRecords()[0]['message']
         );
     }
 
@@ -436,6 +437,22 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(404, $response2->getStatusCode());
         $this->assertEquals(404, $response3->getStatusCode());
         $this->assertEquals(404, $response4->getStatusCode());
+    }
+
+    public function testRemoveRole500()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $em = $this->h->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+
+        $res = $this->runApp('PUT',
+            '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::APP_ADMIN, null, null, [
+            EntityManagerInterface::class => $em,
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(500, $res->getStatusCode());
     }
 
     public function testRemoveRole204()

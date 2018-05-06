@@ -93,6 +93,7 @@ class OAuthToken
                 $this->em->flush();
             } catch (\Exception $e) {
                 $this->log->critical($e->getMessage(), ['exception' => $e]);
+                return ""; // old token is invalid, new token could not be saved
             }
         }
 
@@ -151,7 +152,11 @@ class OAuthToken
         return $token;
     }
 
-    private function refreshAccessToken($existingToken)
+    /**
+     * @param AccessToken $existingToken
+     * @return NULL|\League\OAuth2\Client\Token\AccessToken
+     */
+    private function refreshAccessToken(AccessToken $existingToken)
     {
         $newAccessToken = null;
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {

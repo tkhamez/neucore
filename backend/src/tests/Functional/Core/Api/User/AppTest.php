@@ -9,11 +9,13 @@ use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\AppRepository;
 use Brave\Core\Entity\App;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class AppTest extends WebTestCase
 {
@@ -451,6 +453,24 @@ class AppTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-group/'.$this->gid);
         $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.($this->gid + 1));
         $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testRemoveGroup500()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $em = $this->helper->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+
+        $log = new Logger('Test');
+        $log->pushHandler(new TestHandler());
+
+        $res = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid, null, null, [
+            EntityManagerInterface::class => $em,
+            LoggerInterface::class => $log
+        ]);
+        $this->assertEquals(500, $res->getStatusCode());
     }
 
     public function testRemoveGroup204()

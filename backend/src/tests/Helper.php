@@ -48,9 +48,9 @@ class Helper
         $rp->setValue(null, true);
     }
 
-    public function getEm()
+    public function getEm($discrete = false)
     {
-        if (self::$em === null) {
+        if (self::$em === null || $discrete) {
             $settings = (new Application())->loadSettings(true);
 
             $config = Setup::createAnnotationMetadataConfiguration(
@@ -59,7 +59,13 @@ class Helper
                 $settings['config']['doctrine']['meta']['proxy_dir']
             );
 
-            self::$em = EntityManager::create($settings['config']['doctrine']['connection'], $config);
+            $em = EntityManager::create($settings['config']['doctrine']['connection'], $config);
+
+            if ($discrete) {
+                return $em;
+            } else {
+                self::$em = $em;
+            }
         }
 
         return self::$em;

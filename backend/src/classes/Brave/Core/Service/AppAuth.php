@@ -128,7 +128,6 @@ class AppAuth implements RoleProviderInterface
         if (password_needs_rehash($this->app->getSecret(), PASSWORD_DEFAULT)) {
             $this->app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
             try {
-                $this->em->persist($this->app);
                 $this->em->flush();
             } catch (\Exception $e) {
                 $this->log->critical($e->getMessage(), ['exception' => $e]);

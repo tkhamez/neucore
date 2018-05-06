@@ -9,9 +9,11 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
+use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
+use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
@@ -19,6 +21,7 @@ use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class CorporationTest extends WebTestCase
 {
@@ -44,6 +47,8 @@ class CorporationTest extends WebTestCase
 
     private $esi;
 
+    private $log;
+
     public function setUp()
     {
         $_SESSION = null;
@@ -55,14 +60,14 @@ class CorporationTest extends WebTestCase
         $this->alliRepo = new AllianceRepository($this->em);
 
         // mock Swagger API
-        $log = new Logger('Test');
-        $log->pushHandler(new TestHandler());
+        $this->log = new Logger('Test');
+        $this->log->pushHandler(new TestHandler());
         $oauth = $this->createMock(GenericProvider::class);
-        $ts = new OAuthToken($oauth, $this->em, $log);
+        $ts = new OAuthToken($oauth, $this->em, $this->log);
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
         $charApi = $this->createMock(CharacterApi::class);
-        $this->esi = new EsiApi($log, $ts, $this->alliApi, $this->corpApi, $charApi);
+        $this->esi = new EsiApi($this->log, $ts, $this->alliApi, $this->corpApi, $charApi);
     }
 
     public function testAll403()
@@ -338,6 +343,21 @@ class CorporationTest extends WebTestCase
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
         $this->assertEquals(404, $response3->getStatusCode());
+    }
+
+    public function testRemoveGroup500()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $em = $this->h->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+
+        $res = $this->runApp('PUT','/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1, null, null, [
+            EntityManagerInterface::class => $em,
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(500, $res->getStatusCode());
     }
 
     public function testRemoveGroup204()

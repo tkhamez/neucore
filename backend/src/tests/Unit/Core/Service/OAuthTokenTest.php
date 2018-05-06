@@ -13,6 +13,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
+use Tests\WriteErrorListener;
 
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,15 +25,14 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     private $es;
 
-    public static function setUpBeforeClass()
+    private $esError;
+
+    public function setUp()
     {
         $h = new Helper();
         $h->emptyDb();
         $h->addRoles([Roles::USER]);
-    }
 
-    public function setUp()
-    {
         $this->em = (new Helper())->getEm();
 
         $this->log = new Logger('Test');
@@ -40,6 +40,11 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
         $this->oauth = $this->createMock(GenericProvider::class);
         $this->es = new OAuthToken($this->oauth, $this->em, $this->log);
+
+        // a second OAuthToken instance with another EntityManager that throws an exception on flush.
+        $em = (new Helper())->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $this->esError = new OAuthToken($this->oauth, $em, $this->log);
     }
 
     public function testSetCharacter()
@@ -100,34 +105,29 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     public function testGetTokenNewTokenUpdateDatabase()
     {
-        $this->oauth->method('getAccessToken')->willReturn(new AccessToken([
-            'access_token' => 'new-token',
-            'refresh_token' => '',
-            'expires' => 1519933900, // 03/01/2018 @ 7:51pm (UTC)
-        ]));
+        $char = $this->setUpData();
 
-        $c = new Character();
-        $c->setId(123);
-        $c->setName('n');
-        $c->setMain(true);
-        $c->setCharacterOwnerHash('coh');
-        $c->setAccessToken('old-token');
-        $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
+        $this->es->setCharacter($char);
+        $token = $this->es->getToken();
 
-        $this->em->persist($c);
-        $this->em->flush();
-
-        $this->es->setCharacter($c);
-        $this->es->getToken();
-
-        $this->assertSame('new-token', $this->es->getToken());
-        $this->assertSame('new-token', $c->getAccessToken());
+        $this->assertSame('new-token', $token);
+        $this->assertSame('new-token', $char->getAccessToken());
 
         $this->em->clear();
         $charFromDB = (new CharacterRepository($this->em))->find(123);
         $this->assertSame('new-token', $charFromDB->getAccessToken());
 
         $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));
+    }
+
+    public function testGetTokenNewTokenUpdateDatabaseError()
+    {
+        $char = $this->setUpData();
+
+        $this->esError->setCharacter($char);
+        $token = $this->esError->getToken();
+
+        $this->assertSame('', $token);
     }
 
     public function testGetTokenNoRefresh()
@@ -172,5 +172,27 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
             'ExpiresOn' => '2018-05-03T20:27:38.7999223',
             'CharacterOwnerHash' => 'coh',
         ], $owner->toArray());
+    }
+
+    private function setUpData(): Character
+    {
+        $this->oauth->method('getAccessToken')->willReturn(new AccessToken([
+            'access_token' => 'new-token',
+            'refresh_token' => '',
+            'expires' => 1519933900, // 03/01/2018 @ 7:51pm (UTC)
+        ]));
+
+        $c = new Character();
+        $c->setId(123);
+        $c->setName('n');
+        $c->setMain(true);
+        $c->setCharacterOwnerHash('coh');
+        $c->setAccessToken('old-token');
+        $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
+
+        $this->em->persist($c);
+        $this->em->flush();
+
+        return $c;
     }
 }

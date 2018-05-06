@@ -119,9 +119,12 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
         $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);
 
         $oldHash = $this->repo->find($appId)->getSecret();
-        $newHash = $this->service->getApp($req)->getSecret();
-
         $this->assertStringStartsWith('$1$', $oldHash);
+
+        $this->service->getApp($req);
+        $h->getEm()->clear();
+
+        $newHash = $this->repo->find($appId)->getSecret();
         $this->assertStringStartsNotWith('$1$', $newHash);
     }
 }

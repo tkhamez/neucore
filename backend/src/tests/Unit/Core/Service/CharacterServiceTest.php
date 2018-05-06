@@ -20,6 +20,7 @@ use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -41,6 +42,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
     private $cs;
 
+    private $csError;
+
     public function setUp()
     {
         $this->testHelper = new Helper();
@@ -61,6 +64,11 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->corpR = new CorporationRepository($this->em);
         $this->charR = new CharacterRepository($this->em);
         $this->cs = new CharacterService($log, $esi, $this->em, $this->ar, $this->corpR, $this->charR);
+
+        // a second CharacterService instance with another EntityManager that throws an exception on flush.
+        $em = (new Helper())->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $this->csError = new CharacterService($log, $esi, $em, $this->ar, $this->corpR, $this->charR);
     }
 
     public function testGetEsiApi()
@@ -313,5 +321,17 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->em->clear();
         $aDb = $this->ar->find(345);
         $this->assertNotNull($aDb);
+    }
+
+    public function testFetchAllianceCreateFlushError()
+    {
+        $this->testHelper->emptyDb();
+
+        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
+            'name' => 'A', 'ticker' => 'A'
+        ]));
+
+        $alli = $this->csError->fetchAlliance(345, true);
+        $this->assertNull($alli);
     }
 }

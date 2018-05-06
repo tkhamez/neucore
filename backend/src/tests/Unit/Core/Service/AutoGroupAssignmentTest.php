@@ -13,6 +13,7 @@ use Brave\Core\Service\AutoGroupAssignment;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 {
@@ -23,6 +24,8 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
     private $playerRepo;
 
     private $aga;
+
+    private $agaError;
 
     private $playerId;
 
@@ -49,6 +52,11 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->playerRepo = new PlayerRepository($this->em);
 
         $this->aga = new AutoGroupAssignment($log, $this->em, $corpRepo, $groupRepo, $this->playerRepo);
+
+        // a second CharacterService instance with another EntityManager that throws an exception on flush.
+        $em = (new Helper())->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $this->agaError = new AutoGroupAssignment($log, $em, $corpRepo, $groupRepo, $this->playerRepo);
     }
 
     public function testAssignNotFound()
@@ -78,6 +86,13 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }
 
+    public function testAssignFlushError()
+    {
+        $this->setUpData();
+        $player = $this->agaError->assign($this->playerId);
+        $this->assertNull($player);
+    }
+
     private function setUpData()
     {
         $this->th->emptyDb();
@@ -96,6 +111,8 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
             ->setCharacterOwnerHash('h1')->setAccessToken('t1')->setCorporation($corp1);
         $char2 = (new Character())->setId(2)->setName('ch2')->setMain(false)->setPlayer($player)
             ->setCharacterOwnerHash('h2')->setAccessToken('t2')->setCorporation($corp2);
+        $char3 = (new Character())->setId(3)->setName('ch3')->setMain(false)->setPlayer($player)
+            ->setCharacterOwnerHash('h2')->setAccessToken('t2');
 
         $this->em->persist($group1);
         $this->em->persist($group2);
@@ -107,6 +124,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->em->persist($corp3);
         $this->em->persist($char1);
         $this->em->persist($char2);
+        $this->em->persist($char3);
         $this->em->persist($player);
         $this->em->flush();
         $this->em->clear();
