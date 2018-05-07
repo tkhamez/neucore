@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
 
 		systemctl reload apache2
 
-        sudo apt install openjdk-8-jre-headless
+        sudo apt install openjdk-8-jre-headless -y
 
 	SHELL
 
