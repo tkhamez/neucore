@@ -6,7 +6,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/test_coverage)](https://codeclimate.com/github/tkhamez/brvneucore/test_coverage)
 [![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 
-https://brvneucore.herokuapp.com
+Preview: https://brvneucore.herokuapp.com
 
 API: https://brvneucore.herokuapp.com/api
 
@@ -91,6 +91,7 @@ Then install the dependencies and build the back-end and front-end by executing:
 
 To deploy to Heroku, add buildpacks in this order:
 ```
+heroku buildpacks:add heroku/java
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
 ```
