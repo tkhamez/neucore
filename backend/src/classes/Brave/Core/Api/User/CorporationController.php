@@ -5,8 +5,8 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\GroupRepository;
-use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\EsiCharacterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
@@ -167,7 +167,7 @@ class CorporationController
      *     )
      * )
      */
-    public function add(string $id, EsiApi $es, CharacterService $cs): Response
+    public function add(string $id, EsiApi $es, EsiCharacterService $cs): Response
     {
         $corpId = (int) $id;
 

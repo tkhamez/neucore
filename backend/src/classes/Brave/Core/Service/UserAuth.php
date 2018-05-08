@@ -4,7 +4,6 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
 use Brave\Slim\Role\RoleProviderInterface;
@@ -24,31 +23,51 @@ use Psr\Log\LoggerInterface;
  */
 class UserAuth implements RoleProviderInterface
 {
+    /**
+     * @var SessionData
+     */
     private $session;
 
+    /**
+     * @var CoreCharacterService
+     */
+    private $characterService;
+
+    /**
+     * @var CharacterRepository
+     */
     private $characterRepository;
 
+    /**
+     * @var $characterRepository
+     */
     private $roleRepository;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
+    /**
+     * @var LoggerInterface
+     */
     private $log;
 
     /**
-     *
      * @var Character
      */
     private $user;
 
-    public function __construct(SessionData $session,
+    public function __construct(SessionData $session, CoreCharacterService $charService,
         CharacterRepository $characterRepository, RoleRepository $roleRepository,
         EntityManagerInterface $em, LoggerInterface $log)
     {
-        $this->log = $log;
         $this->session = $session;
-        $this->em = $em;
+        $this->characterService = $charService;
         $this->characterRepository = $characterRepository;
         $this->roleRepository = $roleRepository;
+        $this->em = $em;
+        $this->log = $log;
     }
 
     /**
@@ -103,37 +122,21 @@ class UserAuth implements RoleProviderInterface
                 return false;
             }
 
-            $player = new Player();
-            $player->setName($characterName);
-            $player->addRole($userRole[0]);
-
-            $char = new Character();
-            $char->setId($characterId);
-            $char->setMain(true);
-            $char->setPlayer($player);
-        } else {
-            $player = $char->getPlayer();
-            if ($char->getMain()) {
-                $player->setName($characterName);
-            }
+            $char = $this->characterService->createNewPlayerWithMain(
+                $characterId,
+                $characterName,
+                $userRole[0]
+            );
         }
 
-        // update user
         $char->setName($characterName);
-        $char->setCharacterOwnerHash($characterOwnerHash);
-        $char->setAccessToken($token->getToken());
-        $char->setExpires($token->getExpires());
-        $char->setRefreshToken($token->getRefreshToken());
-        $char->setValidToken(true); // set valid even if there is no token
         $char->setLastLogin(new \DateTime());
-        $char->setScopes($scopes);
+        $char->setValidToken(true); // set valid even if there is no token
 
-        try {
-            $this->em->persist($player); // necessary for new player
-            $this->em->persist($char);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        $success = $this->characterService->updateAndStoreCharacterWithPlayer(
+            $char, $characterOwnerHash, $token, $scopes);
+
+        if (! $success) {
             return false;
         }
 
@@ -178,25 +181,12 @@ class UserAuth implements RoleProviderInterface
 
         $player->addCharacter($alt);
         $alt->setPlayer($player);
-
         $alt->setMain(false);
         $alt->setName($characterName);
-        $alt->setCharacterOwnerHash($characterOwnerHash);
-        $alt->setAccessToken($token->getToken());
-        $alt->setExpires($token->getExpires());
-        $alt->setRefreshToken($token->getRefreshToken());
         $alt->setValidToken(true); // set valid even if there is no token
-        $alt->setScopes($scopes);
 
-        try {
-            $this->em->persist($alt); // necessary for new character
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
-
-        return true;
+        return $this->characterService->updateAndStoreCharacterWithPlayer(
+            $alt, $characterOwnerHash, $token, $scopes);
     }
 
     /**

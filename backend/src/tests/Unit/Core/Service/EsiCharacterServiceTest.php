@@ -7,7 +7,7 @@ use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\EsiCharacterService;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
 use Monolog\Logger;
@@ -22,7 +22,7 @@ use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class CharacterServiceTest extends \PHPUnit\Framework\TestCase
+class EsiCharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
     private $testHelper;
 
@@ -63,12 +63,12 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->ar = new AllianceRepository($this->em);
         $this->corpR = new CorporationRepository($this->em);
         $this->charR = new CharacterRepository($this->em);
-        $this->cs = new CharacterService($log, $esi, $this->em, $this->ar, $this->corpR, $this->charR);
+        $this->cs = new EsiCharacterService($log, $esi, $this->em, $this->ar, $this->corpR, $this->charR);
 
-        // a second CharacterService instance with another EntityManager that throws an exception on flush.
+        // a second EsiCharacterService instance with another EntityManager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->csError = new CharacterService($log, $esi, $em, $this->ar, $this->corpR, $this->charR);
+        $this->csError = new EsiCharacterService($log, $esi, $em, $this->ar, $this->corpR, $this->charR);
     }
 
     public function testGetEsiApi()

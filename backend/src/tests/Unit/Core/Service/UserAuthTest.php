@@ -5,8 +5,9 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
-use Brave\Core\Service\UserAuth;
+use Brave\Core\Service\CoreCharacterService;
 use Brave\Slim\Session\SessionData;
+use Brave\Core\Service\UserAuth;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
@@ -38,8 +39,9 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $em = $h->getEm();
         $cr = new CharacterRepository($em);
         $rr = new RoleRepository($em);
+        $ccs = new CoreCharacterService($this->log, $em);
 
-        $this->service = new UserAuth(new SessionData(), $cr, $rr, $em, $this->log);
+        $this->service = new UserAuth(new SessionData(), $ccs, $cr, $rr, $em, $this->log);
     }
 
     public function testGetRolesNoAuth()

@@ -47,13 +47,13 @@ class Character implements \JsonSerializable
 
     /**
      *
-     * @Column(type="text", length=65535, name="character_owner_hash")
+     * @Column(type="text", length=65535, name="character_owner_hash", nullable=true)
      * @var string
      */
     private $characterOwnerHash;
 
     /**
-     * @Column(type="text", length=65535, name="access_token")
+     * @Column(type="text", length=65535, name="access_token", nullable=true)
      * @var string
      */
     private $accessToken;
@@ -214,11 +214,11 @@ class Character implements \JsonSerializable
     /**
      * Set characterOwnerHash.
      *
-     * @param string $characterOwnerHash
+     * @param string|null $characterOwnerHash
      *
      * @return Character
      */
-    public function setCharacterOwnerHash(string $characterOwnerHash)
+    public function setCharacterOwnerHash(string $characterOwnerHash = null)
     {
         $this->characterOwnerHash = $characterOwnerHash;
 
@@ -228,7 +228,7 @@ class Character implements \JsonSerializable
     /**
      * Get characterOwnerHash.
      *
-     * @return string
+     * @return string|null
      */
     public function getCharacterOwnerHash()
     {
@@ -238,11 +238,11 @@ class Character implements \JsonSerializable
     /**
      * Set accessToken.
      *
-     * @param string $accessToken
+     * @param string|null $accessToken
      *
      * @return Character
      */
-    public function setAccessToken(string $accessToken)
+    public function setAccessToken(string $accessToken = null)
     {
         $this->accessToken = $accessToken;
 
@@ -252,7 +252,7 @@ class Character implements \JsonSerializable
     /**
      * Get accessToken.
      *
-     * @return string
+     * @return string|null
      */
     public function getAccessToken()
     {
@@ -262,7 +262,7 @@ class Character implements \JsonSerializable
     /**
      * Set expires.
      *
-     * @param int $expires
+     * @param int|null $expires
      *
      * @return Character
      */
@@ -276,7 +276,7 @@ class Character implements \JsonSerializable
     /**
      * Get expires.
      *
-     * @return int
+     * @return int|null
      */
     public function getExpires()
     {
@@ -300,11 +300,11 @@ class Character implements \JsonSerializable
     /**
      * Get refreshToken.
      *
-     * @return string
+     * @return string|null
      */
     public function getRefreshToken()
     {
-        return (string) $this->refreshToken;
+        return $this->refreshToken;
     }
 
     /**

@@ -53,7 +53,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
         $this->aga = new AutoGroupAssignment($log, $this->em, $corpRepo, $groupRepo, $this->playerRepo);
 
-        // a second CharacterService instance with another EntityManager that throws an exception on flush.
+        // a second EsiCharacterService instance with another EntityManager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
         $this->agaError = new AutoGroupAssignment($log, $em, $corpRepo, $groupRepo, $this->playerRepo);

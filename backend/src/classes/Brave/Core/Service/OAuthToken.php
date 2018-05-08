@@ -142,7 +142,7 @@ class OAuthToken
         try {
             $token = new AccessToken([
                 'access_token' => $this->character->getAccessToken(),
-                'refresh_token' => $this->character->getRefreshToken(),
+                'refresh_token' => (string) $this->character->getRefreshToken(),
                 'expires' => $this->character->getExpires()
             ]);
         } catch (\Exception $e) {
@@ -162,7 +162,7 @@ class OAuthToken
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {
             try {
                 $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
-                    'refresh_token' => $existingToken->getRefreshToken()
+                    'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), ['exception' => $e]);

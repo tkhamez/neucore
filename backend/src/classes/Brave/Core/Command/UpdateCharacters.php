@@ -3,7 +3,7 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\EsiCharacterService;
 use Brave\Core\Service\OAuthToken;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -20,7 +20,7 @@ class UpdateCharacters extends Command
     private $charRepo;
 
     /**
-     * @var CharacterService
+     * @var EsiCharacterService
      */
     private $charService;
 
@@ -41,7 +41,7 @@ class UpdateCharacters extends Command
 
     public function __construct(
         CharacterRepository $charRepo,
-        CharacterService $charService,
+        EsiCharacterService $charService,
         OAuthToken $token,
         EntityManagerInterface $em,
         LoggerInterface $log

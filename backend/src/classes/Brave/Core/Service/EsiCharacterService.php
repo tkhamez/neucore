@@ -10,7 +10,7 @@ use Brave\Core\Entity\Corporation;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-class CharacterService
+class EsiCharacterService
 {
     /**
      * @var LoggerInterface

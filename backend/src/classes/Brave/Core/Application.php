@@ -10,7 +10,7 @@ use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\EsiCharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
@@ -241,7 +241,7 @@ class Application
 
         $console->add(new UpdateCharacters(
             $c->get(CharacterRepository::class),
-            $c->get(CharacterService::class),
+            $c->get(EsiCharacterService::class),
             $c->get(OAuthToken::class),
             $c->get(EntityManagerInterface::class),
             $c->get(LoggerInterface::class)
