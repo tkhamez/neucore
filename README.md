@@ -72,6 +72,7 @@ The values for the EVE application must be adjusted.
 - Node.js + npm
 - MySQL/MariaDB
 - Apache, set the document root to the "web" directory.
+- Java (for swagger-codegen)
 
 ### App setup
 
