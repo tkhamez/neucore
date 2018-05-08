@@ -59,8 +59,7 @@ class CoreCharacterService
         int $characterId,
         string $characterName,
         Role $role =  null
-    ): Character
-    {
+    ): Character {
         $player = new Player();
         $player->setName($characterName);
         if ($role !== null) {
@@ -82,8 +81,7 @@ class CoreCharacterService
         string $characterOwnerHash = null,
         AccessToken $token = null,
         string $scopes = null
-    ): bool
-    {
+    ): bool {
         $char->setCharacterOwnerHash($characterOwnerHash);
         $char->setScopes($scopes);
 

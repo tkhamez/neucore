@@ -39,7 +39,7 @@ class UserAuth implements RoleProviderInterface
     private $characterRepository;
 
     /**
-     * @var $characterRepository
+     * @var RoleRepository
      */
     private $roleRepository;
 
