@@ -190,7 +190,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         ]);
 
         $expectedOutput = [
-            '3: update OK, token UNKNOWN => check log',
+            '3: update OK, token OK',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);

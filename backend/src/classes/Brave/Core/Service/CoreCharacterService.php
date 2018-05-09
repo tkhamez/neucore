@@ -21,12 +21,19 @@ class CoreCharacterService
      */
     private $em;
 
+    /**
+     * @var OAuthToken
+     */
+    private $token;
+
     public function __construct(
         LoggerInterface $log,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        OAuthToken $token
     ) {
         $this->log = $log;
         $this->em = $em;
+        $this->token = $token;
     }
 
     /**
@@ -102,5 +109,38 @@ class CoreCharacterService
         }
 
         return true;
+    }
+
+    /**
+     * Verifies refresh token.
+     *
+     * Also updates CharacterOwnerHash.
+     *
+     * @param Character $char An instance that is attached to the Doctrine EntityManager.
+     * @return boolean
+     */
+    public function checkTokenUpdateCharacter(Character $char): bool
+    {
+        $this->token->setCharacter($char);
+        $resourceOwner = $this->token->verify();
+
+        if ($resourceOwner === null) {
+            $char->setValidToken(false);
+        } else {
+            $char->setValidToken(true);
+            $data = $resourceOwner->toArray();
+            if (isset($data['CharacterOwnerHash'])) {
+                $char->setCharacterOwnerHash($data['CharacterOwnerHash']);
+            } else {
+                // that's an error, OAuth changed resource owner data
+                $this->log->error('Unexpected result from OAuth verify.', [
+                    'data' => $data
+                ]);
+            }
+        }
+
+        $this->em->flush();
+
+        return $char->getValidToken();
     }
 }

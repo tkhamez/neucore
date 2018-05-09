@@ -2,11 +2,13 @@
 
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Service\CoreCharacterService;
-use Monolog\Logger;
-use Monolog\Handler\TestHandler;
-use Tests\Helper;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Service\CoreCharacterService;
+use Brave\Core\Service\OAuthToken;
+use League\OAuth2\Client\Provider\GenericProvider;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use Tests\Helper;
 
 class CoreCharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -17,11 +19,15 @@ class CoreCharacterServiceTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->helper = new Helper();
+        $em = $this->helper->getEm();
 
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->service = new CoreCharacterService($log, $this->helper->getEm());
+        $oauth = $this->createMock(GenericProvider::class);
+        $token = new OAuthToken($oauth, $em, $log);
+
+        $this->service = new CoreCharacterService($log, $em, $token);
     }
 
     public function testAddCharacter()
@@ -50,6 +56,11 @@ class CoreCharacterServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     public function testUpdateAndStoreCharacterWithPlayer()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testCheckTokenUpdateCharacter()
     {
         $this->markTestIncomplete();
     }

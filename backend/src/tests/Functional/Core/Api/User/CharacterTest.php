@@ -5,6 +5,7 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Roles;
+use League\OAuth2\Client\Provider\GenericProvider;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
@@ -96,10 +97,12 @@ class CharacterTest extends WebTestCase
         $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
             'name' => $this->corpName, 'ticker' => $this->corpTicker, 'alliance_id' => null
         ]));
+        $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             CharacterApi::class => $charApi,
             CorporationApi::class => $corpApi,
+            GenericProvider::class => $oauth
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -127,6 +130,9 @@ class CharacterTest extends WebTestCase
         $this->helper->getEm()->clear();
         $player = (new PlayerRepository($this->helper->getEm()))->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
+
+        // checkTokenUpdateCharacter
+        $this->markTestIncomplete();
     }
 
     public function testUpdate200Admin()
@@ -142,10 +148,12 @@ class CharacterTest extends WebTestCase
         $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
             'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance_id' => null
         ]));
+        $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             CharacterApi::class => $charApi,
             CorporationApi::class => $corpApi,
+            GenericProvider::class => $oauth
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());

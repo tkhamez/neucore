@@ -6,8 +6,10 @@ use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\CoreCharacterService;
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
+use Brave\Slim\Session\SessionData;
+use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
@@ -23,10 +25,6 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
      */
     private $service;
 
-    public static function setUpBeforeClass()
-    {
-    }
-
     public function setUp()
     {
         $h = new Helper();
@@ -39,7 +37,11 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $em = $h->getEm();
         $cr = new CharacterRepository($em);
         $rr = new RoleRepository($em);
-        $ccs = new CoreCharacterService($this->log, $em);
+
+        $oauth = $this->createMock(GenericProvider::class);
+        $token = new OAuthToken($oauth, $em, $this->log);
+
+        $ccs = new CoreCharacterService($this->log, $em, $token);
 
         $this->service = new UserAuth(new SessionData(), $ccs, $cr, $rr, $em, $this->log);
     }

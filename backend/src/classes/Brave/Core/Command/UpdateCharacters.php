@@ -3,14 +3,14 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Service\CoreCharacterService;
 use Brave\Core\Service\EsiCharacterService;
-use Brave\Core\Service\OAuthToken;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCharacters extends Command
 {
@@ -22,12 +22,12 @@ class UpdateCharacters extends Command
     /**
      * @var EsiCharacterService
      */
-    private $charService;
+    private $esiCharService;
 
     /**
-     * @var OAuthToken
+     * @var CoreCharacterService
      */
-    private $token;
+    private $coreCharService;
 
     /**
      * @var EntityManagerInterface
@@ -41,16 +41,16 @@ class UpdateCharacters extends Command
 
     public function __construct(
         CharacterRepository $charRepo,
-        EsiCharacterService $charService,
-        OAuthToken $token,
+        EsiCharacterService $esiCharService,
+        CoreCharacterService $coreCharService,
         EntityManagerInterface $em,
         LoggerInterface $log
     ) {
         parent::__construct();
 
         $this->charRepo = $charRepo;
-        $this->charService = $charService;
-        $this->token = $token;
+        $this->esiCharService = $esiCharService;
+        $this->coreCharService = $coreCharService;
         $this->em = $em;
         $this->log = $log;
     }
@@ -78,7 +78,7 @@ class UpdateCharacters extends Command
             usleep($sleep * 1000);
 
             // update name, corp and alliance from ESI
-            $updatedChar = $this->charService->fetchCharacter($charId, true);
+            $updatedChar = $this->esiCharService->fetchCharacter($charId, true);
             if ($updatedChar === null) {
                 $output->writeln($charId.': error updating.');
                 continue;
@@ -89,26 +89,11 @@ class UpdateCharacters extends Command
                 $output->writeln($charId.': update OK, token N/A');
                 continue;
             }
-            $this->token->setCharacter($updatedChar);
-            $resourceOwner = $this->token->verify();
-            if ($resourceOwner === null) {
-                $updatedChar->setValidToken(false);
-                $output->writeln($charId.': update OK, token NOK');
+            if ($this->coreCharService->checkTokenUpdateCharacter($updatedChar)) {
+                $output->writeln($charId.': update OK, token OK');
             } else {
-                $data = $resourceOwner->toArray();
-                if (isset($data['CharacterOwnerHash'])) {
-                    $updatedChar->setCharacterOwnerHash($data['CharacterOwnerHash']);
-                    $updatedChar->setValidToken(true);
-                    $output->writeln($charId.': update OK, token OK');
-                } else {
-                    // that's an error, OAuth changed resource owner data
-                    $this->log->error('Unexpected result from OAuth verify.', [
-                        'data' => $data
-                    ]);
-                    $output->writeln($charId.': update OK, token UNKNOWN => check log');
-                }
+                $output->writeln($charId.': update OK, token NOK');
             }
-            $this->em->flush();
         }
 
         $output->writeln('All done.');

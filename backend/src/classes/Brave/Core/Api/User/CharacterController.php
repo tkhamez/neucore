@@ -5,6 +5,7 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
+use Brave\Core\Service\CoreCharacterService;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\EsiCharacterService;
 use Brave\Core\Service\UserAuth;
@@ -36,19 +37,25 @@ class CharacterController
     /**
      * @var EsiCharacterService
      */
-    private $charService;
+    private $esiCharService;
+
+    /**
+     * @var CoreCharacterService
+     */
+    private $coreCharService;
 
     /**
      * @var CharacterRepository
      */
     private $charRepo;
 
-    public function __construct(Response $response, UserAuth $uas, EsiCharacterService $cs,
-        CharacterRepository $charRepo)
+    public function __construct(Response $response, UserAuth $uas, EsiCharacterService $esiCs,
+        CoreCharacterService $coreCs, CharacterRepository $charRepo)
     {
         $this->res = $response;
         $this->uas = $uas;
-        $this->charService = $cs;
+        $this->esiCharService = $esiCs;
+        $this->coreCharService = $coreCs;
         $this->charRepo = $charRepo;
     }
 
@@ -81,7 +88,8 @@ class CharacterController
      *     path="/user/character/{id}/update",
      *     operationId="update",
      *     summary="Updates a character of the logged in player account with data from ESI.",
-     *     description="Needs role: user or user-admin to update any character",
+     *     description="Needs role: user or user-admin to update any character.
+     *                  It also updates groups and verifies the OAuth token.",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -131,9 +139,14 @@ class CharacterController
         }
 
         // update from ESI
-        $updatedChar = $this->charService->fetchCharacter($char->getId(), true);
+        $updatedChar = $this->esiCharService->fetchCharacter($char->getId(), true);
         if ($updatedChar === null) {
             return $this->res->withStatus(503);
+        }
+
+        // check token
+        if ((string) $updatedChar->getRefreshToken() !== '') {
+            $this->coreCharService->checkTokenUpdateCharacter($updatedChar);
         }
 
         // assign auto groups
