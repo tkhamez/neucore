@@ -3,11 +3,11 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\EsiCharacterService;
 use Brave\Core\Service\UserAuth;
-use Brave\Core\Roles;
 use Slim\Http\Response;
 
 /**

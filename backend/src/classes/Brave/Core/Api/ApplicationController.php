@@ -13,6 +13,20 @@ use Slim\Http\Response;
  *     name="Application",
  *     description="API for 3rd party apps.",
  * )
+ *
+ * @SWG\Definition(
+ *     definition="CharacterGroups",
+ *     required={"character_id", "groups"},
+ *     @SWG\Property(
+ *         property="character",
+ *         ref="#/definitions/Character"
+ *     ),
+ *     @SWG\Property(
+ *         property="groups",
+ *         type="array",
+ *         @SWG\Items(ref="#/definitions/Group")
+ *     )
+ * )
  */
 class ApplicationController
 {
@@ -67,7 +81,7 @@ class ApplicationController
      * @SWG\Get(
      *     path="/app/v1/groups/{cid}",
      *     operationId="groupsV1",
-     *     summary="Returns groups of the character's player account.",
+     *     summary="Return groups of the character's player account.",
      *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
@@ -95,22 +109,76 @@ class ApplicationController
      */
     public function groupsV1(string $cid, ServerRequestInterface $request): Response
     {
-        $char = $this->charRepo->find((int) $cid);
+        $appGroups = $this->appService->getApp($request)->getGroups();
+        $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
 
-        if ($char === null) {
+        if ($result === null) {
             return $this->response->withStatus(404);
         }
 
-        $playerGroups = $char->getPlayer()->getGroups();
+        return $this->response->withJson($result['groups']);
+    }
+
+    /**
+     * @SWG\Post(
+     *     path="/app/v1/groups",
+     *     operationId="groupsBulkV1",
+     *     summary="Return the groups of multiple players, identified by one of their character IDs.",
+     *     description="Needs role: app.
+     *                  Returns only groups that have been added to the app as well.
+     *                  Skips characters that are not found in the local database.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="ids",
+     *         in="body",
+     *         required=true,
+     *         description="EVE character IDs array.",
+     *         @SWG\Schema(type="array", @SWG\Items(type="integer"))
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of characters (id, name and corporation properties only) with groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CharacterGroups"))
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupsBulkV1(ServerRequestInterface $request): Response
+    {
+        $charIds = $request->getParsedBody();
+
+        if (! is_array($charIds)) {
+            return $this->response->withStatus(400);
+        }
+
+        $charIds = array_map('intval', $charIds);
+        $charIds = array_unique($charIds);
+        if (count($charIds) === 0) {
+            return $this->response->withJson([]);
+        }
+
         $appGroups = $this->appService->getApp($request)->getGroups();
 
         $result = [];
-        foreach ($appGroups as $appGroup) {
-            foreach ($playerGroups as $playerGroup) {
-                if ($appGroup->getId() === $playerGroup->getId()) {
-                    $result[] = $playerGroup;
-                }
+        foreach ($charIds as $charId) {
+            if ($charId <= 0) {
+                continue;
             }
+
+            $charGroups = $this->getGroupsForPlayer($charId, $appGroups);
+            if ($charGroups === null) {
+                continue;
+            }
+
+            $result[] = $charGroups;
         }
 
         return $this->response->withJson($result);
@@ -170,5 +238,39 @@ class ApplicationController
         }
 
         return $this->response->withJson($result);
+    }
+
+    /**
+     *
+     * @param int $characterId
+     * @param array $appGroups
+     * @return void|\Brave\Core\Entity\Group[] Returns NULL if character was not found.
+     */
+    private function getGroupsForPlayer(int $characterId, array $appGroups)
+    {
+        $char = $this->charRepo->find($characterId);
+        if ($char === null) {
+            return;
+        }
+
+        $result = [
+            'character' => [
+                'id' => $char->getId(),
+                'name' => $char->getName(),
+                'corporation' => $char->getCorporation(),
+            ],
+            'groups' => []
+        ];
+
+        $playerGroups = $char->getPlayer()->getGroups();
+        foreach ($appGroups as $appGroup) {
+            foreach ($playerGroups as $playerGroup) {
+                if ($appGroup->getId() === $playerGroup->getId()) {
+                    $result['groups'][] = $playerGroup;
+                }
+            }
+        }
+
+        return $result;
     }
 }

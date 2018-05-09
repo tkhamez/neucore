@@ -153,7 +153,7 @@ class Helper
      * @param array $roles
      * @return Character
      */
-    public function addCharacterMain(string $name, int $charId, array $roles, array $groups = [])
+    public function addCharacterMain(string $name, int $charId, array $roles = [], array $groups = [])
     {
         $em = $this->getEm();
 
