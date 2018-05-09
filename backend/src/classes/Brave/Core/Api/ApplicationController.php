@@ -16,7 +16,7 @@ use Slim\Http\Response;
  *
  * @SWG\Definition(
  *     definition="CharacterGroups",
- *     required={"character_id", "groups"},
+ *     required={"character", "groups"},
  *     @SWG\Property(
  *         property="character",
  *         ref="#/definitions/Character"
