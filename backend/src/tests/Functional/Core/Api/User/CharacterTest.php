@@ -2,6 +2,8 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Roles;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
@@ -13,6 +15,12 @@ use Tests\Helper;
 class CharacterTest extends WebTestCase
 {
     private $helper;
+
+    private $playerId;
+
+    private $corpId = 234;
+    private $corpName = 'The Corp.';
+    private $corpTicker = '-TTT-';
 
     public function setUp()
     {
@@ -82,11 +90,11 @@ class CharacterTest extends WebTestCase
 
         $charApi = $this->createMock(CharacterApi::class);
         $charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'Char 96061222', 'corporation_id' => 234
+            'name' => 'Char 96061222', 'corporation_id' => $this->corpId
         ]));
         $corpApi = $this->createMock(CorporationApi::class);
         $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance_id' => null
+            'name' => $this->corpName, 'ticker' => $this->corpTicker, 'alliance_id' => null
         ]));
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
@@ -101,7 +109,12 @@ class CharacterTest extends WebTestCase
             'name' => 'Char 96061222',
             'main' => true,
             'validToken' => false,
-            'corporation' => ['id' => 234, 'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance' => null]
+            'corporation' => [
+                'id' => $this->corpId,
+                'name' => $this->corpName,
+                'ticker' => $this->corpTicker,
+                'alliance' => null
+            ]
         ];
         $actual = $this->parseJsonBody($response);
 
@@ -109,6 +122,11 @@ class CharacterTest extends WebTestCase
         unset($actual['lastUpdate']);
 
         $this->assertSame($expected, $actual);
+
+        // check group
+        $this->helper->getEm()->clear();
+        $player = (new PlayerRepository($this->helper->getEm()))->find($this->playerId);
+        $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
     }
 
     public function testUpdate200Admin()
@@ -118,7 +136,7 @@ class CharacterTest extends WebTestCase
 
         $charApi = $this->createMock(CharacterApi::class);
         $charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'Char 96061222', 'corporation_id' => 234
+            'name' => 'Char 96061222', 'corporation_id' => 456
         ]));
         $corpApi = $this->createMock(CorporationApi::class);
         $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
@@ -136,7 +154,15 @@ class CharacterTest extends WebTestCase
     private function setupDb()
     {
         $this->helper->emptyDb();
-        $this->helper->addCharacterMain('User', 96061222, [Roles::USER], ['group1']);
-        $this->helper->addCharacterMain('User', 9, [Roles::USER, Roles::USER_ADMIN], ['group1']);
+        $char = $this->helper->addCharacterMain('User', 96061222, [Roles::USER]);
+        $this->playerId = $char->getPlayer()->getId();
+        $this->helper->addCharacterMain('User', 9, [Roles::USER, Roles::USER_ADMIN]);
+
+        $groups = $this->helper->addGroups(['auto.bni']);
+
+        $corp = (new Corporation())->setId($this->corpId)->setName($this->corpName)->setTicker($this->corpTicker);
+        $corp->addGroup($groups[0]);
+        $this->helper->getEm()->persist($corp);
+        $this->helper->getEm()->flush();
     }
 }

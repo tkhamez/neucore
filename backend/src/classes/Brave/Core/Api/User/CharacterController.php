@@ -2,12 +2,13 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Service\EsiCharacterService;
-use Brave\Core\Service\EsiApi;
-use Brave\Core\Service\UserAuth;
-use Slim\Http\Response;
-use Brave\Core\Roles;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Service\AutoGroupAssignment;
+use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\EsiCharacterService;
+use Brave\Core\Service\UserAuth;
+use Brave\Core\Roles;
+use Slim\Http\Response;
 
 /**
  * @SWG\Tag(
@@ -109,8 +110,9 @@ class CharacterController
      *     )
      * )
      */
-    public function update(string $id): Response
+    public function update(string $id, AutoGroupAssignment $groupAssign): Response
     {
+        // find character
         $char = null;
         $player = $this->uas->getUser()->getPlayer();
         if ($player->hasRole(Roles::USER_ADMIN)) {
@@ -128,10 +130,14 @@ class CharacterController
             return $this->res->withStatus(404);
         }
 
+        // update from ESI
         $updatedChar = $this->charService->fetchCharacter($char->getId(), true);
         if ($updatedChar === null) {
             return $this->res->withStatus(503);
         }
+
+        // assign auto groups
+        $groupAssign->assign($updatedChar->getPlayer()->getId());
 
         return $this->res->withJson($updatedChar);
     }
