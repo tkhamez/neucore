@@ -123,6 +123,77 @@ class ApplicationTest extends WebTestCase
         $this->assertSame($expected, $body);
     }
 
+    public function testCorpGroupsV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/corp-groups/123');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCorpGroupsV1404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/corp-groups/123', null, $headers);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testCorpGroupsV1200()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/corp-groups/500', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testCorpGroupsBulkV1403()
+    {
+        $response = $this->runApp('POST', '/api/app/v1/corp-groups');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCorpGroupsBulkV1400()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('POST', '/api/app/v1/corp-groups', new \stdClass(), $headers);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testCorpGroupsBulkV1200()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('POST', '/api/app/v1/corp-groups', [500, 500, 789, 501], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $expected = [[
+            'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'groups' => [
+                ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ]
+        ], [
+            'id' => 501, 'name' => 'f1', 'ticker' => '-51-', 'groups' => [
+                ['id' => $this->group0Id, 'name' => 'g0', 'visibility' => Group::VISIBILITY_PRIVATE],
+                ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ]
+        ]];
+        $this->assertSame($expected, $body);
+    }
+
     public function testMainV1403()
     {
         $response = $this->runApp('GET', '/api/app/v1/main/123');
@@ -211,9 +282,17 @@ class ApplicationTest extends WebTestCase
 
         $alli = (new Alliance())->setId(100)->setName('one')->setTicker('-1-');
         $corp = (new Corporation())->setId(500)->setName('five')->setTicker('-5-');
+        $corp->addGroup($groups[2]);
+        $corp->addGroup($groups[1]);
         $corp->setAlliance($alli);
+
+        $corp2 = (new Corporation())->setId(501)->setName('f1')->setTicker('-51-');
+        $corp2->addGroup($groups[0]);
+        $corp2->addGroup($groups[1]);
+
         $h->getEm()->persist($alli);
         $h->getEm()->persist($corp);
+        $h->getEm()->persist($corp2);
 
         $char3 = $h->addCharacterMain('C3', 789); // no roles
         $char3->setCorporation($corp);

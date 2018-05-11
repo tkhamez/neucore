@@ -49,7 +49,7 @@ class CharacterTest extends WebTestCase
                 'name' => 'User',
                 'main' => true,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => true,
                 'corporation' => null
             ],
             $this->parseJsonBody($response)
@@ -131,8 +131,8 @@ class CharacterTest extends WebTestCase
         $player = (new PlayerRepository($this->helper->getEm()))->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
-        // checkTokenUpdateCharacter
-        $this->markTestIncomplete();
+        // checkTokenUpdateCharacter() changed it from true to false
+        $this->assertFalse($player->getCharacters()[0]->getValidToken());
     }
 
     public function testUpdate200Admin()
@@ -163,6 +163,7 @@ class CharacterTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Roles::USER]);
+        $char->setValidToken(true);
         $this->playerId = $char->getPlayer()->getId();
         $this->helper->addCharacterMain('User', 9, [Roles::USER, Roles::USER_ADMIN]);
 

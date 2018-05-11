@@ -5,9 +5,9 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\CoreCharacterService;
+use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\EsiApi;
-use Brave\Core\Service\EsiCharacterService;
+use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Response;
 
@@ -35,12 +35,12 @@ class CharacterController
     private $es;
 
     /**
-     * @var EsiCharacterService
+     * @var EsiCharacter
      */
     private $esiCharService;
 
     /**
-     * @var CoreCharacterService
+     * @var CoreCharacter
      */
     private $coreCharService;
 
@@ -49,8 +49,8 @@ class CharacterController
      */
     private $charRepo;
 
-    public function __construct(Response $response, UserAuth $uas, EsiCharacterService $esiCs,
-        CoreCharacterService $coreCs, CharacterRepository $charRepo)
+    public function __construct(Response $response, UserAuth $uas, EsiCharacter $esiCs,
+        CoreCharacter $coreCs, CharacterRepository $charRepo)
     {
         $this->res = $response;
         $this->uas = $uas;

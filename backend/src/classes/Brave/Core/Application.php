@@ -10,8 +10,8 @@ use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\CoreCharacterService;
-use Brave\Core\Service\EsiCharacterService;
+use Brave\Core\Service\CoreCharacter;
+use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -241,8 +241,8 @@ class Application
 
         $console->add(new UpdateCharacters(
             $c->get(CharacterRepository::class),
-            $c->get(EsiCharacterService::class),
-            $c->get(CoreCharacterService::class),
+            $c->get(EsiCharacter::class),
+            $c->get(CoreCharacter::class),
             $c->get(EntityManagerInterface::class),
             $c->get(LoggerInterface::class)
         ));

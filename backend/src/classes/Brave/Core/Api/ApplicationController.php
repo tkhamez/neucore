@@ -3,6 +3,7 @@
 namespace Brave\Core\Api;
 
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
@@ -46,11 +47,21 @@ class ApplicationController
      */
     private $charRepo;
 
-    public function __construct(Response $response, AppAuth $aap, CharacterRepository $cr)
-    {
+    /**
+     * @var CorporationRepository
+     */
+    private $corpRepo;
+
+    public function __construct(
+        Response $response,
+        AppAuth $aap,
+        CharacterRepository $charRepo,
+        CorporationRepository $corpRepo
+    ) {
         $this->response = $response;
         $this->appService = $aap;
-        $this->charRepo = $cr;
+        $this->charRepo = $charRepo;
+        $this->corpRepo = $corpRepo;
     }
 
     /**
@@ -123,7 +134,7 @@ class ApplicationController
      * @SWG\Post(
      *     path="/app/v1/groups",
      *     operationId="groupsBulkV1",
-     *     summary="Return the groups of multiple players, identified by one of their character IDs.",
+     *     summary="Return groups of multiple players, identified by one of their character IDs.",
      *     description="Needs role: app.
      *                  Returns only groups that have been added to the app as well.
      *                  Skips characters that are not found in the local database.",
@@ -153,14 +164,10 @@ class ApplicationController
      */
     public function groupsBulkV1(ServerRequestInterface $request): Response
     {
-        $charIds = $request->getParsedBody();
-
-        if (! is_array($charIds)) {
+        $charIds = $this->getIntegerArrayFromBody($request);
+        if ($charIds === null) {
             return $this->response->withStatus(400);
         }
-
-        $charIds = array_map('intval', $charIds);
-        $charIds = array_unique($charIds);
         if (count($charIds) === 0) {
             return $this->response->withJson([]);
         }
@@ -179,6 +186,109 @@ class ApplicationController
             }
 
             $result[] = $charGroups;
+        }
+
+        return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/corp-groups/{cid}",
+     *     operationId="corpGroupsV1",
+     *     summary="Return groups for the corporation.",
+     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="cid",
+     *         in="path",
+     *         required=true,
+     *         description="EVE corporation ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Corporation not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function corpGroupsV1(string $cid, ServerRequestInterface $request): Response
+    {
+        $appGroups = $this->appService->getApp($request)->getGroups();
+        $result = $this->getGroupsForCorporation((int) $cid, $appGroups);
+
+        if ($result === null) {
+            return $this->response->withStatus(404);
+        }
+
+        return $this->response->withJson($result['groups']);
+    }
+
+    /**
+     * @SWG\Post(
+     *     path="/app/v1/corp-groups",
+     *     operationId="corpGroupsBulkV1",
+     *     summary="Return groups for multiple corporations.",
+     *     description="Needs role: app.
+     *                  Returns only groups that have been added to the app as well.
+     *                  Skips corporations that are not found in the local database.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="ids",
+     *         in="body",
+     *         required=true,
+     *         description="EVE corporation IDs array.",
+     *         @SWG\Schema(type="array", @SWG\Items(type="integer"))
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of corporations with groups but without alliance.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function corpGroupsBulkV1(ServerRequestInterface $request): Response
+    {
+        $corpIds = $this->getIntegerArrayFromBody($request);
+        if ($corpIds === null) {
+            return $this->response->withStatus(400);
+        }
+        if (count($corpIds) === 0) {
+            return $this->response->withJson([]);
+        }
+
+        $appGroups = $this->appService->getApp($request)->getGroups();
+
+        $result = [];
+        foreach ($corpIds as $corpId) {
+            if ($corpId <= 0) {
+                continue;
+            }
+
+            $corpGroups = $this->getGroupsForCorporation($corpId, $appGroups);
+            if ($corpGroups === null) {
+                continue;
+            }
+
+            $result[] = $corpGroups;
         }
 
         return $this->response->withJson($result);
@@ -240,11 +350,25 @@ class ApplicationController
         return $this->response->withJson($result);
     }
 
+    private function getIntegerArrayFromBody(ServerRequestInterface $request)
+    {
+        $ids = $request->getParsedBody();
+
+        if (! is_array($ids)) {
+            return null;
+        }
+
+        $ids = array_map('intval', $ids);
+        $ids = array_unique($ids);
+
+        return $ids;
+    }
+
     /**
      *
      * @param int $characterId
-     * @param array $appGroups
-     * @return void|\Brave\Core\Entity\Group[] Returns NULL if character was not found.
+     * @param \Brave\Core\Entity\Group[] $appGroups
+     * @return void|array Returns NULL if character was not found.
      */
     private function getGroupsForPlayer(int $characterId, array $appGroups)
     {
@@ -262,11 +386,44 @@ class ApplicationController
             'groups' => []
         ];
 
-        $playerGroups = $char->getPlayer()->getGroups();
         foreach ($appGroups as $appGroup) {
-            foreach ($playerGroups as $playerGroup) {
+            foreach ($char->getPlayer()->getGroups() as $playerGroup) {
                 if ($appGroup->getId() === $playerGroup->getId()) {
                     $result['groups'][] = $playerGroup;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get groups of corporation.
+     *
+     * Returns data from jsonSerialize() of a Corporation object plus
+     * all of it's groups that also belongs to the app.
+     *
+     * @param int $corporationId
+     * @param \Brave\Core\Entity\Group[] $appGroups
+     * @return void|array Returns NULL if corporation was not found.
+     * @see \Brave\Core\Entity\Corporation::jsonSerialize()
+     * @see \Brave\Core\Entity\Group::jsonSerialize()
+     */
+    private function getGroupsForCorporation(int $corporationId, array $appGroups)
+    {
+        $corp = $this->corpRepo->find($corporationId);
+        if ($corp === null) {
+            return;
+        }
+
+        $result = $corp->jsonSerialize();
+        unset($result['alliance']);
+        $result['groups'] = [];
+
+        foreach ($appGroups as $appGroup) {
+            foreach ($corp->getGroups() as $corpGroup) {
+                if ($appGroup->getId() === $corpGroup->getId()) {
+                    $result['groups'][] = $corpGroup->jsonSerialize();
                 }
             }
         }

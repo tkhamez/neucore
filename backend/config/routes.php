@@ -64,8 +64,10 @@ return [
     '/api/user/player/{id}/remove-role/{name}'  => ['PUT', PlayerController::class.'::removeRole'],
     '/api/user/player/{id}/show'                => ['GET', PlayerController::class.'::showById'],
 
-    '/api/app/v1/show'         => ['GET',  ApplicationController::class.'::showV1'],
-    '/api/app/v1/groups/{cid}' => ['GET',  ApplicationController::class.'::groupsV1'],
-    '/api/app/v1/groups'       => ['POST', ApplicationController::class.'::groupsBulkV1'],
-    '/api/app/v1/main/{cid}'   => ['GET',  ApplicationController::class.'::mainV1'],
+    '/api/app/v1/show'              => ['GET',  ApplicationController::class.'::showV1'],
+    '/api/app/v1/groups/{cid}'      => ['GET',  ApplicationController::class.'::groupsV1'],
+    '/api/app/v1/groups'            => ['POST', ApplicationController::class.'::groupsBulkV1'],
+    '/api/app/v1/corp-groups/{cid}' => ['GET',  ApplicationController::class.'::corpGroupsV1'],
+    '/api/app/v1/corp-groups'       => ['POST', ApplicationController::class.'::corpGroupsBulkV1'],
+    '/api/app/v1/main/{cid}'        => ['GET',  ApplicationController::class.'::mainV1'],
 ];
