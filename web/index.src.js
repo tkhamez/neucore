@@ -1,3 +1,5 @@
+'use strict'
+
 var SwaggerBrvneucoreJs = require('bravecore-swagger-js-client'); /* jshint ignore: line */
 var defaultClient = SwaggerBrvneucoreJs.ApiClient.instance;
 defaultClient.basePath = location.protocol + "//" + location.hostname + ':' + location.port + '/api';
@@ -63,8 +65,7 @@ var bravecore = new window.Vue({
 				redirect: '/#login-alt'
 			}, function(error, data) {
 				bravecore.loading(false);
-				if (error) {
-					window.console.error(error);
+				if (error) { // 403 usually
 					return;
 				}
 				bravecore.loginAltUrl = data;
@@ -90,8 +91,7 @@ var bravecore = new window.Vue({
 			this.loading(true);
 			new SwaggerBrvneucoreJs.CharacterApi().show(function(error, data) {
 				bravecore.loading(false);
-				if (error) {
-					window.console.error(error);
+				if (error) { // 403 usually
 					bravecore.authChar = null;
 					return;
 				}
@@ -103,8 +103,7 @@ var bravecore = new window.Vue({
 			this.loading(true);
 			new SwaggerBrvneucoreJs.PlayerApi().show(function(error, data) {
 				bravecore.loading(false);
-				if (error) {
-					window.console.error(error);
+				if (error) { // 403 usually
 					return;
 				}
 				bravecore.player = data;
@@ -115,8 +114,7 @@ var bravecore = new window.Vue({
 			this.loading(true);
 			new SwaggerBrvneucoreJs.AuthApi().logout(function(error) {
 				bravecore.loading(false);
-				if (error) {
-					window.console.error(error);
+				if (error) { // 403 usually
 					return;
 				}
 				bravecore.getCharacter();
@@ -128,8 +126,7 @@ var bravecore = new window.Vue({
 			this.loading(true);
 			new SwaggerBrvneucoreJs.PlayerApi().setMain(characterId, function(error) {
 				bravecore.loading(false);
-				if (error) {
-					window.console.error(error);
+				if (error) { // 403 usually
 					return;
 				}
 				bravecore.getPlayer();
@@ -140,8 +137,7 @@ var bravecore = new window.Vue({
 			this.loading(true);
 			new SwaggerBrvneucoreJs.CharacterApi().update(characterId, function(error) {
 				bravecore.loading(false);
-				if (error) {
-					window.console.error(error);
+				if (error) { // 403 usually
 					return;
 				}
 				bravecore.getPlayer();
