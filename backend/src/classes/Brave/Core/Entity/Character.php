@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *
  * @SWG\Definition(
  *     definition="Character",
- *     required={"id", "name", "corporation"}
+ *     required={"id", "name"}
  * )
  * @Entity(repositoryClass="Brave\Core\Entity\CharacterRepository")
  * @Table(name="characters")

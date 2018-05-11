@@ -2,18 +2,17 @@
 
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Entity\Player;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;
 use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\GenericResourceOwner;
+use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Player;
-use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Provider\GenericResourceOwner;
 
 class CoreCharacterTest extends \PHPUnit\Framework\TestCase
 {

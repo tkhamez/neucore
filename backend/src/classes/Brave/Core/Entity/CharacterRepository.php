@@ -39,4 +39,19 @@ class CharacterRepository extends \Doctrine\ORM\EntityRepository
     {
         return parent::findBy($criteria, $orderBy, $limit, $offset);
     }
+
+    /**
+     *
+     * @param string $name
+     * @return \Brave\Core\Entity\Character[]
+     */
+    public function findByNamePartialMatch($name)
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.name LIKE :name')
+            ->addOrderBy('c.name', 'ASC')
+            ->setParameter('name', "%$name%")
+            ->getQuery()
+            ->getResult();
+    }
 }

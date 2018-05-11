@@ -63,7 +63,7 @@ class CharacterController
      * @SWG\Get(
      *     path="/user/character/show",
      *     operationId="show",
-     *     summary="Returns the logged in EVE character.",
+     *     summary="Return the logged in EVE character.",
      *     description="Needs role: user",
      *     tags={"Character"},
      *     security={{"Session"={}}},
@@ -84,10 +84,101 @@ class CharacterController
     }
 
     /**
+     * @SWG\Get(
+     *     path="/user/character/find-by/{name}",
+     *     operationId="findBy",
+     *     summary="Return a list of characters that matches the name (partial matching, minimum 3 characters).",
+     *     description="Needs role: user-admin",
+     *     tags={"Character"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the character.",
+     *         type="string",
+     *         minLength=3
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of characters (ID and name only).",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Input too short."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized"
+     *     )
+     * )
+     */
+    public function findBy(string $name): Response
+    {
+        if (mb_strlen($name) < 3) {
+            return $this->res->withStatus(400);
+        }
+
+        $result = $this->charRepo->findByNamePartialMatch($name);
+
+        $retVal = [];
+        foreach ($result as $char) {
+            $retVal[] = [
+                'id' => $char->getId(),
+                'name' => $char->getName(),
+            ];
+        }
+
+        return $this->res->withJson($retVal);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/character/find-player-of/{id}",
+     *     operationId="findPlayerOf",
+     *     summary="Return the player to whom the character belongs.",
+     *     description="Needs role: user-admin",
+     *     tags={"Character"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the character.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The player with all properties.",
+     *         @SWG\Schema(ref="#/definitions/Player")
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="No player found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized"
+     *     )
+     * )
+     */
+    public function findPlayerOf($id): Response
+    {
+        $char = $this->charRepo->find((int) $id);
+
+        if ($char === null) {
+            return $this->res->withStatus(204);
+        }
+
+        return $this->res->withJson($char->getPlayer());
+    }
+
+    /**
      * @SWG\Put(
      *     path="/user/character/{id}/update",
      *     operationId="update",
-     *     summary="Updates a character of the logged in player account with data from ESI.",
+     *     summary="Update a character of the logged in player account with data from ESI.",
      *     description="Needs role: user or user-admin to update any character.
      *                  It also updates groups and verifies the OAuth token.",
      *     tags={"Character"},

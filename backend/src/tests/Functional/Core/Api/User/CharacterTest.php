@@ -56,6 +56,92 @@ class CharacterTest extends WebTestCase
         );
     }
 
+    public function testFindBy403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/character/find-by/abc');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->loginUser(96061222); // not an admin
+        $response2 = $this->runApp('GET', '/api/user/character/find-by/abc');
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testFindBy400()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response = $this->runApp('GET', '/api/user/character/find-by/na');
+        $this->assertSame(400, $response->getStatusCode());
+    }
+
+    public function testFindBy200()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response = $this->runApp('GET', '/api/user/character/find-by/ser');
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [
+                ['id' => 456, 'name' => 'Another USER'],
+                ['id' => 96061222, 'name' => 'User']
+
+            ],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testFindPlayerOf403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/character/find-player-of/123');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->loginUser(96061222); // not an admin
+        $response2 = $this->runApp('GET', '/api/user/character/find-player-of/123');
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testFindPlayerOf204()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response = $this->runApp('GET', '/api/user/character/find-player-of/123');
+        $this->assertSame(204, $response->getStatusCode());
+    }
+
+    public function testFindPlayerOf200()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response = $this->runApp('GET', '/api/user/character/find-player-of/456');
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertSame([
+            'id' => $this->playerId,
+            'name' => 'User',
+            'roles' => [Roles::USER],
+            'characters' => [
+                ['id' => 456, 'name' => 'Another USER', 'main' => false,
+                    'lastUpdate' => null, 'validToken' => false, 'corporation' => null],
+                ['id' => 96061222, 'name' => 'User', 'main' => true,
+                    'lastUpdate' => null, 'validToken' => true, 'corporation' => null],
+            ],
+            'applications' => [],
+            'groups' => [],
+            'managerGroups' => [],
+            'managerApps' => [],
+
+        ], $this->parseJsonBody($response));
+    }
+
     public function testUpdate403()
     {
         $response = $this->runApp('PUT', '/api/user/character/96061222/update');
@@ -164,13 +250,15 @@ class CharacterTest extends WebTestCase
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Roles::USER]);
         $char->setValidToken(true);
+        $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();
-        $this->helper->addCharacterMain('User', 9, [Roles::USER, Roles::USER_ADMIN]);
+        $this->helper->addCharacterMain('Admin', 9, [Roles::USER, Roles::USER_ADMIN]);
 
         $groups = $this->helper->addGroups(['auto.bni']);
 
         $corp = (new Corporation())->setId($this->corpId)->setName($this->corpName)->setTicker($this->corpTicker);
         $corp->addGroup($groups[0]);
+
         $this->helper->getEm()->persist($corp);
         $this->helper->getEm()->flush();
     }

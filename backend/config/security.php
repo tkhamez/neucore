@@ -18,7 +18,9 @@ return [
     '/api/user/auth/callback'  => [Roles::ANONYMOUS, Roles::USER],
     '/api/user/auth/result'    => [Roles::ANONYMOUS, Roles::USER],
 
-    '/api/user/character/{id}/update' => [Roles::USER, Roles::USER_ADMIN],
+    '/api/user/character/find-by'        => [Roles::USER_ADMIN],
+    '/api/user/character/find-player-of' => [Roles::USER_ADMIN],
+    '/api/user/character/{id}/update'    => [Roles::USER, Roles::USER_ADMIN],
 
     '/api/user/corporation' => [Roles::GROUP_ADMIN],
 
