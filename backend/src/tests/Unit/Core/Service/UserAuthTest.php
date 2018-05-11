@@ -5,7 +5,7 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
-use Brave\Core\Service\CoreCharacterService;
+use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
@@ -41,7 +41,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $oauth = $this->createMock(GenericProvider::class);
         $token = new OAuthToken($oauth, $em, $this->log);
 
-        $ccs = new CoreCharacterService($this->log, $em, $token);
+        $ccs = new CoreCharacter($this->log, $em, $token);
 
         $this->service = new UserAuth(new SessionData(), $ccs, $cr, $rr, $em, $this->log);
     }

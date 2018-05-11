@@ -3,8 +3,8 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Service\CoreCharacterService;
-use Brave\Core\Service\EsiCharacterService;
+use Brave\Core\Service\CoreCharacter;
+use Brave\Core\Service\EsiCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -20,12 +20,12 @@ class UpdateCharacters extends Command
     private $charRepo;
 
     /**
-     * @var EsiCharacterService
+     * @var EsiCharacter
      */
     private $esiCharService;
 
     /**
-     * @var CoreCharacterService
+     * @var CoreCharacter
      */
     private $coreCharService;
 
@@ -41,8 +41,8 @@ class UpdateCharacters extends Command
 
     public function __construct(
         CharacterRepository $charRepo,
-        EsiCharacterService $esiCharService,
-        CoreCharacterService $coreCharService,
+        EsiCharacter $esiCharService,
+        CoreCharacter $coreCharService,
         EntityManagerInterface $em,
         LoggerInterface $log
     ) {

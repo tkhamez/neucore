@@ -29,7 +29,7 @@ class UserAuth implements RoleProviderInterface
     private $session;
 
     /**
-     * @var CoreCharacterService
+     * @var CoreCharacter
      */
     private $characterService;
 
@@ -58,7 +58,7 @@ class UserAuth implements RoleProviderInterface
      */
     private $user;
 
-    public function __construct(SessionData $session, CoreCharacterService $charService,
+    public function __construct(SessionData $session, CoreCharacter $charService,
         CharacterRepository $characterRepository, RoleRepository $roleRepository,
         EntityManagerInterface $em, LoggerInterface $log)
     {
@@ -123,10 +123,9 @@ class UserAuth implements RoleProviderInterface
             }
 
             $char = $this->characterService->createNewPlayerWithMain(
-                $characterId,
-                $characterName,
-                $userRole[0]
-            );
+                $characterId, $characterName);
+
+            $char->getPlayer()->addRole($userRole[0]);
         }
 
         $char->setName($characterName);

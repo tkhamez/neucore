@@ -4,12 +4,11 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Role;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
 
-class CoreCharacterService
+class CoreCharacter
 {
     /**
      * @var LoggerInterface
@@ -39,13 +38,14 @@ class CoreCharacterService
     /**
      * Creates and stores a new Character and Player.
      *
-     * This is for characters who have not signed up with EVE SSO.
+     * This is for characters who have not signed up with EVE SSO
+     * (not used at the moment).
      *
      * @param int $characterId
      * @param string $characterName
      * @return boolean
      */
-    public function addCharacter(int $characterId, string $characterName)
+    public function createCharacter(int $characterId, string $characterName)
     {
         return $this->updateAndStoreCharacterWithPlayer(
             $this->createNewPlayerWithMain($characterId, $characterName)
@@ -59,19 +59,11 @@ class CoreCharacterService
      *
      * @param int $characterId
      * @param string $characterName
-     * @param Role|null $role
      * @return Character
      */
-    public function createNewPlayerWithMain(
-        int $characterId,
-        string $characterName,
-        Role $role =  null
-    ): Character {
+    public function createNewPlayerWithMain(int $characterId, string $characterName): Character {
         $player = new Player();
         $player->setName($characterName);
-        if ($role !== null) {
-            $player->addRole($role);
-        }
 
         $char = new Character();
         $char->setId($characterId);
@@ -83,6 +75,18 @@ class CoreCharacterService
         return $char;
     }
 
+    /**
+     * Update and save character and player.
+     *
+     * Updates character with the data provided and persists player
+     * and character in the database. Both Entities can be new.
+     *
+     * @param Character $char Character with Player object attached.
+     * @param string|null $characterOwnerHash Will be set to null if not provided.
+     * @param AccessToken|null $token Will not be updated if not provided.
+     * @param string|null $scopes Will be set to null if not provided.
+     * @return bool
+     */
     public function updateAndStoreCharacterWithPlayer(
         Character $char,
         string $characterOwnerHash = null,
@@ -103,7 +107,6 @@ class CoreCharacterService
             $this->em->persist($char); // could be a new character
             $this->em->flush();
         } catch (\Exception $e) {
-            print_r($e->getMessage());
             $this->log->critical($e->getMessage(), ['exception' => $e]);
             return false;
         }
@@ -114,7 +117,9 @@ class CoreCharacterService
     /**
      * Verifies refresh token.
      *
-     * Also updates CharacterOwnerHash.
+     * The refresh token is verified by requesting a new access token.
+     * But this only updates the validToken property (true/false)
+     * and the CharacterOwnerHash.
      *
      * @param Character $char An instance that is attached to the Doctrine EntityManager.
      * @return boolean

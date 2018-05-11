@@ -147,7 +147,8 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     public function testVerify()
     {
-        // can't really test "getAccessToken()" method here, but that is done above.
+        // can't really test "getAccessToken()" method here,
+        // but that is done above in testGetToken*()
 
         $this->oauth->method('getResourceOwner')->willReturn(new GenericResourceOwner([
             'CharacterID' => '123',
