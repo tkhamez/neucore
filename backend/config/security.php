@@ -18,8 +18,8 @@ return [
     '/api/user/auth/callback'  => [Roles::ANONYMOUS, Roles::USER],
     '/api/user/auth/result'    => [Roles::ANONYMOUS, Roles::USER],
 
-    '/api/user/character/find-by'        => [Roles::USER_ADMIN],
-    '/api/user/character/find-player-of' => [Roles::USER_ADMIN],
+    '/api/user/character/find-by'        => [Roles::USER_ADMIN, Roles::GROUP_MANAGER],
+    '/api/user/character/find-player-of' => [Roles::USER_ADMIN, Roles::GROUP_MANAGER],
     '/api/user/character/{id}/update'    => [Roles::USER, Roles::USER_ADMIN],
 
     '/api/user/corporation' => [Roles::GROUP_ADMIN],
@@ -40,7 +40,7 @@ return [
     '/api/user/player/set-main'           => [Roles::USER],
     '/api/user/player/app-managers'       => [Roles::APP_ADMIN],
     '/api/user/player/group-managers'     => [Roles::GROUP_ADMIN],
-    '/api/user/player/all'                => [Roles::USER_ADMIN, Roles::GROUP_ADMIN],
+    '/api/user/player/all'                => [Roles::USER_ADMIN, Roles::GROUP_ADMIN, Roles::GROUP_MANAGER],
     '/api/user/player'                    => [Roles::USER_ADMIN],
 
     '/api/user' => [Roles::USER],
