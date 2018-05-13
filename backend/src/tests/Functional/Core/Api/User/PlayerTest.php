@@ -21,7 +21,9 @@ class PlayerTest extends WebTestCase
 
     private $em;
 
-    private $mid;
+    private $userId;
+
+    private $managerId;
 
     private $player;
 
@@ -250,7 +252,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(11); // not user-admin or group-admin
+        $this->loginUser(10); // not user-admin, group-admin or group-manager
 
         $response = $this->runApp('GET', '/api/user/player/all');
         $this->assertEquals(403, $response->getStatusCode());
@@ -266,7 +268,8 @@ class PlayerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->player->getId(), 'name' => 'Admin'],
-            ['id' => $this->mid, 'name' => 'Manager'],
+            ['id' => $this->managerId, 'name' => 'Manager'],
+            ['id' => $this->userId, 'name' => 'User'],
         ], $this->parseJsonBody($response));
     }
 
@@ -310,7 +313,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->mid, 'name' => 'Manager']],
+            [['id' => $this->managerId, 'name' => 'Manager']],
             $this->parseJsonBody($response)
         );
     }
@@ -355,7 +358,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->mid, 'name' => 'Manager']],
+            [['id' => $this->managerId, 'name' => 'Manager']],
             $this->parseJsonBody($response)
         );
     }
@@ -555,7 +558,9 @@ class PlayerTest extends WebTestCase
         $this->group = $gs[0];
         $this->gPrivId = $gs[1]->getId();
 
-        $this->mid = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
+        $this->userId = $this->h->addCharacterMain('User', 10, [Roles::USER])->getPlayer()->getId();;
+
+        $this->managerId = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
             ->getPlayer()->getId();
 
         $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
