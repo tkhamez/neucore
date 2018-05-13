@@ -88,7 +88,7 @@ class CharacterController
      *     path="/user/character/find-by/{name}",
      *     operationId="findBy",
      *     summary="Return a list of characters that matches the name (partial matching, minimum 3 characters).",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-admin or group-manager",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -138,7 +138,7 @@ class CharacterController
      *     path="/user/character/find-player-of/{id}",
      *     operationId="findPlayerOf",
      *     summary="Return the player to whom the character belongs.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-admin or group-manager",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(

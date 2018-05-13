@@ -262,7 +262,7 @@ class PlayerController
      *     path="/user/player/all",
      *     operationId="all",
      *     summary="List all players.",
-     *     description="Needs role: user-admin or group-admin",
+     *     description="Needs role: user-admin, group-admin or group-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
