@@ -11,7 +11,7 @@
 		data : {
 			loginUrl : null,
 			loginAltUrl : null,
-			loginErrorMessage: '',
+			errorMessage: '',
 			authChar : null,
 			player : {},
 			loadingCount: 0
@@ -82,8 +82,8 @@
 						return;
 					}
 					if (! data.success) {
-						bravecore.loginErrorMessage = data.message;
-						window.$("#msg-login-error").show();
+						bravecore.errorMessage = data.message;
+						window.$("#msg-error").show();
 					}
 				});
 			},
@@ -138,7 +138,11 @@
 				this.loading(true);
 				new SwaggerBrvneucoreJs.CharacterApi().update(characterId, function(error) {
 					bravecore.loading(false);
-					if (error) { // 403 usually
+					if (error) { // 403 (Core) or 503 (ESI down) usually
+						if (error.message) {
+							bravecore.errorMessage = error.message;
+							window.$("#msg-error").show();
+						}
 						return;
 					}
 					bravecore.getPlayer();

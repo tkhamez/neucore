@@ -14,6 +14,15 @@
 			position: relative;
 			min-height: 430px;
 		}
+
+		.player-hdl {
+			position: relative;
+		}
+		.player-hdl h2 {
+			display: inline-block;
+			margin-right: 10px;
+		}
+
 		#preview {
 			position: absolute;
 			right: 20px;
@@ -27,8 +36,9 @@
 			background-color: rgba(200, 200, 200, .5);
 			display: none;
 		}
+
 		#msg-update-done,
-		#msg-login-error {
+		#msg-error {
 			position: fixed;
 			top: 170px;
 			left: 25%;
@@ -36,6 +46,7 @@
 			z-index: 5000;
 			display: none;
 		}
+
 		#loader {
 			position: fixed;
 			top: 25px;
@@ -60,8 +71,8 @@
 	<div id="app">
 
 		<div class="alert alert-success" id="msg-update-done">Update done.</div>
-		<div class="alert alert-danger alert-dismissible fade show" id="msg-login-error">
-			&nbsp; {{ loginErrorMessage }}
+		<div class="alert alert-danger alert-dismissible fade show" id="msg-error">
+			&nbsp; {{ errorMessage }}
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
@@ -148,11 +159,6 @@
 				<div class="row">
 					<div class="col-lg-8">
 						<h2>Characters</h2>
-					</div>
-					<div class="col-lg-4"></div>
-				</div>
-				<div class="row">
-					<div class="col-lg-8">
 						<div class="card-columns">
 							<div v-for="char in player.characters" class="card border-secondary bg-light">
 								<div class="card-header">
@@ -197,6 +203,10 @@
 						</div>
 					</div>
 					<div class="col-lg-4">
+						<div class="player-hdl">
+							<h2>Player</h2>
+							<span>Name: {{ player.name }}, ID: {{ player.id }}</span>
+						</div>
 						<div class="card border-secondary mb-3">
 							<h3 class="card-header">Groups</h3>
 							<ul class="list-group list-group-flush">
