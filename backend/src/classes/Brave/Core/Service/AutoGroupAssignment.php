@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\PlayerRepository;
@@ -21,6 +22,11 @@ class AutoGroupAssignment
     private $em;
 
     /**
+     * @var AllianceRepository
+     */
+    private $allianceRepo;
+
+    /**
      * @var CorporationRepository
      */
     private $corpRepo;
@@ -36,14 +42,21 @@ class AutoGroupAssignment
     private $playerRepo;
 
     /**
-     * Corporation ID to group IDs mapping
+     * Alliance ID to group IDs mapping.
      *
      * @var array
      */
-    private $mapping;
+    private $allianceMapping;
 
     /**
-     * All group IDs from the corporation -> group configuration.
+     * Corporation ID to group IDs mapping.
+     *
+     * @var array
+     */
+    private $corpMapping;
+
+    /**
+     * All group IDs from the corporation and alliance to group configuration.
      *
      * @var array
      */
@@ -52,12 +65,14 @@ class AutoGroupAssignment
     public function __construct(
         LoggerInterface $log,
         EntityManagerInterface $em,
+        AllianceRepository $allianceRepo,
         CorporationRepository $corpRepo,
         GroupRepository $groupRepo,
         PlayerRepository $playerRepo
     ) {
         $this->log = $log;
         $this->em = $em;
+        $this->allianceRepo = $allianceRepo;
         $this->corpRepo = $corpRepo;
         $this->groupRepo = $groupRepo;
         $this->playerRepo = $playerRepo;
@@ -66,13 +81,18 @@ class AutoGroupAssignment
     /**
      * Add and remove groups from the player.
      *
-     * The assignment is made on the basis of the Group -> Group configuration.
+     * The assignment is based on the group configuration of the
+     * corporations and alliances.
      *
-     * Only groups belonging to a corporation will be removed if the character
-     * does not belong to that corporation.
+     * A player gets all groups that belongs to his corporation or
+     * alliance.
+     *
+     * Only groups belonging to a company or alliance will be removed
+     * from a player when he no longer is a member of that corporation
+     * or alliance.
      *
      * @param int $playerId
-     * @return void|\Brave\Core\Entity\Player|NULL
+     * @return \Brave\Core\Entity\Player|NULL
      */
     public function assign(int $playerId)
     {
@@ -83,15 +103,23 @@ class AutoGroupAssignment
 
         $this->loadMapping();
 
-        // collect group IDs
+        // collect groups that the player should have
         $groupIds = [];
         foreach ($player->getCharacters() as $char) {
             if ($char->getCorporation() === null) {
                 continue;
             }
+
             $corpId = $char->getCorporation()->getId();
-            if (isset($this->mapping[$corpId])) {
-                $groupIds = array_merge($groupIds, $this->mapping[$corpId]);
+            if (isset($this->corpMapping[$corpId])) {
+                $groupIds = array_merge($groupIds, $this->corpMapping[$corpId]);
+            }
+
+            if ($char->getCorporation()->getAlliance()) {
+                $allianceId = $char->getCorporation()->getAlliance()->getId();
+                if (isset($this->allianceMapping[$allianceId])) {
+                    $groupIds = array_merge($groupIds, $this->allianceMapping[$allianceId]);
+                }
             }
         }
         $groupIds = array_unique($groupIds);
@@ -121,23 +149,39 @@ class AutoGroupAssignment
 
     private function loadMapping()
     {
-        if ($this->mapping !== null) {
+        if ($this->autoGroups !== null) {
             return;
         }
-
-        $this->mapping = [];
         $this->autoGroups = [];
-        foreach ($this->corpRepo->getAllWithGroups() as $corp) {
-            $cid = $corp->getId();
-            $this->mapping[$cid] = [];
-            foreach ($corp->getGroups() as $group) {
-                $gid = $group->getId();
-                $this->mapping[$cid][] = $gid;
-                if (! in_array($gid, $this->autoGroups)) {
-                    $this->autoGroups[] = $gid;
+
+        $this->allianceMapping = $this->fillMaps($this->allianceRepo->getAllWithGroups());
+        $this->corpMapping = $this->fillMaps($this->corpRepo->getAllWithGroups());
+    }
+
+    /**
+     *
+     * @param \Brave\Core\Entity\Corporation[]|\Brave\Core\Entity\Alliance[] $entities
+     * @return array
+     */
+    private function fillMaps(array $entities): array
+    {
+        $map = [];
+
+        foreach ($entities as $entity) {
+            $eId = $entity->getId();
+            $map[$eId] = [];
+            foreach ($entity->getGroups() as $group) {
+                $gId = $group->getId();
+                if (! in_array($gId, $map)) {
+                    $map[$eId][] = $gId;
+                }
+                if (! in_array($gId, $this->autoGroups)) {
+                    $this->autoGroups[] = $gId;
                 }
             }
         }
+
+        return $map;
     }
 
     private function flush(): bool

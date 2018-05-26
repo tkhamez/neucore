@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationRepository;
@@ -14,6 +15,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
 use Tests\WriteErrorListener;
+use Brave\Core\Entity\Alliance;
 
 class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 {
@@ -39,6 +41,10 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
     private $group5Id;
 
+    private $group6Id;
+
+    private $group7Id;
+
     public function setUp()
     {
         $this->th = new Helper();
@@ -47,16 +53,17 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
+        $alliRepo = new AllianceRepository($this->em);
         $corpRepo = new CorporationRepository($this->em);
         $groupRepo = new GroupRepository($this->em);
         $this->playerRepo = new PlayerRepository($this->em);
 
-        $this->aga = new AutoGroupAssignment($log, $this->em, $corpRepo, $groupRepo, $this->playerRepo);
+        $this->aga = new AutoGroupAssignment($log, $this->em, $alliRepo, $corpRepo, $groupRepo, $this->playerRepo);
 
         // a second EsiCharacter instance with another EntityManager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->agaError = new AutoGroupAssignment($log, $em, $corpRepo, $groupRepo, $this->playerRepo);
+        $this->agaError = new AutoGroupAssignment($log, $em, $alliRepo, $corpRepo, $groupRepo, $this->playerRepo);
     }
 
     public function testAssignNotFound()
@@ -69,9 +76,11 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
     {
         $this->setUpData();
 
-        // Player belongs to corps with groups 1, 2 and 3
+        // Player belongs to corps with groups 1, 2, 3 and 7
         // Group 4 belongs to another corp
         // Group 5 does not belong to any group
+        // Group 6 belongs to the player's alliance
+        // Group 7 belongs to the player's alliance and corp 2
 
         $playerBefore = $this->playerRepo->find($this->playerId);
         $this->assertSame([$this->group4Id, $this->group5Id], $playerBefore->getGroupIds());
@@ -82,7 +91,10 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
         $playerDb = $this->playerRepo->find($this->playerId);
         $groupIds = $playerDb->getGroupIds();
-        $this->assertSame([$this->group1Id, $this->group2Id, $this->group3Id, $this->group5Id], $groupIds);
+        $this->assertSame(
+            [$this->group1Id, $this->group2Id, $this->group3Id, $this->group5Id, $this->group6Id, $this->group7Id],
+            $groupIds
+        );
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }
 
@@ -102,8 +114,12 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $group3 = (new Group())->setName('g3');
         $group4 = (new Group())->setName('g4');
         $group5 = (new Group())->setName('g5');
+        $group6 = (new Group())->setName('g6');
+        $group7 = (new Group())->setName('g7');
+        $alliance = (new Alliance())->setId(1)->setName('a1')->setTicker('ta1')->addGroup($group6)->addGroup($group7);
         $corp1 = (new Corporation())->setId(1)->setName('c1')->setTicker('t1')->addGroup($group1)->addGroup($group2);
-        $corp2 = (new Corporation())->setId(2)->setName('c2')->setTicker('t2')->addGroup($group1)->addGroup($group3);
+        $corp2 = (new Corporation())->setId(2)->setName('c2')->setTicker('t2')->addGroup($group1)->addGroup($group3)
+            ->addGroup($group7)->setAlliance($alliance);
         $corp3 = (new Corporation())->setId(3)->setName('c2')->setTicker('t3')->addGroup($group4);
         $player = (new Player())->setName('p')->addGroup($group4)->addGroup($group5)
             ->setLastUpdate(new \DateTime('2018-04-28 17:56:54'));
@@ -119,6 +135,9 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->em->persist($group3);
         $this->em->persist($group4);
         $this->em->persist($group5);
+        $this->em->persist($group6);
+        $this->em->persist($group7);
+        $this->em->persist($alliance);
         $this->em->persist($corp1);
         $this->em->persist($corp2);
         $this->em->persist($corp3);
@@ -135,5 +154,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->group3Id = $group3->getId();
         $this->group4Id = $group4->getId();
         $this->group5Id = $group5->getId();
+        $this->group6Id = $group6->getId();
+        $this->group7Id = $group7->getId();
     }
 }
