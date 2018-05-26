@@ -53,6 +53,17 @@ class Alliance implements \JsonSerializable
     private $corporations;
 
     /**
+     * Groups for automatic assignment (API: not included by default).
+     *
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
+     * @ManyToMany(targetEntity="Group", inversedBy="alliances")
+     * @JoinTable(name="alliance_group")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $groups;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -64,6 +75,7 @@ class Alliance implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'ticker' => $this->ticker
+            // API: groups are not included by default
         ];
     }
     /**
@@ -71,6 +83,7 @@ class Alliance implements \JsonSerializable
      */
     public function __construct()
     {
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->corporations = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -181,5 +194,41 @@ class Alliance implements \JsonSerializable
     public function getCorporations()
     {
         return $this->corporations->toArray();
+    }
+
+    /**
+     * Add group.
+     *
+     * @param \Brave\Core\Entity\Group $group
+     *
+     * @return Alliance
+     */
+    public function addGroup(\Brave\Core\Entity\Group $group)
+    {
+        $this->groups[] = $group;
+
+        return $this;
+    }
+
+    /**
+     * Remove group.
+     *
+     * @param \Brave\Core\Entity\Group $group
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeGroup(\Brave\Core\Entity\Group $group)
+    {
+        return $this->groups->removeElement($group);
+    }
+
+    /**
+     * Get groups.
+     *
+     * @return Group[]
+     */
+    public function getGroups()
+    {
+        return $this->groups->toArray();
     }
 }

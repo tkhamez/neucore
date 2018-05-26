@@ -4,6 +4,7 @@ namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\Group;
 
 class AllianceTest extends \PHPUnit\Framework\TestCase
 {
@@ -56,5 +57,21 @@ class AllianceTest extends \PHPUnit\Framework\TestCase
 
         $alli->removeCorporation($c2);
         $this->assertSame([$c1], $alli->getCorporations());
+    }
+
+    public function testAddGetRemoveGroup()
+    {
+        $alli = new Alliance();
+        $g1 = new Group();
+        $g2 = new Group();
+
+        $this->assertSame([], $alli->getGroups());
+
+        $alli->addGroup($g1);
+        $alli->addGroup($g2);
+        $this->assertSame([$g1, $g2], $alli->getGroups());
+
+        $alli->removeGroup($g2);
+        $this->assertSame([$g1], $alli->getGroups());
     }
 }

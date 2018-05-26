@@ -89,6 +89,15 @@ class Group implements \JsonSerializable
     private $corporations;
 
     /**
+     * Alliances for automatic assignment.
+     *
+     * @ManyToMany(targetEntity="Alliance", mappedBy="groups")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $alliances;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -113,6 +122,7 @@ class Group implements \JsonSerializable
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
         $this->corporations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->alliances = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -356,5 +366,41 @@ class Group implements \JsonSerializable
     public function getCorporations()
     {
         return $this->corporations->toArray();
+    }
+
+    /**
+     * Add alliance.
+     *
+     * @param \Brave\Core\Entity\Alliance $alliance
+     *
+     * @return Group
+     */
+    public function addAlliance(\Brave\Core\Entity\Alliance $alliance)
+    {
+        $this->alliances[] = $alliance;
+
+        return $this;
+    }
+
+    /**
+     * Remove alliance.
+     *
+     * @param \Brave\Core\Entity\Alliance $alliance
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeAlliance(\Brave\Core\Entity\Alliance $alliance)
+    {
+        return $this->alliances->removeElement($alliance);
+    }
+
+    /**
+     * Get alliances.
+     *
+     * @return Alliance[]
+     */
+    public function getAlliances()
+    {
+        return $this->alliances->toArray();
     }
 }

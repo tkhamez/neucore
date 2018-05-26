@@ -21,9 +21,7 @@ See the [**front-end**](frontend/README.md) and [**back-end**](backend/README.md
 
 There is also a minimal (temporary) front-end in the [**web**](web) directory.
 
-### Features
-
-TODO move stuff from google doc
+See [**doc/features.md**](doc/features.md) for more.
 
 ### Player Accounts and Character Registration
 

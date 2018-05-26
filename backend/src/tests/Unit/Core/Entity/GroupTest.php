@@ -3,6 +3,7 @@
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\App;
+use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
@@ -129,5 +130,21 @@ class GroupTest extends \PHPUnit\Framework\TestCase
 
         $group->removeCorporation($c2);
         $this->assertSame([$c1], $group->getCorporations());
+    }
+
+    public function testAddGetRemoveAlliance()
+    {
+        $group = new Group();
+        $a1 = new Alliance();
+        $a2 = new Alliance();
+
+        $this->assertSame([], $group->getAlliances());
+
+        $group->addAlliance($a1);
+        $group->addAlliance($a2);
+        $this->assertSame([$a1, $a2], $group->getAlliances());
+
+        $group->removeAlliance($a2);
+        $this->assertSame([$a1], $group->getAlliances());
     }
 }
