@@ -230,6 +230,16 @@ class Corporation implements \JsonSerializable
         return $this->groups->toArray();
     }
 
+    public function hasGroup(int $groupId): bool
+    {
+        foreach ($this->getGroups() as $g) {
+            if ($g->getId() === $groupId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Add character.
      *

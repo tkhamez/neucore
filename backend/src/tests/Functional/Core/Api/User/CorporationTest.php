@@ -119,11 +119,12 @@ class CorporationTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/corporation/with-groups');
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([
-                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'groups' => [
+        $this->assertSame(
+            [
+                ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null, 'groups' => [
                     ['id' => $this->gid1, 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE]
                 ]],
-                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'groups' => [
+                ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null, 'groups' => [
                     ['id' => $this->gid1, 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE],
                     ['id' => $this->gid2, 'name' => 'group 2', 'visibility' => Group::VISIBILITY_PRIVATE]
                 ]]

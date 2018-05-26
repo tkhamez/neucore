@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Brave\Core\Api\ApplicationController;
+use Brave\Core\Api\User\AllianceController;
 use Brave\Core\Api\User\AppController;
 use Brave\Core\Api\User\AuthController;
 use Brave\Core\Api\User\CharacterController;
@@ -32,6 +33,12 @@ return [
     '/api/user/character/find-player-of/{id}' => ['GET',  CharacterController::class.'::findPlayerOf'],
     '/api/user/character/show'                => ['GET',  CharacterController::class.'::show'],
     '/api/user/character/{id}/update'         => ['PUT',  CharacterController::class.'::update'],
+
+    '/api/user/alliance/all'                     => ['GET',  AllianceController::class.'::all'],
+    '/api/user/alliance/with-groups'             => ['GET',  AllianceController::class.'::withGroups'],
+    '/api/user/alliance/add/{id}'                => ['POST', AllianceController::class.'::add'],
+    '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
+    '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
 
     '/api/user/corporation/all'                     => ['GET',  CorporationController::class.'::all'],
     '/api/user/corporation/with-groups'             => ['GET',  CorporationController::class.'::withGroups'],

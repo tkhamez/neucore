@@ -29,4 +29,18 @@ class AllianceRepository extends \Doctrine\ORM\EntityRepository
     {
         return parent::find($id, $lockMode, $lockVersion);
     }
+
+    /**
+     *
+     * @return \Brave\Core\Entity\Alliance[]
+     */
+    public function getAllWithGroups()
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.groups', 'g')
+        ->andWhere('g.id IS NOT NULL')
+        ->orderBy('a.name')
+        ->getQuery()
+        ->getResult();
+    }
 }

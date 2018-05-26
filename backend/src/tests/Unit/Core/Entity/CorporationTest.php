@@ -69,6 +69,23 @@ class CorporationTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$g1], $corp->getGroups());
     }
 
+    public function testHasGroup()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $corp = new Corporation();
+        $corp->addGroup($group1);
+
+        $this->assertTrue($corp->hasGroup($group1->getId()));
+        $this->assertFalse($corp->hasGroup($group2->getId()));
+    }
+
     public function testAddGetRemoveCharacter()
     {
         $corp = new Corporation();

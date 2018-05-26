@@ -10,6 +10,8 @@ use Brave\Core\Roles;
 return [
     '/api/app' => [Roles::APP],
 
+    '/api/user/alliance' => [Roles::GROUP_ADMIN],
+
     '/api/user/app/{id}/change-secret' => [Roles::APP_MANAGER],
     '/api/user/app'                    => [Roles::APP_ADMIN],
 

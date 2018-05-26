@@ -120,8 +120,9 @@ class Application
         date_default_timezone_set('UTC');
 
         // use the following when an error occured before the error handling is setup
-        #ini_set('error_log', Application::ROOT_DIR . '/var/logs/php_error.log');
+        #ini_set('display_errors', '1');
 
+        // allow group to change files
         umask(0002);
     }
 

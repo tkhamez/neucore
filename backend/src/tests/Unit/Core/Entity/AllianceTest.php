@@ -74,4 +74,21 @@ class AllianceTest extends \PHPUnit\Framework\TestCase
         $alli->removeGroup($g2);
         $this->assertSame([$g1], $alli->getGroups());
     }
+
+    public function testHasGroup()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $alli = new Alliance();
+        $alli->addGroup($group1);
+
+        $this->assertTrue($alli->hasGroup($group1->getId()));
+        $this->assertFalse($alli->hasGroup($group2->getId()));
+    }
 }

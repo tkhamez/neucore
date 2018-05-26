@@ -2,8 +2,8 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Service\EsiCharacter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,16 +12,16 @@ use Slim\Http\Response;
 
 /**
  * @SWG\Tag(
- *     name="Corporation",
- *     description="Corporation management (for automatic group assignment)."
+ *     name="Alliance",
+ *     description="Alliance management (for automatic group assignment)."
  * )
  */
-class CorporationController
+class AllianceController
 {
     /**
      * @var Response
      */
-    private $res;
+    private $response;
 
     /**
      * @var LoggerInterface
@@ -34,9 +34,9 @@ class CorporationController
     private $em;
 
     /**
-     * @var CorporationRepository
+     * @var AllianceRepository
      */
-    private $corpRepo;
+    private $allianceRepo;
 
     /**
      * @var GroupRepository
@@ -44,37 +44,41 @@ class CorporationController
     private $groupRepo;
 
     /**
-     * @var Corporation
+     * @var Alliance
      */
-    private $corp;
+    private $alliance;
 
     /**
      * @var \Brave\Core\Entity\Group
      */
     private $group;
 
-    public function __construct(Response $response, LoggerInterface $log, EntityManagerInterface $em,
-        CorporationRepository $corpRepo, GroupRepository $groupRepo)
+    public function __construct(
+        Response $response,
+        LoggerInterface $log,
+        EntityManagerInterface $em,
+        AllianceRepository $allianceRepo,
+        GroupRepository $groupRepo)
     {
-        $this->res = $response;
+        $this->response = $response;
         $this->log = $log;
         $this->em = $em;
-        $this->corpRepo = $corpRepo;
+        $this->allianceRepo = $allianceRepo;
         $this->groupRepo = $groupRepo;
     }
 
     /**
      * @SWG\Get(
-     *     path="/user/corporation/all",
+     *     path="/user/alliance/all",
      *     operationId="all",
-     *     summary="List all corporations.",
+     *     summary="List all alliances.",
      *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
+     *     tags={"Alliance"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="List of corporations.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         description="List of alliances.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -84,21 +88,21 @@ class CorporationController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->corpRepo->findAll());
+        return $this->response->withJson($this->allianceRepo->findAll());
     }
 
     /**
      * @SWG\Get(
-     *     path="/user/corporation/with-groups",
+     *     path="/user/alliance/with-groups",
      *     operationId="withGroups",
-     *     summary="List all corporations that have groups assigned.",
+     *     summary="List all alliances that have groups assigned.",
      *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
+     *     tags={"Alliance"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="List of corporations (this one includes the groups property).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         description="List of alliances (this one includes the groups property).",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -109,49 +113,48 @@ class CorporationController
     public function withGroups(): Response
     {
         $result = [];
-        foreach ($this->corpRepo->getAllWithGroups() as $corp) {
-            // corporation model with groups
-            $json = $corp->jsonSerialize();
-            $json['groups'] = $corp->getGroups();
+        foreach ($this->allianceRepo->getAllWithGroups() as $alliance) {
+            // alliance model with groups
+            $json = $alliance->jsonSerialize();
+            $json['groups'] = $alliance->getGroups();
             $result[] = $json;
         }
 
-        return $this->res->withJson($result);
+        return $this->response->withJson($result);
     }
 
     /**
      * @SWG\Post(
-     *     path="/user/corporation/add/{id}",
+     *     path="/user/alliance/add/{id}",
      *     operationId="add",
-     *     summary="Add an EVE corporation to the database.",
+     *     summary="Add an EVE alliance to the database.",
      *     description="Needs role: group-admin
-     *                  This makes an ESI request and adds the corporation only if it exists.
-     *                  Also adds the corresponding alliance, if there is one.",
-     *     tags={"Corporation"},
+     *                  This makes an ESI request and adds the alliance only if it exists",
+     *     tags={"Alliance"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="EVE corporation ID.",
+     *         description="EVE alliance ID.",
      *         type="integer"
      *     ),
      *     @SWG\Response(
      *         response="201",
-     *         description="The new corporation.",
-     *         @SWG\Schema(ref="#/definitions/Corporation")
+     *         description="The new alliance.",
+     *         @SWG\Schema(ref="#/definitions/Alliance")
      *     ),
      *     @SWG\Response(
      *         response="400",
-     *         description="Inalid corporation ID."
+     *         description="Inalid alliance ID."
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Corporation not found."
+     *         description="Alliance not found."
      *     ),
      *     @SWG\Response(
      *         response="409",
-     *         description="The corporation already exists."
+     *         description="The alliance already exists."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -165,43 +168,43 @@ class CorporationController
      */
     public function add(string $id, EsiCharacter $service): Response
     {
-        $corpId = (int) $id;
+        $allianceId = (int) $id;
 
-        if ($this->corpRepo->find($corpId)) {
-            return $this->res->withStatus(409);
+        if ($this->allianceRepo->find($allianceId)) {
+            return $this->response->withStatus(409);
         }
 
-        // get corporation (also fetches alliance)
-        $corporation = $service->fetchCorporation($corpId);
-        if ($corporation === null) {
+        // get alliance
+        $alliance = $service->fetchAlliance($allianceId);
+        if ($alliance === null) {
             $code = $service->getEsiApi()->getLastErrorCode();
             if ($code === 404 || $code === 400) {
-                return $this->res->withStatus($code);
+                return $this->response->withStatus($code);
             } else {
-                return $this->res->withStatus(503);
+                return $this->response->withStatus(503);
             }
         }
 
         if (! $this->flush()) {
-            return $this->res->withStatus(500);
+            return $this->response->withStatus(500);
         }
 
-        return $this->res->withStatus(201)->withJson($corporation);
+        return $this->response->withStatus(201)->withJson($alliance);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/corporation/{id}/add-group/{gid}",
+     *     path="/user/alliance/{id}/add-group/{gid}",
      *     operationId="addGroup",
-     *     summary="Add a group to the corporation.",
+     *     summary="Add a group to the alliance.",
      *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
+     *     tags={"Alliance"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the corporation.",
+     *         description="ID of the alliance.",
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
@@ -217,7 +220,7 @@ class CorporationController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Corporation and/or group not found."
+     *         description="Alliance and/or group not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -227,34 +230,34 @@ class CorporationController
      */
     public function addGroup(string $id, string $gid): Response
     {
-        if (! $this->findCorpAndGroup($id, $gid)) {
-            return $this->res->withStatus(404);
+        if (! $this->findAllianceAndGroup($id, $gid)) {
+            return $this->response->withStatus(404);
         }
 
-        if (! $this->corp->hasGroup($this->group->getId())) {
-            $this->corp->addGroup($this->group);
+        if (! $this->alliance->hasGroup($this->group->getId())) {
+            $this->alliance->addGroup($this->group);
         }
 
         if (! $this->flush()) {
-            return $this->res->withStatus(500);
+            return $this->response->withStatus(500);
         }
 
-        return $this->res->withStatus(204);
+        return $this->response->withStatus(204);
     }
 
     /**
      * @SWG\Put(
-     *     path="/user/corporation/{id}/remove-group/{gid}",
+     *     path="/user/alliance/{id}/remove-group/{gid}",
      *     operationId="removeGroup",
-     *     summary="Remove a group from the corporation.",
+     *     summary="Remove a group from the alliance.",
      *     description="Needs role: group-admin",
-     *     tags={"Corporation"},
+     *     tags={"Alliance"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the corporation.",
+     *         description="ID of the alliance.",
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
@@ -270,7 +273,7 @@ class CorporationController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Corporation and/or group not found."
+     *         description="Alliance and/or group not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -280,25 +283,25 @@ class CorporationController
      */
     public function removeGroup(string $id, string $gid): Response
     {
-        if (! $this->findCorpAndGroup($id, $gid)) {
-            return $this->res->withStatus(404);
+        if (! $this->findAllianceAndGroup($id, $gid)) {
+            return $this->response->withStatus(404);
         }
 
-        $this->corp->removeGroup($this->group);
+        $this->alliance->removeGroup($this->group);
 
         if (! $this->flush()) {
-            return $this->res->withStatus(500);
+            return $this->response->withStatus(500);
         }
 
-        return $this->res->withStatus(204);
+        return $this->response->withStatus(204);
     }
 
-    private function findCorpAndGroup(string $corpId, string $groupId): bool
+    private function findAllianceAndGroup(string $allianceId, string $groupId): bool
     {
-        $this->corp = $this->corpRepo->find((int) $corpId);
+        $this->alliance = $this->allianceRepo->find((int) $allianceId);
         $this->group = $this->groupRepo->find((int) $groupId);
 
-        if ($this->corp === null || $this->group === null) {
+        if ($this->alliance === null || $this->group === null) {
             return false;
         }
 
