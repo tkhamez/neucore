@@ -194,7 +194,7 @@ class AuthController
             return $this->res->withRedirect($redirectUrl);
         }
 
-        // verify scopes (users can have manipulate the SSO URL)
+        // verify scopes (user can manipulate the SSO login URL)
         $scopes = isset($verify['Scopes']) ? $verify['Scopes'] : '';
         if (! $this->verifyScopes($scopes)) {
             $this->session->set('auth_result', [

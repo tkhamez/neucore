@@ -558,7 +558,7 @@ class PlayerTest extends WebTestCase
         $this->group = $gs[0];
         $this->gPrivId = $gs[1]->getId();
 
-        $this->userId = $this->h->addCharacterMain('User', 10, [Roles::USER])->getPlayer()->getId();;
+        $this->userId = $this->h->addCharacterMain('User', 10, [Roles::USER])->getPlayer()->getId();
 
         $this->managerId = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
             ->getPlayer()->getId();
