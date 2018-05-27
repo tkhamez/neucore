@@ -56,7 +56,7 @@ use Whoops\Run;
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
  *       description="Client library of Brave Collective Core Services API",
- *       version="0.1.1"
+ *       version="0.2.0"
  *     ),
  *     @SWG\SecurityScheme(
  *         securityDefinition="Bearer",

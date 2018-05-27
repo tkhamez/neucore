@@ -17,6 +17,8 @@ class ApplicationTest extends WebTestCase
 
     private $group1Id;
 
+    private $group4Id;
+
     public function testShowV1403()
     {
         $response = $this->runApp('GET', '/api/app/v1/show');
@@ -194,6 +196,77 @@ class ApplicationTest extends WebTestCase
         $this->assertSame($expected, $body);
     }
 
+    public function testAllianceGroupsV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/alliance-groups/123');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAllianceGroupsV1404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/alliance-groups/123', null, $headers);
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testAllianceGroupsV1200()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/alliance-groups/100', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE]
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testAllianceGroupsBulkV1403()
+    {
+        $response = $this->runApp('POST', '/api/app/v1/alliance-groups');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAllianceGroupsBulkV1400()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('POST', '/api/app/v1/alliance-groups', new \stdClass(), $headers);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testAllianceGroupsBulkV1200()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('POST', '/api/app/v1/alliance-groups', [100, 100, 789, 101], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $expected = [[
+            'id' => 100, 'name' => 'one', 'ticker' => '-1-', 'groups' => [
+                ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ]
+        ], [
+            'id' => 101, 'name' => 'o1', 'ticker' => '-11-', 'groups' => [
+                ['id' => $this->group0Id, 'name' => 'g0', 'visibility' => Group::VISIBILITY_PRIVATE],
+                ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ]
+        ]];
+        $this->assertSame($expected, $body);
+    }
+
     public function testMainV1403()
     {
         $response = $this->runApp('GET', '/api/app/v1/main/123');
@@ -265,13 +338,15 @@ class ApplicationTest extends WebTestCase
         $h = new Helper();
         $h->emptyDb();
 
-        $groups = $h->addGroups(['g0', 'g1', 'g2', 'g3']);
+        $groups = $h->addGroups(['g0', 'g1', 'g2', 'g3', 'g4']);
         $this->group0Id = $groups[0]->getId();
         $this->group1Id = $groups[1]->getId();
+        $this->group4Id = $groups[4]->getId();
 
         $app = $h->addApp('A1', 's1', ['app']);
         $app->addGroup($groups[0]);
         $app->addGroup($groups[1]);
+        $app->addGroup($groups[4]);
         $this->appId = $app->getId();
 
         $char1 = $h->addCharacterMain('C1', 123, [Roles::USER]);
@@ -281,6 +356,13 @@ class ApplicationTest extends WebTestCase
         $char2->getPlayer()->addGroup($groups[2]);
 
         $alli = (new Alliance())->setId(100)->setName('one')->setTicker('-1-');
+        $alli->addGroup($groups[2]);
+        $alli->addGroup($groups[4]);
+
+        $alli2 = (new Alliance())->setId(101)->setName('o1')->setTicker('-11-');
+        $alli2->addGroup($groups[0]);
+        $alli2->addGroup($groups[4]);
+
         $corp = (new Corporation())->setId(500)->setName('five')->setTicker('-5-');
         $corp->addGroup($groups[2]);
         $corp->addGroup($groups[1]);
@@ -291,6 +373,7 @@ class ApplicationTest extends WebTestCase
         $corp2->addGroup($groups[1]);
 
         $h->getEm()->persist($alli);
+        $h->getEm()->persist($alli2);
         $h->getEm()->persist($corp);
         $h->getEm()->persist($corp2);
 

@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api;
 
+use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Service\AppAuth;
@@ -52,16 +53,23 @@ class ApplicationController
      */
     private $corpRepo;
 
+    /**
+     * @var AllianceRepository
+     */
+    private $allianceRepo;
+
     public function __construct(
         Response $response,
         AppAuth $aap,
         CharacterRepository $charRepo,
-        CorporationRepository $corpRepo
+        CorporationRepository $corpRepo,
+        AllianceRepository $allianceRepo
     ) {
         $this->response = $response;
         $this->appService = $aap;
         $this->charRepo = $charRepo;
         $this->corpRepo = $corpRepo;
+        $this->allianceRepo = $allianceRepo;
     }
 
     /**
@@ -195,7 +203,7 @@ class ApplicationController
      * @SWG\Get(
      *     path="/app/v1/corp-groups/{cid}",
      *     operationId="corpGroupsV1",
-     *     summary="Return groups for the corporation.",
+     *     summary="Return groups of the corporation.",
      *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
@@ -224,7 +232,7 @@ class ApplicationController
     public function corpGroupsV1(string $cid, ServerRequestInterface $request): Response
     {
         $appGroups = $this->appService->getApp($request)->getGroups();
-        $result = $this->getGroupsForCorporation((int) $cid, $appGroups);
+        $result = $this->getGroupsFor('Corporation', (int) $cid, $appGroups);
 
         if ($result === null) {
             return $this->response->withStatus(404);
@@ -237,7 +245,7 @@ class ApplicationController
      * @SWG\Post(
      *     path="/app/v1/corp-groups",
      *     operationId="corpGroupsBulkV1",
-     *     summary="Return groups for multiple corporations.",
+     *     summary="Return groups of multiple corporations.",
      *     description="Needs role: app.
      *                  Returns only groups that have been added to the app as well.
      *                  Skips corporations that are not found in the local database.",
@@ -283,12 +291,115 @@ class ApplicationController
                 continue;
             }
 
-            $corpGroups = $this->getGroupsForCorporation($corpId, $appGroups);
+            $corpGroups = $this->getGroupsFor('Corporation', $corpId, $appGroups);
             if ($corpGroups === null) {
                 continue;
             }
 
             $result[] = $corpGroups;
+        }
+
+        return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/alliance-groups/{aid}",
+     *     operationId="allianceGroupsV1",
+     *     summary="Return groups of the alliance.",
+     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="aid",
+     *         in="path",
+     *         required=true,
+     *         description="EVE alliance ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Alliance not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function allianceGroupsV1(string $aid, ServerRequestInterface $request): Response
+    {
+        $appGroups = $this->appService->getApp($request)->getGroups();
+        $result = $this->getGroupsFor('Alliance', (int) $aid, $appGroups);
+
+        if ($result === null) {
+            return $this->response->withStatus(404);
+        }
+
+        return $this->response->withJson($result['groups']);
+    }
+
+    /**
+     * @SWG\Post(
+     *     path="/app/v1/alliance-groups",
+     *     operationId="allianceGroupsBulkV1",
+     *     summary="Return groups of multiple alliances.",
+     *     description="Needs role: app.
+     *                  Returns only groups that have been added to the app as well.
+     *                  Skips alliances that are not found in the local database.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="ids",
+     *         in="body",
+     *         required=true,
+     *         description="EVE alliance IDs array.",
+     *         @SWG\Schema(type="array", @SWG\Items(type="integer"))
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of alliances with groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function allianceGroupsBulkV1(ServerRequestInterface $request): Response
+    {
+        $allianceIds = $this->getIntegerArrayFromBody($request);
+        if ($allianceIds === null) {
+            return $this->response->withStatus(400);
+        }
+        if (count($allianceIds) === 0) {
+            return $this->response->withJson([]);
+        }
+
+        $appGroups = $this->appService->getApp($request)->getGroups();
+
+        $result = [];
+        foreach ($allianceIds as $allianceId) {
+            if ($allianceId <= 0) {
+                continue;
+            }
+
+            $allianceGroups = $this->getGroupsFor('Alliance', $allianceId, $appGroups);
+            if ($allianceGroups === null) {
+                continue;
+            }
+
+            $result[] = $allianceGroups;
         }
 
         return $this->response->withJson($result);
@@ -398,30 +509,36 @@ class ApplicationController
     }
 
     /**
-     * Get groups of corporation.
+     * Get groups of corporation or alliance.
      *
-     * Returns data from jsonSerialize() of a Corporation object plus
-     * all of it's groups that also belongs to the app.
+     * Returns data from jsonSerialize() of a Corporation or Alliance object
+     * plus all of it's groups that also belongs to the app.
      *
-     * @param int $corporationId
+     * @param string $entityName "Corporation" or "Alliance"
+     * @param int $entityId
      * @param \Brave\Core\Entity\Group[] $appGroups
      * @return void|array Returns NULL if corporation was not found.
      * @see \Brave\Core\Entity\Corporation::jsonSerialize()
+     * @see \Brave\Core\Entity\Alliance::jsonSerialize()
      * @see \Brave\Core\Entity\Group::jsonSerialize()
      */
-    private function getGroupsForCorporation(int $corporationId, array $appGroups)
+    private function getGroupsFor(string $entityName, int $entityId, array $appGroups)
     {
-        $corp = $this->corpRepo->find($corporationId);
-        if ($corp === null) {
+        $repository = $entityName === 'Corporation' ? $this->corpRepo : $this->allianceRepo;
+
+        $entity = $repository->find($entityId);
+        if ($entity === null) {
             return;
         }
 
-        $result = $corp->jsonSerialize();
-        unset($result['alliance']);
+        $result = $entity->jsonSerialize();
+        if (array_key_exists('alliance', $result)) {
+            unset($result['alliance']);
+        }
         $result['groups'] = [];
 
         foreach ($appGroups as $appGroup) {
-            foreach ($corp->getGroups() as $corpGroup) {
+            foreach ($entity->getGroups() as $corpGroup) {
                 if ($appGroup->getId() === $corpGroup->getId()) {
                     $result['groups'][] = $corpGroup->jsonSerialize();
                 }
