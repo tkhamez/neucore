@@ -23,21 +23,6 @@ There is also a minimal (temporary) front-end in the [**web**](web) directory.
 
 See [**doc/features.md**](doc/features.md) for more.
 
-### Player Accounts and Character Registration
-
-Each EVE character belongs to a player account, an account can have several characters.
-
-When a character logs in via EVE SSO for the first time, a new player account is created
-and that character is marked as the main character.
-
-After a successful login, additional characters (alts) can be added to the account. This
-is also done via EVE SSO.
-
-If a character to be added to an account already belongs to another account, it will be
-removed from that account and added to the current account. This can happen, for example,
-if someone has accidentally created two accounts by logging in with an alt that has not
-yet been added to the main account.
-
 ## Installation
 
 ### EVE API setup
@@ -66,7 +51,7 @@ The values for the EVE application must be adjusted.
 
 ### Local dev Requirements
 
-- PHP with Composer (see Vagrantfile for necessary additional extensions)
+- PHP 7 with Composer (see Vagrantfile for necessary additional extensions)
 - Node.js + npm
 - MySQL/MariaDB
 - Apache, set the document root to the "web" directory.
