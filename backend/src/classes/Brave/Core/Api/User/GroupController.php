@@ -81,7 +81,7 @@ class GroupController
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
-     *     description="Needs role: app-admin, group-admin or user-admin",
+     *     description="Needs role: app-admin or group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(

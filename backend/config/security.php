@@ -27,7 +27,7 @@ return [
     '/api/user/corporation' => [Roles::GROUP_ADMIN],
 
     '/api/user/group/public'                => [Roles::USER],
-    '/api/user/group/all'                   => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER_ADMIN],
+    '/api/user/group/all'                   => [Roles::APP_ADMIN, Roles::GROUP_ADMIN],
     '/api/user/group/{id}/applicants'       => [Roles::GROUP_MANAGER],
     '/api/user/group/{id}/remove-applicant' => [Roles::GROUP_MANAGER],
     '/api/user/group/{id}/add-member'       => [Roles::GROUP_MANAGER],
