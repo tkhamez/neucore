@@ -37,7 +37,7 @@ readme.
 
 - `players` identifies EVE players. Each player account can have one or more `characters`. One
   character is marked as the "Main" character, the rest are "Alts".
-- `apps` are 3rd party applications that have access to the "App" API. They can have several groups.
+- `apps` are 3rd party applications that have access to the "Application API". They can have several groups.
 - A player account can be member of several `groups`.
 - A player account can be manager of several groups and apps.
 - A player can apply to groups.
@@ -46,7 +46,7 @@ readme.
 
 ## Roles
 
-All API endpoints from the backend are protected by roles.
+All API endpoints from the back-end are protected by roles.
 
 ### anonymous
 
@@ -73,7 +73,7 @@ Group API
 - List all public groups. `/user/group/public`
 
 Player API
-- Returns the logged in player with all properties. `/user/player/show`
+- Return the logged in player with all properties. `/user/player/show`
 - Submit a group application. `/user/player/add-application/{gid}`
 - Cancel a group application. `/user/player/remove-application/{gid}`
 - Leave a group. `/user/player/leave-group/{gid}`

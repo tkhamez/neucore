@@ -80,7 +80,7 @@ class PlayerController
      * @SWG\Get(
      *     path="/user/player/show",
      *     operationId="show",
-     *     summary="Returns the logged in player with all properties.",
+     *     summary="Return the logged in player with all properties.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
