@@ -1,6 +1,6 @@
 # Features
 
-This primarily describes the back-end, most functions is not yet available
+This primarily describes the back-end, most functions are not yet available
 in the front-end. Admins must use the Swagger-UI for now (`https://[domain]/api.html`).
 
 ## Player Accounts and Character Registration
@@ -50,80 +50,137 @@ All API endpoints from the backend are protected by roles.
 
 ### anonymous
 
-- Can login with EVE SSO.
-- This role is added automatically to every unauthenticated client.
-- This role cannot be added to player accounts.
+This role is added automatically to every unauthenticated client, it
+cannot be added to player accounts.
+
+Auth API
+- EVE SSO login URL. `/user/auth/login-url`
+- Result of last SSO attempt. `/user/auth/result`
 
 ### user
 
-- This role is added to all player accounts.
-- Can see his own data (character name, groups etc.).
-- Can see a list of his EVE characters.
-- Can update his characters from ESI.
-- Can change his "Main".
-- Can add "Alts". Alts need to be authenticated with EVE SSO before they are added to the player account.
-- Can see a list of public groups.
-- Can request to be added to a public group.
-- Can see a list of his applications.
-- Can cancel an application.
-- Can leave a group.
-- Can logout.
+This role is added to all player accounts.
+
+Auth API
+- EVE SSO login URL to add additional characters to an account. `/user/auth/login-alt-url`
+- User logout. `/user/auth/logout`
+
+Character API
+- Return the logged in EVE character. `/user/character/show`
+- Update a character with data from ESI. `/user/character/{id}/update`
+
+Group API
+- List all public groups. `/user/group/public`
+
+Player API
+- Returns the logged in player with all properties. `/user/player/show`
+- Submit a group application. `/user/player/add-application/{gid}`
+- Cancel a group application. `/user/player/remove-application/{gid}`
+- Leave a group. `/user/player/leave-group/{gid}`
+- Change the main character from the player account. `/user/player/set-main/{cid}`
 
 ### user-admin
 
-- Can see a list of all player accounts.
-- Can see all data (characters, roles, groups, etc.) from all players.
-- Can update any character from ESI.
-- Can add and remove from player accounts.
-- Can search for characters by character name.
-- Can search for players by character ID.
+Character API
+- Return a list of characters that matches the name (partial matching, minimum 3 characters).
+  `/user/character/find-by/{name}`
+- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
+- Update a character with data from ESI. `/user/character/{id}/update`
+
+Player API
+- List all players. `/user/player/all`
+- Add a role to the player. `/user/player/{id}/add-role/{name}`
+- Remove a role from a player. `/user/player/{id}/remove-role/{name}`
+- Show all data from a player. `/user/player/{id}/show`
 
 ### group-admin
 
-- Can see a list of all groups.
-- Can create, rename and delete groups.
-- Can change the visibility of a group.
-- Can see a list of all player accounts with the role group-manager.
-- Can add and remove group managers to a group.
-- Can see a list of all managers of a group.
-- Can manage configuration for automatic group assignment ("Corporation" and "Alliance" API).
-- Can see a list of all player accounts.
-- Can search for characters by character name.
-- Can search for players by character ID.
+Alliance API
+- List all alliances. `/user/alliance/all`
+- List all alliances that have groups assigned. `/user/alliance/with-groups`
+- Add an EVE alliance to the database. `/user/alliance/add/{id}`
+- Add a group to the alliance. `/user/alliance/{id}/add-group/{gid}`
+- Remove a group from the alliance. `/user/alliance/{id}/remove-group/{gid}`
+
+Character API
+- Return a list of characters that matches the name (partial matching, minimum 3 characters).
+  `/user/character/find-by/{name}`
+- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
+
+Corporation API
+- List all corporations. `/user/corporation/all`
+- List all corporations that have groups assigned. `/user/corporation/with-groups`
+- Add an EVE corporation to the database. `/user/corporation/add/{id}`
+- Add a group to the corporation. `/user/corporation/{id}/add-group/{gid}`
+- Remove a group from the corporation. `/user/corporation/{id}/remove-group/{gid}`
+
+Group API
+- List all groups. `/user/group/all`
+- Create a group. `/user/group/create`
+- Rename a group. `/user/group/{id}/rename`
+- Change visibility of a group. `/user/group/{id}/set-visibility/{choice}`
+- Delete a group. `/user/group/{id}/delete`
+- List all managers of a group. `/user/group/{id}/managers`
+- Assign a player as manager to a group. `/user/group/{id}/add-manager/{pid}`
+- Remove a manager (player) from a group. `/user/group/{id}/remove-manager/{pid}`
+
+Player API
+- List all players. `/user/player/all`
+- List all players with the role group-manger. `/user/player/group-managers`
 
 ### group-manager
 
-- Can see groups of which he is manager.
-- Can see a list of member from his groups.
-- Can see players that requested to be added to his groups
-- Can add and remove any player to a group of which he is manager.
-- Can delete a player's request to join a group of which he is manager.
-- Can see a list of all players.
+Group API
+- List all applicants of a group. `/user/group/{id}/applicants`
+- Remove a player's request to join a group. `/user/group/{id}/remove-applicant/{pid}`
+- Adds a player to a group. `/user/group/{id}/add-member/{pid}`
+- Remove player from a group. `/user/group/{id}/remove-member/{pid}`
+- List all members of a group. `/user/group/{id}/members`
+
+Player API
+- List all players. `/user/player/all`
 
 ### app-admin
 
-- Can see a list of all apps.
-- Can create, rename and delete apps.
-- Can see a list of all groups.
-- Can see a list of all groups of an app
-- Can add and remove apps to/from a group.
-- Can see a list of all player accounts with the role app-manager.
-- Can see a list of all managers of an app.
-- Can assign app managers to an app.
+App API
+- List all apps. `/user/app/all`
+- Create an app. `/user/app/create`
+- Rename an app. `/user/app/{id}/rename`
+- Delete an app. `/user/app/{id}/delete`
+- List all managers of an app. `/user/app/{id}/managers`
+- Assign a player as manager to an app. `/user/app/{id}/add-manager/{pid}`
+- Remove a manager (player) from an app. `/user/app/{id}/remove-manager/{pid}`
+- List all groups of an app. `/user/app/{id}/groups`
+- Add a group to an app. `/user/app/{id}/add-group/{gid}`
+- Remove a group from an app. `/user/app/{id}/remove-group/{gid}`
+
+Group API
+- List all groups. `/user/group/all`
+
+Player API
+- List all players with the role app-manger. `/user/player/app-managers`
 
 ### app-manager
 
-- Can change the password for apps of which he is manager.
+App API
+- Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.
+  `/user/app/{id}/change-secret`
 
 ### app
 
-- This role is added to all authenticated apps automatically.
-- This role cannot be added to player accounts.
-- Can request info about itself (name, ID)
-- Can request groups for a character ("Alt" or "Main" does not matter). The API only returns
-  groups that are assigned to the app and the associated player account of the requested character.
-- Can query the main character of an account using an EVE character ID.
-- Can request groups of corporations and alliances.
+This role is added to all authenticated apps automatically. It
+cannot be added to player accounts.
+
+Application API
+- Show app information. `/app/v1/show`
+- Return groups of the character's player account. `/app/v1/groups/{cid}`
+- Return groups of multiple players, identified by one of their character IDs. `/app/v1/groups`
+- Return groups of the corporation. `/app/v1/corp-groups/{cid}`
+- Return groups of multiple corporations. `/app/v1/corp-groups`
+- Return groups of the alliance. `/app/v1/alliance-groups/{aid}`
+- Return groups of multiple alliances. `/app/v1/alliance-groups`
+- Returns the main character of the player account to which the character ID belongs.
+  `/app/v1/main/{cid}`
 
 ## Console application
 
