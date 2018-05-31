@@ -11,22 +11,22 @@ else
 fi
 
 # generate the Swagger client
-cd ../frontend
+cd ../frontend2
 if [ ! -f swagger-codegen-cli.jar ]; then
 	wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar \
 		-O swagger-codegen-cli.jar
 fi
-rm -Rf bravecore-swagger-js-client/*
+rm -Rf brvneucore-js-client/*
 java -jar swagger-codegen-cli.jar generate \
-	-c bravecore-swagger-js-client.json \
+	-c brvneucore-js-client.json \
 	-i ../web/swagger.json \
 	-l javascript \
-	-o bravecore-swagger-js-client
-cd bravecore-swagger-js-client
+	-o brvneucore-js-client
+cd brvneucore-js-client
 npm install
 
 # build front-end
-cd ..
+cd ../../frontend
 npm install
 if [ "$1" = "prod" ]; then
     npm run build:prod
@@ -34,7 +34,11 @@ else
     npm run build
 fi
 
-# install Swagger UI and the temporary front-end
+# build frontend2
+cd ../frontend2
+npm install
+npm run build
+
+# install Swagger UI
 cd ../web
 npm install
-node_modules/.bin/browserify index.src.js > index.js

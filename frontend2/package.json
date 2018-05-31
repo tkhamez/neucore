@@ -1,0 +1,27 @@
+{
+    "name": "brvneucore",
+    "private": true,
+    "dependencies": {
+        "bootstrap": "^4.1.0",
+        "bootswatch": "^4.1.0",
+        "brvneucore-js-client": "file:brvneucore-js-client",
+        "browserify": "^16.2.2",
+        "cssify": "^1.0.3",
+        "fontify": "0.0.2",
+        "jquery": "^3.3.1",
+        "open-iconic": "^1.1.1",
+        "popper.js": "^1.14.3",
+        "vue": "^2.5.16"
+    },
+    "browser": {
+        "vue": "vue/dist/vue.min.js"
+    },
+    "browserify": {
+        "transform": [
+            "cssify"
+        ]
+    },
+    "scripts": {
+        "build": "browserify index.src.js > ../web/index.js && fontify"
+    }
+}

@@ -1,15 +1,7 @@
 {
-    "name": "brave-neucore-web",
+    "name": "brvneucore-api",
     "private": true,
     "dependencies": {
-        "bootstrap": "^4.1.0",
-        "bootswatch": "^4.1.0",
-        "bravecore-swagger-js-client": "file:../frontend/bravecore-swagger-js-client",
-        "browserify": "^16.2.2",
-        "jquery": "^3.3.1",
-        "open-iconic": "^1.1.1",
-        "popper.js": "^1.14.3",
-        "swagger-ui-dist": "^3.14.2",
-        "vue": "^2.5.16"
+        "swagger-ui-dist": "^3.14.2"
     }
 }

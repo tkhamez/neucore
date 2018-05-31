@@ -3,13 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Brave Collective Core Services</title>
-	<link rel="stylesheet" href="/node_modules/bootswatch/dist/darkly/bootstrap.min.css">
-	<link href="/node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
-	<script src="/node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
-	<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="/node_modules/vue/dist/vue.min.js"></script>
 	<style>
+		[v-cloak] {
+			display: none;
+			visibility: hidden;
+		}
+
 		.jumbotron {
 			position: relative;
 			min-height: 430px;
@@ -34,17 +33,14 @@
 			padding-left: 30px;
 			transform: rotate(10deg);
 			background-color: rgba(200, 200, 200, .5);
-			display: none;
 		}
 
-		#msg-update-done,
-		#msg-error {
+		.alert.brv-alert {
 			position: fixed;
 			top: 170px;
 			left: 25%;
 			right: 25%;
 			z-index: 5000;
-			display: none;
 		}
 
 		#loader {
@@ -59,7 +55,6 @@
 			border-top: 16px solid #eee;
 			border-radius: 50%;
 			animation: spin 2s linear infinite;
-			display: none;
 		}
 		@keyframes spin {
 			0% { transform: rotate(0deg); }
@@ -70,15 +65,15 @@
 <body>
 	<div id="app">
 
-		<div class="alert alert-success" id="msg-update-done">Update done.</div>
-		<div class="alert alert-danger fade show" id="msg-error">
+		<div v-if="successMessage" v-cloak class="alert alert-success brv-alert">{{ successMessage }}</div>
+		<div v-if="errorMessage" v-cloak class="alert alert-danger fade show brv-alert">
 			&nbsp; {{ errorMessage }}
-			<button type="button" class="close" v-on:click="hide('#msg-error')" aria-label="Close">
+			<button type="button" class="close" v-on:click="errorMessage = '';" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
 		</div>
-		<div id="loader"></div>
-		<div class="modal fade" id="tokenModal">
+		<div v-if="loadingCount > 0" v-cloak id="loader"></div>
+		<div v-cloak class="modal fade" id="tokenModal">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -106,17 +101,18 @@
 				Brave Collective
 			</a>
 			<ul class="navbar-nav mr-auto"></ul>
-			<img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
+			<img v-if="authChar" v-cloak :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
 				class="d-inline-block align-top mr-2" alt="Character Portrait">
-			<span class="navbar-brand" v-if="authChar">{{ authChar.name }}</span>
-			<input v-on:click="logout" v-if="authChar" class="btn btn-outline-success" type="submit" value="Sign Out">
+			<span v-if="authChar" v-cloak class="navbar-brand">{{ authChar.name }}</span>
+			<input v-if="authChar" v-cloak v-on:click="logout"
+				class="btn btn-outline-success" type="submit" value="Sign Out">
 		</nav>
 
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="jumbotron mt-3">
-						<span id="preview">PREVIEW</span>
+						<span id="preview" v-if="preview" v-cloak>PREVIEW</span>
 						<a href="https://www.bravecollective.com/" target="_blank">
 							<img src="/images/brave_300.png" class="float-right" alt="Brave logo"
 								title="Brave Collective: What's your fun per hour?">
@@ -127,24 +123,22 @@
 						</p>
 						<hr class="my-4">
 
-						<div v-if="! authChar">
+						<div v-if="! authChar" v-cloak>
 							<p class="lead">
 								Click the button below to login through <i>EVE Online SSO</i>.
 							</p>
 							<a :href="loginUrl">
 								<img src="/images/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
 							</a>
-							<p>
+							<p class="small">
 								<br>
-								<small>
-									Learn more about the security of <i>EVE Online SSO</i> in this
-				<a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/" target="_blank">
-									dev-blog</a> article.
-								</small>
+								Learn more about the security of <i>EVE Online SSO</i> in this
+								<a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
+									target="_blank">dev-blog</a> article.
 							</p>
 						</div>
 
-						<div v-if="authChar">
+						<div v-if="authChar" v-cloak>
 							<p>Please add all your characters by logging in with EVE SSO.</p>
 							<p class="lead">
 								<a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
@@ -155,7 +149,7 @@
 				</div>
 			</div> <!-- row -->
 
-			<div v-if="authChar">
+			<div v-if="authChar" v-cloak>
 				<div class="row">
 					<div class="col-lg-8">
 						<h2>Characters</h2>
