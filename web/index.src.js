@@ -8,7 +8,7 @@
 	var bravecore = new window.Vue({
 		el : '#app',
 
-		data : {
+		data: {
 			loginUrl : null,
 			loginAltUrl : null,
 			errorMessage: '',
@@ -17,7 +17,7 @@
 			loadingCount: 0
 		},
 
-		mounted : function() {
+		mounted: function() {
 			this.getLoginUrl();
 			this.getLoginAltUrl();
 			this.getCharacter();
@@ -31,7 +31,15 @@
 			}
 		},
 
-		methods : {
+		methods: {
+
+			show: function(selector) {
+				window.$("#msg-error").show();
+			},
+
+			hide: function(selector) {
+				window.$(selector).hide();
+			},
 
 			loading: function (status) {
 				if (status) {
@@ -46,7 +54,7 @@
 				}
 			},
 
-			getLoginUrl : function() {
+			getLoginUrl: function() {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.AuthApi().loginUrl({
 					redirect: '/#login'
@@ -60,7 +68,7 @@
 				});
 			},
 
-			getLoginAltUrl : function() {
+			getLoginAltUrl: function() {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.AuthApi().loginAltUrl({
 					redirect: '/#login-alt'
@@ -83,12 +91,12 @@
 					}
 					if (! data.success) {
 						bravecore.errorMessage = data.message;
-						window.$("#msg-error").show();
+						bravecore.show("#msg-error");
 					}
 				});
 			},
 
-			getCharacter : function() {
+			getCharacter: function() {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.CharacterApi().show(function(error, data) {
 					bravecore.loading(false);
@@ -100,7 +108,7 @@
 				});
 			},
 
-			getPlayer : function() {
+			getPlayer: function() {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.PlayerApi().show(function(error, data) {
 					bravecore.loading(false);
@@ -111,7 +119,7 @@
 				});
 			},
 
-			logout : function() {
+			logout: function() {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.AuthApi().logout(function(error) {
 					bravecore.loading(false);
@@ -123,7 +131,7 @@
 				});
 			},
 
-			makeMain : function(characterId) {
+			makeMain: function(characterId) {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.PlayerApi().setMain(characterId, function(error) {
 					bravecore.loading(false);
@@ -134,7 +142,7 @@
 				});
 			},
 
-			update : function(characterId) {
+			update: function(characterId) {
 				this.loading(true);
 				new SwaggerBrvneucoreJs.CharacterApi().update(characterId, function(error) {
 					bravecore.loading(false);

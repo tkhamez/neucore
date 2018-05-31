@@ -71,9 +71,9 @@
 	<div id="app">
 
 		<div class="alert alert-success" id="msg-update-done">Update done.</div>
-		<div class="alert alert-danger alert-dismissible fade show" id="msg-error">
+		<div class="alert alert-danger fade show" id="msg-error">
 			&nbsp; {{ errorMessage }}
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<button type="button" class="close" v-on:click="hide('#msg-error')" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
 		</div>
