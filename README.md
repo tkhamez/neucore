@@ -33,7 +33,18 @@ See [**doc/features.md**](doc/features.md) for more.
 are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
 
-### Vagrant Requirements
+### Vagrant
+
+Only tested with Vagrant 2 + libvirt.
+
+- `vagrant up` creates and configures the virtual machine.
+- Use `vagrant ssh` and `ifconfig` to determine the IP address.
+- Browse to https://localhost:8443
+- If the Vagrant file changes, run `vagrant provision` to update the VM.
+- `vagrant destroy` will completely remove the VM.
+
+The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
+The values for the EVE application must be adjusted.
 
 For synced folder with NFS (instead of rsync), install `nfs-kernel-server` and edit Vagrantfile:
 ```
@@ -41,20 +52,12 @@ For synced folder with NFS (instead of rsync), install `nfs-kernel-server` and e
 + config.vm.synced_folder "./", "/var/www/bravecore", :nfs => true
 ```
 
-- `vagrant up`
-- browse to https://localhost:8443
-- If the vagrant file changes, run `vagrant provision` to update the VM.
-- `vagrant destroy` will completely remove the VM.
-
-The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
-The values for the EVE application must be adjusted.
-
 ### Local dev Requirements
 
 - PHP 7 with Composer (see Vagrantfile for necessary additional extensions)
-- Node.js + npm
-- MySQL/MariaDB
-- Apache, set the document root to the "web" directory.
+- Node.js 8 + npm 5
+- MariaDB or MySQL Server
+- Apache or another HTTP Server, set the document root to the `web` directory.
 - Java (for swagger-codegen)
 
 ### App setup

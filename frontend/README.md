@@ -11,6 +11,8 @@
 - `npm run check` to lint and validate frontend
 - `npm run build:prod` for a minified production build
 
+With Vagrant you can also run them like this, e. g.:
+`vagrant ssh -c 'cd /var/www/brvneucore/frontend && npm run watch'`
 
 ## Editor Configuration
 
