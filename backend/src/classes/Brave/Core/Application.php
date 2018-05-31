@@ -349,6 +349,10 @@ class Application
             if (strpos($conf['path'], 'php://') === false) {
                 $dir = realpath(dirname($conf['path']));
                 if (! is_writable($dir)) {
+                    if ($this->env === self::ENV_PROD) {
+                        // output message because we may never see it otherwise
+                        echo 'Error: the log directory must be writable by the webserver.';
+                    }
                     throw new \Exception('The log directory ' . $dir . ' must be writable by the webserver.');
                 }
             }
