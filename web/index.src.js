@@ -34,7 +34,7 @@
 		methods: {
 
 			show: function(selector) {
-				window.$("#msg-error").show();
+				window.$(selector).show();
 			},
 
 			hide: function(selector) {
