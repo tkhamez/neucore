@@ -1,23 +1,6 @@
 'use strict';
 
-// jquery, popper + bootstrap with bootswatch
-window.jQuery = require('jquery');
-window.popper = require('popper.js');
-require('bootstrap');
-require('./node_modules/bootswatch/dist/darkly/bootstrap.min.css');
-window.jQuery(function() {
-	window.jQuery('[data-toggle="popover"]').popover();
-});
-
-// open-iconic, font files are copied to ../web, see fontify.json
-require('./node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-// swagger client
-var swagger = require('brvneucore-js-client');
-swagger.ApiClient.instance.basePath = location.protocol + "//" + location.hostname + ':' + location.port + '/api';
-
-var Vue = require('vue');
-var bravecore = new Vue({
+var brvneucore = new window.Vue({
 	el: '#app',
 
 	data: {
@@ -28,7 +11,8 @@ var bravecore = new Vue({
 		errorMessage: '',
 		authChar: null,
 		player: {},
-		loadingCount: 0
+		loadingCount: 0,
+		swagger: null
 	},
 
 	mounted: function() {
@@ -36,6 +20,11 @@ var bravecore = new Vue({
 		if (location.hostname === 'brvneucore.herokuapp.com') {
 			this.preview = true;
 		}
+
+		// configure swagger client
+		this.swagger = window.brvneucoreJsClient;
+		this.swagger.ApiClient.instance.basePath =
+			location.protocol + "//" + location.hostname + ':' + location.port + '/api';
 
 		this.getLoginUrl();
 		this.getLoginAltUrl();
@@ -53,7 +42,7 @@ var bravecore = new Vue({
 		showSuccess: function(message) {
 			this.successMessage = message;
 			setTimeout(function() {
-				bravecore.successMessage = '';
+				brvneucore.successMessage = '';
 			}, 1500);
 		},
 
@@ -67,103 +56,103 @@ var bravecore = new Vue({
 
 		getLoginUrl: function() {
 			this.loading(true);
-			new swagger.AuthApi().loginUrl({
+			new this.swagger.AuthApi().loginUrl({
 				redirect: '/#login'
 			}, function(error, data) {
-				bravecore.loading(false);
+				brvneucore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				bravecore.loginUrl = data;
+				brvneucore.loginUrl = data;
 			});
 		},
 
 		getLoginAltUrl: function() {
 			this.loading(true);
-			new swagger.AuthApi().loginAltUrl({
+			new this.swagger.AuthApi().loginAltUrl({
 				redirect: '/#login-alt'
 			}, function(error, data) {
-				bravecore.loading(false);
+				brvneucore.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				bravecore.loginAltUrl = data;
+				brvneucore.loginAltUrl = data;
 			});
 		},
 
 		getAuthResult: function() {
 			this.loading(true);
-			new swagger.AuthApi().result(function(error, data) {
-				bravecore.loading(false);
+			new this.swagger.AuthApi().result(function(error, data) {
+				brvneucore.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
 				if (! data.success) {
-					bravecore.errorMessage = data.message;
+					brvneucore.errorMessage = data.message;
 				}
 			});
 		},
 
 		getCharacter: function() {
 			this.loading(true);
-			new swagger.CharacterApi().show(function(error, data) {
-				bravecore.loading(false);
+			new this.swagger.CharacterApi().show(function(error, data) {
+				brvneucore.loading(false);
 				if (error) { // 403 usually
-					bravecore.authChar = null;
+					brvneucore.authChar = null;
 					return;
 				}
-				bravecore.authChar = data;
+				brvneucore.authChar = data;
 			});
 		},
 
 		getPlayer: function() {
 			this.loading(true);
-			new swagger.PlayerApi().show(function(error, data) {
-				bravecore.loading(false);
+			new this.swagger.PlayerApi().show(function(error, data) {
+				brvneucore.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				bravecore.player = data;
+				brvneucore.player = data;
 			});
 		},
 
 		logout: function() {
 			this.loading(true);
-			new swagger.AuthApi().logout(function(error) {
-				bravecore.loading(false);
+			new this.swagger.AuthApi().logout(function(error) {
+				brvneucore.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				bravecore.getCharacter();
-				bravecore.getLoginUrl();
+				brvneucore.getCharacter();
+				brvneucore.getLoginUrl();
 			});
 		},
 
 		makeMain: function(characterId) {
 			this.loading(true);
-			new swagger.PlayerApi().setMain(characterId, function(error) {
-				bravecore.loading(false);
+			new this.swagger.PlayerApi().setMain(characterId, function(error) {
+				brvneucore.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				bravecore.getPlayer();
+				brvneucore.getPlayer();
 			});
 		},
 
 		update: function(characterId) {
 			this.loading(true);
-			new swagger.CharacterApi().update(characterId, function(error) {
-				bravecore.loading(false);
+			new this.swagger.CharacterApi().update(characterId, function(error) {
+				brvneucore.loading(false);
 				if (error) { // 403 (Core) or 503 (ESI down) usually
 					if (error.message) {
-						bravecore.errorMessage = error.message;
+						brvneucore.errorMessage = error.message;
 					}
 					return;
 				}
-				bravecore.showSuccess('Update done.');
-				bravecore.getPlayer();
+				brvneucore.showSuccess('Update done.');
+				brvneucore.getPlayer();
 			});
 		}
 	}

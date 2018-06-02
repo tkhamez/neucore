@@ -4,14 +4,15 @@
     "dependencies": {
         "bootstrap": "^4.1.0",
         "bootswatch": "^4.1.0",
-        "brvneucore-js-client": "file:brvneucore-js-client",
         "browserify": "^16.2.2",
+        "brvneucore-js-client": "file:brvneucore-js-client",
         "cssify": "^1.0.3",
         "fontify": "0.0.2",
         "jquery": "^3.3.1",
         "open-iconic": "^1.1.1",
         "popper.js": "^1.14.3",
-        "vue": "^2.5.16"
+        "vue": "^2.5.16",
+        "watchify": "^3.11.0"
     },
     "browser": {
         "vue": "vue/dist/vue.min.js"
@@ -22,6 +23,7 @@
         ]
     },
     "scripts": {
-        "build": "browserify index.src.js > ../web/index.js && fontify"
+        "build": "browserify src/vendor.js > ../web/vendor.js && browserify src/index.js > ../web/index.js && fontify",
+        "watch": "watchify src/index.js -o ../web/index.js"
     }
 }
