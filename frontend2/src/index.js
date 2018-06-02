@@ -1,6 +1,19 @@
 'use strict';
 
-var brvneucore = new window.Vue({
+require("./styles.scss");
+
+var app;
+var initApp = function() {
+	app = new window.Vue(options);
+};
+
+if (window.addEventListener) {
+	window.addEventListener('load', initApp);
+} else if (window.attachEvent) { // IE
+	window.attachEvent('onload', initApp);
+}
+
+var options = {
 	el: '#app',
 
 	data: {
@@ -42,7 +55,7 @@ var brvneucore = new window.Vue({
 		showSuccess: function(message) {
 			this.successMessage = message;
 			setTimeout(function() {
-				brvneucore.successMessage = '';
+				app.successMessage = '';
 			}, 1500);
 		},
 
@@ -59,12 +72,12 @@ var brvneucore = new window.Vue({
 			new this.swagger.AuthApi().loginUrl({
 				redirect: '/#login'
 			}, function(error, data) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
-				brvneucore.loginUrl = data;
+				app.loginUrl = data;
 			});
 		},
 
@@ -73,24 +86,24 @@ var brvneucore = new window.Vue({
 			new this.swagger.AuthApi().loginAltUrl({
 				redirect: '/#login-alt'
 			}, function(error, data) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				brvneucore.loginAltUrl = data;
+				app.loginAltUrl = data;
 			});
 		},
 
 		getAuthResult: function() {
 			this.loading(true);
 			new this.swagger.AuthApi().result(function(error, data) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) {
 					window.console.error(error);
 					return;
 				}
 				if (! data.success) {
-					brvneucore.errorMessage = data.message;
+					app.errorMessage = data.message;
 				}
 			});
 		},
@@ -98,62 +111,62 @@ var brvneucore = new window.Vue({
 		getCharacter: function() {
 			this.loading(true);
 			new this.swagger.CharacterApi().show(function(error, data) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) { // 403 usually
-					brvneucore.authChar = null;
+					app.authChar = null;
 					return;
 				}
-				brvneucore.authChar = data;
+				app.authChar = data;
 			});
 		},
 
 		getPlayer: function() {
 			this.loading(true);
 			new this.swagger.PlayerApi().show(function(error, data) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				brvneucore.player = data;
+				app.player = data;
 			});
 		},
 
 		logout: function() {
 			this.loading(true);
 			new this.swagger.AuthApi().logout(function(error) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				brvneucore.getCharacter();
-				brvneucore.getLoginUrl();
+				app.getCharacter();
+				app.getLoginUrl();
 			});
 		},
 
 		makeMain: function(characterId) {
 			this.loading(true);
 			new this.swagger.PlayerApi().setMain(characterId, function(error) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) { // 403 usually
 					return;
 				}
-				brvneucore.getPlayer();
+				app.getPlayer();
 			});
 		},
 
 		update: function(characterId) {
 			this.loading(true);
 			new this.swagger.CharacterApi().update(characterId, function(error) {
-				brvneucore.loading(false);
+				app.loading(false);
 				if (error) { // 403 (Core) or 503 (ESI down) usually
 					if (error.message) {
-						brvneucore.errorMessage = error.message;
+						app.errorMessage = error.message;
 					}
 					return;
 				}
-				brvneucore.showSuccess('Update done.');
-				brvneucore.getPlayer();
+				app.showSuccess('Update done.');
+				app.getPlayer();
 			});
 		}
 	}
-});
+};

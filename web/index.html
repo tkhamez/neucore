@@ -4,66 +4,15 @@
 	<meta charset="UTF-8">
 	<title>Brave Collective Core Services</title>
 	<script src="/vendor.js"></script>
-	<style>
-		[v-cloak] {
-			display: none;
-			visibility: hidden;
-		}
-
-		.jumbotron {
-			position: relative;
-			min-height: 430px;
-		}
-
-		.player-hdl {
-			position: relative;
-		}
-		.player-hdl h2 {
-			display: inline-block;
-			margin-right: 10px;
-		}
-
-		#preview {
-			position: absolute;
-			right: 20px;
-			font-size: 3em;
-			font-family: impact, sans-serif;
-			letter-spacing: 30px;
-			color: #dd3333;
-			text-shadow: 1px 1px black;
-			padding-left: 30px;
-			transform: rotate(10deg);
-			background-color: rgba(200, 200, 200, .5);
-		}
-
-		.alert.brv-alert {
-			position: fixed;
-			top: 170px;
-			left: 25%;
-			right: 25%;
-			z-index: 5000;
-		}
-
-		#loader {
-			position: fixed;
-			top: 25px;
-			left: 50%;
-			width: 120px;
-			height: 120px;
-			margin-left: -60px;
-			z-index: 5000;
-			border: 16px solid #555;
-			border-top: 16px solid #eee;
-			border-radius: 50%;
-			animation: spin 2s linear infinite;
-		}
-		@keyframes spin {
-			0% { transform: rotate(0deg); }
-			100% { transform: rotate(360deg); }
-		}
-	</style>
+	<script src="/index.js"></script>
 </head>
 <body>
+	<!--[if lt IE 10]>
+		<p class="browserupgrade">You are using an <strong>outdated</strong> browser.
+		Please <a href="https://browsehappy.com/">upgrade your browser</a>
+		to improve your experience and security.</p>
+	<![endif]-->
+
 	<div id="app">
 
 		<div v-if="successMessage" v-cloak class="alert alert-success brv-alert">{{ successMessage }}</div>
@@ -233,6 +182,5 @@
 			</div> <!-- if authenticated -->
 		</div> <!-- container -->
 	</div>
-	<script src="/index.js"></script>
 </body>
 </html>

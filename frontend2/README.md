@@ -15,7 +15,7 @@ npm install
 npm run build
 ```
 
-Rebuild on change
+Rebuild on change:
 ```
 npm run watch
 ```
