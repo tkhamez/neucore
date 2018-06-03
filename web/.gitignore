@@ -5,9 +5,9 @@
 /front.js
 
 # frontend2
+/dist
 /fonts
-/app.js
-/vendor.js
+/index.html
 
 # swagger-ui
 /node_modules
