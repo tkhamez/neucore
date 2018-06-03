@@ -8,7 +8,7 @@ window.jQuery(function() {
 	window.jQuery('[data-toggle="popover"]').popover();
 });
 
-// open-iconic, font files are copied to /web, see fontify.json
+// open-iconic (contains font files)
 require('../node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 // swagger client
