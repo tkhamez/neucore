@@ -15,6 +15,8 @@ npm install
 npm run build
 ```
 
+For production use: `npm run build:prod`.
+
 Rebuild on change:
 ```
 npm run watch

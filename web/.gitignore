@@ -1,6 +1,13 @@
-/fonts
-/node_modules/
-/front.js
-/index.js
+# backend
 /swagger.json
+
+# frontend
+/front.js
+
+# frontend2
+/fonts
+/app.js
 /vendor.js
+
+# swagger-ui
+/node_modules

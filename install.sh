@@ -23,7 +23,11 @@ fi
 cd ../frontend2
 ./swagger.sh
 npm install
-npm run build
+if [ "$1" = "prod" ]; then
+    npm run build:prod
+else
+    npm run build
+fi
 
 # install Swagger UI
 cd ../web

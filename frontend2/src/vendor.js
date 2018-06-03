@@ -15,4 +15,4 @@ require('../node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css');
 window.brvneucoreJsClient = require('brvneucore-js-client');
 
 // Vue.js - runtime + compiler
-window.Vue = require('vue');
+window.Vue = require('vue/dist/vue.min.js');
