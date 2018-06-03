@@ -1,5 +1,7 @@
 # Typescript Vue Frontend
 
+This frontend was never finished. It is currently available at https://[domain]/front.html.
+
 ## Setup
 
 - `npm i`

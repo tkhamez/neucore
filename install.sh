@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# build back-end
+# build backend
 cd backend
 if [ "$1" = "prod" ]; then
     composer install --no-dev --optimize-autoloader --no-interaction
@@ -10,7 +10,7 @@ else
     composer compile
 fi
 
-# build front-end
+# build frontend
 cd ../frontend
 npm install
 if [ "$1" = "prod" ]; then

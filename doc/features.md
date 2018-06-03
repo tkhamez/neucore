@@ -1,7 +1,7 @@
 # Features
 
-This primarily describes the back-end, most functions are not yet available
-in the front-end. Admins must use the Swagger-UI for now (`https://[domain]/api.html`).
+This primarily describes the backend, most functions are not yet available
+in the frontend. Admins must use the Swagger-UI for now (`https://[domain]/api.html`).
 
 ## Player Accounts and Character Registration
 
@@ -28,7 +28,7 @@ A player logs in with EVE SSO. 3rd party applications authenticate with an HTTP 
 
 The API is documented with Swagger, it is available at `https://[domain]/swagger.json`.
 
-For more details see the [**front-end**](../frontend/README.md) and [**back-end**](../backend/README.md)
+For more details see the [**frontend**](../frontend/README.md) and [**backend**](../backend/README.md)
 readme.
 
 ## Data Structure (Backend)
@@ -46,7 +46,7 @@ readme.
 
 ## Roles
 
-All API endpoints from the back-end are protected by roles.
+All API endpoints from the backend are protected by roles.
 
 ### anonymous
 

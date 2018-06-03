@@ -9,7 +9,7 @@ interface User {
 	groups: string[];
 }
 
-// totally made up for front-end UI mocks
+// totally made up for frontend UI mocks
 interface Group {
 	name: string;
 	admins: number[];

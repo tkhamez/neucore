@@ -16,10 +16,10 @@ Objectives
 - Manage alliance specific groups for players.
 - Provide an API for authorized third-party applications to query these groups.
 
-This project consists of two applications, the back-end and the front-end.
-See the [**front-end**](frontend2/README.md) and [**back-end**](backend/README.md) Readme for more.
+This project consists of two applications, the backend and the frontend.
+See the [**frontend**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more.
 
-There is also another front-end in the [**frontend**](frontend) directory,
+There is also another frontend in the [**frontend**](frontend) directory,
 but it was never finished, maybe one day?
 
 See [**doc/features.md**](doc/features.md) for more.
@@ -30,7 +30,7 @@ See [**doc/features.md**](doc/features.md) for more.
 
 - visit https://developers.eveonline.com/applications
 - create a new application (eg: brvneucore-dev)
-- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core back-end
+- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core backend
 are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
 
@@ -72,7 +72,7 @@ In `dev` mode both the web server and SSH user write the same files to `backend/
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
-Then install the dependencies and build the back-end and front-end by executing:
+Then install the dependencies and build the backend and frontend by executing:
 `./install.sh` or `./install.sh prod`.
 
 ### Heroku
