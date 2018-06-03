@@ -4,4 +4,4 @@
 /var/logs/*
 !/var/logs/.gitkeep
 /var/phpunit
-/vendor/
+/vendor
