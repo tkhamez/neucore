@@ -24,7 +24,7 @@ return [
 
         'doctrine' => [
             'meta' => [
-                'entity_path' => [
+                'entity_paths' => [
                     Application::ROOT_DIR . '/src/classes/Brave/Core/Entity'
                 ],
                 'dev_mode' => false,

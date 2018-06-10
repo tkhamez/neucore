@@ -17,7 +17,7 @@ $settings = (new Application())->loadSettings();
 $conf = $settings['config']['doctrine'];
 
 $config = Setup::createAnnotationMetadataConfiguration(
-    $conf['meta']['entity_path'],
+    $conf['meta']['entity_paths'],
     $conf['meta']['dev_mode'],
     $conf['meta']['proxy_dir']
 );

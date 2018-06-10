@@ -326,7 +326,7 @@ class Application
         $container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
             $conf = $c->get('config')['doctrine'];
             $config = Setup::createAnnotationMetadataConfiguration(
-                $conf['meta']['entity_path'],
+                $conf['meta']['entity_paths'],
                 $conf['meta']['dev_mode'],
                 $conf['meta']['proxy_dir']
             );

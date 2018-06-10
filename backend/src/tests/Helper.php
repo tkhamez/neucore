@@ -54,7 +54,7 @@ class Helper
             $settings = (new Application())->loadSettings(true);
 
             $config = Setup::createAnnotationMetadataConfiguration(
-                $settings['config']['doctrine']['meta']['entity_path'],
+                $settings['config']['doctrine']['meta']['entity_paths'],
                 $settings['config']['doctrine']['meta']['dev_mode'],
                 $settings['config']['doctrine']['meta']['proxy_dir']
             );
