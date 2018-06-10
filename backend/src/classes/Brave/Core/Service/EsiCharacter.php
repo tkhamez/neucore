@@ -156,6 +156,8 @@ class EsiCharacter
             }
             $corp->setAlliance($alliance);
             $alliance->addCorporation($corp);
+        } else {
+            $corp->setAlliance(null);
         }
 
         // flush

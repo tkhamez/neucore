@@ -268,6 +268,31 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertNotNull($aDb);
     }
 
+    public function testFetchCorporationRemovesAlliance()
+    {
+        $this->testHelper->emptyDb();
+        $alli = (new Alliance())->setId(100)->setName('A')->setTicker('a');
+        $corp = (new Corporation())->setId(200)->setName('C')->setTicker('c')->setAlliance($alli);
+        $this->em->persist($alli);
+        $this->em->persist($corp);
+        $this->em->flush();
+        $this->em->clear();
+
+        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
+            'name' => 'C', 'ticker' => 'c', 'alliance_id' => null
+        ]));
+
+        $corpResult = $this->cs->fetchCorporation(200, true);
+        $this->assertNull($corpResult->getAlliance());
+        $this->em->clear();
+
+        // load from DB
+        $corporation = $this->corpR->find(200);
+        $this->assertNull($corporation->getAlliance());
+        $alliance = $this->ar->find(100);
+        $this->assertSame([], $alliance->getCorporations());
+    }
+
     public function testFetchAllianceInvalidId()
     {
         $alli = $this->cs->fetchAlliance(-1);
