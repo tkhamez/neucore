@@ -114,6 +114,11 @@ class Application
      */
     private $env;
 
+    /**
+     * @var \DI\Container
+     */
+    private $container;
+
     public function __construct()
     {
         // set timezone - also used by Doctrine for dates/times in the database
@@ -188,30 +193,33 @@ class Application
     }
 
     /**
-     * Creates the Slim app
+     * Returns DI container, builds it if needed.
      *
-     * @param bool $withMiddleware Optional, defaults to true
-     * @param bool $withRoutes Optional, defaults to true
-     * @return App
+     * @var \DI\Container
      */
-    public function getApp($withMiddleware = true, $withRoutes = true): App
+    public function getContainer()
     {
         $this->loadSettings();
+        $this->buildContainer();
 
-        $container = $this->buildContainer();
+        return $this->container;
+    }
+
+    /**
+     * Creates the Slim app
+     *
+     * @return \Slim\App
+     */
+    public function getApp(): App
+    {
+        $container = $this->getContainer();
         $app = new App($container);
 
-        $this->dependencies($container);
-        $this->errorHandling($container);
-        $this->sessionHandler($container);
+        $this->errorHandling();
+        $this->sessionHandler();
 
-        if ($withMiddleware) {
-            $this->addMiddleware($app);
-        }
-
-        if ($withRoutes) {
-            $this->routes($app);
-        }
+        $this->addMiddleware($app);
+        $this->routes($app);
 
         return $app;
     }
@@ -219,39 +227,37 @@ class Application
     /**
      * Creates the Symfony console app.
      *
-     * @param App $app
-     * @return ConsoleApplication
+     * @param Container $container
+     * @return \Symfony\Component\Console\Application
      */
-    public function getConsoleApp(App $app = null): ConsoleApplication
+    public function getConsoleApp(): ConsoleApplication
     {
         set_time_limit(0);
 
-        if ($app === null) {
-            $app = $this->getApp(true, false); // with middleware, without routes
-        }
-        $c = $app->getContainer();
-
+        $container = $this->getContainer();
         $console = new ConsoleApplication();
 
+        $this->errorHandling();
+
         $console->add(new MakeAdmin(
-            $c->get(CharacterRepository::class),
-            $c->get(RoleRepository::class),
-            $c->get(EntityManagerInterface::class),
-            $c->get(LoggerInterface::class)
+            $container->get(CharacterRepository::class),
+            $container->get(RoleRepository::class),
+            $container->get(EntityManagerInterface::class),
+            $container->get(LoggerInterface::class)
         ));
 
         $console->add(new UpdateCharacters(
-            $c->get(CharacterRepository::class),
-            $c->get(EsiCharacter::class),
-            $c->get(CoreCharacter::class),
-            $c->get(EntityManagerInterface::class),
-            $c->get(LoggerInterface::class)
+            $container->get(CharacterRepository::class),
+            $container->get(EsiCharacter::class),
+            $container->get(CoreCharacter::class),
+            $container->get(EntityManagerInterface::class),
+            $container->get(LoggerInterface::class)
         ));
 
         $console->add(new UpdatePlayerGroups(
-            $c->get(PlayerRepository::class),
-            $c->get(AutoGroupAssignment::class),
-            $c->get(EntityManagerInterface::class)
+            $container->get(PlayerRepository::class),
+            $container->get(AutoGroupAssignment::class),
+            $container->get(EntityManagerInterface::class)
         ));
 
         return $console;
@@ -289,8 +295,12 @@ class Application
         $app->add(new Cors($c->get('config')['CORS']['allow_origin']));
     }
 
-    private function buildContainer(): Container
+    private function buildContainer()
     {
+        if ($this->container !== null) {
+            return;
+        }
+
         // include config.php from php-di/slim-bridge
         $reflector = new \ReflectionClass('DI\Bridge\Slim\App');
         $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
@@ -308,7 +318,9 @@ class Application
         $containerBuilder->addDefinitions($bridgeConfig);
         $containerBuilder->addDefinitions($this->settings);
 
-        return $containerBuilder->build();
+        $this->container = $containerBuilder->build();
+
+        $this->dependencies();
     }
 
     /**
@@ -316,14 +328,14 @@ class Application
      *
      * @return void
      */
-    private function dependencies(Container $container)
+    private function dependencies()
     {
         // Configuration class
-        $config = new Config($container->get('config'));
-        $container->set(Config::class, $config);
+        $config = new Config($this->container->get('config'));
+        $this->container->set(Config::class, $config);
 
         // Doctrine
-        $container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
+        $this->container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
             $conf = $c->get('config')['doctrine'];
             $config = Setup::createAnnotationMetadataConfiguration(
                 $conf['meta']['entity_paths'],
@@ -334,17 +346,17 @@ class Application
         });
 
         // EVE OAuth
-        $container->set(GenericProvider::class, new GenericProvider([
-            'clientId'                => $container->get('config')['eve']['client_id'],
-            'clientSecret'            => $container->get('config')['eve']['secret_key'],
-            'redirectUri'             => $container->get('config')['eve']['callback_url'],
+        $this->container->set(GenericProvider::class, new GenericProvider([
+            'clientId'                => $this->container->get('config')['eve']['client_id'],
+            'clientSecret'            => $this->container->get('config')['eve']['secret_key'],
+            'redirectUri'             => $this->container->get('config')['eve']['callback_url'],
             'urlAuthorize'            => 'https://login.eveonline.com/oauth/authorize',
             'urlAccessToken'          => 'https://login.eveonline.com/oauth/token',
             'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
         ]));
 
         // Monolog
-        $container->set(LoggerInterface::class, function (ContainerInterface $c) {
+        $this->container->set(LoggerInterface::class, function (ContainerInterface $c) {
             $conf = $c->get('config')['monolog'];
             if (strpos($conf['path'], 'php://') === false) {
                 $dir = realpath(dirname($conf['path']));
@@ -367,11 +379,10 @@ class Application
      *
      * (not for CLI)
      *
-     * @param Container $container
      * @return void
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
-    private function sessionHandler(Container $container)
+    private function sessionHandler()
     {
         if (PHP_SAPI === 'cli') {
             // PHP 7.2 for unit tests:
@@ -381,9 +392,9 @@ class Application
             return;
         }
 
-        ini_set('session.gc_maxlifetime', (string) $container->get('config')['session']['gc_maxlifetime']);
+        ini_set('session.gc_maxlifetime', (string) $this->container->get('config')['session']['gc_maxlifetime']);
 
-        $pdo = $container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
+        $pdo = $this->container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
 
         session_set_save_handler($sessionHandler, true);
@@ -392,10 +403,9 @@ class Application
     /**
      * Setup error handling.
      *
-     * @param Container $container
      * @return void
      */
-    private function errorHandling(Container $container)
+    private function errorHandling()
     {
         // php settings
         ini_set('display_errors', '0'); // all errors are shown with whoops in dev mode
@@ -404,15 +414,15 @@ class Application
 
         if ($this->env === self::ENV_PROD) {
             // Extend Slim's error and php error handler.
-            $container->set('errorHandler', function ($c) {
+            $this->container->set('errorHandler', function ($c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             });
-            $container->set('phpErrorHandler', function ($c) {
+            $this->container->set('phpErrorHandler', function ($c) {
                 return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             });
 
             // logs errors that are not converted to exceptions by Slim
-            ErrorHandler::register($container->get(LoggerInterface::class));
+            ErrorHandler::register($this->container->get(LoggerInterface::class));
         } else { // self::ENV_DEV
             // Slim's error handling is not added to the container in
             // self::buildContainer() for dev env, instead we use Whoops

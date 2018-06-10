@@ -53,17 +53,14 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         // create app with test settings and without middleware
         $app = new Application();
         $app->loadSettings(true);
-        $slimApp = $app->getApp(false);
 
         // change dependencies in container
-        /* @var $c \DI\Container */
-        $c = $slimApp->getContainer();
+        $container = $app->getContainer();
         foreach ($mocks as $class => $obj) {
-            $c->set($class, $obj);
+            $container->set($class, $obj);
         }
 
-        // add middleware (gets objects from container)
-        $app->addMiddleware($slimApp);
+        $slimApp = $app->getApp();
 
         // Process the application
         $response = $slimApp->process($request, $response);

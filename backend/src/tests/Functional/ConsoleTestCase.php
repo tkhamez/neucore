@@ -14,19 +14,14 @@ class ConsoleTestCase extends \PHPUnit\Framework\TestCase
     {
         $app = new Application();
         $app->loadSettings(true);
-        $slimApp = $app->getApp(false, false); // no middleware, without routes
 
         // change dependencies in container
-        /* @var $c \DI\Container */
-        $c = $slimApp->getContainer();
+        $container = $app->getContainer();
         foreach ($mocks as $class => $obj) {
-            $c->set($class, $obj);
+            $container->set($class, $obj);
         }
 
-        // add middleware (gets objects from container)
-        $app->addMiddleware($slimApp);
-
-        $console = $app->getConsoleApp($slimApp);
+        $console = $app->getConsoleApp();
 
         $command = $console->find($name);
         $commandTester = new CommandTester($command);
