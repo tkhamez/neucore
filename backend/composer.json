@@ -21,7 +21,7 @@
         "symfony/yaml": "^4.0",
         "league/oauth2-client": "^2.2",
         "zircote/swagger-php": "^2.0",
-        "tkhamez/swagger-eve-php": "0.8.1.1",
+        "tkhamez/swagger-eve-php": "0.8.3.1",
 
         "filp/whoops": "^2.1",
         "phpunit/phpunit": "^7.0",
