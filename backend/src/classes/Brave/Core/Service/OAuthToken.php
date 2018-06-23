@@ -7,7 +7,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Configuration;
 
 /**
  * Handles OAuth tokens for ESI.
@@ -51,21 +50,6 @@ class OAuthToken
     public function setCharacter(Character $character)
     {
         $this->character = $character;
-    }
-
-    /**
-     * Returns the configuration for the Swagger client.
-     *
-     * For requests that need an access token.
-     *
-     * @return Configuration
-     */
-    public function getConfiguration(): Configuration
-    {
-        $conf = Configuration::getDefaultConfiguration();
-        $conf->setAccessToken($this->getToken());
-
-        return $conf;
     }
 
     /**

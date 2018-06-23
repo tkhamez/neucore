@@ -7,12 +7,12 @@ use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
 use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
-use League\OAuth2\Client\Provider\GenericResourceOwner;
 use Tests\WriteErrorListener;
 
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
@@ -54,18 +54,6 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $c = new Character();
         $this->es->setCharacter($c);
         $this->assertAttributeSame($c, 'character', $this->es);
-    }
-
-    public function testGetConfiguration()
-    {
-        $c = new Character();
-        $c->setAccessToken('old-token');
-        $c->setExpires(time() + 10000);
-        $this->es->setCharacter($c);
-
-        $conf = $this->es->getConfiguration();
-
-        $this->assertSame($this->es->getToken(), $conf->getAccessToken());
     }
 
     public function testGetTokenNoUser()

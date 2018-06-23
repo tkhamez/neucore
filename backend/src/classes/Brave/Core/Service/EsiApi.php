@@ -2,10 +2,12 @@
 
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\Character;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
+use Swagger\Client\Eve\Configuration;
 
 class EsiApi
 {
@@ -49,7 +51,7 @@ class EsiApi
         AllianceApi $alliApi, CorporationApi $corpApi, CharacterApi $charApi)
     {
         $this->log = $log;
-        $this->tokenService = $ts; // not yet used (only needed for protected endpoints)
+        $this->tokenService = $ts;
         $this->alliApi = $alliApi;
         $this->corpApi = $corpApi;
         $this->charApi = $charApi;
@@ -63,6 +65,24 @@ class EsiApi
     public function getLastErrorMessage()
     {
         return $this->lastErrorMessage;
+    }
+
+    /**
+     * Returns the configuration for the Swagger client.
+     *
+     * For requests that need an access token.
+     *
+     * @param Character $character
+     * @return Configuration
+     */
+    public function getConfiguration(Character $character): Configuration
+    {
+        $this->tokenService->setCharacter($character);
+
+        $conf = Configuration::getDefaultConfiguration();
+        $conf->setAccessToken($this->tokenService->getToken());
+
+        return $conf;
     }
 
     /**

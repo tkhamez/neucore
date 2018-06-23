@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\Character;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -42,6 +43,18 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
         $this->corpApi = $this->createMock(CorporationApi::class);
         $this->charApi = $this->createMock(CHaracterApi::class);
         $this->esi = new EsiApi($this->log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
+    }
+
+    public function testGetConfiguration()
+    {
+        $char = new Character();
+        $char->setAccessToken('token');
+        $char->setExpires(time() + 10000);
+
+        $conf = $this->esi->getConfiguration($char);
+
+        $this->assertSame('token', $conf->getAccessToken());
+        $this->assertSame($char->getAccessToken(), $conf->getAccessToken());
     }
 
     public function testGetAllianceException404()
