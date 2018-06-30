@@ -35,7 +35,6 @@ before_script:
 
 script:
     - backend/vendor/bin/phpunit -c backend/phpunit.xml
-    - npm --prefix frontend run check
 
 after_script:
     - mkdir -p build/logs
