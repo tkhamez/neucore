@@ -41,6 +41,9 @@ Only tested with Vagrant 2 + libvirt.
 - If the Vagrant file changes, run `vagrant provision` to update the VM.
 - `vagrant destroy` will completely remove the VM.
 
+Please note that the `rsync` that is used is a one way sync from the host to the virtual 
+machine which is done every time `vagrant up` or `vagrant reload` is executed.
+
 The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
 The values for the EVE application must be adjusted.
 
