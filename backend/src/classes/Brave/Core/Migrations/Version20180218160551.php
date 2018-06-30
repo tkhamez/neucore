@@ -3,7 +3,7 @@
 namespace Brave\Core\Migrations;
 
 use Brave\Core\Roles;
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
