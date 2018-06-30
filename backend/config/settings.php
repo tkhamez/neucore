@@ -18,7 +18,7 @@ return [
 
         'monolog' => [
             'name' => 'app',
-            'path' => Application::ROOT_DIR . '/var/logs/app.log',
+            'path' => Application::ROOT_DIR . '/var/logs/app-'.date('Y-m').'.log',
             'level' => Logger::DEBUG,
         ],
 

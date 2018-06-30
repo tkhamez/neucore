@@ -1,45 +1,45 @@
 language: php
 
 php:
-  - '7.1'
-  - '7.2'
+    - '7.1'
+    - '7.2'
 
 addons:
-  mariadb: '10.1'
+    mariadb: '10.1'
 
 env:
-  global:
-    - BRAVECORE_APP_ENV=dev
-    - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
-    - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
-    - BRAVECORE_EVE_CLIENT_ID=123
-    - BRAVECORE_EVE_SECRET_KEY=abc
-    - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
-    - BRAVECORE_EVE_SCOPES=
-    - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
+    global:
+        - BRAVECORE_APP_ENV=dev
+        - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
+        - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
+        - BRAVECORE_EVE_CLIENT_ID=123
+        - BRAVECORE_EVE_SECRET_KEY=abc
+        - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
+        - BRAVECORE_EVE_SCOPES=
+        - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
 
 matrix:
-  fast_finish: true
+    fast_finish: true
 
 before_install:
-  - phpenv config-add config/travis.ini
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
+    - phpenv config-add config/travis.ini
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
 
 install:
-  - ./install.sh
+    - ./install.sh
 
 before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > backend/cc-test-reporter
-  - chmod +x backend/cc-test-reporter
-  - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter before-build; fi
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > backend/cc-test-reporter
+    - chmod +x backend/cc-test-reporter
+    - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter before-build; fi
 
 script:
-  - backend/vendor/bin/phpunit -c backend/phpunit.xml
-  - npm --prefix frontend run check
+    - backend/vendor/bin/phpunit -c backend/phpunit.xml
+    - npm --prefix frontend run check
 
 after_script:
-  - mkdir -p build/logs
-  - cp backend/var/logs/clover.xml build/logs/clover.xml
-  - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT; fi
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover backend/var/logs/clover.xml
+    - mkdir -p build/logs
+    - cp backend/var/logs/clover.xml build/logs/clover.xml
+    - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT; fi
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --format=php-clover backend/var/logs/clover.xml

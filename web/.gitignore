@@ -2,7 +2,8 @@
 /swagger.json
 
 # frontend
-/front.js
+/frontend.html
+/frontend.js
 
 # frontend2
 /dist

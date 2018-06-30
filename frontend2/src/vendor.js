@@ -5,7 +5,7 @@ window.popper = require('popper.js');
 require('../node_modules/bootswatch/dist/darkly/bootstrap.min.css');
 require('bootstrap');
 window.jQuery(function() {
-	window.jQuery('[data-toggle="popover"]').popover();
+    window.jQuery('[data-toggle="popover"]').popover();
 });
 
 // open-iconic (contains font files)

@@ -10,8 +10,7 @@
         "ext-intl": "*",
         "ext-dom": "*",
         "ext-curl": "*",
-        "ext-apcu": "*",
-        "ext-newrelic": "*"
+        "ext-apcu": "*"
     },
     "scripts": {
        "post-install-cmd": [

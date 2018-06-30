@@ -1,9 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './index.ts',
-  output: { path: path.resolve(__dirname, '../web'), filename: 'front.js' },
+  output: { path: path.resolve(__dirname, '../web'), filename: 'frontend.js' },
   module: {
     rules: [
       {
@@ -31,6 +32,12 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'frontend.html',
+      filename: 'frontend.html'
+    }),
+  ],
   resolve: {
     extensions: ['.ts', '.js', '.vue', '.json'],
     alias: { 'vue$': 'vue/dist/vue.esm.js' }

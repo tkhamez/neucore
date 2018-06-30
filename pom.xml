@@ -1,7 +1,7 @@
 <!DOCTYPE xml>
 <project>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.braveineve.core</groupId>
-	<artifactId>only-for-heroku</artifactId>
-	<version>1</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.braveineve.core</groupId>
+    <artifactId>only-for-heroku</artifactId>
+    <version>1</version>
 </project>

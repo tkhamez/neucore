@@ -7,7 +7,6 @@
 [![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 
 Preview: https://brvneucore.herokuapp.com
-
 API: https://brvneucore.herokuapp.com/api
 
 ## General
@@ -16,11 +15,10 @@ Objectives
 - Manage alliance specific groups for players.
 - Provide an API for authorized third-party applications to query these groups.
 
-This project consists of two applications, the back-end and the front-end.
-See the [**front-end**](frontend2/README.md) and [**back-end**](backend/README.md) Readme for more.
+This project consists of two applications, the backend and the frontend.
+See the [**frontend2**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more.
 
-There is also another front-end in the [**frontend**](frontend) directory,
-but it was never finished, maybe one day?
+There is also another frontend in the [**frontend**](frontend) directory, but it was never finished.
 
 See [**doc/features.md**](doc/features.md) for more.
 
@@ -30,7 +28,7 @@ See [**doc/features.md**](doc/features.md) for more.
 
 - visit https://developers.eveonline.com/applications
 - create a new application (eg: brvneucore-dev)
-- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core back-end
+- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core backend
 are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
 
@@ -48,7 +46,7 @@ The values for the EVE application must be adjusted.
 
 ### Local dev Requirements
 
-- PHP 7 with Composer (see Vagrantfile for necessary additional extensions)
+- PHP 7.1+ with Composer, see Vagrantfile for necessary additional extensions
 - Node.js 8 + npm 5
 - MariaDB or MySQL Server
 - Apache or another HTTP Server, set the document root to the `web` directory.
@@ -65,16 +63,22 @@ In `dev` mode both the web server and SSH user write the same files to `backend/
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
-Then install the dependencies and build the back-end and front-end by executing:
-`./install.sh` or `./install.sh prod`.
+Then install the dependencies and build the backend and frontend by executing:
+
+`./install.sh` or
+
+`./install.sh prod`
 
 ### Heroku
 
-To deploy to Heroku, add buildpacks in this order:
+- Create a new app
+- Add a database, e. g. JawsDB Maria.
+- Add the necessary Config Vars (see `backend/.env.dist` file)
+- Add buildpacks in this order:
 ```
 heroku buildpacks:add heroku/java
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
 ```
 
-Logs are streamed to `stderr`, not written to files.
+Logs are streamed to `stderr` instead of being written to files.

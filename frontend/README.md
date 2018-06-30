@@ -1,6 +1,6 @@
 # Typescript Vue Frontend
 
-This frontend was never finished. It is currently available at https://[domain]/front.html.
+This frontend was never finished. It is available at https://[domain]/frontend.html after it was build.
 
 ## Setup
 
