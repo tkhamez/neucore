@@ -9,7 +9,8 @@ Vagrant.configure("2") do |config|
     config.vm.box = "generic/ubuntu1804"
     config.vm.hostname = "brvneucore"
 
-    config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync"
+    config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync",
+        rsync__exclude: [".settings/", ".buildpath", ".project", "backend/.env"]
 
     config.vm.network "forwarded_port", guest: 443, host: 8443, host_ip: "127.0.0.1"
     config.vm.network :private_network, type: "dhcp"
@@ -17,7 +18,7 @@ Vagrant.configure("2") do |config|
     config.ssh.username = 'vagrant'
     config.ssh.password = 'vagrant'
 
-    # run setup script as root
+    # run server setup as root
     config.vm.provision "shell", inline: <<-SHELL
         export DEBIAN_FRONTEND=noninteractive
         echo "LC_ALL=en_US.UTF-8" > /etc/environment
@@ -72,7 +73,7 @@ Vagrant.configure("2") do |config|
         sudo snap install heroku --classic
     SHELL
 
-    # run the server as an unprivileged user
+    # run app setup as an unprivileged user
     config.vm.provision "up", type: "shell", run: "always", privileged: false, inline: <<-SHELL
         cd /var/www/brvneucore
 
@@ -86,14 +87,14 @@ Vagrant.configure("2") do |config|
 
         ./install.sh
 
-        echo "------------------------------------------------------------------"
-        echo "-- Brave Core https://localhost:8443                            --"
-        echo "-- phpMyAdmin: https://localhost:8443/phpmyadmin (core/brave)   --"
-        echo "-- SSH user: vagrant/vagrant                                    --"
-        echo "-- mount e. g.: sshfs vagrant@192.168.121.223:/ /mnt/brvneucore --"
-        echo "-- umount: fusermount -u /mnt/brvneucore                        --"
-        echo "-- ifconfig eth0 | grep inet:                                   --"
+        echo "------------------------------------------------------------------------"
+        echo "-- Brave Core https://localhost:8443                                  --"
+        echo "-- phpMyAdmin: https://localhost:8443/phpmyadmin (core/brave)         --"
+        echo "-- SSH user: vagrant/vagrant                                          --"
+        echo "-- mount e. g.: sshfs vagrant@192.168.121.223:/ /mnt/brvneucore       --"
+        echo "-- unmount: fusermount -u /mnt/brvneucore                             --"
+        echo "-- ifconfig eth0 | grep inet:                                         --"
         /sbin/ifconfig eth0 | grep inet
-        echo "------------------------------------------------------------------"
+        echo "------------------------------------------------------------------------"
     SHELL
 end
