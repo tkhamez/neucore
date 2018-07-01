@@ -5,32 +5,6 @@
     visibility: hidden;
 }
 
-.jumbotron {
-    position: relative;
-    min-height: 430px;
-}
-
-.player-hdl {
-    position: relative;
-}
-.player-hdl h2 {
-    display: inline-block;
-    margin-right: 10px;
-}
-
-#preview {
-    position: absolute;
-    right: 20px;
-    font-size: 3em;
-    font-family: impact, sans-serif;
-    letter-spacing: 30px;
-    color: #dd3333;
-    text-shadow: 1px 1px black;
-    padding-left: 30px;
-    transform: rotate(10deg);
-    background-color: rgba(200, 200, 200, .5);
-}
-
 .alert.brv-alert {
     position: fixed;
     top: 170px;
@@ -52,6 +26,7 @@
     border-radius: 50%;
     animation: spin 2s linear infinite;
 }
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

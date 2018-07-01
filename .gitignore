@@ -8,7 +8,8 @@
 npm-debug.log*
 
 # IDEs
-/.buildpath
-/.project
 /.settings
+/.buildpath
+/.jshintrc
+/.project
 /nbproject

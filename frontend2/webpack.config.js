@@ -1,10 +1,11 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const webpack = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
@@ -36,6 +37,9 @@ module.exports = (env, argv) => {
                 // Swagger client AMD define fails, https://github.com/swagger-api/swagger-codegen/issues/3466
                 test: /brvneucore-js-client\/.*\.js$/,
                 use: 'imports-loader?define=>false'
+            }, {
+                test: /\.vue$/,
+                loader: 'vue-loader'
             }]
         },
         plugins: [
@@ -52,7 +56,8 @@ module.exports = (env, argv) => {
             new MiniCssExtractPlugin({
                 filename: "[name].[chunkhash].css",
                 //chunkFilename: "[name].[id].[chunkhash].css"
-            })
+            }),
+            new VueLoaderPlugin()
         ],
         optimization: {
             runtimeChunk: true,

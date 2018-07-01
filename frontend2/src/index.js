@@ -1,25 +1,20 @@
 'use strict';
 
-require("./styles.scss");
+require("./index.scss");
 
-var app;
-var initApp = function() {
-    app = new window.Vue(options);
-};
+import Home from './Home.vue';
+import GroupManagement from './GroupManagement.vue';
 
-if (window.addEventListener) {
-    window.addEventListener('load', initApp);
-} else if (window.attachEvent) { // IE
-    window.attachEvent('onload', initApp);
-}
-
-var options = {
+var app = new window.Vue({
     el: '#app',
 
+    components: {
+        Home,
+        GroupManagement,
+    },
+
     data: {
-        preview: false,
-        loginUrl: null,
-        loginAltUrl: null,
+        currentComponent: 'Home',
         successMessage: '',
         errorMessage: '',
         authChar: null,
@@ -28,19 +23,19 @@ var options = {
         swagger: null
     },
 
-    mounted: function() {
-        // "preview" banner
-        if (location.hostname === 'brvneucore.herokuapp.com') {
-            this.preview = true;
-        }
-
+    created: function() {
         // configure swagger client
         this.swagger = window.brvneucoreJsClient;
         this.swagger.ApiClient.instance.basePath =
-            location.protocol + "//" + location.hostname + ':' + location.port + '/api';
+            window.location.protocol + "//" + window.location.hostname + ':' + window.location.port + '/api';
 
-        this.getLoginUrl();
-        this.getLoginAltUrl();
+        // event listeners
+        this.$on('playerChange', function() {
+            this.getPlayer();
+        });
+    },
+
+    mounted: function() {
         this.getCharacter();
         this.getPlayer();
 
@@ -51,12 +46,15 @@ var options = {
     },
 
     methods: {
-
         showSuccess: function(message) {
             this.successMessage = message;
-            setTimeout(function() {
+            window.setTimeout(function() {
                 app.successMessage = '';
             }, 1500);
+        },
+
+        showError: function(message) {
+            this.errorMessage = message;
         },
 
         loading: function (status) {
@@ -67,33 +65,6 @@ var options = {
             }
         },
 
-        getLoginUrl: function() {
-            this.loading(true);
-            new this.swagger.AuthApi().loginUrl({
-                redirect: '/#login'
-            }, function(error, data) {
-                app.loading(false);
-                if (error) {
-                    window.console.error(error);
-                    return;
-                }
-                app.loginUrl = data;
-            });
-        },
-
-        getLoginAltUrl: function() {
-            this.loading(true);
-            new this.swagger.AuthApi().loginAltUrl({
-                redirect: '/#login-alt'
-            }, function(error, data) {
-                app.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
-                app.loginAltUrl = data;
-            });
-        },
-
         getAuthResult: function() {
             this.loading(true);
             new this.swagger.AuthApi().result(function(error, data) {
@@ -102,7 +73,9 @@ var options = {
                     window.console.error(error);
                     return;
                 }
-                if (! data.success) {
+                if (data.success) {
+                    console.log(data.message);
+                } else {
                     app.errorMessage = data.message;
                 }
             });
@@ -127,6 +100,22 @@ var options = {
                 if (error) { // 403 usually
                     return;
                 }
+
+                // TODO swagger codegen bug:
+                // https://github.com/swagger-api/swagger-codegen/issues/4819
+                // data.roles is: [{0: "a", 1: "b"}, {}] instead of ["ab", ""]
+                // so transform back:
+                var roles = [];
+                for (var i = 0; i < data.roles.length; i++) {
+                    roles[i] = '';
+                    for (var property in data.roles[i]) {
+                        if (data.roles[i].hasOwnProperty(property)) {
+                            roles[i] += data.roles[i][property];
+                        }
+                    }
+                }
+                data.roles = roles;
+
                 app.player = data;
             });
         },
@@ -139,34 +128,14 @@ var options = {
                     return;
                 }
                 app.getCharacter();
-                app.getLoginUrl();
             });
         },
 
-        makeMain: function(characterId) {
-            this.loading(true);
-            new this.swagger.PlayerApi().setMain(characterId, function(error) {
-                app.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
-                app.getPlayer();
-            });
-        },
-
-        update: function(characterId) {
-            this.loading(true);
-            new this.swagger.CharacterApi().update(characterId, function(error) {
-                app.loading(false);
-                if (error) { // 403 (Core) or 503 (ESI down) usually
-                    if (error.message) {
-                        app.errorMessage = error.message;
-                    }
-                    return;
-                }
-                app.showSuccess('Update done.');
-                app.getPlayer();
-            });
+        hasRole: function(name) {
+            if (! this.authChar || ! this.player.roles) {
+                return false;
+            }
+            return this.player.roles.indexOf(name) !== -1;
         }
     }
-};
+});
