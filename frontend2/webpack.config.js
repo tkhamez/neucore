@@ -3,6 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
@@ -54,7 +56,13 @@ module.exports = (env, argv) => {
         ],
         optimization: {
             runtimeChunk: true,
-            splitChunks: { chunks: 'all' }
+            splitChunks: { chunks: 'all' },
+            minimizer: [
+                new UglifyJsPlugin({
+                    sourceMap: true
+                }),
+                new OptimizeCSSAssetsPlugin()
+            ]
         },
         devtool: devMode ? 'inline-source-map' : 'source-map',
         performance: { hints: false }
