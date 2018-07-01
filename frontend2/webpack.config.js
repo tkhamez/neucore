@@ -66,7 +66,9 @@ module.exports = (env, argv) => {
                 new UglifyJsPlugin({
                     sourceMap: true
                 }),
-                new OptimizeCSSAssetsPlugin()
+                new OptimizeCSSAssetsPlugin({
+                    cssProcessorOptions: { safe: true },
+                })
             ]
         },
         devtool: devMode ? 'inline-source-map' : 'source-map',
