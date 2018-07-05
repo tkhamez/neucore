@@ -23,34 +23,10 @@
             </button>
         </div>
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-            <a class="navbar-brand" href="https://www.bravecollective.com/" target="_blank"
-                title="Brave Collective: What's your fun per hour?">
-                <img src="images/brave_32.png" class="align-top mr-2" alt="Brave logo">
-                Brave Collective
-            </a>
-            <ul class="navbar-nav mr-auto">
-                <li v-if="hasRole('group-manager')" v-cloak
-                    class="nav-item" :class="{ active: currentComponent == 'Home' }">
-                    <a class="nav-link" href="#" v-on:click="currentComponent = 'Home';">
-                        Home</a>
-                </li>
-                <li v-if="hasRole('group-manager')" v-cloak
-                    class="nav-item" :class="{ active: currentComponent == 'GroupManagement' }">
-                    <a class="nav-link" href="#" v-on:click="currentComponent = 'GroupManagement';">
-                        Group Management</a>
-                </li>
-            </ul>
-            <img v-if="authChar" v-cloak :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
-                class="d-inline-block align-top mr-2" alt="Character Portrait">
-            <span v-if="authChar" v-cloak class="navbar-brand">{{ authChar.name }}</span>
-            <input v-if="authChar" v-cloak v-on:click="logout"
-                class="btn btn-outline-success" type="submit" value="Sign Out">
-        </nav>
+        <navbar :auth-char="authChar" :page="page"></navbar>
 
-        <component v-bind:is="currentComponent"
+        <component v-bind:is="page"
             :swagger="swagger" :auth-char="authChar" :player="player"></component>
-
     </div>
 </body>
 </html>

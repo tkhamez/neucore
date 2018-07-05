@@ -25,7 +25,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="jumbotron mt-3">
-                    <span id="preview" v-if="preview" v-cloak>PREVIEW</span>
+                    <span v-cloak id="preview" v-if="preview">PREVIEW</span>
                     <a href="https://www.bravecollective.com/" target="_blank">
                         <img src="/images/brave_300.png" class="float-right" alt="Brave logo"
                             title="Brave Collective: What's your fun per hour?">
@@ -36,7 +36,7 @@
                     </p>
                     <hr class="my-4">
 
-                    <div v-if="! authChar" v-cloak>
+                    <div v-cloak v-if="! authChar">
                         <p class="lead">
                             Click the button below to login through <i>EVE Online SSO</i>.
                         </p>
@@ -51,7 +51,7 @@
                         </p>
                     </div>
 
-                    <div v-if="authChar" v-cloak>
+                    <div v-cloak v-if="authChar">
                         <p>Please add all your characters by logging in with EVE SSO.</p>
                         <p class="lead">
                             <a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
@@ -62,7 +62,7 @@
             </div>
         </div> <!-- row -->
 
-        <div v-if="authChar" v-cloak>
+        <div v-cloak v-if="authChar">
             <div class="row">
                 <div class="col-lg-8">
                     <h2>Characters</h2>
@@ -193,9 +193,9 @@ module.exports = {
                 redirect = '/#login';
             }
 
-            vm.$root.loading(true);
+            vm.$root.$emit('loading', true);
             api[method].apply(api, [{ redirect: redirect }, function(error, data) {
-                vm.$root.loading(false);
+                vm.$root.$emit('loading', false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -209,9 +209,9 @@ module.exports = {
 
         makeMain: function(characterId) {
             var vm = this;
-            vm.$root.loading(true);
+            vm.$root.$emit('loading', true);
             new this.swagger.PlayerApi().setMain(characterId, function(error) {
-                vm.$root.loading(false);
+                vm.$root.$emit('loading', false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -221,17 +221,16 @@ module.exports = {
 
         update: function(characterId) {
             var vm = this;
-            vm.$root.loading(true);
+            vm.$root.$emit('loading', true);
             new this.swagger.CharacterApi().update(characterId, function(error) {
-                vm.$root.loading(false);
+                vm.$root.$emit('loading', false);
                 if (error) { // usually 403 (from Core) or 503 (ESI down)
                     if (error.message) {
-                        vm.$root.showError(error.message);
+                        vm.$root.$emit('message', error.message, 'error');
                     }
                     return;
                 }
-                vm.$root.showSuccess('Update done.');
-                vm.$root.$emit('playerChange');
+                vm.$root.$emit('message', 'Update done.', 'success');
             });
         }
     }
