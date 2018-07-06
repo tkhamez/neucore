@@ -17,9 +17,11 @@
                     Group Management</a>
             </li>
         </ul>
-        <img v-cloak v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
-            class="d-inline-block align-top mr-2" alt="Character Portrait">
-        <span v-cloak v-if="authChar" class="navbar-brand">{{ authChar.name }}</span>
+        <span v-cloak v-if="authChar" class="navbar-brand">
+            <img :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
+                class="d-inline-block align-top mr-2" alt="Character Portrait">
+            {{ authChar.name }}
+        </span>
         <a v-cloak v-if="authChar" href="#logout"
             class="btn btn-outline-success">Sign Out</a>
     </nav>

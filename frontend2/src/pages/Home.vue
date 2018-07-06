@@ -193,9 +193,9 @@ module.exports = {
                 redirect = '/#login';
             }
 
-            vm.$root.$emit('loading', true);
+            vm.loading(true);
             api[method].apply(api, [{ redirect: redirect }, function(error, data) {
-                vm.$root.$emit('loading', false);
+                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -209,9 +209,9 @@ module.exports = {
 
         makeMain: function(characterId) {
             var vm = this;
-            vm.$root.$emit('loading', true);
+            vm.loading(true);
             new this.swagger.PlayerApi().setMain(characterId, function(error) {
-                vm.$root.$emit('loading', false);
+                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -221,16 +221,16 @@ module.exports = {
 
         update: function(characterId) {
             var vm = this;
-            vm.$root.$emit('loading', true);
+            vm.loading(true);
             new this.swagger.CharacterApi().update(characterId, function(error) {
-                vm.$root.$emit('loading', false);
+                vm.loading(false);
                 if (error) { // usually 403 (from Core) or 503 (ESI down)
                     if (error.message) {
-                        vm.$root.$emit('message', error.message, 'error');
+                        vm.message(error.message, 'error');
                     }
                     return;
                 }
-                vm.$root.$emit('message', 'Update done.', 'success');
+                vm.message('Update done.', 'success');
             });
         }
     }

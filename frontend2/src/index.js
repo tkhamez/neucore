@@ -8,6 +8,25 @@ import GroupManagement from './pages/GroupManagement.vue';
 
 window.Vue.mixin({
     methods: {
+        loading: function(status) {
+            if (status) {
+                this.$root.loadingCount ++;
+            } else {
+                this.$root.loadingCount --;
+            }
+        },
+
+        message: function(text, type) {
+            switch (type) {
+                case 'error':
+                    this.$root.showError(text);
+                    break;
+                case 'success':
+                    this.$root.showSuccess(text);
+                    break;
+            }
+        },
+
         hasRole: function(name) {
             if (! this.$root.authChar || ! this.$root.player.roles) {
                 return false;
@@ -36,15 +55,39 @@ var app = new window.Vue({
     },
 
     data: {
+        /**
+         * current route/location hash
+         */
         route: '',
-        page: '',
+
+        /**
+         * the current page/component
+         */
+        page: 'Home',
+
+        /**
+         * all available pages
+         */
         pages: ['Home', 'GroupManagement'],
+
+        /**
+         * the authenticated character
+         */
+        authChar: null,
+
+        /**
+         * the player object
+         */
+        player: {},
+
+        /**
+         * brvneucore API client
+         */
+        swagger: null,
+
         successMessage: '',
         errorMessage: '',
-        authChar: null,
-        player: {},
         loadingCount: 0,
-        swagger: null
     },
 
     created: function() {
@@ -64,25 +107,8 @@ var app = new window.Vue({
         });
 
         // event listeners
-        this.$on('loading', (status) => {
-            if (status) {
-                this.loadingCount ++;
-            } else {
-                this.loadingCount --;
-            }
-        });
         this.$on('playerChange', () => {
             this.getPlayer();
-        });
-        this.$on('message', (text, type) => {
-            switch (type) {
-                case 'error':
-                    this.showError(text);
-                    break;
-                case 'success':
-                    this.showSuccess(text);
-                    break;
-            }
         });
     },
 
@@ -122,9 +148,9 @@ var app = new window.Vue({
         },
 
         getAuthResult: function() {
-            this.$emit('loading', true);
+            this.loading(true);
             new this.swagger.AuthApi().result(function(error, data) {
-                app.$emit('loading', false);
+                app.loading(false);
                 if (error) {
                     window.console.error(error);
                     return;
@@ -138,9 +164,9 @@ var app = new window.Vue({
         },
 
         getCharacter: function() {
-            this.$emit('loading', true);
+            this.loading(true);
             new this.swagger.CharacterApi().show(function(error, data) {
-                app.$emit('loading', false);
+                app.loading(false);
                 if (error) { // 403 usually
                     app.authChar = null;
                     app.page = 'Home';
@@ -151,9 +177,9 @@ var app = new window.Vue({
         },
 
         getPlayer: function() {
-            this.$emit('loading', true);
+            this.loading(true);
             new this.swagger.PlayerApi().show(function(error, data) {
-                app.$emit('loading', false);
+                app.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -178,9 +204,9 @@ var app = new window.Vue({
         },
 
         logout: function() {
-            this.$emit('loading', true);
+            this.loading(true);
             new this.swagger.AuthApi().logout(function(error) {
-                app.$emit('loading', false);
+                app.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
