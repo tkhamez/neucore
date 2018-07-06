@@ -22,45 +22,40 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="jumbotron mt-3">
-                    <span v-cloak id="preview" v-if="preview">PREVIEW</span>
-                    <a href="https://www.bravecollective.com/" target="_blank">
-                        <img src="/images/brave_300.png" class="float-right" alt="Brave logo"
-                            title="Brave Collective: What's your fun per hour?">
-                    </a>
-                    <h1 class="display-3">BRAVE Core</h1>
-                    <p class="lead">
-                        This site provides access to alliance services such as Mumble, Wiki and Forum.
-                    </p>
-                    <hr class="my-4">
+        <div class="jumbotron mt-3">
+            <span v-cloak id="preview" v-if="preview">PREVIEW</span>
+            <a href="https://www.bravecollective.com/" target="_blank">
+                <img src="/images/brave_300.png" class="float-right" alt="Brave logo"
+                    title="Brave Collective: What's your fun per hour?">
+            </a>
+            <h1 class="display-3">BRAVE Core</h1>
+            <p class="lead">
+                This site provides access to alliance services such as Mumble, Wiki and Forum.
+            </p>
+            <hr class="my-4">
 
-                    <div v-cloak v-if="! authChar">
-                        <p class="lead">
-                            Click the button below to login through <i>EVE Online SSO</i>.
-                        </p>
-                        <a :href="loginUrl">
-                            <img src="/images/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
-                        </a>
-                        <p class="small">
-                            <br>
-                            Learn more about the security of <i>EVE Online SSO</i> in this
-                            <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
-                                target="_blank">dev-blog</a> article.
-                        </p>
-                    </div>
-
-                    <div v-cloak v-if="authChar">
-                        <p>Please add all your characters by logging in with EVE SSO.</p>
-                        <p class="lead">
-                            <a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
-                        </p>
-                    </div>
-
-                </div>
+            <div v-cloak v-if="! authChar">
+                <p class="lead">
+                    Click the button below to login through <i>EVE Online SSO</i>.
+                </p>
+                <a :href="loginUrl">
+                    <img src="/images/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
+                </a>
+                <p class="small">
+                    <br>
+                    Learn more about the security of <i>EVE Online SSO</i> in this
+                    <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
+                        target="_blank">dev-blog</a> article.
+                </p>
             </div>
-        </div> <!-- row -->
+
+            <div v-cloak v-if="authChar">
+                <p>Please add all your characters by logging in with EVE SSO.</p>
+                <p class="lead">
+                    <a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                </p>
+            </div>
+        </div>
 
         <div v-cloak v-if="authChar">
             <div class="row">
