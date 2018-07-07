@@ -149,7 +149,10 @@ class OAuthToken
                     'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
-                $this->log->error($e->getMessage(), ['exception' => $e]);
+                // don't log "invalid_token" message as this is expected when the token is revoked
+                if ($e->getMessage() !== 'invalid_token') {
+                    $this->log->error($e->getMessage(), ['exception' => $e]);
+                }
             }
         }
 
