@@ -148,6 +148,7 @@ module.exports = {
     props: {
         route: Array,
         swagger: Object,
+        initialized: Boolean,
         player: [null, Object],
     },
 
@@ -161,14 +162,16 @@ module.exports = {
 
     mounted: function() {
         // "preview" banner
-        if (location.hostname === 'brvneucore.herokuapp.com') {
+        if (window.location.hostname === 'brvneucore.herokuapp.com') {
             this.preview = true;
         }
-
-        this.getLoginUrl();
     },
 
     watch: {
+        initialized: function() {
+            this.getLoginUrl();
+        },
+
         player: function() {
             this.getLoginUrl();
         }

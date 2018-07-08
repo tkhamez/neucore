@@ -81,6 +81,14 @@ var app = new window.Vue({
          */
         swagger: null,
 
+        /**
+         * True after first Ajax request finished.
+         *
+         * Don't do any request before with is true to avoid creating
+         * several session on the server.
+         */
+        initialized: false,
+
         successMessage: '',
         errorMessage: '',
         loadingCount: 0,
@@ -106,11 +114,14 @@ var app = new window.Vue({
         this.$on('playerChange', () => {
             this.getPlayer();
         });
+
+        this.getAuthenticatedCharacter();
     },
 
-    mounted: function() {
-        this.getCharacter();
-        this.getPlayer();
+    watch: {
+        initialized: function() {
+            this.getPlayer()
+        }
     },
 
     methods: {
@@ -158,10 +169,11 @@ var app = new window.Vue({
             });
         },
 
-        getCharacter: function() {
+        getAuthenticatedCharacter: function() {
             this.loading(true);
             new this.swagger.CharacterApi().show(function(error, data) {
                 app.loading(false);
+                app.initialized = true;
                 if (error) { // 403 usually
                     app.authChar = null;
                     app.page = 'Home';
@@ -206,7 +218,7 @@ var app = new window.Vue({
                 if (error) { // 403 usually
                     return;
                 }
-                app.getCharacter();
+                app.getAuthenticatedCharacter();
                 app.getPlayer();
             });
         },

@@ -113,6 +113,9 @@ class NonBlockingSessionMiddleware
                 'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true,
                 'cookie_httponly' => true,
             ]);
+
+            // write something to the session so that the Set-Cookie header is send
+            $_SESSION['_started'] = isset($_SESSION['_started']) ?: time();
         } else {
             // allow unit tests to inject values in the session
             $_SESSION = isset($_SESSION) ? $_SESSION : array();

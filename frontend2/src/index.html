@@ -27,7 +27,8 @@
 
         <navbar :auth-char="authChar" :page="route[0]"></navbar>
 
-        <component v-bind:is="page" :route="route" :swagger="swagger" :player="player"></component>
+        <component v-bind:is="page" :route="route"
+            :initialized="initialized" :swagger="swagger" :player="player"></component>
 
         <footer class="footer bg-secondary">
             <div class="container text-muted">
