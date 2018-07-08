@@ -8,13 +8,11 @@
         <ul class="navbar-nav mr-auto">
             <li v-cloak v-if="hasAnyRole(['group-manager', 'group-admin'])"
                 class="nav-item" :class="{ active: page == 'Home' }">
-                <a class="nav-link" href="#Home">
-                    Home</a>
+                <a class="nav-link" href="#Home">Home</a>
             </li>
             <li v-cloak v-if="hasRole('group-manager')"
                 class="nav-item" :class="{ active: page == 'GroupManagement' }">
-                <a class="nav-link" href="#GroupManagement">
-                    Group Management</a>
+                <a class="nav-link" href="#GroupManagement">Group Management</a>
             </li>
         </ul>
         <span v-cloak v-if="authChar" class="navbar-brand">

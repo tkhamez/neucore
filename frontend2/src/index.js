@@ -28,7 +28,7 @@ window.Vue.mixin({
         },
 
         hasRole: function(name) {
-            if (! this.$root.authChar || ! this.$root.player.roles) {
+            if (! this.$root.player) {
                 return false;
             }
             return this.$root.player.roles.indexOf(name) !== -1;
@@ -55,30 +55,26 @@ var app = new window.Vue({
     },
 
     data: {
-        /**
-         * current route/location hash
-         */
-        route: '',
 
         /**
-         * the current page/component
+         * Current route (hash splitted by /), first element is the current page.
          */
-        page: 'Home',
+        route: [],
 
         /**
-         * all available pages
+         * All available pages
          */
         pages: ['Home', 'GroupManagement'],
 
         /**
-         * the authenticated character
+         * The authenticated character
          */
         authChar: null,
 
         /**
-         * the player object
+         * The player object
          */
-        player: {},
+        player: null,
 
         /**
          * brvneucore API client
@@ -99,11 +95,11 @@ var app = new window.Vue({
             window.location.port + '/api';
 
         // initial route
-        this.route = window.location.hash;
+        this.updateRoute();
 
         // route listener
         window.addEventListener('hashchange', () => {
-            this.route = window.location.hash;
+            this.updateRoute();
         });
 
         // event listeners
@@ -115,12 +111,6 @@ var app = new window.Vue({
     mounted: function() {
         this.getCharacter();
         this.getPlayer();
-    },
-
-    watch: {
-        route: function() {
-            this.updatePage();
-        }
     },
 
     methods: {
@@ -135,16 +125,21 @@ var app = new window.Vue({
             this.errorMessage = message;
         },
 
-        updatePage() {
-            var parts = this.route.substr(1).split('/');
+        updateRoute() {
+            this.route = window.location.hash.substr(1).split('/');
 
-            if (parts[0] === 'login' || parts[0] === 'login-alt') {
+            // handle routes that do not have a page
+            if (this.route[0] === 'login' || this.route[0] === 'login-alt') {
                 this.getAuthResult();
-            } else if (parts[0] === 'logout') {
+            } else if (this.route[0] === 'logout') {
                 this.logout();
             }
 
-            this.page = this.pages.indexOf(parts[0]) !== -1 ? parts[0] : 'Home';
+            // set page
+            if (this.pages.indexOf(this.route[0]) === -1) {
+                this.route[0] = 'Home';
+            }
+            this.page = this.route[0];
         },
 
         getAuthResult: function() {
@@ -181,6 +176,7 @@ var app = new window.Vue({
             new this.swagger.PlayerApi().show(function(error, data) {
                 app.loading(false);
                 if (error) { // 403 usually
+                    app.player = null;
                     return;
                 }
 
@@ -211,6 +207,7 @@ var app = new window.Vue({
                     return;
                 }
                 app.getCharacter();
+                app.getPlayer();
             });
         },
     },

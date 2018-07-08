@@ -34,7 +34,7 @@
             </p>
             <hr class="my-4">
 
-            <div v-cloak v-if="! authChar">
+            <div v-cloak v-if="! this.player">
                 <p class="lead">
                     Click the button below to login through <i>EVE Online SSO</i>.
                 </p>
@@ -49,7 +49,7 @@
                 </p>
             </div>
 
-            <div v-cloak v-if="authChar">
+            <div v-cloak v-if="this.player">
                 <p>Please add all your characters by logging in with EVE SSO.</p>
                 <p class="lead">
                     <a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
@@ -57,12 +57,12 @@
             </div>
         </div>
 
-        <div v-cloak v-if="authChar">
+        <div v-cloak v-if="this.player">
             <div class="row">
                 <div class="col-lg-8">
                     <h2>Characters</h2>
                     <div class="card-columns">
-                        <div v-for="(char, idx) in player.characters" :key='idx'
+                        <div v-for="char in player.characters"
                             class="card border-secondary bg-light">
                             <div class="card-header">
                                 <img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'"
@@ -113,7 +113,7 @@
                     <div class="card border-secondary mb-3">
                         <h3 class="card-header">Groups</h3>
                         <ul class="list-group list-group-flush">
-                            <li v-for="(group, idx) in player.groups" :key='idx' class="list-group-item">
+                            <li v-for="group in player.groups" class="list-group-item">
                                 {{ group.name }}
                             </li>
                         </ul>
@@ -122,8 +122,8 @@
                             class="card border-secondary mb-3" >
                         <h3 class="card-header">Group Manager</h3>
                         <ul class="list-group list-group-flush">
-                            <li v-for="(mg, idx) in player.managerGroups" :key='idx' class="list-group-item">
-                                {{ mg.name }}
+                            <li v-for="group in player.managerGroups" class="list-group-item">
+                                {{ group.name }}
                             </li>
                         </ul>
                     </div>
@@ -131,8 +131,8 @@
                             class="card border-secondary mb-3" >
                         <h3 class="card-header">App Manager</h3>
                         <ul class="list-group list-group-flush">
-                            <li v-for="(ag, idx) in player.managerApps" :key='idx' class="list-group-item">
-                                {{ ag.name }}
+                            <li v-for="app in player.managerApps" class="list-group-item">
+                                {{ app.name }}
                             </li>
                         </ul>
                     </div>
@@ -145,9 +145,9 @@
 <script>
 module.exports = {
     props: {
+        route: Array,
         swagger: Object,
-        authChar: [null, Object],
-        player: Object,
+        player: [null, Object],
     },
 
     data: function() {
@@ -168,7 +168,7 @@ module.exports = {
     },
 
     watch: {
-        authChar: function() {
+        player: function() {
             this.getLoginUrl();
         }
     },
@@ -180,7 +180,7 @@ module.exports = {
 
             var method;
             var redirect;
-            if (this.authChar) {
+            if (this.player) {
                 method = 'loginAltUrl';
                 redirect = '/#login-alt';
             } else {
@@ -226,6 +226,7 @@ module.exports = {
                     return;
                 }
                 vm.message('Update done.', 'success');
+                vm.$root.$emit('playerChange');
             });
         }
     }

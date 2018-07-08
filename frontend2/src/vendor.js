@@ -16,3 +16,5 @@ window.brvneucoreJsClient = require('brvneucore-js-client');
 
 // Vue.js - runtime + compiler
 window.Vue = require('vue/dist/vue.min.js');
+
+window._ = require('lodash');
