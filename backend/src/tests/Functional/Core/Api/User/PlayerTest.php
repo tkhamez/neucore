@@ -47,13 +47,13 @@ class PlayerTest extends WebTestCase
         $this->log->pushHandler(new TestHandler());
     }
 
-    public function testPlayer403()
+    public function testShow403()
     {
         $response = $this->runApp('GET', '/api/user/player/show');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testPlayer200()
+    public function testShow200()
     {
         $this->h->emptyDb();
         $groups = $this->h->addGroups(['group1', 'another-group']);
@@ -477,19 +477,19 @@ class PlayerTest extends WebTestCase
         );
     }
 
-    public function testShow403()
+    public function testShowById403()
     {
         $response = $this->runApp('GET', '/api/user/player/1/show');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(11); // not user-admin
+        $this->loginUser(10); // not user-admin or group-manager
 
         $response = $this->runApp('GET', '/api/user/player/1/show');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testShow404()
+    public function testShowById404()
     {
         $this->setupDb();
         $this->loginUser(12);
@@ -498,7 +498,7 @@ class PlayerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testShow200()
+    public function testShowById200()
     {
         $this->setupDb();
         $this->loginUser(12);
@@ -539,6 +539,60 @@ class PlayerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
+    public function testCharacters403()
+    {
+        $this->setupDb();
+        $this->loginUser(12); // not a group-manager
+
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCharacters404()
+    {
+        $this->setupDb();
+        $this->loginUser(11);
+
+        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/characters');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testCharacters200()
+    {
+        $this->setupDb();
+        $this->loginUser(11);
+
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            'id' => $this->player->getId(),
+            'name' => 'Admin',
+            'characters' => [
+                [
+                    'id' => 12,
+                    'name' => 'Admin',
+                    'main' => true,
+                    'lastUpdate' => null,
+                    'validToken' => false,
+                    'corporation' => [
+                        'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
+                            'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
+                        ]
+                    ]
+                ],
+                [
+                    'id' => 13,
+                    'name' => 'Alt',
+                    'main' => false,
+                    'lastUpdate' => null,
+                    'validToken' => false,
+                    'corporation' => null
+                ],
+            ],
+        ], $this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
         $this->h->emptyDb();
@@ -560,8 +614,8 @@ class PlayerTest extends WebTestCase
 
         $this->userId = $this->h->addCharacterMain('User', 10, [Roles::USER])->getPlayer()->getId();
 
-        $this->managerId = $this->h->addCharacterMain('Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])
-            ->getPlayer()->getId();
+        $this->managerId = $this->h->addCharacterMain(
+            'Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])->getPlayer()->getId();
 
         $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
         $corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);

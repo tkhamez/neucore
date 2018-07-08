@@ -102,11 +102,6 @@ Alliance API
 - Add a group to the alliance. `/user/alliance/{id}/add-group/{gid}`
 - Remove a group from the alliance. `/user/alliance/{id}/remove-group/{gid}`
 
-Character API
-- Return a list of characters that matches the name (partial matching, minimum 3 characters).
-  `/user/character/find-by/{name}`
-- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
-
 Corporation API
 - List all corporations. `/user/corporation/all`
 - List all corporations that have groups assigned. `/user/corporation/with-groups`
@@ -125,7 +120,6 @@ Group API
 - Remove a manager (player) from a group. `/user/group/{id}/remove-manager/{pid}`
 
 Player API
-- List all players. `/user/player/all`
 - List all players with the role group-manger. `/user/player/group-managers`
 
 ### group-manager
@@ -139,6 +133,12 @@ Group API
 
 Player API
 - List all players. `/user/player/all`
+- Show all characters from a player. `/user/player/{id}/characters`
+
+Character API
+- Return a list of characters that matches the name (partial matching, minimum 3 characters).
+  `/user/character/find-by/{name}`
+- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 
 ### app-admin
 

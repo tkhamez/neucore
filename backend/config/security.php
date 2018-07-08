@@ -42,7 +42,8 @@ return [
     '/api/user/player/set-main'           => [Roles::USER],
     '/api/user/player/app-managers'       => [Roles::APP_ADMIN],
     '/api/user/player/group-managers'     => [Roles::GROUP_ADMIN],
-    '/api/user/player/all'                => [Roles::USER_ADMIN, Roles::GROUP_ADMIN, Roles::GROUP_MANAGER],
+    '/api/user/player/all'                => [Roles::USER_ADMIN, Roles::GROUP_MANAGER],
+    '/api/user/player/{id}/characters'    => [Roles::GROUP_MANAGER],
     '/api/user/player'                    => [Roles::USER_ADMIN],
 
     '/api/user' => [Roles::USER],

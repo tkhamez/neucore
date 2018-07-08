@@ -87,7 +87,7 @@ class CharacterController
      * @SWG\Get(
      *     path="/user/character/find-by/{name}",
      *     operationId="findBy",
-     *     summary="Return a list of characters that matches the name (partial matching, minimum 3 characters).",
+     *     summary="Return a list of characters that matches the name (partial matching).",
      *     description="Needs role: user-admin or group-manager",
      *     tags={"Character"},
      *     security={{"Session"={}}},
@@ -96,17 +96,12 @@ class CharacterController
      *         in="path",
      *         required=true,
      *         description="Name of the character.",
-     *         type="string",
-     *         minLength=3
+     *         type="string"
      *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="List of characters (ID and name only).",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
-     *     ),
-     *     @SWG\Response(
-     *         response="400",
-     *         description="Input too short."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -116,10 +111,6 @@ class CharacterController
      */
     public function findBy(string $name): Response
     {
-        if (mb_strlen($name) < 3) {
-            return $this->res->withStatus(400);
-        }
-
         $result = $this->charRepo->findByNamePartialMatch($name);
 
         $retVal = [];
@@ -150,7 +141,7 @@ class CharacterController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The player with all properties.",
+     *         description="The player with id and name properties only.",
      *         @SWG\Schema(ref="#/definitions/Player")
      *     ),
      *     @SWG\Response(
@@ -171,7 +162,10 @@ class CharacterController
             return $this->res->withStatus(204);
         }
 
-        return $this->res->withJson($char->getPlayer());
+        return $this->res->withJson([
+            'id' => $char->getPlayer()->getId(),
+            'name' => $char->getPlayer()->getName(),
+        ]);
     }
 
     /**

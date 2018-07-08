@@ -68,15 +68,6 @@ class CharacterTest extends WebTestCase
         $this->assertSame(403, $response2->getStatusCode());
     }
 
-    public function testFindBy400()
-    {
-        $this->setupDb();
-        $this->loginUser(9);
-
-        $response = $this->runApp('GET', '/api/user/character/find-by/na');
-        $this->assertSame(400, $response->getStatusCode());
-    }
-
     public function testFindBy200()
     {
         $this->setupDb();
@@ -127,18 +118,6 @@ class CharacterTest extends WebTestCase
         $this->assertSame([
             'id' => $this->playerId,
             'name' => 'User',
-            'roles' => [Roles::USER],
-            'characters' => [
-                ['id' => 456, 'name' => 'Another USER', 'main' => false,
-                    'lastUpdate' => null, 'validToken' => false, 'corporation' => null],
-                ['id' => 96061222, 'name' => 'User', 'main' => true,
-                    'lastUpdate' => null, 'validToken' => true, 'corporation' => null],
-            ],
-            'applications' => [],
-            'groups' => [],
-            'managerGroups' => [],
-            'managerApps' => [],
-
         ], $this->parseJsonBody($response));
     }
 

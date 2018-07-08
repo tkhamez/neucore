@@ -262,7 +262,7 @@ class PlayerController
      *     path="/user/player/all",
      *     operationId="all",
      *     summary="List all players.",
-     *     description="Needs role: user-admin, group-admin or group-manager",
+     *     description="Needs role: user-admin or group-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -493,6 +493,51 @@ class PlayerController
         }
 
         return $this->res->withJson($player);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/{id}/characters",
+     *     operationId="characters",
+     *     summary="Show player with characters.",
+     *     description="Needs role: group-manager",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The player with id, name and characters properties only.",
+     *         @SWG\Schema(ref="#/definitions/Player")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Player not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function characters(string $id): Response
+    {
+        $player = $this->pr->find((int) $id);
+
+        if ($player === null) {
+            return $this->res->withStatus(404);
+        }
+
+        return $this->res->withJson([
+            'id' => $player->getId(),
+            'name' => $player->getName(),
+            'characters' => $player->getCharacters(),
+        ]);
     }
 
     private function getManagers(string $roleName): array
