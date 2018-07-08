@@ -83,7 +83,7 @@
                     </div>
                     <ul v-if="searchResult.length > 0" class="list-group search-result">
                         <li v-for="character in searchResult" v-on:click="findPlayer(character.id)"
-                                class="list-group-item list-group-item-action">
+                                class="list-group-item list-group-item-action search-result-item">
                             <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'">
                             {{ character.name }}
                         </li>
@@ -186,7 +186,7 @@ module.exports = {
             }
 
             // set group name variable
-            for (group of this.player.managerGroups) {
+            for (var group of this.player.managerGroups) {
                 if (group.id === this.groupId) {
                     this.groupName = group.name;
                 }
@@ -223,7 +223,7 @@ module.exports = {
                 }
                 vm.searchResult = data;
             });
-        }, 350),
+        }, 250),
 
         findPlayer: function(characterId) {
             var vm = this;
@@ -265,7 +265,7 @@ module.exports = {
                 vm.selectedPlayer = data;
                 window.setTimeout(function() {
                     window.jQuery('#playerModal').modal('show');
-                }, 100);
+                }, 10);
             });
         },
 
@@ -293,5 +293,9 @@ module.exports = {
     max-height: 173px;
     width: 95%;
     overflow: auto;
+}
+
+.search-result-item {
+    cursor: pointer;
 }
 </style>

@@ -8,8 +8,8 @@ window.jQuery(function() {
     window.jQuery('[data-toggle="popover"]').popover();
 });
 
-// open-iconic (contains font files)
-require('../node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css');
+// fontawesome (contains font files)
+require('../node_modules/@fortawesome/fontawesome-free/css/all.css');
 
 // swagger client
 window.brvneucoreJsClient = require('brvneucore-js-client');
@@ -18,3 +18,5 @@ window.brvneucoreJsClient = require('brvneucore-js-client');
 window.Vue = require('vue/dist/vue.min.js');
 
 window._ = require('lodash');
+
+import "babel-polyfill"; // for useBuiltIns: true

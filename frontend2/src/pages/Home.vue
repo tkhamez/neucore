@@ -83,22 +83,23 @@
                                 </p>
                             </div>
                             <div class="card-footer">
-                                <span v-if="char.main" class="oi oi-star text-warning mr-2" title="Main"
+                                <span v-if="char.main" class="fas fa-star text-warning mr-2" title="Main"
                                     aria-hidden="true"></span>
 
                                 <button v-if="! char.validToken" type="button" class="btn btn-danger btn-sm"
-                                    data-toggle="modal" data-target="#tokenModal">
+                                        data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
 
                                 <button v-if="! char.main && char.validToken"
-                                    type="button" class="btn btn-primary btn-sm" v-on:click="makeMain(char.id)">
+                                        type="button" class="btn btn-primary btn-sm"
+                                        v-on:click="makeMain(char.id)">
                                     Make Main
                                 </button>
                                 <button v-if="char.validToken"
-                                    type="button" class="btn btn-primary btn-sm"
-                                    v-on:click="update(char.id)">
-                                    <span class="oi oi-loop-circular pull-right"></span>
+                                        type="button" class="btn btn-primary btn-sm"
+                                        v-on:click="update(char.id)">
+                                    <i class="fas fa-sync small"></i>
                                     Update
                                 </button>
                             </div>

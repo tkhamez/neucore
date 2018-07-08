@@ -40,6 +40,15 @@ module.exports = (env, argv) => {
             }, {
                 test: /\.vue$/,
                 loader: 'vue-loader'
+            }, {
+                test: /\.js$/,
+                exclude: /(node_modules|brvneucore-js-client)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['env']
+                    }
+                }
             }]
         },
         plugins: [
@@ -47,7 +56,7 @@ module.exports = (env, argv) => {
                 template: 'src/index.html',
                 filename: '../index.html'
             }),
-            new CleanWebpackPlugin(['dist'], {
+            new CleanWebpackPlugin(['dist', 'fonts'], {
                 root: path.resolve(__dirname, '../web')
             }),
             new webpack.DefinePlugin({
@@ -72,6 +81,6 @@ module.exports = (env, argv) => {
             ]
         },
         devtool: devMode ? 'inline-source-map' : 'source-map',
-        performance: { hints: false }
+        performance: { hints: false },
     }
 };
