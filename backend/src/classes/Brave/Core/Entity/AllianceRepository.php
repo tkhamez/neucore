@@ -37,10 +37,10 @@ class AllianceRepository extends \Doctrine\ORM\EntityRepository
     public function getAllWithGroups()
     {
         return $this->createQueryBuilder('a')
-        ->join('a.groups', 'g')
-        ->andWhere('g.id IS NOT NULL')
-        ->orderBy('a.name')
-        ->getQuery()
-        ->getResult();
+            ->join('a.groups', 'g')
+            ->andWhere('g.id IS NOT NULL')
+            ->orderBy('a.name')
+            ->getQuery()
+            ->getResult();
     }
 }
