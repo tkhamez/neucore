@@ -84,7 +84,7 @@ var app = new window.Vue({
         /**
          * True after first Ajax request finished.
          *
-         * Don't do any request before with is true to avoid creating
+         * Don't do any request before this is true to avoid creating
          * several session on the server.
          */
         initialized: false,
