@@ -92,12 +92,12 @@
                                 </button>
 
                                 <button v-if="! char.main && char.validToken"
-                                        type="button" class="btn btn-primary btn-sm"
+                                        type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="makeMain(char.id)">
                                     Make Main
                                 </button>
                                 <button v-if="char.validToken"
-                                        type="button" class="btn btn-primary btn-sm"
+                                        type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="update(char.id)">
                                     <i class="fas fa-sync small"></i>
                                     Update

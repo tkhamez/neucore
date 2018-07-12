@@ -14,8 +14,13 @@
                     </button>
                 </div>
                 <ul class="list-group">
-                    <li v-for="character in selectedPlayer.characters"
-                            class="list-group-item">
+                    <li v-for="character in selectedPlayer.characters" class="list-group-item">
+                        <a class="badge badge-secondary badge-link ml-1"
+                            :href="'https://zkillboard.com/character/' + character.id"
+                            target="_blank">zKillboard</a>
+                        <a class="badge badge-secondary badge-link ml-1"
+                            :href="'https://evewho.com/pilot/' + character.name"
+                            target="_blank">Eve Who</a>
                         <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'">
                         {{ character.name }}
                         <div class="small">
@@ -25,13 +30,12 @@
                                 {{ character.corporation.name }}
                             </span>
                             <br>
-                            <span class="text-muted">Alliance:</span>
+                            <span class="text-muted"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Alliance:</span>
                             <span v-if="character.corporation && character.corporation.alliance">
                                 [{{ character.corporation.alliance.ticker }}]
                                 {{ character.corporation.alliance.name }}
                             </span>
                         </div>
-
                     </li>
                 </ul>
                 <div class="modal-footer">
@@ -238,21 +242,6 @@ module.exports = {
             });
         },
 
-        addPlayer: function() {
-            if (this.groupId === null || this.newMember === null) {
-                return;
-            }
-            var vm = this;
-            vm.loading(true);
-            new this.swagger.GroupApi().addMember(this.groupId, this.newMember.id, function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    return;
-                }
-                vm.getMembers();
-            });
-        },
-
         showCharacters: function(playerId) {
             var vm = this;
             vm.characters = [];
@@ -269,6 +258,25 @@ module.exports = {
             });
         },
 
+        addPlayer: function() {
+            if (this.groupId === null || this.newMember === null) {
+                return;
+            }
+            var vm = this;
+            vm.loading(true);
+            new this.swagger.GroupApi().addMember(this.groupId, this.newMember.id, function(error, data) {
+                vm.loading(false);
+                if (error) {
+                    return;
+                }
+                if (vm.newMember.id === vm.player.id) {
+                    vm.$root.$emit('playerChange'); // changes the player object which triggers getMembers()
+                } else {
+                    vm.getMembers();
+                }
+            });
+        },
+
         removePlayer: function(playerId) {
             if (this.groupId === null) {
                 return;
@@ -280,7 +288,11 @@ module.exports = {
                 if (error) {
                     return;
                 }
-                vm.getMembers();
+                if (playerId === vm.player.id) {
+                    vm.$root.$emit('playerChange');
+                } else {
+                    vm.getMembers();
+                }
             });
         },
     },
@@ -288,14 +300,18 @@ module.exports = {
 </script>
 
 <style scoped>
-.search-result {
-    position: absolute;
-    max-height: 173px;
-    width: 95%;
-    overflow: auto;
-}
+    .search-result {
+        position: absolute;
+        max-height: 173px;
+        width: 95%;
+        overflow: auto;
+    }
 
-.search-result-item {
-    cursor: pointer;
-}
+    .search-result-item {
+        cursor: pointer;
+    }
+
+    .badge-link {
+        float: right;
+    }
 </style>
