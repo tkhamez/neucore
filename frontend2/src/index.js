@@ -5,6 +5,9 @@ require("./index.scss");
 import Navbar from './components/Navbar.vue';
 import Home from './pages/Home.vue';
 import GroupManagement from './pages/GroupManagement.vue';
+import GroupAdmin from './pages/GroupAdmin.vue';
+import UserAdmin from './pages/UserAdmin.vue';
+import AppAdmin from './pages/AppAdmin.vue';
 
 window.Vue.mixin({
     methods: {
@@ -52,6 +55,9 @@ var app = new window.Vue({
         Navbar,
         Home,
         GroupManagement,
+        UserAdmin,
+        GroupAdmin,
+        AppAdmin,
     },
 
     data: {
@@ -64,7 +70,7 @@ var app = new window.Vue({
         /**
          * All available pages
          */
-        pages: ['Home', 'GroupManagement'],
+        pages: ['Home', 'GroupManagement', 'UserAdmin', 'GroupAdmin', 'AppAdmin'],
 
         /**
          * The authenticated character
@@ -90,7 +96,9 @@ var app = new window.Vue({
         initialized: false,
 
         successMessage: '',
+
         errorMessage: '',
+
         loadingCount: 0,
     },
 
@@ -120,7 +128,7 @@ var app = new window.Vue({
 
     watch: {
         initialized: function() {
-            this.getPlayer()
+            this.getPlayer();
         }
     },
 
@@ -173,17 +181,21 @@ var app = new window.Vue({
             this.loading(true);
             new this.swagger.CharacterApi().show(function(error, data) {
                 app.loading(false);
-                app.initialized = true;
                 if (error) { // 403 usually
                     app.authChar = null;
                     app.page = 'Home';
-                    return;
+                } else {
+                    app.authChar = data;
                 }
-                app.authChar = data;
+                app.initialized = true;
             });
         },
 
         getPlayer: function() {
+            if (! this.authChar) {
+                return;
+            }
+
             this.loading(true);
             new this.swagger.PlayerApi().show(function(error, data) {
                 app.loading(false);
@@ -192,7 +204,7 @@ var app = new window.Vue({
                     return;
                 }
 
-                // TODO swagger codegen bug:
+                // Workaround for Swagger Codegen bug:
                 // https://github.com/swagger-api/swagger-codegen/issues/4819
                 // data.roles is: [{0: "a", 1: "b"}, {}] instead of ["ab", ""]
                 // so transform back:
@@ -218,8 +230,8 @@ var app = new window.Vue({
                 if (error) { // 403 usually
                     return;
                 }
-                app.getAuthenticatedCharacter();
-                app.getPlayer();
+                app.authChar = null;
+                app.player = null;
             });
         },
     },

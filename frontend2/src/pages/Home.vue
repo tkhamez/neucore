@@ -34,7 +34,7 @@
             </p>
             <hr class="my-4">
 
-            <div v-cloak v-if="! this.player">
+            <div v-cloak v-if="loginUrl">
                 <p class="lead">
                     Click the button below to login through <i>EVE Online SSO</i>.
                 </p>
@@ -49,7 +49,7 @@
                 </p>
             </div>
 
-            <div v-cloak v-if="this.player">
+            <div v-cloak v-if="loginAltUrl">
                 <p>Please add all your characters by logging in with EVE SSO.</p>
                 <p class="lead">
                     <a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
@@ -149,6 +149,7 @@ module.exports = {
         route: Array,
         swagger: Object,
         initialized: Boolean,
+        authChar: [null, Object],
         player: [null, Object],
     },
 
@@ -168,12 +169,14 @@ module.exports = {
     },
 
     watch: {
-        initialized: function() {
+        authChar: function() { // for login, logout and refresh while logged in
             this.getLoginUrl();
         },
 
-        player: function() {
-            this.getLoginUrl();
+        initialized: function() { // for refresh while not logged in
+            if (! this.authChar) {
+                this.getLoginUrl();
+            }
         }
     },
 
@@ -184,13 +187,16 @@ module.exports = {
 
             var method;
             var redirect;
-            if (this.player) {
+            if (this.authChar) {
                 method = 'loginAltUrl';
                 redirect = '/#login-alt';
             } else {
                 method = 'loginUrl';
                 redirect = '/#login';
             }
+
+            this.loginUrl = null;
+            this.loginAltUrl = null;
 
             vm.loading(true);
             api[method].apply(api, [{ redirect: redirect }, function(error, data) {
