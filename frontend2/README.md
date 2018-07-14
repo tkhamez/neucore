@@ -1,6 +1,7 @@
 # Frontend
 
-This contains a minimal frontend that users can use to add their alts to their account.
+The frontend is based on [Vue.js](https://vuejs.org) and
+[Bootstrap](https://getbootstrap.com) with a [Bootswatch](https://bootswatch.com) theme.
 
 ## Style Guide
 

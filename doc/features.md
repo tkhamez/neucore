@@ -1,7 +1,7 @@
 # Features
 
-This primarily describes the backend, most functions are not yet available
-in the frontend. Admins must use the Swagger-UI for now (`https://[domain]/api.html`).
+This primarily describes the backend, not all functions are yet available in the frontend.
+Administrators must use the Swagger UI for missing functions. (`https://[domain]/api.html`).
 
 ## Player Accounts and Character Registration
 
