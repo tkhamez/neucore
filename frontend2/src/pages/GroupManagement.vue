@@ -35,7 +35,7 @@
                 <div v-cloak v-if="groupId" class="card-body">
                     <div class="input-group input-group-sm mb-1">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">Add member</span>
+                            <span class="input-group-text">Add member</span>
                         </div>
                         <input type="text" class="form-control" placeholder="Character name"
                             v-model="searchTerm" v-on:click="findCharacter">
