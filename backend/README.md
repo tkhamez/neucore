@@ -7,6 +7,18 @@ with the [PHP-DI container](http://php-di.org/).
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
 
+## App Auth
+
+Authentication for apps is done via an HTTP Authorization header.
+
+The authorization string is composed of the word Bearer followed by a base64-encoded
+string containing the app ID and secret separated by a colon (1:my awesome secret).
+
+Example:
+```
+curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://brave.core.tld/api/app/v1/show
+```
+
 ## Command-Line App
 
 The console application is available at
@@ -73,16 +85,3 @@ Generate swagger.json:
 ```
 vendor/bin/swagger --exclude bin,config,var,vendor --output ../web
 ```
-
-## App Auth
-
-Authentication for apps is done via an HTTP Authorization header.
-
-The authorization string is composed of the word Bearer followed by a base64-encoded
-string containing the app ID and secret separated by a colon (1:my awesome secret).
-
-Example:
-```
-curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://brave.core.tld/api/app/v1/show
-```
-

@@ -393,6 +393,88 @@ class GroupController
     }
 
     /**
+     * @SWG\Get(
+     *     path="/user/group/{id}/corporations",
+     *     operationId="corporations",
+     *     summary="List all corporations of a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of corporations ordered by name.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function corporations(string $id): Response
+    {
+        if (! $this->findGroup($id)) {
+            return $this->res->withStatus(404);
+        }
+
+        $corps = $this->group->getCorporations();
+
+        return $this->res->withJson($corps);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/group/{id}/alliances",
+     *     operationId="alliances",
+     *     summary="List all alliances of a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of alliances ordered by name.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function alliances(string $id): Response
+    {
+        if (! $this->findGroup($id)) {
+            return $this->res->withStatus(404);
+        }
+
+        $allis = $this->group->getAlliances();
+
+        return $this->res->withJson($allis);
+    }
+
+    /**
      * @SWG\Put(
      *     path="/user/group/{id}/add-manager/{pid}",
      *     operationId="addManager",

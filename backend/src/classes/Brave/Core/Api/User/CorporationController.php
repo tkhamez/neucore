@@ -84,7 +84,7 @@ class CorporationController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->corpRepo->findAll());
+        return $this->res->withJson($this->corpRepo->findBy([], ['name' => 'ASC']));
     }
 
     /**

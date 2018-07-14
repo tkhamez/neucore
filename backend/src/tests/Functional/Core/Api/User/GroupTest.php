@@ -2,6 +2,8 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupRepository;
 use Brave\Core\Entity\Player;
@@ -322,6 +324,78 @@ class GroupTest extends WebTestCase
         $this->assertSame(
             [['id' => $this->pid, 'name' => 'Admin']],
             $this->parseJsonBody($response)
+        );
+    }
+
+    public function testCorporations403()
+    {
+        $response = $this->runApp('GET', '/api/user/group/1/corporations');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(6); # not an admin
+
+        $response = $this->runApp('GET', '/api/user/group/1/corporations');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCorporations404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/group/'.($this->gid + 5).'/corporations');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testCorporations200()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/corporations');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => 200, 'name' => 'corp 2', 'ticker' => 'c2', 'alliance' => [
+                'id' => 10, 'name' => 'alli 1', 'ticker' => 'a1'
+            ]],
+            ], $this->parseJsonBody($response)
+        );
+    }
+
+    public function testAlliances403()
+    {
+        $response = $this->runApp('GET', '/api/user/group/1/alliances');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(6); # not an admin
+
+        $response = $this->runApp('GET', '/api/user/group/1/alliances');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAlliances404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/group/'.($this->gid + 5).'/alliances');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testAlliances200()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/alliances');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => 10, 'name' => 'alli 1', 'ticker' => 'a1'],
+            ], $this->parseJsonBody($response)
         );
     }
 
@@ -667,6 +741,14 @@ class GroupTest extends WebTestCase
 
         $g[0]->addManager($admin->getPlayer());
         $user->getPlayer()->addApplication($g[0]);
+
+        // corps and alliances
+        $alli = (new Alliance())->setId(10)->setTicker('a1')->setName('alli 1');
+        $corp = (new Corporation())->setId(200)->setTicker('c2')->setName('corp 2')->setAlliance($alli);
+        $alli->addGroup($g[0]);
+        $corp->addGroup($g[0]);
+        $this->em->persist($alli);
+        $this->em->persist($corp);
 
         $this->em->flush();
     }

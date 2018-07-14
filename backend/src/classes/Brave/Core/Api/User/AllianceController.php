@@ -88,7 +88,7 @@ class AllianceController
      */
     public function all(): Response
     {
-        return $this->response->withJson($this->allianceRepo->findAll());
+        return $this->response->withJson($this->allianceRepo->findBy([], ['name' => 'ASC']));
     }
 
     /**

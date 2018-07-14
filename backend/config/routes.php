@@ -61,6 +61,8 @@ return [
     '/api/user/group/{id}/set-visibility/{choice}' => ['PUT',    GroupController::class.'::setVisibility'],
     '/api/user/group/{id}/delete'                  => ['DELETE', GroupController::class.'::delete'],
     '/api/user/group/{id}/managers'                => ['GET',    GroupController::class.'::managers'],
+    '/api/user/group/{id}/corporations'            => ['GET',    GroupController::class.'::corporations'],
+    '/api/user/group/{id}/alliances'               => ['GET',    GroupController::class.'::alliances'],
     '/api/user/group/{id}/add-manager/{pid}'       => ['PUT',    GroupController::class.'::addManager'],
     '/api/user/group/{id}/remove-manager/{pid}'    => ['PUT',    GroupController::class.'::removeManager'],
     '/api/user/group/{id}/applicants'              => ['GET',    GroupController::class.'::applicants'],

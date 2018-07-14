@@ -116,6 +116,8 @@ Group API
 - Change visibility of a group. `/user/group/{id}/set-visibility/{choice}`
 - Delete a group. `/user/group/{id}/delete`
 - List all managers of a group. `/user/group/{id}/managers`
+- List all corporations of a group. `/user/group/{id}/corporations`
+- List all alliances of a group. `/user/group/{id}/alliances`
 - Assign a player as manager to a group. `/user/group/{id}/add-manager/{pid}`
 - Remove a manager (player) from a group. `/user/group/{id}/remove-manager/{pid}`
 
