@@ -96,7 +96,8 @@
                             <th v-if="contentType == 'managers'">ID</th>
                             <th v-if="contentType != 'managers'">Ticker</th>
                             <th>Name</th>
-                            <th v-if="contentType == 'managers'"></th>
+                            <th v-if="contentType == 'managers'">Characters</th>
+                            <th v-if="contentType == 'corporations'">Alliance</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -109,6 +110,12 @@
                                 <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
                                     Show characters
                                 </button>
+                            </td>
+                            <td v-if="contentType == 'corporations'">
+                                <span v-if="row.alliance">
+                                    [{{ row.alliance.ticker }}]
+                                    {{ row.alliance.name }}
+                                </span>
                             </td>
                             <td>
                                 <button v-if="contentType == 'managers'"
