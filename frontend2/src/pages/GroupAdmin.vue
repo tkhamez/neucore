@@ -60,9 +60,11 @@
                                 <span v-if="contentType == 'corporations'">Select corporation ...</span>
                                 <span v-if="contentType == 'alliances'">Select alliance ...</span>
                             </option>
-                            <option v-for="option in selectContent"
-                                v-bind:value="{ id: option.id, name: option.name, ticker: option.ticker }">
+                            <option v-for="option in selectContent" v-bind:value="option">
                                 {{ option.name }}
+                                <span v-if="contentType == 'corporations' && option.alliance">
+                                    ({{ option.alliance.name }})
+                                </span>
                             </option>
                         </select>
                     </div>
@@ -71,9 +73,20 @@
                         <span v-if="contentType == 'managers'" class="text-muted">Player account:</span>
                         <span v-if="contentType == 'corporations'" class="text-muted">Corporation:</span>
                         <span v-if="contentType == 'alliances'" class="text-muted">Alliance:</span>
+
                         <span v-if="contentType == 'managers'">[{{ newObject.id }}]</span>
                         <span v-if="contentType != 'managers'">[{{ newObject.ticker }}]</span>
                         {{ newObject.name }}
+
+                        <span v-if="contentType == 'corporations'" class="small text-muted">
+                            Alliance:
+                            <span v-if="newObject.alliance">
+                                [{{ newObject.alliance.ticker }}]
+                                {{ newObject.alliance.name }}
+                            </span>
+                            <span v-if="! newObject.alliance">n/a</span>
+                        </span>
+
                         <button v-if="contentType == 'managers'"
                             class="btn btn-info btn-sm" v-on:click="showCharacters(newObject.id)">
                             Show characters
