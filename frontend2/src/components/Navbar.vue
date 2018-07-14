@@ -12,8 +12,7 @@
         </button>
         <div class="navbar-collapse collapse" id="navbarColor01" style="">
             <ul class="navbar-nav mr-auto">
-                <li v-cloak v-if="hasAnyRole(['group-manager', 'group-admin'])"
-                    class="nav-item" :class="{ active: page == 'Home' }">
+                <li v-cloak class="nav-item" :class="{ active: page == 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
                 <li v-cloak v-if="hasRole('group-manager')"

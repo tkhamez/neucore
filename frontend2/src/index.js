@@ -3,11 +3,11 @@
 require("./index.scss");
 
 import Navbar from './components/Navbar.vue';
-import Home from './pages/Home.vue';
+import Home            from './pages/Home.vue';
 import GroupManagement from './pages/GroupManagement.vue';
-import GroupAdmin from './pages/GroupAdmin.vue';
-import UserAdmin from './pages/UserAdmin.vue';
-import AppAdmin from './pages/AppAdmin.vue';
+import GroupAdmin      from './pages/GroupAdmin.vue';
+import UserAdmin       from './pages/UserAdmin.vue';
+import AppAdmin        from './pages/AppAdmin.vue';
 
 window.Vue.mixin({
     methods: {

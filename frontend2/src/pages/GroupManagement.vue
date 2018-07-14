@@ -1,49 +1,7 @@
 <template>
 <div class="container-fluid">
 
-    <div v-cloak v-if="selectedPlayer" class="modal fade" id="playerModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        [{{ selectedPlayer.id }}]
-                        {{ selectedPlayer.name }}
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <ul class="list-group">
-                    <li v-for="character in selectedPlayer.characters" class="list-group-item">
-                        <a class="badge badge-secondary badge-link ml-1"
-                            :href="'https://zkillboard.com/character/' + character.id"
-                            target="_blank">zKillboard</a>
-                        <a class="badge badge-secondary badge-link ml-1"
-                            :href="'https://evewho.com/pilot/' + character.name"
-                            target="_blank">Eve Who</a>
-                        <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'">
-                        {{ character.name }}
-                        <div class="small">
-                            <span class="text-muted">Corporation:</span>
-                            <span v-if="character.corporation">
-                                [{{ character.corporation.ticker }}]
-                                {{ character.corporation.name }}
-                            </span>
-                            <br>
-                            <span class="text-muted"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Alliance:</span>
-                            <span v-if="character.corporation && character.corporation.alliance">
-                                [{{ character.corporation.alliance.ticker }}]
-                                {{ character.corporation.alliance.name }}
-                            </span>
-                        </div>
-                    </li>
-                </ul>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <characters :swagger="swagger" ref="charactersModal"></characters>
 
     <div class="row">
         <div class="col-lg-12">
@@ -74,7 +32,7 @@
                     <span class="text-muted small">{{ groupName }}</span>
                 </h3>
 
-                <div v-cloak v-if="groupId" class="card-body add-member">
+                <div v-cloak v-if="groupId" class="card-body">
                     <div class="input-group input-group-sm mb-1">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">Add member</span>
@@ -140,7 +98,13 @@
 </template>
 
 <script>
+import Characters from '../components/Characters.vue';
+
 module.exports = {
+    components: {
+        Characters,
+    },
+
     props: {
         route: Array,
         swagger: Object,
@@ -155,7 +119,6 @@ module.exports = {
             searchTerm: '',
             searchResult: [],
             newMember: null,
-            selectedPlayer: null,
         }
     },
 
@@ -174,8 +137,11 @@ module.exports = {
     },
 
     methods: {
-
         getMembers: function() {
+            if (! this.player) {
+                return;
+            }
+
             // reset variables
             this.groupMembers = [];
             this.searchTerm = '';
@@ -183,13 +149,13 @@ module.exports = {
             this.newMember = null;
 
             // group id
-            this.groupName = null;
-            this.groupId = this.route[1] ?  parseInt(this.route[1], 10) : null;
+            this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
             if (this.groupId === null) {
                 return;
             }
 
             // set group name variable
+            this.groupName = null;
             for (var group of this.player.managerGroups) {
                 if (group.id === this.groupId) {
                     this.groupName = group.name;
@@ -242,20 +208,8 @@ module.exports = {
             });
         },
 
-        showCharacters: function(playerId) {
-            var vm = this;
-            vm.characters = [];
-            vm.loading(true);
-            new this.swagger.PlayerApi().characters(playerId, function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    return;
-                }
-                vm.selectedPlayer = data;
-                window.setTimeout(function() {
-                    window.jQuery('#playerModal').modal('show');
-                }, 10);
-            });
+        showCharacters: function(memberId) {
+            this.$refs.charactersModal.showCharacters(memberId);
         },
 
         addPlayer: function() {
@@ -302,16 +256,12 @@ module.exports = {
 <style scoped>
     .search-result {
         position: absolute;
-        max-height: 173px;
+        max-height: 230px;
         width: 95%;
         overflow: auto;
     }
 
     .search-result-item {
         cursor: pointer;
-    }
-
-    .badge-link {
-        float: right;
     }
 </style>

@@ -146,7 +146,6 @@
 <script>
 module.exports = {
     props: {
-        route: Array,
         swagger: Object,
         initialized: Boolean,
         authChar: [null, Object],
@@ -161,23 +160,31 @@ module.exports = {
         }
     },
 
-    mounted: function() {
+    created: function() {
         // "preview" banner
         if (window.location.hostname === 'brvneucore.herokuapp.com') {
             this.preview = true;
         }
     },
 
+    mounted: function() { // after "redirect" (e. g. "404" or "403")
+        if (this.initialized) {
+            this.getLoginUrl();
+        }
+    },
+
     watch: {
         authChar: function() { // for login, logout and refresh while logged in
-            this.getLoginUrl();
+            if (this.initialized) {
+                this.getLoginUrl();
+            }
         },
 
         initialized: function() { // for refresh while not logged in
             if (! this.authChar) {
                 this.getLoginUrl();
             }
-        }
+        },
     },
 
     methods: {
