@@ -12,9 +12,6 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync",
         rsync__exclude: [".settings/", ".buildpath", ".project", "backend/.env"]
 
-    config.vm.network "forwarded_port", guest: 443, host: 8443, host_ip: "127.0.0.1"
-    config.vm.network :private_network, type: "dhcp"
-
     config.ssh.username = 'vagrant'
     config.ssh.password = 'vagrant'
 
@@ -87,14 +84,16 @@ Vagrant.configure("2") do |config|
 
         ./install.sh
 
+        echo ""
         echo "------------------------------------------------------------------------"
-        echo "-- Brave Core https://localhost:8443                                  --"
-        echo "-- phpMyAdmin: https://localhost:8443/phpmyadmin (core/brave)         --"
+        echo "-- (change IP as needed)                                              --"
+        echo "-- Brave Core https://192.168.123.6                                   --"
+        echo "-- phpMyAdmin: https://192.168.123.6/phpmyadmin (core/brave)          --"
         echo "-- SSH user: vagrant/vagrant                                          --"
-        echo "-- mount e. g.: sshfs vagrant@192.168.121.223:/ /mnt/brvneucore       --"
+        echo "-- mount: sshfs vagrant@192.168.123.6:/ /mnt/brvneucore               --"
         echo "-- unmount: fusermount -u /mnt/brvneucore                             --"
         echo "-- ifconfig eth0 | grep inet:                                         --"
-        /sbin/ifconfig eth0 | grep inet
+        /sbin/ifconfig eth0 | grep "inet "
         echo "------------------------------------------------------------------------"
     SHELL
 end
