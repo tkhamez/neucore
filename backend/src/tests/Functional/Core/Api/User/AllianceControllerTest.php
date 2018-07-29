@@ -21,7 +21,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class AllianceTest extends WebTestCase
+class AllianceControllerTest extends WebTestCase
 {
     private $helper;
 

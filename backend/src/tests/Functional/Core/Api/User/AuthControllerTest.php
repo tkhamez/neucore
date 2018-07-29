@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
 
-class AuthTest extends WebTestCase
+class AuthControllerTest extends WebTestCase
 {
     public function setUp()
     {

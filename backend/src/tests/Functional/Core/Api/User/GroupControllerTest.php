@@ -17,7 +17,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class GroupTest extends WebTestCase
+class GroupControllerTest extends WebTestCase
 {
     private $helper;
 

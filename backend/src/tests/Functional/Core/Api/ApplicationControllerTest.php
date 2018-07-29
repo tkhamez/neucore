@@ -9,7 +9,7 @@ use Tests\Helper;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Alliance;
 
-class ApplicationTest extends WebTestCase
+class ApplicationControllerTest extends WebTestCase
 {
     private $appId;
 

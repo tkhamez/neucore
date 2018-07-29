@@ -17,7 +17,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class AppTest extends WebTestCase
+class AppControllerTest extends WebTestCase
 {
     private $helper;
 

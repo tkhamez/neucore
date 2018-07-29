@@ -23,7 +23,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class CorporationTest extends WebTestCase
+class CorporationControllerTest extends WebTestCase
 {
     private $h;
 

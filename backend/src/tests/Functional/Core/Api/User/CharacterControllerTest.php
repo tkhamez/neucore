@@ -13,7 +13,7 @@ use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
-class CharacterTest extends WebTestCase
+class CharacterControllerTest extends WebTestCase
 {
     private $helper;
 

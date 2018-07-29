@@ -15,7 +15,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class PlayerTest extends WebTestCase
+class PlayerControllerTest extends WebTestCase
 {
     private $h;
 
