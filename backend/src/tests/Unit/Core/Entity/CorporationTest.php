@@ -40,9 +40,21 @@ class CorporationTest extends \PHPUnit\Framework\TestCase
 
     public function testSetGetTicker()
     {
-        $alli = new Corporation();
-        $alli->setTicker('ABC');
-        $this->assertSame('ABC', $alli->getTicker());
+        $corp = new Corporation();
+        $corp->setTicker('ABC');
+        $this->assertSame('ABC', $corp->getTicker());
+    }
+
+    public function testSetGetLastUpdate()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:36');
+
+        $corp = new Alliance();
+        $corp->setLastUpdate($dt1);
+        $dt2 = $corp->getLastUpdate();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
     }
 
     public function testSetGetAlliance()

@@ -30,7 +30,7 @@ class Alliance implements \JsonSerializable
      * EVE alliance name.
      *
      * @SWG\Property()
-     * @Column(type="string", length=255)
+     * @Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $name;
@@ -39,10 +39,19 @@ class Alliance implements \JsonSerializable
      * Alliance ticker.
      *
      * @SWG\Property()
-     * @Column(type="string", length=16)
+     * @Column(type="string", length=16, nullable=true)
      * @var string
      */
     private $ticker;
+
+    /**
+     * Last ESI update.
+     *
+     * @SWG\Property()
+     * @Column(type="datetime", name="last_update", nullable=true)
+     * @var \DateTime
+     */
+    private $lastUpdate;
 
     /**
      *
@@ -158,6 +167,30 @@ class Alliance implements \JsonSerializable
     public function getTicker()
     {
         return $this->ticker;
+    }
+
+    /**
+     * Set lastUpdate.
+     *
+     * @param \DateTime $update
+     *
+     * @return Alliance
+     */
+    public function setLastUpdate($lastUpdate)
+    {
+        $this->lastUpdate = clone $lastUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdate.
+     *
+     * @return \DateTime|null
+     */
+    public function getLastUpdate()
+    {
+        return $this->lastUpdate;
     }
 
     /**

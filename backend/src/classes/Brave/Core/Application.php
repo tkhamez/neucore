@@ -5,7 +5,9 @@ namespace Brave\Core;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdatePlayerGroups;
+use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Entity\CorporationRepository;
 use Brave\Core\Entity\PlayerRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Service\AppAuth;
@@ -248,6 +250,8 @@ class Application
 
         $console->add(new UpdateCharacters(
             $container->get(CharacterRepository::class),
+            $container->get(CorporationRepository::class),
+            $container->get(AllianceRepository::class),
             $container->get(EsiCharacter::class),
             $container->get(CoreCharacter::class),
             $container->get(EntityManagerInterface::class),

@@ -2,15 +2,19 @@
 
 namespace Tests\Functional\Core\Command;
 
+use Brave\Core\Entity\AllianceRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
-use Swagger\Client\Eve\Api\CharacterApi;
+use Brave\Core\Entity\CorporationRepository;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Api\AllianceApi;
+use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
+use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Functional\ConsoleTestCase;
@@ -24,6 +28,8 @@ class UpdateCharactersTest extends ConsoleTestCase
 
     private $corpApi;
 
+    private $alliApi;
+
     private $oauth;
 
     public function setUp()
@@ -34,6 +40,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $this->charApi = $this->createMock(CharacterApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
+        $this->alliApi = $this->createMock(AllianceApi::class);
         $this->oauth = $this->createMock(GenericProvider::class);
     }
 
@@ -49,13 +56,13 @@ class UpdateCharactersTest extends ConsoleTestCase
         ]);
 
         $expectedOutput = [
-            '1: error updating.',
+            'Character 1: error updating.',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
     }
 
-    public function testExecuteWithoutToken()
+    public function testExecuteWithoutTokenWithCorpAndAlliance()
     {
         // setup
         $c1 = (new Character())->setId(1122)->setName('c11')->setCharacterOwnerHash('coh11')->setAccessToken('at11');
@@ -67,34 +74,48 @@ class UpdateCharactersTest extends ConsoleTestCase
             'name' => 'char xx', 'corporation_id' => 234
         ]));
         $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-T-T-', 'alliance_id' => null
+            'name' => 'The Corp.', 'ticker' => '-T-T-', 'alliance_id' => 212
+        ]));
+        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
+            'name' => 'The Alli.', 'ticker' => '-A-'
         ]));
 
         // run
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             CharacterApi::class => $this->charApi,
             CorporationApi::class => $this->corpApi,
+            AllianceApi::class => $this->alliApi,
         ]);
 
         $this->em->clear();
 
         $expectedOutput = [
-            '1122: update OK, token N/A',
-            '2233: update OK, token N/A',
+            'Character 1122: update OK, token N/A',
+            'Character 2233: update OK, token N/A',
+            'Corporation 234: update OK',
+            'Alliance 212: update OK',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
 
         # read result
-        $actual = (new CharacterRepository($this->em))->findAll();
-        $this->assertSame(1122, $actual[0]->getId());
-        $this->assertSame(2233, $actual[1]->getId());
-        $this->assertNotNull($actual[0]->getLastUpdate());
-        $this->assertNotNull($actual[1]->getLastUpdate());
-        $this->assertSame(234, $actual[0]->getCorporation()->getId());
-        $this->assertSame(234, $actual[1]->getCorporation()->getId());
-        $this->assertNull($actual[0]->getCorporation()->getAlliance());
-        $this->assertNull($actual[1]->getCorporation()->getAlliance());
+        $this->em->clear();
+
+        $actualChars = (new CharacterRepository($this->em))->findAll();
+        $this->assertSame(1122, $actualChars[0]->getId());
+        $this->assertSame(2233, $actualChars[1]->getId());
+        $this->assertNotNull($actualChars[0]->getLastUpdate());
+        $this->assertNotNull($actualChars[1]->getLastUpdate());
+        $this->assertSame(234, $actualChars[0]->getCorporation()->getId());
+        $this->assertSame(234, $actualChars[1]->getCorporation()->getId());
+        $this->assertSame(212, $actualChars[0]->getCorporation()->getAlliance()->getId());
+        $this->assertSame(212, $actualChars[1]->getCorporation()->getAlliance()->getId());
+
+        $actualCorps = (new CorporationRepository($this->em))->findAll();
+        $this->assertSame(234, $actualCorps[0]->getId());
+
+        $actualAlliances = (new AllianceRepository($this->em))->findAll();
+        $this->assertSame(212, $actualAlliances[0]->getId());
     }
 
     public function testExecuteInvalidToken()
@@ -120,7 +141,8 @@ class UpdateCharactersTest extends ConsoleTestCase
         ]);
 
         $expectedOutput = [
-            '3: update OK, token NOK',
+            'Character 3: update OK, token NOK',
+            'Corporation 1: update OK',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
@@ -153,7 +175,8 @@ class UpdateCharactersTest extends ConsoleTestCase
         ]);
 
         $expectedOutput = [
-            '3: update OK, token OK',
+            'Character 3: update OK, token OK',
+            'Corporation 1: update OK',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
@@ -190,7 +213,8 @@ class UpdateCharactersTest extends ConsoleTestCase
         ]);
 
         $expectedOutput = [
-            '3: update OK, token OK',
+            'Character 3: update OK, token OK',
+            'Corporation 1: update OK',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
