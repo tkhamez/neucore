@@ -5,7 +5,7 @@ use Monolog\Logger;
 
 return [
 
-    // Settings that can be customized by users
+    // Slim framework settings that can be customized by users
     'settings.httpVersion' => '1.1',
     'settings.responseChunkSize' => 4096,
     'settings.outputBuffering' => 'append',

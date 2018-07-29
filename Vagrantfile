@@ -84,9 +84,9 @@ Vagrant.configure("2") do |config|
 
         ./install.sh
 
-        echo ""
+        echo " "
         echo "------------------------------------------------------------------------"
-        echo "-- (change IP as needed)                                              --"
+        echo "-- URLs (change IP as needed):                                        --"
         echo "-- Brave Core https://192.168.123.6                                   --"
         echo "-- phpMyAdmin: https://192.168.123.6/phpmyadmin (core/brave)          --"
         echo "-- SSH user: vagrant/vagrant                                          --"
