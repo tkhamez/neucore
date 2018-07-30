@@ -16,9 +16,8 @@ Objectives
 - Provide an API for authorized third-party applications to query these groups.
 
 This project consists of two applications, the backend and the frontend.
-See the [**frontend2**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more.
-
-There is also another frontend in the [**frontend**](frontend) directory, but it was never finished.
+See the [**frontend2**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more. There is also 
+another frontend in the [**frontend**](frontend) directory, but it was never finished.
 
 See [**doc/features.md**](doc/features.md) for more.
 
@@ -54,7 +53,8 @@ The values for the EVE application must be adjusted.
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
     * set the document root to the `web` directory.
-    * For Nginx config see https://www.slimframework.com/docs/v3/start/web-servers.html#nginx-configuration
+    * for Nginx config see https://www.slimframework.com/docs/v3/start/web-servers.html#nginx-configuration,
+      but rewrite to app.php instead of index.php.
 * Java (for swagger-codegen)
 
 ### App setup
