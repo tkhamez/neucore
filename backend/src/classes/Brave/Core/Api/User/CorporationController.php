@@ -171,8 +171,8 @@ class CorporationController
             return $this->res->withStatus(409);
         }
 
-        // get corporation (also fetches alliance)
-        $corporation = $service->fetchCorporation($corpId);
+        // get corporation
+        $corporation = $service->fetchCorporation($corpId, false);
         if ($corporation === null) {
             $code = $service->getEsiApi()->getLastErrorCode();
             if ($code === 404 || $code === 400) {
@@ -180,6 +180,11 @@ class CorporationController
             } else {
                 return $this->res->withStatus(503);
             }
+        }
+
+        // fetch alliance
+        if ($corporation->getAlliance() !== null) {
+            $service->fetchAlliance($corporation->getAlliance()->getId(), false);
         }
 
         if (! $this->flush()) {

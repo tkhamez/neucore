@@ -68,21 +68,56 @@ class EsiCharacter
     }
 
     /**
+     * Updates character, corporation and alliance from ESI.
+     *
+     * Character must already exist in the local database.
+     * Returns null if any of the ESI requests fails.
+     *
+     * @param int $id EVE character ID
+     * @return NULL|\Brave\Core\Entity\Character
+     */
+    public function fetchCharacterWithCorporationAndAlliance(int $id)
+    {
+        $char = $this->fetchCharacter($id, false);
+        if ($char === null) {
+            return null;
+        }
+
+        $corp = $this->fetchCorporation($char->getCorporation()->getId(), false);
+        if ($corp === null) {
+            return null;
+        }
+
+        if ($corp->getAlliance() !== null) {
+            $alli = $this->fetchAlliance($corp->getAlliance()->getId(), false);
+            if ($alli === null) {
+                return null;
+            }
+        }
+
+        if (! $this->flush()) {
+            return null;
+        }
+
+        return $char;
+    }
+
+    /**
      * Updates character from ESI.
      *
      * The character must already exist.
      *
      * If the character's corporation is not yet in the database it will
-     * be created, it will optionally also be updated from ESI. Same for alliance.
+     * be created, but not updated with data from ESI.
      *
-     * Returns null if any of the ESI requests fails or if the character
+     * Returns null if the ESI requests fails or if the character
      * does not exist in the local database.
      *
      * @param int $id
-     * @param bool $updateCorp Optionally update corporation from ESI, defaults to true
+     * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine EntityManager.
      */
-    public function fetchCharacter(int $id, bool $updateCorp = true)
+    public function fetchCharacter(int $id, bool $flush = true)
     {
         if ($id <= 0) {
             return null;
@@ -94,7 +129,7 @@ class EsiCharacter
             return null;
         }
 
-        // get char from ESI
+        // get data from ESI
         $eveChar = $this->esi->getCharacter($id);
         if ($eveChar === null) {
             return null;
@@ -102,18 +137,14 @@ class EsiCharacter
         $char->setName($eveChar->getName());
         $char->setLastUpdate(new \DateTime());
 
-        // create corporation
+        // update char with corp entity - does not fetch data from ESI
         $corpId = (int) $eveChar->getCorporationId();
-        $corp = $this->fetchCorporation($corpId, $updateCorp, false);
-        if ($corp === null) {
-            return null;
-        }
+        $corp = $this->getCorporationEntity($corpId);
         $char->setCorporation($corp);
         $corp->addCharacter($char);
 
         // flush
-        if (! $this->flush()) {
-            var_dump(12313123123);
+        if ($flush && ! $this->flush()) {
             return null;
         }
 
@@ -121,58 +152,48 @@ class EsiCharacter
     }
 
     /**
-     * Create and/or update corporation.
+     * Updates corporation from ESI.
      *
      * Creates the corporation in the local database if it does not already exist.
-     * Same for alliance if the update parameter is true or if it's a new corp.
      *
-     * Returns null if any of the ESI requests fails.
+     * If the corporation belongs to an alliance this creates a database entity,
+     * if it does not already exists, but does not fetch it's data from ESI.
      *
-     * @param int $id
-     * @param bool $update Optionally update from ESI (including alliance), defaults to true
+     * Returns null if the ESI requests fails.
+     *
+     * @param int $id EVE corporation ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine EntityManager.
      */
-    public function fetchCorporation(int $id, bool $update = true, bool $flush = true)
+    public function fetchCorporation(int $id, bool $flush = true)
     {
         if ($id <= 0) {
             return null;
         }
 
+        // get data from ESI
+        $eveCorp = $this->esi->getCorporation($id);
+        if ($eveCorp === null) {
+            return null;
+        }
+
         // get or create corp
-        $corp = $this->corpRepo->find($id);
-        if ($corp === null) {
-            $corp = new Corporation();
-            $corp->setId($id);
-            $update = true; // check if corp exists
+        $corp = $this->getCorporationEntity($id);
+
+        // update entity
+        $corp->setName($eveCorp->getName());
+        $corp->setTicker($eveCorp->getTicker());
+        $corp->setLastUpdate(new \DateTime());
+
+        // update corporation with alliance entity - does not fetch data from ESI
+        $alliId = (int) $eveCorp->getAllianceId();
+        if ($alliId > 0) {
+            $alliance = $this->getAllianceEntity($alliId);
+            $corp->setAlliance($alliance);
+            $alliance->addCorporation($corp);
+        } else {
+            $corp->setAlliance(null);
         }
-
-        if ($update) {
-            // update corp
-            $eveCorp = $this->esi->getCorporation($id);
-            if ($eveCorp === null) {
-                return null;
-            }
-            $corp->setName($eveCorp->getName());
-            $corp->setTicker($eveCorp->getTicker());
-            $corp->setLastUpdate(new \DateTime());
-
-            // create/fetch alliance
-            $alliId = (int) $eveCorp->getAllianceId();
-            if ($alliId > 0) {
-                $alliance = $this->fetchAlliance($alliId, true, false);
-                if ($alliance === null) {
-                    return null;
-                }
-                $corp->setAlliance($alliance);
-                $alliance->addCorporation($corp);
-            } else {
-                $corp->setAlliance(null);
-            }
-        }
-
-        // persist new corp
-        $this->em->persist($corp);
 
         // flush
         if ($flush && ! $this->flush()) {
@@ -190,44 +211,57 @@ class EsiCharacter
      *
      * Returns null if the ESI requests fails.
      *
-     * @param int $id
-     * @param bool $update Optionally update from ESI, defaults to true
+     * @param int $id EVE alliance ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine EntityManager.
      */
-    public function fetchAlliance(int $id, bool $update = true, bool $flush = true)
+    public function fetchAlliance(int $id, bool $flush = true)
     {
         if ($id <= 0) {
             return null;
         }
 
+        // get data from ESI
+        $eveAlli = $this->esi->getAlliance($id);
+        if ($eveAlli === null) {
+            return null;
+        }
+
         // get or create alliance
-        $alliance = $this->alliRepo->find($id);
-        if ($alliance === null) {
-            $alliance = new Alliance();
-            $alliance->setId($id);
-            $update = true;
-        }
+        $alliance = $this->getAllianceEntity($id);
 
-        // update from ESI
-        if ($update) {
-            $eveAlli = $this->esi->getAlliance($id);
-            if ($eveAlli === null) {
-                return null;
-            }
-            $alliance->setName($eveAlli->getName());
-            $alliance->setTicker($eveAlli->getTicker());
-            $alliance->setLastUpdate(new \DateTime());
-        }
-
-        // persist new alliance
-        $this->em->persist($alliance);
+        // update entity
+        $alliance->setName($eveAlli->getName());
+        $alliance->setTicker($eveAlli->getTicker());
+        $alliance->setLastUpdate(new \DateTime());
 
         // flush
         if ($flush && ! $this->flush()) {
             return null;
         }
 
+        return $alliance;
+    }
+
+    private function getCorporationEntity(int $id): Corporation
+    {
+        $corp = $this->corpRepo->find($id);
+        if ($corp === null) {
+            $corp = new Corporation();
+            $corp->setId($id);
+            $this->em->persist($corp);
+        }
+        return $corp;
+    }
+
+    private function getAllianceEntity(int $id): Alliance
+    {
+        $alliance = $this->alliRepo->find($id);
+        if ($alliance === null) {
+            $alliance = new Alliance();
+            $alliance->setId($id);
+            $this->em->persist($alliance);
+        }
         return $alliance;
     }
 

@@ -108,7 +108,7 @@ class UpdateCharacters extends Command
             usleep($this->sleep * 1000);
 
             // update name, corp and alliance from ESI
-            $updatedChar = $this->esiCharService->fetchCharacter($charId, false);
+            $updatedChar = $this->esiCharService->fetchCharacter($charId);
             if ($updatedChar === null) {
                 $output->writeln('Character ' . $charId.': error updating.');
                 continue;

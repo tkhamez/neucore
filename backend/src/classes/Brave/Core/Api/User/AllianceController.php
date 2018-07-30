@@ -175,7 +175,7 @@ class AllianceController
         }
 
         // get alliance
-        $alliance = $service->fetchAlliance($allianceId);
+        $alliance = $service->fetchAlliance($allianceId, false);
         if ($alliance === null) {
             $code = $service->getEsiApi()->getLastErrorCode();
             if ($code === 404 || $code === 400) {

@@ -76,14 +76,87 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(EsiApi::class, $this->cs->getEsiApi());
     }
 
+    public function testFetchCharacterWithCorporationAndAllianceCharInvalid()
+    {
+        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $this->assertNull($char);
+    }
+
+    public function testFetchCharacterWithCorporationAndAllianceCorpError()
+    {
+        $this->testHelper->emptyDb();
+        $this->testHelper->addCharacterMain('newc', 10, []);
+
+        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
+            'name' => 'char name', 'corporation_id' => 20
+        ]));
+        $this->corpApi->method('getCorporationsCorporationId')->will(
+            $this->throwException(new \Exception('Not Found.', 404))
+        );
+
+        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $this->assertNull($char);
+    }
+
+    public function testFetchCharacterWithCorporationAndAllianceAlliError()
+    {
+        $this->testHelper->emptyDb();
+        $this->testHelper->addCharacterMain('newc', 10, []);
+
+        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
+            'name' => 'char name', 'corporation_id' => 20
+        ]));
+        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
+            'name' => 'corp name', 'ticker' => '-cn-', 'alliance_id' => 30
+        ]));
+        $this->alliApi->method('getAlliancesAllianceId')->will(
+            $this->throwException(new \Exception('Not Found.', 404))
+        );
+
+        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $this->assertNull($char);
+    }
+
+    public function testFetchCharacterWithCorporationAndAlliance()
+    {
+        $this->testHelper->emptyDb();
+        $this->testHelper->addCharacterMain('newc', 10, []);
+
+        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
+            'name' => 'char name', 'corporation_id' => 20
+        ]));
+        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
+            'name' => 'corp name', 'ticker' => '-cn-', 'alliance_id' => 30
+        ]));
+        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
+            'name' => 'alli name', 'ticker' => '-an-'
+        ]));
+
+        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $this->assertSame('char name', $char->getName());
+        $this->assertSame('corp name', $char->getCorporation()->getName());
+        $this->assertSame('alli name', $char->getCorporation()->getAlliance()->getName());
+    }
+
     public function testFetchCharacterInvalidId()
     {
         $char = $this->cs->fetchCharacter(-1);
         $this->assertNull($char);
     }
 
+    public function testFetchCharacterNotInDB()
+    {
+        $this->testHelper->emptyDb();
+
+        $char = $this->cs->fetchCharacter(123);
+        $this->assertNull($char);
+    }
+
     public function testFetchCharacterNotFound()
     {
+        $this->testHelper->emptyDb();
+        $this->testHelper->addCharacterMain('newc', 123, []);
+
         $this->charApi->method('getCharactersCharacterId')->will(
             $this->throwException(new \Exception('Not Found.', 404))
         );
@@ -92,40 +165,11 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterNotInDB()
+    public function testFetchCharacterNoFlush()
     {
         $this->testHelper->emptyDb();
-
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'newc', 'corporation_id' => 234
-        ]));
-
-        $char = $this->cs->fetchCharacter(123);
-        $this->assertNull($char);
-    }
-
-    public function testFetchCharacterCorpNotFound()
-    {
-        $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 123, []);
-
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'newc', 'corporation_id' => 234
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
-
-        $char = $this->cs->fetchCharacter(123);
-        $this->assertNull($char);
-    }
-
-    public function testFetchCharacterUpdateCorpFalse()
-    {
-        $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 123, []);
-        $oldCorp = (new Corporation())->setId(234)->setName('old-name')->setTicker('t');
-        $this->em->persist($oldCorp);
+        $char = $this->testHelper->addCharacterMain('newc', 123, []);
+        $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
         $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
@@ -133,11 +177,14 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         ]));
 
         $char = $this->cs->fetchCharacter(123, false);
-
         $this->assertSame(123, $char->getId());
         $this->assertSame('newc', $char->getName());
         $this->assertSame(234, $char->getCorporation()->getId());
-        $this->assertSame('old-name', $char->getCorporation()->getName());
+        $this->assertNull($char->getCorporation()->getName());
+
+        $this->em->clear();
+        $charDb = $this->charRepo->find(123);
+        $this->assertNull($charDb->getCorporation());
     }
 
     public function testFetchCharacter()
@@ -150,21 +197,18 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
             'name' => 'newc', 'corporation_id' => 234
         ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-HAT-', 'alliance_id' => null
-        ]));
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertSame(123, $char->getId());
         $this->assertSame('newc', $char->getName());
         $this->assertSame(234, $char->getCorporation()->getId());
-        $this->assertNull($char->getCorporation()->getAlliance());
+        $this->assertNull($char->getCorporation()->getName());
 
         $this->em->clear();
-        $cDb = $this->charRepo->find(123);
-        $this->assertSame(234, $cDb->getCorporation()->getId());
-        $this->assertSame('UTC', $cDb->getLastUpdate()->getTimezone()->getName());
-        $this->assertGreaterThan('2018-03-26 17:24:30', $cDb->getLastUpdate()->format('Y-m-d H:i:s'));
+        $charDb = $this->charRepo->find(123);
+        $this->assertSame(234, $charDb->getCorporation()->getId());
+        $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
+        $this->assertGreaterThan('2018-03-26 17:24:30', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }
 
     public function testFetchCorporationInvalidId()
@@ -173,32 +217,7 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($corp);
     }
 
-    public function testFetchCorporationChecksEsiWithUpdateFalse()
-    {
-        $this->testHelper->emptyDb();
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
-
-        $corp = $this->cs->fetchCorporation(234, false);
-        $this->assertNull($corp);
-    }
-
-    public function testFetchCorporationNoUpdate()
-    {
-        $this->testHelper->emptyDb();
-        $oldCorp = (new Corporation())->setId(234)->setName('old-name')->setTicker('t');
-        $this->em->persist($oldCorp);
-        $this->em->flush();
-
-        $corp = $this->cs->fetchCorporation(234, false);
-        $this->assertSame(234, $corp->getId());
-        $this->assertSame('old-name', $corp->getName());
-        $this->assertSame('t', $corp->getTicker());
-        $this->assertNull($corp->getAlliance());
-    }
-
-    public function testFetchCorporationNoFlush()
+    public function testFetchCorporationNoFlushNoAlliance()
     {
         $this->testHelper->emptyDb();
 
@@ -206,15 +225,15 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'The Corp.', 'ticker' => '-HAT-', 'alliance_id' => null
         ]));
 
-        $corp = $this->cs->fetchCorporation(234, true, false);
+        $corp = $this->cs->fetchCorporation(234, false);
         $this->assertSame(234, $corp->getId());
         $this->assertSame('The Corp.', $corp->getName());
         $this->assertSame('-HAT-', $corp->getTicker());
         $this->assertNull($corp->getAlliance());
 
         $this->em->clear();
-        $cDb = $this->corpRepo->find(234);
-        $this->assertNull($cDb);
+        $corpDb = $this->corpRepo->find(234);
+        $this->assertNull($corpDb);
     }
 
     public function testFetchCorporation()
@@ -228,21 +247,20 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'The A.', 'ticker' => '-A-'
         ]));
 
-        $corp = $this->cs->fetchCorporation(234, true);
+        $corp = $this->cs->fetchCorporation(234);
         $this->assertSame(234, $corp->getId());
         $this->assertSame('The Corp.', $corp->getName());
         $this->assertSame('-HAT-', $corp->getTicker());
         $this->assertSame(345, $corp->getAlliance()->getId());
-        $this->assertSame('The A.', $corp->getAlliance()->getName());
-        $this->assertSame('-A-', $corp->getAlliance()->getTicker());
+        $this->assertNull($corp->getAlliance()->getName());
+        $this->assertNull($corp->getAlliance()->getTicker());
         $this->assertSame('UTC', $corp->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2018-07-29 16:30:30', $corp->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $this->em->clear();
-        $cDb = $this->corpRepo->find(234);
-        $aDb = $this->alliRepo->find(345);
-        $this->assertNotNull($cDb);
-        $this->assertNotNull($aDb);
+        $corpDb = $this->corpRepo->find(234);
+        $this->assertSame(234, $corpDb->getId());
+        $this->assertSame(345, $corpDb->getAlliance()->getId());
     }
 
     public function testFetchCorporationNoAllianceRemovesAlliance()
@@ -259,7 +277,7 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'C', 'ticker' => 'c', 'alliance_id' => null
         ]));
 
-        $corpResult = $this->cs->fetchCorporation(200, true);
+        $corpResult = $this->cs->fetchCorporation(200);
         $this->assertNull($corpResult->getAlliance());
         $this->em->clear();
 
@@ -276,34 +294,6 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($alli);
     }
 
-    public function testFetchAllianceChecksEsiWithUpdateFalse()
-    {
-        $this->alliApi->method('getAlliancesAllianceId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
-
-        $alli = $this->cs->fetchAlliance(345, false);
-        $this->assertNull($alli);
-    }
-
-    public function testFetchAllianceNoUpdate()
-    {
-        $this->testHelper->emptyDb();
-        $oldAlli = (new Alliance())->setId(345)->setName('will-be-updated')->setTicker('t');
-        $this->em->persist($oldAlli);
-        $this->em->flush();
-        $this->em->clear();
-
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The A.', 'ticker' => '-A-'
-        ]));
-
-        $alli = $this->cs->fetchAlliance(345, false);
-        $this->assertSame(345, $alli->getId());
-        $this->assertSame('will-be-updated', $alli->getName());
-        $this->assertSame('t', $alli->getTicker());
-    }
-
     public function testFetchAllianceNoFlush()
     {
         $this->testHelper->emptyDb();
@@ -312,14 +302,14 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'The A.', 'ticker' => '-A-'
         ]));
 
-        $alli = $this->cs->fetchAlliance(345, true, false);
+        $alli = $this->cs->fetchAlliance(345, false);
         $this->assertSame(345, $alli->getId());
         $this->assertSame('The A.', $alli->getName());
         $this->assertSame('-A-', $alli->getTicker());
 
         $this->em->clear();
-        $aDb = $this->alliRepo->find(345);
-        $this->assertNull($aDb);
+        $alliDb = $this->alliRepo->find(345);
+        $this->assertNull($alliDb);
     }
 
     public function testFetchAlliance()
@@ -338,8 +328,8 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertGreaterThan('2018-07-29 16:30:30', $alli->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $this->em->clear();
-        $aDb = $this->alliRepo->find(345);
-        $this->assertSame(345, $aDb->getId());
+        $alliDb = $this->alliRepo->find(345);
+        $this->assertSame(345, $alliDb->getId());
     }
 
     public function testFetchAllianceCreateFlushError()

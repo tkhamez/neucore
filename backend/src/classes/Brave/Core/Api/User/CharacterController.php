@@ -224,7 +224,7 @@ class CharacterController
         }
 
         // update from ESI
-        $updatedChar = $this->esiCharService->fetchCharacter($char->getId());
+        $updatedChar = $this->esiCharService->fetchCharacterWithCorporationAndAlliance($char->getId());
         if ($updatedChar === null) {
             return $this->res->withStatus(503);
         }
