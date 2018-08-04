@@ -119,7 +119,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div v-if="player.managerGroups && player.managerGroups.length > 0"
+                    <div v-cloak v-if="player.managerGroups && player.managerGroups.length > 0"
                             class="card border-secondary mb-3" >
                         <h3 class="card-header">Group Manager</h3>
                         <ul class="list-group list-group-flush">
@@ -128,12 +128,20 @@
                             </li>
                         </ul>
                     </div>
-                    <div v-if="player.managerApps && player.managerApps.length > 0"
+                    <div v-cloak v-if="player.managerApps && player.managerApps.length > 0"
                             class="card border-secondary mb-3" >
                         <h3 class="card-header">App Manager</h3>
                         <ul class="list-group list-group-flush">
                             <li v-for="app in player.managerApps" class="list-group-item">
                                 {{ app.name }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-cloak v-if="player.roles.length > 1" class="card border-secondary mb-3" >
+                        <h3 class="card-header">Roles</h3>
+                        <ul class="list-group list-group-flush">
+                            <li v-for="role in player.roles" class="list-group-item">
+                                {{ role }}
                             </li>
                         </ul>
                     </div>
