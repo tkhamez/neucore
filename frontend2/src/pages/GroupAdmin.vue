@@ -3,6 +3,59 @@
 
     <characters :swagger="swagger" ref="charactersModal"></characters>
 
+    <div v-cloak class="modal" id="createGroupModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Group</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Group name</label>
+                        <input class="form-control" v-model="newGroupName" type="text">
+                        <small id="emailHelp" class="form-text text-muted">
+                            Allowed characters (no spaces): A-Z a-z 0-9 - . _
+                        </small>
+                    </div>
+                    <div v-if="newGroupErrorMessage" v-cloak class="alert alert-danger">
+                        {{ newGroupErrorMessage }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" v-on:click="createGroup()">Create</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteGroupModal">
+        <div class="modal-dialog">
+            <div v-cloak v-if="groupToDelete" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Group</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to <strong>permanently</strong> delete this group?</p>
+                    <pre>{{ groupToDelete.name }}</pre>
+                    <div v-if="deleteGroupErrorMessage" v-cloak class="alert alert-danger">
+                        {{ deleteGroupErrorMessage }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" v-on:click="deleteGroup()">DELETE group</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <h1>Group Administration</h1>
@@ -12,20 +65,26 @@
     <div class="row">
         <div class="col-lg-4">
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">Groups</h3>
+                <h3 class="card-header">
+                    Groups
+                    <i class="far fa-plus-square add-group" v-on:click="showCreateGroupModal()"></i>
+                </h3>
                 <div class="list-group">
-                    <a
-                        v-for="group in groups"
-                        class="list-group-item list-group-item-action"
-                        :class="{ active: groupId === group.id }"
-                        :href="'#GroupAdmin/' + group.id + '/' + contentType">
-                        {{ group.name }}
-                    </a>
+                    <span v-for="group in groups">
+                        <a class="list-group-item list-group-item-action"
+                            :class="{ active: groupId === group.id }"
+                            :href="'#GroupAdmin/' + group.id + '/' + contentType">
+                            {{ group.name }}
+                            <i v-cloak v-if="groupId === group.id"
+                                class="far fa-trash-alt delete-group bg-danger"
+                                v-on:click="showDeleteGroupModal(group)" title="delete"></i>
+                        </a>
+                    </span>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
+        <div v-cloak v-if="groupId" class="col-lg-8">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
                     <a class="nav-link active"
@@ -45,7 +104,7 @@
             </ul>
 
             <div class="card border-secondary mb-3">
-                <div v-cloak v-if="groupId" class="card-body">
+                <div class="card-body">
                     <div class="input-group mb-1">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
@@ -173,6 +232,10 @@ module.exports = {
             selectContent: [],
             tableContent: [],
             newObject: "", // empty string to select the first entry in the dropdown
+            newGroupName: "",
+            newGroupErrorMessage: "",
+            groupToDelete: null,
+            deleteGroupErrorMessage: "",
         }
     },
 
@@ -208,6 +271,55 @@ module.exports = {
     },
 
     methods: {
+
+        showCreateGroupModal: function() {
+            this.newGroupName = '';
+            this.newGroupErrorMessage = '';
+            window.jQuery('#createGroupModal').modal('show');
+        },
+
+        createGroup: function() {
+            var vm = this;
+            vm.loading(true);
+            new this.swagger.GroupApi().create(this.newGroupName, function(error, data, response) {
+                vm.loading(false);
+                if (response.status === 409) {
+                    vm.newGroupErrorMessage = 'A group with this name already exists.';
+                } else if (response.status === 400) {
+                    vm.newGroupErrorMessage = 'Invalid group name.';
+                } else if (error) {
+                    vm.newGroupErrorMessage = 'Error: ' + response.status +' '+ response.statusText;
+                } else {
+                    window.jQuery('#createGroupModal').modal('hide');
+                    vm.message('Group created.', 'success');
+                    window.location.hash = '#GroupAdmin/' + data.id;
+                    vm.getGroups();
+                }
+            });
+        },
+
+        showDeleteGroupModal: function(group) {
+            this.groupToDelete = group;
+            this.deleteGroupErrorMessage = '';
+            window.jQuery('#deleteGroupModal').modal('show');
+        },
+
+        deleteGroup: function() {
+            var vm = this;
+            new this.swagger.GroupApi().callDelete(this.groupToDelete.id, function(error, data, response) {
+                vm.loading(false);
+                if (error) {
+                    vm.deleteGroupErrorMessage = 'Error: ' + response.status +' '+ response.statusText;
+                } else {
+                    vm.groupToDelete = null;
+                    window.jQuery('#deleteGroupModal').modal('hide');
+                    vm.message('Group deleted.', 'success');
+                    vm.getGroups();
+                    window.location.hash = '#GroupAdmin';
+                }
+            });
+        },
+
         getGroups: function() {
             var vm = this;
             vm.loading(true);
@@ -345,5 +457,12 @@ module.exports = {
 </script>
 
 <style scoped>
-
+    .add-group {
+        float: right;
+    }
+    .delete-group {
+        float: right;
+        padding: 4px 4px 5px 4px;
+        border: 1px solid white;
+    }
 </style>
