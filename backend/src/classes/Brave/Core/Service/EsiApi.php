@@ -101,11 +101,7 @@ class EsiApi
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->lastErrorMessage = $e->getMessage();
-
-            // don't log these client errors: 404 not found, 400 invalid param
-            if ($e->getCode() !== 404 && $e->getCode() !== 400) {
-                $this->log->error($e->getMessage());
-            }
+            $this->log->error($e->getMessage());
         }
 
         return $alli;
@@ -127,9 +123,7 @@ class EsiApi
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->lastErrorMessage = $e->getMessage();
-            if ($e->getCode() !== 404) {
-                $this->log->error($e->getMessage());
-            }
+            $this->log->error($e->getMessage());
         }
 
         return $corp;
@@ -151,9 +145,7 @@ class EsiApi
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->lastErrorMessage = $e->getMessage();
-            if ($e->getCode() !== 404) {
-                $this->log->error($e->getMessage());
-            }
+            $this->log->error($e->getMessage());
         }
 
         return $char;

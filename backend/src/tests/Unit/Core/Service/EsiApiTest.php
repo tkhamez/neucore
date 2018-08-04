@@ -57,20 +57,6 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($char->getAccessToken(), $conf->getAccessToken());
     }
 
-    public function testGetAllianceException404()
-    {
-        $this->alliApi->method('getAlliancesAllianceId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
-
-        $result = $this->esi->getAlliance(456);
-
-        $this->assertNull($result);
-        $this->assertSame(404, $this->esi->getLastErrorCode());
-        $this->assertSame('Not Found.', $this->esi->getLastErrorMessage());
-        $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));
-    }
-
     public function testGetAllianceException500()
     {
         $this->alliApi->method('getAlliancesAllianceId')->will(
@@ -98,20 +84,6 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(GetAlliancesAllianceIdOk::class, $result);
         $this->assertSame('The Alliance.', $result->getName());
         $this->assertSame('-HAT-', $result->getTicker());
-    }
-
-    public function testGetCorporation404()
-    {
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
-
-        $result = $this->esi->getCorporation(123);
-
-        $this->assertNull($result);
-        $this->assertSame(404, $this->esi->getLastErrorCode());
-        $this->assertSame('Not Found.', $this->esi->getLastErrorMessage());
-        $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));
     }
 
     public function testGetCorporation500()
@@ -142,20 +114,6 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(GetCorporationsCorporationIdOk::class, $result);
         $this->assertSame('The Corp.', $result->getName());
         $this->assertSame('-HAT-', $result->getTicker());
-    }
-
-    public function testGetCharacter404()
-    {
-        $this->charApi->method('getCharactersCharacterId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
-
-        $result = $this->esi->getCharacter(123);
-
-        $this->assertNull($result);
-        $this->assertSame(404, $this->esi->getLastErrorCode());
-        $this->assertSame('Not Found.', $this->esi->getLastErrorMessage());
-        $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));
     }
 
     public function testGetCharacter500()
