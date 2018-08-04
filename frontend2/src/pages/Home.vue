@@ -185,6 +185,15 @@ module.exports = {
                 this.getLoginUrl();
             }
         },
+
+        player: function() {
+            var vm = this;
+            this.player.characters.forEach(function(character) {
+                if (character.lastUpdate === null) {
+                    vm.update(character.id);
+                }
+          });
+        }
     },
 
     methods: {

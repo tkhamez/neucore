@@ -154,7 +154,7 @@ var app = new window.Vue({
                 this.logout();
             }
 
-            // set page
+            // set page, fallback to Home
             if (this.pages.indexOf(this.route[0]) === -1) {
                 this.route[0] = 'Home';
             }

@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
                     'sass-loader'
                 ]
             }, {
-                // for open-iconic fonts
+                // for font awesome fonts
                 test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
                 use: [{
                     loader: 'file-loader',
