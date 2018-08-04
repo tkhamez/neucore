@@ -403,19 +403,19 @@ class PlayerControllerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->player->getId(), 'name' => 'Admin']
-        ],$this->parseJsonBody($response1));
+        ], $this->parseJsonBody($response1));
         $this->assertSame([
             ['id' => $this->managerId, 'name' => 'Manager']
-        ],$this->parseJsonBody($response2));
+        ], $this->parseJsonBody($response2));
         $this->assertSame([
             ['id' => $this->player->getId(), 'name' => 'Admin']
-        ],$this->parseJsonBody($response3));
+        ], $this->parseJsonBody($response3));
         $this->assertSame([
             ['id' => $this->managerId, 'name' => 'Manager']
-        ],$this->parseJsonBody($response4));
+        ], $this->parseJsonBody($response4));
         $this->assertSame([
             ['id' => $this->player->getId(), 'name' => 'Admin']
-        ],$this->parseJsonBody($response5));
+        ], $this->parseJsonBody($response5));
     }
 
     public function testAddRole403()
