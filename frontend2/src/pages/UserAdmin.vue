@@ -57,7 +57,7 @@
 
                     <div class="input-group input-group-sm mb-1">
                         <div class="input-group-prepend">
-                            <span class="input-group-text">Add tole</span>
+                            <span class="input-group-text">Add role</span>
                         </div>
                         <select class="custom-select" v-model="newRole">
                             <option value="">Select role ...</option>
