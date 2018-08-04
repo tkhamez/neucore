@@ -195,6 +195,9 @@ module.exports = {
         },
 
         player: function() {
+            if (! this.player) {
+                return;
+            }
             var vm = this;
             this.player.characters.forEach(function(character) {
                 if (character.lastUpdate === null) {

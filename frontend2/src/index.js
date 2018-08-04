@@ -144,10 +144,16 @@ var app = new window.Vue({
         });
 
         this.getAuthenticatedCharacter();
+
+        // refresh session every 5 minutes
+        window.setInterval(function() {
+            app.getAuthenticatedCharacter(true);
+        }, 1000*60*5);
     },
 
     watch: {
         initialized: function() {
+            console.log('initialized');
             this.getPlayer();
         }
     },
@@ -170,6 +176,7 @@ var app = new window.Vue({
             // handle routes that do not have a page
             if (this.route[0] === 'login' || this.route[0] === 'login-alt') {
                 this.getAuthResult();
+                window.location.hash = '';
             } else if (this.route[0] === 'logout') {
                 this.logout();
             }
@@ -197,14 +204,15 @@ var app = new window.Vue({
             });
         },
 
-        getAuthenticatedCharacter: function() {
+        getAuthenticatedCharacter: function(ping) {
             this.loading(true);
             new this.swagger.CharacterApi().show(function(error, data) {
                 app.loading(false);
                 if (error) { // 403 usually
                     app.authChar = null;
+                    app.player = null;
                     app.page = 'Home';
-                } else {
+                } else if (! ping) { // don't update because it triggers watch events
                     app.authChar = data;
                 }
                 app.initialized = true;
