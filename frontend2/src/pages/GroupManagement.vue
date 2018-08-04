@@ -33,16 +33,9 @@
                 </h3>
 
                 <div v-cloak v-if="groupId" class="card-body">
-                    <div class="input-group input-group-sm mb-1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Add member</span>
-                        </div>
-                        <input type="text" class="form-control" placeholder="Character name"
-                            v-model="searchTerm" v-on:click="findCharacter">
-                        <div class="input-group-append">
-                            <button class="btn" type="button" v-on:click="searchTerm = ''">&times;</button>
-                        </div>
-                    </div>
+
+                    <character-search :swagger="swagger" v-on:result="searchResult = $event"></character-search>
+
                     <ul v-if="searchResult.length > 0" class="list-group search-result">
                         <li v-for="character in searchResult" v-on:click="findPlayer(character.id)"
                                 class="list-group-item list-group-item-action search-result-item">
@@ -98,11 +91,13 @@
 </template>
 
 <script>
-import Characters from '../components/Characters.vue';
+import Characters      from '../components/Characters.vue';
+import CharacterSearch from '../components/CharacterSearch.vue';
 
 module.exports = {
     components: {
         Characters,
+        CharacterSearch,
     },
 
     props: {
@@ -116,7 +111,6 @@ module.exports = {
             groupId: null,
             groupName: null,
             groupMembers: [],
-            searchTerm: '',
             searchResult: [],
             newMember: null,
         }
@@ -129,10 +123,6 @@ module.exports = {
 
         route: function() {
             this.getMembers();
-        },
-
-        searchTerm: function() {
-            this.findCharacter();
         }
     },
 
@@ -144,7 +134,6 @@ module.exports = {
 
             // reset variables
             this.groupMembers = [];
-            this.searchTerm = '';
             this.searchResult = [];
             this.newMember = null;
 
@@ -173,27 +162,6 @@ module.exports = {
                 vm.groupMembers = data;
             });
         },
-
-        findCharacter() {
-            this.newMember = null;
-            if (this.searchTerm === '') {
-                this.searchResult = [];
-            } else {
-                this.doFindCharacter(this);
-            }
-        },
-
-        doFindCharacter: _.debounce((vm) => {
-            vm.loading(true);
-            new vm.swagger.CharacterApi().findBy(vm.searchTerm, function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    vm.searchResult = [];
-                    return;
-                }
-                vm.searchResult = data;
-            });
-        }, 250),
 
         findPlayer: function(characterId) {
             var vm = this;

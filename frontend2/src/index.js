@@ -30,11 +30,12 @@ window.Vue.mixin({
             }
         },
 
-        hasRole: function(name) {
-            if (! this.$root.player) {
+        hasRole: function(name, player) {
+            player = player || this.$root.player;
+            if (! player) {
                 return false;
             }
-            return this.$root.player.roles.indexOf(name) !== -1;
+            return player.roles.indexOf(name) !== -1;
         },
 
         hasAnyRole: function(names) {
@@ -45,6 +46,25 @@ window.Vue.mixin({
             }
             return false;
         },
+
+        /**
+         * Workaround for Swagger Codegen bug
+         * https://github.com/swagger-api/swagger-codegen/issues/4819
+         *
+         * roles is: [{0: "a", 1: "b"}, {}] instead of ["ab", ""]
+         */
+        fixRoles: function(roles) {
+            var fixed = [];
+            for (var i = 0; i < roles.length; i++) {
+                fixed[i] = '';
+                for (var property in roles[i]) {
+                    if (roles[i].hasOwnProperty(property)) {
+                        fixed[i] += roles[i][property];
+                    }
+                }
+            }
+            return fixed;
+        }
     }
 });
 
@@ -203,22 +223,7 @@ var app = new window.Vue({
                     app.player = null;
                     return;
                 }
-
-                // Workaround for Swagger Codegen bug:
-                // https://github.com/swagger-api/swagger-codegen/issues/4819
-                // data.roles is: [{0: "a", 1: "b"}, {}] instead of ["ab", ""]
-                // so transform back:
-                var roles = [];
-                for (var i = 0; i < data.roles.length; i++) {
-                    roles[i] = '';
-                    for (var property in data.roles[i]) {
-                        if (data.roles[i].hasOwnProperty(property)) {
-                            roles[i] += data.roles[i][property];
-                        }
-                    }
-                }
-                data.roles = roles;
-
+                data.roles = app.fixRoles(data.roles);
                 app.player = data;
             });
         },

@@ -227,7 +227,7 @@ module.exports = {
     data: function() {
         return {
             groups: [],
-            groupId: null,
+            groupId: null, // current group
             contentType: "",
             selectContent: [],
             tableContent: [],
@@ -459,6 +459,7 @@ module.exports = {
 <style scoped>
     .add-group {
         float: right;
+        cursor: pointer;
     }
     .delete-group {
         float: right;

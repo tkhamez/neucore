@@ -27,11 +27,14 @@
                         Admin
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown" >
-                        <a class="dropdown-item" :class="{ active: page == 'GroupAdmin' }"
+                        <a v-cloak v-if="hasRole('group-admin')"
+                            class="dropdown-item" :class="{ active: page == 'GroupAdmin' }"
                             href="#GroupAdmin">Groups</a>
-                        <a class="dropdown-item" :class="{ active: page == 'UserAdmin' }"
+                        <a v-cloak v-if="hasRole('user-admin')"
+                            class="dropdown-item" :class="{ active: page == 'UserAdmin' }"
                             href="#UserAdmin">Users</a>
-                        <a class="dropdown-item" :class="{ active: page == 'AppAdmin' }"
+                        <a v-cloak v-if="hasRole('app-admin')"
+                            class="dropdown-item" :class="{ active: page == 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
                     </div>
                 </li>
