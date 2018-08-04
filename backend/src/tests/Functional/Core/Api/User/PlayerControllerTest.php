@@ -363,6 +363,61 @@ class PlayerControllerTest extends WebTestCase
         );
     }
 
+    public function testWithRole403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/with-role/role-name');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin
+
+        $response = $this->runApp('GET', '/api/user/player/with-role/role-name');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testWithRole400()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/with-role/invalid');
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testWithRole200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response1 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::APP_ADMIN);
+        $response2 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::APP_MANAGER);
+        $response3 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::GROUP_ADMIN);
+        $response4 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::GROUP_MANAGER);
+        $response5 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::USER_ADMIN);
+
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertEquals(200, $response3->getStatusCode());
+        $this->assertEquals(200, $response4->getStatusCode());
+        $this->assertEquals(200, $response5->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->player->getId(), 'name' => 'Admin']
+        ],$this->parseJsonBody($response1));
+        $this->assertSame([
+            ['id' => $this->managerId, 'name' => 'Manager']
+        ],$this->parseJsonBody($response2));
+        $this->assertSame([
+            ['id' => $this->player->getId(), 'name' => 'Admin']
+        ],$this->parseJsonBody($response3));
+        $this->assertSame([
+            ['id' => $this->managerId, 'name' => 'Manager']
+        ],$this->parseJsonBody($response4));
+        $this->assertSame([
+            ['id' => $this->player->getId(), 'name' => 'Admin']
+        ],$this->parseJsonBody($response5));
+    }
+
     public function testAddRole403()
     {
         $response = $this->runApp('PUT', '/api/user/player/101/add-role/r');

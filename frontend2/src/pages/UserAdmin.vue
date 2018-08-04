@@ -29,12 +29,12 @@
                     Players by role
                 </h3>
                 <div class="card-body">
-                    <span v-for="role in availableRoles"
-                        class="badge btn mr-1"
-                        :class="{ 'badge-secondary': activeRole !== role, 'badge-primary': activeRole === role }"
+                    <button v-for="role in availableRoles"
+                        type="button" class="btn mr-1 mb-1"
+                        :class="{ 'btn-secondary': activeRole !== role, 'btn-primary': activeRole === role }"
                         v-on:click="getPlayerByRole(role)">
                         {{ role }}
-                    </span>
+                    </button>
                 </div>
                 <div class="list-group">
                      <a v-for="pr in playersRole" class="list-group-item list-group-item-action"
@@ -79,6 +79,7 @@
                         </button>
                         {{ role }}
                     </div>
+                    <div v-if="playerEdit.roles.length === 1">No roles.</div>
 
                     <hr>
 
@@ -221,26 +222,14 @@ module.exports = {
         getPlayerByRole: function(roleName) {
             this.activeRole = roleName;
             var vm = this;
-            var api = new this.swagger.PlayerApi();
-
-            var method;
-            if (roleName === 'group-manager') {
-                method = 'groupManagers';
-            } else if (roleName === 'app-manager') {
-                method = 'appManagers';
-            } else {
-                vm.playersRole = [];
-                return;
-            }
-
             vm.loading(true);
-            api[method].apply(api, [function(error, data) {
+            new this.swagger.PlayerApi().withRole(roleName, function(error, data) {
                 vm.loading(false);
-                if (error) { // 403 usually
+                if (error) {
                     return;
                 }
                 vm.playersRole = data;
-            }]);
+            });
         },
 
         getPlayer: function() {
