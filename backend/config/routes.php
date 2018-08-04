@@ -83,4 +83,5 @@ return [
     '/api/user/player/{id}/remove-role/{name}'  => ['PUT', PlayerController::class.'::removeRole'],
     '/api/user/player/{id}/show'                => ['GET', PlayerController::class.'::showById'],
     '/api/user/player/{id}/characters'          => ['GET', PlayerController::class.'::characters'],
+    '/api/user/player/with-role/{name}'         => ['GET', PlayerController::class.'::withRole'],
 ];

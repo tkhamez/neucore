@@ -85,15 +85,15 @@ Vagrant.configure("2") do |config|
         ./install.sh
 
         echo " "
-        echo "------------------------------------------------------------------------"
-        echo "-- URLs (change IP as needed):                                        --"
-        echo "-- Brave Core https://192.168.123.6                                   --"
-        echo "-- phpMyAdmin: https://192.168.123.6/phpmyadmin (core/brave)          --"
-        echo "-- SSH user: vagrant/vagrant                                          --"
-        echo "-- mount: sshfs vagrant@192.168.123.6:/ /mnt/brvneucore               --"
-        echo "-- unmount: fusermount -u /mnt/brvneucore                             --"
-        echo "-- ifconfig eth0 | grep inet:                                         --"
+        echo "--------------------------------------------------------------------------------"
+        echo "-- URLs (change IP as needed):                                                --"
+        echo "-- Brave Core  https://192.168.123.6                                          --"
+        echo "-- phpMyAdmin: https://192.168.123.6/phpmyadmin (core/brave)                  --"
+        echo "-- SSH user: vagrant/vagrant                                                  --"
+        echo "-- mount:   sshfs vagrant@192.168.123.6:/ /mnt/brvneucore                     --"
+        echo "-- unmount: fusermount -u /mnt/brvneucore                                     --"
+        echo "-- $ ifconfig eth0 | grep inet:                                               --"
         /sbin/ifconfig eth0 | grep "inet "
-        echo "------------------------------------------------------------------------"
+        echo "--------------------------------------------------------------------------------"
     SHELL
 end

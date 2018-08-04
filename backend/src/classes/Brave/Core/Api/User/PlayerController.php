@@ -311,7 +311,7 @@ class PlayerController
      */
     public function appManagers(): Response
     {
-        $ret = $this->getManagers(Roles::APP_MANAGER);
+        $ret = $this->getPlayerByRole(Roles::APP_MANAGER);
 
         return $this->res->withJson($ret);
     }
@@ -337,9 +337,59 @@ class PlayerController
      */
     public function groupManagers(): Response
     {
-        $ret = $this->getManagers(Roles::GROUP_MANAGER);
+        $ret = $this->getPlayerByRole(Roles::GROUP_MANAGER);
 
         return $this->res->withJson($ret);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/with-role/{name}",
+     *     operationId="withRole",
+     *     summary="List all players with a role.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Role name.",
+     *         type="string",
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin"}
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid role name."
+     *     ),
+     * )
+     */
+    public function withRole(string $name): Response
+    {
+        $validRoles = [
+            Roles::APP_ADMIN,
+            Roles::APP_MANAGER,
+            Roles::GROUP_ADMIN,
+            Roles::GROUP_MANAGER,
+            Roles::USER_ADMIN
+        ];
+
+        if (! in_array($name, $validRoles)) {
+            return $this->res->withStatus(400);
+        }
+
+        $players = $this->getPlayerByRole($name);
+
+        return $this->res->withJson($players);
     }
 
     /**
@@ -363,7 +413,7 @@ class PlayerController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin","app-manager","group-admin","group-manager", "user-admin"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -420,7 +470,7 @@ class PlayerController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin","app-manager","group-admin","group-manager", "user-admin"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -540,7 +590,7 @@ class PlayerController
         ]);
     }
 
-    private function getManagers(string $roleName): array
+    private function getPlayerByRole(string $roleName): array
     {
         $ret = [];
 
