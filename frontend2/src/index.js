@@ -2,12 +2,13 @@
 
 require("./index.scss");
 
-import Navbar from './components/Navbar.vue';
+import NavBar from './components/NavBar.vue';
 import Home            from './pages/Home.vue';
 import GroupManagement from './pages/GroupManagement.vue';
 import GroupAdmin      from './pages/GroupAdmin.vue';
 import UserAdmin       from './pages/UserAdmin.vue';
 import AppAdmin        from './pages/AppAdmin.vue';
+import Esi             from './pages/Esi.vue';
 
 window.Vue.mixin({
     methods: {
@@ -39,7 +40,7 @@ window.Vue.mixin({
         },
 
         hasAnyRole: function(names) {
-            for (var name of names) {
+            for (let name of names) {
                 if (this.hasRole(name)) {
                     return true;
                 }
@@ -54,10 +55,10 @@ window.Vue.mixin({
          * roles is: [{0: "a", 1: "b"}, {}] instead of ["ab", ""]
          */
         fixRoles: function(roles) {
-            var fixed = [];
-            for (var i = 0; i < roles.length; i++) {
+            const fixed = [];
+            for (let i = 0; i < roles.length; i++) {
                 fixed[i] = '';
-                for (var property in roles[i]) {
+                for (let property in roles[i]) {
                     if (roles[i].hasOwnProperty(property)) {
                         fixed[i] += roles[i][property];
                     }
@@ -72,12 +73,13 @@ var app = new window.Vue({
     el: '#app',
 
     components: {
-        Navbar,
+        NavBar,
         Home,
         GroupManagement,
         UserAdmin,
         GroupAdmin,
         AppAdmin,
+        Esi,
     },
 
     data: {
@@ -90,7 +92,7 @@ var app = new window.Vue({
         /**
          * All available pages
          */
-        pages: ['Home', 'GroupManagement', 'UserAdmin', 'GroupAdmin', 'AppAdmin'],
+        pages: ['Home', 'GroupManagement', 'UserAdmin', 'GroupAdmin', 'AppAdmin', 'Esi'],
 
         /**
          * The authenticated character
@@ -153,7 +155,6 @@ var app = new window.Vue({
 
     watch: {
         initialized: function() {
-            console.log('initialized');
             this.getPlayer();
         }
     },

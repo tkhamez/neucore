@@ -56,7 +56,7 @@ class OAuthToken
      * Returns the access token for an EVE character.
      *
      * If the existing token has expired, a new one is fetched with the
-     * resfresh token and saved in the database for the character.
+     * refresh token and saved in the database for the character.
      *
      * @return string
      * @see OAuthToken::setCharacter()
@@ -89,14 +89,14 @@ class OAuthToken
      *
      * Set a character first, it must contain a refresh token.
      *
-     * @return void|\League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @return null|\League\OAuth2\Client\Provider\ResourceOwnerInterface
      * @see OAuthToken::setCharacter()
      */
     public function verify()
     {
         $existingToken = $this->createAccessTokenFromCharacter();
         if ($existingToken === null) {
-            return;
+            return null;
         }
 
         $newAccessToken = $this->refreshAccessToken($existingToken);
@@ -122,7 +122,7 @@ class OAuthToken
     {
         if ($this->character === null) {
             $this->log->error('OAuthToken::getToken: Character not set.');
-            return;
+            return null;
         }
 
         $token = null;

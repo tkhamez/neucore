@@ -38,6 +38,10 @@
                             href="#AppAdmin">Apps</a>
                     </div>
                 </li>
+                <li v-cloak v-if="hasRole('esi')"
+                    class="nav-item" :class="{ active: page == 'Esi' }">
+                    <a class="nav-link" href="#Esi">ESI</a>
+                </li>
             </ul>
             <span v-cloak v-if="authChar" class="navbar-brand">
                 <img :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"

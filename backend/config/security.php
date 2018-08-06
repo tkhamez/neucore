@@ -26,6 +26,8 @@ return [
 
     '/api/user/corporation' => [Roles::GROUP_ADMIN],
 
+    '/api/user/esi/request' => [Roles::ESI],
+
     '/api/user/group/public'                => [Roles::USER],
     '/api/user/group/all'                   => [Roles::APP_ADMIN, Roles::GROUP_ADMIN],
     '/api/user/group/{id}/applicants'       => [Roles::GROUP_MANAGER],

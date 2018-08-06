@@ -6,6 +6,7 @@ use Brave\Core\Api\User\AppController;
 use Brave\Core\Api\User\AuthController;
 use Brave\Core\Api\User\CharacterController;
 use Brave\Core\Api\User\CorporationController;
+use Brave\Core\Api\User\EsiController;
 use Brave\Core\Api\User\GroupController;
 use Brave\Core\Api\User\PlayerController;
 
@@ -31,6 +32,12 @@ return [
     '/api/user/app/{id}/remove-manager/{pid}' => ['PUT',    AppController::class.'::removeManager'],
     '/api/user/app/{id}/change-secret'        => ['PUT',    AppController::class.'::changeSecret'],
 
+    '/api/user/alliance/all'                     => ['GET',  AllianceController::class.'::all'],
+    '/api/user/alliance/with-groups'             => ['GET',  AllianceController::class.'::withGroups'],
+    '/api/user/alliance/add/{id}'                => ['POST', AllianceController::class.'::add'],
+    '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
+    '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
+
     '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
     '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
     '/api/user/auth/callback'      => ['GET',  AuthController::class.'::callback'],
@@ -42,17 +49,13 @@ return [
     '/api/user/character/show'                => ['GET',  CharacterController::class.'::show'],
     '/api/user/character/{id}/update'         => ['PUT',  CharacterController::class.'::update'],
 
-    '/api/user/alliance/all'                     => ['GET',  AllianceController::class.'::all'],
-    '/api/user/alliance/with-groups'             => ['GET',  AllianceController::class.'::withGroups'],
-    '/api/user/alliance/add/{id}'                => ['POST', AllianceController::class.'::add'],
-    '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
-    '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
-
     '/api/user/corporation/all'                     => ['GET',  CorporationController::class.'::all'],
     '/api/user/corporation/with-groups'             => ['GET',  CorporationController::class.'::withGroups'],
     '/api/user/corporation/add/{id}'                => ['POST', CorporationController::class.'::add'],
     '/api/user/corporation/{id}/add-group/{gid}'    => ['PUT',  CorporationController::class.'::addGroup'],
     '/api/user/corporation/{id}/remove-group/{gid}' => ['PUT',  CorporationController::class.'::removeGroup'],
+
+    '/api/user/esi/request' => ['GET', EsiController::class.'::request'],
 
     '/api/user/group/all'                          => ['GET',    GroupController::class.'::all'],
     '/api/user/group/public'                       => ['GET',    GroupController::class.'::public'],

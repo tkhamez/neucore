@@ -61,4 +61,11 @@ class Roles
      * @var string
      */
     const GROUP_MANAGER = 'group-manager';
+
+    /**
+     * Allows a player to make ESI request for any character in the database.
+     *
+     * @var string
+     */
+    const ESI = 'esi';
 }

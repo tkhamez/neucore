@@ -60,7 +60,8 @@ class PlayerController
         Roles::APP_MANAGER,
         Roles::GROUP_ADMIN,
         Roles::GROUP_MANAGER,
-        Roles::USER_ADMIN
+        Roles::USER_ADMIN,
+        Roles::ESI
     ];
 
     public function __construct(Response $response, LoggerInterface $log,

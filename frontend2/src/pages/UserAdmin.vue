@@ -176,7 +176,7 @@ module.exports = {
             activeRole: '',
             playerId: null, // player ID from route
             playerEdit: null,// player being edited
-            availableRoles: ['app-admin', 'app-manager', 'group-admin', 'group-manager', 'user-admin'],
+            availableRoles: ['app-admin', 'app-manager', 'group-admin', 'group-manager', 'user-admin', 'esi'],
             newRole: '',
             searchResult: [],
         }
@@ -208,7 +208,7 @@ module.exports = {
     methods: {
 
         findPlayer: function(characterId) {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.CharacterApi().findPlayerOf(characterId, function(error, data) {
                 vm.loading(false);
@@ -221,7 +221,7 @@ module.exports = {
 
         getPlayerByRole: function(roleName) {
             this.activeRole = roleName;
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.PlayerApi().withRole(roleName, function(error, data) {
                 vm.loading(false);
@@ -233,7 +233,7 @@ module.exports = {
         },
 
         getPlayer: function() {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.PlayerApi().showById(this.playerId, function(error, data) {
                 vm.loading(false);
@@ -246,9 +246,9 @@ module.exports = {
         },
 
         addRole: function(playerId, roleName) {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
-            new this.swagger.PlayerApi().addRole(playerId, roleName, function(error, data) {
+            new this.swagger.PlayerApi().addRole(playerId, roleName, function(error) {
                 vm.loading(false);
                 if (error) {
                     return;
@@ -264,10 +264,10 @@ module.exports = {
             if (! this.playerEdit) {
                 return;
             }
-            var playerId = this.playerEdit.id;
-            var vm = this;
+            const playerId = this.playerEdit.id;
+            const vm = this;
             vm.loading(true);
-            new this.swagger.PlayerApi().removeRole(playerId, roleName, function(error, data) {
+            new this.swagger.PlayerApi().removeRole(playerId, roleName, function(error) {
                 vm.loading(false);
                 if (error) {
                     return;
@@ -283,7 +283,4 @@ module.exports = {
 </script>
 
 <style scoped>
-    .remove-role {
-        float: right;
-    }
 </style>

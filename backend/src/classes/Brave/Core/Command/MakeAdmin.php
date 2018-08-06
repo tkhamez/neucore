@@ -59,7 +59,8 @@ class MakeAdmin extends Command
             Roles::APP_MANAGER,
             Roles::GROUP_ADMIN,
             Roles::GROUP_MANAGER,
-            Roles::USER_ADMIN
+            Roles::USER_ADMIN,
+            Roles::ESI,
         ];
         foreach ($this->rr->findBy(['name' => $newRoles]) as $newRole) {
             if (! $player->hasRole($newRole->getName())) {

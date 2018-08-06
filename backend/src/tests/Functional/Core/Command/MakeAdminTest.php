@@ -27,7 +27,8 @@ class MakeAdminTest extends ConsoleTestCase
             Roles::APP_MANAGER,
             Roles::GROUP_ADMIN,
             Roles::GROUP_MANAGER,
-            Roles::USER_ADMIN
+            Roles::USER_ADMIN,
+            Roles::ESI,
         ]);
         $h->addCharacterMain('Admin', 1234, [Roles::USER, Roles::APP_ADMIN]);
 
@@ -44,10 +45,11 @@ class MakeAdminTest extends ConsoleTestCase
         $expected = [
             Roles::APP_ADMIN,
             Roles::APP_MANAGER,
+            Roles::ESI,
             Roles::GROUP_ADMIN,
             Roles::GROUP_MANAGER,
             Roles::USER,
-            Roles::USER_ADMIN
+            Roles::USER_ADMIN,
         ];
         $actual = (new CharacterRepository(self::$em))->find(1234)->getPlayer()->getRoleNames();
         $this->assertSame($expected, $actual);
