@@ -28,7 +28,8 @@
                 <button type="submit" class="btn btn-primary" v-on:click="request()">Submit</button>
 
                 <div class="alert alert-secondary mt-3">
-                    <pre>{{ result }}</pre>
+                    <pre>{{ header }}</pre>
+                    <pre>{{ body }}</pre>
                 </div>
             </div>
         </div>
@@ -45,7 +46,8 @@ module.exports = {
 
     data: function() {
         return {
-            result : '',
+            header : '',
+            body : '',
             characterId : '',
             esiRoute : '',
         }
@@ -60,10 +62,13 @@ module.exports = {
                 route: this.esiRoute
             }, function(error, data, response) {
                 vm.loading(false);
+                let result;
                 try {
-                    vm.result = JSON.parse(response.text);
+                    result = JSON.parse(response.text);
+                    vm.body = result.body || result;
+                    vm.header = result.header || '';
                 } catch(e) {
-                    vm.result = response.text;
+                    vm.body = response.text;
                 }
             });
         }

@@ -7,6 +7,7 @@ use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\MessageInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -127,23 +128,46 @@ class EsiController
                 'headers' => ['Authorization' => 'Bearer ' . $token]
             ]);
         } catch (ClientException $ce) {
-            return $this->response->withJson($ce->getMessage(), 400);
+            return $this->prepareResponse($ce->getMessage(), $ce->getResponse(), 400);
         }
 
         $json = null;
         try {
             $json = $response->getBody()->getContents();
         } catch (\RuntimeException $re) {
-            return $this->response->withJson($re->getMessage(), 400);
+            return $this->prepareResponse($re->getMessage(), $response, 400);
         }
 
-        $result = null;
+        $body = null;
         try {
-            $result = \GuzzleHttp\json_decode($json);
+            $body = \GuzzleHttp\json_decode($json);
         } catch (\InvalidArgumentException $iae) {
-            return $this->response->withJson($iae->getMessage(), 400);
+            return $this->prepareResponse($iae->getMessage(), $response, 400);
         }
 
-        return $this->response->withJson($result, null, JSON_PRETTY_PRINT);
+        return $this->prepareResponse($body, $response);
+    }
+
+    private function prepareResponse($body, MessageInterface $response = null, $code = 200)
+    {
+        return $this->response->withJson([
+            'header' => $this->extractHeaders($response),
+            'body' => $body,
+        ], $code);
+    }
+
+    private function extractHeaders(MessageInterface $response = null)
+    {
+        if ($response === null) {
+            return null;
+        }
+
+        return [
+            'X-Esi-Error-Limit-Remain' => $response->hasHeader('X-Esi-Error-Limit-Remain') ?
+                $response->getHeader('X-Esi-Error-Limit-Remain')[0] : null,
+            'X-Esi-Error-Limit-Reset' => $response->hasHeader('X-Esi-Error-Limit-Reset') ?
+                $response->getHeader('X-Esi-Error-Limit-Reset')[0] : null,
+            'X-Pages' => $response->hasHeader('X-Pages') ? $response->getHeader('X-Pages')[0] : null,
+        ];
     }
 }
