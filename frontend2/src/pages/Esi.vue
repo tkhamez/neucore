@@ -40,6 +40,7 @@
 module.exports = {
     props: {
         initialized: Boolean,
+        swagger: Object,
     },
 
     data: function() {
@@ -53,13 +54,17 @@ module.exports = {
     methods: {
         request: function() {
             const vm = this;
-            const $ = window.jQuery;
-            const url = '/api/user/esi/request?route='+this.esiRoute+'&character='+this.characterId;
-            vm.result = '';
-            $.get(url, function(result) {
-                vm.result = result;
-            }).fail(function() {
-                vm.result = 'Error.';
+            vm.loading(true);
+            new this.swagger.ESIApi().request({
+                character: this.characterId,
+                route: this.esiRoute
+            }, function(error, data, response) {
+                vm.loading(false);
+                try {
+                    vm.result = JSON.parse(response.text);
+                } catch(e) {
+                    vm.result = response.text;
+                }
             });
         }
     }

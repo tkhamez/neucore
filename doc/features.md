@@ -1,7 +1,19 @@
 # Features
 
-This primarily describes the backend, not all functions are yet available in the frontend.
-Administrators must use the Swagger UI for missing functions. (`https://[domain]/api.html`).
+* EVE SSO login with configurable permission scopes
+* Player accounts with alts
+* Cron job for character updates from ESI
+* Role based permission system
+* Creation of groups and apps
+* Group and app manager
+* Group member management
+* Automatic group assignment for players based on corporations and alliances from all of their characters
+* An API for applications to query group membership of characters, corporations and alliances
+* Limit groups that an app can see
+* ESI request for authorized scopes for any character (very basic implementation so far)
+
+Most of the functions are available in the frontend. Administrators can use the 
+Swagger interface for the missing functions at `https://[domain]/api.html`.
 
 ## Player Accounts and Character Registration
 
@@ -18,6 +30,13 @@ removed from that account and added to the current account. This can happen, for
 if someone has accidentally created two accounts by logging in with an alt that has not
 yet been added to the main account.
 
+## Console application
+
+The console application has commands to:
+- update characters with information from ESI, like corporation etc. and checks ESI tokens.
+- perform automatic group assignment based on corporation and alliance to group configuration.
+
+
 ## Architecture
 
 Backend and Frontend are developed as separated apps, they communicate via an API.
@@ -31,7 +50,7 @@ The API is documented with Swagger, it is available at `https://[domain]/swagger
 For more details see the [**frontend**](../frontend/README.md) and [**backend**](../backend/README.md)
 readme.
 
-## Data Structure (Backend)
+### Data Structure (Backend)
 
 ![Entity–relationship model](er-model.png)
 
@@ -156,6 +175,9 @@ App API
 - Add a group to an app. `/user/app/{id}/add-group/{gid}`
 - Remove a group from an app. `/user/app/{id}/remove-group/{gid}`
 
+ESI API
+- ESI request. `/user/esi/request`
+
 Group API
 - List all groups. `/user/group/all`
 
@@ -183,10 +205,3 @@ Application API
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
 - Returns the main character of the player account to which the character ID belongs.
   `/app/v1/main/{cid}`
-
-## Console application
-
-The console application has commands to:
-- update characters with information from ESI, like corporation etc. and checks ESI tokens.
-- perform automatic group assignment based on corporation and alliance to group configuration.
-

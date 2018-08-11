@@ -60,7 +60,7 @@
                 <table v-cloak v-if="groupId" class="table table-striped table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Player ID</th>
                             <th>Name</th>
                             <th></th>
                             <th></th>

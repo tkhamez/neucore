@@ -93,6 +93,9 @@
                             <th>Name</th>
                             <th>Corporation</th>
                             <th>Alliance</th>
+                            <th>main</th>
+                            <th>validToken</th>
+                            <th>lastUpdate</th>
                         </tr>
                         <tr v-for="character in playerEdit.characters">
                             <td>{{ character.id }}</td>
@@ -109,6 +112,9 @@
                                     {{ character.corporation.alliance.name }}
                                 </span>
                             </td>
+                            <td>{{ character.main }}</td>
+                            <td>{{ character.validToken }}</td>
+                            <td>{{ character.lastUpdate }}</td>
                         </tr>
                     </table>
 

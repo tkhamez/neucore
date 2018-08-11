@@ -8,7 +8,6 @@ Modal window with all characters of one player.
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        [{{ selectedPlayer.id }}]
                         {{ selectedPlayer.name }}
                     </h5>
                     <button type="button" class="close" data-dismiss="modal">

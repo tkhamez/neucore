@@ -1,10 +1,34 @@
 <!--
-Content page for groups and apps
+Content page for group and app administration
 -->
 <template>
     <div class="card border-secondary mb-3">
 
         <characters :swagger="swagger" ref="charactersModal"></characters>
+
+        <div v-cloak v-if="showGroupsEntity" class="modal fade" id="showGroupsModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            [{{ showGroupsEntity.ticker }}]
+                            {{ showGroupsEntity.name }}
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <ul class="list-group">
+                        <li v-for="group in showGroupsEntity.groups" class="list-group-item">
+                            {{ group.name }}
+                        </li>
+                    </ul>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="card-body">
             <div class="input-group mb-1">
@@ -35,11 +59,12 @@ Content page for groups and apps
         <table v-cloak v-if="typeId" class="table table-striped table-hover mb-0">
             <thead>
             <tr>
-                <th v-if="contentType === 'managers'">ID</th>
+                <th v-if="contentType === 'managers'">Player ID</th>
                 <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
                 <th>Name</th>
                 <th v-if="contentType === 'managers'">Characters</th>
                 <th v-if="contentType === 'corporations'">Alliance</th>
+                <th v-if="contentType === 'corporations' || contentType === 'alliances'">Groups</th>
                 <th></th>
             </tr>
             </thead>
@@ -58,6 +83,11 @@ Content page for groups and apps
                         [{{ row.alliance.ticker }}]
                         {{ row.alliance.name }}
                     </span>
+                </td>
+                <td v-if="contentType === 'corporations' || contentType === 'alliances'">
+                    <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">
+                        Show groups
+                    </button>
                 </td>
                 <td>
                     <button v-if="contentType === 'managers'"
@@ -104,6 +134,8 @@ module.exports = {
             newObject: "", // empty string to select the first entry in the drop-down
             selectContent: [],
             tableContent: [],
+            showGroupsEntity: null, // one alliance or corporation object with groups
+            withGroups: [], // all alliances or corporations with groups
         }
     },
 
@@ -111,6 +143,7 @@ module.exports = {
         this.getSelectContent();
         if (this.typeId) {
             this.getTableContent();
+            this.getWithGroups();
         }
     },
 
@@ -127,6 +160,7 @@ module.exports = {
             this.getSelectContent();
             if (this.typeId) {
                 this.getTableContent();
+                this.getWithGroups();
             }
         },
 
@@ -217,6 +251,33 @@ module.exports = {
             }]);
         },
 
+        getWithGroups: function() {
+            if (this.type !== 'Group') {
+                return;
+            }
+
+            const vm = this;
+            vm.withGroups = [];
+
+            let api;
+            if (this.contentType === 'corporations') {
+                api = new this.swagger.CorporationApi();
+            } else if (this.contentType === 'alliances') {
+                api = new this.swagger.AllianceApi();
+            } else {
+                return;
+            }
+
+            vm.loading(true);
+            api['withGroups'].apply(api, [function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.withGroups = data;
+            }]);
+        },
+
         tableHas: function(option) {
             for (let row of this.tableContent) {
                 if (row.id === option.id) {
@@ -228,6 +289,19 @@ module.exports = {
 
         showCharacters: function(managerId) {
             this.$refs.charactersModal.showCharacters(managerId);
+        },
+
+        showGroups: function(corpOrAllianceId) {
+            this.showGroupsEntity = null;
+            for (let entity of this.withGroups) {
+                if (entity.id === corpOrAllianceId) {
+                    this.showGroupsEntity = entity;
+                    break;
+                }
+            }
+            window.setTimeout(function() {
+                window.jQuery('#showGroupsModal').modal('show');
+            }, 10);
         },
 
         addOrRemoveManagerToGroupOrApp: function(playerId, action) {
@@ -288,6 +362,7 @@ module.exports = {
                     return;
                 }
                 vm.getTableContent();
+                vm.getWithGroups();
             }]);
         },
 

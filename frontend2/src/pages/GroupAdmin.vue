@@ -40,19 +40,19 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active"
-                       :class="{ 'bg-primary': contentType === 'corporations' }"
-                       :href="'#GroupAdmin/' + groupId + '/corporations'">Corporations</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active"
                        :class="{ 'bg-primary': contentType === 'alliances' }"
                        :href="'#GroupAdmin/' + groupId + '/alliances'">Alliances</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       :class="{ 'bg-primary': contentType === 'corporations' }"
+                       :href="'#GroupAdmin/' + groupId + '/corporations'">Corporations</a>
+                </li>
             </ul>
 
-            <select-members v-cloak v-if="groupId"
+            <admin v-cloak v-if="groupId"
                 :player="player" :contentType="contentType" :typeId="groupId"
-                :swagger="swagger" :type="'Group'"></select-members>
+                :swagger="swagger" :type="'Group'"></admin>
 
         </div>
     </div>
@@ -61,12 +61,12 @@
 
 <script>
 import CreateDelete  from '../components/GroupAppCreateDelete.vue';
-import SelectMembers from '../components/GroupAppSelectMembers.vue';
+import Admin from '../components/GroupAppAdmin.vue';
 
 module.exports = {
     components: {
         CreateDelete,
-        SelectMembers,
+        Admin,
     },
 
     props: {

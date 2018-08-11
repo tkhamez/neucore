@@ -45,9 +45,17 @@
                 </li>
             </ul>
 
-            <select-members v-cloak v-if="appId"
+            <div v-cloak v-if="contentType === 'groups'" class="card">
+                <div class="card-body">
+                    <button class="btn btn-outline-warning float-right" v-on:click="addAllGroups()">
+                        Add all groups to app
+                    </button>
+                </div>
+            </div>
+
+            <admin v-cloak v-if="appId" ref="admin"
                  :player="player" :contentType="contentType" :typeId="appId"
-                :swagger="swagger" :type="'App'"></select-members>
+                :swagger="swagger" :type="'App'"></admin>
 
         </div>
     </div>
@@ -56,12 +64,12 @@
 
 <script>
 import CreateDelete  from '../components/GroupAppCreateDelete.vue';
-import SelectMembers from '../components/GroupAppSelectMembers.vue';
+import Admin from '../components/GroupAppAdmin.vue';
 
 module.exports = {
     components: {
         CreateDelete,
-        SelectMembers,
+        Admin,
     },
 
     props: {
@@ -134,6 +142,47 @@ module.exports = {
                 this.contentType = this.route[2] ? this.route[2] : 'managers';
             }
         },
+
+        addAllGroups: function() {
+            const vm = this;
+
+            if (! vm.appId) {
+                return;
+            }
+
+            let numGroups = 0;
+            let numAdded = 0;
+
+            vm.loading(true);
+            new this.swagger.GroupApi().all(function(error, data) {
+                vm.loading(false);
+                if (error) {
+                    return;
+                }
+                numGroups = data.length;
+                for (let group of data) {
+                    add(group);
+                }
+            });
+
+            function add(group) {
+                vm.loading(true);
+                new vm.swagger.AppApi().addGroup(vm.appId, group.id, function(error) {
+                    vm.loading(false);
+                    if (error) { // 403 usually
+                        return;
+                    }
+                    done();
+                });
+            }
+
+            function done() {
+                numAdded ++;
+                if (numGroups === numAdded) {
+                    vm.$refs.admin.getTableContent();
+                }
+            }
+        }
     },
 }
 </script>

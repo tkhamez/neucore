@@ -49,8 +49,7 @@ class EsiController
         OAuthToken $token,
         Client $httpClient,
         Config $config
-    )
-    {
+    ) {
         $this->response = $response;
         $this->characterRepository = $characterRepository;
         $this->token = $token;
@@ -58,28 +57,63 @@ class EsiController
         $this->config = $config;
     }
 
+    /**
+     * @SWG\Get(
+     *     path="/user/esi/request",
+     *     operationId="request",
+     *     summary="ESI request.",
+     *     description="Needs role: user-admin
+     *                  Example route: /characters/{character_id}/stats/
+     *                  Only for GET request.
+     *                  Only the {character_id} placeholder is implemented.",
+     *     tags={"ESI"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="character",
+     *         in="query",
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="route",
+     *         in="query",
+     *         description="The ESI route.",
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The result from ESI or an error message.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Error.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
     public function request(Request $request): Response
     {
-        $route = $request->getParam('route');
-        $charId = $request->getParam('character');
+        $charId = $request->getParam('character', '');
+        $route = $request->getParam('route', '');
 
-        #$route = '/characters/{character_id}/stats/';
-        #$route = '/characters/{character_id}/standings/';
-
-        if ($route === null || $charId === null) {
-            return $this->response->withJson('Missing route and/or character parameter.');
+        if ($route === '' || $charId === '') {
+            return $this->response->withJson('Missing route and/or character parameter.', 400);
         }
 
         $character = $this->characterRepository->find($charId);
         if ($character === null) {
-            return $this->response->withJson('Character not found.');
+            return $this->response->withJson('Character not found.', 400);
         }
 
         $this->token->setCharacter($character);
         $token = $this->token->getToken();
 
         $baseUri = 'https://esi.evetech.net';
-
         $path = '/latest' . str_replace('{character_id}', $character->getId(), $route);
         if (strpos($path, '?') === false) {
             $path .= '?datasource=tranquility';
@@ -87,32 +121,27 @@ class EsiController
             $path .= '&datasource=tranquility';
         }
 
-        $result = null;
-
         $response = null;
         try {
             $response = $this->httpClient->request('GET', $baseUri . $path, [
                 'headers' => ['Authorization' => 'Bearer ' . $token]
             ]);
         } catch (ClientException $ce) {
-            $result = $ce->getMessage();
+            return $this->response->withJson($ce->getMessage(), 400);
         }
 
         $json = null;
-        if ($response) {
-            try {
-                $json = $response->getBody()->getContents();
-            } catch (\RuntimeException $re) {
-                $result = $re->getMessage();
-            }
+        try {
+            $json = $response->getBody()->getContents();
+        } catch (\RuntimeException $re) {
+            return $this->response->withJson($re->getMessage(), 400);
         }
 
-        if ($json) {
-            try {
-                $result = \GuzzleHttp\json_decode($json);
-            } catch (\InvalidArgumentException $iae) {
-                $result = $iae->getMessage();
-            }
+        $result = null;
+        try {
+            $result = \GuzzleHttp\json_decode($json);
+        } catch (\InvalidArgumentException $iae) {
+            return $this->response->withJson($iae->getMessage(), 400);
         }
 
         return $this->response->withJson($result, null, JSON_PRETTY_PRINT);
