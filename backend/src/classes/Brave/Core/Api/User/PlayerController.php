@@ -381,7 +381,8 @@ class PlayerController
             Roles::APP_MANAGER,
             Roles::GROUP_ADMIN,
             Roles::GROUP_MANAGER,
-            Roles::USER_ADMIN
+            Roles::USER_ADMIN,
+            Roles::ESI
         ];
 
         if (! in_array($name, $validRoles)) {

@@ -3,7 +3,7 @@
 
     <characters :swagger="swagger" ref="charactersModal"></characters>
 
-    <div class="row">
+    <div class="row mb-3 mt-3">
         <div class="col-lg-12">
             <h1>Group Management</h1>
         </div>
@@ -28,8 +28,8 @@
         <div class="col-lg-8">
             <div class="card border-secondary mb-3">
                 <h3 class="card-header">
-                    Members
-                    <span class="text-muted small">{{ groupName }}</span>
+                    Members -
+                    {{ groupName }}
                 </h3>
 
                 <div v-cloak v-if="groupId" class="card-body">

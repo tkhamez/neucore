@@ -1,6 +1,6 @@
 <template>
 <div class="container-fluid">
-    <div class="row">
+    <div class="row mb-3 mt-3">
         <div class="col-lg-12">
             <h1>User Administration</h1>
         </div>
@@ -46,13 +46,16 @@
             </div>
         </div>
 
-        <div v-cloak v-if="playerEdit" class="col-lg-8">
+        <div class="col-lg-8">
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header" :title="'ID: ' + playerEdit.id">
-                    Player: {{ playerEdit.name }}
+                <h3 class="card-header">
+                    Player:
+                    <span v-cloak v-if="playerEdit">
+                        {{ playerEdit.name }}
+                    </span>
                 </h3>
 
-                <div class="card-body">
+                <div v-cloak v-if="playerEdit" class="card-body">
                     <h4>Roles</h4>
 
                     <div class="input-group input-group-sm mb-1">

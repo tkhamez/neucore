@@ -2,9 +2,9 @@
 <template>
 <div class="input-group input-group-sm mb-1">
     <div class="input-group-prepend">
-        <span class="input-group-text">Search</span>
+        <span class="input-group-text">Search Character</span>
     </div>
-    <input type="text" class="form-control" placeholder="Character name"
+    <input type="text" class="form-control" placeholder="Name (min. 3 characters)"
         v-model="searchTerm" v-on:click="findCharacter">
     <div class="input-group-append">
         <button class="btn" type="button" v-on:click="searchTerm = ''">&times;</button>
@@ -35,7 +35,7 @@ module.exports = {
         findCharacter() {
             if (this.searchTerm === '') {
                 this.$emit('result', []);
-            } else {
+            } else if (this.searchTerm.length >= 3) {
                 this.doFindCharacter(this);
             }
         },

@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
 
-        <div class="row">
+        <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>ESI</h1>
 
@@ -22,12 +22,12 @@
                         <br>
                         Only GET request are implemented at the moment.
                         <br>
-                        {character_id} is the only implemented parameter so far.
+                        {character_id} is the only implemented placeholder so far.
                     </small>
                 </div>
                 <button type="submit" class="btn btn-primary" v-on:click="request()">Submit</button>
 
-                <div class="alert alert-dismissible alert-secondary mt-3">
+                <div class="alert alert-secondary mt-3">
                     <pre>{{ result }}</pre>
                 </div>
             </div>
@@ -55,8 +55,11 @@ module.exports = {
             const vm = this;
             const $ = window.jQuery;
             const url = '/api/user/esi/request?route='+this.esiRoute+'&character='+this.characterId;
+            vm.result = '';
             $.get(url, function(result) {
                 vm.result = result;
+            }).fail(function() {
+                vm.result = 'Error.';
             });
         }
     }

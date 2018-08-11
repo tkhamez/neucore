@@ -5,9 +5,10 @@ require("./index.scss");
 import NavBar from './components/NavBar.vue';
 import Home            from './pages/Home.vue';
 import GroupManagement from './pages/GroupManagement.vue';
+import AppManagement   from './pages/AppManagement.vue';
 import GroupAdmin      from './pages/GroupAdmin.vue';
-import UserAdmin       from './pages/UserAdmin.vue';
 import AppAdmin        from './pages/AppAdmin.vue';
+import UserAdmin       from './pages/UserAdmin.vue';
 import Esi             from './pages/Esi.vue';
 
 window.Vue.mixin({
@@ -76,9 +77,10 @@ var app = new window.Vue({
         NavBar,
         Home,
         GroupManagement,
-        UserAdmin,
+        AppManagement,
         GroupAdmin,
         AppAdmin,
+        UserAdmin,
         Esi,
     },
 
@@ -92,7 +94,7 @@ var app = new window.Vue({
         /**
          * All available pages
          */
-        pages: ['Home', 'GroupManagement', 'UserAdmin', 'GroupAdmin', 'AppAdmin', 'Esi'],
+        pages: ['Home', 'GroupManagement', 'AppManagement', 'GroupAdmin', 'AppAdmin', 'UserAdmin', 'Esi'],
 
         /**
          * The authenticated character
