@@ -425,7 +425,8 @@ class AppController
      *     path="/user/app/{id}/groups",
      *     operationId="groups",
      *     summary="List all groups of an app.",
-     *     description="Needs role: app-admin",
+     *     description="Needs role: app-admin, app-manager
+     *                  Managers can only see groups of their own apps.",
      *     tags={"App"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -450,13 +451,19 @@ class AppController
      *     )
      * )
      */
-    public function groups(string $id): Response
+    public function groups(string $id, UserAuth $uas): Response
     {
         $ret = [];
 
         $app = $this->ar->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
+        }
+
+        // check if logged in user is manager of this app or has the role app-admin
+        $player = $uas->getUser()->getPlayer();
+        if (! $player->hasRole(Roles::APP_ADMIN) && ! $app->isManager($player)) {
+            return $this->res->withStatus(403);
         }
 
         foreach ($app->getGroups() as $group) {

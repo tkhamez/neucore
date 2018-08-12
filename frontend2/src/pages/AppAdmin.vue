@@ -1,8 +1,10 @@
 <template>
 <div class="container-fluid">
 
-    <create-delete :swagger="swagger" :type="'App'" ref="createDeleteModals"
-           v-on:created="appCreated($event)" v-on:deleted="appDeleted()"></create-delete>
+    <edit :swagger="swagger" :type="'App'" ref="editModals"
+        v-on:created="appCreated($event)"
+        v-on:deleted="appDeleted()"
+        v-on:itemChange="appChanged()"></edit>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -24,8 +26,11 @@
                            :href="'#AppAdmin/' + app.id + '/' + contentType">
                             {{ app.name }}
                             <i v-cloak v-if="appId === app.id"
-                               class="far fa-trash-alt delete-app bg-danger"
+                               class="far fa-trash-alt bg-danger mr-1 delete-app"
                                v-on:click="showDeleteAppModal(app)" title="delete"></i>
+                            <i v-cloak v-if="appId === app.id"
+                               class="fas fa-pencil-alt bg-secondary mr-1 rename-app"
+                               v-on:click="showRenameAppModal(app)" title="rename"></i>
                         </a>
                     </span>
                 </div>
@@ -63,12 +68,12 @@
 </template>
 
 <script>
-import CreateDelete  from '../components/GroupAppCreateDelete.vue';
+import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/GroupAppAdmin.vue';
 
 module.exports = {
     components: {
-        CreateDelete,
+        Edit,
         Admin,
     },
 
@@ -107,7 +112,7 @@ module.exports = {
     methods: {
 
         showCreateAppModal: function() {
-            this.$refs.createDeleteModals.showCreateModal();
+            this.$refs.editModals.showCreateModal();
         },
 
         appCreated: function(newAppId) {
@@ -116,11 +121,21 @@ module.exports = {
         },
 
         showDeleteAppModal: function(app) {
-            this.$refs.createDeleteModals.showDeleteModal(app);
+            this.$refs.editModals.showDeleteModal(app);
         },
 
         appDeleted: function() {
             window.location.hash = '#AppAdmin';
+            this.appId = null;
+            this.contentType = '';
+            this.getApps();
+        },
+
+        showRenameAppModal: function(app) {
+            this.$refs.editModals.showEditModal(app);
+        },
+
+        appChanged: function() {
             this.getApps();
         },
 
@@ -192,7 +207,8 @@ module.exports = {
         float: right;
         cursor: pointer;
     }
-    .delete-app {
+    .delete-app,
+    .rename-app {
         float: right;
         padding: 4px 4px 5px 4px;
         border: 1px solid white;

@@ -4,7 +4,8 @@
     <div class="input-group-prepend">
         <span class="input-group-text">Search Character</span>
     </div>
-    <input type="text" class="form-control" placeholder="Name (min. 3 characters)"
+    <input type="text" class="form-control"
+       placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
         v-model="searchTerm" v-on:click="findCharacter">
     <div class="input-group-append">
         <button class="btn" type="button" v-on:click="searchTerm = ''">&times;</button>

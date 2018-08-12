@@ -28,8 +28,7 @@
         <div class="col-lg-8">
             <div class="card border-secondary mb-3">
                 <h3 class="card-header">
-                    Members -
-                    {{ groupName }}
+                    Members
                 </h3>
 
                 <div v-cloak v-if="groupId" class="card-body">

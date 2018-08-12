@@ -14,6 +14,9 @@
                 </h3>
                 <div class="card-body">
                     <character-search :swagger="swagger" v-on:result="searchResult = $event"></character-search>
+                    <span class="text-muted small">
+                        Select a character to show it's player account.
+                    </span>
                 </div>
                 <div class="list-group">
                     <span v-for="char in searchResult"
@@ -115,6 +118,20 @@
                             <td>{{ character.main }}</td>
                             <td>{{ character.validToken }}</td>
                             <td>{{ character.lastUpdate }}</td>
+                        </tr>
+                    </table>
+
+                    <h4>Group Membership</h4>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>visibility</th>
+                        </tr>
+                        <tr v-for="group in playerEdit.groups">
+                            <td>{{ group.id }}</td>
+                            <td>{{ group.name }}</td>
+                            <td>{{ group.visibility }}</td>
                         </tr>
                     </table>
 

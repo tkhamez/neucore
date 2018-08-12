@@ -1,8 +1,10 @@
 <template>
 <div class="container-fluid">
 
-    <create-delete :swagger="swagger" :type="'Group'" ref="createDeleteModals"
-           v-on:created="groupCreated($event)" v-on:deleted="groupDeleted()"></create-delete>
+    <edit :swagger="swagger" :type="'Group'" ref="editModals"
+          v-on:created="groupCreated($event)"
+          v-on:deleted="groupDeleted()"
+          v-on:itemChange="groupChanged()"></edit>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -24,8 +26,11 @@
                             :href="'#GroupAdmin/' + group.id + '/' + contentType">
                             {{ group.name }}
                             <i v-cloak v-if="groupId === group.id"
-                                class="far fa-trash-alt delete-group bg-danger"
+                                class="far fa-trash-alt bg-danger mr-1 delete-group"
                                 v-on:click="showDeleteGroupModal(group)" title="delete"></i>
+                            <i v-cloak v-if="groupId === group.id"
+                               class="fas fa-pencil-alt bg-secondary mr-1 edit-group"
+                               v-on:click="showEditGroupModal(group)" title="edit"></i>
                         </a>
                     </span>
                 </div>
@@ -60,12 +65,12 @@
 </template>
 
 <script>
-import CreateDelete  from '../components/GroupAppCreateDelete.vue';
+import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/GroupAppAdmin.vue';
 
 module.exports = {
     components: {
-        CreateDelete,
+        Edit,
         Admin,
     },
 
@@ -80,7 +85,7 @@ module.exports = {
         return {
             groups: [],
             groupId: null, // current group
-            contentType: "",
+            contentType: '',
         }
     },
 
@@ -103,7 +108,7 @@ module.exports = {
 
     methods: {
         showCreateGroupModal: function() {
-            this.$refs.createDeleteModals.showCreateModal('Allowed characters (no spaces): A-Z a-z 0-9 - . _');
+            this.$refs.editModals.showCreateModal();
         },
 
         groupCreated: function(newGroupId) {
@@ -112,11 +117,21 @@ module.exports = {
         },
 
         showDeleteGroupModal: function(group) {
-            this.$refs.createDeleteModals.showDeleteModal(group);
+            this.$refs.editModals.showDeleteModal(group);
         },
 
         groupDeleted: function() {
             window.location.hash = '#GroupAdmin';
+            this.groupId = null;
+            this.contentType = '';
+            this.getGroups();
+        },
+
+        showEditGroupModal: function(group) {
+            this.$refs.editModals.showEditModal(group);
+        },
+
+        groupChanged: function() {
             this.getGroups();
         },
 
@@ -147,7 +162,8 @@ module.exports = {
         float: right;
         cursor: pointer;
     }
-    .delete-group {
+    .delete-group,
+    .edit-group {
         float: right;
         padding: 4px 4px 5px 4px;
         border: 1px solid white;

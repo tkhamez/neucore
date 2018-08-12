@@ -189,6 +189,7 @@ Player API
 App API
 - Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.
   `/user/app/{id}/change-secret`
+- List all groups of an app. `/user/app/{id}/groups` (Managers can only see groups of their own apps.)
 
 ### app
 

@@ -13,6 +13,7 @@ return [
     '/api/user/alliance' => [Roles::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Roles::APP_MANAGER],
+    '/api/user/app/{id}/groups'        => [Roles::APP_MANAGER, Roles::APP_ADMIN],
     '/api/user/app'                    => [Roles::APP_ADMIN],
 
     '/api/user/auth/login-alt' => [Roles::USER],

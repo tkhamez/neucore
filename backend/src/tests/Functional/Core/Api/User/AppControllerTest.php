@@ -355,9 +355,9 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(9); // not app-admin
+        $this->loginUser(9); // not app-admin and not manager of tested group
 
-        $response = $this->runApp('GET', '/api/user/app/1/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.($this->aid).'/groups');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -374,6 +374,20 @@ class AppControllerTest extends WebTestCase
     {
         $this->setupDb();
         $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/groups');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testGroups200Manager()
+    {
+        $this->setupDb();
+        $this->loginUser(10); // manager of tested group, not an admin
 
         $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/groups');
         $this->assertEquals(200, $response->getStatusCode());

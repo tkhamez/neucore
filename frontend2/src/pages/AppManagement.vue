@@ -23,17 +23,21 @@
             <div class="col-lg-8">
                 <div class="card border-secondary mb-3">
                     <h3 class="card-header">
-                        Generate application secret
+                        Details
                     </h3>
                     <div v-cloak v-if="appId" class="card-body">
+                        <h5>Application Secret</h5>
                         <p class="card-text">
-                            Are you sure you want to generate a new application secret
-                            for your app?<br>
+                            Here you can generate a new application secret. See also
+                            <a href="https://github.com/bravecollective/brvneucore/tree/master/backend#app-auth"
+                                target="_blank">Backend - App Auth</a>.
                         </p>
-                        <p class="text-warning">{{ appName }}</p>
-                        <button type="button" class="btn btn-warning" v-on:click="generateSecret()">
-                            Yes, do it!
-                        </button>
+                        <p>
+                            <button type="button" class="btn btn-warning" v-on:click="generateSecret()">
+                                Generate new secret
+                            </button>
+                            for: <span class="text-warning">{{ appName }}</span>
+                        </p>
 
                         <div v-cloak v-if="secret" class="alert alert-secondary mt-4">
                             <code>{{ secret }}</code>
@@ -41,10 +45,27 @@
                         <p v-cloak v-if="secret" class="card-text">
                             Please make a note of the new secret, it is not retrievable again!
                         </p>
+
+                        <hr>
+
+                        <h5>Groups</h5>
+                        <table class="table table-striped">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>visibility</th>
+                            </tr>
+                            <tr v-for="group in appGroups">
+                                <td>{{ group.id }}</td>
+                                <td>{{ group.name }}</td>
+                                <td>{{ group.visibility }}</td>
+                            </tr>
+                        </table>
                     </div>
-                </div>
-            </div> <!-- card -->
-        </div> <!-- col  -->
+
+                </div> <!-- card -->
+            </div> <!-- col -->
+        </div> <!-- row  -->
     </div>
 </template>
 
@@ -60,6 +81,7 @@ module.exports = {
         return {
             appId: null,
             appName: null,
+            appGroups: [],
             secret: null,
         }
     },
@@ -86,8 +108,24 @@ module.exports = {
             for (let app of this.player.managerApps) {
                 if (app.id === this.appId) {
                     this.appName = app.name;
+                    this.getGroups();
+                    break;
                 }
             }
+        },
+
+        getGroups: function() {
+            const vm = this;
+            vm.appGroups = [];
+
+            vm.loading(true);
+            new this.swagger.AppApi().groups(this.appId, function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.appGroups = data;
+            });
         },
 
         generateSecret: function() {

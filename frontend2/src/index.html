@@ -14,13 +14,15 @@
     <div id="app">
         <div v-if="loadingCount > 0" v-cloak id="loader"></div>
 
-        <div v-if="successMessage" v-cloak class="alert alert-success brv-alert">
+        <div v-if="successMessage" v-cloak class="alert alert-success brv-alert"
+             v-on:click="successMessage = ''">
             {{ successMessage }}
         </div>
 
-        <div v-if="errorMessage" v-cloak class="alert alert-danger fade show brv-alert">
+        <div v-if="errorMessage" v-cloak class="alert alert-danger fade show brv-alert"
+            v-on:click="errorMessage = ''">
             {{ errorMessage }}
-            <button type="button" class="close" v-on:click="errorMessage = '';" aria-label="Close">
+            <button type="button" class="close" v-on:click="errorMessage = ''" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
