@@ -151,7 +151,7 @@ class EsiController
     private function prepareResponse($body, MessageInterface $response = null, $code = 200)
     {
         return $this->response->withJson([
-            'header' => $this->extractHeaders($response),
+            'headers' => $this->extractHeaders($response),
             'body' => $body,
         ], $code);
     }
