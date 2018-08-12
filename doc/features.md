@@ -175,9 +175,6 @@ App API
 - Add a group to an app. `/user/app/{id}/add-group/{gid}`
 - Remove a group from an app. `/user/app/{id}/remove-group/{gid}`
 
-ESI API
-- ESI request. `/user/esi/request`
-
 Group API
 - List all groups. `/user/group/all`
 
@@ -190,6 +187,11 @@ App API
 - Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.
   `/user/app/{id}/change-secret`
 - List all groups of an app. `/user/app/{id}/groups` (Managers can only see groups of their own apps.)
+
+### esi
+
+ESI API
+- ESI request. `/user/esi/request`
 
 ### app
 
