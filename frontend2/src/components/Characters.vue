@@ -16,14 +16,21 @@ Modal window with all characters of one player.
                 </div>
                 <ul class="list-group">
                     <li v-for="character in selectedPlayer.characters" class="list-group-item">
-                        <a class="badge badge-secondary badge-link ml-1"
-                            :href="'https://zkillboard.com/character/' + character.id"
-                            target="_blank">zKillboard</a>
-                        <a class="badge badge-secondary badge-link ml-1"
-                            :href="'https://evewho.com/pilot/' + character.name"
-                            target="_blank">Eve Who</a>
+                        <div class="badges">
+                            <span v-if="character.validToken" class="badge badge-success ml-1">Valid token</span>
+                            <span v-if="! character.validToken" class="badge badge-danger ml-1">Invalid token</span>
+                            <a class="badge badge-secondary ml-1"
+                               :href="'https://zkillboard.com/character/' + character.id"
+                               target="_blank">zKillboard</a>
+                            <br>
+                            <a class="badge badge-secondary ml-1"
+                               :href="'https://evewho.com/pilot/' + character.name"
+                               target="_blank">Eve Who</a>
+                        </div>
+
                         <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'">
                         {{ character.name }}
+                        <span v-if="character.main" class="fas fa-star text-warning" title="Main"></span>
                         <div class="small">
                             <span class="text-muted">Corporation:</span>
                             <span v-if="character.corporation">
@@ -79,7 +86,8 @@ module.exports = {
 </script>
 
 <style scoped>
-    .badge-link {
+    .badges {
         float: right;
+        text-align: right;
     }
 </style>
