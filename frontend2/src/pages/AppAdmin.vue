@@ -26,10 +26,10 @@
                            :href="'#AppAdmin/' + app.id + '/' + contentType">
                             {{ app.name }}
                             <i v-cloak v-if="appId === app.id"
-                               class="far fa-trash-alt bg-danger mr-1 delete-app"
+                               class="far fa-trash-alt mr-1 delete-app"
                                v-on:click="showDeleteAppModal(app)" title="delete"></i>
                             <i v-cloak v-if="appId === app.id"
-                               class="fas fa-pencil-alt bg-secondary mr-1 rename-app"
+                               class="fas fa-pencil-alt mr-1 rename-app"
                                v-on:click="showRenameAppModal(app)" title="rename"></i>
                         </a>
                     </span>
@@ -207,10 +207,18 @@ module.exports = {
         float: right;
         cursor: pointer;
     }
+
     .delete-app,
     .rename-app {
         float: right;
         padding: 4px 4px 5px 4px;
         border: 1px solid white;
+    }
+
+    .add-app:hover,
+    .delete-app:hover,
+    .rename-app:hover {
+        color: #F39C12;
+        border-color: #F39C12;
     }
 </style>

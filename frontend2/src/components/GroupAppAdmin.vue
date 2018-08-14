@@ -47,6 +47,9 @@ Content page for group and app administration
                     <option v-if="contentType === 'groups'" value="">Select group ...</option>
                     <option v-for="option in selectContent" v-bind:value="option"
                             v-if="! tableHas(option)">
+                        <template v-if="contentType === 'corporations' || contentType === 'alliances'">
+                            [{{ option.ticker }}]
+                        </template>
                         {{ option.name }}
                         <template v-if="contentType === 'corporations' && option.alliance">
                             ({{ option.alliance.name }})
@@ -60,6 +63,7 @@ Content page for group and app administration
             <thead>
             <tr>
                 <th v-if="contentType === 'managers'">Player ID</th>
+                <th v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
                 <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
                 <th>Name</th>
                 <th v-if="contentType === 'managers'">Characters</th>
@@ -71,6 +75,7 @@ Content page for group and app administration
             <tbody>
             <tr v-for="row in tableContent">
                 <td v-if="contentType === 'managers'">{{ row.id }}</td>
+                <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.id }}</td>
                 <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
                 <td>{{ row.name }}</td>
                 <td v-if="contentType === 'managers'">

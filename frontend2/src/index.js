@@ -70,7 +70,7 @@ window.Vue.mixin({
     }
 });
 
-var app = new window.Vue({
+const app = new window.Vue({
     el: '#app',
 
     components: {
@@ -163,6 +163,7 @@ var app = new window.Vue({
 
     methods: {
         showSuccess: function(message) {
+            this.errorMessage = '';
             this.successMessage = message;
             window.setTimeout(function() {
                 app.successMessage = '';
@@ -170,6 +171,7 @@ var app = new window.Vue({
         },
 
         showError: function(message) {
+            this.successMessage = '';
             this.errorMessage = message;
         },
 
