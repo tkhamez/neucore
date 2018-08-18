@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
 
         # install node + npm (npm version in Ubuntu does not yet support package-lock.json)
         apt-get install -y nodejs npm
-        npm install -y npm@5.6.0 -g
+        npm install -y npm@5.10 -g
         apt-get remove -y npm
         apt-get autoremove -y
 
