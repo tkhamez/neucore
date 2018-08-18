@@ -3,36 +3,33 @@
     "type": "project",
     "require": {
         "php-64bit": "^7.1",
-        "ext-zend-opcache": "*",
-        "ext-pdo_mysql": "*",
-        "ext-zip": "*",
-        "ext-mbstring": "*",
-        "ext-intl": "*",
-        "ext-dom": "*",
         "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-intl": "*",
         "ext-json": "*",
-        "slim/slim": "^3.1",
-        "php-di/slim-bridge": "^1.1",
-        "monolog/monolog": "^1.17",
+        "ext-mbstring": "*",
+        "ext-pdo_mysql": "*",
+        "ext-zend-opcache": "*",
+        "ext-zip": "*",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
-        "ocramius/proxy-manager": "~2.1.0",
+        "league/oauth2-client": "^2.2",
+        "monolog/monolog": "^1.17",
+        "php-di/slim-bridge": "^1.1",
+        "slim/slim": "^3.1",
         "symfony/console": "^4.0",
+        "symfony/dotenv": "^4.0",
         "symfony/http-foundation": "^4.0",
         "symfony/yaml": "^4.0",
-        "league/oauth2-client": "^2.2",
-        "zircote/swagger-php": "^2.0",
         "tkhamez/swagger-eve-php": "0.8.3.1",
+        "zircote/swagger-php": "^2.0",
 
         "filp/whoops": "^2.1",
-        "phpunit/phpunit": "^7.0",
-        "symfony/dotenv": "^4.0"
-    },
-    "require-dev": {
-        "ext-xdebug": "*"
+        "phpunit/phpunit": "^7.0"
     },
     "suggest": {
-        "ext-apcu": "*"
+        "ext-apcu": "*",
+        "ext-xdebug": "*"
     },
     "autoload": {
         "psr-4": {
