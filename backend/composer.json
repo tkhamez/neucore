@@ -2,7 +2,7 @@
     "name": "brv/neucore",
     "type": "project",
     "require": {
-        "php-64bit": "^7.1",
+        "php-64bit": "^7.2",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-intl": "*",

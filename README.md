@@ -48,7 +48,7 @@ The values for the EVE application must be adjusted.
 
 ### Local dev Requirements
 
-* PHP 7.1+ with Composer, see Vagrantfile for necessary additional extensions
+* PHP 7.2 with Composer, see Vagrantfile for necessary additional extensions
 * Node.js 8 + npm 5
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
