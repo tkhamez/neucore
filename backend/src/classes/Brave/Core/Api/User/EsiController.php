@@ -7,6 +7,7 @@ use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\MessageInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -129,6 +130,8 @@ class EsiController
             ]);
         } catch (ClientException $ce) {
             return $this->prepareResponse($ce->getMessage(), $ce->getResponse(), 400);
+        } catch (GuzzleException $ge) {
+            return $this->prepareResponse($ge->getMessage(), null, 400);
         }
 
         $json = null;

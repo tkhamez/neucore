@@ -42,14 +42,10 @@ class NonBlockingSessionMiddleware
         $this->options = $options;
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $req
-     * @param ResponseInterface $res
-     * @param callable $next
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        callable $next): ResponseInterface
     {
         // check if session should be started
         if (! $this->shouldStartSession($request->getAttribute('route'))) {

@@ -50,14 +50,6 @@
                 </li>
             </ul>
 
-            <div v-cloak v-if="contentType === 'groups'" class="card">
-                <div class="card-body">
-                    <button class="btn btn-outline-warning float-right" v-on:click="addAllGroups()">
-                        Add all groups to app
-                    </button>
-                </div>
-            </div>
-
             <admin v-cloak v-if="appId" ref="admin"
                  :player="player" :contentType="contentType" :typeId="appId"
                 :swagger="swagger" :type="'App'"></admin>
@@ -136,6 +128,7 @@ module.exports = {
         },
 
         appChanged: function() {
+            this.$refs.editModals.hideEditModal();
             this.getApps();
         },
 
@@ -157,47 +150,6 @@ module.exports = {
                 this.contentType = this.route[2] ? this.route[2] : 'managers';
             }
         },
-
-        addAllGroups: function() {
-            const vm = this;
-
-            if (! vm.appId) {
-                return;
-            }
-
-            let numGroups = 0;
-            let numAdded = 0;
-
-            vm.loading(true);
-            new this.swagger.GroupApi().all(function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    return;
-                }
-                numGroups = data.length;
-                for (let group of data) {
-                    add(group);
-                }
-            });
-
-            function add(group) {
-                vm.loading(true);
-                new vm.swagger.AppApi().addGroup(vm.appId, group.id, function(error) {
-                    vm.loading(false);
-                    if (error) { // 403 usually
-                        return;
-                    }
-                    done();
-                });
-            }
-
-            function done() {
-                numAdded ++;
-                if (numGroups === numAdded) {
-                    vm.$refs.admin.getTableContent();
-                }
-            }
-        }
     },
 }
 </script>

@@ -172,7 +172,7 @@ class Player implements \JsonSerializable
     /**
      * Set lastUpdate.
      *
-     * @param \DateTime $update
+     * @param \DateTime $lastUpdate
      *
      * @return Player
      */
@@ -200,7 +200,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function addRole(\Brave\Core\Entity\Role $role)
+    public function addRole(Role $role)
     {
         $this->roles[] = $role;
 
@@ -214,7 +214,7 @@ class Player implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeRole(\Brave\Core\Entity\Role $role)
+    public function removeRole(Role $role)
     {
         return $this->roles->removeElement($role);
     }
@@ -260,7 +260,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function addCharacter(\Brave\Core\Entity\Character $character)
+    public function addCharacter(Character $character)
     {
         $this->characters[] = $character;
 
@@ -274,7 +274,7 @@ class Player implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCharacter(\Brave\Core\Entity\Character $character)
+    public function removeCharacter(Character $character)
     {
         return $this->characters->removeElement($character);
     }
@@ -296,7 +296,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function addApplication(\Brave\Core\Entity\Group $application)
+    public function addApplication(Group $application)
     {
         $this->applications[] = $application;
 
@@ -310,7 +310,7 @@ class Player implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApplication(\Brave\Core\Entity\Group $application)
+    public function removeApplication(Group $application)
     {
         return $this->applications->removeElement($application);
     }
@@ -332,7 +332,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function addGroup(\Brave\Core\Entity\Group $group)
+    public function addGroup(Group $group)
     {
         $this->groups[] = $group;
 
@@ -346,7 +346,7 @@ class Player implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeGroup(\Brave\Core\Entity\Group $group)
+    public function removeGroup(Group $group)
     {
         return $this->groups->removeElement($group);
     }
@@ -401,7 +401,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function addManagerGroup(\Brave\Core\Entity\Group $managerGroup)
+    public function addManagerGroup(Group $managerGroup)
     {
         $this->managerGroups[] = $managerGroup;
 
@@ -415,7 +415,7 @@ class Player implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeManagerGroup(\Brave\Core\Entity\Group $managerGroup)
+    public function removeManagerGroup(Group $managerGroup)
     {
         return $this->managerGroups->removeElement($managerGroup);
     }
@@ -448,7 +448,7 @@ class Player implements \JsonSerializable
      *
      * @return Player
      */
-    public function addManagerApp(\Brave\Core\Entity\App $managerApp)
+    public function addManagerApp(App $managerApp)
     {
         $this->managerApps[] = $managerApp;
 
@@ -462,7 +462,7 @@ class Player implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeManagerApp(\Brave\Core\Entity\App $managerApp)
+    public function removeManagerApp(App $managerApp)
     {
         return $this->managerApps->removeElement($managerApp);
     }

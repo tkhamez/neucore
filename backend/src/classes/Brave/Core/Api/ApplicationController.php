@@ -439,7 +439,7 @@ class ApplicationController
      *     )
      * )
      */
-    public function mainV1($cid): Response
+    public function mainV1(string $cid): Response
     {
         $char = $this->charRepo->find((int) $cid);
 
@@ -479,13 +479,13 @@ class ApplicationController
      *
      * @param int $characterId
      * @param \Brave\Core\Entity\Group[] $appGroups
-     * @return void|array Returns NULL if character was not found.
+     * @return null|array Returns NULL if character was not found.
      */
     private function getGroupsForPlayer(int $characterId, array $appGroups)
     {
         $char = $this->charRepo->find($characterId);
         if ($char === null) {
-            return;
+            return null;
         }
 
         $result = [
@@ -517,7 +517,7 @@ class ApplicationController
      * @param string $entityName "Corporation" or "Alliance"
      * @param int $entityId
      * @param \Brave\Core\Entity\Group[] $appGroups
-     * @return void|array Returns NULL if corporation was not found.
+     * @return null|array Returns NULL if corporation was not found.
      * @see \Brave\Core\Entity\Corporation::jsonSerialize()
      * @see \Brave\Core\Entity\Alliance::jsonSerialize()
      * @see \Brave\Core\Entity\Group::jsonSerialize()
@@ -528,7 +528,7 @@ class ApplicationController
 
         $entity = $repository->find($entityId);
         if ($entity === null) {
-            return;
+            return null;
         }
 
         $result = $entity->jsonSerialize();

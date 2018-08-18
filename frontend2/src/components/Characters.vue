@@ -20,10 +20,6 @@ Modal window with all characters of one player.
                             <span v-if="character.validToken" class="badge badge-success ml-1">Valid token</span>
                             <span v-if="! character.validToken" class="badge badge-danger ml-1">Invalid token</span>
                             <a class="badge badge-secondary ml-1"
-                               :href="'https://zkillboard.com/character/' + character.id"
-                               target="_blank">zKillboard</a>
-                            <br>
-                            <a class="badge badge-secondary ml-1"
                                :href="'https://evewho.com/pilot/' + character.name"
                                target="_blank">Eve Who</a>
                         </div>

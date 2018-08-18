@@ -10,7 +10,8 @@
         "ext-intl": "*",
         "ext-dom": "*",
         "ext-curl": "*",
-        "ext-apcu": "*"
+        "ext-apcu": "*",
+        "ext-json": "*"
     },
     "scripts": {
        "post-install-cmd": [

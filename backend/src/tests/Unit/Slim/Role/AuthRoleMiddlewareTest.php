@@ -5,6 +5,7 @@ namespace Tests\Unit\Slim\Role;
 use Brave\Core\Roles;
 use Brave\Slim\Role\AuthRoleMiddleware;
 use Brave\Slim\Role\RoleProviderInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -15,8 +16,9 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testAddsRolesForPaths()
     {
         $test = $this;
-        $next = function ($req) use ($test) {
+        $next = function (ServerRequestInterface $req) use ($test) {
             $test->assertSame(['r1', 'r2'], $req->getAttribute('roles'));
+            return new Response();
         };
 
         $this->invokeMiddleware('/path1', ['/path1', '/path2'], ['r1', 'r2'], $next, true);
@@ -26,8 +28,9 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testAddsRoleAnonymous()
     {
         $test = $this;
-        $next = function ($req) use ($test) {
+        $next = function (ServerRequestInterface $req) use ($test) {
             $test->assertSame([Roles::ANONYMOUS], $req->getAttribute('roles'));
+            return new Response();
         };
 
         $this->invokeMiddleware('/path1', ['/path1'], [], $next, true);
@@ -36,8 +39,9 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testDoesNotAddRolesForOtherPaths()
     {
         $test = $this;
-        $next = function ($req) use ($test) {
+        $next = function (ServerRequestInterface $req) use ($test) {
             $test->assertNull($req->getAttribute('roles'));
+            return new Response();
         };
 
         $this->invokeMiddleware('/other/path', ['/path1'], ['role1'], $next, true);
@@ -47,8 +51,9 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testDoesNotAddRolesWithoutPattern()
     {
         $test = $this;
-        $next = function ($req) use ($test) {
+        $next = function (ServerRequestInterface $req) use ($test) {
             $test->assertNull($req->getAttribute('roles'));
+            return new Response();
         };
 
         $this->invokeMiddleware('/path1', null, ['role1'], $next, true);
@@ -58,8 +63,9 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
     public function testDoesNotAddRolesWithoutRouteAttribute()
     {
         $test = $this;
-        $next = function ($req) use ($test) {
+        $next = function (ServerRequestInterface $req) use ($test) {
             $test->assertNull($req->getAttribute('roles'));
+            return new Response();
         };
 
         $this->invokeMiddleware('/path1', ['/path1'], ['role1'], $next, false);
@@ -80,6 +86,6 @@ class AuthRoleMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $arm = new AuthRoleMiddleware($role, ['route_pattern' =>  $routes]);
 
-        $arm($req, new Response(), $next);
+        return $arm($req, new Response(), $next);
     }
 }

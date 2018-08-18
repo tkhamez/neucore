@@ -195,7 +195,7 @@ class Group implements \JsonSerializable
      *
      * @return Group
      */
-    public function addApplicant(\Brave\Core\Entity\Player $applicant)
+    public function addApplicant(Player $applicant)
     {
         $this->applicants[] = $applicant;
 
@@ -209,7 +209,7 @@ class Group implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApplicant(\Brave\Core\Entity\Player $applicant)
+    public function removeApplicant(Player $applicant)
     {
         return $this->applicants->removeElement($applicant);
     }
@@ -231,7 +231,7 @@ class Group implements \JsonSerializable
      *
      * @return Group
      */
-    public function addPlayer(\Brave\Core\Entity\Player $player)
+    public function addPlayer(Player $player)
     {
         $this->players[] = $player;
 
@@ -245,7 +245,7 @@ class Group implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removePlayer(\Brave\Core\Entity\Player $player)
+    public function removePlayer(Player $player)
     {
         return $this->players->removeElement($player);
     }
@@ -267,7 +267,7 @@ class Group implements \JsonSerializable
      *
      * @return Group
      */
-    public function addManager(\Brave\Core\Entity\Player $manager)
+    public function addManager(Player $manager)
     {
         $this->managers[] = $manager;
 
@@ -281,7 +281,7 @@ class Group implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeManager(\Brave\Core\Entity\Player $manager)
+    public function removeManager(Player $manager)
     {
         return $this->managers->removeElement($manager);
     }
@@ -303,7 +303,7 @@ class Group implements \JsonSerializable
      *
      * @return Group
      */
-    public function addApp(\Brave\Core\Entity\App $app)
+    public function addApp(App $app)
     {
         $this->apps[] = $app;
 
@@ -317,7 +317,7 @@ class Group implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApp(\Brave\Core\Entity\App $app)
+    public function removeApp(App $app)
     {
         return $this->apps->removeElement($app);
     }
@@ -339,7 +339,7 @@ class Group implements \JsonSerializable
      *
      * @return Group
      */
-    public function addCorporation(\Brave\Core\Entity\Corporation $corporation)
+    public function addCorporation(Corporation $corporation)
     {
         $this->corporations[] = $corporation;
 
@@ -353,7 +353,7 @@ class Group implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCorporation(\Brave\Core\Entity\Corporation $corporation)
+    public function removeCorporation(Corporation $corporation)
     {
         return $this->corporations->removeElement($corporation);
     }
@@ -375,7 +375,7 @@ class Group implements \JsonSerializable
      *
      * @return Group
      */
-    public function addAlliance(\Brave\Core\Entity\Alliance $alliance)
+    public function addAlliance(Alliance $alliance)
     {
         $this->alliances[] = $alliance;
 
@@ -389,7 +389,7 @@ class Group implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeAlliance(\Brave\Core\Entity\Alliance $alliance)
+    public function removeAlliance(Alliance $alliance)
     {
         return $this->alliances->removeElement($alliance);
     }

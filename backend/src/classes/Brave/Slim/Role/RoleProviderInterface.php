@@ -10,8 +10,7 @@ interface RoleProviderInterface
     /**
      * Returns roles from an authenticated user.
      *
-     * @param ServerRequestInterface $request
-     * @return array e .g. ['role.one', 'role.two']
+     * Example: ['role.one', 'role.two']
      */
     public function getRoles(ServerRequestInterface $request): array;
 }

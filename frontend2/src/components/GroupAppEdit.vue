@@ -138,6 +138,10 @@ module.exports = {
             window.jQuery('#editModal').modal('show');
         },
 
+        hideEditModal: function() {
+            window.jQuery('#editModal').modal('hide');
+        },
+
         create: function() {
             const vm = this;
             let api;

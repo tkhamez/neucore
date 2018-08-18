@@ -172,7 +172,7 @@ class Alliance implements \JsonSerializable
     /**
      * Set lastUpdate.
      *
-     * @param \DateTime $update
+     * @param \DateTime $lastUpdate
      *
      * @return Alliance
      */
@@ -200,7 +200,7 @@ class Alliance implements \JsonSerializable
      *
      * @return Alliance
      */
-    public function addCorporation(\Brave\Core\Entity\Corporation $corporation)
+    public function addCorporation(Corporation $corporation)
     {
         $this->corporations[] = $corporation;
 
@@ -214,7 +214,7 @@ class Alliance implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCorporation(\Brave\Core\Entity\Corporation $corporation)
+    public function removeCorporation(Corporation $corporation)
     {
         return $this->corporations->removeElement($corporation);
     }
@@ -236,7 +236,7 @@ class Alliance implements \JsonSerializable
      *
      * @return Alliance
      */
-    public function addGroup(\Brave\Core\Entity\Group $group)
+    public function addGroup(Group $group)
     {
         $this->groups[] = $group;
 
@@ -250,7 +250,7 @@ class Alliance implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeGroup(\Brave\Core\Entity\Group $group)
+    public function removeGroup(Group $group)
     {
         return $this->groups->removeElement($group);
     }

@@ -19,7 +19,6 @@ use Doctrine\ORM\Tools\Setup;
 
 class Helper
 {
-
     /**
      * @var EntityManager
      */
@@ -35,7 +34,7 @@ class Helper
         Alliance::class,
     ];
 
-    public function resetSessionData()
+    public function resetSessionData(): void
     {
         unset($_SESSION);
 
@@ -48,7 +47,7 @@ class Helper
         $rp->setValue(null, true);
     }
 
-    public function getEm($discrete = false)
+    public function getEm(bool $discrete = false): EntityManager
     {
         if (self::$em === null || $discrete) {
             $settings = (new Application())->loadSettings(true);
@@ -71,7 +70,7 @@ class Helper
         return self::$em;
     }
 
-    public function updateDbSchema()
+    public function updateDbSchema(): void
     {
         $em = $this->getEm();
 
@@ -84,7 +83,7 @@ class Helper
         $tool->updateSchema($classes);
     }
 
-    public function emptyDb()
+    public function emptyDb(): void
     {
         $em = $this->getEm();
         $qb = $em->createQueryBuilder();
@@ -97,11 +96,9 @@ class Helper
     }
 
     /**
-     *
-     * @param array $roles
      * @return \Brave\Core\Entity\Role[]
      */
-    public function addRoles($roles)
+    public function addRoles(array $roles): array
     {
         $em = $this->getEm();
         $rr = new RoleRepository($em);
@@ -122,11 +119,9 @@ class Helper
     }
 
     /**
-     *
-     * @param array $groups
      * @return \Brave\Core\Entity\Group[]
      */
-    public function addGroups($groups)
+    public function addGroups(array $groups): array
     {
         $em = $this->getEm();
         $gr = new GroupRepository($em);
@@ -146,14 +141,7 @@ class Helper
         return $groupEntities;
     }
 
-    /**
-     *
-     * @param string $name
-     * @param int $charId
-     * @param array $roles
-     * @return Character
-     */
-    public function addCharacterMain(string $name, int $charId, array $roles = [], array $groups = [])
+    public function addCharacterMain(string $name, int $charId, array $roles = [], array $groups = []): Character
     {
         $em = $this->getEm();
 
@@ -187,14 +175,7 @@ class Helper
         return $char;
     }
 
-    /**
-     *
-     * @param string $name
-     * @param int $charId
-     * @param Player $player
-     * @return \Brave\Core\Entity\Character
-     */
-    public function addCharacterToPlayer(string $name, int $charId, Player $player)
+    public function addCharacterToPlayer(string $name, int $charId, Player $player): Character
     {
         $alt = new Character();
         $alt->setId($charId);
@@ -211,15 +192,7 @@ class Helper
         return $alt;
     }
 
-    /**
-     *
-     * @param string $name
-     * @param string $secret
-     * @param array $roles
-     * @param mixed $hash PASSWORD_DEFAULT or 'md5' (this is only to test password_needs_rehash())
-     * @return App
-     */
-    public function addApp(string $name, string $secret, array $roles, $hashAlgo = PASSWORD_DEFAULT)
+    public function addApp(string $name, string $secret, array $roles, $hashAlgo = PASSWORD_DEFAULT): App
     {
         $hash = $hashAlgo === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, PASSWORD_DEFAULT);
 

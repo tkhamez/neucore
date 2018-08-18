@@ -30,20 +30,18 @@ class SecureRouteMiddleware
      *      '/api/one/public' => ['anonymous', 'user'],
      *      '/api/one' => ['user'],
      * ]
+     *
+     * @param array $secured
      */
     public function __construct(array $secured)
     {
         $this->secured = $secured;
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $next
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        callable $next): ResponseInterface
     {
         /* @var $roles array */
         $roles = $request->getAttribute('roles');

@@ -37,14 +37,10 @@ class AuthRoleMiddleware
         $this->options = $options;
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $next
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        callable $next): ResponseInterface
     {
         if (! $this->shouldAuthenticate($request->getAttribute('route'))) {
             return $next($request, $response);

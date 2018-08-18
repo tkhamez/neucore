@@ -20,7 +20,6 @@ class AllianceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     *
      * {@inheritDoc}
      * @see \Doctrine\ORM\EntityRepository::find()
      * @return \Brave\Core\Entity\Alliance|null
@@ -31,7 +30,16 @@ class AllianceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     *
+     * {@inheritDoc}
+     * @see \Doctrine\ORM\EntityRepository::findBy()
+     * @return \Brave\Core\Entity\Alliance[]
+     */
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    {
+        return parent::findBy($criteria, $orderBy, $limit, $offset);
+    }
+
+    /**
      * @return \Brave\Core\Entity\Alliance[]
      */
     public function getAllWithGroups()

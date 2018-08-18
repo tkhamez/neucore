@@ -146,7 +146,7 @@ class Application
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
      * @return array
      */
-    public function loadSettings($unitTest = false): array
+    public function loadSettings(bool $unitTest = false): array
     {
         if ($this->settings !== null) {
             return $this->settings;
@@ -197,9 +197,11 @@ class Application
     /**
      * Returns DI container, builds it if needed.
      *
-     * @var \DI\Container
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ReflectionException
      */
-    public function getContainer()
+    public function getContainer(): Container
     {
         $this->loadSettings();
         $this->buildContainer();
@@ -210,6 +212,9 @@ class Application
     /**
      * Creates the Slim app
      *
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ReflectionException
      * @return \Slim\App
      */
     public function getApp(): App
@@ -229,8 +234,9 @@ class Application
     /**
      * Creates the Symfony console app.
      *
-     * @param Container $container
-     * @return \Symfony\Component\Console\Application
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ReflectionException
      */
     public function getConsoleApp(): ConsoleApplication
     {
@@ -267,12 +273,7 @@ class Application
         return $console;
     }
 
-    /**
-     *
-     * @param App $app
-     * @return void
-     */
-    public function addMiddleware(App $app)
+    public function addMiddleware(App $app): void
     {
         $c = $app->getContainer();
 
@@ -299,14 +300,19 @@ class Application
         $app->add(new Cors($c->get('config')['CORS']['allow_origin']));
     }
 
-    private function buildContainer()
+    /**
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ReflectionException
+     */
+    private function buildContainer(): void
     {
         if ($this->container !== null) {
             return;
         }
 
         // include config.php from php-di/slim-bridge
-        $reflector = new \ReflectionClass('DI\Bridge\Slim\App');
+        $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
         $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
 
         // Disable Slim’s error handling for dev env.
@@ -330,9 +336,10 @@ class Application
     /**
      * Add dependencies to DI container.
      *
-     * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
-    private function dependencies()
+    private function dependencies(): void
     {
         // Configuration class
         $config = new Config($this->container->get('config'));
@@ -383,10 +390,11 @@ class Application
      *
      * (not for CLI)
      *
-     * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
-    private function sessionHandler()
+    private function sessionHandler(): void
     {
         if (PHP_SAPI === 'cli') {
             // PHP 7.2 for unit tests:
@@ -407,9 +415,10 @@ class Application
     /**
      * Setup error handling.
      *
-     * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
-    private function errorHandling()
+    private function errorHandling(): void
     {
         // php settings
         ini_set('display_errors', '0'); // all errors are shown with whoops in dev mode
@@ -418,10 +427,10 @@ class Application
 
         if ($this->env === self::ENV_PROD) {
             // Extend Slim's error and php error handler.
-            $this->container->set('errorHandler', function ($c) {
+            $this->container->set('errorHandler', function (Container $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             });
-            $this->container->set('phpErrorHandler', function ($c) {
+            $this->container->set('phpErrorHandler', function (Container $c) {
                 return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             });
 
@@ -442,12 +451,7 @@ class Application
         }
     }
 
-    /**
-     *
-     * @param App $app
-     * @return void
-     */
-    private function routes(App $app)
+    private function routes(App $app): void
     {
         $routes = include self::ROOT_DIR . '/config/routes.php';
 

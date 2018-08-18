@@ -14,9 +14,9 @@ class Config
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function get($key)
+    public function get(string $key)
     {
         return isset($this->config[$key]) ? $this->config[$key] : null;
     }

@@ -109,7 +109,7 @@ class Role implements \JsonSerializable
      *
      * @return Role
      */
-    public function addPlayer(\Brave\Core\Entity\Player $player)
+    public function addPlayer(Player $player)
     {
         $this->players[] = $player;
 
@@ -123,7 +123,7 @@ class Role implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removePlayer(\Brave\Core\Entity\Player $player)
+    public function removePlayer(Player $player)
     {
         return $this->players->removeElement($player);
     }
@@ -145,7 +145,7 @@ class Role implements \JsonSerializable
      *
      * @return Role
      */
-    public function addApp(\Brave\Core\Entity\App $app)
+    public function addApp(App $app)
     {
         $this->apps[] = $app;
 
@@ -159,7 +159,7 @@ class Role implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApp(\Brave\Core\Entity\App $app)
+    public function removeApp(App $app)
     {
         return $this->apps->removeElement($app);
     }

@@ -92,13 +92,13 @@ class AutoGroupAssignment
      * or alliance.
      *
      * @param int $playerId
-     * @return \Brave\Core\Entity\Player|NULL
+     * @return \Brave\Core\Entity\Player|null
      */
     public function assign(int $playerId)
     {
         $player = $this->playerRepo->find($playerId);
         if ($player === null) {
-            return;
+            return null;
         }
 
         $this->loadMapping();
@@ -142,9 +142,11 @@ class AutoGroupAssignment
 
         $player->setLastUpdate(new \DateTime());
 
-        if ($this->flush()) {
-            return $player;
+        if (! $this->flush()) {
+            return null;
         }
+
+        return $player;
     }
 
     private function loadMapping()

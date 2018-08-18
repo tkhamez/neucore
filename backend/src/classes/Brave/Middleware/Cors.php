@@ -27,15 +27,9 @@ class Cors
         $this->allowOrigin = $allowOrigin;
     }
 
-    /**
-     *
-     * @param ServerRequestInterface $req
-     * @param ResponseInterface $res
-     * @param callable $next
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $req, ResponseInterface $res, callable $next)
+    public function __invoke(ServerRequestInterface $req, ResponseInterface $res, callable $next): ResponseInterface
     {
+        /** @var ResponseInterface $response */
         $response = $next($req, $res);
 
         $origin = $req->getHeader('HTTP_ORIGIN')[0] ?? null;

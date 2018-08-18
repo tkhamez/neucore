@@ -10,6 +10,7 @@
         "ext-intl": "*",
         "ext-dom": "*",
         "ext-curl": "*",
+        "ext-json": "*",
         "slim/slim": "^3.1",
         "php-di/slim-bridge": "^1.1",
         "monolog/monolog": "^1.17",

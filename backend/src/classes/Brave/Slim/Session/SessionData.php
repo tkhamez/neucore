@@ -33,7 +33,6 @@ class SessionData
     }
 
     /**
-     *
      * @return array|null
      */
     public function getAll()
@@ -65,7 +64,7 @@ class SessionData
      * @throws \RuntimeException If session is read-only
      * @return $this
      */
-    public function set($key, $value)
+    public function set(string $key, $value): self
     {
         if (self::$readOnly) {
             throw new \RuntimeException('Session is read-only.');
@@ -79,11 +78,9 @@ class SessionData
     /**
      * Delete a session variable.
      *
-     * @param string $key
      * @throws \RuntimeException If session is read-only
-     * @return $this
      */
-    public function delete($key)
+    public function delete(string $key): self
     {
         if (self::$readOnly) {
             throw new \RuntimeException('Session is read-only.');
@@ -101,9 +98,8 @@ class SessionData
      * and delete the old associated session file.
      *
      * @throws \RuntimeException If session is read-only
-     * @return $this
      */
-    public function clear()
+    public function clear(): self
     {
         if (self::$readOnly) {
             throw new \RuntimeException('Session is read-only.');

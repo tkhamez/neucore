@@ -30,20 +30,36 @@ Content page for group and app administration
             </div>
         </div>
 
-        <div class="card-body">
+        <div v-cloak class="card-body">
+            <p v-if="type === 'Group' && contentType === 'managers'">
+                Managers can add and remove players to a group.
+            </p>
+            <p v-if="type === 'App' && contentType === 'managers'">
+                Managers can change the application secret.
+            </p>
+            <p v-if="contentType === 'alliances' || contentType === 'corporations'">
+                Players in these {{contentType}} are automatically added to the group and removed when they leave.
+            </p>
+            <p v-if="contentType === 'groups'">
+                Apps can only see the membership of players to groups that are listed here.
+                <button class="btn btn-outline-warning float-right" v-on:click="addAllGroupsToApp()">
+                    Add all groups to app
+                </button>
+            </p>
+
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
                     <span class="input-group-text">
                         <span v-if="contentType === 'managers'">Add manager</span>
-                        <span v-if="contentType === 'corporations'">Add corporation</span>
                         <span v-if="contentType === 'alliances'">Add alliance</span>
+                        <span v-if="contentType === 'corporations'">Add corporation</span>
                         <span v-if="contentType === 'groups'">Add group</span>
                     </span>
                 </div>
                 <select class="custom-select" v-model="newObject" title="">
                     <option v-if="contentType === 'managers'" value="">Select player ...</option>
-                    <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>
                     <option v-if="contentType === 'alliances'" value="">Select alliance ...</option>
+                    <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>
                     <option v-if="contentType === 'groups'" value="">Select group ...</option>
                     <option v-for="option in selectContent" v-bind:value="option"
                             v-if="! tableHas(option)">
@@ -393,6 +409,40 @@ module.exports = {
                 vm.getTableContent();
             }]);
         },
+
+        addAllGroupsToApp: function() {
+            const vm = this;
+
+            if (! vm.typeId || vm.type !== 'App') {
+                return;
+            }
+
+            const numGroups = vm.selectContent.length;
+            let numAdded = 0;
+
+            for (let group of vm.selectContent) {
+                add(group);
+            }
+
+            function add(group) {
+                vm.loading(true);
+                new vm.swagger.AppApi().addGroup(vm.typeId, group.id, function(error) {
+                    vm.loading(false);
+                    if (error) { // 403 usually
+                        return;
+                    }
+                    done();
+                });
+            }
+
+            function done() {
+                numAdded ++;
+                if (numGroups === numAdded) {
+                    vm.getTableContent();
+                }
+            }
+        },
+
     },
 }
 </script>

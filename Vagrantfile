@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
     config.vm.hostname = "brvneucore"
 
     config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync",
-        rsync__exclude: [".settings/", ".buildpath", ".project", "backend/.env"]
+        rsync__exclude: ["backend/.env", ".settings/", ".buildpath", ".project", ".idea", ".jshintrc"]
 
     config.ssh.username = 'vagrant'
     config.ssh.password = 'vagrant'

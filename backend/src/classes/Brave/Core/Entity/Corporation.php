@@ -182,7 +182,7 @@ class Corporation implements \JsonSerializable
     /**
      * Set lastUpdate.
      *
-     * @param \DateTime $update
+     * @param \DateTime $lastUpdate
      *
      * @return Corporation
      */
@@ -210,7 +210,7 @@ class Corporation implements \JsonSerializable
      *
      * @return Corporation
      */
-    public function setAlliance(\Brave\Core\Entity\Alliance $alliance = null)
+    public function setAlliance(Alliance $alliance = null)
     {
         $this->alliance = $alliance;
 
@@ -234,7 +234,7 @@ class Corporation implements \JsonSerializable
      *
      * @return Corporation
      */
-    public function addGroup(\Brave\Core\Entity\Group $group)
+    public function addGroup(Group $group)
     {
         $this->groups[] = $group;
 
@@ -248,7 +248,7 @@ class Corporation implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeGroup(\Brave\Core\Entity\Group $group)
+    public function removeGroup(Group $group)
     {
         return $this->groups->removeElement($group);
     }
@@ -280,7 +280,7 @@ class Corporation implements \JsonSerializable
      *
      * @return Corporation
      */
-    public function addCharacter(\Brave\Core\Entity\Character $character)
+    public function addCharacter(Character $character)
     {
         $this->characters[] = $character;
 
@@ -294,7 +294,7 @@ class Corporation implements \JsonSerializable
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCharacter(\Brave\Core\Entity\Character $character)
+    public function removeCharacter(Character $character)
     {
         return $this->characters->removeElement($character);
     }

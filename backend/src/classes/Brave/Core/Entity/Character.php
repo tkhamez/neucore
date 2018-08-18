@@ -382,7 +382,7 @@ class Character implements \JsonSerializable
     /**
      * Set lastUpdate.
      *
-     * @param \DateTime $update
+     * @param \DateTime $lastUpdate
      *
      * @return Character
      */
@@ -410,7 +410,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setPlayer(\Brave\Core\Entity\Player $player = null)
+    public function setPlayer(Player $player = null)
     {
         $this->player = $player;
 
@@ -434,7 +434,7 @@ class Character implements \JsonSerializable
      *
      * @return Character
      */
-    public function setCorporation(\Brave\Core\Entity\Corporation $corporation = null)
+    public function setCorporation(Corporation $corporation = null)
     {
         $this->corporation = $corporation;
 

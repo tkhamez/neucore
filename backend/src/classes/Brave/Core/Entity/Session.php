@@ -19,23 +19,23 @@ class Session
      * @Id
      * @GeneratedValue(strategy="NONE")
      */
-    private $sessId;
+    public $sessId;
 
     /**
      * @var string
      * @Column(name="sess_data", type="blob", length=65535, nullable=false)
      */
-    private $sessData;
+    public $sessData;
 
     /**
      * @var int
      * @Column(name="sess_lifetime", type="integer", nullable=false)
      */
-    private $sessLifetime;
+    public $sessLifetime;
 
     /**
      * @var int
      * @Column(name="sess_time", type="integer", nullable=false, options={"unsigned"=true})
      */
-    private $sessTime;
+    public $sessTime;
 }

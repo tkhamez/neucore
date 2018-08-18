@@ -6,7 +6,6 @@ use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;
-use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Response;
@@ -28,11 +27,6 @@ class CharacterController
      * @var UserAuth
      */
     private $uas;
-
-    /**
-     * @var EsiApi
-     */
-    private $es;
 
     /**
      * @var EsiCharacter
@@ -154,7 +148,7 @@ class CharacterController
      *     )
      * )
      */
-    public function findPlayerOf($id): Response
+    public function findPlayerOf(string $id): Response
     {
         $char = $this->charRepo->find((int) $id);
 
