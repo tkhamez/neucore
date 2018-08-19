@@ -2,7 +2,7 @@
     "name": "brv/neucore",
     "type": "project",
     "require": {
-        "php-64bit": "^7.2",
+        "php-64bit": "^7.1",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-intl": "*",
@@ -15,6 +15,7 @@
         "doctrine/migrations": "^1.6",
         "league/oauth2-client": "^2.2",
         "monolog/monolog": "^1.17",
+        "ocramius/proxy-manager": "^2.1 <2.2.0",
         "php-di/slim-bridge": "^2.0",
         "slim/slim": "^3.1",
         "symfony/console": "^4.0",

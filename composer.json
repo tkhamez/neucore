@@ -2,16 +2,16 @@
     "name": "brv/neucore-heroku",
     "description": "For Heroku to setup the PHP environment and install the backend and frontend.",
     "require": {
-        "php": "^7.2",
-        "ext-zend-opcache": "*",
-        "ext-pdo_mysql": "*",
-        "ext-zip": "*",
-        "ext-mbstring": "*",
-        "ext-intl": "*",
-        "ext-dom": "*",
+        "php": "^7.1",
         "ext-curl": "*",
-        "ext-apcu": "*",
-        "ext-json": "*"
+        "ext-dom": "*",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-pdo_mysql": "*",
+        "ext-zend-opcache": "*",
+        "ext-zip": "*",
+        "ext-apcu": "*"
     },
     "scripts": {
        "post-install-cmd": [
