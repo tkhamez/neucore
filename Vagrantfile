@@ -9,8 +9,9 @@ Vagrant.configure("2") do |config|
     config.vm.box = "generic/ubuntu1804"
     config.vm.hostname = "brvneucore"
 
-    config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync",
-        rsync__exclude: ["backend/.env", ".settings/", ".buildpath", ".project", ".idea", ".jshintrc"]
+    config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync", rsync__exclude: [
+        "backend/.env", "backend/vendor/", "frontend2/node_modules/", "frontend2/brvneucore-js-client/",
+        ".settings/", ".buildpath", ".project", ".idea", ".jshintrc"]
 
     config.ssh.username = 'vagrant'
     config.ssh.password = 'vagrant'
@@ -25,7 +26,8 @@ Vagrant.configure("2") do |config|
         apt-get autoremove -y
 
         # install php + composer
-        apt-get install -y php7.2-fpm php-cli php-curl php-xml php-json php-mbstring php-mysql php7.2-opcache
+        apt-get install -y php php7.2 php7.2-fpm
+        apt-get install -y php-cli php-curl php-xml php-json php-mbstring php-mysql php7.2-opcache
         apt-get install -y php-apcu php-xdebug
         apt-get install -y composer
 
@@ -50,10 +52,10 @@ Vagrant.configure("2") do |config|
         a2dissite 000-default
         a2enconf php7.2-fpm
 
-        # install phpmyadmin
-        debconf-set-selections <<< "phpmyadmin phpmyadmin/dbconfig-install boolean true"
-        debconf-set-selections <<< "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2"
-        apt-get install -y phpmyadmin
+        # also install php-pgsql, php-sqlite3
+        apt-get install -y adminer
+        echo "Alias /adminer /usr/share/adminer/adminer/" > /etc/apache2/sites-available/020-adminer.conf
+        a2ensite 020-adminer
 
         # put cli and web user into each other's group for write permissions
         usermod -a -G www-data vagrant
@@ -88,9 +90,9 @@ Vagrant.configure("2") do |config|
         echo "--------------------------------------------------------------------------------"
         echo "-- URLs (change IP as needed):                                                --"
         echo "-- Brave Core  https://192.168.123.6                                          --"
-        echo "-- phpMyAdmin: https://192.168.123.6/phpmyadmin (core/brave)                  --"
+        echo "-- Adminer: https://192.168.123.6/adminer (core/brave)                        --"
         echo "-- SSH user: vagrant/vagrant                                                  --"
-        echo "-- mount:   sshfs vagrant@192.168.123.6:/ /mnt/brvneucore                     --"
+        echo "-- mount: sshfs vagrant@192.168.123.6:/ /mnt/brvneucore                       --"
         echo "-- unmount: fusermount -u /mnt/brvneucore                                     --"
         echo "-- $ ifconfig eth0 | grep inet:                                               --"
         /sbin/ifconfig eth0 | grep "inet "
