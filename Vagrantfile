@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
 
         # also install php-pgsql, php-sqlite3
         apt-get install -y adminer
-        echo "Alias /adminer /usr/share/adminer/adminer/" > /etc/apache2/sites-available/020-adminer.conf
+        echo "Alias /adminer /usr/share/adminer/" > /etc/apache2/sites-available/020-adminer.conf
         a2ensite 020-adminer
 
         # put cli and web user into each other's group for write permissions
@@ -89,10 +89,10 @@ Vagrant.configure("2") do |config|
         echo " "
         echo "--------------------------------------------------------------------------------"
         echo "-- URLs (change IP as needed):                                                --"
-        echo "-- Brave Core  https://192.168.123.6                                          --"
-        echo "-- Adminer: https://192.168.123.6/adminer (core/brave)                        --"
+        echo "-- Brave Core  https://192.168.121.111                                        --"
+        echo "-- Adminer: https://192.168.121.111/adminer/adminer/designs.php (core/brave)  --"
         echo "-- SSH user: vagrant/vagrant                                                  --"
-        echo "-- mount: sshfs vagrant@192.168.123.6:/ /mnt/brvneucore                       --"
+        echo "-- mount: sshfs vagrant@192.168.121.111:/ /mnt/brvneucore                     --"
         echo "-- unmount: fusermount -u /mnt/brvneucore                                     --"
         echo "-- $ ifconfig eth0 | grep inet:                                               --"
         /sbin/ifconfig eth0 | grep "inet "
