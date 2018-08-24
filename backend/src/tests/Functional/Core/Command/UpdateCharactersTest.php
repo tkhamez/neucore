@@ -22,14 +22,29 @@ use Tests\Helper;
 
 class UpdateCharactersTest extends ConsoleTestCase
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $charApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $corpApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $alliApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $oauth;
 
     public function setUp()
@@ -46,7 +61,8 @@ class UpdateCharactersTest extends ConsoleTestCase
 
     public function testExecuteErrorUpdate()
     {
-        $c = (new Character())->setId(1)->setName('c1')->setCharacterOwnerHash('coh1')->setAccessToken('at1');
+        $c = (new Character())->setId(1)->setName('c1')
+            ->setCharacterOwnerHash('coh1')->setAccessToken('at1');
         $this->em->persist($c);
         $this->em->flush();
         $this->charApi->method('getCharactersCharacterId')->willReturn(null);
@@ -65,8 +81,10 @@ class UpdateCharactersTest extends ConsoleTestCase
     public function testExecuteWithoutTokenWithCorpAndAlliance()
     {
         // setup
-        $c1 = (new Character())->setId(1122)->setName('c11')->setCharacterOwnerHash('coh11')->setAccessToken('at11');
-        $c2 = (new Character())->setId(2233)->setName('c22')->setCharacterOwnerHash('coh22')->setAccessToken('at22');
+        $c1 = (new Character())->setId(1122)->setName('c11')
+            ->setCharacterOwnerHash('coh11')->setAccessToken('at11');
+        $c2 = (new Character())->setId(2233)->setName('c22')
+            ->setCharacterOwnerHash('coh22')->setAccessToken('at22');
         $this->em->persist($c1);
         $this->em->persist($c2);
         $this->em->flush();
@@ -101,7 +119,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         # read result
         $this->em->clear();
 
-        $actualChars = (new CharacterRepository($this->em))->findAll();
+        $actualChars = (new CharacterRepository($this->em))->findBy([]);
         $this->assertSame(1122, $actualChars[0]->getId());
         $this->assertSame(2233, $actualChars[1]->getId());
         $this->assertNotNull($actualChars[0]->getLastUpdate());
@@ -111,10 +129,10 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertSame(212, $actualChars[0]->getCorporation()->getAlliance()->getId());
         $this->assertSame(212, $actualChars[1]->getCorporation()->getAlliance()->getId());
 
-        $actualCorps = (new CorporationRepository($this->em))->findAll();
+        $actualCorps = (new CorporationRepository($this->em))->findBy([]);
         $this->assertSame(234, $actualCorps[0]->getId());
 
-        $actualAlliances = (new AllianceRepository($this->em))->findAll();
+        $actualAlliances = (new AllianceRepository($this->em))->findBy([]);
         $this->assertSame(212, $actualAlliances[0]->getId());
     }
 

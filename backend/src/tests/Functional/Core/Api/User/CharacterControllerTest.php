@@ -15,12 +15,17 @@ use Tests\Helper;
 
 class CharacterControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
     private $helper;
 
     private $playerId;
 
     private $corpId = 234;
+
     private $corpName = 'The Corp.';
+
     private $corpTicker = '-TTT-';
 
     public function setUp()

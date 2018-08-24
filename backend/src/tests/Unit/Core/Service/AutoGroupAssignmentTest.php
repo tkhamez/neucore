@@ -19,12 +19,24 @@ use Brave\Core\Entity\Alliance;
 
 class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var Helper
+     */
     private $th;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
+    /**
+     * @var PlayerRepository
+     */
     private $playerRepo;
 
+    /**
+     * @var AutoGroupAssignment
+     */
     private $aga;
 
     private $agaError;

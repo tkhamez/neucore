@@ -14,6 +14,9 @@ use Tests\WriteErrorListener;
 
 class MakeAdminTest extends ConsoleTestCase
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private static $em;
 
     public static function setUpBeforeClass()
