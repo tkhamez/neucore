@@ -25,8 +25,8 @@ Vagrant.configure("2") do |config|
         apt-get autoremove -y
 
         # install php + composer
-        apt-get install -y php7.2-fpm php-zip php-bz2 php-mbstring php-intl php-dom php-curl
-        apt-get install -y php-mysql php-apcu php-xdebug
+        apt-get install -y php7.2-fpm php-cli php-curl php-xml php-json php-mbstring php-mysql php7.2-opcache
+        apt-get install -y php-apcu php-xdebug
         apt-get install -y composer
 
         # install node + npm (npm version in Ubuntu does not yet support package-lock.json)

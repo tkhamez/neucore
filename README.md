@@ -48,7 +48,7 @@ The values for the EVE application must be adjusted.
 
 ### Local dev Requirements
 
-* PHP 7.1+ with Composer, see Vagrantfile for necessary additional extensions
+* PHP 7.1+ with Composer, see `backend/composer.json` for necessary extensions
 * Node.js 8 + npm 5 (use 5.6 if there are "write after end" errors)
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
@@ -79,7 +79,7 @@ Then install the dependencies and build the backend and frontend by executing:
 - Create a new app
 - Add a database, e. g. JawsDB Maria.
 - Add the necessary Config Vars (see `backend/.env.dist` file)
-- Add buildpacks in this order:
+- Add build packs in this order:
 ```
 heroku buildpacks:add heroku/java
 heroku buildpacks:add heroku/nodejs
