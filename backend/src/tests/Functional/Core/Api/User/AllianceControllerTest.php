@@ -23,8 +23,14 @@ use Tests\WriteErrorListener;
 
 class AllianceControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
     private $helper;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
     private $alliId1;
@@ -35,8 +41,14 @@ class AllianceControllerTest extends WebTestCase
 
     private $groupId2;
 
+    /**
+     * @var AllianceRepository
+     */
     private $alliRepo;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $alliApi;
 
     private $esi;
@@ -223,7 +235,7 @@ class AllianceControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        // check that aliance was created in db
+        // check that alliance was created in db
         $alli = $this->alliRepo->find(123456);
 
         $this->assertSame(123456, $alli->getId());

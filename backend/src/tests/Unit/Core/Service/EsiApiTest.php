@@ -18,14 +18,29 @@ use Tests\Helper;
 
 class EsiApiTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var Logger
+     */
     private $log;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $alliApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $corpApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $charApi;
 
+    /**
+     * @var EsiApi
+     */
     private $esi;
 
     public function setUp()

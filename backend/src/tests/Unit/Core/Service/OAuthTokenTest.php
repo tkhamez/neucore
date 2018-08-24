@@ -17,14 +17,26 @@ use Tests\WriteErrorListener;
 
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
+    /**
+     * @var Logger
+     */
     private $log;
 
     private $oauth;
 
+    /**
+     * @var OAuthToken
+     */
     private $es;
 
+    /**
+     * @var OAuthToken
+     */
     private $esError;
 
     public function setUp()

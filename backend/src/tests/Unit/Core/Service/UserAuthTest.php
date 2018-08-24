@@ -18,6 +18,9 @@ use Tests\Helper;
 
 class UserAuthTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var Logger
+     */
     private $log;
 
     /**

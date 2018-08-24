@@ -17,22 +17,40 @@ use Tests\WriteErrorListener;
 
 class PlayerControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
     private $h;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
     private $userId;
 
     private $managerId;
 
+    /**
+     * @var \Brave\Core\Entity\Player
+     */
     private $player;
 
+    /**
+     * @var Group
+     */
     private $group;
 
     private $gPrivId;
 
+    /**
+     * @var PlayerRepository
+     */
     private $pr;
 
+    /**
+     * @var Logger
+     */
     private $log;
 
     public function setUp()

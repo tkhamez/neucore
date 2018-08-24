@@ -47,7 +47,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
 
         # read result
-        $actual = (new PlayerRepository($em))->findAll();
+        $actual = (new PlayerRepository($em))->findBy([]);
         $this->assertSame($p1->getId(), $actual[0]->getId());
         $this->assertSame($p2->getId(), $actual[1]->getId());
         $this->assertNotNull($actual[0]->getLastUpdate());

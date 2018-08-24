@@ -19,12 +19,24 @@ use Tests\WriteErrorListener;
 
 class AppControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
     private $helper;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
+    /**
+     * @var AppRepository
+     */
     private $ar;
 
+    /**
+     * @var GroupRepository
+     */
     private $gr;
 
     private $gid;
@@ -464,9 +476,10 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-group/'.$this->gid);
-        $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.($this->gid + 1));
-        $this->assertEquals(404, $response->getStatusCode());
+        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid + 1).'/remove-group/'.$this->gid);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.($this->gid + 1));
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
     }
 
     public function testRemoveGroup500()

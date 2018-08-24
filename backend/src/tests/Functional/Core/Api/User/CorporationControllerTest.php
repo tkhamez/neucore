@@ -25,8 +25,14 @@ use Tests\WriteErrorListener;
 
 class CorporationControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
     private $h;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
     private $cid1;
@@ -37,12 +43,24 @@ class CorporationControllerTest extends WebTestCase
 
     private $gid2;
 
+    /**
+     * @var CorporationRepository
+     */
     private $corpRepo;
 
+    /**
+     * @var AllianceRepository
+     */
     private $alliRepo;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $alliApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $corpApi;
 
     private $esi;
@@ -268,7 +286,7 @@ class CorporationControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        // check that corp and aliance were created in db
+        // check that corp and alliance were created in db
         $corp = $this->corpRepo->find(456123);
         $alli = $this->alliRepo->find(123456);
 

@@ -126,7 +126,7 @@ class Application
         // set timezone - also used by Doctrine for dates/times in the database
         date_default_timezone_set('UTC');
 
-        // use the following when an error occured before the error handling is setup
+        // use the following when an error occurred before the error handling is setup
         #ini_set('display_errors', '1');
 
         // allow group to change files
@@ -304,6 +304,7 @@ class Application
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      * @throws \ReflectionException
+     * @throws \Exception
      */
     private function buildContainer(): void
     {
@@ -374,9 +375,9 @@ class Application
                 if (! is_writable($dir)) {
                     if ($this->env === self::ENV_PROD) {
                         // output message because we may never see it otherwise
-                        echo 'Error: the log directory must be writable by the webserver.';
+                        echo 'Error: the log directory must be writable by the web server.';
                     }
-                    throw new \Exception('The log directory ' . $dir . ' must be writable by the webserver.');
+                    throw new \Exception('The log directory ' . $dir . ' must be writable by the web server.');
                 }
             }
             $logger = new Logger($conf['name']);

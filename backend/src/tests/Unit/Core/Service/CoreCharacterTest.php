@@ -16,10 +16,19 @@ use Tests\Helper;
 
 class CoreCharacterTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var Helper
+     */
     private $helper;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $oauthProvider;
 
+    /**
+     * @var CoreCharacter
+     */
     private $service;
 
     public function setUp()

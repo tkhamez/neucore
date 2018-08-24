@@ -19,12 +19,24 @@ use Tests\WriteErrorListener;
 
 class GroupControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
     private $helper;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
+    /**
+     * @var GroupRepository
+     */
     private $gr;
 
+    /**
+     * @var PlayerRepository
+     */
     private $pr;
 
     private $gid;

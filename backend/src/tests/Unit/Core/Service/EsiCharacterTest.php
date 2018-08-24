@@ -24,24 +24,54 @@ use Tests\WriteErrorListener;
 
 class EsiCharacterTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var Helper
+     */
     private $testHelper;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $alliApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $charApi;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
     private $corpApi;
 
+    /**
+     * @var AllianceRepository
+     */
     private $alliRepo;
 
+    /**
+     * @var CorporationRepository
+     */
     private $corpRepo;
 
+    /**
+     * @var CharacterRepository
+     */
     private $charRepo;
 
+    /**
+     * @var EsiCharacter
+     */
     private $cs;
 
+    /**
+     * @var EsiCharacter
+     */
     private $csError;
 
     public function setUp()
