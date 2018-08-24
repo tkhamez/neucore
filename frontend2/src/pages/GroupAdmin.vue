@@ -158,6 +158,7 @@ module.exports = {
             this.groupId = null;
             this.contentType = '';
             this.getGroups();
+            this.$root.$emit('playerChange'); // current player could have been a manager or member
         },
 
         showEditGroupModal: function(group) {

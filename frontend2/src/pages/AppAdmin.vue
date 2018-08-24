@@ -121,6 +121,7 @@ module.exports = {
             this.appId = null;
             this.contentType = '';
             this.getApps();
+            this.$root.$emit('playerChange'); // current player could have been a manager
         },
 
         showRenameAppModal: function(app) {
