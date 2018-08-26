@@ -6,7 +6,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\CharacterRepository;
 use Brave\Core\Entity\RoleRepository;
 use Brave\Core\Roles;
-use Brave\Slim\Role\RoleProviderInterface;
+use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
@@ -73,7 +73,7 @@ class UserAuth implements RoleProviderInterface
     /**
      *
      * {@inheritdoc}
-     * @see \Brave\Slim\Role\RoleProviderInterface::getRoles()
+     * @see \Tkhamez\Slim\RoleAuth\RoleProviderInterface::getRoles()
      */
     public function getRoles(ServerRequestInterface $request = null): array
     {

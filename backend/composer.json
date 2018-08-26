@@ -20,6 +20,7 @@
         "symfony/dotenv": "^4.0",
         "symfony/http-foundation": "^4.0",
         "symfony/yaml": "^4.0",
+        "tkhamez/slim-role-auth": "@dev",
         "tkhamez/swagger-eve-php": "0.8.3.1",
         "zircote/swagger-php": "^2.0",
 
@@ -36,10 +37,10 @@
         	"Tests\\": "src/tests/"
     	}
     },
-    "repositories": [{
-        "type": "git",
-        "url": "https://github.com/tkhamez/swagger-eve-php.git"
-    }],
+    "repositories": [
+        { "type": "git", "url": "https://github.com/tkhamez/slim-role-auth.git" },
+        { "type": "git", "url": "https://github.com/tkhamez/swagger-eve-php.git" }
+    ],
     "scripts": {
         "compile": [
             "doctrine-migrations migrations:migrate --no-interaction",
@@ -53,5 +54,10 @@
         "test": "phpunit",
         "test:cov": "phpunit --coverage-html var/phpunit",
         "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"
+    },
+    "config": {
+        "platform": {
+            "php": "7.1.3"
+        }
     }
 }

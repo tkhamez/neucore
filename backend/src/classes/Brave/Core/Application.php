@@ -18,8 +18,8 @@ use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
-use Brave\Slim\Role\AuthRoleMiddleware;
-use Brave\Slim\Role\SecureRouteMiddleware;
+use Tkhamez\Slim\RoleAuth\RoleMiddleware;
+use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
 
 use DI\Container;
@@ -126,8 +126,8 @@ class Application
         // set timezone - also used by Doctrine for dates/times in the database
         date_default_timezone_set('UTC');
 
-        // use the following when an error occurred before the error handling is setup
-        #ini_set('display_errors', '1');
+        // show error until the error handling is setup
+        ini_set('display_errors', '1');
 
         // allow group to change files
         umask(0002);
@@ -282,8 +282,8 @@ class Application
         $security = include self::ROOT_DIR . '/config/security.php';
         $app->add(new SecureRouteMiddleware($security));
 
-        $app->add(new AuthRoleMiddleware($c->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
-        $app->add(new AuthRoleMiddleware($c->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
+        $app->add(new RoleMiddleware($c->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
+        $app->add(new RoleMiddleware($c->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',

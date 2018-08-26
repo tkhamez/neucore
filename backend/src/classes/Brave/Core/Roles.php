@@ -2,7 +2,7 @@
 
 namespace Brave\Core;
 
-use Brave\Slim\Role\AuthRoleMiddleware;
+use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 
 class Roles
 {
@@ -18,7 +18,7 @@ class Roles
      *
      * @var string
      */
-    const ANONYMOUS = AuthRoleMiddleware::ROLE_ANONYMOUS;
+    const ANONYMOUS = RoleMiddleware::ROLE_ANONYMOUS;
 
     /**
      * This role is given to every authenticated user.
