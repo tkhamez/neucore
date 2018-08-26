@@ -36,7 +36,6 @@ are configured with the environment variable BRAVECORE_EVE_SCOPES.
 Only tested with Vagrant 2 + libvirt.
 
 - `vagrant up` creates and configures the virtual machine.
-- Browse to https://localhost:8443
 - If the Vagrant file changes, run `vagrant provision` to update the VM.
 - `vagrant destroy` will completely remove the VM.
 
