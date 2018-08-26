@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "dee6d8b2a25968c3265be531359ecefb",
+    "content-hash": "406c7cfcd5a56a52b1bb06b1b522d6a5",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -3937,7 +3937,7 @@
         },
         {
             "name": "tkhamez/slim-role-auth",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/slim-role-auth.git",
@@ -4246,9 +4246,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "tkhamez/slim-role-auth": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
