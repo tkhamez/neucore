@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "406c7cfcd5a56a52b1bb06b1b522d6a5",
+    "content-hash": "e21acf0942d20de86c0a598b13d464e1",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -4250,7 +4250,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php-64bit": "^7.1",
+        "php-64bit": "^7.1.3",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-json": "*",
