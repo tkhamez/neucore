@@ -4,7 +4,7 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\AppRepository;
-use Brave\Slim\Role\RoleProviderInterface;
+use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -39,7 +39,7 @@ class AppAuth implements RoleProviderInterface
     /**
      *
      * {@inheritDoc}
-     * @see \Brave\Slim\Role\RoleProviderInterface::getRoles()
+     * @see \Tkhamez\Slim\RoleAuth\RoleProviderInterface::getRoles()
      */
     public function getRoles(ServerRequestInterface $request): array
     {
