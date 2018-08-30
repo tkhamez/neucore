@@ -13,7 +13,9 @@ class AllianceRepositoryTest extends \PHPUnit\Framework\TestCase
     {
         $em = (new Helper())->getEm();
         $r = new AllianceRepository($em);
+
         $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
+        $this->assertSame(Alliance::class, $r->getClassName());
     }
 
     public function testGetAllWithGroups()

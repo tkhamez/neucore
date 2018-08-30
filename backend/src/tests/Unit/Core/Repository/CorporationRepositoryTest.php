@@ -13,7 +13,9 @@ class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase
     {
         $em = (new Helper())->getEm();
         $r = new CorporationRepository($em);
+
         $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
+        $this->assertSame(Corporation::class, $r->getClassName());
     }
 
     public function testGetAllWithGroups()
