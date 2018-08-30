@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Entity;
+namespace Brave\Core\Repository;
+
+use Brave\Core\Entity\Role;
 
 /**
  * RoleRepository

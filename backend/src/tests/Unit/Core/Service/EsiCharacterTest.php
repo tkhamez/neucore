@@ -3,10 +3,10 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\AllianceRepository;
-use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;

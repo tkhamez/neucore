@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Service\AutoGroupAssignment;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;

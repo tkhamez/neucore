@@ -2,7 +2,7 @@
 
 namespace Tests\Functional\Core\Command;
 
-use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;

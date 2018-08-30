@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core\Entity;
 
-use Brave\Core\Entity\AllianceRepository;
+use Brave\Core\Repository\AllianceRepository;
 use Tests\Helper;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Group;

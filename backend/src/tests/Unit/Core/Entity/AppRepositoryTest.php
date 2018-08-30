@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core\Entity;
 
-use Brave\Core\Entity\AppRepository;
+use Brave\Core\Repository\AppRepository;
 use Tests\Helper;
 
 class AppRepositoryTest extends \PHPUnit\Framework\TestCase

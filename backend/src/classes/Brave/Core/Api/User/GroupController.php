@@ -3,9 +3,9 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
-use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Service\UserAuth;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;

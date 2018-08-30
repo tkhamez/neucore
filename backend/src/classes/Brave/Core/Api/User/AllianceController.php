@@ -3,8 +3,8 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\AllianceRepository;
-use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Service\EsiCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;

@@ -2,10 +2,10 @@
 
 namespace Tests\Functional\Core\Command;
 
-use Brave\Core\Entity\AllianceRepository;
+use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Character;
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationRepository;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Monolog\Logger;

@@ -2,10 +2,10 @@
 
 namespace Brave\Core\Service;
 
-use Brave\Core\Entity\AllianceRepository;
-use Brave\Core\Entity\CorporationRepository;
-use Brave\Core\Entity\GroupRepository;
-use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\GroupRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 

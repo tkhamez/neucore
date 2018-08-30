@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
 use Tests\Helper;
 

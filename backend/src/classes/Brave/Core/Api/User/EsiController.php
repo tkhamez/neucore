@@ -3,7 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Config;
-use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;

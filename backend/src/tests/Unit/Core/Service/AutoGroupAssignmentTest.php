@@ -2,14 +2,14 @@
 
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Entity\AllianceRepository;
+use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
-use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Service\AutoGroupAssignment;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;

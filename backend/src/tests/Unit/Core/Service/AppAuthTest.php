@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Entity\AppRepository;
+use Brave\Core\Repository\AppRepository;
 use Brave\Core\Service\AppAuth;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;

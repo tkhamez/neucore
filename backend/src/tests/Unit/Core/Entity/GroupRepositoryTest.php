@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core\Entity;
 
-use Brave\Core\Entity\GroupRepository;
+use Brave\Core\Repository\GroupRepository;
 use Tests\Helper;
 
 class GroupRepositoryTest extends \PHPUnit\Framework\TestCase

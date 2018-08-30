@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Core\Api\User;
 
-use Brave\Core\Entity\AllianceRepository;
+use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
