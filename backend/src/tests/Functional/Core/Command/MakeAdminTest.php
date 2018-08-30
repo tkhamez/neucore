@@ -15,7 +15,7 @@ use Tests\WriteErrorListener;
 class MakeAdminTest extends ConsoleTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private static $em;
 

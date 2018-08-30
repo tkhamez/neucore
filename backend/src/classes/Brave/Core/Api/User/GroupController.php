@@ -6,9 +6,8 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -26,11 +25,6 @@ class GroupController
     private $res;
 
     /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var GroupRepository
      */
     private $gr;
@@ -46,9 +40,9 @@ class GroupController
     private $uas;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     /**
      * @var string
@@ -65,15 +59,18 @@ class GroupController
      */
     private $player;
 
-    public function __construct(Response $res, LoggerInterface $log, GroupRepository $gr,
-        PlayerRepository $pr, UserAuth $uas, EntityManagerInterface $em)
-    {
-        $this->log = $log;
+    public function __construct(
+        Response $res,
+        GroupRepository $gr,
+        PlayerRepository $pr,
+        UserAuth $uas,
+        ObjectManager $objectManager
+    ) {
         $this->res = $res;
         $this->gr = $gr;
         $this->pr = $pr;
         $this->uas = $uas;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -175,8 +172,8 @@ class GroupController
         $group = new Group();
         $group->setName($name);
 
-        $this->em->persist($group);
-        if (! $this->flush()) {
+        $this->objectManager->persist($group);
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -247,7 +244,7 @@ class GroupController
         }
 
         $this->group->setName($name);
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -307,7 +304,7 @@ class GroupController
             return $this->res->withStatus(400);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -349,8 +346,8 @@ class GroupController
             return $this->res->withStatus(404);
         }
 
-        $this->em->remove($this->group);
-        if (! $this->flush()) {
+        $this->objectManager->remove($this->group);
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -817,7 +814,7 @@ class GroupController
             $this->player->addGroup($this->group);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -842,7 +839,7 @@ class GroupController
             $this->player->removeApplication($this->group);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -887,17 +884,5 @@ class GroupController
         }
 
         return false;
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
-
-        return true;
     }
 }

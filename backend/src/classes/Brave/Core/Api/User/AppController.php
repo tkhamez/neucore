@@ -10,8 +10,8 @@ use Brave\Core\Entity\Player;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
+use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -45,9 +45,9 @@ class AppController
     private $rr;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     /**
      * @var App
@@ -64,14 +64,18 @@ class AppController
      */
     private $group;
 
-    public function __construct(Response $res, LoggerInterface $log, AppRepository $ar, RoleRepository $rr,
-        EntityManagerInterface $em)
+    public function __construct(
+        Response $res,
+        LoggerInterface $log,
+        AppRepository $ar,
+        RoleRepository $rr,
+        ObjectManager $objectManager)
     {
         $this->res = $res;
         $this->log = $log;
         $this->ar = $ar;
         $this->rr = $rr;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -148,8 +152,8 @@ class AppController
         $app->setSecret(password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT));
         $app->addRole($appRole);
 
-        $this->em->persist($app);
-        if (! $this->flush()) {
+        $this->objectManager->persist($app);
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -212,7 +216,7 @@ class AppController
         }
 
         $app->setName($name);
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -255,8 +259,8 @@ class AppController
             return $this->res->withStatus(404);
         }
 
-        $this->em->remove($app);
-        if (! $this->flush()) {
+        $this->objectManager->remove($app);
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -362,7 +366,7 @@ class AppController
             $this->app->addManager($this->player);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -413,7 +417,7 @@ class AppController
 
         $this->app->removeManager($this->player);
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -523,7 +527,7 @@ class AppController
             $this->app->addGroup($this->group);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -574,7 +578,7 @@ class AppController
 
         $this->app->removeGroup($this->group);
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -627,7 +631,7 @@ class AppController
         $secret = bin2hex(random_bytes(32));
         $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -662,17 +666,5 @@ class AppController
     private function sanitize($name): string
     {
         return str_replace(["\r", "\n"], ' ', trim($name));
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
-
-        return true;
     }
 }

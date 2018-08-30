@@ -14,6 +14,7 @@ use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\EsiCharacter;
+use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -53,7 +54,7 @@ use Whoops\Run;
  * App bootstrapping
  *
  * @SWG\Swagger(
- *     schemes={"https"},
+ *     schemes={"https", "http"},
  *     basePath="/api",
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
@@ -78,15 +79,12 @@ use Whoops\Run;
  */
 class Application
 {
-
     /**
-     *
      * @var string
      */
     const ENV_PROD = 'prod';
 
     /**
-     *
      * @var string
      */
     const ENV_DEV = 'dev';
@@ -187,7 +185,7 @@ class Application
         }
 
         if ($unitTest) {
-            $test = include Application::ROOT_DIR . '/config/settings_tests.php';
+            $test = include self::ROOT_DIR . '/config/settings_tests.php';
             $this->settings = array_replace_recursive($this->settings, $test);
         }
 
@@ -197,14 +195,15 @@ class Application
     /**
      * Returns DI container, builds it if needed.
      *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function getContainer(): Container
     {
         $this->loadSettings();
-        $this->buildContainer();
+        if ($this->container === null) {
+            $this->buildContainer();
+            $this->addDependencies();
+        }
 
         return $this->container;
     }
@@ -212,21 +211,18 @@ class Application
     /**
      * Creates the Slim app
      *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     * @throws \ReflectionException
-     * @return \Slim\App
+     * @throws \Exception
      */
     public function getApp(): App
     {
-        $container = $this->getContainer();
-        $app = new App($container);
-
+        $this->getContainer();
         $this->errorHandling();
         $this->sessionHandler();
 
+        $app = new App($this->container);
+
         $this->addMiddleware($app);
-        $this->routes($app);
+        $this->registerRoutes($app);
 
         return $app;
     }
@@ -234,56 +230,35 @@ class Application
     /**
      * Creates the Symfony console app.
      *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function getConsoleApp(): ConsoleApplication
     {
         set_time_limit(0);
 
-        $container = $this->getContainer();
-        $console = new ConsoleApplication();
-
+        $this->getContainer();
         $this->errorHandling();
 
-        $console->add(new MakeAdmin(
-            $container->get(CharacterRepository::class),
-            $container->get(RoleRepository::class),
-            $container->get(EntityManagerInterface::class),
-            $container->get(LoggerInterface::class)
-        ));
+        $console = new ConsoleApplication();
 
-        $console->add(new UpdateCharacters(
-            $container->get(CharacterRepository::class),
-            $container->get(CorporationRepository::class),
-            $container->get(AllianceRepository::class),
-            $container->get(EsiCharacter::class),
-            $container->get(CoreCharacter::class),
-            $container->get(EntityManagerInterface::class),
-            $container->get(LoggerInterface::class)
-        ));
-
-        $console->add(new UpdatePlayerGroups(
-            $container->get(PlayerRepository::class),
-            $container->get(AutoGroupAssignment::class),
-            $container->get(EntityManagerInterface::class)
-        ));
+        $this->addCommands($console);
 
         return $console;
     }
 
-    public function addMiddleware(App $app): void
+    /**
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     */
+    private function addMiddleware(App $app): void
     {
-        $c = $app->getContainer();
-
         // Add middleware, last added are executed first.
 
         $security = include self::ROOT_DIR . '/config/security.php';
         $app->add(new SecureRouteMiddleware($security));
 
-        $app->add(new RoleMiddleware($c->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
-        $app->add(new RoleMiddleware($c->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
+        $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
+        $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',
@@ -297,21 +272,15 @@ class Application
             ],
         ]));
 
-        $app->add(new Cors($c->get('config')['CORS']['allow_origin']));
+        $app->add(new Cors($this->container->get('config')['CORS']['allow_origin']));
     }
 
     /**
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \ReflectionException
      * @throws \Exception
      */
     private function buildContainer(): void
     {
-        if ($this->container !== null) {
-            return;
-        }
-
         // include config.php from php-di/slim-bridge
         $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
         $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
@@ -330,8 +299,6 @@ class Application
         $containerBuilder->addDefinitions($this->settings);
 
         $this->container = $containerBuilder->build();
-
-        $this->dependencies();
     }
 
     /**
@@ -340,7 +307,7 @@ class Application
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    private function dependencies(): void
+    private function addDependencies(): void
     {
         // Configuration class
         $config = new Config($this->container->get('config'));
@@ -452,7 +419,7 @@ class Application
         }
     }
 
-    private function routes(App $app): void
+    private function registerRoutes(App $app): void
     {
         $routes = include self::ROOT_DIR . '/config/routes.php';
 
@@ -467,5 +434,33 @@ class Application
                 $app->put($route, $conf[1]);
             }
         }
+    }
+
+    /**
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     */
+    private function addCommands(ConsoleApplication $console): void
+    {
+        $console->add(new MakeAdmin(
+            $this->container->get(CharacterRepository::class),
+            $this->container->get(RoleRepository::class),
+            $this->container->get(ObjectManager::class)
+        ));
+
+        $console->add(new UpdateCharacters(
+            $this->container->get(CharacterRepository::class),
+            $this->container->get(CorporationRepository::class),
+            $this->container->get(AllianceRepository::class),
+            $this->container->get(EsiCharacter::class),
+            $this->container->get(CoreCharacter::class),
+            $this->container->get(ObjectManager::class)
+        ));
+
+        $console->add(new UpdatePlayerGroups(
+            $this->container->get(PlayerRepository::class),
+            $this->container->get(AutoGroupAssignment::class),
+            $this->container->get(ObjectManager::class)
+        ));
     }
 }

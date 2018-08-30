@@ -4,7 +4,6 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
-use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
 
@@ -16,9 +15,9 @@ class CoreCharacter
     private $log;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     /**
      * @var OAuthToken
@@ -27,11 +26,11 @@ class CoreCharacter
 
     public function __construct(
         LoggerInterface $log,
-        EntityManagerInterface $em,
+        ObjectManager $objectManager,
         OAuthToken $token
     ) {
         $this->log = $log;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
         $this->token = $token;
     }
 
@@ -103,26 +102,20 @@ class CoreCharacter
             $char->setRefreshToken($token->getRefreshToken());
         }
 
-        try {
-            $this->em->persist($char->getPlayer()); // could be a new player
-            $this->em->persist($char); // could be a new character
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
+        $this->objectManager->persist($char->getPlayer()); // could be a new player
+        $this->objectManager->persist($char); // could be a new character
 
-        return true;
+        return $this->objectManager->flush();
     }
 
     /**
      * Verifies refresh token.
      *
      * The refresh token is verified by requesting a new access token.
-     * But this only updates the validToken property (true/false)
-     * and the CharacterOwnerHash.
+     * This only updates the validToken property (true/false)
+     * and the character owner hash, not the access token.
      *
-     * @param Character $char An instance that is attached to the Doctrine EntityManager.
+     * @param Character $char An instance that is attached to the Doctrine entity manager.
      * @return boolean
      */
     public function checkTokenUpdateCharacter(Character $char): bool
@@ -145,7 +138,7 @@ class CoreCharacter
             }
         }
 
-        $this->em->flush();
+        $this->objectManager->flush();
 
         return $char->getValidToken();
     }

@@ -3,12 +3,14 @@
 namespace Tests\Unit\Middleware;
 
 use Brave\Middleware\Cors;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 
 class CorsTest extends \PHPUnit\Framework\TestCase
 {
     public function testAddsHeader()
     {
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['https://domain.tld']);
 
@@ -29,6 +31,7 @@ class CorsTest extends \PHPUnit\Framework\TestCase
 
     public function testDoesNotAddHeader()
     {
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['http://domain.tld']);
 

@@ -23,7 +23,7 @@ class PlayerControllerTest extends WebTestCase
     private $h;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

@@ -65,9 +65,14 @@ class AuthController
      */
     private $scopes;
 
-    public function __construct(Response $res, SessionData $session, GenericProvider $sso,
-        LoggerInterface $log, UserAuth $auth, Config $config)
-    {
+    public function __construct(
+        Response $res,
+        SessionData $session,
+        GenericProvider $sso,
+        LoggerInterface $log,
+        UserAuth $auth,
+        Config $config
+    ) {
         $this->res = $res;
         $this->session = $session;
         $this->sso = $sso;

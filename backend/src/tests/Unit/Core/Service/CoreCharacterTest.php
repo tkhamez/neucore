@@ -7,6 +7,7 @@ use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;
+use Brave\Core\Service\ObjectManager;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
@@ -22,7 +23,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
     private $helper;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|GenericProvider
      */
     private $oauthProvider;
 
@@ -41,9 +42,9 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
         $log->pushHandler(new TestHandler());
 
         $this->oauthProvider = $this->createMock(GenericProvider::class);
-        $token = new OAuthToken($this->oauthProvider, $em, $log);
+        $token = new OAuthToken($this->oauthProvider, new ObjectManager($em, $log), $log);
 
-        $this->service = new CoreCharacter($log, $em, $token);
+        $this->service = new CoreCharacter($log, new ObjectManager($em, $log), $token);
     }
 
     public function testCreateCharacter()

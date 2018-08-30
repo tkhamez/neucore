@@ -6,20 +6,13 @@ use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 
 class AutoGroupAssignment
 {
     /**
-     * @var LoggerInterface
+     * @var ObjectManager
      */
-    private $log;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private $objectManager;
 
     /**
      * @var AllianceRepository
@@ -63,15 +56,13 @@ class AutoGroupAssignment
     private $autoGroups;
 
     public function __construct(
-        LoggerInterface $log,
-        EntityManagerInterface $em,
+        ObjectManager $objectManager,
         AllianceRepository $allianceRepo,
         CorporationRepository $corpRepo,
         GroupRepository $groupRepo,
         PlayerRepository $playerRepo
     ) {
-        $this->log = $log;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
         $this->allianceRepo = $allianceRepo;
         $this->corpRepo = $corpRepo;
         $this->groupRepo = $groupRepo;
@@ -142,7 +133,7 @@ class AutoGroupAssignment
 
         $player->setLastUpdate(new \DateTime());
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return null;
         }
 
@@ -184,16 +175,5 @@ class AutoGroupAssignment
         }
 
         return $map;
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
-        return true;
     }
 }

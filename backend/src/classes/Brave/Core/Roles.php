@@ -4,6 +4,9 @@ namespace Brave\Core;
 
 use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 
+/**
+ * Definition of all roles used for authorization.
+ */
 class Roles
 {
     /**

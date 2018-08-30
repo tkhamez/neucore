@@ -14,13 +14,14 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
 class Helper
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private static $em;
 
@@ -47,7 +48,7 @@ class Helper
         $rp->setValue(null, true);
     }
 
-    public function getEm(bool $discrete = false): EntityManager
+    public function getEm(bool $discrete = false): EntityManagerInterface
     {
         if (self::$em === null || $discrete) {
             $settings = (new Application())->loadSettings(true);
@@ -96,6 +97,7 @@ class Helper
     }
 
     /**
+     * @param array $roles
      * @return \Brave\Core\Entity\Role[]
      */
     public function addRoles(array $roles): array
@@ -119,6 +121,7 @@ class Helper
     }
 
     /**
+     * @param array $groups
      * @return \Brave\Core\Entity\Group[]
      */
     public function addGroups(array $groups): array

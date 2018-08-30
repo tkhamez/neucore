@@ -10,6 +10,7 @@ use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
+use Brave\Core\Service\ObjectManager;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -30,22 +31,22 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
     private $testHelper;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|AllianceApi
      */
     private $alliApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|CharacterApi
      */
     private $charApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|CorporationApi
      */
     private $corpApi;
 
@@ -82,8 +83,8 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $oauth = $this->createMock(GenericProvider::class);
-        $ts = new OAuthToken($oauth, $this->em, $log);
+        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
+        $ts = new OAuthToken($oauth, new ObjectManager($this->em, $log), $log);
 
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
@@ -93,12 +94,14 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->alliRepo = new AllianceRepository($this->em);
         $this->corpRepo = new CorporationRepository($this->em);
         $this->charRepo = new CharacterRepository($this->em);
-        $this->cs = new EsiCharacter($log, $esi, $this->em, $this->alliRepo, $this->corpRepo, $this->charRepo);
+        $this->cs = new EsiCharacter(
+            $esi, new ObjectManager($this->em, $log), $this->alliRepo, $this->corpRepo, $this->charRepo);
 
-        // a second EsiCharacter instance with another EntityManager that throws an exception on flush.
+        // a second EsiCharacter instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->csError = new EsiCharacter($log, $esi, $em, $this->alliRepo, $this->corpRepo, $this->charRepo);
+        $this->csError = new EsiCharacter(
+            $esi, new ObjectManager($em, $log), $this->alliRepo, $this->corpRepo, $this->charRepo);
     }
 
     public function testGetEsiApi()

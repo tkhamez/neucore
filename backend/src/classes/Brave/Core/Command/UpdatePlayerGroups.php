@@ -4,7 +4,7 @@ namespace Brave\Core\Command;
 
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Service\AutoGroupAssignment;
-use Doctrine\ORM\EntityManagerInterface;
+use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,20 +23,20 @@ class UpdatePlayerGroups extends Command
     private $autoGroup;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     public function __construct(
         PlayerRepository $playerRepo,
         AutoGroupAssignment $autoGroup,
-        EntityManagerInterface $em
+        ObjectManager $objectManager
     ) {
         parent::__construct();
 
         $this->playerRepo = $playerRepo;
         $this->autoGroup = $autoGroup;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
     }
 
     protected function configure()
@@ -56,11 +56,11 @@ class UpdatePlayerGroups extends Command
         foreach ($players as $player) {
             $playerIds[] = $player->getId();
         }
-        $this->em->clear(); // detaches all objects from Doctrine
+        $this->objectManager->clear(); // detaches all objects from Doctrine
 
         foreach ($playerIds as $playerId) {
             $player = $this->autoGroup->assign($playerId);
-            $this->em->clear();
+            $this->objectManager->clear();
             if ($player === null) {
                 $output->writeln('Error updating ' . $playerId);
             } else {

@@ -9,6 +9,7 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
+use Brave\Core\Service\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Logger;
@@ -31,7 +32,7 @@ class CorporationControllerTest extends WebTestCase
     private $h;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -54,12 +55,12 @@ class CorporationControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|AllianceApi
      */
     private $alliApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|CorporationApi
      */
     private $corpApi;
 
@@ -80,11 +81,11 @@ class CorporationControllerTest extends WebTestCase
         // mock Swagger API
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $oauth = $this->createMock(GenericProvider::class);
-        $ts = new OAuthToken($oauth, $this->em, $this->log);
+        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
+        $ts = new OAuthToken($oauth, new ObjectManager($this->em, $this->log), $this->log);
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
-        $charApi = $this->createMock(CharacterApi::class);
+        $charApi = $this->createMock(CharacterApi::class); /* @var $charApi CharacterApi */
         $this->esi = new EsiApi($this->log, $ts, $this->alliApi, $this->corpApi, $charApi);
     }
 

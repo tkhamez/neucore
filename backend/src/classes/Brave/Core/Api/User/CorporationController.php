@@ -6,8 +6,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Service\EsiCharacter;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
+use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
 
 /**
@@ -24,14 +23,9 @@ class CorporationController
     private $res;
 
     /**
-     * @var LoggerInterface
+     * @var ObjectManager
      */
-    private $log;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private $objectManager;
 
     /**
      * @var CorporationRepository
@@ -53,12 +47,14 @@ class CorporationController
      */
     private $group;
 
-    public function __construct(Response $response, LoggerInterface $log, EntityManagerInterface $em,
-        CorporationRepository $corpRepo, GroupRepository $groupRepo)
-    {
+    public function __construct(
+        Response $response,
+        ObjectManager $objectManager,
+        CorporationRepository $corpRepo,
+        GroupRepository $groupRepo
+    ) {
         $this->res = $response;
-        $this->log = $log;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
         $this->corpRepo = $corpRepo;
         $this->groupRepo = $groupRepo;
     }
@@ -187,7 +183,7 @@ class CorporationController
             $service->fetchAlliance($corporation->getAlliance()->getId(), false);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -240,7 +236,7 @@ class CorporationController
             $this->corp->addGroup($this->group);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -291,7 +287,7 @@ class CorporationController
 
         $this->corp->removeGroup($this->group);
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -304,18 +300,6 @@ class CorporationController
         $this->group = $this->groupRepo->find((int) $groupId);
 
         if ($this->corp === null || $this->group === null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
             return false;
         }
 

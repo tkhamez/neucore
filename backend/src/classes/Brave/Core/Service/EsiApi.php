@@ -11,7 +11,6 @@ use Swagger\Client\Eve\Configuration;
 
 class EsiApi
 {
-
     /**
      * @var LoggerInterface
      */
@@ -47,9 +46,13 @@ class EsiApi
      */
     private $lastErrorMessage;
 
-    public function __construct(LoggerInterface $log, OAuthToken $ts,
-        AllianceApi $alliApi, CorporationApi $corpApi, CharacterApi $charApi)
-    {
+    public function __construct(
+        LoggerInterface $log,
+        OAuthToken $ts,
+        AllianceApi $alliApi,
+        CorporationApi $corpApi,
+        CharacterApi $charApi
+    ) {
         $this->log = $log;
         $this->tokenService = $ts;
         $this->alliApi = $alliApi;
