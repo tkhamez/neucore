@@ -72,7 +72,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         // Process the application
         try {
             $response = $app->getApp()->process($request, $response);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
 

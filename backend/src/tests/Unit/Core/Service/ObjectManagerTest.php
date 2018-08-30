@@ -10,7 +10,6 @@ use Tests\WriteErrorListener;
 
 class ObjectManagerTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testFlush()
     {
         $om = new ObjectManager((new Helper())->getEm(), new Logger('Test'));
@@ -29,6 +28,6 @@ class ObjectManagerTest extends \PHPUnit\Framework\TestCase
         $om = new ObjectManager($em, $log);
 
         $this->assertFalse($om->flush());
-        $this->assertSame('error',$log->getHandlers()[0]->getRecords()[0]['message']);
+        $this->assertSame('error', $log->getHandlers()[0]->getRecords()[0]['message']);
     }
 }
