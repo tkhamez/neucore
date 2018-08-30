@@ -2,8 +2,8 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

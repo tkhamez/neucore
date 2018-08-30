@@ -2,9 +2,9 @@
 
 namespace Brave\Core\Api;
 
-use Brave\Core\Entity\AllianceRepository;
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core\Entity;
 
-use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Repository\RoleRepository;
 use Tests\Helper;
 
 class RoleRepositoryTest extends \PHPUnit\Framework\TestCase

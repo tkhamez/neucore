@@ -3,8 +3,8 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;

@@ -3,7 +3,7 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\App;
-use Brave\Core\Entity\AppRepository;
+use Brave\Core\Repository\AppRepository;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\ServerRequestInterface;

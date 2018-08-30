@@ -3,9 +3,9 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\AllianceRepository;
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Corporation;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;

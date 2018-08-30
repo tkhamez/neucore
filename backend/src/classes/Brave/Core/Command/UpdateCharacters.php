@@ -2,9 +2,9 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Entity\AllianceRepository;
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\CorporationRepository;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\EsiCharacter;
 use Doctrine\ORM\EntityManagerInterface;

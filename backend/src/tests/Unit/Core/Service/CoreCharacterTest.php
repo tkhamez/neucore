@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Entity\CharacterRepository;
+use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;

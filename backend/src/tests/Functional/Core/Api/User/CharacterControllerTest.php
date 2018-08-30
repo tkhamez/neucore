@@ -3,7 +3,7 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Roles;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Swagger\Client\Eve\Api\CharacterApi;

@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Entity\CharacterRepository;
-use Brave\Core\Entity\RoleRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;

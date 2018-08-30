@@ -5,7 +5,7 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
-use Brave\Core\Entity\PlayerRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
