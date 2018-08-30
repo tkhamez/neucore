@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Core\Entity;
+namespace Tests\Unit\Core\Repository;
 
-use Brave\Core\Repository\AppRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Tests\Helper;
 
-class AppRepositoryTest extends \PHPUnit\Framework\TestCase
+class PlayerRepositoryTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
         $em = (new Helper())->getEm();
-        $r = new AppRepository($em);
+        $r = new PlayerRepository($em);
         $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
     }
 }
