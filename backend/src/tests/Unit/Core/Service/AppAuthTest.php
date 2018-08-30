@@ -4,8 +4,9 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Repository\AppRepository;
 use Brave\Core\Service\AppAuth;
-use Monolog\Handler\StreamHandler;
+use Brave\Core\Service\ObjectManager;
 use Monolog\Logger;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -27,11 +28,10 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $log = new Logger('test');
-        $log->pushHandler(new StreamHandler('php://stderr'));
         $em = (new Helper())->getEm();
         $this->repo = new AppRepository($em);
 
-        $this->service = new AppAuth($this->repo, $em, $log);
+        $this->service = new AppAuth($this->repo, new ObjectManager($em, $log));
     }
 
     public function testGetRolesNoAuth()
@@ -48,6 +48,7 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
         $h->emptyDb();
         $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
         $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);
@@ -67,24 +68,27 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testGetAppBrokenAuth()
     {
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
-
         $req->method('getHeader')->willReturn(['Bearer not:b64-encoded']);
+
         $this->assertNull($this->service->getApp($req));
     }
 
     public function testGetAppBrokenAuth2()
     {
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
-
         $req->method('getHeader')->willReturn(['Bearer '.base64_encode('no-id')]);
+
         $this->assertNull($this->service->getApp($req));
     }
 
     public function testGetAppInvalidPass()
     {
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
         $req->method('getHeader')->willReturn(['Bearer '.base64_encode('1:invalid-secret')]);
@@ -98,6 +102,7 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
         $h->emptyDb();
         $appId = $h->addApp('Test App', 'my-test-secret', ['app'])->getId();
 
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
         $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);
@@ -114,6 +119,7 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
         $h->emptyDb();
         $appId = $h->addApp('Test App', 'my-test-secret', ['app'], 'md5')->getId();
 
+        /* @var $req ServerRequestInterface|MockObject */
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('hasHeader')->willReturn(true);
         $req->method('getHeader')->willReturn(['Bearer '.base64_encode($appId.':my-test-secret')]);

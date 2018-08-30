@@ -3,7 +3,6 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
@@ -19,9 +18,9 @@ class OAuthToken
     private $oauth;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     /**
      * @var LoggerInterface
@@ -33,10 +32,10 @@ class OAuthToken
      */
     private $character;
 
-    public function __construct(GenericProvider $oauth, EntityManagerInterface $em, LoggerInterface $log)
+    public function __construct(GenericProvider $oauth, ObjectManager $objectManager, LoggerInterface $log)
     {
         $this->oauth = $oauth;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
         $this->log = $log;
     }
 
@@ -73,10 +72,7 @@ class OAuthToken
         if ($newAccessToken) {
             $this->character->setAccessToken($newAccessToken->getToken());
             $this->character->setExpires($newAccessToken->getExpires());
-            try {
-                $this->em->flush();
-            } catch (\Exception $e) {
-                $this->log->critical($e->getMessage(), ['exception' => $e]);
+            if (! $this->objectManager->flush()) {
                 return ""; // old token is invalid, new token could not be saved
             }
         }

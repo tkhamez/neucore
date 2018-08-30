@@ -7,11 +7,11 @@ use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;
+use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
-use Monolog\Handler\StreamHandler;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
@@ -36,17 +36,16 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $_SESSION = []; // "start" session for SessionData object and reset data
 
         $this->log = new Logger('test');
-        $this->log->pushHandler(new StreamHandler('php://stderr'));
         $em = $h->getEm();
         $cr = new CharacterRepository($em);
         $rr = new RoleRepository($em);
 
-        $oauth = $this->createMock(GenericProvider::class);
-        $token = new OAuthToken($oauth, $em, $this->log);
+        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
+        $token = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
 
-        $ccs = new CoreCharacter($this->log, $em, $token);
+        $ccs = new CoreCharacter($this->log, new ObjectManager($em, $this->log), $token);
 
-        $this->service = new UserAuth(new SessionData(), $ccs, $cr, $rr, $em, $this->log);
+        $this->service = new UserAuth(new SessionData(), $ccs, $cr, $rr, $this->log);
     }
 
     public function testGetRolesNoAuth()
@@ -88,7 +87,6 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAuthenticateNoUserRoleError()
     {
         (new Helper())->emptyDb();
-        $this->log->popHandler();
         $this->log->pushHandler(new TestHandler());
 
         $token = new AccessToken(['access_token' => 'token']);

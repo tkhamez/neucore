@@ -16,12 +16,20 @@ class ConsoleTestCase extends \PHPUnit\Framework\TestCase
         $app->loadSettings(true);
 
         // change dependencies in container
-        $container = $app->getContainer();
+        try {
+            $container = $app->getContainer();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
         foreach ($mocks as $class => $obj) {
             $container->set($class, $obj);
         }
 
-        $console = $app->getConsoleApp();
+        try {
+            $console = $app->getConsoleApp();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
 
         $command = $console->find($name);
         $commandTester = new CommandTester($command);

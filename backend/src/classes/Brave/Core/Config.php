@@ -1,6 +1,9 @@
 <?php
 namespace Brave\Core;
 
+/**
+ * Wraps the config array to make it injectable.
+ */
 class Config
 {
     /**

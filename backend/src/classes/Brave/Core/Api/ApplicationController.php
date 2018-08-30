@@ -32,7 +32,6 @@ use Slim\Http\Response;
  */
 class ApplicationController
 {
-
     /**
      * @var Response
      */

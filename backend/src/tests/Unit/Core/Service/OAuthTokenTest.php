@@ -6,6 +6,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
+use Brave\Core\Service\ObjectManager;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -18,7 +19,7 @@ use Tests\WriteErrorListener;
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -27,6 +28,9 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
      */
     private $log;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|GenericProvider
+     */
     private $oauth;
 
     /**
@@ -51,12 +55,12 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->log->pushHandler(new TestHandler());
 
         $this->oauth = $this->createMock(GenericProvider::class);
-        $this->es = new OAuthToken($this->oauth, $this->em, $this->log);
+        $this->es = new OAuthToken($this->oauth, new ObjectManager($this->em, $this->log), $this->log);
 
-        // a second OAuthToken instance with another EntityManager that throws an exception on flush.
+        // a second OAuthToken instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->esError = new OAuthToken($this->oauth, $em, $this->log);
+        $this->esError = new OAuthToken($this->oauth, new ObjectManager($em, $this->log), $this->log);
     }
 
     public function testSetCharacter()

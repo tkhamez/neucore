@@ -43,9 +43,13 @@ class CharacterController
      */
     private $charRepo;
 
-    public function __construct(Response $response, UserAuth $uas, EsiCharacter $esiCs,
-        CoreCharacter $coreCs, CharacterRepository $charRepo)
-    {
+    public function __construct(
+        Response $response,
+        UserAuth $uas,
+        EsiCharacter $esiCs,
+        CoreCharacter $coreCs,
+        CharacterRepository $charRepo
+    ) {
         $this->res = $response;
         $this->uas = $uas;
         $this->esiCharService = $esiCs;

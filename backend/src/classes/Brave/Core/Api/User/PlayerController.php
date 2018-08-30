@@ -6,9 +6,9 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Core\Roles;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
 
@@ -51,9 +51,9 @@ class PlayerController
     private $uas;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     private $availableRoles = [
         Roles::APP_ADMIN,
@@ -64,17 +64,22 @@ class PlayerController
         Roles::ESI
     ];
 
-    public function __construct(Response $response, LoggerInterface $log,
-        PlayerRepository $pr, RoleRepository $rr, GroupRepository $gr,
-        UserAuth $uas, EntityManagerInterface $em)
-    {
+    public function __construct(
+        Response $response,
+        LoggerInterface $log,
+        PlayerRepository $pr,
+        RoleRepository $rr,
+        GroupRepository $gr,
+        UserAuth $uas,
+        ObjectManager $objectManager
+    ) {
         $this->res = $response;
         $this->log = $log;
         $this->pr = $pr;
         $this->rr = $rr;
         $this->gr = $gr;
         $this->uas = $uas;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -251,7 +256,7 @@ class PlayerController
             return $this->res->withStatus(404);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -444,7 +449,7 @@ class PlayerController
             $player->addRole($role);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -499,7 +504,7 @@ class PlayerController
 
         $player->removeRole($role);
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
@@ -644,22 +649,10 @@ class PlayerController
             $player->removeGroup($group);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
         return $this->res->withStatus(204);
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
-
-        return true;
     }
 }

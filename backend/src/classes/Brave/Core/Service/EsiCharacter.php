@@ -7,25 +7,18 @@ use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Corporation;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 
 class EsiCharacter
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-
     /**
      * @var EsiApi
      */
     private $esi;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     /**
      * @var AllianceRepository
@@ -43,23 +36,20 @@ class EsiCharacter
     private $charRepo;
 
     public function __construct(
-        LoggerInterface $log,
         EsiApi $esi,
-        EntityManagerInterface $em,
+        ObjectManager $objectManager,
         AllianceRepository $ar,
         CorporationRepository $cpr,
         CharacterRepository $crr
     ) {
-        $this->log = $log;
         $this->esi = $esi;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
         $this->alliRepo = $ar;
         $this->corpRepo = $cpr;
         $this->charRepo = $crr;
     }
 
     /**
-     *
      * @return \Brave\Core\Service\EsiApi
      */
     public function getEsiApi()
@@ -95,7 +85,7 @@ class EsiCharacter
             }
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return null;
         }
 
@@ -115,7 +105,7 @@ class EsiCharacter
      *
      * @param int $id
      * @param bool $flush Optional write data to database, defaults to true
-     * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine EntityManager.
+     * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine entity manager.
      */
     public function fetchCharacter(int $id, bool $flush = true)
     {
@@ -144,7 +134,7 @@ class EsiCharacter
         $corp->addCharacter($char);
 
         // flush
-        if ($flush && ! $this->flush()) {
+        if ($flush && ! $this->objectManager->flush()) {
             return null;
         }
 
@@ -163,7 +153,7 @@ class EsiCharacter
      *
      * @param int $id EVE corporation ID
      * @param bool $flush Optional write data to database, defaults to true
-     * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine EntityManager.
+     * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine entity manager.
      */
     public function fetchCorporation(int $id, bool $flush = true)
     {
@@ -196,7 +186,7 @@ class EsiCharacter
         }
 
         // flush
-        if ($flush && ! $this->flush()) {
+        if ($flush && ! $this->objectManager->flush()) {
             return null;
         }
 
@@ -213,7 +203,7 @@ class EsiCharacter
      *
      * @param int $id EVE alliance ID
      * @param bool $flush Optional write data to database, defaults to true
-     * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine EntityManager.
+     * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine entity manager.
      */
     public function fetchAlliance(int $id, bool $flush = true)
     {
@@ -236,7 +226,7 @@ class EsiCharacter
         $alliance->setLastUpdate(new \DateTime());
 
         // flush
-        if ($flush && ! $this->flush()) {
+        if ($flush && ! $this->objectManager->flush()) {
             return null;
         }
 
@@ -249,7 +239,7 @@ class EsiCharacter
         if ($corp === null) {
             $corp = new Corporation();
             $corp->setId($id);
-            $this->em->persist($corp);
+            $this->objectManager->persist($corp);
         }
         return $corp;
     }
@@ -260,19 +250,8 @@ class EsiCharacter
         if ($alliance === null) {
             $alliance = new Alliance();
             $alliance->setId($id);
-            $this->em->persist($alliance);
+            $this->objectManager->persist($alliance);
         }
         return $alliance;
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
-            return false;
-        }
-        return true;
     }
 }

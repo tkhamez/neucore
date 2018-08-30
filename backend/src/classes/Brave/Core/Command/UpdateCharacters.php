@@ -7,8 +7,7 @@ use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\EsiCharacter;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
+use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,14 +41,9 @@ class UpdateCharacters extends Command
     private $coreCharService;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private $objectManager;
 
     /**
      * @var int
@@ -62,8 +56,7 @@ class UpdateCharacters extends Command
         AllianceRepository $alliRepo,
         EsiCharacter $esiCharService,
         CoreCharacter $coreCharService,
-        EntityManagerInterface $em,
-        LoggerInterface $log
+        ObjectManager $objectManager
     ) {
         parent::__construct();
 
@@ -72,8 +65,7 @@ class UpdateCharacters extends Command
         $this->alliRepo = $alliRepo;
         $this->esiCharService = $esiCharService;
         $this->coreCharService = $coreCharService;
-        $this->em = $em;
-        $this->log = $log;
+        $this->objectManager = $objectManager;
     }
 
     protected function configure()
@@ -104,7 +96,7 @@ class UpdateCharacters extends Command
         }
 
         foreach ($charIds as $charId) {
-            $this->em->clear(); // detaches all objects from Doctrine
+            $this->objectManager->clear(); // detaches all objects from Doctrine
             usleep($this->sleep * 1000);
 
             // update name, corp and alliance from ESI
@@ -136,7 +128,7 @@ class UpdateCharacters extends Command
         }
 
         foreach ($corpIds as $corpId) {
-            $this->em->clear();
+            $this->objectManager->clear();
             usleep($this->sleep * 1000);
 
             $updatedCorp = $this->esiCharService->fetchCorporation($corpId);
@@ -158,7 +150,7 @@ class UpdateCharacters extends Command
         }
 
         foreach ($alliIds as $alliId) {
-            $this->em->clear();
+            $this->objectManager->clear();
             usleep($this->sleep * 1000);
 
             $updatedAlli = $this->esiCharService->fetchAlliance($alliId);

@@ -6,8 +6,7 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Service\EsiCharacter;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
+use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
 
 /**
@@ -24,14 +23,9 @@ class AllianceController
     private $response;
 
     /**
-     * @var LoggerInterface
+     * @var ObjectManager
      */
-    private $log;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private $objectManager;
 
     /**
      * @var AllianceRepository
@@ -55,14 +49,12 @@ class AllianceController
 
     public function __construct(
         Response $response,
-        LoggerInterface $log,
-        EntityManagerInterface $em,
+        ObjectManager $objectManager,
         AllianceRepository $allianceRepo,
         GroupRepository $groupRepo)
     {
         $this->response = $response;
-        $this->log = $log;
-        $this->em = $em;
+        $this->objectManager = $objectManager;
         $this->allianceRepo = $allianceRepo;
         $this->groupRepo = $groupRepo;
     }
@@ -185,7 +177,7 @@ class AllianceController
             }
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 
@@ -238,7 +230,7 @@ class AllianceController
             $this->alliance->addGroup($this->group);
         }
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 
@@ -289,7 +281,7 @@ class AllianceController
 
         $this->alliance->removeGroup($this->group);
 
-        if (! $this->flush()) {
+        if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 
@@ -302,18 +294,6 @@ class AllianceController
         $this->group = $this->groupRepo->find((int) $groupId);
 
         if ($this->alliance === null || $this->group === null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function flush(): bool
-    {
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
             return false;
         }
 

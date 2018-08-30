@@ -25,7 +25,7 @@ class AppControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

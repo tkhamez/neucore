@@ -6,12 +6,11 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
-use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Brave\Slim\Session\SessionData;
-use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 
 /**
  * Provides methods to authenticate and get a user.
@@ -44,11 +43,6 @@ class UserAuth implements RoleProviderInterface
     private $roleRepository;
 
     /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
      * @var LoggerInterface
      */
     private $log;
@@ -58,15 +52,17 @@ class UserAuth implements RoleProviderInterface
      */
     private $user;
 
-    public function __construct(SessionData $session, CoreCharacter $charService,
-        CharacterRepository $characterRepository, RoleRepository $roleRepository,
-        EntityManagerInterface $em, LoggerInterface $log)
-    {
+    public function __construct(
+        SessionData $session,
+        CoreCharacter $charService,
+        CharacterRepository $characterRepository,
+        RoleRepository $roleRepository,
+        LoggerInterface $log
+    ) {
         $this->session = $session;
         $this->characterService = $charService;
         $this->characterRepository = $characterRepository;
         $this->roleRepository = $roleRepository;
-        $this->em = $em;
         $this->log = $log;
     }
 

@@ -5,32 +5,36 @@ namespace Brave\Core\Command;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Roles;
+use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 
 class MakeAdmin extends Command
 {
+    /**
+     * @var CharacterRepository
+     */
     private $cr;
 
+    /**
+     * @var RoleRepository
+     */
     private $rr;
 
-    private $em;
+    /**
+     * @var ObjectManager
+     */
+    private $objectManager;
 
-    private $log;
-
-    public function __construct(CharacterRepository $cr, RoleRepository $rr, EntityManagerInterface $em,
-        LoggerInterface $log)
+    public function __construct(CharacterRepository $cr, RoleRepository $rr, ObjectManager $objectManager)
     {
         parent::__construct();
 
         $this->cr = $cr;
         $this->rr = $rr;
-        $this->em = $em;
-        $this->log = $log;
+        $this->objectManager = $objectManager;
     }
 
     protected function configure()
@@ -68,10 +72,7 @@ class MakeAdmin extends Command
             }
         }
 
-        try {
-            $this->em->flush();
-        } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+        if (! $this->objectManager->flush()) {
             return;
         }
 

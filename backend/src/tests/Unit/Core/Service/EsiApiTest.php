@@ -5,6 +5,7 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
+use Brave\Core\Service\ObjectManager;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -24,17 +25,17 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
     private $log;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|AllianceApi
      */
     private $alliApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|CorporationApi
      */
     private $corpApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|CHaracterApi
      */
     private $charApi;
 
@@ -51,8 +52,8 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
-        $oauth = $this->createMock(GenericProvider::class);
-        $ts = new OAuthToken($oauth, $em, $this->log);
+        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
+        $ts = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
 
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);

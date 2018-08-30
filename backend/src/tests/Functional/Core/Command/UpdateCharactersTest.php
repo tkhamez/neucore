@@ -23,7 +23,7 @@ use Tests\Helper;
 class UpdateCharactersTest extends ConsoleTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
