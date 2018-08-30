@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Core\Entity;
+namespace Tests\Unit\Core\Repository;
 
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
