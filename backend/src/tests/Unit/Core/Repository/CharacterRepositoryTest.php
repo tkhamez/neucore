@@ -12,7 +12,9 @@ class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
     {
         $em = (new Helper())->getEm();
         $r = new CharacterRepository($em);
+
         $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
+        $this->assertSame(Character::class, $r->getClassName());
     }
 
     public function testFindByNamePartialMatch()

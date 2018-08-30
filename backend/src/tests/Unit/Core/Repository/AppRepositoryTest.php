@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Core\Repository;
 
+use Brave\Core\Entity\App;
 use Brave\Core\Repository\AppRepository;
 use Tests\Helper;
 
@@ -11,6 +12,8 @@ class AppRepositoryTest extends \PHPUnit\Framework\TestCase
     {
         $em = (new Helper())->getEm();
         $r = new AppRepository($em);
+
         $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
+        $this->assertSame(App::class, $r->getClassName());
     }
 }
