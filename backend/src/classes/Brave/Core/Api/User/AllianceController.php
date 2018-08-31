@@ -36,7 +36,7 @@ class AllianceController
     private $groupRepo;
 
     /**
-     * @var \Brave\Core\Entity\Alliance\Alliance
+     * @var \Brave\Core\Entity\Alliance
      */
     private $alliance;
 
