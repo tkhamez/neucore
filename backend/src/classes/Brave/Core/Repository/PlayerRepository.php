@@ -16,5 +16,4 @@ use Brave\Core\Entity\Player;
  */
 class PlayerRepository extends \Doctrine\ORM\EntityRepository
 {
-
 }

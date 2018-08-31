@@ -16,5 +16,4 @@ use Brave\Core\Entity\Group;
  */
 class GroupRepository extends \Doctrine\ORM\EntityRepository
 {
-
 }

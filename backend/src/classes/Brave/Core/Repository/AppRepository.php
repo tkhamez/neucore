@@ -16,5 +16,4 @@ use Brave\Core\Entity\App;
  */
 class AppRepository extends \Doctrine\ORM\EntityRepository
 {
-
 }
