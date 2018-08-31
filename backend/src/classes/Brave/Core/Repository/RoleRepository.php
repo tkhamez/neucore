@@ -16,5 +16,4 @@ use Brave\Core\Entity\Role;
  */
 class RoleRepository extends \Doctrine\ORM\EntityRepository
 {
-
 }
