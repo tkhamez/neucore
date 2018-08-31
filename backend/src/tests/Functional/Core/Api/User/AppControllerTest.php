@@ -2,10 +2,10 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Group;
-use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Repository\AppRepository;
 use Brave\Core\Entity\App;
@@ -55,8 +55,10 @@ class AppControllerTest extends WebTestCase
 
         $this->helper = new Helper();
         $this->em = $this->helper->getEm();
-        $this->ar = new AppRepository($this->em);
-        $this->gr = new GroupRepository($this->em);
+
+        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->ar = $repositoryFactory->getAppRepository();
+        $this->gr = $repositoryFactory->getGroupRepository();
     }
 
     public function testAll403()
@@ -353,7 +355,7 @@ class AppControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.$this->pid3);
         $this->assertEquals(204, $response->getStatusCode());
 
-        $player = (new PlayerRepository($this->em))->find($this->pid3);
+        $player = (new RepositoryFactory($this->em))->getPlayerRepository()->find($this->pid3);
         $actual = [];
         foreach ($player->getManagerGroups() as $mg) {
             $actual[] = $mg->getId();

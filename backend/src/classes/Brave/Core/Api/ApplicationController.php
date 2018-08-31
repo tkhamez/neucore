@@ -2,9 +2,7 @@
 
 namespace Brave\Core\Api;
 
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
@@ -43,32 +41,27 @@ class ApplicationController
     private $appService;
 
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $charRepo;
 
     /**
-     * @var CorporationRepository
+     * @var \Brave\Core\Repository\CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var AllianceRepository
+     * @var \Brave\Core\Repository\AllianceRepository
      */
     private $allianceRepo;
 
-    public function __construct(
-        Response $response,
-        AppAuth $aap,
-        CharacterRepository $charRepo,
-        CorporationRepository $corpRepo,
-        AllianceRepository $allianceRepo
-    ) {
+    public function __construct(Response $response, AppAuth $aap, RepositoryFactory $repositoryFactory)
+    {
         $this->response = $response;
         $this->appService = $aap;
-        $this->charRepo = $charRepo;
-        $this->corpRepo = $corpRepo;
-        $this->allianceRepo = $allianceRepo;
+        $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->allianceRepo = $repositoryFactory->getAllianceRepository();
     }
 
     /**

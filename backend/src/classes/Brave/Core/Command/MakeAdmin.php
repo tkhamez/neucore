@@ -2,8 +2,7 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
@@ -14,12 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeAdmin extends Command
 {
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $cr;
 
     /**
-     * @var RoleRepository
+     * @var \Brave\Core\Repository\RoleRepository
      */
     private $rr;
 
@@ -28,12 +27,12 @@ class MakeAdmin extends Command
      */
     private $objectManager;
 
-    public function __construct(CharacterRepository $cr, RoleRepository $rr, ObjectManager $objectManager)
+    public function __construct(RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
     {
         parent::__construct();
 
-        $this->cr = $cr;
-        $this->rr = $rr;
+        $this->cr = $repositoryFactory->getCharacterRepository();
+        $this->rr = $repositoryFactory->getRoleRepository();
         $this->objectManager = $objectManager;
     }
 

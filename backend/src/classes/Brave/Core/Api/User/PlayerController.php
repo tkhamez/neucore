@@ -3,9 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Group;
-use Brave\Core\Repository\GroupRepository;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Core\Roles;
@@ -31,17 +29,17 @@ class PlayerController
     private $log;
 
     /**
-     * @var PlayerRepository
+     * @var \Brave\Core\Repository\PlayerRepository
      */
     private $pr;
 
     /**
-     * @var RoleRepository
+     * @var \Brave\Core\Repository\RoleRepository
      */
     private $rr;
 
     /**
-     * @var GroupRepository
+     * @var \Brave\Core\Repository\GroupRepository
      */
     private $gr;
 
@@ -67,17 +65,15 @@ class PlayerController
     public function __construct(
         Response $response,
         LoggerInterface $log,
-        PlayerRepository $pr,
-        RoleRepository $rr,
-        GroupRepository $gr,
+        RepositoryFactory $repositoryFactory,
         UserAuth $uas,
         ObjectManager $objectManager
     ) {
         $this->res = $response;
         $this->log = $log;
-        $this->pr = $pr;
-        $this->rr = $rr;
-        $this->gr = $gr;
+        $this->pr = $repositoryFactory->getPlayerRepository();
+        $this->rr = $repositoryFactory->getRoleRepository();
+        $this->gr = $repositoryFactory->getGroupRepository();
         $this->uas = $uas;
         $this->objectManager = $objectManager;
     }

@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 class UpdatePlayerGroups extends Command
 {
     /**
-     * @var PlayerRepository
+     * @var \Brave\Core\Repository\PlayerRepository
      */
     private $playerRepo;
 
@@ -28,13 +28,13 @@ class UpdatePlayerGroups extends Command
     private $objectManager;
 
     public function __construct(
-        PlayerRepository $playerRepo,
+        RepositoryFactory $repositoryFactory,
         AutoGroupAssignment $autoGroup,
         ObjectManager $objectManager
     ) {
         parent::__construct();
 
-        $this->playerRepo = $playerRepo;
+        $this->playerRepo = $repositoryFactory->getPlayerRepository();
         $this->autoGroup = $autoGroup;
         $this->objectManager = $objectManager;
     }

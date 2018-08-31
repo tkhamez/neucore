@@ -3,6 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Repository\AppRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\ObjectManager;
 use Monolog\Logger;
@@ -29,9 +30,10 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
     {
         $log = new Logger('test');
         $em = (new Helper())->getEm();
-        $this->repo = new AppRepository($em);
+        $repositoryFactory = new RepositoryFactory($em);
+        $this->repo = $repositoryFactory->getAppRepository();
 
-        $this->service = new AppAuth($this->repo, new ObjectManager($em, $log));
+        $this->service = new AppAuth($repositoryFactory, new ObjectManager($em, $log));
     }
 
     public function testGetRolesNoAuth()

@@ -3,7 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Config;
-use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -26,7 +26,7 @@ class EsiController
     private $response;
 
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $characterRepository;
 
@@ -47,13 +47,13 @@ class EsiController
 
     public function __construct(
         Response $response,
-        CharacterRepository $characterRepository,
+        RepositoryFactory $repositoryFactory,
         OAuthToken $token,
         Client $httpClient,
         Config $config
     ) {
         $this->response = $response;
-        $this->characterRepository = $characterRepository;
+        $this->characterRepository = $repositoryFactory->getCharacterRepository();
         $this->token = $token;
         $this->httpClient = $httpClient;
         $this->config = $config;

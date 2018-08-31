@@ -3,8 +3,7 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Token\AccessToken;
@@ -33,12 +32,12 @@ class UserAuth implements RoleProviderInterface
     private $characterService;
 
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $characterRepository;
 
     /**
-     * @var RoleRepository
+     * @var \Brave\Core\Repository\RoleRepository
      */
     private $roleRepository;
 
@@ -55,14 +54,13 @@ class UserAuth implements RoleProviderInterface
     public function __construct(
         SessionData $session,
         CoreCharacter $charService,
-        CharacterRepository $characterRepository,
-        RoleRepository $roleRepository,
+        RepositoryFactory $repositoryFactory,
         LoggerInterface $log
     ) {
         $this->session = $session;
         $this->characterService = $charService;
-        $this->characterRepository = $characterRepository;
-        $this->roleRepository = $roleRepository;
+        $this->characterRepository = $repositoryFactory->getCharacterRepository();
+        $this->roleRepository = $repositoryFactory->getRoleRepository();
         $this->log = $log;
     }
 

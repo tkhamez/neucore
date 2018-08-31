@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -118,7 +118,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('new-token', $char->getAccessToken());
 
         $this->em->clear();
-        $charFromDB = (new CharacterRepository($this->em))->find(123);
+        $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
         $this->assertSame('new-token', $charFromDB->getAccessToken());
 
         $this->assertSame(0, count($this->log->getHandlers()[0]->getRecords()));

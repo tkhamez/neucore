@@ -8,10 +8,9 @@ use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
-use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
-use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -103,7 +102,7 @@ class Helper
     public function addRoles(array $roles): array
     {
         $em = $this->getEm();
-        $rr = new RoleRepository($em);
+        $rr = (new RepositoryFactory($em))->getRoleRepository();
 
         $roleEntities = [];
         foreach ($roles as $roleName) {
@@ -127,7 +126,7 @@ class Helper
     public function addGroups(array $groups): array
     {
         $em = $this->getEm();
-        $gr = new GroupRepository($em);
+        $gr = (new RepositoryFactory($em))->getGroupRepository();
 
         $groupEntities = [];
         foreach ($groups as $groupName) {

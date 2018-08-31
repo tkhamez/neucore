@@ -6,6 +6,7 @@ use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
@@ -75,8 +76,9 @@ class CorporationControllerTest extends WebTestCase
         $this->h = new Helper();
         $this->em = $this->h->getEm();
 
-        $this->corpRepo = new CorporationRepository($this->em);
-        $this->alliRepo = new AllianceRepository($this->em);
+        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->alliRepo = $repositoryFactory->getAllianceRepository();
 
         // mock Swagger API
         $this->log = new Logger('Test');

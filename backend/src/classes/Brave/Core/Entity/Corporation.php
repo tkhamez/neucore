@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *     definition="Corporation",
  *     required={"id", "name", "ticker"}
  * )
- * @Entity(repositoryClass="Brave\Core\Entity\CorporationRepository")
+ * @Entity
  * @Table(name="corporations")
  */
 class Corporation implements \JsonSerializable

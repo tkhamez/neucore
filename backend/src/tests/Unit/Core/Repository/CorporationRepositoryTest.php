@@ -3,21 +3,12 @@
 namespace Tests\Unit\Core\Repository;
 
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
+use Brave\Core\Repository\RepositoryFactory;
 use Tests\Helper;
 
 class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function testConstruct()
-    {
-        $em = (new Helper())->getEm();
-        $r = new CorporationRepository($em);
-
-        $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
-        $this->assertSame(Corporation::class, $r->getClassName());
-    }
-
     public function testGetAllWithGroups()
     {
         // setup
@@ -25,7 +16,7 @@ class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
         $h->emptyDb();
         $em = $h->getEm();
-        $r = new CorporationRepository($em);
+        $r = (new RepositoryFactory($em))->getCorporationRepository();
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');

@@ -63,6 +63,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         try {
             $container = $app->getContainer();
         } catch (\Exception $e) {
+            echo $e->getMessage();
             return null;
         }
         foreach ($mocks as $class => $obj) {
@@ -73,6 +74,7 @@ class WebTestCase extends \PHPUnit\Framework\TestCase
         try {
             $response = $app->getApp()->process($request, $response);
         } catch(\Exception $e) {
+            echo $e->getMessage();
             return null;
         }
 

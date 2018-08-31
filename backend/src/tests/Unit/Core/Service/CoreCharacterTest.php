@@ -5,6 +5,7 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -32,6 +33,11 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
      */
     private $service;
 
+    /**
+     * @var CharacterRepository
+     */
+    private $charRepo;
+
     public function setUp()
     {
         $this->helper = new Helper();
@@ -45,6 +51,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
         $token = new OAuthToken($this->oauthProvider, new ObjectManager($em, $log), $log);
 
         $this->service = new CoreCharacter($log, new ObjectManager($em, $log), $token);
+        $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
     }
 
     public function testCreateCharacter()
@@ -54,8 +61,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
 
         $this->helper->getEm()->clear();
 
-        $charRepo = new CharacterRepository($this->helper->getEm());
-        $character = $charRepo->find(123);
+        $character = $this->charRepo->find(123);
 
         $this->assertSame('abc', $character->getName());
         $this->assertTrue($character->getMain());
@@ -88,8 +94,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
 
         $this->helper->getEm()->clear();
 
-        $charRepo = new CharacterRepository($this->helper->getEm());
-        $character = $charRepo->find(11);
+        $character = $this->charRepo->find(11);
 
         $this->assertSame('name', $character->getName());
         $this->assertFalse($character->getMain());
@@ -118,8 +123,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
 
         $this->helper->getEm()->clear();
 
-        $charRepo = new CharacterRepository($this->helper->getEm());
-        $character = $charRepo->find(12);
+        $character = $this->charRepo->find(12);
 
         $this->assertSame('name', $character->getName());
         $this->assertFalse($character->getMain());
@@ -161,8 +165,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
 
         $em->clear();
 
-        $charRepo = new CharacterRepository($em);
-        $character = $charRepo->find(31);
+        $character = $this->charRepo->find(31);
 
         $this->assertSame('new-hash', $character->getCharacterOwnerHash()); // updated
         $this->assertSame('at', $character->getAccessToken()); // not updated

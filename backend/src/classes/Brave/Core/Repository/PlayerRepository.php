@@ -16,11 +16,5 @@ use Brave\Core\Entity\Player;
  */
 class PlayerRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-     * Constructor that makes this class autowireable.
-     */
-    public function __construct(\Doctrine\ORM\EntityManagerInterface $em)
-    {
-        parent::__construct($em, $em->getClassMetadata(Player::class));
-    }
+
 }

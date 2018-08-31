@@ -2,10 +2,7 @@
 
 namespace Brave\Core\Service;
 
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Repository\GroupRepository;
-use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 
 class AutoGroupAssignment
 {
@@ -15,22 +12,22 @@ class AutoGroupAssignment
     private $objectManager;
 
     /**
-     * @var AllianceRepository
+     * @var \Brave\Core\Repository\AllianceRepository
      */
     private $allianceRepo;
 
     /**
-     * @var CorporationRepository
+     * @var \Brave\Core\Repository\CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var GroupRepository
+     * @var \Brave\Core\Repository\GroupRepository
      */
     private $groupRepo;
 
     /**
-     * @var PlayerRepository
+     * @var \Brave\Core\Repository\PlayerRepository
      */
     private $playerRepo;
 
@@ -55,18 +52,13 @@ class AutoGroupAssignment
      */
     private $autoGroups;
 
-    public function __construct(
-        ObjectManager $objectManager,
-        AllianceRepository $allianceRepo,
-        CorporationRepository $corpRepo,
-        GroupRepository $groupRepo,
-        PlayerRepository $playerRepo
-    ) {
+    public function __construct(ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
+    {
         $this->objectManager = $objectManager;
-        $this->allianceRepo = $allianceRepo;
-        $this->corpRepo = $corpRepo;
-        $this->groupRepo = $groupRepo;
-        $this->playerRepo = $playerRepo;
+        $this->allianceRepo = $repositoryFactory->getAllianceRepository();
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->groupRepo = $repositoryFactory->getGroupRepository();
+        $this->playerRepo = $repositoryFactory->getPlayerRepository();
     }
 
     /**

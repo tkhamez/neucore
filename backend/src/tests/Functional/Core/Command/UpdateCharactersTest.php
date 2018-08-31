@@ -2,10 +2,8 @@
 
 namespace Tests\Functional\Core\Command;
 
-use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Character;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Monolog\Logger;
@@ -119,7 +117,9 @@ class UpdateCharactersTest extends ConsoleTestCase
         # read result
         $this->em->clear();
 
-        $actualChars = (new CharacterRepository($this->em))->findBy([]);
+        $repositoryFactory = new RepositoryFactory($this->em);
+
+        $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(1122, $actualChars[0]->getId());
         $this->assertSame(2233, $actualChars[1]->getId());
         $this->assertNotNull($actualChars[0]->getLastUpdate());
@@ -129,10 +129,10 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertSame(212, $actualChars[0]->getCorporation()->getAlliance()->getId());
         $this->assertSame(212, $actualChars[1]->getCorporation()->getAlliance()->getId());
 
-        $actualCorps = (new CorporationRepository($this->em))->findBy([]);
+        $actualCorps = $repositoryFactory->getCorporationRepository()->findBy([]);
         $this->assertSame(234, $actualCorps[0]->getId());
 
-        $actualAlliances = (new AllianceRepository($this->em))->findBy([]);
+        $actualAlliances = $repositoryFactory->getAllianceRepository()->findBy([]);
         $this->assertSame(212, $actualAlliances[0]->getId());
     }
 

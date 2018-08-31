@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;
@@ -39,7 +39,7 @@ class CharacterController
     private $coreCharService;
 
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $charRepo;
 
@@ -48,13 +48,13 @@ class CharacterController
         UserAuth $uas,
         EsiCharacter $esiCs,
         CoreCharacter $coreCs,
-        CharacterRepository $charRepo
+        RepositoryFactory $repositoryFactory
     ) {
         $this->res = $response;
         $this->uas = $uas;
         $this->esiCharService = $esiCs;
         $this->coreCharService = $coreCs;
-        $this->charRepo = $charRepo;
+        $this->charRepo = $repositoryFactory->getCharacterRepository();
     }
 
     /**

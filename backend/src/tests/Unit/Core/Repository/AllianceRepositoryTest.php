@@ -2,22 +2,13 @@
 
 namespace Tests\Unit\Core\Repository;
 
-use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Tests\Helper;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Group;
 
 class AllianceRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function testConstruct()
-    {
-        $em = (new Helper())->getEm();
-        $r = new AllianceRepository($em);
-
-        $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
-        $this->assertSame(Alliance::class, $r->getClassName());
-    }
-
     public function testGetAllWithGroups()
     {
         // setup
@@ -25,7 +16,7 @@ class AllianceRepositoryTest extends \PHPUnit\Framework\TestCase
         $h = new Helper();
         $h->emptyDb();
         $em = $h->getEm();
-        $r = new AllianceRepository($em);
+        $r = (new RepositoryFactory($em))->getAllianceRepository();
 
         $alli1 = (new Alliance())->setId(111)->setTicker('a1')->setName('alli 1');
         $alli2 = (new Alliance())->setId(222)->setTicker('a2')->setName('alli 2');

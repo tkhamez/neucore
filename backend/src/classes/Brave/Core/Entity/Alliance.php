@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *     definition="Alliance",
  *     required={"id", "name", "ticker"}
  * )
- * @Entity(repositoryClass="Brave\Core\Entity\AllianceRepository")
+ * @Entity
  * @Table(name="alliances")
  */
 class Alliance implements \JsonSerializable

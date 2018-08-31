@@ -2,14 +2,12 @@
 
 namespace Tests\Unit\Core\Service;
 
-use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
-use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
 use Monolog\Handler\TestHandler;
@@ -69,19 +67,15 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $alliRepo = new AllianceRepository($this->em);
-        $corpRepo = new CorporationRepository($this->em);
-        $groupRepo = new GroupRepository($this->em);
-        $this->playerRepo = new PlayerRepository($this->em);
+        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $this->aga = new AutoGroupAssignment(
-            new ObjectManager($this->em, $log), $alliRepo, $corpRepo, $groupRepo, $this->playerRepo);
+        $this->aga = new AutoGroupAssignment(new ObjectManager($this->em, $log), $repositoryFactory);
 
         // a second EsiCharacter instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->agaError = new AutoGroupAssignment(
-            new ObjectManager($em, $log), $alliRepo, $corpRepo, $groupRepo, $this->playerRepo);
+        $this->agaError = new AutoGroupAssignment(new ObjectManager($em, $log), $repositoryFactory);
     }
 
     public function testAssignNotFound()

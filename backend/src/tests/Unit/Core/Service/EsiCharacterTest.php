@@ -7,6 +7,7 @@ use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
@@ -91,17 +92,17 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->charApi = $this->createMock(CharacterApi::class);
         $esi = new EsiApi($log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
 
-        $this->alliRepo = new AllianceRepository($this->em);
-        $this->corpRepo = new CorporationRepository($this->em);
-        $this->charRepo = new CharacterRepository($this->em);
-        $this->cs = new EsiCharacter(
-            $esi, new ObjectManager($this->em, $log), $this->alliRepo, $this->corpRepo, $this->charRepo);
+        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->alliRepo = $repositoryFactory->getAllianceRepository();
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->charRepo = $repositoryFactory->getCharacterRepository();
+
+        $this->cs = new EsiCharacter($esi, new ObjectManager($this->em, $log), $repositoryFactory);
 
         // a second EsiCharacter instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->csError = new EsiCharacter(
-            $esi, new ObjectManager($em, $log), $this->alliRepo, $this->corpRepo, $this->charRepo);
+        $this->csError = new EsiCharacter($esi, new ObjectManager($em, $log), $repositoryFactory);
     }
 
     public function testGetEsiApi()

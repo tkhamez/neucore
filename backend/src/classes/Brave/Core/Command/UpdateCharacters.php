@@ -2,9 +2,7 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\ObjectManager;
@@ -16,17 +14,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateCharacters extends Command
 {
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $charRepo;
 
     /**
-     * @var CorporationRepository
+     * @var \Brave\Core\Repository\CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var AllianceRepository
+     * @var \Brave\Core\Repository\AllianceRepository
      */
     private $alliRepo;
 
@@ -51,18 +49,16 @@ class UpdateCharacters extends Command
     private $sleep;
 
     public function __construct(
-        CharacterRepository $charRepo,
-        CorporationRepository $corpRepo,
-        AllianceRepository $alliRepo,
+        RepositoryFactory $repositoryFactory,
         EsiCharacter $esiCharService,
         CoreCharacter $coreCharService,
         ObjectManager $objectManager
     ) {
         parent::__construct();
 
-        $this->charRepo = $charRepo;
-        $this->corpRepo = $corpRepo;
-        $this->alliRepo = $alliRepo;
+        $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->alliRepo = $repositoryFactory->getAllianceRepository();
         $this->esiCharService = $esiCharService;
         $this->coreCharService = $coreCharService;
         $this->objectManager = $objectManager;

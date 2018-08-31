@@ -2,8 +2,7 @@
 
 namespace Brave\Core\Service;
 
-use Brave\Core\Entity\App;
-use Brave\Core\Repository\AppRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class AppAuth implements RoleProviderInterface
 {
     /**
-     * @var AppRepository
+     * @var \Brave\Core\Repository\AppRepository
      */
     private $appRepository;
 
@@ -26,13 +25,13 @@ class AppAuth implements RoleProviderInterface
     private $objectManager;
 
     /**
-     * @var App
+     * @var \Brave\Core\Entity\App
      */
     private $app;
 
-    public function __construct(AppRepository $appRepository, ObjectManager $objectManager)
+    public function __construct(RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
     {
-        $this->appRepository = $appRepository;
+        $this->appRepository = $repositoryFactory->getAppRepository();
         $this->objectManager = $objectManager;
     }
 
