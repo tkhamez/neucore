@@ -30,24 +30,9 @@ class AppController
     private $log;
 
     /**
-     * @var \Brave\Core\Repository\AppRepository
+     * @var RepositoryFactory
      */
-    private $ar;
-
-    /**
-     * @var \Brave\Core\Repository\RoleRepository
-     */
-    private $rr;
-
-    /**
-     * @var \Brave\Core\Repository\PlayerRepository
-     */
-    private $pr;
-
-    /**
-     * @var \Brave\Core\Repository\GroupRepository
-     */
-    private $gr;
+    private $repositoryFactory;
 
     /**
      * @var ObjectManager
@@ -77,10 +62,7 @@ class AppController
     {
         $this->res = $res;
         $this->log = $log;
-        $this->ar = $repositoryFactory->getAppRepository();
-        $this->rr = $repositoryFactory->getRoleRepository();
-        $this->pr = $repositoryFactory->getPlayerRepository();
-        $this->gr = $repositoryFactory->getGroupRepository();
+        $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
     }
 
@@ -105,7 +87,7 @@ class AppController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->ar->findAll());
+        return $this->res->withJson($this->repositoryFactory->getAppRepository()->findAll());
     }
 
     /**
@@ -147,7 +129,7 @@ class AppController
             return $this->res->withStatus(400);
         }
 
-        $appRole = $this->rr->findOneBy(['name' => Roles::APP]);
+        $appRole = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Roles::APP]);
         if ($appRole === null) {
             $this->log->critical('AppController->create(): Role "'.Roles::APP.'" not found.');
             return $this->res->withStatus(500);
@@ -211,7 +193,7 @@ class AppController
      */
     public function rename(string $id, Request $request): Response
     {
-        $app = $this->ar->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -260,7 +242,7 @@ class AppController
      */
     public function delete(string $id): Response
     {
-        $app = $this->ar->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -307,7 +289,7 @@ class AppController
     {
         $ret = [];
 
-        $app = $this->ar->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -465,7 +447,7 @@ class AppController
     {
         $ret = [];
 
-        $app = $this->ar->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -623,7 +605,7 @@ class AppController
      */
     public function changeSecret(string $id, UserAuth $uas): Response
     {
-        $app = $this->ar->find((int) $id);
+        $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->res->withStatus(404);
         }
@@ -646,8 +628,8 @@ class AppController
 
     private function findAppAndPlayer(string $id, string $player): bool
     {
-        $this->app = $this->ar->find((int) $id);
-        $this->player = $this->pr->find((int) $player);
+        $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $this->player = $this->repositoryFactory->getPlayerRepository()->find((int) $player);
 
         if ($this->app === null || $this->player === null) {
             return false;
@@ -659,8 +641,8 @@ class AppController
 
     private function findAppAndGroup(string $id, string $gid): bool
     {
-        $this->app = $this->ar->find((int) $id);
-        $this->group = $this->gr->find((int) $gid);
+        $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $gid);
 
         if ($this->app === null || $this->group === null) {
             return false;

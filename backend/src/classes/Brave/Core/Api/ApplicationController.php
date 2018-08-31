@@ -38,30 +38,18 @@ class ApplicationController
     /**
      * @var AppAuth
      */
-    private $appService;
+    private $appAuthService;
 
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var RepositoryFactory
      */
-    private $charRepo;
+    private $repositoryFactory;
 
-    /**
-     * @var \Brave\Core\Repository\CorporationRepository
-     */
-    private $corpRepo;
-
-    /**
-     * @var \Brave\Core\Repository\AllianceRepository
-     */
-    private $allianceRepo;
-
-    public function __construct(Response $response, AppAuth $aap, RepositoryFactory $repositoryFactory)
+    public function __construct(Response $response, AppAuth $appAuthService, RepositoryFactory $repositoryFactory)
     {
         $this->response = $response;
-        $this->appService = $aap;
-        $this->charRepo = $repositoryFactory->getCharacterRepository();
-        $this->corpRepo = $repositoryFactory->getCorporationRepository();
-        $this->allianceRepo = $repositoryFactory->getAllianceRepository();
+        $this->appAuthService = $appAuthService;
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -85,7 +73,7 @@ class ApplicationController
      */
     public function showV1(ServerRequestInterface $request): Response
     {
-        return $this->response->withJson($this->appService->getApp($request));
+        return $this->response->withJson($this->appAuthService->getApp($request));
     }
 
     /**
@@ -120,7 +108,7 @@ class ApplicationController
      */
     public function groupsV1(string $cid, ServerRequestInterface $request): Response
     {
-        $appGroups = $this->appService->getApp($request)->getGroups();
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
         $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
 
         if ($result === null) {
@@ -172,7 +160,7 @@ class ApplicationController
             return $this->response->withJson([]);
         }
 
-        $appGroups = $this->appService->getApp($request)->getGroups();
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
 
         $result = [];
         foreach ($charIds as $charId) {
@@ -223,7 +211,7 @@ class ApplicationController
      */
     public function corpGroupsV1(string $cid, ServerRequestInterface $request): Response
     {
-        $appGroups = $this->appService->getApp($request)->getGroups();
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
         $result = $this->getGroupsFor('Corporation', (int) $cid, $appGroups);
 
         if ($result === null) {
@@ -275,7 +263,7 @@ class ApplicationController
             return $this->response->withJson([]);
         }
 
-        $appGroups = $this->appService->getApp($request)->getGroups();
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
 
         $result = [];
         foreach ($corpIds as $corpId) {
@@ -326,7 +314,7 @@ class ApplicationController
      */
     public function allianceGroupsV1(string $aid, ServerRequestInterface $request): Response
     {
-        $appGroups = $this->appService->getApp($request)->getGroups();
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
         $result = $this->getGroupsFor('Alliance', (int) $aid, $appGroups);
 
         if ($result === null) {
@@ -378,7 +366,7 @@ class ApplicationController
             return $this->response->withJson([]);
         }
 
-        $appGroups = $this->appService->getApp($request)->getGroups();
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
 
         $result = [];
         foreach ($allianceIds as $allianceId) {
@@ -433,7 +421,7 @@ class ApplicationController
      */
     public function mainV1(string $cid): Response
     {
-        $char = $this->charRepo->find((int) $cid);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
 
         if ($char === null) {
             return $this->response->withStatus(404);
@@ -475,7 +463,7 @@ class ApplicationController
      */
     private function getGroupsForPlayer(int $characterId, array $appGroups)
     {
-        $char = $this->charRepo->find($characterId);
+        $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($char === null) {
             return null;
         }
@@ -516,7 +504,9 @@ class ApplicationController
      */
     private function getGroupsFor(string $entityName, int $entityId, array $appGroups)
     {
-        $repository = $entityName === 'Corporation' ? $this->corpRepo : $this->allianceRepo;
+        $repository = $entityName === 'Corporation' ?
+            $this->repositoryFactory->getCorporationRepository() :
+            $this->repositoryFactory->getAllianceRepository();
 
         $entity = $repository->find($entityId);
         if ($entity === null) {

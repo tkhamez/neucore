@@ -32,14 +32,9 @@ class UserAuth implements RoleProviderInterface
     private $characterService;
 
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var RepositoryFactory
      */
-    private $characterRepository;
-
-    /**
-     * @var \Brave\Core\Repository\RoleRepository
-     */
-    private $roleRepository;
+    private $repositoryFactory;
 
     /**
      * @var LoggerInterface
@@ -59,8 +54,7 @@ class UserAuth implements RoleProviderInterface
     ) {
         $this->session = $session;
         $this->characterService = $charService;
-        $this->characterRepository = $repositoryFactory->getCharacterRepository();
-        $this->roleRepository = $repositoryFactory->getRoleRepository();
+        $this->repositoryFactory = $repositoryFactory;
         $this->log = $log;
     }
 
@@ -105,12 +99,12 @@ class UserAuth implements RoleProviderInterface
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
         string $scopes, AccessToken $token): bool
     {
-        $char = $this->characterRepository->find($characterId);
+        $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($char === null) {
 
             // first login, create user
 
-            $userRole = $this->roleRepository->findBy(['name' => Roles::USER]);
+            $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Roles::USER]);
             if (count($userRole) !== 1) {
                 $this->log->critical('UserAuth::authenticate(): Role "'.Roles::USER.'" not found.');
                 return false;
@@ -153,7 +147,7 @@ class UserAuth implements RoleProviderInterface
 
         // check if the character was already registered,
         // if yes, move it to this player account, otherwise create it
-        $alt = $this->characterRepository->find($characterId);
+        $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($alt !== null) {
 
             // check if new alt is the currently logged in user
@@ -189,7 +183,7 @@ class UserAuth implements RoleProviderInterface
     {
         $userId = $this->session->get('character_id');
         if ($userId !== null) {
-            $this->user = $this->characterRepository->find($userId);
+            $this->user = $this->repositoryFactory->getCharacterRepository()->find($userId);
         }
     }
 }

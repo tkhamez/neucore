@@ -19,27 +19,15 @@ class EsiCharacter
     private $objectManager;
 
     /**
-     * @var \Brave\Core\Repository\AllianceRepository
+     * @var RepositoryFactory
      */
-    private $alliRepo;
-
-    /**
-     * @var \Brave\Core\Repository\CorporationRepository
-     */
-    private $corpRepo;
-
-    /**
-     * @var \Brave\Core\Repository\CharacterRepository
-     */
-    private $charRepo;
+    private $repositoryFactory;
 
     public function __construct(EsiApi $esi, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
     {
         $this->esi = $esi;
         $this->objectManager = $objectManager;
-        $this->alliRepo = $repositoryFactory->getAllianceRepository();
-        $this->corpRepo = $repositoryFactory->getCorporationRepository();
-        $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -107,7 +95,7 @@ class EsiCharacter
         }
 
         // get char from local database
-        $char = $this->charRepo->find($id);
+        $char = $this->repositoryFactory->getCharacterRepository()->find($id);
         if ($char === null) {
             return null;
         }
@@ -228,7 +216,7 @@ class EsiCharacter
 
     private function getCorporationEntity(int $id): Corporation
     {
-        $corp = $this->corpRepo->find($id);
+        $corp = $this->repositoryFactory->getCorporationRepository()->find($id);
         if ($corp === null) {
             $corp = new Corporation();
             $corp->setId($id);
@@ -239,7 +227,7 @@ class EsiCharacter
 
     private function getAllianceEntity(int $id): Alliance
     {
-        $alliance = $this->alliRepo->find($id);
+        $alliance = $this->repositoryFactory->getAllianceRepository()->find($id);
         if ($alliance === null) {
             $alliance = new Alliance();
             $alliance->setId($id);

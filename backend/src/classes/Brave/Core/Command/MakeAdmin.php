@@ -15,12 +15,12 @@ class MakeAdmin extends Command
     /**
      * @var \Brave\Core\Repository\CharacterRepository
      */
-    private $cr;
+    private $charRepo;
 
     /**
      * @var \Brave\Core\Repository\RoleRepository
      */
-    private $rr;
+    private $roleRepo;
 
     /**
      * @var ObjectManager
@@ -31,8 +31,8 @@ class MakeAdmin extends Command
     {
         parent::__construct();
 
-        $this->cr = $repositoryFactory->getCharacterRepository();
-        $this->rr = $repositoryFactory->getRoleRepository();
+        $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $this->roleRepo = $repositoryFactory->getRoleRepository();
         $this->objectManager = $objectManager;
     }
 
@@ -49,7 +49,7 @@ class MakeAdmin extends Command
     {
         $arg = $input->getArgument('id');
 
-        $char = $this->cr->find($arg);
+        $char = $this->charRepo->find($arg);
         if ($char === null) {
             $output->writeln('Character with ID "' . $arg .'" not found');
             return;
@@ -65,7 +65,7 @@ class MakeAdmin extends Command
             Roles::USER_ADMIN,
             Roles::ESI,
         ];
-        foreach ($this->rr->findBy(['name' => $newRoles]) as $newRole) {
+        foreach ($this->roleRepo->findBy(['name' => $newRoles]) as $newRole) {
             if (! $player->hasRole($newRole->getName())) {
                 $player->addRole($newRole);
             }

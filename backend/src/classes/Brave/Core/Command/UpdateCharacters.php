@@ -67,7 +67,8 @@ class UpdateCharacters extends Command
     protected function configure()
     {
         $this->setName('update-chars')
-            ->setDescription('Updates all characters, corporations and alliances from ESI and checks refresh token.')
+            ->setDescription(
+                'Updates all characters, corporations and alliances from ESI and checks refresh token.')
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each character update', 200);
     }

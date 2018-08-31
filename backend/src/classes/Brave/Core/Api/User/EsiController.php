@@ -26,9 +26,9 @@ class EsiController
     private $response;
 
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var RepositoryFactory
      */
-    private $characterRepository;
+    private $repositoryFactory;
 
     /**
      * @var OAuthToken
@@ -53,7 +53,7 @@ class EsiController
         Config $config
     ) {
         $this->response = $response;
-        $this->characterRepository = $repositoryFactory->getCharacterRepository();
+        $this->repositoryFactory = $repositoryFactory;
         $this->token = $token;
         $this->httpClient = $httpClient;
         $this->config = $config;
@@ -107,7 +107,7 @@ class EsiController
             return $this->response->withJson('Missing route and/or character parameter.', 400);
         }
 
-        $character = $this->characterRepository->find($charId);
+        $character = $this->repositoryFactory->getCharacterRepository()->find($charId);
         if ($character === null) {
             return $this->response->withJson('Character not found.', 400);
         }

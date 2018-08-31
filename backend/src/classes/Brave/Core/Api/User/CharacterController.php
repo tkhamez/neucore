@@ -39,9 +39,9 @@ class CharacterController
     private $coreCharService;
 
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var repositoryFactory
      */
-    private $charRepo;
+    private $repositoryFactory;
 
     public function __construct(
         Response $response,
@@ -54,7 +54,7 @@ class CharacterController
         $this->uas = $uas;
         $this->esiCharService = $esiCs;
         $this->coreCharService = $coreCs;
-        $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -109,7 +109,7 @@ class CharacterController
      */
     public function findBy(string $name): Response
     {
-        $result = $this->charRepo->findByNamePartialMatch($name);
+        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name);
 
         $retVal = [];
         foreach ($result as $char) {
@@ -154,7 +154,7 @@ class CharacterController
      */
     public function findPlayerOf(string $id): Response
     {
-        $char = $this->charRepo->find((int) $id);
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
 
         if ($char === null) {
             return $this->res->withStatus(204);
@@ -207,7 +207,7 @@ class CharacterController
         $char = null;
         $player = $this->uas->getUser()->getPlayer();
         if ($player->hasRole(Roles::USER_ADMIN)) {
-            $char = $this->charRepo->find((int) $id);
+            $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
             foreach ($this->uas->getUser()->getPlayer()->getCharacters() as $c) {
                 if ($c->getId() === (int) $id) {

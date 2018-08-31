@@ -15,9 +15,9 @@ use Psr\Http\Message\ServerRequestInterface;
 class AppAuth implements RoleProviderInterface
 {
     /**
-     * @var \Brave\Core\Repository\AppRepository
+     * @var RepositoryFactory
      */
-    private $appRepository;
+    private $repositoryFactory;
 
     /**
      * @var ObjectManager
@@ -31,7 +31,7 @@ class AppAuth implements RoleProviderInterface
 
     public function __construct(RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
     {
-        $this->appRepository = $repositoryFactory->getAppRepository();
+        $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
     }
 
@@ -93,7 +93,7 @@ class AppAuth implements RoleProviderInterface
         $appId = $tokenParts[0];
         $secret = $tokenParts[1];
 
-        $app = $this->appRepository->find($appId);
+        $app = $this->repositoryFactory->getAppRepository()->find($appId);
         if ($app !== null && password_verify($secret, $app->getSecret())) {
             $this->app = $app;
             $this->upgradeHash($secret);

@@ -26,14 +26,9 @@ class AllianceController
     private $objectManager;
 
     /**
-     * @var \Brave\Core\Repository\AllianceRepository
+     * @var RepositoryFactory
      */
-    private $allianceRepo;
-
-    /**
-     * @var \Brave\Core\Repository\GroupRepository
-     */
-    private $groupRepo;
+    private $repositoryFactory;
 
     /**
      * @var \Brave\Core\Entity\Alliance
@@ -49,8 +44,7 @@ class AllianceController
     {
         $this->response = $response;
         $this->objectManager = $objectManager;
-        $this->allianceRepo = $repositoryFactory->getAllianceRepository();
-        $this->groupRepo = $repositoryFactory->getGroupRepository();
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -74,7 +68,8 @@ class AllianceController
      */
     public function all(): Response
     {
-        return $this->response->withJson($this->allianceRepo->findBy([], ['name' => 'ASC']));
+        return $this->response->withJson(
+            $this->repositoryFactory->getAllianceRepository()->findBy([], ['name' => 'ASC']));
     }
 
     /**
@@ -99,7 +94,7 @@ class AllianceController
     public function withGroups(): Response
     {
         $result = [];
-        foreach ($this->allianceRepo->getAllWithGroups() as $alliance) {
+        foreach ($this->repositoryFactory->getAllianceRepository()->getAllWithGroups() as $alliance) {
             // alliance model with groups
             $json = $alliance->jsonSerialize();
             $json['groups'] = $alliance->getGroups();
@@ -156,7 +151,7 @@ class AllianceController
     {
         $allianceId = (int) $id;
 
-        if ($this->allianceRepo->find($allianceId)) {
+        if ($this->repositoryFactory->getAllianceRepository()->find($allianceId)) {
             return $this->response->withStatus(409);
         }
 
@@ -284,8 +279,8 @@ class AllianceController
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool
     {
-        $this->alliance = $this->allianceRepo->find((int) $allianceId);
-        $this->group = $this->groupRepo->find((int) $groupId);
+        $this->alliance = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
+        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
         if ($this->alliance === null || $this->group === null) {
             return false;

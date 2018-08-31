@@ -23,14 +23,9 @@ class GroupController
     private $res;
 
     /**
-     * @var \Brave\Core\Repository\GroupRepository
+     * @var RepositoryFactory
      */
-    private $gr;
-
-    /**
-     * @var \Brave\Core\Repository\PlayerRepository
-     */
-    private $pr;
+    private $repositoryFactory;
 
     /**
      * @var UserAuth
@@ -64,8 +59,7 @@ class GroupController
         ObjectManager $objectManager
     ) {
         $this->res = $res;
-        $this->gr = $repositoryFactory->getGroupRepository();
-        $this->pr = $repositoryFactory->getPlayerRepository();
+        $this->repositoryFactory = $repositoryFactory;
         $this->uas = $uas;
         $this->objectManager = $objectManager;
     }
@@ -91,7 +85,7 @@ class GroupController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->gr->findBy([], ['name' => 'ASC']));
+        return $this->res->withJson($this->repositoryFactory->getGroupRepository()->findBy([], ['name' => 'ASC']));
     }
 
     /**
@@ -115,7 +109,8 @@ class GroupController
      */
     public function public(): Response
     {
-        return $this->res->withJson($this->gr->findBy(['visibility' => Group::VISIBILITY_PUBLIC], ['name' => 'ASC']));
+        return $this->res->withJson($this->repositoryFactory->getGroupRepository()->findBy(
+            ['visibility' => Group::VISIBILITY_PUBLIC], ['name' => 'ASC']));
     }
 
     /**
@@ -752,7 +747,7 @@ class GroupController
      */
     private function otherGroupExists(string $name, int $id = null): bool
     {
-        $group = $this->gr->findOneBy(['name' => $name]);
+        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['name' => $name]);
 
         if ($group === null) {
             return false;
@@ -845,7 +840,7 @@ class GroupController
 
     private function findGroup(string $id): bool
     {
-        $this->group = $this->gr->find((int) $id);
+        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
         if ($this->group === null) {
             return false;
         }
@@ -855,8 +850,8 @@ class GroupController
 
     private function findGroupAndPlayer(string $groupId, string $playerId): bool
     {
-        $this->group = $this->gr->find((int) $groupId);
-        $this->player = $this->pr->find((int) $playerId);
+        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $this->player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
 
         if ($this->group === null || $this->player === null) {
             return false;

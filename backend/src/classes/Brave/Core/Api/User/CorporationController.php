@@ -26,14 +26,9 @@ class CorporationController
     private $objectManager;
 
     /**
-     * @var \Brave\Core\Repository\CorporationRepository
+     * @var RepositoryFactory
      */
-    private $corpRepo;
-
-    /**
-     * @var \Brave\Core\Repository\GroupRepository
-     */
-    private $groupRepo;
+    private $repositoryFactory;
 
     /**
      * @var \Brave\Core\Entity\Corporation
@@ -49,8 +44,7 @@ class CorporationController
     {
         $this->res = $response;
         $this->objectManager = $objectManager;
-        $this->corpRepo = $repositoryFactory->getCorporationRepository();
-        $this->groupRepo = $repositoryFactory->getGroupRepository();
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -74,7 +68,8 @@ class CorporationController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->corpRepo->findBy([], ['name' => 'ASC']));
+        return $this->res->withJson(
+            $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC']));
     }
 
     /**
@@ -99,7 +94,7 @@ class CorporationController
     public function withGroups(): Response
     {
         $result = [];
-        foreach ($this->corpRepo->getAllWithGroups() as $corp) {
+        foreach ($this->repositoryFactory->getCorporationRepository()->getAllWithGroups() as $corp) {
             // corporation model with groups
             $json = $corp->jsonSerialize();
             $json['groups'] = $corp->getGroups();
@@ -157,7 +152,7 @@ class CorporationController
     {
         $corpId = (int) $id;
 
-        if ($this->corpRepo->find($corpId)) {
+        if ($this->repositoryFactory->getCorporationRepository()->find($corpId)) {
             return $this->res->withStatus(409);
         }
 
@@ -290,8 +285,8 @@ class CorporationController
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool
     {
-        $this->corp = $this->corpRepo->find((int) $corpId);
-        $this->group = $this->groupRepo->find((int) $groupId);
+        $this->corp = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
+        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
         if ($this->corp === null || $this->group === null) {
             return false;

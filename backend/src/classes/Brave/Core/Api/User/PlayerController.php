@@ -29,19 +29,9 @@ class PlayerController
     private $log;
 
     /**
-     * @var \Brave\Core\Repository\PlayerRepository
+     * @var RepositoryFactory
      */
-    private $pr;
-
-    /**
-     * @var \Brave\Core\Repository\RoleRepository
-     */
-    private $rr;
-
-    /**
-     * @var \Brave\Core\Repository\GroupRepository
-     */
-    private $gr;
+    private $repositoryFactory;
 
     /**
      * @var UserAuth
@@ -71,9 +61,7 @@ class PlayerController
     ) {
         $this->res = $response;
         $this->log = $log;
-        $this->pr = $repositoryFactory->getPlayerRepository();
-        $this->rr = $repositoryFactory->getRoleRepository();
-        $this->gr = $repositoryFactory->getGroupRepository();
+        $this->repositoryFactory = $repositoryFactory;
         $this->uas = $uas;
         $this->objectManager = $objectManager;
     }
@@ -282,7 +270,7 @@ class PlayerController
     {
         $ret = [];
 
-        foreach ($this->pr->findBy([], ['name' => 'ASC']) as $player) {
+        foreach ($this->repositoryFactory->getPlayerRepository()->findBy([], ['name' => 'ASC']) as $player) {
             $ret[] = [
                 'id' => $player->getId(),
                 'name' => $player->getName()
@@ -434,8 +422,8 @@ class PlayerController
      */
     public function addRole(string $id, string $name): Response
     {
-        $player = $this->pr->find((int) $id);
-        $role = $this->rr->findOneBy(['name' => $name]);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
             return $this->res->withStatus(404);
@@ -491,8 +479,8 @@ class PlayerController
      */
     public function removeRole(string $id, string $name): Response
     {
-        $player = $this->pr->find((int) $id);
-        $role = $this->rr->findOneBy(['name' => $name]);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
             return $this->res->withStatus(404);
@@ -539,7 +527,7 @@ class PlayerController
      */
     public function showById(string $id): Response
     {
-        $player = $this->pr->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->res->withStatus(404);
@@ -580,7 +568,7 @@ class PlayerController
      */
     public function characters(string $id): Response
     {
-        $player = $this->pr->find((int) $id);
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->res->withStatus(404);
@@ -597,7 +585,7 @@ class PlayerController
     {
         $ret = [];
 
-        $role = $this->rr->findOneBy(['name' => $roleName]);
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if ($role === null) {
             $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
             return $ret;
@@ -621,7 +609,7 @@ class PlayerController
         } else {
             $criteria = ['id' => (int) $groupId];
         }
-        $group = $this->gr->findOneBy($criteria);
+        $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
         if ($group === null) {
             return $this->res->withStatus(404);
         }

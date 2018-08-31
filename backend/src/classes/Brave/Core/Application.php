@@ -15,9 +15,9 @@ use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
+use Brave\Slim\Session\NonBlockingSessionMiddleware;
 use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
-use Brave\Slim\Session\NonBlockingSessionMiddleware;
 
 use DI\Container;
 use DI\ContainerBuilder;
