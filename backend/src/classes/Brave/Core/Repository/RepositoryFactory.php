@@ -62,20 +62,28 @@ class RepositoryFactory
         if (! isset($this->instance[$repositoryClass])) {
             $metadata = $this->em->getClassMetadata($entityClass);
             $repository = null;
-            if ($repositoryClass === AllianceRepository::class) {
-                $repository = new AllianceRepository($this->em, $metadata);
-            } elseif ($repositoryClass === AppRepository::class) {
-                $repository = new AppRepository($this->em, $metadata);
-            } elseif ($repositoryClass === CharacterRepository::class) {
-                $repository = new CharacterRepository($this->em, $metadata);
-            } elseif ($repositoryClass === CorporationRepository::class) {
-                $repository = new CorporationRepository($this->em, $metadata);
-            } elseif ($repositoryClass === GroupRepository::class) {
-                $repository = new GroupRepository($this->em, $metadata);
-            } elseif ($repositoryClass === PlayerRepository::class) {
-                $repository = new PlayerRepository($this->em, $metadata);
-            } elseif ($repositoryClass === RoleRepository::class) {
-                $repository = new RoleRepository($this->em, $metadata);
+            switch ($repositoryClass) {
+                case AllianceRepository::class:
+                    $repository = new AllianceRepository($this->em, $metadata);
+                    break;
+                case AppRepository::class:
+                    $repository = new AppRepository($this->em, $metadata);
+                    break;
+                case CharacterRepository::class:
+                    $repository = new CharacterRepository($this->em, $metadata);
+                    break;
+                case CorporationRepository::class:
+                    $repository = new CorporationRepository($this->em, $metadata);
+                    break;
+                case GroupRepository::class:
+                    $repository = new GroupRepository($this->em, $metadata);
+                    break;
+                case PlayerRepository::class:
+                    $repository = new PlayerRepository($this->em, $metadata);
+                    break;
+                case RoleRepository::class:
+                    $repository = new RoleRepository($this->em, $metadata);
+                    break;
             }
             $this->instance[$repositoryClass] = $repository;
         }
