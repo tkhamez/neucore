@@ -16,11 +16,5 @@ use Brave\Core\Entity\Group;
  */
 class GroupRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-     * Constructor that makes this class autowireable.
-     */
-    public function __construct(\Doctrine\ORM\EntityManagerInterface $em)
-    {
-        parent::__construct($em, $em->getClassMetadata(Group::class));
-    }
+
 }

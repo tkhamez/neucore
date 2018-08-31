@@ -2,21 +2,12 @@
 
 namespace Tests\Unit\Core\Repository;
 
-use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Tests\Helper;
 use Brave\Core\Entity\Character;
 
 class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function testConstruct()
-    {
-        $em = (new Helper())->getEm();
-        $r = new CharacterRepository($em);
-
-        $this->assertInstanceOf('Doctrine\ORM\EntityRepository', $r);
-        $this->assertSame(Character::class, $r->getClassName());
-    }
-
     public function testFindByNamePartialMatch()
     {
         // setup
@@ -37,7 +28,7 @@ class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
 
         // test
 
-        $r = new CharacterRepository($em);
+        $r = (new RepositoryFactory($em))->getCharacterRepository();
 
         $actual = $r->findByNamePartialMatch('har');
         $this->assertSame(2, count($actual));

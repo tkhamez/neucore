@@ -3,12 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\App;
-use Brave\Core\Repository\AppRepository;
-use Brave\Core\Entity\Group;
-use Brave\Core\Repository\GroupRepository;
-use Brave\Core\Entity\Player;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -35,14 +30,24 @@ class AppController
     private $log;
 
     /**
-     * @var AppRepository
+     * @var \Brave\Core\Repository\AppRepository
      */
     private $ar;
 
     /**
-     * @var RoleRepository
+     * @var \Brave\Core\Repository\RoleRepository
      */
     private $rr;
+
+    /**
+     * @var \Brave\Core\Repository\PlayerRepository
+     */
+    private $pr;
+
+    /**
+     * @var \Brave\Core\Repository\GroupRepository
+     */
+    private $gr;
 
     /**
      * @var ObjectManager
@@ -50,31 +55,32 @@ class AppController
     private $objectManager;
 
     /**
-     * @var App
+     * @var \Brave\Core\Entity\App
      */
     private $app;
 
     /**
-     * @var Player
+     * @var \Brave\Core\Entity\Player
      */
     private $player;
 
     /**
-     * @var Group
+     * @var \Brave\Core\Entity\Group
      */
     private $group;
 
     public function __construct(
         Response $res,
         LoggerInterface $log,
-        AppRepository $ar,
-        RoleRepository $rr,
+        RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager)
     {
         $this->res = $res;
         $this->log = $log;
-        $this->ar = $ar;
-        $this->rr = $rr;
+        $this->ar = $repositoryFactory->getAppRepository();
+        $this->rr = $repositoryFactory->getRoleRepository();
+        $this->pr = $repositoryFactory->getPlayerRepository();
+        $this->gr = $repositoryFactory->getGroupRepository();
         $this->objectManager = $objectManager;
     }
 
@@ -352,9 +358,9 @@ class AppController
      *     )
      * )
      */
-    public function addManager(string $id, string $pid, PlayerRepository $pr): Response
+    public function addManager(string $id, string $pid): Response
     {
-        if (! $this->findAppAndPlayer($id, $pid, $pr)) {
+        if (! $this->findAppAndPlayer($id, $pid)) {
             return $this->res->withStatus(404);
         }
 
@@ -409,9 +415,9 @@ class AppController
      *     )
      * )
      */
-    public function removeManager(string $id, string $pid, PlayerRepository $pr): Response
+    public function removeManager(string $id, string $pid): Response
     {
-        if (! $this->findAppAndPlayer($id, $pid, $pr)) {
+        if (! $this->findAppAndPlayer($id, $pid)) {
             return $this->res->withStatus(404);
         }
 
@@ -513,9 +519,9 @@ class AppController
      *     )
      * )
      */
-    public function addGroup(string $id, string $gid, GroupRepository $gr): Response
+    public function addGroup(string $id, string $gid): Response
     {
-        if (! $this->findAppAndGroup($id, $gid, $gr)) {
+        if (! $this->findAppAndGroup($id, $gid)) {
             return $this->res->withStatus(404);
         }
 
@@ -570,9 +576,9 @@ class AppController
      *     )
      * )
      */
-    public function removeGroup(string $id, string $gid, GroupRepository $gr): Response
+    public function removeGroup(string $id, string $gid): Response
     {
-        if (! $this->findAppAndGroup($id, $gid, $gr)) {
+        if (! $this->findAppAndGroup($id, $gid)) {
             return $this->res->withStatus(404);
         }
 
@@ -638,10 +644,10 @@ class AppController
         return $this->res->withJson($secret);
     }
 
-    private function findAppAndPlayer(string $id, string $player, PlayerRepository $pr): bool
+    private function findAppAndPlayer(string $id, string $player): bool
     {
         $this->app = $this->ar->find((int) $id);
-        $this->player = $pr->find((int) $player);
+        $this->player = $this->pr->find((int) $player);
 
         if ($this->app === null || $this->player === null) {
             return false;
@@ -651,10 +657,10 @@ class AppController
     }
 
 
-    private function findAppAndGroup(string $id, string $gid, GroupRepository $gr): bool
+    private function findAppAndGroup(string $id, string $gid): bool
     {
         $this->app = $this->ar->find((int) $id);
-        $this->group = $gr->find((int) $gid);
+        $this->group = $this->gr->find((int) $gid);
 
         if ($this->app === null || $this->group === null) {
             return false;

@@ -11,7 +11,7 @@ namespace Brave\Core\Entity;
  *     definition="Character",
  *     required={"id", "name"}
  * )
- * @Entity(repositoryClass="Brave\Core\Entity\CharacterRepository")
+ * @Entity
  * @Table(name="characters")
  */
 class Character implements \JsonSerializable

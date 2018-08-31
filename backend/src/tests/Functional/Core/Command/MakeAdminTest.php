@@ -2,7 +2,7 @@
 
 namespace Tests\Functional\Core\Command;
 
-use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;
@@ -54,7 +54,8 @@ class MakeAdminTest extends ConsoleTestCase
             Roles::USER,
             Roles::USER_ADMIN,
         ];
-        $actual = (new CharacterRepository(self::$em))->find(1234)->getPlayer()->getRoleNames();
+        $actual = (new RepositoryFactory(self::$em))
+            ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();
         $this->assertSame($expected, $actual);
     }
 

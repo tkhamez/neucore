@@ -17,14 +17,6 @@ use Brave\Core\Entity\Corporation;
 class CorporationRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * Constructor that makes this class autowireable.
-     */
-    public function __construct(\Doctrine\ORM\EntityManagerInterface $em)
-    {
-        parent::__construct($em, $em->getClassMetadata(Corporation::class));
-    }
-
-    /**
      * @return \Brave\Core\Entity\Corporation[]
      */
     public function getAllWithGroups()

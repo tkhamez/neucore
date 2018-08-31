@@ -11,7 +11,7 @@ namespace Brave\Core\Entity;
  *     enum={"app-admin", "app-manager", "group-admin", "group-manager", "user", "user-admin", "esi"})
  * )
  *
- * @Entity(repositoryClass="Brave\Core\Entity\RoleRepository")
+ * @Entity
  * @Table(name="roles")
  */
 class Role implements \JsonSerializable

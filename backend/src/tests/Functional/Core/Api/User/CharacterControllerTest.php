@@ -3,7 +3,7 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Swagger\Client\Eve\Api\CharacterApi;
@@ -198,7 +198,7 @@ class CharacterControllerTest extends WebTestCase
 
         // check group
         $this->helper->getEm()->clear();
-        $player = (new PlayerRepository($this->helper->getEm()))->find($this->playerId);
+        $player = (new RepositoryFactory($this->helper->getEm()))->getPlayerRepository()->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
         // checkTokenUpdateCharacter() changed it from true to false

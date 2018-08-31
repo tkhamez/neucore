@@ -5,11 +5,7 @@ namespace Brave\Core;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdatePlayerGroups;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;
@@ -443,22 +439,19 @@ class Application
     private function addCommands(ConsoleApplication $console): void
     {
         $console->add(new MakeAdmin(
-            $this->container->get(CharacterRepository::class),
-            $this->container->get(RoleRepository::class),
+            $this->container->get(RepositoryFactory::class),
             $this->container->get(ObjectManager::class)
         ));
 
         $console->add(new UpdateCharacters(
-            $this->container->get(CharacterRepository::class),
-            $this->container->get(CorporationRepository::class),
-            $this->container->get(AllianceRepository::class),
+            $this->container->get(RepositoryFactory::class),
             $this->container->get(EsiCharacter::class),
             $this->container->get(CoreCharacter::class),
             $this->container->get(ObjectManager::class)
         ));
 
         $console->add(new UpdatePlayerGroups(
-            $this->container->get(PlayerRepository::class),
+            $this->container->get(RepositoryFactory::class),
             $this->container->get(AutoGroupAssignment::class),
             $this->container->get(ObjectManager::class)
         ));

@@ -2,9 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Repository\GroupRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
@@ -28,17 +26,17 @@ class CorporationController
     private $objectManager;
 
     /**
-     * @var CorporationRepository
+     * @var \Brave\Core\Repository\CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var GroupRepository
+     * @var \Brave\Core\Repository\GroupRepository
      */
     private $groupRepo;
 
     /**
-     * @var Corporation
+     * @var \Brave\Core\Entity\Corporation
      */
     private $corp;
 
@@ -47,16 +45,12 @@ class CorporationController
      */
     private $group;
 
-    public function __construct(
-        Response $response,
-        ObjectManager $objectManager,
-        CorporationRepository $corpRepo,
-        GroupRepository $groupRepo
-    ) {
+    public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
+    {
         $this->res = $response;
         $this->objectManager = $objectManager;
-        $this->corpRepo = $corpRepo;
-        $this->groupRepo = $groupRepo;
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->groupRepo = $repositoryFactory->getGroupRepository();
     }
 
     /**

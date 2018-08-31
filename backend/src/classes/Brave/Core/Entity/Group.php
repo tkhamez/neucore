@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *     definition="Group",
  *     required={"id", "name"}
  * )
- * @Entity(repositoryClass="Brave\Core\Entity\GroupRepository")
+ * @Entity
  * @Table(name="groups")
  */
 class Group implements \JsonSerializable

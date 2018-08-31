@@ -4,7 +4,7 @@ namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
-use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\Character;
@@ -47,7 +47,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
 
         # read result
-        $actual = (new PlayerRepository($em))->findBy([]);
+        $actual = (new RepositoryFactory($em))->getPlayerRepository()->findBy([]);
         $this->assertSame($p1->getId(), $actual[0]->getId());
         $this->assertSame($p2->getId(), $actual[1]->getId());
         $this->assertNotNull($actual[0]->getLastUpdate());

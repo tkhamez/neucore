@@ -3,8 +3,8 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Alliance;
-use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Group;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
@@ -43,7 +43,7 @@ class AllianceControllerTest extends WebTestCase
     private $groupId2;
 
     /**
-     * @var AllianceRepository
+     * @var \Brave\Core\Repository\AllianceRepository
      */
     private $alliRepo;
 
@@ -63,7 +63,7 @@ class AllianceControllerTest extends WebTestCase
         $this->helper = new Helper();
         $this->em = $this->helper->getEm();
 
-        $this->alliRepo = new AllianceRepository($this->em);
+        $this->alliRepo = (new RepositoryFactory($this->em))->getAllianceRepository();
 
         // mock Swagger API
         $this->log = new Logger('Test');

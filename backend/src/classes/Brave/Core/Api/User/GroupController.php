@@ -3,9 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Group;
-use Brave\Core\Repository\GroupRepository;
-use Brave\Core\Entity\Player;
-use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Request;
@@ -25,12 +23,12 @@ class GroupController
     private $res;
 
     /**
-     * @var GroupRepository
+     * @var \Brave\Core\Repository\GroupRepository
      */
     private $gr;
 
     /**
-     * @var PlayerRepository
+     * @var \Brave\Core\Repository\PlayerRepository
      */
     private $pr;
 
@@ -50,25 +48,24 @@ class GroupController
     private $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
     /**
-     * @var Group
+     * @var \Brave\Core\Entity\Group
      */
     private $group;
 
     /**
-     * @var Player
+     * @var \Brave\Core\Entity\Player
      */
     private $player;
 
     public function __construct(
         Response $res,
-        GroupRepository $gr,
-        PlayerRepository $pr,
+        RepositoryFactory $repositoryFactory,
         UserAuth $uas,
         ObjectManager $objectManager
     ) {
         $this->res = $res;
-        $this->gr = $gr;
-        $this->pr = $pr;
+        $this->gr = $repositoryFactory->getGroupRepository();
+        $this->pr = $repositoryFactory->getPlayerRepository();
         $this->uas = $uas;
         $this->objectManager = $objectManager;
     }

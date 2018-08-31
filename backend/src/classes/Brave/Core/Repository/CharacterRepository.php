@@ -17,15 +17,6 @@ use Brave\Core\Entity\Character;
 class CharacterRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * Constructor that makes this class autowireable.
-     */
-    public function __construct(\Doctrine\ORM\EntityManagerInterface $em)
-    {
-        parent::__construct($em, $em->getClassMetadata(Character::class));
-    }
-
-    /**
-     *
      * @param string $name
      * @return \Brave\Core\Entity\Character[]
      */

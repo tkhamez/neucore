@@ -2,9 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\GroupRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
@@ -28,17 +26,17 @@ class AllianceController
     private $objectManager;
 
     /**
-     * @var AllianceRepository
+     * @var \Brave\Core\Repository\AllianceRepository
      */
     private $allianceRepo;
 
     /**
-     * @var GroupRepository
+     * @var \Brave\Core\Repository\GroupRepository
      */
     private $groupRepo;
 
     /**
-     * @var Alliance
+     * @var \Brave\Core\Entity\Alliance\Alliance
      */
     private $alliance;
 
@@ -47,16 +45,12 @@ class AllianceController
      */
     private $group;
 
-    public function __construct(
-        Response $response,
-        ObjectManager $objectManager,
-        AllianceRepository $allianceRepo,
-        GroupRepository $groupRepo)
+    public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
     {
         $this->response = $response;
         $this->objectManager = $objectManager;
-        $this->allianceRepo = $allianceRepo;
-        $this->groupRepo = $groupRepo;
+        $this->allianceRepo = $repositoryFactory->getAllianceRepository();
+        $this->groupRepo = $repositoryFactory->getGroupRepository();
     }
 
     /**

@@ -7,7 +7,7 @@ namespace Brave\Core\Entity;
  *     definition="App",
  *     required={"id", "name"}
  * )
- * @Entity(repositoryClass="Brave\Core\Entity\AppRepository")
+ * @Entity
  * @Table(name="apps")
  */
 class App implements \JsonSerializable

@@ -3,10 +3,8 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Alliance;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Repository\RepositoryFactory;
 
 class EsiCharacter
 {
@@ -21,32 +19,27 @@ class EsiCharacter
     private $objectManager;
 
     /**
-     * @var AllianceRepository
+     * @var \Brave\Core\Repository\AllianceRepository
      */
     private $alliRepo;
 
     /**
-     * @var CorporationRepository
+     * @var \Brave\Core\Repository\CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var CharacterRepository
+     * @var \Brave\Core\Repository\CharacterRepository
      */
     private $charRepo;
 
-    public function __construct(
-        EsiApi $esi,
-        ObjectManager $objectManager,
-        AllianceRepository $ar,
-        CorporationRepository $cpr,
-        CharacterRepository $crr
-    ) {
+    public function __construct(EsiApi $esi, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
+    {
         $this->esi = $esi;
         $this->objectManager = $objectManager;
-        $this->alliRepo = $ar;
-        $this->corpRepo = $cpr;
-        $this->charRepo = $crr;
+        $this->alliRepo = $repositoryFactory->getAllianceRepository();
+        $this->corpRepo = $repositoryFactory->getCorporationRepository();
+        $this->charRepo = $repositoryFactory->getCharacterRepository();
     }
 
     /**

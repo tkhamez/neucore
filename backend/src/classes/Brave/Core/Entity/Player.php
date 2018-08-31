@@ -9,7 +9,7 @@ namespace Brave\Core\Entity;
  *     required={"id", "name"}
  * )
  *
- * @Entity(repositoryClass="Brave\Core\Entity\PlayerRepository")
+ * @Entity
  * @Table(name="players")
  */
 class Player implements \JsonSerializable

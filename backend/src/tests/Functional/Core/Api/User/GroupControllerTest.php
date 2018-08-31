@@ -8,6 +8,7 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;
@@ -53,8 +54,9 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper = new Helper();
         $this->em = $this->helper->getEm();
-        $this->gr = new GroupRepository($this->em);
-        $this->pr = new PlayerRepository($this->em);
+        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->gr = $repositoryFactory->getGroupRepository();
+        $this->pr = $repositoryFactory->getPlayerRepository();
     }
 
     public function testAll403()
@@ -491,7 +493,7 @@ class GroupControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());
 
-        $player = (new PlayerRepository($this->em))->find($this->pid);
+        $player = (new RepositoryFactory($this->em))->getPlayerRepository()->find($this->pid);
         $actual = [];
         foreach ($player->getManagerGroups() as $mg) {
             $actual[] = $mg->getId();

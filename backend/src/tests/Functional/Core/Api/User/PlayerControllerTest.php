@@ -6,6 +6,7 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RepositoryFactory;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
@@ -59,7 +60,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->h = new Helper();
         $this->em = $this->h->getEm();
-        $this->pr = new PlayerRepository($this->em);
+        $this->pr = (new RepositoryFactory($this->em))->getPlayerRepository();
 
         $this->log = new Logger('test');
         $this->log->pushHandler(new TestHandler());
@@ -478,7 +479,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $player = (new PlayerRepository($this->em))->find($this->player->getId());
+        $player = $this->pr->find($this->player->getId());
         $this->assertSame(
             [Roles::APP_ADMIN, Roles::APP_MANAGER, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             $player->getRoleNames()
@@ -543,7 +544,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $player = (new PlayerRepository($this->em))->find($this->player->getId());
+        $player = $this->pr->find($this->player->getId());
         $this->assertSame(
             [Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
             $player->getRoleNames()
