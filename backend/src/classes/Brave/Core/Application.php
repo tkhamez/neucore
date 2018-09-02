@@ -5,7 +5,7 @@ namespace Brave\Core;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdatePlayerGroups;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;

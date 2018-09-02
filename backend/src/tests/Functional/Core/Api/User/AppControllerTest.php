@@ -2,7 +2,7 @@
 
 namespace Tests\Functional\Core\Api\User;
 
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Group;

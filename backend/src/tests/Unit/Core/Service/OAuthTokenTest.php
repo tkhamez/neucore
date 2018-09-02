@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -63,29 +63,9 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->esError = new OAuthToken($this->oauth, new ObjectManager($em, $this->log), $this->log);
     }
 
-    public function testSetCharacter()
-    {
-        $this->assertAttributeSame(null, 'character', $this->es);
-
-        $c = new Character();
-        $this->es->setCharacter($c);
-        $this->assertAttributeSame($c, 'character', $this->es);
-    }
-
-    public function testGetTokenNoUser()
-    {
-        $this->assertSame("", $this->es->getToken());
-
-        $this->assertSame(
-            'OAuthToken::getToken: Character not set.',
-            $this->log->getHandlers()[0]->getRecords()[0]['message']
-        );
-    }
-
     public function testGetTokenNoExistingTokenException()
     {
-        $this->es->setCharacter(new Character());
-        $this->es->getToken();
+        $this->es->getToken(new Character());
 
         $this->assertSame(
             'Required option not passed: "access_token"',
@@ -100,9 +80,8 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $c = new Character();
         $c->setAccessToken('at');
         $c->setExpires(1349067601); // 2012-10-01 + 1
-        $this->es->setCharacter($c);
 
-        $this->es->getToken();
+        $this->es->getToken($c);
 
         $this->assertSame('test e', $this->log->getHandlers()[0]->getRecords()[0]['message']);
     }
@@ -111,8 +90,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     {
         $char = $this->setUpData();
 
-        $this->es->setCharacter($char);
-        $token = $this->es->getToken();
+        $token = $this->es->getToken($char);
 
         $this->assertSame('new-token', $token);
         $this->assertSame('new-token', $char->getAccessToken());
@@ -128,8 +106,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     {
         $char = $this->setUpData();
 
-        $this->esError->setCharacter($char);
-        $token = $this->esError->getToken();
+        $token = $this->esError->getToken($char);
 
         $this->assertSame('', $token);
     }
@@ -139,14 +116,8 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $c = new Character();
         $c->setAccessToken('old-token');
         $c->setExpires(time() + 10000);
-        $this->es->setCharacter($c);
 
-        $this->assertSame('old-token', $this->es->getToken());
-    }
-
-    public function testVerifyNoExistingToken()
-    {
-        $this->assertNull($this->es->verify());
+        $this->assertSame('old-token', $this->es->getToken($c));
     }
 
     public function testVerify()
@@ -166,9 +137,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $c->setExpires(time() - 1800);
         $c->setRefreshToken('rt');
 
-        $this->es->setCharacter($c);
-
-        $owner = $this->es->verify();
+        $owner = $this->es->verify($c);
 
         $this->assertInstanceOf(ResourceOwnerInterface::class, $owner);
         $this->assertSame([

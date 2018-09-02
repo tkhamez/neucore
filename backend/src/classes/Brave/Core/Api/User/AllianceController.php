@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;

@@ -27,11 +27,6 @@ class OAuthToken
      */
     private $log;
 
-    /**
-     * @var Character
-     */
-    private $character;
-
     public function __construct(GenericProvider $oauth, ObjectManager $objectManager, LoggerInterface $log)
     {
         $this->oauth = $oauth;
@@ -40,29 +35,17 @@ class OAuthToken
     }
 
     /**
-     * Set the character that holds the access and refresh token.
-     *
-     * The entity should already be saved to the database.
-     *
-     * @param Character $character
-     */
-    public function setCharacter(Character $character)
-    {
-        $this->character = $character;
-    }
-
-    /**
      * Returns the access token for an EVE character.
      *
      * If the existing token has expired, a new one is fetched with the
      * refresh token and saved in the database for the character.
      *
+     * @param Character $character The entity should already be saved to the database.
      * @return string
-     * @see OAuthToken::setCharacter()
      */
-    public function getToken(): string
+    public function getToken(Character $character): string
     {
-        $existingToken = $this->createAccessTokenFromCharacter();
+        $existingToken = $this->createAccessTokenFromCharacter($character);
         if ($existingToken === null) {
             return "";
         }
@@ -70,8 +53,8 @@ class OAuthToken
         $newAccessToken = $this->refreshAccessToken($existingToken);
 
         if ($newAccessToken) {
-            $this->character->setAccessToken($newAccessToken->getToken());
-            $this->character->setExpires($newAccessToken->getExpires());
+            $character->setAccessToken($newAccessToken->getToken());
+            $character->setExpires($newAccessToken->getExpires());
             if (! $this->objectManager->flush()) {
                 return ""; // old token is invalid, new token could not be saved
             }
@@ -83,14 +66,12 @@ class OAuthToken
     /**
      * Returns resource owner.
      *
-     * Set a character first, it must contain a refresh token.
-     *
+     * @param Character $character It must contain a refresh token
      * @return null|\League\OAuth2\Client\Provider\ResourceOwnerInterface
-     * @see OAuthToken::setCharacter()
      */
-    public function verify()
+    public function verify(Character $character)
     {
-        $existingToken = $this->createAccessTokenFromCharacter();
+        $existingToken = $this->createAccessTokenFromCharacter($character);
         if ($existingToken === null) {
             return null;
         }
@@ -114,19 +95,14 @@ class OAuthToken
     /**
      * @return AccessToken|null
      */
-    private function createAccessTokenFromCharacter()
+    private function createAccessTokenFromCharacter(Character $character)
     {
-        if ($this->character === null) {
-            $this->log->error('OAuthToken::getToken: Character not set.');
-            return null;
-        }
-
         $token = null;
         try {
             $token = new AccessToken([
-                'access_token' => $this->character->getAccessToken(),
-                'refresh_token' => (string) $this->character->getRefreshToken(),
-                'expires' => $this->character->getExpires()
+                'access_token' => $character->getAccessToken(),
+                'refresh_token' => (string) $character->getRefreshToken(),
+                'expires' => $character->getExpires()
             ]);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);

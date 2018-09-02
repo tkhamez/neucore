@@ -4,7 +4,7 @@ namespace Tests\Unit\Core\Repository;
 
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Tests\Helper;
 
 class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase

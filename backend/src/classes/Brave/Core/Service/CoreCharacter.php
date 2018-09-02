@@ -120,8 +120,7 @@ class CoreCharacter
      */
     public function checkTokenUpdateCharacter(Character $char): bool
     {
-        $this->token->setCharacter($char);
-        $resourceOwner = $this->token->verify();
+        $resourceOwner = $this->token->verify($char);
 
         if ($resourceOwner === null) {
             $char->setValidToken(false);

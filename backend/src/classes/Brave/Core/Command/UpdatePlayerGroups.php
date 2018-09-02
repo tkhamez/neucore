@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Command;
 
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;

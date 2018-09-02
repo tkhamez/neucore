@@ -3,7 +3,8 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\EsiApiFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Swagger\Client\Eve\Api\CharacterApi;
@@ -148,7 +149,7 @@ class CharacterControllerTest extends WebTestCase
 
         $charApi = $this->createMock(CharacterApi::class);
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            CharacterApi::class => $charApi
+            EsiApiFactory::class => new EsiApiFactory(null, null, $charApi)
         ]);
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -170,8 +171,7 @@ class CharacterControllerTest extends WebTestCase
         $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            CharacterApi::class => $charApi,
-            CorporationApi::class => $corpApi,
+            EsiApiFactory::class => new EsiApiFactory(null, $corpApi, $charApi),
             GenericProvider::class => $oauth
         ]);
 
@@ -221,8 +221,7 @@ class CharacterControllerTest extends WebTestCase
         $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            CharacterApi::class => $charApi,
-            CorporationApi::class => $corpApi,
+            EsiApiFactory::class => new EsiApiFactory(null, $corpApi, $charApi),
             GenericProvider::class => $oauth
         ]);
 

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core\Repository;
 
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Tests\Helper;
 use Brave\Core\Entity\Character;
 

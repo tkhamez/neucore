@@ -4,7 +4,7 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 
 class EsiCharacter
 {

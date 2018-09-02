@@ -3,7 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\App;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;

@@ -19,6 +19,22 @@ Example:
 curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://brave.core.tld/api/app/v1/show
 ```
 
+## Install
+
+See main [**README.md**](../README.md) for prerequisites.
+
+dev:
+```
+composer install
+composer compile
+```
+
+prod:
+```
+composer install --no-dev --optimize-autoloader --no-interaction
+composer compile:prod --no-dev --no-interaction
+```
+
 ## Command-Line App
 
 The console application is available at

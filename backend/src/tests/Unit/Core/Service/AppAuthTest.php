@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Repository\AppRepository;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\ObjectManager;
 use Monolog\Logger;

@@ -3,7 +3,8 @@
 namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\EsiApiFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Monolog\Logger;
@@ -66,7 +67,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->charApi->method('getCharactersCharacterId')->willReturn(null);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            CharacterApi::class => $this->charApi
+            EsiApiFactory::class => new EsiApiFactory(null, null, $this->charApi)
         ]);
 
         $expectedOutput = [
@@ -98,9 +99,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         // run
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            CharacterApi::class => $this->charApi,
-            CorporationApi::class => $this->corpApi,
-            AllianceApi::class => $this->alliApi,
+            EsiApiFactory::class => new EsiApiFactory($this->alliApi, $this->corpApi, $this->charApi)
         ]);
 
         $this->em->clear();
@@ -153,8 +152,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->oauth->method('getResourceOwner')->willReturn(null);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            CharacterApi::class => $this->charApi,
-            CorporationApi::class => $this->corpApi,
+            EsiApiFactory::class => new EsiApiFactory(null, $this->corpApi, $this->charApi),
             GenericProvider::class => $this->oauth,
         ]);
 
@@ -187,8 +185,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->oauth->method('getResourceOwner')->willReturn($ro);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            CharacterApi::class => $this->charApi,
-            CorporationApi::class => $this->corpApi,
+            EsiApiFactory::class => new EsiApiFactory(null, $this->corpApi, $this->charApi),
             GenericProvider::class => $this->oauth,
         ]);
 
@@ -224,8 +221,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $log->pushHandler(new TestHandler());
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            CharacterApi::class => $this->charApi,
-            CorporationApi::class => $this->corpApi,
+            EsiApiFactory::class => new EsiApiFactory(null, $this->corpApi, $this->charApi),
             GenericProvider::class => $this->oauth,
             LoggerInterface::class => $log,
         ]);

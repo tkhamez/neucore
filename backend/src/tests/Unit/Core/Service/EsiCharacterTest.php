@@ -3,18 +3,17 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Alliance;
+use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiCharacter;
 use Brave\Core\Service\EsiApi;
-use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Api\CharacterApi;
@@ -37,17 +36,17 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
     private $em;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|AllianceApi
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $alliApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|CharacterApi
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $charApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|CorporationApi
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $corpApi;
 
@@ -84,13 +83,10 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
-        $ts = new OAuthToken($oauth, new ObjectManager($this->em, $log), $log);
-
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
         $this->charApi = $this->createMock(CharacterApi::class);
-        $esi = new EsiApi($log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
+        $esi = new EsiApi($log, new EsiApiFactory($this->alliApi, $this->corpApi, $this->charApi));
 
         $repositoryFactory = new RepositoryFactory($this->em);
         $this->alliRepo = $repositoryFactory->getAllianceRepository();

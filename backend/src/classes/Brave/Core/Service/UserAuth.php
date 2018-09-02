@@ -3,7 +3,7 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Token\AccessToken;

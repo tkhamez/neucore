@@ -3,7 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Config;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -112,8 +112,7 @@ class EsiController
             return $this->response->withJson('Character not found.', 400);
         }
 
-        $this->token->setCharacter($character);
-        $token = $this->token->getToken();
+        $token = $this->token->getToken($character);
 
         $baseUri = 'https://esi.evetech.net';
         $path = '/latest' . str_replace('{character_id}', $character->getId(), $route);

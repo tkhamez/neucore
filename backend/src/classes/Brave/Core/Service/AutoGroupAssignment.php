@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Service;
 
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 
 class AutoGroupAssignment
 {

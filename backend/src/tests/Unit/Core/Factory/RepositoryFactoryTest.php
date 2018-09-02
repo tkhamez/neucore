@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Core\Repository;
+namespace Tests\Unit\Core\Factory;
 
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\App;
@@ -15,7 +15,7 @@ use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RoleRepository;
 use Tests\Helper;
 

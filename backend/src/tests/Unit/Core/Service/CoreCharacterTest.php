@@ -5,7 +5,7 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
-use Brave\Core\Repository\RepositoryFactory;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\CoreCharacter;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;

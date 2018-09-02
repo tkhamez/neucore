@@ -3,6 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -25,17 +26,17 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
     private $log;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|AllianceApi
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $alliApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|CorporationApi
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $corpApi;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|CHaracterApi
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $charApi;
 
@@ -46,31 +47,13 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $h = new Helper();
-        $em = $h->getEm();
-
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-
-        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
-        $ts = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
 
         $this->alliApi = $this->createMock(AllianceApi::class);
         $this->corpApi = $this->createMock(CorporationApi::class);
         $this->charApi = $this->createMock(CHaracterApi::class);
-        $this->esi = new EsiApi($this->log, $ts, $this->alliApi, $this->corpApi, $this->charApi);
-    }
-
-    public function testGetConfiguration()
-    {
-        $char = new Character();
-        $char->setAccessToken('token');
-        $char->setExpires(time() + 10000);
-
-        $conf = $this->esi->getConfiguration($char);
-
-        $this->assertSame('token', $conf->getAccessToken());
-        $this->assertSame($char->getAccessToken(), $conf->getAccessToken());
+        $this->esi = new EsiApi($this->log, new EsiApiFactory($this->alliApi, $this->corpApi, $this->charApi));
     }
 
     public function testGetAllianceException500()

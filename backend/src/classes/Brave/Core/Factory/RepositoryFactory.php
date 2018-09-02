@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Brave\Core\Factory;
 
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\App;
@@ -9,6 +9,13 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\AppRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\GroupRepository;
+use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RepositoryFactory
