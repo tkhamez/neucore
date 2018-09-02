@@ -6,7 +6,7 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Factory\RepositoryFactory;
 
-class EsiCharacter
+class EsiData
 {
     /**
      * @var EsiApi

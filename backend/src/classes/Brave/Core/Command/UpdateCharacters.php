@@ -4,7 +4,7 @@ namespace Brave\Core\Command;
 
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\CoreCharacter;
-use Brave\Core\Service\EsiCharacter;
+use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +29,7 @@ class UpdateCharacters extends Command
     private $alliRepo;
 
     /**
-     * @var EsiCharacter
+     * @var EsiData
      */
     private $esiCharService;
 
@@ -50,7 +50,7 @@ class UpdateCharacters extends Command
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
-        EsiCharacter $esiCharService,
+        EsiData $esiCharService,
         CoreCharacter $coreCharService,
         ObjectManager $objectManager
     ) {

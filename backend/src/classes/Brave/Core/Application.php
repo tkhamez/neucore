@@ -9,7 +9,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;
-use Brave\Core\Service\EsiCharacter;
+use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
@@ -445,7 +445,7 @@ class Application
 
         $console->add(new UpdateCharacters(
             $this->container->get(RepositoryFactory::class),
-            $this->container->get(EsiCharacter::class),
+            $this->container->get(EsiData::class),
             $this->container->get(CoreCharacter::class),
             $this->container->get(ObjectManager::class)
         ));

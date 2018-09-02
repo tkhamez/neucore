@@ -9,7 +9,7 @@ use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiCharacter;
+use Brave\Core\Service\EsiData;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\ObjectManager;
 use Monolog\Logger;
@@ -23,7 +23,7 @@ use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
-class EsiCharacterTest extends \PHPUnit\Framework\TestCase
+class EsiDataTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Helper
@@ -66,12 +66,12 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
     private $charRepo;
 
     /**
-     * @var EsiCharacter
+     * @var EsiData
      */
     private $cs;
 
     /**
-     * @var EsiCharacter
+     * @var EsiData
      */
     private $csError;
 
@@ -93,12 +93,12 @@ class EsiCharacterTest extends \PHPUnit\Framework\TestCase
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->charRepo = $repositoryFactory->getCharacterRepository();
 
-        $this->cs = new EsiCharacter($esi, new ObjectManager($this->em, $log), $repositoryFactory);
+        $this->cs = new EsiData($esi, new ObjectManager($this->em, $log), $repositoryFactory);
 
-        // a second EsiCharacter instance with another entity manager that throws an exception on flush.
+        // a second EsiData instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->csError = new EsiCharacter($esi, new ObjectManager($em, $log), $repositoryFactory);
+        $this->csError = new EsiData($esi, new ObjectManager($em, $log), $repositoryFactory);
     }
 
     public function testGetEsiApi()

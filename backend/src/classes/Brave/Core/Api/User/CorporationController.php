@@ -3,7 +3,7 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiCharacter;
+use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
 
@@ -148,7 +148,7 @@ class CorporationController
      *     )
      * )
      */
-    public function add(string $id, EsiCharacter $service): Response
+    public function add(string $id, EsiData $service): Response
     {
         $corpId = (int) $id;
 

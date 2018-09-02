@@ -6,7 +6,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CoreCharacter;
-use Brave\Core\Service\EsiCharacter;
+use Brave\Core\Service\EsiData;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Response;
 
@@ -29,7 +29,7 @@ class CharacterController
     private $uas;
 
     /**
-     * @var EsiCharacter
+     * @var EsiData
      */
     private $esiCharService;
 
@@ -46,7 +46,7 @@ class CharacterController
     public function __construct(
         Response $response,
         UserAuth $uas,
-        EsiCharacter $esiCs,
+        EsiData $esiCs,
         CoreCharacter $coreCs,
         RepositoryFactory $repositoryFactory
     ) {
