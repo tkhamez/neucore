@@ -330,7 +330,7 @@ class Application
                 'urlAccessToken'          => 'https://login.eveonline.com/oauth/token',
                 'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
             ]);
-         });
+        });
 
         // Monolog
         $this->container->set(LoggerInterface::class, function (ContainerInterface $c) {
