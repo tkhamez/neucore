@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Brave\Core\Factory;
 
+use GuzzleHttp\ClientInterface;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
@@ -12,21 +13,23 @@ class EsiApiFactory
     private $instances = [];
 
     /**
+     * @var ClientInterface|null
+     */
+    private $client = null;
+
+    /**
      * @var Configuration
      */
     private $configuration;
 
     /**
-     * Constructor to allow mock objects.
+     * Optionally set a client.
      */
-    public function __construct(
-        AllianceApi $allianceApi = null,
-        CorporationApi $corporationApi = null,
-        CharacterApi $characterApi = null
-    ) {
-        $this->instances[AllianceApi::class] = $allianceApi ? $allianceApi : null;
-        $this->instances[CorporationApi::class] = $corporationApi ? $corporationApi : null;
-        $this->instances[CharacterApi::class] = $characterApi ? $characterApi : null;
+    public function setClient(ClientInterface $client): self
+    {
+        $this->client = $client;
+
+        return $this;
     }
 
     /**
@@ -64,13 +67,13 @@ class EsiApiFactory
         if (! isset($this->instances[$class])) {
             switch ($class) {
                 case AllianceApi::class:
-                    $this->instances[$class] = new AllianceApi();
+                    $this->instances[$class] = new AllianceApi($this->client);
                     break;
                 case CorporationApi::class:
-                    $this->instances[$class] = new CorporationApi();
+                    $this->instances[$class] = new CorporationApi($this->client);
                     break;
                 case CharacterApi::class:
-                    $this->instances[$class] = new CharacterApi();
+                    $this->instances[$class] = new CharacterApi($this->client);
                     break;
             }
         }

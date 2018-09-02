@@ -9,13 +9,11 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Api\AllianceApi;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Api\CorporationApi;
-use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
@@ -46,9 +44,9 @@ class AllianceControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
      */
-    private $alliApi;
+    private $client;
 
     private $esi;
 
@@ -66,10 +64,8 @@ class AllianceControllerTest extends WebTestCase
         // mock Swagger API
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $this->alliApi = $this->createMock(AllianceApi::class);
-        $corpApi = $this->createMock(CorporationApi::class);
-        $charApi = $this->createMock(CharacterApi::class);
-        $this->esi = new EsiApi($this->log, new EsiApiFactory($this->alliApi, $corpApi, $charApi));
+        $this->client = $this->createMock(ClientInterface::class);
+        $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
     public function testAll403()
@@ -154,10 +150,7 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->alliApi->method('getAlliancesAllianceId')->will(
-            $this->throwException(new \Exception("failed to coerce value '123456789123' into ...", 400))
-        );
+        $this->client->method('send')->willReturn(new Response(400));
 
         $response = $this->runApp('POST', '/api/user/alliance/add/123456789123', null, null, [
             EsiApi::class => $this->esi
@@ -171,10 +164,7 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->alliApi->method('getAlliancesAllianceId')->will(
-            $this->throwException(new \Exception("Alliance not found", 404))
-        );
+        $this->client->method('send')->willReturn(new Response(404));
 
         $response = $this->runApp('POST', '/api/user/alliance/add/123', null, null, [
             EsiApi::class => $this->esi
@@ -197,10 +187,7 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->alliApi->method('getAlliancesAllianceId')->will(
-            $this->throwException(new \Exception("ESI down.", 503))
-        );
+        $this->client->method('send')->willReturn(new Response(503));
 
         $response = $this->runApp('POST', '/api/user/alliance/add/123', null, null, [
             EsiApi::class => $this->esi
@@ -214,11 +201,10 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The Alliance.',
-            'ticker' => '-AT-',
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "The Alliance.",
+            "ticker": "-AT-"
+        }'));
 
         $response = $this->runApp('POST', '/api/user/alliance/add/123456', null, null, [
             EsiApi::class => $this->esi

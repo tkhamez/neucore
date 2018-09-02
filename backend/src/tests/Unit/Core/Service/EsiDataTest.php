@@ -12,14 +12,10 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\ObjectManager;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
-use Swagger\Client\Eve\Api\AllianceApi;
-use Swagger\Client\Eve\Api\CorporationApi;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
@@ -36,19 +32,9 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     private $em;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
      */
-    private $alliApi;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $charApi;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $corpApi;
+    private $client;
 
     /**
      * @var AllianceRepository
@@ -83,10 +69,8 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->alliApi = $this->createMock(AllianceApi::class);
-        $this->corpApi = $this->createMock(CorporationApi::class);
-        $this->charApi = $this->createMock(CharacterApi::class);
-        $esi = new EsiApi($log, new EsiApiFactory($this->alliApi, $this->corpApi, $this->charApi));
+        $this->client = $this->createMock(ClientInterface::class);
+        $esi = new EsiApi($log, (new EsiApiFactory())->setClient($this->client));
 
         $repositoryFactory = new RepositoryFactory($this->em);
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
@@ -117,11 +101,12 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newc', 10, []);
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char name', 'corporation_id' => 20
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char name",
+                "corporation_id": 20
+            }'),
+            new Response(404)
         );
 
         $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
@@ -133,14 +118,17 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newc', 10, []);
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char name', 'corporation_id' => 20
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'corp name', 'ticker' => '-cn-', 'alliance_id' => 30
-        ]));
-        $this->alliApi->method('getAlliancesAllianceId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char name",
+                "corporation_id": 20
+            }'),
+            new Response(200, [], '{
+                "name": "corp name",
+                "ticker": "-cn-",
+                "alliance_id": 30
+            }'),
+            new Response(404)
         );
 
         $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
@@ -152,15 +140,21 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newc', 10, []);
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char name', 'corporation_id' => 20
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'corp name', 'ticker' => '-cn-', 'alliance_id' => 30
-        ]));
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'alli name', 'ticker' => '-an-'
-        ]));
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char name",
+                "corporation_id": 20
+            }'),
+            new Response(200, [], '{
+                "name": "corp name",
+                "ticker": "-cn-",
+                "alliance_id": 30
+            }'),
+            new Response(200, [], '{
+                "name": "alli name",
+                "ticker": "-an-"
+            }')
+        );
 
         $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertSame('char name', $char->getName());
@@ -187,9 +181,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newc', 123, []);
 
-        $this->charApi->method('getCharactersCharacterId')->will(
-            $this->throwException(new \Exception('Not Found.', 404))
-        );
+        $this->client->method('send')->willReturn(new Response(404));
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertNull($char);
@@ -202,13 +194,14 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'newc', 'corporation_id' => 234
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "new corp",
+            "corporation_id": 234
+        }'));
 
         $char = $this->cs->fetchCharacter(123, false);
         $this->assertSame(123, $char->getId());
-        $this->assertSame('newc', $char->getName());
+        $this->assertSame('new corp', $char->getName());
         $this->assertSame(234, $char->getCorporation()->getId());
         $this->assertNull($char->getCorporation()->getName());
 
@@ -224,13 +217,14 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'newc', 'corporation_id' => 234
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "new corp",
+            "corporation_id": 234
+        }'));
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertSame(123, $char->getId());
-        $this->assertSame('newc', $char->getName());
+        $this->assertSame('new corp', $char->getName());
         $this->assertSame(234, $char->getCorporation()->getId());
         $this->assertNull($char->getCorporation()->getName());
 
@@ -251,9 +245,11 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-HAT-', 'alliance_id' => null
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "The Corp.",
+            "ticker": "-HAT-",
+            "alliance_id": null
+        }'));
 
         $corp = $this->cs->fetchCorporation(234, false);
         $this->assertSame(234, $corp->getId());
@@ -270,12 +266,17 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-HAT-', 'alliance_id' => 345
-        ]));
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The A.', 'ticker' => '-A-'
-        ]));
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "The Corp.",
+                "ticker": "-HAT-",
+                "alliance_id": 345
+            }'),
+            new Response(200, [], '{
+                "name": "The A.",
+                "ticker": "-A-"
+            }')
+        );
 
         $corp = $this->cs->fetchCorporation(234);
         $this->assertSame(234, $corp->getId());
@@ -303,9 +304,11 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'C', 'ticker' => 'c', 'alliance_id' => null
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "C",
+            "ticker": "c",
+            "alliance_id": null
+        }'));
 
         $corpResult = $this->cs->fetchCorporation(200);
         $this->assertNull($corpResult->getAlliance());
@@ -328,9 +331,10 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The A.', 'ticker' => '-A-'
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "The A.",
+            "ticker": "-A-"
+        }'));
 
         $alli = $this->cs->fetchAlliance(345, false);
         $this->assertSame(345, $alli->getId());
@@ -346,9 +350,10 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The A.', 'ticker' => '-A-'
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "The A.",
+            "ticker": "-A-"
+        }'));
 
         $alli = $this->cs->fetchAlliance(345);
         $this->assertSame(345, $alli->getId());
@@ -366,9 +371,10 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'A', 'ticker' => 'A'
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "The A.",
+            "ticker": "-A-"
+        }'));
 
         $alli = $this->csError->fetchAlliance(345, true);
         $this->assertNull($alli);

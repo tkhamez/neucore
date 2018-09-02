@@ -6,11 +6,12 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Api\CorporationApi;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -147,9 +148,13 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(96061222);
 
-        $charApi = $this->createMock(CharacterApi::class);
+        /* @var $client \PHPUnit\Framework\MockObject\MockObject|ClientInterface */
+        $client = $this->createMock(ClientInterface::class);
+        $client->method('send')->willReturn(new Response(500));
+
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => new EsiApiFactory(null, null, $charApi)
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
+            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -160,18 +165,23 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(96061222);
 
-        $charApi = $this->createMock(CharacterApi::class);
-        $charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'Char 96061222', 'corporation_id' => $this->corpId
-        ]));
-        $corpApi = $this->createMock(CorporationApi::class);
-        $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => $this->corpName, 'ticker' => $this->corpTicker, 'alliance_id' => null
-        ]));
+        /* @var $client \PHPUnit\Framework\MockObject\MockObject|ClientInterface */
+        $client = $this->createMock(ClientInterface::class);
+        $client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "Char 96061222",
+                "corporation_id": '.$this->corpId.'
+            }'),
+            new Response(200, [], '{
+                "name": "'.$this->corpName.'",
+                "ticker": "'.$this->corpTicker.'",
+                "alliance_id": null
+            }')
+        );
         $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => new EsiApiFactory(null, $corpApi, $charApi),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
             GenericProvider::class => $oauth
         ]);
 
@@ -210,18 +220,23 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(9);
 
-        $charApi = $this->createMock(CharacterApi::class);
-        $charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'Char 96061222', 'corporation_id' => 456
-        ]));
-        $corpApi = $this->createMock(CorporationApi::class);
-        $corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-TTT-', 'alliance_id' => null
-        ]));
+        /* @var $client \PHPUnit\Framework\MockObject\MockObject|ClientInterface */
+        $client = $this->createMock(ClientInterface::class);
+        $client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "Char 96061222",
+                "corporation_id": 456
+            }'),
+            new Response(200, [], '{
+                "name": "The Corp.",
+                "ticker": "-TTT-",
+                "alliance_id": null
+            }')
+        );
         $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => new EsiApiFactory(null, $corpApi, $charApi),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
             GenericProvider::class => $oauth
         ]);
 

@@ -1,14 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\Unit\Core\Factory;
 
 use Brave\Core\Factory\EsiApiFactory;
+use GuzzleHttp\Client;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 
 class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 {
+    public function testSetClient()
+    {
+        $factory = new EsiApiFactory();
+        $client = new Client();
+
+        $this->assertInstanceOf(EsiApiFactory::class, $factory->setClient($client));
+    }
+
     public function testSetToken()
     {
         $factory = new EsiApiFactory();

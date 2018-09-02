@@ -11,14 +11,11 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Api\AllianceApi;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Api\CorporationApi;
-use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
@@ -54,14 +51,9 @@ class CorporationControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
      */
-    private $alliApi;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $corpApi;
+    private $client;
 
     private $esi;
 
@@ -81,10 +73,8 @@ class CorporationControllerTest extends WebTestCase
         // mock Swagger API
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $this->alliApi = $this->createMock(AllianceApi::class);
-        $this->corpApi = $this->createMock(CorporationApi::class);
-        $charApi = $this->createMock(CharacterApi::class);
-        $this->esi = new EsiApi($this->log, new EsiApiFactory($this->alliApi, $this->corpApi, $charApi));
+        $this->client = $this->createMock(ClientInterface::class);
+        $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
     public function testAll403()
@@ -168,10 +158,7 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception("failed to coerce value '123456789123' into type integer", 400))
-        );
+        $this->client->method('send')->willReturn(new Response(400));
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123456789123', null, null, [
             EsiApi::class => $this->esi
@@ -185,10 +172,7 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception("#", 404))
-        );
+        $this->client->method('send')->willReturn(new Response(404));
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123', null, null, [
             EsiApi::class => $this->esi
@@ -211,10 +195,7 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->corpApi->method('getCorporationsCorporationId')->will(
-            $this->throwException(new \Exception("Oops.", 503))
-        );
+        $this->client->method('send')->willReturn(new Response(503));
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123', null, null, [
             EsiApi::class => $this->esi
@@ -228,12 +209,11 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // method is called via EsiApi class
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.',
-            'ticker' => '-CT-',
-            'alliance_id' => null
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "name": "The Corp.",
+            "ticker": "-CT-",
+            "alliance_id": null
+        }'));
 
         $response = $this->runApp('POST', '/api/user/corporation/add/456123', null, null, [
             EsiApi::class => $this->esi
@@ -260,16 +240,17 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // methods are called via EsiApi class
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.',
-            'ticker' => '-CT-',
-            'alliance_id' => 123456
-        ]));
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The Alliance.',
-            'ticker' => '-AT-',
-        ]));
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "The Corp.",
+                "ticker": "-CT-",
+                "alliance_id": "123456"
+            }'),
+            new Response(200, [], '{
+                "name": "The Alliance.",
+                "ticker": "-AT-"
+            }')
+        );
 
         $response = $this->runApp('POST', '/api/user/corporation/add/456123', null, null, [
             EsiApi::class => $this->esi

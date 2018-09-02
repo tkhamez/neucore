@@ -5,17 +5,13 @@ namespace Tests\Functional\Core\Command;
 use Brave\Core\Entity\Character;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Swagger\Client\Eve\Api\AllianceApi;
-use Swagger\Client\Eve\Api\CharacterApi;
-use Swagger\Client\Eve\Api\CorporationApi;
-use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
-use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 
@@ -27,19 +23,9 @@ class UpdateCharactersTest extends ConsoleTestCase
     private $em;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
      */
-    private $charApi;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $corpApi;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $alliApi;
+    private $client;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
@@ -52,9 +38,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $h->emptyDb();
         $this->em = $h->getEm();
 
-        $this->charApi = $this->createMock(CharacterApi::class);
-        $this->corpApi = $this->createMock(CorporationApi::class);
-        $this->alliApi = $this->createMock(AllianceApi::class);
+        $this->client = $this->createMock(ClientInterface::class);
         $this->oauth = $this->createMock(GenericProvider::class);
     }
 
@@ -64,10 +48,11 @@ class UpdateCharactersTest extends ConsoleTestCase
             ->setCharacterOwnerHash('coh1')->setAccessToken('at1');
         $this->em->persist($c);
         $this->em->flush();
-        $this->charApi->method('getCharactersCharacterId')->willReturn(null);
+        $this->client->method('send')->willReturn(new Response(500));
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            EsiApiFactory::class => new EsiApiFactory(null, null, $this->charApi)
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
         $expectedOutput = [
@@ -87,19 +72,30 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->em->persist($c1);
         $this->em->persist($c2);
         $this->em->flush();
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char xx', 'corporation_id' => 234
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'The Corp.', 'ticker' => '-T-T-', 'alliance_id' => 212
-        ]));
-        $this->alliApi->method('getAlliancesAllianceId')->willReturn(new GetAlliancesAllianceIdOk([
-            'name' => 'The Alli.', 'ticker' => '-A-'
-        ]));
+
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char xx",
+                "corporation_id": 234
+            }'),
+            new Response(200, [], '{
+                "name": "char yy",
+                "corporation_id": 234
+            }'),
+            new Response(200, [], '{
+                "name": "The Corp.",
+                "ticker": "-T-T-",
+                "alliance_id": 212
+            }'),
+            new Response(200, [], '{
+                "name": "The Alli.",
+                "ticker": "-A-"
+            }')
+        );
 
         // run
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            EsiApiFactory::class => new EsiApiFactory($this->alliApi, $this->corpApi, $this->charApi)
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
         ]);
 
         $this->em->clear();
@@ -142,17 +138,21 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->em->persist($c);
         $this->em->flush();
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char1', 'corporation_id' => 1
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'corp1', 'ticker' => 't'
-        ]));
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char1",
+                "corporation_id": 1
+            }'),
+            new Response(200, [], '{
+                "name": "corp1",
+                "ticker": "t"
+            }')
+        );
         $this->oauth->method('getAccessToken')->willReturn(null);
         $this->oauth->method('getResourceOwner')->willReturn(null);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            EsiApiFactory::class => new EsiApiFactory(null, $this->corpApi, $this->charApi),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
             GenericProvider::class => $this->oauth,
         ]);
 
@@ -171,12 +171,16 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->em->persist($c);
         $this->em->flush();
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char1', 'corporation_id' => 1
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'corp1', 'ticker' => 't'
-        ]));
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char1",
+                "corporation_id": 1
+            }'),
+            new Response(200, [], '{
+                "name": "corp1",
+                "ticker": "t"
+            }')
+        );
         $this->oauth->method('getAccessToken')->willReturn(null);
         $ro = $this->createMock(ResourceOwnerInterface::class);
         $ro->method('toArray')->willReturn([
@@ -185,7 +189,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->oauth->method('getResourceOwner')->willReturn($ro);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            EsiApiFactory::class => new EsiApiFactory(null, $this->corpApi, $this->charApi),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
             GenericProvider::class => $this->oauth,
         ]);
 
@@ -204,12 +208,16 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->em->persist($c);
         $this->em->flush();
 
-        $this->charApi->method('getCharactersCharacterId')->willReturn(new GetCharactersCharacterIdOk([
-            'name' => 'char1', 'corporation_id' => 1
-        ]));
-        $this->corpApi->method('getCorporationsCorporationId')->willReturn(new GetCorporationsCorporationIdOk([
-            'name' => 'corp1', 'ticker' => 't'
-        ]));
+        $this->client->method('send')->willReturn(
+            new Response(200, [], '{
+                "name": "char1",
+                "corporation_id": 1
+            }'),
+            new Response(200, [], '{
+                "name": "corp1",
+                "ticker": "t"
+            }')
+        );
         $this->oauth->method('getAccessToken')->willReturn(null);
         $ro = $this->createMock(ResourceOwnerInterface::class);
         $ro->method('toArray')->willReturn([
@@ -221,7 +229,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $log->pushHandler(new TestHandler());
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            EsiApiFactory::class => new EsiApiFactory(null, $this->corpApi, $this->charApi),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
             GenericProvider::class => $this->oauth,
             LoggerInterface::class => $log,
         ]);
