@@ -4,7 +4,7 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
-use Brave\Core\Service\CoreCharacter;
+use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -39,8 +39,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
         $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
         $token = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
-        $coreCharacter = new CoreCharacter($this->log, new ObjectManager($em, $this->log), $token);
-        $this->service = new UserAuth(new SessionData(), $coreCharacter, new RepositoryFactory($em), $this->log);
+        $characterService = new CharacterService($this->log, new ObjectManager($em, $this->log), $token);
+        $this->service = new UserAuth(new SessionData(), $characterService, new RepositoryFactory($em), $this->log);
     }
 
     public function testGetRolesNoAuth()

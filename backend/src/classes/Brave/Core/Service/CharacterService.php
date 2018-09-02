@@ -7,7 +7,7 @@ use Brave\Core\Entity\Player;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
 
-class CoreCharacter
+class CharacterService
 {
     /**
      * @var LoggerInterface

@@ -6,7 +6,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\CoreCharacter;
+use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -16,7 +16,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
 
-class CoreCharacterTest extends \PHPUnit\Framework\TestCase
+class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Helper
@@ -29,7 +29,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
     private $oauthProvider;
 
     /**
-     * @var CoreCharacter
+     * @var CharacterService
      */
     private $service;
 
@@ -50,7 +50,7 @@ class CoreCharacterTest extends \PHPUnit\Framework\TestCase
         $this->oauthProvider = $this->createMock(GenericProvider::class);
         $token = new OAuthToken($this->oauthProvider, new ObjectManager($em, $log), $log);
 
-        $this->service = new CoreCharacter($log, new ObjectManager($em, $log), $token);
+        $this->service = new CharacterService($log, new ObjectManager($em, $log), $token);
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
     }
 

@@ -6,6 +6,9 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Factory\RepositoryFactory;
 
+/**
+ * Fetch and process data from ESI.
+ */
 class EsiData
 {
     /**

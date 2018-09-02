@@ -8,6 +8,9 @@ use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 
+/**
+ * Swagger API wrapper
+ */
 class EsiApi
 {
     /**
