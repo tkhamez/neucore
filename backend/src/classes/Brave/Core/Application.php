@@ -301,15 +301,13 @@ class Application
 
     /**
      * Add dependencies to DI container.
-     *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      */
     private function addDependencies(): void
     {
         // Configuration class
-        $config = new Config($this->container->get('config'));
-        $this->container->set(Config::class, $config);
+        $this->container->set(Config::class, function (ContainerInterface $c) {
+            return new Config($c->get('config'));
+        });
 
         // Doctrine
         $this->container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
@@ -323,14 +321,16 @@ class Application
         });
 
         // EVE OAuth
-        $this->container->set(GenericProvider::class, new GenericProvider([
-            'clientId'                => $this->container->get('config')['eve']['client_id'],
-            'clientSecret'            => $this->container->get('config')['eve']['secret_key'],
-            'redirectUri'             => $this->container->get('config')['eve']['callback_url'],
-            'urlAuthorize'            => 'https://login.eveonline.com/oauth/authorize',
-            'urlAccessToken'          => 'https://login.eveonline.com/oauth/token',
-            'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
-        ]));
+        $this->container->set(GenericProvider::class, function (ContainerInterface $c) {
+            return new GenericProvider([
+                'clientId'                => $c->get('config')['eve']['client_id'],
+                'clientSecret'            => $c->get('config')['eve']['secret_key'],
+                'redirectUri'             => $c->get('config')['eve']['callback_url'],
+                'urlAuthorize'            => 'https://login.eveonline.com/oauth/authorize',
+                'urlAccessToken'          => 'https://login.eveonline.com/oauth/token',
+                'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
+            ]);
+         });
 
         // Monolog
         $this->container->set(LoggerInterface::class, function (ContainerInterface $c) {
@@ -350,7 +350,7 @@ class Application
             return $logger;
         });
 
-        $this->container->set(ClientInterface::class, function (ContainerInterface $c) {
+        $this->container->set(ClientInterface::class, function () {
             return new Client();
         });
     }
