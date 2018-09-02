@@ -14,6 +14,7 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\OAuthTestProvider;
 
 class CharacterControllerTest extends WebTestCase
 {
@@ -178,11 +179,11 @@ class CharacterControllerTest extends WebTestCase
                 "alliance_id": null
             }')
         );
-        $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
-            GenericProvider::class => $oauth
+            GenericProvider::class => new OAuthTestProvider(),
+            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -231,13 +232,14 @@ class CharacterControllerTest extends WebTestCase
                 "name": "The Corp.",
                 "ticker": "-TTT-",
                 "alliance_id": null
-            }')
+            }'),
+            new Response(200, [], '{}') // for OAuthTestProvider->getResourceOwner()
         );
-        $oauth = $this->createMock(GenericProvider::class);
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
-            GenericProvider::class => $oauth
+            GenericProvider::class => new OAuthTestProvider($client),
+            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());

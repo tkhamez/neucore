@@ -8,12 +8,12 @@ use Brave\Core\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\OAuthTestProvider;
 
 class UpdateCharactersTest extends ConsoleTestCase
 {
@@ -27,11 +27,6 @@ class UpdateCharactersTest extends ConsoleTestCase
      */
     private $client;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $oauth;
-
     public function setUp()
     {
         $h = new Helper();
@@ -39,7 +34,6 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->em = $h->getEm();
 
         $this->client = $this->createMock(ClientInterface::class);
-        $this->oauth = $this->createMock(GenericProvider::class);
     }
 
     public function testExecuteErrorUpdate()
@@ -134,7 +128,7 @@ class UpdateCharactersTest extends ConsoleTestCase
     public function testExecuteInvalidToken()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-        ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false);
+            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false);
         $this->em->persist($c);
         $this->em->flush();
 
@@ -143,17 +137,17 @@ class UpdateCharactersTest extends ConsoleTestCase
                 "name": "char1",
                 "corporation_id": 1
             }'),
+            new Response(200, [], 'invalid'), // for getResourceOwner()
             new Response(200, [], '{
                 "name": "corp1",
                 "ticker": "t"
             }')
         );
-        $this->oauth->method('getAccessToken')->willReturn(null);
-        $this->oauth->method('getResourceOwner')->willReturn(null);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => $this->oauth,
+            GenericProvider::class => new OAuthTestProvider($this->client),
+            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
         $expectedOutput = [
@@ -164,10 +158,11 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
     }
 
-    public function testExecuteValidToken()
+    public function testExecuteValidTokenOk()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false);
+            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
+            ->setExpires(time() - 60*60);
         $this->em->persist($c);
         $this->em->flush();
 
@@ -176,21 +171,17 @@ class UpdateCharactersTest extends ConsoleTestCase
                 "name": "char1",
                 "corporation_id": 1
             }'),
+            new Response(200, [], '{"access_token": "tok4"}'), // for getAccessToken()
+            new Response(200, [], '{"CharacterOwnerHash": "coh3"}'), // for getResourceOwner()
             new Response(200, [], '{
                 "name": "corp1",
                 "ticker": "t"
             }')
         );
-        $this->oauth->method('getAccessToken')->willReturn(null);
-        $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn([
-            'CharacterOwnerHash' => 'coh3',
-        ]);
-        $this->oauth->method('getResourceOwner')->willReturn($ro);
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => $this->oauth,
+            GenericProvider::class => new OAuthTestProvider($this->client),
         ]);
 
         $expectedOutput = [
@@ -213,24 +204,20 @@ class UpdateCharactersTest extends ConsoleTestCase
                 "name": "char1",
                 "corporation_id": 1
             }'),
+            // Token has no expire time, so no call to GenericProvider->getAccessToken()
+            new Response(200, [], '{"UNKNOWN": "DATA"}'), // for getResourceOwner()
             new Response(200, [], '{
                 "name": "corp1",
                 "ticker": "t"
             }')
         );
-        $this->oauth->method('getAccessToken')->willReturn(null);
-        $ro = $this->createMock(ResourceOwnerInterface::class);
-        $ro->method('toArray')->willReturn([
-            'UNKNOWN' => 'DATA',
-        ]);
-        $this->oauth->method('getResourceOwner')->willReturn($ro);
 
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => $this->oauth,
+            GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => $log,
         ]);
 

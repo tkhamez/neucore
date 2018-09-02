@@ -4,7 +4,7 @@ namespace Tests\Unit\Slim\Session;
 
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
 use Brave\Slim\Session\SessionData;
-use Slim\Route;
+use Slim\Interfaces\RouteInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -70,7 +70,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 
     private function invokeMiddleware($path, $conf, $addRoute)
     {
-        $route = $this->createMock(Route::class);
+        $route = $this->createMock(RouteInterface::class);
         $route->method('getPattern')->willReturn($path);
 
         $req = Request::createFromEnvironment(Environment::mock());

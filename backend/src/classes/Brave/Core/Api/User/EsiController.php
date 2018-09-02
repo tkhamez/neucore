@@ -5,7 +5,7 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Config;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\OAuthToken;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\MessageInterface;
@@ -36,7 +36,7 @@ class EsiController
     private $token;
 
     /**
-     * @var Client
+     * @var ClientInterface
      */
     private $httpClient;
 
@@ -49,7 +49,7 @@ class EsiController
         Response $response,
         RepositoryFactory $repositoryFactory,
         OAuthToken $token,
-        Client $httpClient,
+        ClientInterface $httpClient,
         Config $config
     ) {
         $this->response = $response;

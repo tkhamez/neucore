@@ -7,13 +7,13 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
-use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Provider\GenericResourceOwner;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
+use Tests\OAuthTestProvider;
 use Tests\WriteErrorListener;
 
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
@@ -29,9 +29,9 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     private $log;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|GenericProvider
+     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
      */
-    private $oauth;
+    private $client;
 
     /**
      * @var OAuthToken
@@ -54,13 +54,15 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
-        $this->oauth = $this->createMock(GenericProvider::class);
-        $this->es = new OAuthToken($this->oauth, new ObjectManager($this->em, $this->log), $this->log);
+        $this->client = $this->createMock(ClientInterface::class);
+        $oauth = new OAuthTestProvider($this->client);
+
+        $this->es = new OAuthToken($oauth, new ObjectManager($this->em, $this->log), $this->log);
 
         // a second OAuthToken instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->esError = new OAuthToken($this->oauth, new ObjectManager($em, $this->log), $this->log);
+        $this->esError = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
     }
 
     public function testGetTokenNoExistingTokenException()
@@ -75,7 +77,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     public function testGetTokenNewTokenException()
     {
-        $this->oauth->method('getAccessToken')->will($this->throwException(new \Exception('test e')));
+        $this->client->method('send')->willReturn(new Response(500));
 
         $c = new Character();
         $c->setAccessToken('at');
@@ -83,10 +85,13 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
         $this->es->getToken($c);
 
-        $this->assertSame('test e', $this->log->getHandlers()[0]->getRecords()[0]['message']);
+        $this->assertStringStartsWith(
+            'An OAuth server error ',
+            $this->log->getHandlers()[0]->getRecords()[0]['message']
+        );
     }
 
-    public function testGetTokenNewTokenUpdateDatabase()
+    public function testGetTokenNewTokenUpdateDatabaseOk()
     {
         $char = $this->setUpData();
 
@@ -125,12 +130,12 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         // can't really test "getAccessToken()" method here,
         // but that is done above in testGetToken*()
 
-        $this->oauth->method('getResourceOwner')->willReturn(new GenericResourceOwner([
-            'CharacterID' => '123',
-            'CharacterName' => 'char name',
-            'ExpiresOn' => '2018-05-03T20:27:38.7999223',
-            'CharacterOwnerHash' => 'coh',
-        ], 'id'));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "CharacterID": "123",
+            "CharacterName": "char name",
+            "ExpiresOn": "2018-05-03T20:27:38.7999223",
+            "CharacterOwnerHash": "coh"
+        }'));
 
         $c = new Character();
         $c->setAccessToken('at');
@@ -150,11 +155,11 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     private function setUpData(): Character
     {
-        $this->oauth->method('getAccessToken')->willReturn(new AccessToken([
-            'access_token' => 'new-token',
-            'refresh_token' => '',
-            'expires' => 1519933900, // 03/01/2018 @ 7:51pm (UTC)
-        ]));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "access_token": "new-token",
+            "refresh_token": "",
+            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+        ));
 
         $c = new Character();
         $c->setId(123);

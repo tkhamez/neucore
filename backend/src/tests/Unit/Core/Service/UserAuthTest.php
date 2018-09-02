@@ -9,11 +9,11 @@ use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
-use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
+use Tests\OAuthTestProvider;
 
 class UserAuthTest extends \PHPUnit\Framework\TestCase
 {
@@ -37,8 +37,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->log = new Logger('test');
         $em = $h->getEm();
 
-        $oauth = $this->createMock(GenericProvider::class); /* @var $oauth GenericProvider */
-        $token = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
+        $token = new OAuthToken(new OAuthTestProvider(), new ObjectManager($em, $this->log), $this->log);
         $characterService = new CharacterService($this->log, new ObjectManager($em, $this->log), $token);
         $this->service = new UserAuth(new SessionData(), $characterService, new RepositoryFactory($em), $this->log);
     }

@@ -70,7 +70,6 @@ class CorporationControllerTest extends WebTestCase
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
 
-        // mock Swagger API
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = $this->createMock(ClientInterface::class);

@@ -16,6 +16,8 @@ use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
 
@@ -346,6 +348,10 @@ class Application
             $logger = new Logger($conf['name']);
             $logger->pushHandler(new StreamHandler($conf['path'], $conf['level']));
             return $logger;
+        });
+
+        $this->container->set(ClientInterface::class, function (ContainerInterface $c) {
+            return new Client();
         });
     }
 

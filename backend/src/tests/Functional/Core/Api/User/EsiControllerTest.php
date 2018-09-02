@@ -3,7 +3,7 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Roles;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -47,7 +47,7 @@ class EsiControllerTest extends WebTestCase
         $this->loginUser(7);
 
         // mock Guzzle client
-        $httpClient = $this->createMock(Client::class);
+        $httpClient = $this->createMock(ClientInterface::class);
         $httpClient->method('request')->willReturn(new \GuzzleHttp\Psr7\Response(
             200,
             [
@@ -62,7 +62,7 @@ class EsiControllerTest extends WebTestCase
             '/api/user/esi/request?character=6&route=/characters/{character_id}',
             null,
             null,
-            [Client::class => $httpClient]
+            [ClientInterface::class => $httpClient]
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([

@@ -9,12 +9,13 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
-use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Provider\GenericResourceOwner;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
+use Tests\OAuthTestProvider;
 
 class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,9 +25,9 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     private $helper;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|GenericProvider
+     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
      */
-    private $oauthProvider;
+    private $client;
 
     /**
      * @var CharacterService
@@ -47,8 +48,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->oauthProvider = $this->createMock(GenericProvider::class);
-        $token = new OAuthToken($this->oauthProvider, new ObjectManager($em, $log), $log);
+        $this->client = $this->createMock(ClientInterface::class);
+        $token = new OAuthToken(new OAuthTestProvider($this->client), new ObjectManager($em, $log), $log);
 
         $this->service = new CharacterService($log, new ObjectManager($em, $log), $token);
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
@@ -141,7 +142,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         // can't really test the difference between no token and revoked token
         // here, but that is done in OAuthTokenTest
 
-        $this->oauthProvider->method('getResourceOwner')->willReturn(null);
+        $this->client->method('send')->willReturn(new Response());
 
         $result = $this->service->checkTokenUpdateCharacter(new Character());
         $this->assertFalse($result);
@@ -149,8 +150,9 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testCheckTokenUpdateCharacterValid()
     {
-        $this->oauthProvider->method('getResourceOwner')->willReturn(
-            new GenericResourceOwner(['CharacterOwnerHash' => 'new-hash'], 'id'));
+        $this->client->method('send')->willReturn(new Response(200, [], '{
+            "CharacterOwnerHash": "new-hash"
+        }'));
 
         $em = $this->helper->getEm();
         $expires = time() - 1000;

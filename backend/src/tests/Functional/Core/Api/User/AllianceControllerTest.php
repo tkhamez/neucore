@@ -61,7 +61,6 @@ class AllianceControllerTest extends WebTestCase
 
         $this->alliRepo = (new RepositoryFactory($this->em))->getAllianceRepository();
 
-        // mock Swagger API
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = $this->createMock(ClientInterface::class);

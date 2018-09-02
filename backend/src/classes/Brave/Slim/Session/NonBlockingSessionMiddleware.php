@@ -4,7 +4,7 @@ namespace Brave\Slim\Session;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Route;
+use Slim\Interfaces\RouteInterface;
 
 /**
  * A non-blocking (read-only) Session.
@@ -65,7 +65,7 @@ class NonBlockingSessionMiddleware
         return $next($request, $response);
     }
 
-    private function shouldStartSession(Route $route = null): bool
+    private function shouldStartSession(RouteInterface $route = null): bool
     {
         $start = false;
 
@@ -118,7 +118,7 @@ class NonBlockingSessionMiddleware
         }
     }
 
-    private function isReadOnly(Route $route = null): bool
+    private function isReadOnly(RouteInterface $route = null): bool
     {
         $routePattern = $route !== null ? $route->getPattern() : null;
         if ($routePattern === null) {
