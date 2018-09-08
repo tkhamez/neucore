@@ -60,6 +60,13 @@ class AuthController
     private $auth;
 
     /**
+     * A prefix for the OAuth state parameter that identifies an alt login.
+     *
+     * @var string
+     */
+    private $altLoginPrefix = '*';
+
+    /**
      * Scopes for EVE SSO login.
      *
      * @var array
@@ -152,7 +159,7 @@ class AuthController
         $redirectUrl = $this->session->get('auth_redirect', '/');
         $this->session->delete('auth_redirect');
 
-        $state = $this->session->get('auth_state');
+        $state = (string) $this->session->get('auth_state');
         $this->session->delete('auth_state');
 
         // check OAuth state parameter
@@ -211,7 +218,7 @@ class AuthController
         }
 
         // normal or alt login?
-        $alt = $state{0} === 't'; // see buildLoginUrl()
+        $alt = $state[0] === $this->altLoginPrefix;
 
         if ($alt) {
             $success = $this->auth->addAlt(
@@ -299,13 +306,11 @@ class AuthController
 
     private function buildLoginUrl(Request $request, bool $altLogin): string
     {
-        // "t" is used in the callback to identify an alt login request
-        // (t is not a valid HEX value, the rest of the state is HEX)
-        $statePrefix = $altLogin ? 't' : '';
+        $statePrefix = $altLogin ? $this->altLoginPrefix : '';
 
         $options = [
             'scope' => implode(' ', $this->scopes),
-            'state' => $statePrefix . Random::hex(32),
+            'state' => $statePrefix . Random::chars(12),
         ];
 
         $url = $this->sso->getAuthorizationUrl($options);

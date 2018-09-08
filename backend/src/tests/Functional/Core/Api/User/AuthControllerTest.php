@@ -42,7 +42,7 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame($redirect, $sess->get('auth_redirect'));
-        $this->assertSame(32, strlen($sess->get('auth_state')));
+        $this->assertSame(12, strlen($sess->get('auth_state')));
     }
 
     public function testLoginUrl204()
@@ -75,8 +75,8 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame($redirect, $sess->get('auth_redirect'));
-        $this->assertSame('t', substr($sess->get('auth_state'), 0, 1));
-        $this->assertSame(33, strlen($sess->get('auth_state')));
+        $this->assertSame('*', substr($sess->get('auth_state'), 0, 1));
+        $this->assertSame(13, strlen($sess->get('auth_state')));
     }
 
     public function testLoginAltUrl403()
@@ -87,7 +87,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackStateError()
     {
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state=INVALID'); // fail early
@@ -103,7 +103,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackAccessTokenException()
     {
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(new Response(500)); // for getAccessToken
@@ -126,7 +126,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackResourceOwnerException()
     {
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -152,7 +152,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackResourceOwnerError()
     {
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -175,7 +175,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackScopesMismatch()
     {
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $sess = new SessionData();
 
         $this->client->method('send')->willReturn(
@@ -222,7 +222,7 @@ class AuthControllerTest extends WebTestCase
     {
         (new Helper())->emptyDb();
 
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -260,7 +260,7 @@ class AuthControllerTest extends WebTestCase
         $h->emptyDb();
         $h->addRoles([Roles::USER]);
 
-        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -291,7 +291,7 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('User1', 654, [Roles::USER], ['group1']);
         $this->loginUser(654);
 
-        $state = 'td2c55ec4cf3fe6224a500f4127bc3e31';
+        $state = '*1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->method('send')->willReturn(
