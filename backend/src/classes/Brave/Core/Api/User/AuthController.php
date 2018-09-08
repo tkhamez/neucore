@@ -305,7 +305,7 @@ class AuthController
 
         $options = [
             'scope' => implode(' ', $this->scopes),
-            'state' => $statePrefix . bin2hex(Random::bytes(16)),
+            'state' => $statePrefix . Random::hex(32),
         ];
 
         $url = $this->sso->getAuthorizationUrl($options);

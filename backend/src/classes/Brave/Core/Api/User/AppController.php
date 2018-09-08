@@ -138,7 +138,7 @@ class AppController
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret(password_hash(bin2hex(Random::bytes(32)), PASSWORD_DEFAULT));
+        $app->setSecret(password_hash(Random::hex(64), PASSWORD_DEFAULT));
         $app->addRole($appRole);
 
         $this->objectManager->persist($app);
@@ -617,7 +617,7 @@ class AppController
             return $this->res->withStatus(403);
         }
 
-        $secret = bin2hex(Random::bytes(32));
+        $secret = Random::hex(64);
         $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
 
         if (! $this->objectManager->flush()) {

@@ -18,6 +18,19 @@ class Random
         return $bytes;
     }
 
+    /**
+     * @param int $length should be even, if not it's rounded up to the nearest even number
+     * @return string
+     */
+    public static function hex(int $length): string
+    {
+        return bin2hex(
+            self::bytes(
+                (int) ceil($length / 2)
+            )
+        );
+    }
+
     public static function pseudoRandomBytes(int $length): string
     {
         $characters = '0123456789ABCDEF';
