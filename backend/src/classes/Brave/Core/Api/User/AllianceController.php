@@ -127,7 +127,7 @@ class AllianceController
      *     ),
      *     @SWG\Response(
      *         response="400",
-     *         description="Inalid alliance ID."
+     *         description="Invalid alliance ID."
      *     ),
      *     @SWG\Response(
      *         response="404",

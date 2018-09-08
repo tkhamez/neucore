@@ -107,7 +107,7 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $sd->getAll());
         $this->assertSame($sd, $ret);
     }
-    public function testSuperglobalIsReference()
+    public function testSuperGlobalIsReference()
     {
         $_SESSION = []; // "start" session
         $sd = new SessionData();

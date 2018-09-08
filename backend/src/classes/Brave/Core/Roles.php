@@ -2,8 +2,6 @@
 
 namespace Brave\Core;
 
-use Tkhamez\Slim\RoleAuth\RoleMiddleware;
-
 /**
  * Definition of all roles used for authorization.
  */
@@ -21,7 +19,7 @@ class Roles
      *
      * @var string
      */
-    const ANONYMOUS = RoleMiddleware::ROLE_ANONYMOUS;
+    const ANONYMOUS = 'anonymous';
 
     /**
      * This role is given to every authenticated user.

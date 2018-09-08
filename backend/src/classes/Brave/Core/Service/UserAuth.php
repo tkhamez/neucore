@@ -59,7 +59,6 @@ class UserAuth implements RoleProviderInterface
     }
 
     /**
-     *
      * {@inheritdoc}
      * @see \Tkhamez\Slim\RoleAuth\RoleProviderInterface::getRoles()
      */
@@ -72,6 +71,9 @@ class UserAuth implements RoleProviderInterface
             foreach ($this->user->getPlayer()->getRoles() as $role) {
                 $roles[] = $role->getName();
             }
+        }
+        if (count($roles) === 0) {
+            $roles[] = Roles::ANONYMOUS;
         }
 
         return $roles;

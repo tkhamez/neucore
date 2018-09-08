@@ -45,7 +45,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testGetRolesNoAuth()
     {
         $roles = $this->service->getRoles();
-        $this->assertSame([], $roles);
+        $this->assertSame([Roles::ANONYMOUS], $roles);
     }
 
     public function testGetRoles()

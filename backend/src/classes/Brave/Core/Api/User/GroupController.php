@@ -739,7 +739,7 @@ class GroupController
     }
 
     /**
-     * Retruns true if another group with that name already exists.
+     * Returns true if another group with that name already exists.
      *
      * @param string $name Group name.
      * @param int $id Group ID.
