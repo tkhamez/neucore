@@ -9,11 +9,10 @@ use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class PlayerControllerTest extends WebTestCase
@@ -42,7 +41,7 @@ class PlayerControllerTest extends WebTestCase
      */
     private $group;
 
-    private $gPrivId;
+    private $gPrivateId;
 
     /**
      * @var PlayerRepository
@@ -63,7 +62,6 @@ class PlayerControllerTest extends WebTestCase
         $this->pr = (new RepositoryFactory($this->em))->getPlayerRepository();
 
         $this->log = new Logger('test');
-        $this->log->pushHandler(new TestHandler());
     }
 
     public function testShow403()
@@ -131,7 +129,7 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/player/add-application/' . ($this->group->getId() + 5));
         $this->assertEquals(404, $response->getStatusCode());
 
-        $response = $this->runApp('PUT', '/api/user/player/add-application/' . $this->gPrivId);
+        $response = $this->runApp('PUT', '/api/user/player/add-application/' . $this->gPrivateId);
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -681,10 +679,10 @@ class PlayerControllerTest extends WebTestCase
             Roles::USER_ADMIN
         ]);
 
-        $gs = $this->h->addGroups(['test-pub', 'test-priv']);
+        $gs = $this->h->addGroups(['test-pub', 'test-private']);
         $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
         $this->group = $gs[0];
-        $this->gPrivId = $gs[1]->getId();
+        $this->gPrivateId = $gs[1]->getId();
 
         $this->userId = $this->h->addCharacterMain('User', 10, [Roles::USER])->getPlayer()->getId();
 

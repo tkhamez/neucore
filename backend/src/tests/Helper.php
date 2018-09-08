@@ -194,9 +194,11 @@ class Helper
         return $alt;
     }
 
-    public function addApp(string $name, string $secret, array $roles, $hashAlgo = PASSWORD_DEFAULT): App
+    public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_DEFAULT): App
     {
-        $hash = $hashAlgo === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, PASSWORD_DEFAULT);
+        $hash = $hashAlgorithm === 'md5' ?
+            crypt($secret, '$1$12345678$') :
+            password_hash($secret, PASSWORD_DEFAULT);
 
         $em = $this->getEm();
 

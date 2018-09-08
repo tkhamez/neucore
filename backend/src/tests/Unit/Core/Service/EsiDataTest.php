@@ -99,7 +99,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacterWithCorporationAndAllianceCorpError()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 10, []);
+        $this->testHelper->addCharacterMain('newChar', 10, []);
 
         $this->client->method('send')->willReturn(
             new Response(200, [], '{
@@ -116,7 +116,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacterWithCorporationAndAllianceAlliError()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 10, []);
+        $this->testHelper->addCharacterMain('newChar', 10, []);
 
         $this->client->method('send')->willReturn(
             new Response(200, [], '{
@@ -138,7 +138,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacterWithCorporationAndAlliance()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 10, []);
+        $this->testHelper->addCharacterMain('newChar', 10, []);
 
         $this->client->method('send')->willReturn(
             new Response(200, [], '{
@@ -179,7 +179,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacterNotFound()
     {
         $this->testHelper->emptyDb();
-        $this->testHelper->addCharacterMain('newc', 123, []);
+        $this->testHelper->addCharacterMain('newChar', 123, []);
 
         $this->client->method('send')->willReturn(new Response(404));
 
@@ -190,7 +190,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacterNoFlush()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('newc', 123, []);
+        $char = $this->testHelper->addCharacterMain('newChar', 123, []);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
@@ -213,7 +213,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     public function testFetchCharacter()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('newc', 123, []);
+        $char = $this->testHelper->addCharacterMain('newChar', 123, []);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 

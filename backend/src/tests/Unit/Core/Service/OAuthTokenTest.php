@@ -10,9 +10,8 @@ use Brave\Core\Service\ObjectManager;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\OAuthTestProvider;
 use Tests\WriteErrorListener;
 
@@ -52,7 +51,6 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->em = (new Helper())->getEm();
 
         $this->log = new Logger('Test');
-        $this->log->pushHandler(new TestHandler());
 
         $this->client = $this->createMock(ClientInterface::class);
         $oauth = new OAuthTestProvider($this->client);

@@ -22,7 +22,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
             'route_include_pattern' => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
-        $this->invokeMiddleware('/nosess', $conf, true);
+        $this->invokeMiddleware('/no-sess', $conf, true);
 
         $this->assertFalse(isset($_SESSION));
     }

@@ -15,13 +15,13 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
     public function testJsonSerialize()
     {
         $a1 = (new App())->setName('app-one');
-        $g1 = (new Group())->setName('gname');
+        $g1 = (new Group())->setName('gName');
         $g2 = (new Group())->setName('group2');
         $play = new Player();
         $play->setName('test user');
         $play->addApplication($g1);
         $play->addGroup($g2);
-        $play->addRole((new Role())->setName('rname'));
+        $play->addRole((new Role())->setName('rName'));
         $play->addRole((new Role())->setName('role2'));
         $c1 = new Character();
         $c2 = new Character();
@@ -41,7 +41,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([
             'id' => null,
             'name' => 'test user',
-            'roles' => ['rname', 'role2'],
+            'roles' => ['rName', 'role2'],
             'characters' => [[
                 'id' => 123,
                 'name' => 'eve one',
@@ -61,12 +61,12 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 'corporation' => null
             ]],
             'applications' => [
-                ['id' => null, 'name' => 'gname', 'visibility' => Group::VISIBILITY_PRIVATE]
+                ['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
             'groups' => [
                 ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
-            'managerGroups' => [['id' => null, 'name' => 'gname', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            'managerGroups' => [['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]],
             'managerApps' => [['id' => null, 'name' => 'app-one']],
         ], json_decode(json_encode($play), true));
     }

@@ -8,9 +8,9 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
 {
     public function testGet()
     {
-        $c = new Config(['key' => ['vals']]);
+        $c = new Config(['key' => ['values']]);
 
         $this->assertNull($c->get('nothing'));
-        $this->assertSame(['vals'], $c->get('key'));
+        $this->assertSame(['values'], $c->get('key'));
     }
 }

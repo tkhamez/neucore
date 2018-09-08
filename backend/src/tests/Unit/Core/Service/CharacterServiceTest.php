@@ -83,11 +83,11 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testUpdateAndStoreCharacterWithPlayerMinimalData()
     {
-        $player = (new Player())->setName('eman');
+        $player = (new Player())->setName('name');
         $expires = time();
         $char = (new Character())->setId(11)->setName('name')->setPlayer($player)
         ->setCharacterOwnerHash('c-o-h')
-            ->setAccessToken('acto') ->setRefreshToken('reto')->setExpires($expires)
+            ->setAccessToken('acTo') ->setRefreshToken('reTo')->setExpires($expires)
             ->setScopes('s1 s2');
 
         $result = $this->service->updateAndStoreCharacterWithPlayer($char);
@@ -99,18 +99,18 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame('name', $character->getName());
         $this->assertFalse($character->getMain());
-        $this->assertSame('eman', $character->getPlayer()->getName());
+        $this->assertSame('name', $character->getPlayer()->getName());
 
         $this->assertNull($character->getCharacterOwnerHash());
-        $this->assertSame('acto', $character->getAccessToken());
-        $this->assertSame('reto', $character->getRefreshToken());
+        $this->assertSame('acTo', $character->getAccessToken());
+        $this->assertSame('reTo', $character->getRefreshToken());
         $this->assertSame($expires, $character->getExpires());
         $this->assertNull($character->getScopes());
     }
 
     public function testUpdateAndStoreCharacterWithPlayerMaximumData()
     {
-        $player = (new Player())->setName('eman');
+        $player = (new Player())->setName('name');
         $char = (new Character())->setId(12)->setName('name')->setPlayer($player);
 
         $expires = time() + (60 * 20);
@@ -128,7 +128,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame('name', $character->getName());
         $this->assertFalse($character->getMain());
-        $this->assertSame('eman', $character->getPlayer()->getName());
+        $this->assertSame('name', $character->getPlayer()->getName());
 
         $this->assertSame('character-owner-hash', $character->getCharacterOwnerHash());
         $this->assertSame('a-t', $character->getAccessToken());

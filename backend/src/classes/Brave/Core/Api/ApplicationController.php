@@ -449,7 +449,7 @@ class ApplicationController
             return null;
         }
 
-        $ids = array_map('intval', $ids);
+        $ids = array_map('intVal', $ids);
         $ids = array_unique($ids);
 
         return $ids;

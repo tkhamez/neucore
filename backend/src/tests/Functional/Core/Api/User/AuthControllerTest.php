@@ -87,7 +87,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackStateError()
     {
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION = ['auth_state' => $state];
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state=INVALID'); // fail early
@@ -103,7 +103,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackAccessTokenException()
     {
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(new Response(500)); // for getAccessToken
@@ -126,7 +126,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackResourceOwnerException()
     {
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -152,7 +152,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackResourceOwnerError()
     {
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -175,7 +175,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCallbackScopesMismatch()
     {
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $sess = new SessionData();
 
         $this->client->method('send')->willReturn(
@@ -199,7 +199,7 @@ class AuthControllerTest extends WebTestCase
         $_SESSION = ['auth_state' => $state];
         $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
-            Config::class => new Config(['eve' => ['scopes' => 'dont-have-this']]),
+            Config::class => new Config(['eve' => ['scopes' => 'do-not-have-this']]),
         ]);
         $this->assertSame(
             ['success' => false, 'message' => 'Required scopes do not match.'],
@@ -222,7 +222,7 @@ class AuthControllerTest extends WebTestCase
     {
         (new Helper())->emptyDb();
 
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -260,7 +260,7 @@ class AuthControllerTest extends WebTestCase
         $h->emptyDb();
         $h->addRoles([Roles::USER]);
 
-        $state = 'd2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'd2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION = ['auth_state' => $state];
 
         $this->client->method('send')->willReturn(
@@ -291,7 +291,7 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('User1', 654, [Roles::USER], ['group1']);
         $this->loginUser(654);
 
-        $state = 'td2c55ec4cfefe6224a500f4127bcee31';
+        $state = 'td2c55ec4cf3fe6224a500f4127bc3e31';
         $_SESSION['auth_state'] = $state;
 
         $this->client->method('send')->willReturn(

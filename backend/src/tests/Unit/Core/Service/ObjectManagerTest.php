@@ -3,9 +3,8 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Service\ObjectManager;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class ObjectManagerTest extends \PHPUnit\Framework\TestCase
@@ -23,7 +22,6 @@ class ObjectManagerTest extends \PHPUnit\Framework\TestCase
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
-        $log->pushHandler(new TestHandler());
 
         $om = new ObjectManager($em, $log);
 

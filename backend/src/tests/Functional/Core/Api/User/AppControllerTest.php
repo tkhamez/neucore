@@ -11,10 +11,10 @@ use Brave\Core\Repository\AppRepository;
 use Brave\Core\Entity\App;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class AppControllerTest extends WebTestCase
@@ -117,7 +117,6 @@ class AppControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $log = new Logger('test');
-        $log->pushHandler(new TestHandler());
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], null, [
             LoggerInterface::class => $log

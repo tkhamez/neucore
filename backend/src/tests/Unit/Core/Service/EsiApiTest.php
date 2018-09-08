@@ -6,11 +6,10 @@ use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Service\EsiApi;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
+use Tests\Logger;
 
 class EsiApiTest extends \PHPUnit\Framework\TestCase
 {
@@ -32,7 +31,6 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->log = new Logger('Test');
-        $this->log->pushHandler(new TestHandler());
         $this->client = $this->createMock(ClientInterface::class);
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }

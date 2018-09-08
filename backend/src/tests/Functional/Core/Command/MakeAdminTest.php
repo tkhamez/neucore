@@ -5,11 +5,10 @@ namespace Tests\Functional\Core\Command;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
-use Monolog\Logger;
-use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class MakeAdminTest extends ConsoleTestCase
@@ -72,7 +71,6 @@ class MakeAdminTest extends ConsoleTestCase
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
-        $log->pushHandler(new TestHandler());
 
         $output = $this->runConsoleApp('make-admin', ['id' => 1234], [
             EntityManagerInterface::class => $em,

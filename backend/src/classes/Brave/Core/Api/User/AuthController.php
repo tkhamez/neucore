@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Config;
 use Brave\Core\Roles;
+use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -304,7 +305,7 @@ class AuthController
 
         $options = [
             'scope' => implode(' ', $this->scopes),
-            'state' => $statePrefix . bin2hex(random_bytes(16)),
+            'state' => $statePrefix . bin2hex(Random::bytes(16)),
         ];
 
         $url = $this->sso->getAuthorizationUrl($options);

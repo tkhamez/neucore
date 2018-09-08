@@ -618,8 +618,8 @@ class PlayerController
 
         if ($action === 'add' && $entity === 'Application') {
             $hasApplied = false;
-            foreach ($player->getApplications() as $applic) {
-                if ($group->getId() === $applic->getId()) {
+            foreach ($player->getApplications() as $application) {
+                if ($group->getId() === $application->getId()) {
                     $hasApplied = true;
                     break;
                 }

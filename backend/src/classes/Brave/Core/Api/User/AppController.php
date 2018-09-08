@@ -6,6 +6,7 @@ use Brave\Core\Entity\App;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\ObjectManager;
+use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
@@ -137,7 +138,7 @@ class AppController
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret(password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT));
+        $app->setSecret(password_hash(bin2hex(Random::bytes(32)), PASSWORD_DEFAULT));
         $app->addRole($appRole);
 
         $this->objectManager->persist($app);
@@ -616,7 +617,7 @@ class AppController
             return $this->res->withStatus(403);
         }
 
-        $secret = bin2hex(random_bytes(32));
+        $secret = bin2hex(Random::bytes(32));
         $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
 
         if (! $this->objectManager->flush()) {

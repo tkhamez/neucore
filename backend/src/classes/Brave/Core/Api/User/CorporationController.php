@@ -128,7 +128,7 @@ class CorporationController
      *     ),
      *     @SWG\Response(
      *         response="400",
-     *         description="Inalid corporation ID."
+     *         description="Invalid corporation ID."
      *     ),
      *     @SWG\Response(
      *         response="404",

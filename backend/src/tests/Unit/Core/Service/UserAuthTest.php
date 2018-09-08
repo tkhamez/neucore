@@ -10,9 +10,8 @@ use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Token\AccessToken;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\OAuthTestProvider;
 
 class UserAuthTest extends \PHPUnit\Framework\TestCase
@@ -30,6 +29,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {
         $h = new Helper();
+        $h->emptyDb();
 
         $h->resetSessionData();
         $_SESSION = []; // "start" session for SessionData object and reset data
@@ -50,9 +50,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testGetRoles()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        (new Helper())->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
         $_SESSION['character_id'] = 9013;
 
         $roles = $this->service->getRoles();
@@ -68,9 +66,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testGetUser()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        (new Helper())->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
         $_SESSION['character_id'] = 9013;
 
         $user = $this->service->getUser();
@@ -80,9 +76,6 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAuthenticateNoUserRoleError()
     {
-        (new Helper())->emptyDb();
-        $this->log->pushHandler(new TestHandler());
-
         $token = new AccessToken(['access_token' => 'token']);
         $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', '', $token));
         $this->assertSame(
@@ -93,9 +86,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAuthenticateNewUser()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addRoles([Roles::USER]);
+        (new Helper())->addRoles([Roles::USER]);
         (new SessionData())->setReadOnly(false);
 
         $this->assertFalse(isset($_SESSION['character_id']));
@@ -122,10 +113,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAuthenticateExistingUser()
     {
-        $h = new Helper();
-        $h->emptyDb();
         (new SessionData())->setReadOnly(false);
-        $char = $h->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $char = (new Helper())->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
 
         $this->assertSame('123', $char->getCharacterOwnerHash());
         $this->assertSame('abc', $char->getAccessToken());
@@ -153,10 +142,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAddAlt()
     {
-        $h = new Helper();
-        $h->emptyDb();
         $_SESSION['character_id'] = 100;
-        $main = $h->addCharacterMain('Main', 100, [Roles::USER]);
+        $main = (new Helper())->addCharacterMain('Main', 100, [Roles::USER]);
         $player = $main->getPlayer();
 
         $this->assertSame(1, count($player->getCharacters()));
@@ -181,11 +168,9 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAddAltExistingChar()
     {
-        $h = new Helper();
-        $h->emptyDb();
         $_SESSION['character_id'] = 100;
-        $main1 = $h->addCharacterMain('Main1', 100, [Roles::USER]);
-        $main2 = $h->addCharacterMain('Main2', 200, [Roles::USER]);
+        $main1 = (new Helper())->addCharacterMain('Main1', 100, [Roles::USER]);
+        $main2 = (new Helper())->addCharacterMain('Main2', 200, [Roles::USER]);
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
         $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'scope1 s2', $token);
@@ -206,10 +191,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAddAltLoggedInChar()
     {
-        $h = new Helper();
-        $h->emptyDb();
         $_SESSION['character_id'] = 100;
-        $main = $h->addCharacterMain('Main1', 100, [Roles::USER]);
+        $main = (new Helper())->addCharacterMain('Main1', 100, [Roles::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
         $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', '', $token);
@@ -222,9 +205,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAddAltNotAuthenticated()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Main1', 100, [Roles::USER]);
+        (new Helper())->addCharacterMain('Main1', 100, [Roles::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
         $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', '', $token);
