@@ -18,6 +18,10 @@ env:
     - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
     - BRAVECORE_EVE_SCOPES=
     - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
+  matrix:
+    - NODE_VERSION="6.11.4"
+    - NODE_VERSION="8.10.0"
+    - NODE_VERSION="10.10.0"
 
 matrix:
   fast_finish: true
@@ -27,6 +31,7 @@ matrix:
 before_install:
   - phpenv config-add config/travis.ini
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
+  - nvm install $NODE_VERSION
 
 install:
   - ./install.sh
