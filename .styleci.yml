@@ -1,5 +1,5 @@
 preset: psr2
 risky: false
 finder:
-    name:
-        - "*.php"
+  name:
+    - "*.php"
