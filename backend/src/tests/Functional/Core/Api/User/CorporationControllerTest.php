@@ -11,13 +11,13 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\TestClient;
 use Tests\WriteErrorListener;
 
 class CorporationControllerTest extends WebTestCase
@@ -51,7 +51,7 @@ class CorporationControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var TestClient
      */
     private $client;
 
@@ -72,7 +72,7 @@ class CorporationControllerTest extends WebTestCase
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $this->client = $this->createMock(ClientInterface::class);
+        $this->client = new TestClient();
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
@@ -157,9 +157,10 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(400));
+        $this->client->setResponse(new Response(400));
 
-        $response = $this->runApp('POST', '/api/user/corporation/add/123456789123', null, null, [
+        $response = $this->runApp('POST', '/api/user/corporation/add/123456789123',
+            null, null, [
             EsiApi::class => $this->esi
         ]);
 
@@ -171,9 +172,10 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(404));
+        $this->client->setResponse(new Response(404));
 
-        $response = $this->runApp('POST', '/api/user/corporation/add/123', null, null, [
+        $response = $this->runApp('POST', '/api/user/corporation/add/123',
+            null, null, [
             EsiApi::class => $this->esi
         ]);
 
@@ -194,9 +196,10 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(503));
+        $this->client->setResponse(new Response(503));
 
-        $response = $this->runApp('POST', '/api/user/corporation/add/123', null, null, [
+        $response = $this->runApp('POST', '/api/user/corporation/add/123',
+            null, null, [
             EsiApi::class => $this->esi
         ]);
 
@@ -208,13 +211,14 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The Corp.",
             "ticker": "-CT-",
             "alliance_id": null
         }'));
 
-        $response = $this->runApp('POST', '/api/user/corporation/add/456123', null, null, [
+        $response = $this->runApp('POST', '/api/user/corporation/add/456123',
+            null, null, [
             EsiApi::class => $this->esi
         ]);
 
@@ -239,7 +243,7 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "The Corp.",
                 "ticker": "-CT-",
@@ -251,7 +255,8 @@ class CorporationControllerTest extends WebTestCase
             }')
         );
 
-        $response = $this->runApp('POST', '/api/user/corporation/add/456123', null, null, [
+        $response = $this->runApp('POST', '/api/user/corporation/add/456123',
+            null, null, [
             EsiApi::class => $this->esi
         ]);
 
@@ -311,8 +316,10 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/add-group/'.$this->gid2);
-        $response2 = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/add-group/'.$this->gid2);
+        $response1 = $this->runApp(
+            'PUT', '/api/user/corporation/'.$this->cid1.'/add-group/'.$this->gid2);
+        $response2 = $this->runApp(
+            'PUT', '/api/user/corporation/'.$this->cid1.'/add-group/'.$this->gid2);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
     }
@@ -335,8 +342,10 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/5');
-        $response2 = $this->runApp('PUT', '/api/user/corporation/123/remove-group/'.$this->gid1);
+        $response1 = $this->runApp(
+            'PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/5');
+        $response2 = $this->runApp(
+            'PUT', '/api/user/corporation/123/remove-group/'.$this->gid1);
         $response3 = $this->runApp('PUT', '/api/user/corporation/123/remove-group/5');
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -351,7 +360,9 @@ class CorporationControllerTest extends WebTestCase
         $em = $this->h->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $res = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1, null, null, [
+        $res = $this->runApp(
+            'PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1,
+            null, null, [
             EntityManagerInterface::class => $em,
             LoggerInterface::class => $this->log
         ]);
@@ -363,8 +374,10 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1);
-        $response2 = $this->runApp('PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1);
+        $response1 = $this->runApp(
+            'PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1);
+        $response2 = $this->runApp(
+            'PUT', '/api/user/corporation/'.$this->cid1.'/remove-group/'.$this->gid1);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
     }

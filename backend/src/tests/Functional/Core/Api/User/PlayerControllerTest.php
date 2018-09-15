@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Tests\Logger;
+use Tests\TestLogger;
 use Tests\WriteErrorListener;
 
 class PlayerControllerTest extends WebTestCase
@@ -49,7 +49,7 @@ class PlayerControllerTest extends WebTestCase
     private $pr;
 
     /**
-     * @var Logger
+     * @var TestLogger
      */
     private $log;
 
@@ -61,7 +61,7 @@ class PlayerControllerTest extends WebTestCase
         $this->em = $this->h->getEm();
         $this->pr = (new RepositoryFactory($this->em))->getPlayerRepository();
 
-        $this->log = new Logger('test');
+        $this->log = new TestLogger('test');
     }
 
     public function testShow403()
@@ -317,7 +317,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([], $this->parseJsonBody($response));
         $this->assertSame(
             'PlayerController->getManagers(): role "app-manager" not found.',
-            $this->log->getHandlers()[0]->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message']
         );
     }
 
@@ -362,7 +362,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([], $this->parseJsonBody($response));
         $this->assertSame(
             'PlayerController->getManagers(): role "group-manager" not found.',
-            $this->log->getHandlers()[0]->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message']
         );
     }
 

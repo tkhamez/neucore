@@ -10,9 +10,9 @@ class OAuthTestProvider extends GenericProvider
     public function __construct(ClientInterface $client = null)
     {
         parent::__construct([
-            'urlAuthorize'            => 'http://localhost',
-            'urlAccessToken'          => 'http://localhost',
-            'urlResourceOwnerDetails' => 'http://localhost'
+            'urlAuthorize'            => 'http://localhost/auth',
+            'urlAccessToken'          => 'http://localhost/token',
+            'urlResourceOwnerDetails' => 'http://localhost/owner'
         ]);
 
         if ($client) {

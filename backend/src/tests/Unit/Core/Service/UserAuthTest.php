@@ -11,13 +11,13 @@ use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
-use Tests\Logger;
+use Tests\TestLogger;
 use Tests\OAuthTestProvider;
 
 class UserAuthTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Logger
+     * @var TestLogger
      */
     private $log;
 
@@ -34,11 +34,12 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $h->resetSessionData();
         $_SESSION = []; // "start" session for SessionData object and reset data
 
-        $this->log = new Logger('test');
+        $this->log = new TestLogger('test');
         $em = $h->getEm();
 
-        $token = new OAuthToken(new OAuthTestProvider(), new ObjectManager($em, $this->log), $this->log);
-        $characterService = new CharacterService($this->log, new ObjectManager($em, $this->log), $token);
+        $objManager = new ObjectManager($em, $this->log);
+        $token = new OAuthToken(new OAuthTestProvider(), $objManager, $this->log);
+        $characterService = new CharacterService($this->log, $objManager, $token);
         $this->service = new UserAuth(new SessionData(), $characterService, new RepositoryFactory($em), $this->log);
     }
 
@@ -80,7 +81,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', '', $token));
         $this->assertSame(
             'UserAuth::authenticate(): Role "'.Roles::USER.'" not found.',
-            $this->log->getHandlers()[0]->getRecords()[0]['message']
+            $this->log->getHandler()->getRecords()[0]['message']
         );
     }
 

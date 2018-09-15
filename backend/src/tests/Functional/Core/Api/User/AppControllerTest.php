@@ -14,7 +14,7 @@ use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Tests\Logger;
+use Tests\TestLogger;
 use Tests\WriteErrorListener;
 
 class AppControllerTest extends WebTestCase
@@ -116,7 +116,7 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $log = new Logger('test');
+        $log = new TestLogger('test');
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], null, [
             LoggerInterface::class => $log
@@ -124,7 +124,7 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertSame(
             'AppController->create(): Role "'.Roles::APP.'" not found.',
-            $log->getHandlers()[0]->getRecords()[0]['message']
+            $log->getHandler()->getRecords()[0]['message']
         );
     }
 
@@ -491,7 +491,7 @@ class AppControllerTest extends WebTestCase
         $em = $this->helper->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $log = new Logger('Test');
+        $log = new TestLogger('Test');
         $log->pushHandler(new TestHandler());
 
         $res = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid, null, null, [

@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
-use Tests\Logger;
+use Tests\TestLogger;
 use Tests\WriteErrorListener;
 
 class MakeAdminTest extends ConsoleTestCase
@@ -70,7 +70,7 @@ class MakeAdminTest extends ConsoleTestCase
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $log = new Logger('Test');
+        $log = new TestLogger('Test');
 
         $output = $this->runConsoleApp('make-admin', ['id' => 1234], [
             EntityManagerInterface::class => $em,
@@ -78,6 +78,6 @@ class MakeAdminTest extends ConsoleTestCase
         ]);
 
         $this->assertSame('', $output);
-        $this->assertSame('error', $log->getHandlers()[0]->getRecords()[0]['message']);
+        $this->assertSame('error', $log->getHandler()->getRecords()[0]['message']);
     }
 }

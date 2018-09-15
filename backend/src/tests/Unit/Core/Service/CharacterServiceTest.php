@@ -9,13 +9,13 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
 use Tests\OAuthTestProvider;
+use Tests\TestClient;
 
 class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -25,7 +25,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     private $helper;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var TestClient
      */
     private $client;
 
@@ -48,7 +48,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->client = $this->createMock(ClientInterface::class);
+        $this->client = new TestClient();
         $token = new OAuthToken(new OAuthTestProvider($this->client), new ObjectManager($em, $log), $log);
 
         $this->service = new CharacterService($log, new ObjectManager($em, $log), $token);
@@ -142,7 +142,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         // can't really test the difference between no token and revoked token
         // here, but that is done in OAuthTokenTest
 
-        $this->client->method('send')->willReturn(new Response());
+        $this->client->setResponse(new Response());
 
         $result = $this->service->checkTokenUpdateCharacter(new Character());
         $this->assertFalse($result);
@@ -150,9 +150,17 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testCheckTokenUpdateCharacterValid()
     {
-        $this->client->method('send')->willReturn(new Response(200, [], '{
-            "CharacterOwnerHash": "new-hash"
-        }'));
+        $this->client->setResponse(
+            // for refreshAccessToken()
+            new Response(200, [], '{
+                "access_token": "new-at"
+            }'),
+
+            // for getResourceOwner()
+            new Response(200, [], '{
+                "CharacterOwnerHash": "new-hash"
+            }')
+        );
 
         $em = $this->helper->getEm();
         $expires = time() - 1000;

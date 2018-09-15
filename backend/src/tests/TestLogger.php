@@ -3,8 +3,9 @@
 namespace Tests;
 
 use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 
-class Logger extends \Monolog\Logger
+class TestLogger extends Logger
 {
     public function __construct(string $name, $handlers = array(), $processors = array())
     {
@@ -13,11 +14,8 @@ class Logger extends \Monolog\Logger
         $this->pushHandler(new TestHandler());
     }
 
-    /**
-     * @return \Monolog\Handler\TestHandler[]|\Monolog\Handler\HandlerInterface[]
-     */
-    public function getHandlers()
+    public function getHandler(): TestHandler
     {
-        return parent::getHandlers();
+        return parent::getHandlers()[0];
     }
 }

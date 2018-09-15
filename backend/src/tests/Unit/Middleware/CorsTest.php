@@ -13,13 +13,12 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['https://domain.tld']);
 
-        $res = new CorsResponse();
         $next = function ($req, $res) {
             return $res;
         };
 
         $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
-        $response = $cors($req, $res, $next);
+        $response = $cors($req, new TestResponse(), $next);
 
         $headers = $response->getHeaders();
         $this->assertSame([
@@ -34,13 +33,12 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['http://domain.tld']);
 
-        $res = new CorsResponse();
         $next = function ($req, $res) {
             return $res;
         };
 
         $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
-        $response = $cors($req, $res, $next);
+        $response = $cors($req, new TestResponse(), $next);
 
         $this->assertSame([], $response->getHeaders());
     }

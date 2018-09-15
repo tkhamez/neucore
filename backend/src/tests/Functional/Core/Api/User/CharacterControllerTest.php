@@ -6,7 +6,6 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
@@ -15,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\OAuthTestProvider;
+use Tests\TestClient;
 
 class CharacterControllerTest extends WebTestCase
 {
@@ -31,10 +31,16 @@ class CharacterControllerTest extends WebTestCase
 
     private $corpTicker = '-TTT-';
 
+    /**
+     * @var TestClient
+     */
+    private $client;
+
     public function setUp()
     {
         $_SESSION = null;
         $this->helper = new Helper();
+        $this->client = new TestClient();
     }
 
     public function testShow403()
@@ -149,12 +155,10 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(96061222);
 
-        /* @var $client \PHPUnit\Framework\MockObject\MockObject|ClientInterface */
-        $client = $this->createMock(ClientInterface::class);
-        $client->method('send')->willReturn(new Response(500));
+        $this->client->setResponse(new Response(500));
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -166,9 +170,7 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(96061222);
 
-        /* @var $client \PHPUnit\Framework\MockObject\MockObject|ClientInterface */
-        $client = $this->createMock(ClientInterface::class);
-        $client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "Char 96061222",
                 "corporation_id": '.$this->corpId.'
@@ -181,7 +183,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
             GenericProvider::class => new OAuthTestProvider(),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
@@ -221,9 +223,7 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(9);
 
-        /* @var $client \PHPUnit\Framework\MockObject\MockObject|ClientInterface */
-        $client = $this->createMock(ClientInterface::class);
-        $client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "Char 96061222",
                 "corporation_id": 456
@@ -237,8 +237,8 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($client),
-            GenericProvider::class => new OAuthTestProvider($client),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 

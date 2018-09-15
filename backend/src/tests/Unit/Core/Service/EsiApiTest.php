@@ -4,22 +4,22 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Service\EsiApi;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
-use Tests\Logger;
+use Tests\TestLogger;
+use Tests\TestClient;
 
 class EsiApiTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Logger
+     * @var TestLogger
      */
     private $log;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var TestClient
      */
     private $client;
 
@@ -30,26 +30,26 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->log = new Logger('Test');
-        $this->client = $this->createMock(ClientInterface::class);
+        $this->log = new TestLogger('Test');
+        $this->client = new TestClient();
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
     public function testGetAllianceException500()
     {
-        $this->client->method('send')->willReturn(new Response(500));
+        $this->client->setResponse(new Response(500));
 
         $result = $this->esi->getAlliance(456);
 
         $this->assertNull($result);
         $this->assertSame(500, $this->esi->getLastErrorCode());
         $this->assertStringStartsWith('[500] Error ', $this->esi->getLastErrorMessage());
-        $this->assertStringStartsWith('[500] Error ', $this->log->getHandlers()[0]->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testGetAlliance()
     {
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The Alliance.",
             "ticker": "-HAT-"
         }'));
@@ -65,19 +65,19 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
 
     public function testGetCorporation500()
     {
-        $this->client->method('send')->willReturn(new Response(500));
+        $this->client->setResponse(new Response(500));
 
         $result = $this->esi->getCorporation(123);
 
         $this->assertNull($result);
         $this->assertSame(500, $this->esi->getLastErrorCode());
         $this->assertStringStartsWith('[500] Error ', $this->esi->getLastErrorMessage());
-        $this->assertStringStartsWith('[500] Error ', $this->log->getHandlers()[0]->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testGetCorporation()
     {
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The Corp.",
             "ticker": "-HAT-",
             "alliance_id": "123"
@@ -94,19 +94,19 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
 
     public function testGetCharacter500()
     {
-        $this->client->method('send')->willReturn(new Response(500));
+        $this->client->setResponse(new Response(500));
 
         $result = $this->esi->getCharacter(123);
 
         $this->assertNull($result);
         $this->assertSame(500, $this->esi->getLastErrorCode());
         $this->assertStringStartsWith('[500] Error ', $this->esi->getLastErrorMessage());
-        $this->assertStringStartsWith('[500] Error ', $this->log->getHandlers()[0]->getRecords()[0]['message']);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testGetCharacter()
     {
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The Char."
         }'));
 

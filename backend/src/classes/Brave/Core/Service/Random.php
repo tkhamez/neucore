@@ -6,6 +6,8 @@ class Random
 {
     /**
      * Provides a (cryptographically insecure) fallback for random_bytes() if that throws an exception.
+     *
+     * @see random_bytes()
      */
     public static function bytes(int $length): string
     {
@@ -23,6 +25,8 @@ class Random
 
     /**
      * Provides a (cryptographically insecure) fallback for random_int() if that throws an exception.
+     *
+     * @see random_int()
      */
     public static function int(int $min, int $max): int
     {
@@ -37,6 +41,8 @@ class Random
 
     /**
      * Uses self::int() to generate a random string.
+     *
+     * @see Random::int()
      */
     public static function chars(
         int $length,
@@ -56,6 +62,7 @@ class Random
      *
      * @param int $length should be even, if not it's rounded up to the nearest even number
      * @return string
+     * @see Random::bytes()
      */
     public static function hex(int $length): string
     {

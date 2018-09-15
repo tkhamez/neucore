@@ -12,11 +12,11 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\ObjectManager;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Tests\Helper;
+use Tests\TestClient;
 use Tests\WriteErrorListener;
 
 class EsiDataTest extends \PHPUnit\Framework\TestCase
@@ -32,7 +32,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     private $em;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var TestClient
      */
     private $client;
 
@@ -69,7 +69,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->client = $this->createMock(ClientInterface::class);
+        $this->client = new TestClient();
         $esi = new EsiApi($log, (new EsiApiFactory())->setClient($this->client));
 
         $repositoryFactory = new RepositoryFactory($this->em);
@@ -101,7 +101,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10, []);
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "char name",
                 "corporation_id": 20
@@ -118,7 +118,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10, []);
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "char name",
                 "corporation_id": 20
@@ -140,7 +140,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10, []);
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "char name",
                 "corporation_id": 20
@@ -181,7 +181,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 123, []);
 
-        $this->client->method('send')->willReturn(new Response(404));
+        $this->client->setResponse(new Response(404));
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertNull($char);
@@ -194,7 +194,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "new corp",
             "corporation_id": 234
         }'));
@@ -217,7 +217,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "new corp",
             "corporation_id": 234
         }'));
@@ -245,7 +245,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The Corp.",
             "ticker": "-HAT-",
             "alliance_id": null
@@ -266,7 +266,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{
                 "name": "The Corp.",
                 "ticker": "-HAT-",
@@ -304,7 +304,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "C",
             "ticker": "c",
             "alliance_id": null
@@ -331,7 +331,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The A.",
             "ticker": "-A-"
         }'));
@@ -350,7 +350,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The A.",
             "ticker": "-A-"
         }'));
@@ -371,7 +371,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $this->testHelper->emptyDb();
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The A.",
             "ticker": "-A-"
         }'));

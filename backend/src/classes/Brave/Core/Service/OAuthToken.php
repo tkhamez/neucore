@@ -8,7 +8,7 @@ use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
 
 /**
- * Handles OAuth tokens for ESI.
+ * Handles OAuth tokens for ESI of a character.
  */
 class OAuthToken
 {

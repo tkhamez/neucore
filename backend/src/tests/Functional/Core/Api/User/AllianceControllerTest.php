@@ -9,13 +9,13 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\TestClient;
 use Tests\WriteErrorListener;
 
 class AllianceControllerTest extends WebTestCase
@@ -44,7 +44,7 @@ class AllianceControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var TestClient
      */
     private $client;
 
@@ -63,7 +63,7 @@ class AllianceControllerTest extends WebTestCase
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $this->client = $this->createMock(ClientInterface::class);
+        $this->client = new TestClient();
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
@@ -149,11 +149,15 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(400));
+        $this->client->setResponse(new Response(400));
 
-        $response = $this->runApp('POST', '/api/user/alliance/add/123456789123', null, null, [
-            EsiApi::class => $this->esi
-        ]);
+        $response = $this->runApp(
+            'POST',
+            '/api/user/alliance/add/123456789123',
+            null,
+            null,
+            [EsiApi::class => $this->esi]
+        );
 
         $this->assertEquals(400, $response->getStatusCode());
     }
@@ -163,11 +167,14 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(404));
+        $this->client->setResponse(new Response(404));
 
-        $response = $this->runApp('POST', '/api/user/alliance/add/123', null, null, [
-            EsiApi::class => $this->esi
-        ]);
+        $response = $this->runApp(
+            'POST',
+            '/api/user/alliance/add/123',
+            null,
+            null, [EsiApi::class => $this->esi]
+        );
 
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -186,11 +193,15 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(503));
+        $this->client->setResponse(new Response(503));
 
-        $response = $this->runApp('POST', '/api/user/alliance/add/123', null, null, [
-            EsiApi::class => $this->esi
-        ]);
+        $response = $this->runApp(
+            'POST',
+            '/api/user/alliance/add/123',
+            null,
+            null,
+            [EsiApi::class => $this->esi]
+        );
 
         $this->assertEquals(503, $response->getStatusCode());
     }
@@ -200,14 +211,17 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $this->client->method('send')->willReturn(new Response(200, [], '{
+        $this->client->setResponse(new Response(200, [], '{
             "name": "The Alliance.",
             "ticker": "-AT-"
         }'));
 
-        $response = $this->runApp('POST', '/api/user/alliance/add/123456', null, null, [
-            EsiApi::class => $this->esi
-        ]);
+        $response = $this->runApp(
+            'POST',
+            '/api/user/alliance/add/123456',
+            null,
+            null, [EsiApi::class => $this->esi]
+        );
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertSame(

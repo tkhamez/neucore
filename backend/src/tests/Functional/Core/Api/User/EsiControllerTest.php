@@ -6,6 +6,7 @@ use Brave\Core\Roles;
 use GuzzleHttp\ClientInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
+use Tests\TestClient;
 
 class EsiControllerTest extends WebTestCase
 {
@@ -36,7 +37,8 @@ class EsiControllerTest extends WebTestCase
         $this->assertEquals(400, $response1->getStatusCode());
         $this->assertEquals('Missing route and/or character parameter.', $this->parseJsonBody($response1));
 
-        $response2 = $this->runApp('GET', '/api/user/esi/request?character=123&route=/characters/{character_id}');
+        $response2 = $this->runApp('GET',
+            '/api/user/esi/request?character=123&route=/characters/{character_id}');
         $this->assertEquals(400, $response2->getStatusCode());
         $this->assertEquals('Character not found.', $this->parseJsonBody($response2));
     }
@@ -46,9 +48,8 @@ class EsiControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        // mock Guzzle client
-        $httpClient = $this->createMock(ClientInterface::class);
-        $httpClient->method('request')->willReturn(new \GuzzleHttp\Psr7\Response(
+        $httpClient = new TestClient();
+        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
             200,
             [
                 'X-Esi-Error-Limit-Remain' => [100],

@@ -5,7 +5,6 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Config;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
@@ -14,18 +13,19 @@ use Psr\Log\LoggerInterface;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
 use Tests\OAuthTestProvider;
+use Tests\TestClient;
 
 class AuthControllerTest extends WebTestCase
 {
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var TestClient
      */
     private $client;
 
     public function setUp()
     {
         $_SESSION = null;
-        $this->client = $this->createMock(ClientInterface::class);
+        $this->client = new TestClient();
     }
 
     public function testLoginUrl200()
@@ -106,12 +106,13 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
-        $this->client->method('send')->willReturn(new Response(500)); // for getAccessToken
+        $this->client->setResponse(new Response(500)); // for getAccessToken
 
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => $log
         ]);
@@ -129,7 +130,7 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
             new Response(500) // for getResourceOwner
         );
@@ -137,7 +138,8 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => $log
         ]);
@@ -155,12 +157,13 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
             new Response(200, [], 'invalid') // for getResourceOwner
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
@@ -178,7 +181,7 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $sess = new SessionData();
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
             new Response(200, [], '{
                 "CharacterID": 123,
@@ -197,7 +200,8 @@ class AuthControllerTest extends WebTestCase
 
         // missing scope
         $_SESSION = ['auth_state' => $state];
-        $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'do-not-have-this']]),
         ]);
@@ -208,7 +212,8 @@ class AuthControllerTest extends WebTestCase
 
         // additional scope
         $_SESSION = ['auth_state' => $state];
-        $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'have-this and-this']]),
         ]);
@@ -225,7 +230,7 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
             new Response(200, [], '{
                 "CharacterID": 123,
@@ -238,7 +243,8 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => $log,
             Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
@@ -263,7 +269,7 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken()
             new Response(200, [], '{
                 "CharacterID": 123,
@@ -273,7 +279,8 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
         ]);
@@ -294,7 +301,7 @@ class AuthControllerTest extends WebTestCase
         $state = '*1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
-        $this->client->method('send')->willReturn(
+        $this->client->setResponse(
             new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
             new Response(200, [], '{
                 "CharacterID": 3,
@@ -304,7 +311,8 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
             GenericProvider::class => new OAuthTestProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
         ]);

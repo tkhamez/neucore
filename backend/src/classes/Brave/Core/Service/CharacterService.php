@@ -83,7 +83,7 @@ class CharacterService
      *
      * @param Character $char Character with Player object attached.
      * @param string|null $characterOwnerHash Will be set to null if not provided.
-     * @param AccessToken|null $token Will not be updated if not provided.
+     * @param AccessToken|null $token Will not be updated in character if not provided.
      * @param string|null $scopes Will be set to null if not provided.
      * @return bool
      */

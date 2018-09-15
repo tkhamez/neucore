@@ -5,7 +5,7 @@ namespace Tests\Unit\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-class CorsResponse implements ResponseInterface
+class TestResponse implements ResponseInterface
 {
     private $headers;
 
@@ -48,7 +48,7 @@ class CorsResponse implements ResponseInterface
         $headers = $this->headers;
         $headers[$name][] = $value;
 
-        return new CorsResponse($headers);
+        return new TestResponse($headers);
     }
 
     public function withBody(StreamInterface $body)
