@@ -185,7 +185,7 @@ class UserAuth implements RoleProviderInterface
     {
         try {
             $userId = $this->session->get('character_id');
-        } catch(\RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             // session could not be started, e. g. for 404 errors.
             return;
         }
