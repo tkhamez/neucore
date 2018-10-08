@@ -142,6 +142,7 @@ Group API
 
 Player API
 - List all players with the role group-manger. `/user/player/group-managers`
+- Show all characters from a player. `/user/player/{id}/characters`
 
 ### group-manager
 
@@ -180,6 +181,7 @@ Group API
 
 Player API
 - List all players with the role app-manger. `/user/player/app-managers`
+- Show all characters from a player. `/user/player/{id}/characters`
 
 ### app-manager
 

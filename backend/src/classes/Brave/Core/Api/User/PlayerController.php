@@ -541,7 +541,7 @@ class PlayerController
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
-     *     description="Needs role: group-manager",
+     *     description="Needs role: app-admin, group-admin, group-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
