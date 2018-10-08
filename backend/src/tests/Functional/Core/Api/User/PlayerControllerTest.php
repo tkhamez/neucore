@@ -614,7 +614,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters403()
     {
         $this->setupDb();
-        $this->loginUser(12); // not a group-manager
+        $this->loginUser(10); // not a group-manager, group-admin or app-admin
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
         $this->assertEquals(403, $response->getStatusCode());
