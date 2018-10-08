@@ -1,8 +1,8 @@
 language: php
 
 php:
-  - '7.1'
-  - '7.2'
+  - 7.1
+  - 7.2
   - nightly
 
 addons:
@@ -27,6 +27,15 @@ matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
+  exclude:
+    - php: 7.2
+      env: NODE_VERSION="6.11.4"
+    - php: 7.2
+      env: NODE_VERSION="10.10.0"
+    - php: nightly
+      env: NODE_VERSION="6.11.4"
+    - php: nightly
+      env: NODE_VERSION="10.10.0"
 
 before_install:
   - phpenv config-add config/travis.ini
