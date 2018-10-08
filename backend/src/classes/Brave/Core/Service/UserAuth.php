@@ -183,7 +183,12 @@ class UserAuth implements RoleProviderInterface
      */
     private function loadUser()
     {
-        $userId = $this->session->get('character_id');
+        try {
+            $userId = $this->session->get('character_id');
+        } catch(\RuntimeException $e) {
+            // session could not be started, e. g. for 404 errors.
+            return;
+        }
         if ($userId !== null) {
             $this->user = $this->repositoryFactory->getCharacterRepository()->find($userId);
         }
