@@ -38,7 +38,6 @@ matrix:
       env: NODE_VERSION="10.10.0"
 
 before_install:
-  - phpenv config-add config/travis.ini
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
   - nvm install $NODE_VERSION
 

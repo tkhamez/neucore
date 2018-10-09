@@ -30,7 +30,7 @@ See [**doc/features.md**](doc/features.md) for more.
 are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
 
-### Vagrant
+### Vagrant (optional)
 
 Only tested with Vagrant 2 + libvirt.
 
@@ -53,7 +53,7 @@ The values for the EVE application must be adjusted.
     * set the document root to the `web` directory.
     * for Nginx config see https://www.slimframework.com/docs/v3/start/web-servers.html#nginx-configuration,
       but rewrite to app.php instead of index.php.
-* Java (for swagger-codegen)
+* Java (only for swagger-codegen)
 
 ### App setup
 

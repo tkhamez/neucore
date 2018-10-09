@@ -46,11 +46,19 @@ Vagrant.configure("2") do |config|
 
         # install apache
         apt-get install apache2 -y
-        cp /var/www/brvneucore/config/brvneucore.vagrant.conf /etc/apache2/sites-available/010-brvneucore.conf
-        a2enmod rewrite ssl proxy_fcgi setenvif
-        a2ensite default-ssl 010-brvneucore
-        a2dissite 000-default
+        a2enmod rewrite proxy_fcgi setenvif
         a2enconf php7.2-fpm
+        cat > /etc/apache2/sites-enabled/010-brvneucore.conf <<EOL
+<VirtualHost *:80>
+    ServerName brvneucore
+    DocumentRoot /var/www/brvneucore/web
+    <Directory /var/www/brvneucore/web/>
+        AllowOverride All
+    </Directory>
+</VirtualHost>
+EOL
+        a2ensite 010-brvneucore
+        a2dissite 000-default.conf
 
         # also install php-pgsql, php-sqlite3
         apt-get install -y adminer
@@ -89,8 +97,8 @@ Vagrant.configure("2") do |config|
         echo " "
         echo "--------------------------------------------------------------------------------"
         echo "-- URLs (change IP as needed):                                                --"
-        echo "-- Brave Core  https://192.168.121.111                                        --"
-        echo "-- Adminer: https://192.168.121.111/adminer/adminer/designs.php (core/brave)  --"
+        echo "-- Brave Core  http://192.168.121.111                                        --"
+        echo "-- Adminer: http://192.168.121.111/adminer/adminer/designs.php (core/brave)  --"
         echo "-- SSH user: vagrant/vagrant                                                  --"
         echo "-- mount: sshfs vagrant@192.168.121.111:/ /mnt/brvneucore                     --"
         echo "-- unmount: fusermount -u /mnt/brvneucore                                     --"
