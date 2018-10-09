@@ -16,8 +16,7 @@ Objectives
 - Provide an API for authorized third-party applications to query these groups.
 
 This project consists of two applications, the backend and the frontend.
-See the [**frontend2**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more. There is also 
-another frontend in the [**frontend**](frontend) directory, but it was never finished.
+See the [**frontend**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more.
 
 See [**doc/features.md**](doc/features.md) for more.
 
@@ -79,6 +78,7 @@ Then install the dependencies and build the backend and frontend by executing:
 - Add a database, e. g. JawsDB Maria.
 - Add the necessary Config Vars (see `backend/.env.dist` file)
 - Add build packs in this order:
+
 ```
 heroku buildpacks:add heroku/java
 heroku buildpacks:add heroku/nodejs

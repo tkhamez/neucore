@@ -17,17 +17,20 @@ The JavaScript Swagger client is generated based on the `web/swagger.json` file 
 ## Install
 
 Install dependencies and build:
+
 ```
 npm install
 npm run build
 ```
 
 For production use:
+
 ```
 npm run build:prod
 ```
 
 Rebuild on change:
+
 ```
 npm run watch
 ```

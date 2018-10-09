@@ -1,10 +1,6 @@
 # backend
 /swagger.json
 
-# frontend
-/frontend.html
-/frontend.js
-
 # frontend2
 /dist
 /fonts
