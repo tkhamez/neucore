@@ -47,7 +47,7 @@ A player logs in with EVE SSO. 3rd party applications authenticate with an HTTP 
 
 The API is documented with Swagger, it is available at `https://[domain]/swagger.json`.
 
-For more details see the [**frontend**](../frontend/README.md) and [**backend**](../backend/README.md)
+For more details see the [**frontend**](../frontend2/README.md) and [**backend**](../backend/README.md)
 readme.
 
 ### Data Structure (Backend)
