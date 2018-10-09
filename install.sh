@@ -10,8 +10,8 @@ else
     composer compile
 fi
 
-# build frontend2
-cd ../frontend2
+# build frontend
+cd ../frontend
 ./swagger.sh
 npm install
 if [ "$1" = "prod" ]; then

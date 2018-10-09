@@ -1,7 +1,7 @@
 # backend
 /swagger.json
 
-# frontend2
+# frontend
 /dist
 /fonts
 /index.html

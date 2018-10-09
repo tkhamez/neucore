@@ -16,7 +16,7 @@ Objectives
 - Provide an API for authorized third-party applications to query these groups.
 
 This project consists of two applications, the backend and the frontend.
-See the [**frontend**](frontend2/README.md) and [**backend**](backend/README.md) Readme for more.
+See the [**frontend**](frontend/README.md) and [**backend**](backend/README.md) Readme for more.
 
 See [**doc/features.md**](doc/features.md) for more.
 
