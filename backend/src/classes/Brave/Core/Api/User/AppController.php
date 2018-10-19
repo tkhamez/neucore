@@ -176,7 +176,7 @@ class AppController
      *     @SWG\Response(
      *         response="200",
      *         description="App was renamed.",
-     *         @SWG\Schema(ref="#/definitions/Group")
+     *         @SWG\Schema(ref="#/definitions/App")
      *     ),
      *     @SWG\Response(
      *         response="404",
