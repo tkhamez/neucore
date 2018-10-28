@@ -55,6 +55,26 @@ class CharacterService
     }
 
     /**
+     * Moves character to a new player.
+     *
+     * Does not persist them in the database.
+     */
+    public function moveCharacterToNewAccount(Character $char): Character
+    {
+        $oldPlayer = $char->getPlayer();
+        $oldPlayer->removeCharacter($char);
+
+        $player = new Player();
+        $player->setName($char->getName());
+
+        $char->setMain(true);
+        $char->setPlayer($player);
+        $player->addCharacter($char);
+
+        return $char;
+    }
+
+    /**
      * Update and save character and player.
      *
      * Updates character with the data provided and persists player
@@ -93,16 +113,21 @@ class CharacterService
     }
 
     /**
-     * Verifies refresh token.
+     * Checks access/refresh token and owner hash.
      *
-     * The refresh token is verified by requesting a new access token.
-     * This only updates the validToken property (true/false)
-     * and the character owner hash, not the access token.
+     * The refresh token is verified by requesting a new access token
+     * (If the access token is still valid the refresh token is not validated).
+     *
+     * If the character owner hash of the character changed the character is deleted!
+     *
+     * This only updates the validToken property (true/false), not the access token itself.
+     *
+     * All objects are saved.
      *
      * @param Character $char An instance that is attached to the Doctrine entity manager.
      * @return boolean
      */
-    public function checkTokenUpdateCharacter(Character $char): bool
+    public function checkAndUpdateCharacter(Character $char): bool
     {
         $resourceOwner = $this->token->verify($char);
 
@@ -112,9 +137,12 @@ class CharacterService
             $char->setValidToken(true);
             $data = $resourceOwner->toArray();
             if (isset($data['CharacterOwnerHash'])) {
-                $char->setCharacterOwnerHash($data['CharacterOwnerHash']);
+                if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
+                    $this->objectManager->remove($char);
+                    $char = null;
+                }
             } else {
-                // that's an error, OAuth changed resource owner data
+                // that's an error, CCP changed resource owner data
                 $this->log->error('Unexpected result from OAuth verify.', [
                     'data' => $data
                 ]);
@@ -123,6 +151,6 @@ class CharacterService
 
         $this->objectManager->flush();
 
-        return $char->getValidToken();
+        return $char ? $char->getValidToken() : false;
     }
 }

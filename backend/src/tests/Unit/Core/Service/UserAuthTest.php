@@ -116,6 +116,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     {
         (new SessionData())->setReadOnly(false);
         $char = (new Helper())->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $player = $char->getPlayer();
 
         $this->assertSame('123', $char->getCharacterOwnerHash());
         $this->assertSame('abc', $char->getAccessToken());
@@ -124,14 +125,14 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($char->getValidToken());
 
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(9013, 'Test User Changed Name', 'coh', 'scope1 s2', $token);
-        $user = $this->service->getUser();
+        $result = $this->service->authenticate(9013, 'Test User Changed Name', '123', 'scope1 s2', $token);
 
+        $user = $this->service->getUser();
         $this->assertTrue($result);
         $this->assertSame(9013, $_SESSION['character_id']);
         $this->assertSame(9013, $user->getId());
         $this->assertSame('Test User Changed Name', $user->getName());
-        $this->assertSame('coh', $user->getCharacterOwnerHash());
+        $this->assertSame('123', $user->getCharacterOwnerHash());
         $this->assertSame('token', $user->getAccessToken());
         $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame(1525456785, $user->getExpires());
@@ -139,6 +140,32 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($char->getValidToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
         $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
+        $this->assertSame($user->getPlayer()->getId(), $player->getId());
+    }
+
+    public function testAuthenticateNewOwner()
+    {
+        (new SessionData())->setReadOnly(false);
+        $char1 = (new Helper())->addCharacterMain('Test User1', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $player = $char1->getPlayer();
+        $char2 = (new Helper())->addCharacterToPlayer('Test User2', 9014, $player);
+
+        $this->assertSame(9014, $char2->getId());
+        $this->assertSame('456', $char2->getCharacterOwnerHash());
+        $this->assertSame($char2->getPlayer()->getId(), $player->getId());
+
+        // changed hash 789, was 456
+        $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $result = $this->service->authenticate(9014, 'Test User2', '789', 'scope1 s2', $token);
+
+        $user = $this->service->getUser();
+        $newPlayer = $user->getPlayer();
+
+        $this->assertTrue($result);
+        $this->assertSame(9014, $_SESSION['character_id']);
+        $this->assertSame(9014, $user->getId());
+        $this->assertSame('789', $user->getCharacterOwnerHash());
+        $this->assertNotSame($newPlayer->getId(), $player->getId());
     }
 
     public function testAddAlt()

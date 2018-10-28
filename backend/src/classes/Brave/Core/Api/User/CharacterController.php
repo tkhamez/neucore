@@ -203,13 +203,15 @@ class CharacterController
      */
     public function update(string $id, AutoGroupAssignment $groupAssign): Response
     {
+        // get player account
+        $player = $this->uas->getUser()->getPlayer();
+
         // find character
         $char = null;
-        $player = $this->uas->getUser()->getPlayer();
         if ($player->hasRole(Roles::USER_ADMIN)) {
             $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
-            foreach ($this->uas->getUser()->getPlayer()->getCharacters() as $c) {
+            foreach ($player->getCharacters() as $c) {
                 if ($c->getId() === (int) $id) {
                     $char = $c;
                     break;
@@ -227,11 +229,11 @@ class CharacterController
             return $this->res->withStatus(503);
         }
 
-        // check token
-        $this->coreCharService->checkTokenUpdateCharacter($updatedChar);
+        // check token and character owner hash - this may delete the character!
+        $this->coreCharService->checkAndUpdateCharacter($updatedChar);
 
         // assign auto groups
-        $groupAssign->assign($updatedChar->getPlayer()->getId());
+        $groupAssign->assign($player->getId());
 
         return $this->res->withJson($updatedChar);
     }

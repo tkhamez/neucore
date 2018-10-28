@@ -15,7 +15,9 @@
 Most of the functions are available in the frontend. Administrators can use the 
 Swagger interface for the missing functions at `https://[domain]/api.html`.
 
-## Player Accounts and Character Registration
+## Player Accounts
+
+### Character Registration
 
 Each EVE character belongs to a player account, an account can have several characters.
 
@@ -29,6 +31,13 @@ If a character to be added to an account already belongs to another account, it 
 removed from that account and added to the current account. This can happen, for example,
 if someone has accidentally created two accounts by logging in with an alt that has not
 yet been added to the main account.
+
+### Removing Characters
+
+When a character is transferred to another EVE account, it is removed from its current 
+player account and deleted.
+
+Characters can also be manually removed from a player's account.
 
 ## Console application
 

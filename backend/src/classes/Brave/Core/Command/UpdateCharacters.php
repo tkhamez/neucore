@@ -103,8 +103,8 @@ class UpdateCharacters extends Command
                 continue;
             }
 
-            // check refresh token, update character owner hash
-            if ($this->coreCharService->checkTokenUpdateCharacter($updatedChar)) {
+            // check token and character owner hash - this may delete the character!
+            if ($this->coreCharService->checkAndUpdateCharacter($updatedChar)) {
                 $output->writeln('Character ' . $charId.': update OK, token OK');
             } else {
                 $output->writeln('Character ' . $charId.': update OK, token NOK');

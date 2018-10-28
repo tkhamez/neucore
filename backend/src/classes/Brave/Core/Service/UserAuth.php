@@ -109,19 +109,19 @@ class UserAuth implements RoleProviderInterface
         string $scopes, AccessToken $token): bool
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($char === null) {
 
-            // first login, create user
-
+        if ($char === null || $char->getCharacterOwnerHash() !== $characterOwnerHash) {
+            // first login or changed owner, create account
             $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Roles::USER]);
             if (count($userRole) !== 1) {
                 $this->log->critical('UserAuth::authenticate(): Role "'.Roles::USER.'" not found.');
                 return false;
             }
-
-            $char = $this->characterService->createNewPlayerWithMain(
-                $characterId, $characterName);
-
+            if ($char === null) {
+                $char = $this->characterService->createNewPlayerWithMain($characterId, $characterName);
+            } else {
+                $char = $this->characterService->moveCharacterToNewAccount($char);
+            }
             $char->getPlayer()->addRole($userRole[0]);
         }
 
@@ -159,15 +159,14 @@ class UserAuth implements RoleProviderInterface
         $player = $this->user->getPlayer();
 
         // check if the character was already registered,
-        // if yes, move it to this player account, otherwise create it
+        // if so, move it to this player account, otherwise create it
+        // (there is no need to check for a changed character owner hash here)
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($alt !== null) {
-            if ($alt->getId() !== $this->user->getId()) { // but not if it's the currently logged in user.
-                $oldPlayer = $alt->getPlayer();
-                if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
-                    $oldPlayer->removeCharacter($alt);
-                    $alt->setPlayer(null);
-                }
+            $oldPlayer = $alt->getPlayer();
+            if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
+                $oldPlayer->removeCharacter($alt);
+                $alt->setPlayer(null); // the current player will be added below
             }
         } else {
             $alt = new Character();
@@ -196,6 +195,7 @@ class UserAuth implements RoleProviderInterface
             // session could not be started, e. g. for 404 errors.
             return;
         }
+
         if ($userId !== null) {
             $this->user = $this->repositoryFactory->getCharacterRepository()->find($userId);
         }

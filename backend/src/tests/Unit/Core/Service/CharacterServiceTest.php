@@ -66,6 +66,23 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $character->getPlayer()->getRoles());
     }
 
+    public function testMoveCharacterToNewPlayer()
+    {
+        $char = new Character();
+        $char->setId(100);
+        $char->setName('char name');
+        $player = new Player();
+        $player->setName($char->getName());
+        $player->addCharacter($char);
+        $char->setPlayer($player);
+
+        $character = $this->service->moveCharacterToNewAccount($char);
+
+        $this->assertSame($char, $character);
+        $this->assertNotSame($player, $character->getPlayer());
+        $this->assertSame('char name', $character->getPlayer()->getName());
+    }
+
     public function testUpdateAndStoreCharacterWithPlayer()
     {
         $player = (new Player())->setName('name');
@@ -96,21 +113,56 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('scope1 scope2', $character->getScopes());
     }
 
-    public function testCheckTokenUpdateCharacterInvalid()
+    public function testCheckAndUpdateCharacterInvalid()
     {
         // can't really test the difference between no token and revoked token
-        // here, but that is done in OAuthTokenTest
+        // here, but that is done in OAuthTokenTest class
 
         $this->client->setResponse(new Response());
 
-        $result = $this->service->checkTokenUpdateCharacter(new Character());
+        $result = $this->service->checkAndUpdateCharacter(new Character());
         $this->assertFalse($result);
     }
 
-    public function testCheckTokenUpdateCharacterValid()
+    public function testCheckAndUpdateCharacterValid()
     {
         $this->client->setResponse(
             // for refreshAccessToken()
+            new Response(200, [], '{
+                "access_token": "new-at"
+            }'),
+
+            // for getResourceOwner()
+            new Response(200, [], '{
+                "CharacterOwnerHash": "hash"
+            }')
+        );
+
+        $em = $this->helper->getEm();
+        $expires = time() - 1000;
+        $char = (new Character())
+            ->setId(31)->setName('n31')
+            ->setValidToken(false) // it's also the default
+            ->setCharacterOwnerHash('hash')
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+        $em->persist($char);
+        $em->flush();
+
+        $result = $this->service->checkAndUpdateCharacter($char);
+        $this->assertTrue($result);
+
+        $em->clear();
+        $character = $this->charRepo->find(31);
+        $this->assertTrue($character->getValidToken());
+        $this->assertSame('at', $character->getAccessToken()); // not updated
+        $this->assertSame('rt', $character->getRefreshToken()); // not updated
+        $this->assertSame($expires, $character->getExpires()); // not updated
+    }
+
+    public function testCheckTokenUpdateCharacterDeletesChar()
+    {
+        $this->client->setResponse(
+        // for refreshAccessToken()
             new Response(200, [], '{
                 "access_token": "new-at"
             }'),
@@ -123,22 +175,18 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $em = $this->helper->getEm();
         $expires = time() - 1000;
-        $char = (new Character())->setId(31)->setName('n31')
+        $char = (new Character())
+            ->setId(31)->setName('n31')
             ->setCharacterOwnerHash('old-hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
         $em->persist($char);
         $em->flush();
 
-        $result = $this->service->checkTokenUpdateCharacter($char);
-        $this->assertTrue($result);
+        $result = $this->service->checkAndUpdateCharacter($char);
+        $this->assertFalse($result);
 
         $em->clear();
-
         $character = $this->charRepo->find(31);
-
-        $this->assertSame('new-hash', $character->getCharacterOwnerHash()); // updated
-        $this->assertSame('at', $character->getAccessToken()); // not updated
-        $this->assertSame('rt', $character->getRefreshToken()); // not updated
-        $this->assertSame($expires, $character->getExpires()); // not updated
+        $this->assertNull($character);
     }
 }
