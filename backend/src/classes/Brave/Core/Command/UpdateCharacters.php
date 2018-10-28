@@ -104,10 +104,6 @@ class UpdateCharacters extends Command
             }
 
             // check refresh token, update character owner hash
-            if ((string) $updatedChar->getRefreshToken() === '') {
-                $output->writeln('Character ' . $charId.': update OK, token N/A');
-                continue;
-            }
             if ($this->coreCharService->checkTokenUpdateCharacter($updatedChar)) {
                 $output->writeln('Character ' . $charId.': update OK, token OK');
             } else {

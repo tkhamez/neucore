@@ -86,9 +86,13 @@ class AuthController
         $this->sso = $sso;
         $this->log = $log;
         $this->auth = $auth;
-        $this->scopes = isset($config->get('eve')['scopes']) ?
-            explode(' ', (string) $config->get('eve')['scopes']) :
-            [];
+
+        $scopes = $config->get('eve')['scopes'];
+        if (trim((string) $scopes) !== '') {
+            $this->scopes = explode(' ', (string) $config->get('eve')['scopes']);
+        } else {
+            $this->scopes = ['publicData'];
+        }
     }
 
     /**

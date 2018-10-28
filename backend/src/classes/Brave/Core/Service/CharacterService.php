@@ -35,30 +35,9 @@ class CharacterService
     }
 
     /**
-     * Creates and stores a new Character and Player.
-     *
-     * This is for characters who have not signed up with EVE SSO
-     * (not used at the moment).
-     *
-     * @param int $characterId
-     * @param string $characterName
-     * @return boolean
-     */
-    public function createCharacter(int $characterId, string $characterName)
-    {
-        return $this->updateAndStoreCharacterWithPlayer(
-            $this->createNewPlayerWithMain($characterId, $characterName)
-        );
-    }
-
-    /**
      * Creates Player and Character objects.
      *
      * Does not persist them in the database.
-     *
-     * @param int $characterId
-     * @param string $characterName
-     * @return Character
      */
     public function createNewPlayerWithMain(int $characterId, string $characterName): Character
     {
@@ -82,25 +61,30 @@ class CharacterService
      * and character in the database. Both Entities can be new.
      *
      * @param Character $char Character with Player object attached.
-     * @param string|null $characterOwnerHash Will be set to null if not provided.
-     * @param AccessToken|null $token Will not be updated in character if not provided.
-     * @param string|null $scopes Will be set to null if not provided.
+     * @param string $characterName
+     * @param string $characterOwnerHash
+     * @param string $scopes
+     * @param AccessToken $token A valid token
      * @return bool
      */
     public function updateAndStoreCharacterWithPlayer(
         Character $char,
-        string $characterOwnerHash = null,
-        AccessToken $token = null,
-        string $scopes = null
+        string $characterName,
+        string $characterOwnerHash,
+        string $scopes,
+        AccessToken $token
     ): bool {
+
+        $char->setName($characterName);
+        $char->setLastLogin(new \DateTime());
+        $char->setValidToken(true);
+
         $char->setCharacterOwnerHash($characterOwnerHash);
         $char->setScopes($scopes);
 
-        if ($token !== null) {
-            $char->setAccessToken($token->getToken());
-            $char->setExpires($token->getExpires());
-            $char->setRefreshToken($token->getRefreshToken());
-        }
+        $char->setAccessToken($token->getToken());
+        $char->setExpires($token->getExpires());
+        $char->setRefreshToken($token->getRefreshToken());
 
         $this->objectManager->persist($char->getPlayer()); // could be a new player
         $this->objectManager->persist($char); // could be a new character

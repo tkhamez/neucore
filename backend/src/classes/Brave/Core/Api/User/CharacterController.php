@@ -228,9 +228,7 @@ class CharacterController
         }
 
         // check token
-        if ((string) $updatedChar->getRefreshToken() !== '') {
-            $this->coreCharService->checkTokenUpdateCharacter($updatedChar);
-        }
+        $this->coreCharService->checkTokenUpdateCharacter($updatedChar);
 
         // assign auto groups
         $groupAssign->assign($updatedChar->getPlayer()->getId());

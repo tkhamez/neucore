@@ -97,6 +97,13 @@ class UserAuth implements RoleProviderInterface
      * User login.
      *
      * Creates character with player account if it is missing.
+     *
+     * @param int $characterId
+     * @param string $characterName
+     * @param string $characterOwnerHash
+     * @param AccessToken $token A valid token
+     * @param string $scopes
+     * @return bool
      */
     public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
         string $scopes, AccessToken $token): bool
@@ -118,12 +125,8 @@ class UserAuth implements RoleProviderInterface
             $char->getPlayer()->addRole($userRole[0]);
         }
 
-        $char->setName($characterName);
-        $char->setLastLogin(new \DateTime());
-        $char->setValidToken(true); // set valid even if there is no token
-
         $success = $this->characterService->updateAndStoreCharacterWithPlayer(
-            $char, $characterOwnerHash, $token, $scopes);
+            $char, $characterName, $characterOwnerHash, $scopes, $token);
 
         if (! $success) {
             return false;
@@ -135,6 +138,14 @@ class UserAuth implements RoleProviderInterface
         return true;
     }
 
+    /**
+     * @param int $characterId
+     * @param string $characterName
+     * @param string $characterOwnerHash
+     * @param string $scopes
+     * @param AccessToken $token A valid token
+     * @return bool
+     */
     public function addAlt(int $characterId, string $characterName, string $characterOwnerHash,
         string $scopes, AccessToken $token): bool
     {
@@ -151,31 +162,27 @@ class UserAuth implements RoleProviderInterface
         // if yes, move it to this player account, otherwise create it
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($alt !== null) {
-
-            // check if new alt is the currently logged in user
-            if ($alt->getId() === $this->user->getId()) {
-                return true;
-            }
-
-            // check if new alt is on another player account
-            $oldPlayer = $alt->getPlayer();
-            if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
-                $oldPlayer->removeCharacter($alt);
-                $alt->setPlayer(null);
+            if ($alt->getId() !== $this->user->getId()) { // but not if it's the currently logged in user.
+                $oldPlayer = $alt->getPlayer();
+                if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
+                    $oldPlayer->removeCharacter($alt);
+                    $alt->setPlayer(null);
+                }
             }
         } else {
             $alt = new Character();
             $alt->setId($characterId);
         }
 
-        $player->addCharacter($alt);
-        $alt->setPlayer($player);
-        $alt->setMain(false);
-        $alt->setName($characterName);
-        $alt->setValidToken(true); // set valid even if there is no token
+        // add alt to account if it is not the currently logged in user
+        if ($alt->getId() !== $this->user->getId()) {
+            $player->addCharacter($alt);
+            $alt->setPlayer($player);
+            $alt->setMain(false);
+        }
 
         return $this->characterService->updateAndStoreCharacterWithPlayer(
-            $alt, $characterOwnerHash, $token, $scopes);
+            $alt, $characterName, $characterOwnerHash, $scopes, $token);
     }
 
     /**

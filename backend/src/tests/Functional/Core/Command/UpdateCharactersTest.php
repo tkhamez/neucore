@@ -61,75 +61,6 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
     }
 
-    public function testExecuteWithoutTokenWithCorpAndAlliance()
-    {
-        // setup
-        $c1 = (new Character())->setId(1122)->setName('c11')
-            ->setCharacterOwnerHash('coh11')->setAccessToken('at11');
-        $c2 = (new Character())->setId(2233)->setName('c22')
-            ->setCharacterOwnerHash('coh22')->setAccessToken('at22');
-        $this->em->persist($c1);
-        $this->em->persist($c2);
-        $this->em->flush();
-
-        $this->client->setResponse(
-            new Response(200, [], '{
-                "name": "char xx",
-                "corporation_id": 234
-            }'),
-            new Response(200, [], '{
-                "name": "char yy",
-                "corporation_id": 234
-            }'),
-            new Response(200, [], '{
-                "name": "The Corp.",
-                "ticker": "-T-T-",
-                "alliance_id": 212
-            }'),
-            new Response(200, [], '{
-                "name": "The Alli.",
-                "ticker": "-A-"
-            }')
-        );
-
-        // run
-        $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
-        ]);
-
-        $this->em->clear();
-
-        $expectedOutput = [
-            'Character 1122: update OK, token N/A',
-            'Character 2233: update OK, token N/A',
-            'Corporation 234: update OK',
-            'Alliance 212: update OK',
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
-
-        # read result
-        $this->em->clear();
-
-        $repositoryFactory = new RepositoryFactory($this->em);
-
-        $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
-        $this->assertSame(1122, $actualChars[0]->getId());
-        $this->assertSame(2233, $actualChars[1]->getId());
-        $this->assertNotNull($actualChars[0]->getLastUpdate());
-        $this->assertNotNull($actualChars[1]->getLastUpdate());
-        $this->assertSame(234, $actualChars[0]->getCorporation()->getId());
-        $this->assertSame(234, $actualChars[1]->getCorporation()->getId());
-        $this->assertSame(212, $actualChars[0]->getCorporation()->getAlliance()->getId());
-        $this->assertSame(212, $actualChars[1]->getCorporation()->getAlliance()->getId());
-
-        $actualCorps = $repositoryFactory->getCorporationRepository()->findBy([]);
-        $this->assertSame(234, $actualCorps[0]->getId());
-
-        $actualAlliances = $repositoryFactory->getAllianceRepository()->findBy([]);
-        $this->assertSame(212, $actualAlliances[0]->getId());
-    }
-
     public function testExecuteInvalidToken()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
@@ -163,7 +94,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
     }
 
-    public function testExecuteValidTokenOk()
+    public function testExecuteValidTokenWithAlliance()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
@@ -174,13 +105,18 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->client->setResponse(
             new Response(200, [], '{
                 "name": "char1",
-                "corporation_id": 1
+                "corporation_id": 101
             }'),
             new Response(200, [], '{"access_token": "tok4"}'), // for getAccessToken()
             new Response(200, [], '{"CharacterOwnerHash": "coh3"}'), // for getResourceOwner()
             new Response(200, [], '{
                 "name": "corp1",
-                "ticker": "t"
+                "ticker": "t",
+                "alliance_id": 212
+            }'),
+            new Response(200, [], '{
+                "name": "The Alli.",
+                "ticker": "-A-"
             }')
         );
 
@@ -191,10 +127,31 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $expectedOutput = [
             'Character 3: update OK, token OK',
-            'Corporation 1: update OK',
+            'Corporation 101: update OK',
+            'Alliance 212: update OK',
             'All done.',
         ];
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+
+        # read result
+        $this->em->clear();
+
+        $repositoryFactory = new RepositoryFactory($this->em);
+
+        $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
+        $this->assertSame(1, count($actualChars));
+        $this->assertSame(3, $actualChars[0]->getId());
+        $this->assertNotNull($actualChars[0]->getLastUpdate());
+        $this->assertSame(101, $actualChars[0]->getCorporation()->getId());
+        $this->assertSame(212, $actualChars[0]->getCorporation()->getAlliance()->getId());
+
+        $actualCorps = $repositoryFactory->getCorporationRepository()->findBy([]);
+        $this->assertSame(1, count($actualCorps));
+        $this->assertSame(101, $actualCorps[0]->getId());
+
+        $actualAlliances = $repositoryFactory->getAllianceRepository()->findBy([]);
+        $this->assertSame(1, count($actualAlliances));
+        $this->assertSame(212, $actualAlliances[0]->getId());
     }
 
     public function testExecuteValidTokenUnexpectedData()

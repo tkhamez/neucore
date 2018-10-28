@@ -55,21 +55,6 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
     }
 
-    public function testCreateCharacter()
-    {
-        $result = $this->service->createCharacter(123, 'abc');
-        $this->assertTrue($result);
-
-        $this->helper->getEm()->clear();
-
-        $character = $this->charRepo->find(123);
-
-        $this->assertSame('abc', $character->getName());
-        $this->assertTrue($character->getMain());
-        $this->assertSame('abc', $character->getPlayer()->getName());
-        $this->assertSame([], $character->getPlayer()->getRoles());
-    }
-
     public function testCreateNewPlayerWithMain()
     {
         $character = $this->service->createNewPlayerWithMain(234, 'bcd');
@@ -81,44 +66,18 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $character->getPlayer()->getRoles());
     }
 
-    public function testUpdateAndStoreCharacterWithPlayerMinimalData()
+    public function testUpdateAndStoreCharacterWithPlayer()
     {
         $player = (new Player())->setName('name');
-        $expires = time();
-        $char = (new Character())->setId(11)->setName('name')->setPlayer($player)
-        ->setCharacterOwnerHash('c-o-h')
-            ->setAccessToken('acTo') ->setRefreshToken('reTo')->setExpires($expires)
-            ->setScopes('s1 s2');
-
-        $result = $this->service->updateAndStoreCharacterWithPlayer($char);
-        $this->assertTrue($result);
-
-        $this->helper->getEm()->clear();
-
-        $character = $this->charRepo->find(11);
-
-        $this->assertSame('name', $character->getName());
-        $this->assertFalse($character->getMain());
-        $this->assertSame('name', $character->getPlayer()->getName());
-
-        $this->assertNull($character->getCharacterOwnerHash());
-        $this->assertSame('acTo', $character->getAccessToken());
-        $this->assertSame('reTo', $character->getRefreshToken());
-        $this->assertSame($expires, $character->getExpires());
-        $this->assertNull($character->getScopes());
-    }
-
-    public function testUpdateAndStoreCharacterWithPlayerMaximumData()
-    {
-        $player = (new Player())->setName('name');
-        $char = (new Character())->setId(12)->setName('name')->setPlayer($player);
+        $char = (new Character())->setId(12)->setPlayer($player);
 
         $expires = time() + (60 * 20);
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
+            'name',
             'character-owner-hash',
-            new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires]),
-            'scope1 scope2'
+            'scope1 scope2',
+            new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires])
         );
         $this->assertTrue($result);
 

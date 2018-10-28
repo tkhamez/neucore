@@ -201,7 +201,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
         $chars = $main->getPlayer()->getCharacters();
         $this->assertSame(1, count($chars));
-        $this->assertSame('Main1', $chars[0]->getName()); // not changed
+        $this->assertSame('Main1 renamed', $chars[0]->getName()); // name changed
     }
 
     public function testAddAltNotAuthenticated()
