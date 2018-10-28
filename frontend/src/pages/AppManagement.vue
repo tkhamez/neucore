@@ -26,9 +26,16 @@
                         Details
                     </h3>
                     <div v-cloak v-if="appId" class="card-body">
+                        <p>ID: {{ appId }}</p>
+                        <p>Name: {{ appName }}</p>
+
+                        <hr>
+
                         <h5>Application Secret</h5>
                         <p class="card-text">
-                            Here you can generate a new application secret. See also
+                            Here you can generate a new application secret.
+                            This will <em>invalidate</em> the existing secret.<br>
+                            See also
                             <a href="https://github.com/bravecollective/brvneucore/tree/master/backend#app-auth"
                                 target="_blank">Backend - App Auth</a>.
                         </p>
@@ -36,9 +43,7 @@
                             <button type="button" class="btn btn-warning" v-on:click="generateSecret()">
                                 Generate new secret
                             </button>
-                            for: <span class="text-warning">{{ appName }}</span>
                         </p>
-
                         <div v-cloak v-if="secret" class="alert alert-secondary mt-4">
                             <code>{{ secret }}</code>
                         </div>
@@ -49,17 +54,21 @@
                         <hr>
 
                         <h5>Groups</h5>
-                        <table class="table table-striped">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>visibility</th>
-                            </tr>
-                            <tr v-for="group in appGroups">
-                                <td>{{ group.id }}</td>
-                                <td>{{ group.name }}</td>
-                                <td>{{ group.visibility }}</td>
-                            </tr>
+                        <table class="table table-hover table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>visibility</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="group in appGroups">
+                                    <td>{{ group.id }}</td>
+                                    <td>{{ group.name }}</td>
+                                    <td>{{ group.visibility }}</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
 
@@ -144,4 +153,7 @@ module.exports = {
 </script>
 
 <style scoped>
+    table {
+        font-size: 90%;
+    }
 </style>

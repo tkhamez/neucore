@@ -90,89 +90,109 @@
                     <hr>
 
                     <h4>Characters</h4>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Corporation</th>
-                            <th>Alliance</th>
-                            <th>main</th>
-                            <th>validToken</th>
-                            <th>lastUpdate</th>
-                        </tr>
-                        <tr v-for="character in playerEdit.characters">
-                            <td>{{ character.id }}</td>
-                            <td>{{ character.name }}</td>
-                            <td>
-                                <span v-if="character.corporation">
-                                    [{{ character.corporation.ticker }}]
-                                    {{ character.corporation.name }}
-                                </span>
-                            </td>
-                            <td>
-                                <span v-if="character.corporation && character.corporation.alliance">
-                                    [{{ character.corporation.alliance.ticker }}]
-                                    {{ character.corporation.alliance.name }}
-                                </span>
-                            </td>
-                            <td>{{ character.main }}</td>
-                            <td>{{ character.validToken }}</td>
-                            <td>{{ character.lastUpdate }}</td>
-                        </tr>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Corporation</th>
+                                <th>Alliance</th>
+                                <th>main</th>
+                                <th>validToken</th>
+                                <th>lastUpdate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="character in playerEdit.characters">
+                                <td>{{ character.id }}</td>
+                                <td>{{ character.name }}</td>
+                                <td>
+                                    <span v-if="character.corporation">
+                                        [{{ character.corporation.ticker }}]
+                                        {{ character.corporation.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span v-if="character.corporation && character.corporation.alliance">
+                                        [{{ character.corporation.alliance.ticker }}]
+                                        {{ character.corporation.alliance.name }}
+                                    </span>
+                                </td>
+                                <td>{{ character.main }}</td>
+                                <td>{{ character.validToken }}</td>
+                                <td>{{ character.lastUpdate }}</td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <h4>Group Membership</h4>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>visibility</th>
-                        </tr>
-                        <tr v-for="group in playerEdit.groups">
-                            <td>{{ group.id }}</td>
-                            <td>{{ group.name }}</td>
-                            <td>{{ group.visibility }}</td>
-                        </tr>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>visibility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="group in playerEdit.groups">
+                                <td>{{ group.id }}</td>
+                                <td>{{ group.name }}</td>
+                                <td>{{ group.visibility }}</td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <h4>Group Manager</h4>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>visibility</th>
-                        </tr>
-                        <tr v-for="managerGroup in playerEdit.managerGroups">
-                            <td>{{ managerGroup.id }}</td>
-                            <td>{{ managerGroup.name }}</td>
-                            <td>{{ managerGroup.visibility }}</td>
-                        </tr>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>visibility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="managerGroup in playerEdit.managerGroups">
+                                <td>{{ managerGroup.id }}</td>
+                                <td>{{ managerGroup.name }}</td>
+                                <td>{{ managerGroup.visibility }}</td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <h4>App Manager</h4>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                        </tr>
-                        <tr v-for="managerApp in playerEdit.managerApps">
-                            <td>{{ managerApp.id }}</td>
-                            <td>{{ managerApp.name }}</td>
-                        </tr>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="managerApp in playerEdit.managerApps">
+                                <td>{{ managerApp.id }}</td>
+                                <td>{{ managerApp.name }}</td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <h4>Group Applications</h4>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>visibility</th>
-                        </tr>
-                        <tr v-for="application in playerEdit.applications">
-                            <td>{{ application.id }}</td>
-                            <td>{{ application.name }}</td>
-                            <td>{{ application.visibility }}</td>
-                        </tr>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>visibility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="application in playerEdit.applications">
+                                <td>{{ application.id }}</td>
+                                <td>{{ application.name }}</td>
+                                <td>{{ application.visibility }}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -309,4 +329,7 @@ module.exports = {
 </script>
 
 <style scoped>
+    table {
+        font-size: 90%;
+    }
 </style>
