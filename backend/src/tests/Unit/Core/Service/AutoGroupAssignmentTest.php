@@ -90,7 +90,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
         // Player belongs to corps with groups 1, 2, 3 and 7
         // Group 4 belongs to another corp
-        // Group 5 does not belong to any group
+        // Group 5 does not belong to any corp or alliance and is assigned to the player directly
         // Group 6 belongs to the player's alliance
         // Group 7 belongs to the player's alliance and corp 2
 
