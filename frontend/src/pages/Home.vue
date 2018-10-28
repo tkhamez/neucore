@@ -22,6 +22,34 @@
             </div>
         </div>
 
+        <div v-cloak class="modal fade" id="deleteCharModal">
+            <div class="modal-dialog">
+                <div v-cloak v-if="charToDelete" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Character</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Are you sure you want to delete this character?
+                            You will lose the associated services.
+                        </p>
+                        <p class="text-warning">{{ charToDelete.name }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
+                            DELETE character
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="jumbotron mt-3">
             <span v-cloak id="preview" v-if="preview">PREVIEW</span>
             <a href="https://www.bravecollective.com/" target="_blank">
@@ -85,12 +113,11 @@
                             <div class="card-footer">
                                 <span v-if="char.main" class="fas fa-star text-warning mr-2" title="Main"
                                     aria-hidden="true"></span>
-
-                                <button v-if="! char.validToken" type="button" class="btn btn-danger btn-sm"
+                                <button v-if="! char.validToken"
+                                        type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-
                                 <button v-if="! char.main && char.validToken"
                                         type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="makeMain(char.id)">
@@ -101,6 +128,12 @@
                                         v-on:click="update(char.id)">
                                     <i class="fas fa-sync small"></i>
                                     Update
+                                </button>
+                                <button v-if="authChar.id !== char.id"
+                                        type="button" class="btn btn-danger btn-sm mt-1"
+                                        v-on:click="askDeleteChar(char.id, char.name)">
+                                    <i class="far fa-trash-alt small"></i>
+                                    Delete
                                 </button>
                             </div>
                         </div>
@@ -165,6 +198,7 @@ module.exports = {
             preview: false,
             loginUrl: null,
             loginAltUrl: null,
+            charToDelete: null,
         }
     },
 
@@ -198,7 +232,7 @@ module.exports = {
             if (! this.player) {
                 return;
             }
-            var vm = this;
+            const vm = this;
             this.player.characters.forEach(function(character) {
                 if (character.lastUpdate === null) {
                     vm.update(character.id);
@@ -209,11 +243,11 @@ module.exports = {
 
     methods: {
         getLoginUrl: function() {
-            var vm = this;
-            var api = new this.swagger.AuthApi();
+            const vm = this;
+            const api = new this.swagger.AuthApi();
 
-            var method;
-            var redirect;
+            let method;
+            let redirect;
             if (this.authChar) {
                 method = 'loginAltUrl';
                 redirect = '/#login-alt';
@@ -240,7 +274,7 @@ module.exports = {
         },
 
         makeMain: function(characterId) {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.PlayerApi().setMain(characterId, function(error) {
                 vm.loading(false);
@@ -252,7 +286,7 @@ module.exports = {
         },
 
         update: function(characterId) {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.CharacterApi().update(characterId, function(error) {
                 vm.loading(false);
@@ -265,7 +299,28 @@ module.exports = {
                 vm.message('Update done.', 'success');
                 vm.$root.$emit('playerChange');
             });
-        }
+        },
+
+        askDeleteChar(characterId, characterName) {
+            this.charToDelete = {
+                id: characterId,
+                name: characterName,
+            };
+            window.jQuery('#deleteCharModal').modal('show');
+        },
+
+        deleteChar() {
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.PlayerApi().deleteCharacter(this.charToDelete.id, function(error) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.update(vm.authChar.id);
+            });
+            this.charToDelete = null;
+        },
     }
 }
 </script>

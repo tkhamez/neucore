@@ -36,7 +36,7 @@ class PlayerController
     /**
      * @var UserAuth
      */
-    private $uas;
+    private $userAuthService;
 
     /**
      * @var ObjectManager
@@ -62,7 +62,7 @@ class PlayerController
         $this->res = $response;
         $this->log = $log;
         $this->repositoryFactory = $repositoryFactory;
-        $this->uas = $uas;
+        $this->userAuthService = $uas;
         $this->objectManager = $objectManager;
     }
 
@@ -87,7 +87,7 @@ class PlayerController
      */
     public function show(): Response
     {
-        return $this->res->withJson($this->uas->getUser()->getPlayer());
+        return $this->res->withJson($this->userAuthService->getUser()->getPlayer());
     }
 
     /**
@@ -225,7 +225,7 @@ class PlayerController
     public function setMain(string $cid): Response
     {
         $main = null;
-        $player = $this->uas->getUser()->getPlayer();
+        $player = $this->userAuthService->getUser()->getPlayer();
         foreach ($player->getCharacters() as $char) {
             if ($char->getId() === (int) $cid) {
                 $char->setMain(true);
@@ -581,6 +581,68 @@ class PlayerController
         ]);
     }
 
+    /**
+     * @SWG\Delete(
+     *     path="/user/player/delete-character/{id}",
+     *     operationId="deleteCharacter",
+     *     summary="Delete a character.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the character.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Character was deleted."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="409",
+     *         description="Trying to delete logged in character."
+     *     )
+     * )
+     */
+    public function deleteCharacter(string $id): Response
+    {
+        $user = $this->userAuthService->getUser();
+
+        if ((int) $id === $user->getId()) {
+            return $this->res->withStatus(409);
+        }
+
+        $player = $user->getPlayer();
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
+
+        if ($player === null || $char === null) {
+            return $this->res->withStatus(404);
+        }
+
+        if (! $player->hasCharacter($char->getId())) {
+            return $this->res->withStatus(403);
+        }
+
+        $player->removeCharacter($char);
+        $this->objectManager->remove($char);
+
+        if (! $this->objectManager->flush()) {
+            return $this->res->withStatus(500);
+        }
+
+        return $this->res->withStatus(204);
+    }
+
     private function getPlayerByRole(string $roleName): array
     {
         $ret = [];
@@ -614,7 +676,7 @@ class PlayerController
             return $this->res->withStatus(404);
         }
 
-        $player = $this->uas->getUser()->getPlayer();
+        $player = $this->userAuthService->getUser()->getPlayer();
 
         if ($action === 'add' && $entity === 'Application') {
             $hasApplied = false;

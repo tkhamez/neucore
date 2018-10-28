@@ -289,6 +289,16 @@ class Player implements \JsonSerializable
         return $this->characters->toArray();
     }
 
+    public function hasCharacter(int $charId): bool
+    {
+        foreach ($this->getCharacters() as $c) {
+            if ($c->getId() === $charId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Add application.
      *

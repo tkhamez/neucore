@@ -126,7 +126,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     public function testVerify()
     {
         // can't really test "refreshAccessToken()" method here,
-        // but that is done above in testGetToken*()
+        // but that is done above in testGetToken*() tests
 
         $this->client->setResponse(
             // for refreshAccessToken()
@@ -160,7 +160,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
             'CharacterOwnerHash' => 'coh',
         ], $owner->toArray());
 
-        // check tha the new token is *not* updated on the character
+        // check that the new token is *not* updated on the character
         $this->assertSame('at', $c->getAccessToken());
     }
 

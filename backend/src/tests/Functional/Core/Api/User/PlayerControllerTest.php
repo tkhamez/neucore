@@ -49,6 +49,11 @@ class PlayerControllerTest extends WebTestCase
     private $pr;
 
     /**
+     * @var CharacterRepository
+     */
+    private $cr;
+
+    /**
      * @var TestLogger
      */
     private $log;
@@ -59,7 +64,10 @@ class PlayerControllerTest extends WebTestCase
 
         $this->h = new Helper();
         $this->em = $this->h->getEm();
-        $this->pr = (new RepositoryFactory($this->em))->getPlayerRepository();
+
+        $rf = new RepositoryFactory($this->em);
+        $this->pr = $rf->getPlayerRepository();
+        $this->cr = $rf->getCharacterRepository();
 
         $this->log = new TestLogger('test');
     }
@@ -663,6 +671,50 @@ class PlayerControllerTest extends WebTestCase
                 ],
             ],
         ], $this->parseJsonBody($response));
+    }
+
+    public function testDeleteCharacter404()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/50');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testDeleteCharacter403()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        // char 10 is on a different player account
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/10');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testDeleteCharacter409()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        // cannot delete logged in char
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/12');
+        $this->assertEquals(409, $response->getStatusCode());
+    }
+
+    public function testDeleteCharacter204()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $deleted = $this->cr->find(13);
+        $this->assertNull($deleted);
     }
 
     private function setupDb()

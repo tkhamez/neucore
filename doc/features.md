@@ -97,6 +97,7 @@ Player API
 - Cancel a group application. `/user/player/remove-application/{gid}`
 - Leave a group. `/user/player/leave-group/{gid}`
 - Change the main character from the player account. `/user/player/set-main/{cid}`
+- Delete a character. `/user/player/delete-character/{id}`
 
 ### user-admin
 

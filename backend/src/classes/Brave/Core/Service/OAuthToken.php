@@ -112,10 +112,12 @@ class OAuthToken
     }
 
     /**
+     * Returns a new token only if the old was is expired.
+     *
      * @param AccessToken $existingToken
      * @return NULL|\League\OAuth2\Client\Token\AccessToken
      */
-    private function refreshAccessToken(AccessToken $existingToken)
+    private function refreshAccessToken(AccessToken $existingToken) : ?AccessToken
     {
         $newAccessToken = null;
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {
