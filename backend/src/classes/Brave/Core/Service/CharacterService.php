@@ -94,7 +94,6 @@ class CharacterService
         string $scopes,
         AccessToken $token
     ): bool {
-
         $char->setName($characterName);
         $char->setLastLogin(new \DateTime());
         $char->setValidToken(true);
