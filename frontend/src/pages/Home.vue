@@ -34,7 +34,7 @@
                     <div class="modal-body">
                         <p>
                             Are you sure you want to delete this character?
-                            You will lose the associated services.
+                            You will lose the associated groups.
                         </p>
                         <p class="text-warning">{{ charToDelete.name }}</p>
                     </div>
