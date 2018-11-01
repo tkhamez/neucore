@@ -5,14 +5,12 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Service\CharacterService;
-use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
 use Tests\TestLogger;
-use Tests\OAuthTestProvider;
 
 class UserAuthTest extends \PHPUnit\Framework\TestCase
 {
@@ -38,8 +36,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $em = $h->getEm();
 
         $objManager = new ObjectManager($em, $this->log);
-        $token = new OAuthToken(new OAuthTestProvider(), $objManager, $this->log);
-        $characterService = new CharacterService($this->log, $objManager, $token);
+        $characterService = new CharacterService($this->log, $objManager);
         $this->service = new UserAuth(new SessionData(), $characterService, new RepositoryFactory($em), $this->log);
     }
 

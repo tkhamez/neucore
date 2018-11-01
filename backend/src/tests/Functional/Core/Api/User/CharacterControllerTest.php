@@ -165,7 +165,7 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(503, $response->getStatusCode());
     }
 
-    public function testUpdate200()
+    public function testUpdate204()
     {
         $this->setupDb();
         $this->loginUser(96061222);
@@ -176,15 +176,50 @@ class CharacterControllerTest extends WebTestCase
                 "corporation_id": '.$this->corpId.'
             }'),
             new Response(200, [], '{
-                "name": "'.$this->corpName.'",
-                "ticker": "'.$this->corpTicker.'",
+                "name": "The Corp updated.",
+                "ticker": "TICK",
                 "alliance_id": null
-            }')
+            }'),
+            // getAccessToken() not called because token is not expired
+            new Response(200, [], '{"CharacterOwnerHash": "coh2"}') // for getResourceOwner()
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider(),
+            GenericProvider::class => new OAuthTestProvider($this->client),
+            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
+        ]);
+
+        $this->assertEquals(204, $response->getStatusCode());
+
+        // check that char was deleted
+        $this->helper->getEm()->clear();
+        $char = (new RepositoryFactory($this->helper->getEm()))->getCharacterRepository()->find(96061222);
+        $this->assertNull($char);
+    }
+
+    public function testUpdate200LoggedInUser()
+    {
+        $this->setupDb();
+        $this->loginUser(96061222);
+
+        $this->client->setResponse(
+            new Response(200, [], '{
+                "name": "Char 96061222",
+                "corporation_id": '.$this->corpId.'
+            }'),
+            new Response(200, [], '{
+                "name": "The Corp updated.",
+                "ticker": "TICK",
+                "alliance_id": null
+            }'),
+            // getAccessToken() not called because token is not expired
+            new Response(200, [], '{"CharacterOwnerHash": "coh1"}') // for getResourceOwner()
+        );
+
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            GenericProvider::class => new OAuthTestProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -194,11 +229,11 @@ class CharacterControllerTest extends WebTestCase
             'id' => 96061222,
             'name' => 'Char 96061222',
             'main' => true,
-            'validToken' => false,
+            'validToken' => true,
             'corporation' => [
                 'id' => $this->corpId,
-                'name' => $this->corpName,
-                'ticker' => $this->corpTicker,
+                'name' => 'The Corp updated.',
+                'ticker' => 'TICK',
                 'alliance' => null
             ]
         ];
@@ -214,8 +249,10 @@ class CharacterControllerTest extends WebTestCase
         $player = (new RepositoryFactory($this->helper->getEm()))->getPlayerRepository()->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
-        // checkTokenUpdateCharacter() changed it from true to false
-        $this->assertFalse($player->getCharacters()[0]->getValidToken());
+        // check char, corp
+        $this->assertSame(96061222, $player->getCharacters()[1]->getId());
+        $this->assertSame('The Corp updated.', $player->getCharacters()[1]->getCorporation()->getName());
+        $this->assertTrue($player->getCharacters()[1]->getValidToken());
     }
 
     public function testUpdate200Admin()
@@ -249,7 +286,7 @@ class CharacterControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Roles::USER]);
-        $char->setValidToken(true);
+        $char->setValidToken(true)->setCharacterOwnerHash('coh1');
         $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();
         $this->helper->addCharacterMain('Admin', 9, [Roles::USER, Roles::USER_ADMIN]);

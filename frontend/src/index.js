@@ -21,13 +21,19 @@ window.Vue.mixin({
             }
         },
 
+        /**
+         * @param text
+         * @param {string} type One of: error, info or success
+         */
         message: function(text, type) {
             switch (type) {
                 case 'error':
-                    this.$root.showError(text);
+                case 'info':
+                    type = type === 'error' ? 'danger' : type;
+                    this.$root.showMessage(text, type);
                     break;
-                case 'success':
-                    this.$root.showSuccess(text);
+                default: // success
+                    this.$root.showMessage(text, type, 1500);
                     break;
             }
         },
@@ -119,9 +125,9 @@ const app = new window.Vue({
          */
         initialized: false,
 
-        successMessage: '',
+        message: '',
 
-        errorMessage: '',
+        messageType: '',
 
         loadingCount: 0,
     },
@@ -162,17 +168,14 @@ const app = new window.Vue({
     },
 
     methods: {
-        showSuccess: function(message) {
-            this.errorMessage = '';
-            this.successMessage = message;
-            window.setTimeout(function() {
-                app.successMessage = '';
-            }, 1500);
-        },
-
-        showError: function(message) {
-            this.successMessage = '';
-            this.errorMessage = message;
+        showMessage: function(message, type, timeout) {
+            this.message = message;
+            this.messageType = 'alert-' + type;
+            if (timeout) {
+                window.setTimeout(function() {
+                    app.message = '';
+                }, timeout);
+            }
         },
 
         updateRoute() {
@@ -204,7 +207,7 @@ const app = new window.Vue({
                 if (data.success) {
                     console.log(data.message);
                 } else {
-                    app.errorMessage = data.message;
+                    app.message = data.message;
                 }
             });
         },

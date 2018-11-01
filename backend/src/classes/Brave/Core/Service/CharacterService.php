@@ -10,6 +10,21 @@ use Psr\Log\LoggerInterface;
 class CharacterService
 {
     /**
+     * Result for checkAndUpdateCharacter() if token is valid.
+     */
+    const CHECK_TOKEN_OK = 1;
+
+    /**
+     * Result for checkAndUpdateCharacter() if token is invalid.
+     */
+    const CHECK_TOKEN_NOK = 2;
+
+    /**
+     * Result for checkAndUpdateCharacter() if owner hash changed and character was deleted.
+     */
+    const CHECK_CHAR_DELETED = 3;
+
+    /**
      * @var LoggerInterface
      */
     private $log;
@@ -19,19 +34,12 @@ class CharacterService
      */
     private $objectManager;
 
-    /**
-     * @var OAuthToken
-     */
-    private $token;
-
     public function __construct(
         LoggerInterface $log,
-        ObjectManager $objectManager,
-        OAuthToken $token
+        ObjectManager $objectManager
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
-        $this->token = $token;
     }
 
     /**
@@ -124,20 +132,24 @@ class CharacterService
      * All objects are saved.
      *
      * @param Character $char An instance that is attached to the Doctrine entity manager.
-     * @return boolean
+     * @param OAuthToken $tokenService
+     * @return int self::TOKEN_NOK, self::TOKEN_OK or self::CHARACTER_DELETED
      */
-    public function checkAndUpdateCharacter(Character $char): bool
+    public function checkAndUpdateCharacter(Character $char, OAuthToken $tokenService): int
     {
-        $resourceOwner = $this->token->verify($char);
+        $resourceOwner = $tokenService->verify($char);
 
         if ($resourceOwner === null) {
             $char->setValidToken(false);
+            $result = self::CHECK_TOKEN_NOK;
         } else {
             $char->setValidToken(true);
+            $result = self::CHECK_TOKEN_OK;
             $data = $resourceOwner->toArray();
             if (isset($data['CharacterOwnerHash'])) {
                 if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
                     $this->objectManager->remove($char);
+                    $result = self::CHECK_CHAR_DELETED;
                     $char = null;
                 }
             } else {
@@ -150,6 +162,6 @@ class CharacterService
 
         $this->objectManager->flush();
 
-        return $char ? $char->getValidToken() : false;
+        return $result;
     }
 }

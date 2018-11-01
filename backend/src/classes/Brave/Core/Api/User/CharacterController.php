@@ -7,6 +7,7 @@ use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiData;
+use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Response;
 
@@ -31,12 +32,17 @@ class CharacterController
     /**
      * @var EsiData
      */
-    private $esiCharService;
+    private $esiData;
 
     /**
      * @var CharacterService
      */
-    private $coreCharService;
+    private $charService;
+
+    /**
+     * @var OAuthToken
+     */
+    private $tokenService;
 
     /**
      * @var repositoryFactory
@@ -46,14 +52,16 @@ class CharacterController
     public function __construct(
         Response $response,
         UserAuth $uas,
-        EsiData $esiCs,
-        CharacterService $coreCs,
+        EsiData $esiData,
+        CharacterService $charService,
+        OAuthToken $tokenService,
         RepositoryFactory $repositoryFactory
     ) {
         $this->res = $response;
         $this->uas = $uas;
-        $this->esiCharService = $esiCs;
-        $this->coreCharService = $coreCs;
+        $this->esiData = $esiData;
+        $this->charService = $charService;
+        $this->tokenService = $tokenService;
         $this->repositoryFactory = $repositoryFactory;
     }
 
@@ -188,6 +196,11 @@ class CharacterController
      *         @SWG\Schema(ref="#/definitions/Character")
      *     ),
      *     @SWG\Response(
+     *         response="204",
+     *         description="If the character was deleted because the owner hash changed.",
+     *         @SWG\Schema(ref="#/definitions/Character")
+     *     ),
+     *     @SWG\Response(
      *         response="404",
      *         description="Character not found on this account."
      *     ),
@@ -224,17 +237,24 @@ class CharacterController
         }
 
         // update from ESI
-        $updatedChar = $this->esiCharService->fetchCharacterWithCorporationAndAlliance($char->getId());
+        $updatedChar = $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId());
         if ($updatedChar === null) {
             return $this->res->withStatus(503);
         }
 
         // check token and character owner hash - this may delete the character!
-        $this->coreCharService->checkAndUpdateCharacter($updatedChar);
+        $result = $this->charService->checkAndUpdateCharacter($updatedChar, $this->tokenService);
+        if ($result === CharacterService::CHECK_CHAR_DELETED) {
+            $updatedChar = null;
+        }
 
         // assign auto groups
         $groupAssign->assign($player->getId());
 
-        return $this->res->withJson($updatedChar);
+        if ($updatedChar !== null) {
+            return $this->res->withJson($updatedChar);
+        } else {
+            return $this->res->withStatus(204);
+        }
     }
 }

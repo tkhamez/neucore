@@ -5,6 +5,7 @@ namespace Brave\Core\Command;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiData;
+use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,12 +32,17 @@ class UpdateCharacters extends Command
     /**
      * @var EsiData
      */
-    private $esiCharService;
+    private $esiData;
 
     /**
      * @var CharacterService
      */
-    private $coreCharService;
+    private $charService;
+
+    /**
+     * @var OAuthToken
+     */
+    private $tokenService;
 
     /**
      * @var ObjectManager
@@ -50,8 +56,9 @@ class UpdateCharacters extends Command
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
-        EsiData $esiCharService,
-        CharacterService $coreCharService,
+        EsiData $esiData,
+        CharacterService $charService,
+        OAuthToken $tokenService,
         ObjectManager $objectManager
     ) {
         parent::__construct();
@@ -59,8 +66,9 @@ class UpdateCharacters extends Command
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
-        $this->esiCharService = $esiCharService;
-        $this->coreCharService = $coreCharService;
+        $this->esiData = $esiData;
+        $this->charService = $charService;
+        $this->tokenService = $tokenService;
         $this->objectManager = $objectManager;
     }
 
@@ -68,7 +76,9 @@ class UpdateCharacters extends Command
     {
         $this->setName('update-chars')
             ->setDescription(
-                'Updates all characters, corporations and alliances from ESI and checks refresh token.')
+                'Updates all characters, corporations and alliances from ESI and checks refresh token. ' .
+                'If the character owner hash has changed, that character will be deleted.'
+            )
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each character update', 200);
     }
@@ -97,17 +107,22 @@ class UpdateCharacters extends Command
             usleep($this->sleep * 1000);
 
             // update name, corp and alliance from ESI
-            $updatedChar = $this->esiCharService->fetchCharacter($charId);
+            $updatedChar = $this->esiData->fetchCharacter($charId);
             if ($updatedChar === null) {
                 $output->writeln('Character ' . $charId.': error updating.');
                 continue;
             }
 
             // check token and character owner hash - this may delete the character!
-            if ($this->coreCharService->checkAndUpdateCharacter($updatedChar)) {
+            $result = $this->charService->checkAndUpdateCharacter($updatedChar, $this->tokenService);
+            if ($result === CharacterService::CHECK_TOKEN_OK) {
                 $output->writeln('Character ' . $charId.': update OK, token OK');
-            } else {
+            } elseif ($result === CharacterService::CHECK_TOKEN_NOK) {
                 $output->writeln('Character ' . $charId.': update OK, token NOK');
+            } elseif ($result === CharacterService::CHECK_CHAR_DELETED) {
+                $output->writeln('Character ' . $charId.': update OK, character deleted');
+            } else {
+                $output->writeln('Character ' . $charId.': unknown result');
             }
         }
     }
@@ -124,7 +139,7 @@ class UpdateCharacters extends Command
             $this->objectManager->clear();
             usleep($this->sleep * 1000);
 
-            $updatedCorp = $this->esiCharService->fetchCorporation($corpId);
+            $updatedCorp = $this->esiData->fetchCorporation($corpId);
             if ($updatedCorp === null) {
                 $output->writeln('Corporation ' . $corpId.': update NOK');
                 continue;
@@ -146,7 +161,7 @@ class UpdateCharacters extends Command
             $this->objectManager->clear();
             usleep($this->sleep * 1000);
 
-            $updatedAlli = $this->esiCharService->fetchAlliance($alliId);
+            $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
                 $output->writeln('Alliance ' . $alliId.': update NOK');
                 continue;

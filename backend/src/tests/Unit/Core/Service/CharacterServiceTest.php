@@ -30,6 +30,11 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     private $client;
 
     /**
+     * @var OAuthToken
+     */
+    private $token;
+
+    /**
      * @var CharacterService
      */
     private $service;
@@ -49,9 +54,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $log->pushHandler(new TestHandler());
 
         $this->client = new TestClient();
-        $token = new OAuthToken(new OAuthTestProvider($this->client), new ObjectManager($em, $log), $log);
-
-        $this->service = new CharacterService($log, new ObjectManager($em, $log), $token);
+        $this->token = new OAuthToken(new OAuthTestProvider($this->client), new ObjectManager($em, $log), $log);
+        $this->service = new CharacterService($log, new ObjectManager($em, $log));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
     }
 
@@ -120,8 +124,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->client->setResponse(new Response());
 
-        $result = $this->service->checkAndUpdateCharacter(new Character());
-        $this->assertFalse($result);
+        $result = $this->service->checkAndUpdateCharacter(new Character(), $this->token);
+        $this->assertSame(CharacterService::CHECK_TOKEN_NOK, $result);
     }
 
     public function testCheckAndUpdateCharacterValid()
@@ -148,8 +152,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->persist($char);
         $em->flush();
 
-        $result = $this->service->checkAndUpdateCharacter($char);
-        $this->assertTrue($result);
+        $result = $this->service->checkAndUpdateCharacter($char, $this->token);
+        $this->assertSame(CharacterService::CHECK_TOKEN_OK, $result);
 
         $em->clear();
         $character = $this->charRepo->find(31);
@@ -182,8 +186,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->persist($char);
         $em->flush();
 
-        $result = $this->service->checkAndUpdateCharacter($char);
-        $this->assertFalse($result);
+        $result = $this->service->checkAndUpdateCharacter($char, $this->token);
+        $this->assertSame(CharacterService::CHECK_CHAR_DELETED, $result);
 
         $em->clear();
         $character = $this->charRepo->find(31);

@@ -10,6 +10,7 @@ use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiData;
+use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
@@ -453,6 +454,7 @@ class Application
             $this->container->get(RepositoryFactory::class),
             $this->container->get(EsiData::class),
             $this->container->get(CharacterService::class),
+            $this->container->get(OAuthToken::class),
             $this->container->get(ObjectManager::class)
         ));
 

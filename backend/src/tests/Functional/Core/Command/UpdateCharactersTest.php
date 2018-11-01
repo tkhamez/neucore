@@ -94,6 +94,48 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
     }
 
+    public function testExecuteCharacterDeleted()
+    {
+        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
+            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
+            ->setExpires(time() - 60*60);
+        $this->em->persist($c);
+        $this->em->flush();
+
+        $this->client->setResponse(
+            new Response(200, [], '{
+                "name": "char1",
+                "corporation_id": 101
+            }'),
+            new Response(200, [], '{"access_token": "tok4"}'), // for getAccessToken()
+            new Response(200, [], '{"CharacterOwnerHash": "coh4"}'), // for getResourceOwner()
+            new Response(200, [], '{
+                "name": "corp1",
+                "ticker": "t"
+            }')
+        );
+
+        $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            GenericProvider::class => new OAuthTestProvider($this->client),
+        ]);
+
+        $expectedOutput = [
+            'Character 3: update OK, character deleted',
+            'Corporation 101: update OK',
+            'All done.',
+        ];
+        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+
+        # read result
+        $this->em->clear();
+
+        $repositoryFactory = new RepositoryFactory($this->em);
+
+        $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
+        $this->assertSame(0, count($actualChars));
+    }
+
     public function testExecuteValidTokenWithAlliance()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
