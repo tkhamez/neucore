@@ -69,4 +69,11 @@ class Roles
      * @var string
      */
     const ESI = 'esi';
+
+    /**
+     * Allows a player to change the system settings.
+     *
+     * @var string
+     */
+    const SETTINGS = 'settings';
 }

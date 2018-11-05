@@ -9,6 +9,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\AppRepository;
 use Brave\Core\Repository\CharacterRepository;
@@ -17,6 +18,7 @@ use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\SystemVariableRepository;
 use Tests\Helper;
 
 class RepositoryFactoryTest extends \PHPUnit\Framework\TestCase
@@ -86,5 +88,13 @@ class RepositoryFactoryTest extends \PHPUnit\Framework\TestCase
 
         $this->assertInstanceOf(RoleRepository::class, $repo);
         $this->assertSame(Role::class, $repo->getClassName());
+    }
+
+    public function testGetSystemVariableRepository()
+    {
+        $repo = $this->factory->getSystemVariableRepository();
+
+        $this->assertInstanceOf(SystemVariableRepository::class, $repo);
+        $this->assertSame(SystemVariable::class, $repo->getClassName());
     }
 }

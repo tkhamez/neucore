@@ -49,7 +49,8 @@ class PlayerController
         Roles::GROUP_ADMIN,
         Roles::GROUP_MANAGER,
         Roles::USER_ADMIN,
-        Roles::ESI
+        Roles::ESI,
+        Roles::SETTINGS,
     ];
 
     public function __construct(
@@ -365,16 +366,7 @@ class PlayerController
      */
     public function withRole(string $name): Response
     {
-        $validRoles = [
-            Roles::APP_ADMIN,
-            Roles::APP_MANAGER,
-            Roles::GROUP_ADMIN,
-            Roles::GROUP_MANAGER,
-            Roles::USER_ADMIN,
-            Roles::ESI
-        ];
-
-        if (! in_array($name, $validRoles)) {
+        if (! in_array($name, $this->availableRoles)) {
             return $this->res->withStatus(400);
         }
 

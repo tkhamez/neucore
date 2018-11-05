@@ -9,6 +9,7 @@ use Brave\Core\Api\User\CorporationController;
 use Brave\Core\Api\User\EsiController;
 use Brave\Core\Api\User\GroupController;
 use Brave\Core\Api\User\PlayerController;
+use Brave\Core\Api\User\SettingsController;
 
 return [
     '/api/app/v1/show'                  => ['GET',  ApplicationController::class.'::showV1'],
@@ -88,4 +89,7 @@ return [
     '/api/user/player/{id}/show'                => ['GET',    PlayerController::class.'::showById'],
     '/api/user/player/{id}/characters'          => ['GET',    PlayerController::class.'::characters'],
     '/api/user/player/with-role/{name}'         => ['GET',    PlayerController::class.'::withRole'],
+
+    '/api/user/settings/system/list'          => ['GET', SettingsController::class.'::systemList'],
+    '/api/user/settings/system/change/{name}' => ['PUT', SettingsController::class.'::systemChange'],
 ];

@@ -52,7 +52,7 @@
         <div class="col-lg-8">
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
-                    Player:
+                    Player Account:
                     <span v-cloak v-if="playerEdit">
                         {{ playerEdit.name }}
                     </span>
@@ -222,7 +222,15 @@ module.exports = {
             activeRole: '',
             playerId: null, // player ID from route
             playerEdit: null,// player being edited
-            availableRoles: ['app-admin', 'app-manager', 'group-admin', 'group-manager', 'user-admin', 'esi'],
+            availableRoles: [
+                'app-admin',
+                'app-manager',
+                'group-admin',
+                'group-manager',
+                'user-admin',
+                'esi',
+                'settings'
+            ],
             newRole: '',
             searchResult: [],
         }

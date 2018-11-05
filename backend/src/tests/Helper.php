@@ -10,6 +10,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManager;
@@ -32,6 +33,7 @@ class Helper
         Role::class,
         Corporation::class,
         Alliance::class,
+        SystemVariable::class,
     ];
 
     public function resetSessionData(): void

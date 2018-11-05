@@ -12,44 +12,47 @@
         </button>
         <div class="navbar-collapse collapse" id="navbarColor01" style="">
             <ul class="navbar-nav mr-auto">
-                <li v-cloak class="nav-item" :class="{ active: page == 'Home' }">
+                <li v-cloak class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
-                <li v-cloak v-if="hasAnyRole(['group-manager', 'app-manager'])" class="nav-item dropdown"
-                    :class="{ active: ['GroupManagement', 'AppManagement'].indexOf(page) !== -1 }">
+                <li v-cloak v-if="hasAnyRole(['group-manager', 'app-manager'])"
+                    class="nav-item dropdown" :class="{ active: managePages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Management
                     </a>
                     <div class="dropdown-menu">
                         <a v-cloak v-if="hasRole('group-manager')"
-                           class="dropdown-item" :class="{ active: page == 'GroupManagement' }"
+                           class="dropdown-item" :class="{ active: page === 'GroupManagement' }"
                            href="#GroupManagement">Groups</a>
                         <a v-cloak v-if="hasRole('app-manager')"
-                           class="dropdown-item" :class="{ active: page == 'AppManagement' }"
+                           class="dropdown-item" :class="{ active: page === 'AppManagement' }"
                            href="#AppManagement">Apps</a>
                     </div>
                 </li>
-                <li v-cloak v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin'])" class="nav-item dropdown"
-                    :class="{ active: ['UserAdmin', 'GroupAdmin', 'AppAdmin'].indexOf(page) !== -1 }">
+                <li v-cloak v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'settings'])"
+                    class="nav-item dropdown" :class="{ active: adminPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Admin
                     </a>
                     <div class="dropdown-menu">
                         <a v-cloak v-if="hasRole('group-admin')"
-                            class="dropdown-item" :class="{ active: page == 'GroupAdmin' }"
+                            class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
                             href="#GroupAdmin">Groups</a>
                         <a v-cloak v-if="hasRole('app-admin')"
-                            class="dropdown-item" :class="{ active: page == 'AppAdmin' }"
+                            class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
                         <a v-cloak v-if="hasRole('user-admin')"
-                           class="dropdown-item" :class="{ active: page == 'UserAdmin' }"
+                           class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
+                        <a v-cloak v-if="hasRole('settings')"
+                           class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
+                           href="#SystemSettings">Settings</a>
                     </div>
                 </li>
                 <li v-cloak v-if="hasRole('esi')"
-                    class="nav-item" :class="{ active: page == 'Esi' }">
+                    class="nav-item" :class="{ active: page === 'Esi' }">
                     <a class="nav-link" href="#Esi">ESI</a>
                 </li>
             </ul>
@@ -69,6 +72,12 @@ module.exports = {
     props: {
         authChar: [null, Object],
         page: String,
+    },
+    data: function() {
+        return {
+            managePages: ['GroupManagement', 'AppManagement'],
+            adminPages: ['UserAdmin', 'GroupAdmin', 'AppAdmin', 'SystemSettings'],
+        }
     },
 }
 </script>

@@ -9,6 +9,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\AppRepository;
 use Brave\Core\Repository\CharacterRepository;
@@ -16,6 +17,7 @@ use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Repository\RoleRepository;
+use Brave\Core\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RepositoryFactory
@@ -64,34 +66,16 @@ class RepositoryFactory
         return $this->getInstance(RoleRepository::class, Role::class);
     }
 
+    public function getSystemVariableRepository(): SystemVariableRepository
+    {
+        return $this->getInstance(SystemVariableRepository::class, SystemVariable::class);
+    }
+
     private function getInstance(string $repositoryClass, string $entityClass)
     {
         if (! isset($this->instance[$repositoryClass])) {
             $metadata = $this->em->getClassMetadata($entityClass);
-            $repository = null;
-            switch ($repositoryClass) {
-                case AllianceRepository::class:
-                    $repository = new AllianceRepository($this->em, $metadata);
-                    break;
-                case AppRepository::class:
-                    $repository = new AppRepository($this->em, $metadata);
-                    break;
-                case CharacterRepository::class:
-                    $repository = new CharacterRepository($this->em, $metadata);
-                    break;
-                case CorporationRepository::class:
-                    $repository = new CorporationRepository($this->em, $metadata);
-                    break;
-                case GroupRepository::class:
-                    $repository = new GroupRepository($this->em, $metadata);
-                    break;
-                case PlayerRepository::class:
-                    $repository = new PlayerRepository($this->em, $metadata);
-                    break;
-                case RoleRepository::class:
-                    $repository = new RoleRepository($this->em, $metadata);
-                    break;
-            }
+            $repository = new $repositoryClass($this->em, $metadata);
             $this->instance[$repositoryClass] = $repository;
         }
         return $this->instance[$repositoryClass];

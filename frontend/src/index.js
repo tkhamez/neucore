@@ -10,6 +10,7 @@ import GroupAdmin      from './pages/GroupAdmin.vue';
 import AppAdmin        from './pages/AppAdmin.vue';
 import UserAdmin       from './pages/UserAdmin.vue';
 import Esi             from './pages/Esi.vue';
+import SystemSettings  from './pages/SystemSettings.vue';
 
 window.Vue.mixin({
     methods: {
@@ -88,6 +89,7 @@ const app = new window.Vue({
         AppAdmin,
         UserAdmin,
         Esi,
+        SystemSettings,
     },
 
     data: {
@@ -100,7 +102,16 @@ const app = new window.Vue({
         /**
          * All available pages
          */
-        pages: ['Home', 'GroupManagement', 'AppManagement', 'GroupAdmin', 'AppAdmin', 'UserAdmin', 'Esi'],
+        pages: [
+            'Home',
+            'GroupManagement',
+            'AppManagement',
+            'GroupAdmin',
+            'AppAdmin',
+            'UserAdmin',
+            'Esi',
+            'SystemSettings'
+        ],
 
         /**
          * The authenticated character
