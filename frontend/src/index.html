@@ -14,9 +14,9 @@
     <div id="app">
         <div v-if="loadingCount > 0" v-cloak id="loader"></div>
 
-        <div v-if="message" v-cloak class="alert fade show brv-alert" v-bind:class="[messageType]">
-            {{ message }}
-            <button type="button" class="close" v-on:click="message = ''" aria-label="Close">
+        <div v-if="messageTxt" v-cloak class="alert fade show brv-alert" v-bind:class="[messageType]">
+            {{ messageTxt }}
+            <button type="button" class="close" v-on:click="messageTxt = ''" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>

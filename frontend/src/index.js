@@ -125,7 +125,7 @@ const app = new window.Vue({
          */
         initialized: false,
 
-        message: '',
+        messageTxt: '',
 
         messageType: '',
 
@@ -168,12 +168,12 @@ const app = new window.Vue({
     },
 
     methods: {
-        showMessage: function(message, type, timeout) {
-            this.message = message;
+        showMessage: function(text, type, timeout) {
+            this.messageTxt = text;
             this.messageType = 'alert-' + type;
             if (timeout) {
                 window.setTimeout(function() {
-                    app.message = '';
+                    app.messageTxt = '';
                 }, timeout);
             }
         },
@@ -207,7 +207,7 @@ const app = new window.Vue({
                 if (data.success) {
                     console.log(data.message);
                 } else {
-                    app.message = data.message;
+                    app.message(data.message, 'error');
                 }
             });
         },
