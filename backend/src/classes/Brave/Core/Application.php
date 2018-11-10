@@ -53,7 +53,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
  *       description="Client library of Brave Collective Core Services API",
- *       version="0.4.0"
+ *       version="0.5.0"
  *     ),
  *     @SWG\SecurityScheme(
  *         securityDefinition="Bearer",
