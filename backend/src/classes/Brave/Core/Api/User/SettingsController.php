@@ -48,17 +48,12 @@ class SettingsController
      *     path="/user/settings/system/list",
      *     operationId="systemList",
      *     summary="List all settings.",
-     *     description="Needs role: user",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
      *         description="List of settings.",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/SystemVariable"))
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
      *     )
      * )
      */

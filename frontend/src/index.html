@@ -23,8 +23,14 @@
 
         <nav-bar :auth-char="authChar" :page="route[0]"></nav-bar>
 
-        <component v-bind:is="page" :route="route" :initialized="initialized" :swagger="swagger"
-            :player="player" :auth-char="authChar"></component>
+        <component v-bind:is="page"
+            :route="route"
+            :initialized="initialized"
+            :swagger="swagger"
+            :settings="settings"
+            :player="player"
+            :auth-char="authChar">
+        </component>
 
         <footer class="footer bg-secondary">
             <div class="container text-muted">

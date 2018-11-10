@@ -1,5 +1,7 @@
 # Features
 
+## Overview
+
 * EVE SSO login with configurable permission scopes
 * Player accounts with alts
 * Cron job for character updates from ESI
@@ -45,7 +47,6 @@ The console application has commands to:
 - update characters with information from ESI, like corporation etc. and checks ESI tokens.
 - perform automatic group assignment based on corporation and alliance to group configuration.
 
-
 ## Architecture
 
 Backend and Frontend are developed as separated apps, they communicate via an API.
@@ -85,6 +86,9 @@ Auth API
 - EVE SSO login URL. `/user/auth/login-url`
 - Result of last SSO attempt. `/user/auth/result`
 
+Settings API
+- List all settings. `/user/settings/system/list`
+
 ### user
 
 This role is added to all player accounts.
@@ -107,6 +111,9 @@ Player API
 - Leave a group. `/user/player/leave-group/{gid}`
 - Change the main character from the player account. `/user/player/set-main/{cid}`
 - Delete a character. `/user/player/delete-character/{id}`
+
+Settings API
+- List all settings. `/user/settings/system/list`
 
 ### user-admin
 
@@ -204,6 +211,11 @@ App API
 
 ESI API
 - ESI request. `/user/esi/request`
+
+### settings
+
+Settings API
+- Change a system settings variable. `/user/settings/system/change/{name}`
 
 ### app
 

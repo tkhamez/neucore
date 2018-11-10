@@ -36,13 +36,20 @@ class SettingsControllerTest extends WebTestCase
         $this->systemVariableRepository = (new RepositoryFactory($this->em))->getSystemVariableRepository();
     }
 
-    public function testSystemList403()
+    public function testSystemList200Anonymous()
     {
-        $response1 = $this->runApp('GET', '/api/user/settings/system/list');
-        $this->assertEquals(403, $response1->getStatusCode());
+        $this->setupDb();
+
+        $response = $this->runApp('GET', '/api/user/settings/system/list');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            ['name' => Variables::ALLOW_CHARACTER_DELETION, 'value' => '0'],
+            ['name' => Variables::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
+            ['name' => Variables::SHOW_PREVIEW_BANNER, 'value' => '0'],
+        ], $this->parseJsonBody($response));
     }
 
-    public function testSystemList200()
+    public function testSystemList200Authenticated()
     {
         $this->setupDb();
         $this->loginUser(5); // role: USER
@@ -53,8 +60,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => Variables::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => Variables::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => Variables::SHOW_PREVIEW_BANNER, 'value' => '0'],
-        ], $this->parseJsonBody($response)
-        );
+        ], $this->parseJsonBody($response));
     }
 
     public function testSystemChange403()

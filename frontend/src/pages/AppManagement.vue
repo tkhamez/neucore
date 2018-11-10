@@ -105,7 +105,6 @@ module.exports = {
         }
     },
 
-
     methods: {
         setRoute: function() {
             this.secret = null;

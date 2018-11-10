@@ -129,6 +129,11 @@ const app = new window.Vue({
         swagger: null,
 
         /**
+         * System settings from backend
+         */
+        settings: [],
+
+        /**
          * True after first Ajax request finished.
          *
          * Don't do any request before this is true to avoid creating
@@ -163,7 +168,11 @@ const app = new window.Vue({
         this.$on('playerChange', () => {
             this.getPlayer();
         });
+        this.$on('settingsChange', () => {
+            this.getSettings();
+        });
 
+        this.getSettings();
         this.getAuthenticatedCharacter();
 
         // refresh session every 5 minutes
@@ -205,6 +214,17 @@ const app = new window.Vue({
                 this.route[0] = 'Home';
             }
             this.page = this.route[0];
+        },
+
+        getSettings: function() {
+            this.loading(true);
+            new this.swagger.SettingsApi().systemList(function(error, data) {
+                app.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                app.settings = data;
+            });
         },
 
         getAuthResult: function() {

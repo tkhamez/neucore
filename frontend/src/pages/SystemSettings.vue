@@ -48,12 +48,12 @@
 
 <script>
 module.exports = {
-
     props: {
         route: Array,
         swagger: Object,
         initialized: Boolean,
         player: [null, Object],
+        settings: Array,
     },
 
     data: function() {
@@ -63,7 +63,6 @@ module.exports = {
                 'groups_require_valid_token',
                 'show_preview_banner',
             ],
-            settings: [],
             api: null
         }
     },
@@ -81,22 +80,8 @@ module.exports = {
     },
 
     methods: {
-
         init: function() {
             this.api = new this.swagger.SettingsApi();
-            this.getSettings();
-        },
-
-        getSettings: function() {
-            const vm = this;
-            vm.loading(true);
-            this.api.systemList(function(error, data) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.settings = data;
-            });
         },
 
         changeSetting: function(name, value) {
@@ -107,7 +92,7 @@ module.exports = {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.getSettings();
+                vm.$root.$emit('settingsChange');
             });
         }
     },

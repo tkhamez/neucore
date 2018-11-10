@@ -191,6 +191,7 @@ module.exports = {
         initialized: Boolean,
         authChar: [null, Object],
         player: [null, Object],
+        settings: Array,
     },
 
     data: function() {
@@ -202,17 +203,11 @@ module.exports = {
         }
     },
 
-    created: function() {
-        // "preview" banner
-        if (window.location.hostname === 'brvneucore.herokuapp.com') {
-            this.preview = true;
-        }
-    },
-
     mounted: function() { // after "redirect" (e. g. "404" or "403")
         if (this.initialized) {
             this.getLoginUrl();
         }
+        this.previewBanner();
     },
 
     watch: {
@@ -237,11 +232,28 @@ module.exports = {
                 if (character.lastUpdate === null) {
                     vm.update(character.id);
                 }
-          });
+            });
+        },
+
+        settings: function() {
+            this.previewBanner();
         }
     },
 
     methods: {
+        previewBanner: function() {
+            for (let variable of this.settings) {
+                if (variable.name === 'show_preview_banner') {
+                    if (variable.value === '1') {
+                        this.preview = true;
+                    } else {
+                        this.preview = false;
+                    }
+                    break;
+                }
+            }
+        },
+
         getLoginUrl: function() {
             const vm = this;
             const api = new this.swagger.AuthApi();

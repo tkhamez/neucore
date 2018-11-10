@@ -50,7 +50,7 @@ return [
     '/api/user/player/{id}/characters'       => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::GROUP_MANAGER],
     '/api/user/player'                       => [Roles::USER_ADMIN],
 
-    '/api/user/settings/system/list' => [Roles::USER],
+    '/api/user/settings/system/list' => [Roles::ANONYMOUS, Roles::USER],
     '/api/user/settings/system'      => [Roles::SETTINGS],
 
     '/api/user' => [Roles::USER],
