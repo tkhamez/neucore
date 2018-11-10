@@ -44,11 +44,6 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
-use Whoops\Handler\JsonResponseHandler;
-use Whoops\Handler\PlainTextHandler;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run;
-
 /**
  * App bootstrapping
  *
@@ -284,15 +279,6 @@ class Application
         $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
         $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
 
-        // Disable Slim’s error handling for dev env.
-        // see also https://www.slimframework.com/docs/v3/handlers/error.html
-        if ($this->env === Application::ENV_DEV) {
-            // Values cannot be unset from the DI\Container,
-            // so it must be done in the configuration before it is built.
-            unset($bridgeConfig['errorHandler']);
-            unset($bridgeConfig['phpErrorHandler']);
-        }
-
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->addDefinitions($bridgeConfig);
         $containerBuilder->addDefinitions($this->settings);
@@ -391,35 +377,21 @@ class Application
      */
     private function errorHandling(): void
     {
+        // Extend Slim's error and php error handler.
+        $this->container->set('errorHandler', function (Container $c) {
+            return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+        });
+        $this->container->set('phpErrorHandler', function (Container $c) {
+            return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+        });
+
+        // logs errors that are not converted to exceptions by Slim
+        ErrorHandler::register($this->container->get(LoggerInterface::class));
+
         // php settings
-        ini_set('display_errors', '0'); // all errors are shown with whoops in dev mode
-        ini_set('log_errors', '0'); // all errors are logged with Monolog in prod mode
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '0'); // all errors are logged with Monolog
         error_reporting(E_ALL);
-
-        if ($this->env === self::ENV_PROD) {
-            // Extend Slim's error and php error handler.
-            $this->container->set('errorHandler', function (Container $c) {
-                return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-            });
-            $this->container->set('phpErrorHandler', function (Container $c) {
-                return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-            });
-
-            // logs errors that are not converted to exceptions by Slim
-            ErrorHandler::register($this->container->get(LoggerInterface::class));
-        } else { // self::ENV_DEV
-            // Slim's error handling is not added to the container in
-            // self::buildContainer() for dev env, instead we use Whoops
-            $whoops = new Run();
-            if (PHP_SAPI === 'cli') {
-                $whoops->pushHandler(new PlainTextHandler());
-            } elseif (isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] === 'application/json') {
-                $whoops->pushHandler((new JsonResponseHandler())->addTraceToOutput(true));
-            } else {
-                $whoops->pushHandler(new PrettyPageHandler());
-            }
-            $whoops->register();
-        }
     }
 
     private function registerRoutes(App $app): void
