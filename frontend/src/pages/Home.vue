@@ -85,6 +85,11 @@
             </div>
         </div>
 
+        <div v-cloak v-if="deactivated" class="alert alert-danger">
+            This account is <strong>deactivated</strong> because one or more characters do not
+            have a valid ESI token.
+        </div>
+
         <div v-cloak v-if="this.player">
             <div class="row">
                 <div class="col-lg-8">
@@ -146,7 +151,7 @@
                     </div>
                     <div class="card border-secondary mb-3">
                         <h3 class="card-header">Groups</h3>
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated }">
                             <li v-for="group in player.groups" class="list-group-item">
                                 {{ group.name }}
                             </li>
@@ -198,6 +203,8 @@ module.exports = {
         return {
             preview: false,
             deleteButton: false,
+            accountDeactivation: false,
+            deactivated: false,
             loginUrl: null,
             loginAltUrl: null,
             charToDelete: null,
@@ -209,6 +216,7 @@ module.exports = {
             this.getLoginUrl();
         }
         this.adjustSettings();
+        this.checkDeactivated();
     },
 
     watch: {
@@ -216,6 +224,7 @@ module.exports = {
             if (this.initialized) {
                 this.getLoginUrl();
             }
+            this.checkDeactivated();
         },
 
         initialized: function() { // for refresh while not logged in
@@ -234,10 +243,12 @@ module.exports = {
                     vm.update(character.id);
                 }
             });
+            this.checkDeactivated();
         },
 
         settings: function() {
             this.adjustSettings();
+            this.checkDeactivated();
         }
     },
 
@@ -249,6 +260,27 @@ module.exports = {
                 }
                 if (variable.name === 'allow_character_deletion') {
                     this.deleteButton = variable.value === '1';
+                }
+                if (variable.name === 'groups_require_valid_token') {
+                    this.accountDeactivation = variable.value === '1';
+                }
+            }
+        },
+
+        checkDeactivated: function() {
+            this.deactivated = false;
+
+            if (! this.accountDeactivation) {
+                return;
+            }
+            if (! this.player) {
+                return;
+            }
+
+            for (let character of this.player.characters) {
+                if (! character.validToken) {
+                    this.deactivated = true
+                    return;
                 }
             }
         },
@@ -370,5 +402,10 @@ module.exports = {
         padding-left: 30px;
         transform: rotate(10deg);
         background-color: rgba(200, 200, 200, .5);
+    }
+
+    .groups-disabled {
+        color: red;
+        text-decoration: line-through;
     }
 </style>
