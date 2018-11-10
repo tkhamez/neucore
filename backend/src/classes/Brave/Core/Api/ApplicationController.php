@@ -609,6 +609,53 @@ class ApplicationController
         return $this->response;
     }
 
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/characters/{characterId}",
+     *     operationId="charactersV1",
+     *     summary="Returns all characters of the player account to which the character ID belongs.",
+     *     description="Needs role: app",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The main character",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function charactersV1(string $characterId): Response
+    {
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
+
+        if ($char === null) {
+            return $this->response->withStatus(404, 'Character not found.');
+        }
+
+        $result = [];
+        foreach ($char->getPlayer()->getCharacters() as $character) {
+            $result[] = $character;
+        }
+
+        return $this->response->withJson($result);
+    }
+
+
     private function getIntegerArrayFromBody(ServerRequestInterface $request)
     {
         $ids = $request->getParsedBody();

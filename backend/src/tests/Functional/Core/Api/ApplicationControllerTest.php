@@ -386,6 +386,63 @@ class ApplicationControllerTest extends WebTestCase
         );
     }
 
+    public function testCharactersV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/characters/123');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCharactersV1404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Character not found.', $response->getReasonPhrase());
+    }
+
+    public function testCharactersV1200()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $char = $h->addCharacterMain('C1', 123, [Roles::USER]);
+        $h->addCharacterToPlayer('C2', 456, $char->getPlayer());
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response1 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
+        $response2 = $this->runApp('GET', '/api/app/v1/characters/456', null, $headers);
+
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response2->getStatusCode());
+
+        $body1 = $this->parseJsonBody($response1);
+        $body2 = $this->parseJsonBody($response2);
+
+        $this->assertSame($body1, $body2);
+        $this->assertSame([[
+                'id' => 123,
+                'name' => 'C1',
+                'main' => true,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'corporation' => null
+            ],[
+                'id' => 456,
+                'name' => 'C2',
+                'main' => false,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'corporation' => null
+            ]],
+            $body1
+        );
+    }
+
     private function setUpDb()
     {
         $h = new Helper();
