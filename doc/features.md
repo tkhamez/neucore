@@ -48,6 +48,17 @@ This means that the API for apps no longer returns groups for that account.
 
 As soon as the token is updated by logging in with this character, the account will be reactivated.
 
+## Automatic group assignment
+
+Alliances and corporations can be assigned to groups. These groups are then managed automatically. 
+This means that every player who has a character in one of these alliances or corporations will 
+automatically become a member of these groups.
+
+Once a group has been removed from all alliances and corporations, it will no longer be managed 
+automatically. This also means that all players who are currently members of this group will 
+remain so. To correct this, this group can simply be deleted, or it must be assigned a manager 
+who can then manually remove all members.
+
 ## Console application
 
 The console application has commands to:
