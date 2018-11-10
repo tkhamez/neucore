@@ -106,7 +106,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Roles::USER], $this->service->getRoles());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
-        $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
+        $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 10);
     }
 
     public function testAuthenticateExistingUser()
@@ -136,7 +136,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertTrue($char->getValidToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
-        $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
+        $this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 10);
         $this->assertSame($user->getPlayer()->getId(), $player->getId());
     }
 
