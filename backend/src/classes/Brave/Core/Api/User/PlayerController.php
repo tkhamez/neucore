@@ -7,6 +7,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Core\Roles;
+use Brave\Core\Variables;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
 
@@ -598,7 +599,7 @@ class PlayerController
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="Not authorized."
+     *         description="Not authorized or feature disabled."
      *     ),
      *     @SWG\Response(
      *         response="409",
@@ -608,23 +609,33 @@ class PlayerController
      */
     public function deleteCharacter(string $id): Response
     {
-        $user = $this->userAuthService->getUser();
+        // check "allow deletion" settings
+        $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+            ['name' => Variables::ALLOW_CHARACTER_DELETION]
+        );
+        if ($allowDeletion && $allowDeletion->getValue() === '0') {
+            return $this->res->withStatus(403);
+        }
 
+        // check if character to delete is logged in
+        $user = $this->userAuthService->getUser();
         if ((int) $id === $user->getId()) {
             return $this->res->withStatus(409);
         }
 
+        // get logged in player and character to delete
         $player = $user->getPlayer();
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
-
         if ($player === null || $char === null) {
             return $this->res->withStatus(404);
         }
 
+        // check if character belongs to the logged in player account
         if (! $player->hasCharacter($char->getId())) {
             return $this->res->withStatus(403);
         }
 
+        // delete char
         $player->removeCharacter($char);
         $this->objectManager->remove($char);
 

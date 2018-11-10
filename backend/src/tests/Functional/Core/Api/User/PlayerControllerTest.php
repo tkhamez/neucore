@@ -5,9 +5,11 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
+use Brave\Core\Variables;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
@@ -690,6 +692,22 @@ class PlayerControllerTest extends WebTestCase
         // char 10 is on a different player account
 
         $response = $this->runApp('DELETE', '/api/user/player/delete-character/10');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testDeleteCharacter403Disabled()
+    {
+        $this->setupDb();
+
+        // deactivate deletion feature
+        $setting = new SystemVariable(Variables::ALLOW_CHARACTER_DELETION);
+        $setting->setValue('0');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $this->loginUser(12);
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
         $this->assertEquals(403, $response->getStatusCode());
     }
 

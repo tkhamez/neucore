@@ -129,7 +129,7 @@
                                     <i class="fas fa-sync small"></i>
                                     Update
                                 </button>
-                                <button v-if="authChar.id !== char.id"
+                                <button v-if="authChar.id !== char.id && deleteButton"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         v-on:click="askDeleteChar(char.id, char.name)">
                                     <i class="far fa-trash-alt small"></i>
@@ -197,6 +197,7 @@ module.exports = {
     data: function() {
         return {
             preview: false,
+            deleteButton: false,
             loginUrl: null,
             loginAltUrl: null,
             charToDelete: null,
@@ -207,7 +208,7 @@ module.exports = {
         if (this.initialized) {
             this.getLoginUrl();
         }
-        this.previewBanner();
+        this.adjustSettings();
     },
 
     watch: {
@@ -236,20 +237,18 @@ module.exports = {
         },
 
         settings: function() {
-            this.previewBanner();
+            this.adjustSettings();
         }
     },
 
     methods: {
-        previewBanner: function() {
+        adjustSettings: function() {
             for (let variable of this.settings) {
                 if (variable.name === 'show_preview_banner') {
-                    if (variable.value === '1') {
-                        this.preview = true;
-                    } else {
-                        this.preview = false;
-                    }
-                    break;
+                    this.preview = variable.value === '1';
+                }
+                if (variable.name === 'allow_character_deletion') {
+                    this.deleteButton = variable.value === '1';
                 }
             }
         },
@@ -334,8 +333,10 @@ module.exports = {
             new this.swagger.PlayerApi().deleteCharacter(this.charToDelete.id, function(error) {
                 vm.loading(false);
                 if (error) { // 403 usually
+                    vm.message('Deletion denied.', 'error');
                     return;
                 }
+                vm.message('Deleted character.', 'success');
                 vm.update(vm.authChar.id);
             });
             this.charToDelete = null;
