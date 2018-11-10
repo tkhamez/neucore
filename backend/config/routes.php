@@ -14,12 +14,16 @@ use Brave\Core\Api\User\SettingsController;
 return [
     '/api/app/v1/show'                  => ['GET',  ApplicationController::class.'::showV1'],
     '/api/app/v1/groups/{cid}'          => ['GET',  ApplicationController::class.'::groupsV1'],
+    '/api/app/v2/groups/{cid}'          => ['GET',  ApplicationController::class.'::groupsV2'],
     '/api/app/v1/groups'                => ['POST', ApplicationController::class.'::groupsBulkV1'],
     '/api/app/v1/corp-groups/{cid}'     => ['GET',  ApplicationController::class.'::corpGroupsV1'],
+    '/api/app/v2/corp-groups/{cid}'     => ['GET',  ApplicationController::class.'::corpGroupsV2'],
     '/api/app/v1/corp-groups'           => ['POST', ApplicationController::class.'::corpGroupsBulkV1'],
     '/api/app/v1/alliance-groups/{aid}' => ['GET',  ApplicationController::class.'::allianceGroupsV1'],
+    '/api/app/v2/alliance-groups/{aid}' => ['GET',  ApplicationController::class.'::allianceGroupsV2'],
     '/api/app/v1/alliance-groups'       => ['POST', ApplicationController::class.'::allianceGroupsBulkV1'],
     '/api/app/v1/main/{cid}'            => ['GET',  ApplicationController::class.'::mainV1'],
+    '/api/app/v2/main/{cid}'            => ['GET',  ApplicationController::class.'::mainV2'],
 
     '/api/user/app/all'                       => ['GET',    AppController::class.'::all'],
     '/api/user/app/create'                    => ['POST',   AppController::class.'::create'],

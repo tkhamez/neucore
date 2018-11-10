@@ -56,6 +56,19 @@ class ApplicationControllerTest extends WebTestCase
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Not Found', $response->getReasonPhrase());
+    }
+
+    public function testGroupsV2404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v2/groups/123', null, $headers);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Character not found.', $response->getReasonPhrase());
     }
 
     public function testGroupsV1200()
@@ -140,6 +153,19 @@ class ApplicationControllerTest extends WebTestCase
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/corp-groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Not Found', $response->getReasonPhrase());
+    }
+
+    public function testCorpGroupsV2404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v2/corp-groups/123', null, $headers);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Corporation not found.', $response->getReasonPhrase());
     }
 
     public function testCorpGroupsV1200()
@@ -211,6 +237,19 @@ class ApplicationControllerTest extends WebTestCase
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/alliance-groups/123', null, $headers);
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Not Found', $response->getReasonPhrase());
+    }
+
+    public function testAllianceGroupsV2404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v2/alliance-groups/123', null, $headers);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Alliance not found.', $response->getReasonPhrase());
     }
 
     public function testAllianceGroupsV1200()
@@ -283,6 +322,20 @@ class ApplicationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
 
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Not Found', $response->getReasonPhrase());
+    }
+
+    public function testMainV2404()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
+        $response = $this->runApp('GET', '/api/app/v2/main/123', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Character not found.', $response->getReasonPhrase());
     }
 
     public function testMainV1204()

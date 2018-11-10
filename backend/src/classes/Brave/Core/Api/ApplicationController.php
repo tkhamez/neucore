@@ -98,7 +98,7 @@ class ApplicationController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Character not found."
+     *         description="Character not found. (default reason phrase)"
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -116,6 +116,47 @@ class ApplicationController
         }
 
         return $this->response->withJson($result['groups']);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v2/groups/{cid}",
+     *     operationId="groupsV2",
+     *     summary="Return groups of the character's player account.",
+     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="cid",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Reason phrase: Character not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupsV2(string $cid, ServerRequestInterface $request): Response
+    {
+        $this->response = $this->groupsV1($cid, $request);
+
+        if ($this->response->getStatusCode() === 404) {
+            $this->response = $this->response->withStatus(404, 'Character not found.');
+        }
+
+        return $this->response;
     }
 
     /**
@@ -201,7 +242,7 @@ class ApplicationController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Corporation not found."
+     *         description="Corporation not found. (default reason phrase)"
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -219,6 +260,47 @@ class ApplicationController
         }
 
         return $this->response->withJson($result['groups']);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v2/corp-groups/{cid}",
+     *     operationId="corpGroupsV2",
+     *     summary="Return groups of the corporation.",
+     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="cid",
+     *         in="path",
+     *         required=true,
+     *         description="EVE corporation ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Reason phrase: Corporation not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function corpGroupsV2(string $cid, ServerRequestInterface $request): Response
+    {
+        $this->response = $this->corpGroupsV1($cid, $request);
+
+        if ($this->response->getStatusCode() === 404) {
+            $this->response = $this->response->withStatus(404, 'Corporation not found.');
+        }
+
+        return $this->response;
     }
 
     /**
@@ -304,7 +386,7 @@ class ApplicationController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Alliance not found."
+     *         description="Alliance not found. (default reason phrase)"
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -322,6 +404,47 @@ class ApplicationController
         }
 
         return $this->response->withJson($result['groups']);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v2/alliance-groups/{aid}",
+     *     operationId="allianceGroupsV2",
+     *     summary="Return groups of the alliance.",
+     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="aid",
+     *         in="path",
+     *         required=true,
+     *         description="EVE alliance ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Reason phrase: Alliance not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function allianceGroupsV2(string $aid, ServerRequestInterface $request): Response
+    {
+        $this->response = $this->allianceGroupsV1($aid, $request);
+
+        if ($this->response->getStatusCode() === 404) {
+            $this->response = $this->response->withStatus(404, 'Alliance not found.');
+        }
+
+        return $this->response;
     }
 
     /**
@@ -411,7 +534,7 @@ class ApplicationController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Character not found."
+     *         description="Character not found. (default reason phrase)"
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -439,6 +562,51 @@ class ApplicationController
         }
 
         return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v2/main/{cid}",
+     *     operationId="mainV2",
+     *     summary="Returns the main character of the player account to which the character ID belongs.",
+     *     description="Needs role: app<br>It is possible that an account has no main character.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="cid",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The main character",
+     *         @SWG\Schema(ref="#/definitions/Character")
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="No main character found."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Reason phrase: Character not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function mainV2(string $cid): Response
+    {
+        $this->response = $this->mainV1($cid);
+
+        if ($this->response->getStatusCode() === 404) {
+            $this->response = $this->response->withStatus(404, 'Character not found.');
+        }
+
+        return $this->response;
     }
 
     private function getIntegerArrayFromBody(ServerRequestInterface $request)
