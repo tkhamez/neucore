@@ -27,8 +27,8 @@
                                 </span>
                                 <span v-if="variable.name === 'groups_require_valid_token'">
                                     <em>Deactivate Accounts:</em>
-                                    Check if the API for application should not return groups for a player
-                                    account if one or more of their characters has an invalid token.
+                                    Check this if the API for third-party applications should not return groups
+                                    for a player account if one or more of its characters have an invalid token.
                                 </span>
                                 <span v-if="variable.name === 'show_preview_banner'">
                                     <em>Preview:</em>
