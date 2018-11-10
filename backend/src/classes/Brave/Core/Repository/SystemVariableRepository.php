@@ -9,6 +9,7 @@ use Brave\Core\Entity\SystemVariable;
  *
  * @method SystemVariable|null find($id, $lockMode = null, $lockVersion = null)
  * @method SystemVariable[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SystemVariable findOneBy(array $criteria, array $orderBy = null)
  */
 class SystemVariableRepository extends \Doctrine\ORM\EntityRepository
 {

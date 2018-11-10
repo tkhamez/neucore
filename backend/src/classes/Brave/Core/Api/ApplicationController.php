@@ -4,6 +4,7 @@ namespace Brave\Core\Api;
 
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
+use Brave\Core\Variables;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
@@ -671,7 +672,6 @@ class ApplicationController
     }
 
     /**
-     *
      * @param int $characterId
      * @param \Brave\Core\Entity\Group[] $appGroups
      * @return null|array Returns NULL if character was not found.
@@ -691,6 +691,18 @@ class ApplicationController
             ],
             'groups' => []
         ];
+
+        // check "deactivated" settings
+        $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+            ['name' => Variables::GROUPS_REQUIRE_VALID_TOKEN]
+        );
+        if ($requireToken && $requireToken->getValue() === '1') {
+            foreach ($char->getPlayer()->getCharacters() as $character) {
+                if (! $character->getValidToken()) {
+                    return $result;
+                }
+            }
+        }
 
         foreach ($appGroups as $appGroup) {
             foreach ($char->getPlayer()->getGroups() as $playerGroup) {

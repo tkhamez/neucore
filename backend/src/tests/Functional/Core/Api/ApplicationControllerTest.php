@@ -2,8 +2,11 @@
 
 namespace Tests\Functional\Core\Api;
 
+use Brave\Core\Entity\SystemVariable;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Core\Entity\Group;
+use Brave\Core\Variables;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\Corporation;
@@ -11,6 +14,16 @@ use Brave\Core\Entity\Alliance;
 
 class ApplicationControllerTest extends WebTestCase
 {
+    /**
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var RepositoryFactory
+     */
+    private $repoFactory;
+
     private $appId;
 
     private $group0Id;
@@ -18,6 +31,12 @@ class ApplicationControllerTest extends WebTestCase
     private $group1Id;
 
     private $group4Id;
+
+    public function setUp()
+    {
+        $this->helper = new Helper();
+        $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+    }
 
     public function testShowV1403()
     {
@@ -27,9 +46,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testShowV1200()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('Test App', 'boring-test-secret', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('Test App', 'boring-test-secret', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':boring-test-secret')];
         $response = $this->runApp('GET', '/api/app/v1/show', null, $headers);
@@ -49,9 +67,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testGroupsV1404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
@@ -61,9 +78,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testGroupsV2404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v2/groups/123', null, $headers);
@@ -90,6 +106,48 @@ class ApplicationControllerTest extends WebTestCase
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
         ], $body1);
+    }
+
+    public function testGroupsV1200DeactivatedInvalidToken()
+    {
+        $this->setUpDb();
+
+        // activate "deactivated accounts"
+        $setting = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $this->assertSame([], $body);
+    }
+
+    public function testGroupsV1200DeactivatedValidToken()
+    {
+        $this->setUpDb();
+
+        // activate "deactivated accounts"
+        $setting = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $this->assertSame([
+            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
+        ], $body);
     }
 
     public function testGroupsBulkV1403()
@@ -138,6 +196,39 @@ class ApplicationControllerTest extends WebTestCase
         $this->assertSame($expected, $body);
     }
 
+    public function testGroupsBulkV1200Deactivated()
+    {
+        $this->setUpDb();
+
+        // activate "deactivated accounts"
+        $setting = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789], $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $expected = [[
+            'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
+            'groups' => [
+                ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
+            ],
+        ], [
+            'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
+                'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'alliance' => [
+                    'id' => 100, 'name' => 'one', 'ticker' => '-1-'
+                ]
+            ]],
+            'groups' => [],
+        ]];
+        $this->assertSame($expected, $body);
+    }
+
     public function testCorpGroupsV1403()
     {
         $response = $this->runApp('GET', '/api/app/v1/corp-groups/123');
@@ -146,9 +237,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testCorpGroupsV1404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/corp-groups/123', null, $headers);
@@ -158,9 +248,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testCorpGroupsV2404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v2/corp-groups/123', null, $headers);
@@ -230,9 +319,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testAllianceGroupsV1404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/alliance-groups/123', null, $headers);
@@ -242,9 +330,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testAllianceGroupsV2404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v2/alliance-groups/123', null, $headers);
@@ -314,9 +401,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testMainV1404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
@@ -327,9 +413,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testMainV2404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v2/main/123', null, $headers);
@@ -340,13 +425,12 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testMainV1204()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
-        $char = $h->addCharacterMain('C1', 123, [Roles::USER]);
+        $char = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
         $char->setMain(false);
-        $h->getEm()->flush();
+        $this->helper->getEm()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
@@ -356,11 +440,10 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testMainV1200()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
-        $char = $h->addCharacterMain('C1', 123, [Roles::USER]);
-        $h->addCharacterToPlayer('C2', 456, $char->getPlayer());
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
+        $char = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
@@ -394,9 +477,8 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testCharactersV1404()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
@@ -407,11 +489,10 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testCharactersV1200()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $aid = $h->addApp('A1', 's1', ['app'])->getId();
-        $char = $h->addCharacterMain('C1', 123, [Roles::USER]);
-        $h->addCharacterToPlayer('C2', 456, $char->getPlayer());
+        $this->helper->emptyDb();
+        $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
+        $char = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
         $response1 = $this->runApp('GET', '/api/app/v1/characters/123', null, $headers);
@@ -445,22 +526,23 @@ class ApplicationControllerTest extends WebTestCase
 
     private function setUpDb()
     {
-        $h = new Helper();
-        $h->emptyDb();
+        $this->helper->emptyDb();
 
-        $groups = $h->addGroups(['g0', 'g1', 'g2', 'g3', 'g4']);
+        $groups = $this->helper->addGroups(['g0', 'g1', 'g2', 'g3', 'g4']);
         $this->group0Id = $groups[0]->getId();
         $this->group1Id = $groups[1]->getId();
         $this->group4Id = $groups[4]->getId();
 
-        $app = $h->addApp('A1', 's1', ['app']);
+        $app = $this->helper->addApp('A1', 's1', ['app']);
         $app->addGroup($groups[0]);
         $app->addGroup($groups[1]);
         $app->addGroup($groups[4]);
         $this->appId = $app->getId();
 
-        $char1 = $h->addCharacterMain('C1', 123, [Roles::USER]);
-        $char2 = $h->addCharacterToPlayer('C2', 456, $char1->getPlayer());
+        $char1 = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $char1->setValidToken(true);
+        $char2 = $this->helper->addCharacterToPlayer('C2', 456, $char1->getPlayer());
+        $char2->setValidToken(true);
 
         $char1->getPlayer()->addGroup($groups[1]);
         $char2->getPlayer()->addGroup($groups[2]);
@@ -482,16 +564,16 @@ class ApplicationControllerTest extends WebTestCase
         $corp2->addGroup($groups[0]);
         $corp2->addGroup($groups[1]);
 
-        $h->getEm()->persist($alli);
-        $h->getEm()->persist($alli2);
-        $h->getEm()->persist($corp);
-        $h->getEm()->persist($corp2);
+        $this->helper->getEm()->persist($alli);
+        $this->helper->getEm()->persist($alli2);
+        $this->helper->getEm()->persist($corp);
+        $this->helper->getEm()->persist($corp2);
 
-        $char3 = $h->addCharacterMain('C3', 789); // no roles
+        $char3 = $this->helper->addCharacterMain('C3', 789); // no roles
         $char3->setCorporation($corp);
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
 
-        $h->getEm()->flush();
+        $this->helper->getEm()->flush();
     }
 }

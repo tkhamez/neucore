@@ -41,6 +41,13 @@ player account and deleted.
 
 Characters can also be manually removed from a player's account.
 
+### Deactivation
+
+If the ESI token of one or more characters on an account is invalid, the account is disabled. 
+This means that the API for apps no longer returns groups for that account.
+
+As soon as the token is updated by logging in with this character, the account will be reactivated.
+
 ## Console application
 
 The console application has commands to:
