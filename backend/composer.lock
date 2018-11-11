@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "23ecc1dec927845969adbbfef10466ea",
+    "content-hash": "562a613fd9b5957542b146b308672acd",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -2614,11 +2614,11 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "0.8.3.1",
+            "version": "0.8.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "825c4e02acf2405f05b3195952de93532cc5f13a"
+                "reference": "4d38a7eac2f2b49d4fa741d3bc6b6c9be9a3a103"
             },
             "require": {
                 "ext-curl": "*",
@@ -2659,7 +2659,7 @@
                 "sdk",
                 "swagger"
             ],
-            "time": "2018-06-23T14:44:51+00:00"
+            "time": "2018-11-11T12:58:53+00:00"
         },
         {
             "name": "zendframework/zend-code",
