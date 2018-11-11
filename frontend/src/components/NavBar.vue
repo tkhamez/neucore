@@ -1,6 +1,6 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary sticky-top">
-        <a class="navbar-brand" href="https://www.bravecollective.com/" target="_blank"
+        <a class="navbar-brand" href="https://www.bravecollective.com/"
             title="Brave Collective: What's your fun per hour?">
             <img src="images/brave_32.png" class="align-top mr-2" alt="Brave logo">
             Brave Collective

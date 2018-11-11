@@ -52,7 +52,7 @@
 
         <div class="jumbotron mt-3">
             <span v-cloak id="preview" v-if="preview">PREVIEW</span>
-            <a href="https://www.bravecollective.com/" target="_blank">
+            <a href="https://www.bravecollective.com/">
                 <img src="/images/brave_300.png" class="float-right" alt="Brave logo"
                     title="Brave Collective: What's your fun per hour?">
             </a>
