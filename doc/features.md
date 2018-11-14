@@ -242,12 +242,11 @@ cannot be added to player accounts.
 
 Application API
 - Show app information. `/app/v1/show`
-- Return groups of the character's player account. `/app/v1/groups/{cid}`
+- Return groups of the character's player account. `/app/v2/groups/{cid}`
 - Return groups of multiple players, identified by one of their character IDs. `/app/v1/groups`
-- Return groups of the corporation. `/app/v1/corp-groups/{cid}`
+- Return groups of the corporation. `/app/v2/corp-groups/{cid}`
 - Return groups of multiple corporations. `/app/v1/corp-groups`
-- Return groups of the alliance. `/app/v1/alliance-groups/{aid}`
+- Return groups of the alliance. `/app/v2/alliance-groups/{aid}`
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
-- Returns the main character of the player account to which the character ID belongs.
-  `/app/v1/main/{cid}`
+- Returns the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
 - Returns all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
