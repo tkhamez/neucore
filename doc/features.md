@@ -250,3 +250,4 @@ Application API
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
 - Returns the main character of the player account to which the character ID belongs.
   `/app/v1/main/{cid}`
+- Returns all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
