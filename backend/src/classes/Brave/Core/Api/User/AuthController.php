@@ -173,7 +173,7 @@ class AuthController
                 $state,
                 $request->getQueryParam('code', '')
             );
-        } catch(\UnexpectedValueException $uve) {
+        } catch (\UnexpectedValueException $uve) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => $uve->getMessage(),
