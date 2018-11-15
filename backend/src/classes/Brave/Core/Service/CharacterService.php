@@ -4,7 +4,7 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
-use League\OAuth2\Client\Token\AccessToken;
+use Brave\Sso\Basics\EveAuthentication;
 use Psr\Log\LoggerInterface;
 
 class CharacterService
@@ -89,25 +89,19 @@ class CharacterService
      * and character in the database. Both Entities can be new.
      *
      * @param Character $char Character with Player object attached.
-     * @param string $characterName
-     * @param string $characterOwnerHash
-     * @param string $scopes
-     * @param AccessToken $token A valid token
+     * @param EveAuthentication $eveAuth
      * @return bool
      */
-    public function updateAndStoreCharacterWithPlayer(
-        Character $char,
-        string $characterName,
-        string $characterOwnerHash,
-        string $scopes,
-        AccessToken $token
-    ): bool {
-        $char->setName($characterName);
+    public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
+    {
+        $token = $eveAuth->getToken();
+
+        $char->setName($eveAuth->getCharacterName());
         $char->setLastLogin(new \DateTime());
         $char->setValidToken(true);
 
-        $char->setCharacterOwnerHash($characterOwnerHash);
-        $char->setScopes($scopes);
+        $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
+        $char->setScopes(implode(' ', $eveAuth->getScopes()));
 
         $char->setAccessToken($token->getToken());
         $char->setExpires($token->getExpires());

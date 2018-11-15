@@ -9,6 +9,7 @@
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
         "ext-zend-opcache": "*",
+        "bravecollective/sso-basics": "0.1.0",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
         "league/oauth2-client": "^2.2",
@@ -38,6 +39,7 @@
     	}
     },
     "repositories": [
+        { "type": "git", "url": "https://github.com/bravecollective/sso-basics.git" },
         { "type": "git", "url": "https://github.com/tkhamez/slim-role-auth.git" },
         { "type": "git", "url": "https://github.com/tkhamez/swagger-eve-php.git" }
     ],

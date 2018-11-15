@@ -7,13 +7,12 @@ use Brave\Core\Roles;
 use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
-use League\OAuth2\Client\Provider\GenericProvider;
+use Brave\Sso\Basics\AuthenticationProvider;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
- *
  * @SWG\Tag(
  *     name="Auth",
  *     description="User authentication."
@@ -45,9 +44,9 @@ class AuthController
     private $session;
 
     /**
-     * @var GenericProvider
+     * @var AuthenticationProvider
      */
-    private $sso;
+    private $authProvider;
 
     /**
      * @var LoggerInterface
@@ -76,14 +75,13 @@ class AuthController
     public function __construct(
         Response $res,
         SessionData $session,
-        GenericProvider $sso,
+        AuthenticationProvider $authProvider,
         LoggerInterface $log,
         UserAuth $auth,
         Config $config
     ) {
         $this->res = $res;
         $this->session = $session;
-        $this->sso = $sso;
         $this->log = $log;
         $this->auth = $auth;
 
@@ -93,6 +91,9 @@ class AuthController
         } else {
             $this->scopes = ['publicData'];
         }
+
+        $authProvider->setScopes($this->scopes);
+        $this->authProvider = $authProvider;
     }
 
     /**
@@ -125,7 +126,7 @@ class AuthController
             return $this->res->withStatus(204);
         }
 
-        return $this->res->withJson($this->buildLoginUrl($request, false));
+        return $this->res->withJson($this->getLoginUrl($request, false));
     }
 
     /**
@@ -155,7 +156,7 @@ class AuthController
      */
     public function loginAltUrl(Request $request): Response
     {
-        return $this->res->withJson($this->buildLoginUrl($request, true));
+        return $this->res->withJson($this->getLoginUrl($request, true));
     }
 
     public function callback(Request $request): Response
@@ -166,57 +167,16 @@ class AuthController
         $state = (string) $this->session->get('auth_state');
         $this->session->delete('auth_state');
 
-        // check OAuth state parameter
-        if ($request->getQueryParam('state') !== $state) {
-            $this->session->set('auth_result', [
-                'success' => false,
-                'message' => 'OAuth state mismatch.',
-            ]);
-            return $this->res->withRedirect($redirectUrl);
-        }
-
-        // get token(s)
         try {
-            $token = $this->sso->getAccessToken('authorization_code', [
-                'code' => $request->getQueryParam('code', '')
-            ]);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $eveAuth = $this->authProvider->validateAuthentication(
+                $request->getQueryParam('state'),
+                $state,
+                $request->getQueryParam('code', '')
+            );
+        } catch(\UnexpectedValueException $uve) {
             $this->session->set('auth_result', [
                 'success' => false,
-                'message' => 'Error when requesting the token.',
-            ]);
-            return $this->res->withRedirect($redirectUrl);
-        }
-
-        // get resource owner (character ID etc.)
-        $resourceOwner = null;
-        try {
-            $resourceOwner = $this->sso->getResourceOwner($token);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
-        }
-
-        // verify result
-        $verify = $resourceOwner !== null ? $resourceOwner->toArray() : null;
-        if (! is_array($verify) ||
-            ! isset($verify['CharacterID']) ||
-            ! isset($verify['CharacterName']) ||
-            ! isset($verify['CharacterOwnerHash'])
-        ) {
-            $this->session->set('auth_result', [
-                'success' => false,
-                'message' => 'Error obtaining Character ID.',
-            ]);
-            return $this->res->withRedirect($redirectUrl);
-        }
-
-        // verify scopes (user can manipulate the SSO login URL)
-        $scopes = isset($verify['Scopes']) ? $verify['Scopes'] : '';
-        if (! $this->verifyScopes($scopes)) {
-            $this->session->set('auth_result', [
-                'success' => false,
-                'message' => 'Required scopes do not match.',
+                'message' => $uve->getMessage(),
             ]);
             return $this->res->withRedirect($redirectUrl);
         }
@@ -225,21 +185,9 @@ class AuthController
         $alt = $state[0] === $this->altLoginPrefix;
 
         if ($alt) {
-            $success = $this->auth->addAlt(
-                $verify['CharacterID'],
-                $verify['CharacterName'],
-                $verify['CharacterOwnerHash'],
-                $scopes,
-                $token
-            );
+            $success = $this->auth->addAlt($eveAuth);
         } else {
-            $success = $this->auth->authenticate(
-                $verify['CharacterID'],
-                $verify['CharacterName'],
-                $verify['CharacterOwnerHash'],
-                $scopes,
-                $token
-            );
+            $success = $this->auth->authenticate($eveAuth);
         }
 
         if ($success) {
@@ -308,32 +256,16 @@ class AuthController
         return $this->res->withStatus(204);
     }
 
-    private function buildLoginUrl(Request $request, bool $altLogin): string
+    private function getLoginUrl(Request $request, bool $altLogin): string
     {
         $statePrefix = $altLogin ? $this->altLoginPrefix : '';
+        $state = $statePrefix . Random::chars(12);
 
-        $options = [
-            'scope' => implode(' ', $this->scopes),
-            'state' => $statePrefix . Random::chars(12),
-        ];
+        $url =  $this->authProvider->buildLoginUrl($state);
 
-        $url = $this->sso->getAuthorizationUrl($options);
-
-        $this->session->set('auth_state', $this->sso->getState());
+        $this->session->set('auth_state', $state);
         $this->session->set('auth_redirect', $request->getQueryParam('redirect', '/'));
 
         return $url;
-    }
-
-    private function verifyScopes(string $scopes): bool
-    {
-        $scopeArr = explode(' ', $scopes);
-        $diff1 = array_diff($this->scopes, $scopeArr);
-        $diff2 = array_diff($scopeArr, $this->scopes);
-
-        if (count($diff1) !== 0 || count($diff2) !== 0) {
-            return false;
-        }
-        return true;
     }
 }

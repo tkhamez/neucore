@@ -40,10 +40,6 @@ class Helper
     {
         unset($_SESSION);
 
-        $rp = new \ReflectionProperty(SessionData::class, 'sess');
-        $rp->setAccessible(true);
-        $rp->setValue(null, null);
-
         $rp = new \ReflectionProperty(SessionData::class, 'readOnly');
         $rp->setAccessible(true);
         $rp->setValue(null, true);

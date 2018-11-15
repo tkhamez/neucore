@@ -5,22 +5,11 @@ namespace Brave\Slim\Session;
 /**
  * Wraps $_SESSION variable.
  *
- * Can be instantiated before the session is started as long
- * as it is instantiated again when the session is active
- * (which is done in the NonBlockingSessionMiddleware class).
+ * Can be instantiated before the session is started.
  */
 class SessionData
 {
-    private static $sess;
-
     private static $readOnly = true;
-
-    public function __construct()
-    {
-        if (isset($_SESSION) && self::$sess === null) {
-            self::$sess = &$_SESSION;
-        }
-    }
 
     public function setReadOnly(bool $readOnly)
     {
@@ -37,7 +26,7 @@ class SessionData
      */
     public function getAll()
     {
-        return self::$sess;
+        return isset($_SESSION) ? $_SESSION : null;
     }
 
     /**
@@ -50,10 +39,10 @@ class SessionData
      */
     public function get($key, $default = null)
     {
-        if (self::$sess === null) {
+        if (! isset($_SESSION)) {
             throw new \RuntimeException('Session not started.');
         }
-        return array_key_exists($key, self::$sess) ? self::$sess[$key] : $default;
+        return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : $default;
     }
 
     /**
@@ -66,11 +55,11 @@ class SessionData
      */
     public function set(string $key, $value): self
     {
-        if (self::$readOnly) {
-            throw new \RuntimeException('Session is read-only.');
+        if (self::$readOnly || ! isset($_SESSION)) {
+            throw new \RuntimeException('Session is read-only or not started.');
         }
 
-        self::$sess[$key] = $value;
+        $_SESSION[$key] = $value;
 
         return $this;
     }
@@ -86,8 +75,8 @@ class SessionData
             throw new \RuntimeException('Session is read-only.');
         }
 
-        if (array_key_exists($key, self::$sess)) {
-            unset(self::$sess[$key]);
+        if (array_key_exists($key, $_SESSION)) {
+            unset($_SESSION[$key]);
         }
 
         return $this;
@@ -105,7 +94,7 @@ class SessionData
             throw new \RuntimeException('Session is read-only.');
         }
 
-        self::$sess = [];
+        $_SESSION = [];
 
         return $this;
     }

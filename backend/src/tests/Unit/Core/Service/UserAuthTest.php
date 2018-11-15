@@ -8,6 +8,7 @@ use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
+use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
@@ -91,7 +92,9 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAuthenticateNoUserRoleError()
     {
         $token = new AccessToken(['access_token' => 'token']);
-        $this->assertFalse($this->service->authenticate(888, 'New User', 'char-owner-hash', '', $token));
+        $this->assertFalse($this->service->authenticate(
+            new EveAuthentication(888, 'New User', 'char-owner-hash', $token, [])
+        ));
         $this->assertSame(
             'UserAuth::authenticate(): Role "'.Roles::USER.'" not found.',
             $this->log->getHandler()->getRecords()[0]['message']
@@ -106,7 +109,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($_SESSION['character_id']));
 
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(888, 'New User', 'coh', 'scope1 s2', $token);
+        $result = $this->service->authenticate(new EveAuthentication(888, 'New User', 'coh', $token, ['scope1', 's2']));
 
         $this->em->clear();
 
@@ -141,7 +144,9 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($char->getLastLogin());
 
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(9013, 'Test User Changed Name', '123', 'scope1 s2', $token);
+        $result = $this->service->authenticate(
+            new EveAuthentication(9013, 'Test User Changed Name', '123', $token, ['scope1', 's2'])
+        );
 
         $user = $this->service->getUser();
         $this->assertTrue($result);
@@ -172,7 +177,9 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
         // changed hash 789, was 456
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(9014, 'Test User2', '789', 'scope1 s2', $token);
+        $result = $this->service->authenticate(
+            new EveAuthentication(9014, 'Test User2', '789', $token, ['scope1', 's2'])
+        );
 
         $user = $this->service->getUser();
         $newPlayer = $user->getPlayer();
@@ -193,7 +200,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(1, count($player->getCharacters()));
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
-        $result = $this->service->addAlt(101, 'Alt 1', 'hash', 'scope1 s2', $token);
+        $result = $this->service->addAlt(new EveAuthentication(101, 'Alt 1', 'hash', $token, ['scope1', 's2']));
         $this->assertTrue($result);
 
         $chars = $player->getCharacters();
@@ -217,7 +224,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $main2 = $this->helper->addCharacterMain('Main2', 200, [Roles::USER]);
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
-        $result = $this->service->addAlt(200, 'Main2 renamed', 'hash', 'scope1 s2', $token);
+        $result = $this->service->addAlt(new EveAuthentication(200, 'Main2 renamed', 'hash', $token, ['scope1', 's2']));
         $this->assertTrue($result);
 
         $chars = $main1->getPlayer()->getCharacters();
@@ -239,7 +246,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $main = $this->helper->addCharacterMain('Main1', 100, [Roles::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
-        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', '', $token);
+        $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));
         $this->assertTrue($result);
 
         $chars = $main->getPlayer()->getCharacters();
@@ -252,7 +259,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->helper->addCharacterMain('Main1', 100, [Roles::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
-        $result = $this->service->addAlt(100, 'Main1 renamed', 'hash', '', $token);
+        $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));
         $this->assertFalse($result);
     }
 }

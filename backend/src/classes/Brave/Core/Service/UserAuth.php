@@ -6,7 +6,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
-use League\OAuth2\Client\Token\AccessToken;
+use Brave\Sso\Basics\EveAuthentication;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
@@ -98,19 +98,15 @@ class UserAuth implements RoleProviderInterface
      *
      * Creates character with player account if it is missing.
      *
-     * @param int $characterId
-     * @param string $characterName
-     * @param string $characterOwnerHash
-     * @param AccessToken $token A valid token
-     * @param string $scopes
+     * @param EveAuthentication $eveAuth
      * @return bool
      */
-    public function authenticate(int $characterId, string $characterName, string $characterOwnerHash,
-        string $scopes, AccessToken $token): bool
+    public function authenticate(EveAuthentication $eveAuth): bool
     {
+        $characterId = (int) $eveAuth->getCharacterId();
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
 
-        if ($char === null || $char->getCharacterOwnerHash() !== $characterOwnerHash) {
+        if ($char === null || $char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
             // first login or changed owner, create account
             $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Roles::USER]);
             if (count($userRole) !== 1) {
@@ -118,15 +114,14 @@ class UserAuth implements RoleProviderInterface
                 return false;
             }
             if ($char === null) {
-                $char = $this->characterService->createNewPlayerWithMain($characterId, $characterName);
+                $char = $this->characterService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
             } else {
                 $char = $this->characterService->moveCharacterToNewAccount($char);
             }
             $char->getPlayer()->addRole($userRole[0]);
         }
 
-        $success = $this->characterService->updateAndStoreCharacterWithPlayer(
-            $char, $characterName, $characterOwnerHash, $scopes, $token);
+        $success = $this->characterService->updateAndStoreCharacterWithPlayer($char, $eveAuth);
 
         if (! $success) {
             return false;
@@ -139,16 +134,13 @@ class UserAuth implements RoleProviderInterface
     }
 
     /**
-     * @param int $characterId
-     * @param string $characterName
-     * @param string $characterOwnerHash
-     * @param string $scopes
-     * @param AccessToken $token A valid token
+     * @param EveAuthentication $eveAuth
      * @return bool
      */
-    public function addAlt(int $characterId, string $characterName, string $characterOwnerHash,
-        string $scopes, AccessToken $token): bool
+    public function addAlt(EveAuthentication $eveAuth): bool
     {
+        $characterId = (int) $eveAuth->getCharacterId();
+
         $this->getUser();
 
         // check if logged in
@@ -180,8 +172,7 @@ class UserAuth implements RoleProviderInterface
             $alt->setMain(false);
         }
 
-        return $this->characterService->updateAndStoreCharacterWithPlayer(
-            $alt, $characterName, $characterOwnerHash, $scopes, $token);
+        return $this->characterService->updateAndStoreCharacterWithPlayer($alt, $eveAuth);
     }
 
     /**

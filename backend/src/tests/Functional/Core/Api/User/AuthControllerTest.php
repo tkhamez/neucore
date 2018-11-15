@@ -85,7 +85,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function testCallbackStateError()
+    public function testCallbackException()
     {
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
@@ -97,128 +97,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(null, $sess->get('auth_state')); // test that it was deleted
         $this->assertSame(
             ['success' => false, 'message' => 'OAuth state mismatch.'],
-            $sess->get('auth_result')
-        );
-    }
-
-    public function testCallbackAccessTokenException()
-    {
-        $state = '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
-
-        $this->client->setResponse(new Response(500)); // for getAccessToken
-
-        $log = new Logger('ignore');
-        $log->pushHandler(new TestHandler());
-
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
-            LoggerInterface::class => $log
-        ]);
-        $this->assertSame(302, $response->getStatusCode());
-
-        $sess = new SessionData();
-        $this->assertSame(
-            ['success' => false, 'message' => 'Error when requesting the token.'],
-            $sess->get('auth_result')
-        );
-    }
-
-    public function testCallbackResourceOwnerException()
-    {
-        $state = '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
-
-        $this->client->setResponse(
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
-            new Response(500) // for getResourceOwner
-        );
-
-        $log = new Logger('ignore');
-        $log->pushHandler(new TestHandler());
-
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
-            LoggerInterface::class => $log
-        ]);
-        $this->assertSame(302, $response->getStatusCode());
-
-        $sess = new SessionData();
-        $this->assertSame(
-            ['success' => false, 'message' => 'Error obtaining Character ID.'],
-            $sess->get('auth_result')
-        );
-    }
-
-    public function testCallbackResourceOwnerError()
-    {
-        $state = '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
-
-        $this->client->setResponse(
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
-            new Response(200, [], 'invalid') // for getResourceOwner
-        );
-
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
-            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
-        ]);
-        $this->assertSame(302, $response->getStatusCode());
-
-        $sess = new SessionData();
-        $this->assertSame(
-            ['success' => false, 'message' => 'Error obtaining Character ID.'],
-            $sess->get('auth_result')
-        );
-    }
-
-    public function testCallbackScopesMismatch()
-    {
-        $state = '1jdHR64hSdYf';
-        $sess = new SessionData();
-
-        $this->client->setResponse(
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
-            new Response(200, [], '{
-                "CharacterID": 123,
-                "CharacterName": "Na",
-                "CharacterOwnerHash": "a",
-                "Scopes": "have-this"
-            }'), // for getResourceOwner
-            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
-            new Response(200, [], '{
-                "CharacterID": 123,
-                "CharacterName": "Na",
-                "CharacterOwnerHash": "a",
-                "Scopes": "have-this"
-            }')
-        );
-
-        // missing scope
-        $_SESSION = ['auth_state' => $state];
-        $this->runApp('GET', '/api/user/auth/callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
-            Config::class => new Config(['eve' => ['scopes' => 'do-not-have-this']]),
-        ]);
-        $this->assertSame(
-            ['success' => false, 'message' => 'Required scopes do not match.'],
-            $sess->get('auth_result')
-        );
-
-        // additional scope
-        $_SESSION = ['auth_state' => $state];
-        $this->runApp('GET', '/api/user/auth/callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
-            Config::class => new Config(['eve' => ['scopes' => 'have-this and-this']]),
-        ]);
-        $this->assertSame(
-            ['success' => false, 'message' => 'Required scopes do not match.'],
             $sess->get('auth_result')
         );
     }

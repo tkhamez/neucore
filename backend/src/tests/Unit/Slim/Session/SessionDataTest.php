@@ -34,10 +34,10 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $sd->get('k');
     }
 
-    public function testSetThrowsExceptionForReadOnlySession()
+    public function testSetThrowsExceptionForReadOnlyOrNotStartedSession()
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Session is read-only.');
+        $this->expectExceptionMessage('Session is read-only or not started.');
 
         $sd = new SessionData();
         $sd->set('k', 'v');
@@ -95,6 +95,7 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
 
     public function testGetAllClear()
     {
+        $_SESSION = []; // "start" session
         $sd = new SessionData();
         $sd->setReadOnly(false);
 
@@ -107,6 +108,7 @@ class SessionDataTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $sd->getAll());
         $this->assertSame($sd, $ret);
     }
+
     public function testSuperGlobalIsReference()
     {
         $_SESSION = []; // "start" session

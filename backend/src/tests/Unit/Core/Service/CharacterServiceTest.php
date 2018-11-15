@@ -9,6 +9,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
+use Brave\Sso\Basics\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
@@ -95,10 +96,13 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $expires = time() + (60 * 20);
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
-            'name',
-            'character-owner-hash',
-            'scope1 scope2',
-            new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires])
+            new EveAuthentication(
+                null,
+                'name',
+                'character-owner-hash',
+                new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires]),
+                ['scope1', 'scope2']
+            )
         );
         $this->assertTrue($result);
 
