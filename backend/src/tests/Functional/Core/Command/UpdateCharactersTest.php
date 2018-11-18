@@ -8,11 +8,11 @@ use Brave\Core\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\ConsoleTestCase;
+use Tests\ConsoleTestCase;
 use Tests\Helper;
-use Tests\TestLogger;
-use Tests\OAuthTestProvider;
-use Tests\TestClient;
+use Tests\Logger;
+use Tests\OAuthProvider;
+use Tests\Client;
 
 class UpdateCharactersTest extends ConsoleTestCase
 {
@@ -22,12 +22,12 @@ class UpdateCharactersTest extends ConsoleTestCase
     private $em;
 
     /**
-     * @var TestLogger
+     * @var Logger
      */
     private $log;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -37,8 +37,8 @@ class UpdateCharactersTest extends ConsoleTestCase
         $h->emptyDb();
         $this->em = $h->getEm();
 
-        $this->log = new TestLogger('Test');
-        $this->client = new TestClient();
+        $this->log = new Logger('Test');
+        $this->client = new Client();
     }
 
     public function testExecuteErrorUpdate()
@@ -82,7 +82,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $this->log
         ]);
 
@@ -117,7 +117,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
         $expectedOutput = [
@@ -164,7 +164,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
         $expectedOutput = [
@@ -218,7 +218,7 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $this->log,
         ]);
 

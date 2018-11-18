@@ -5,16 +5,16 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
+use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
-use Brave\Core\Variables;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
-use Tests\TestLogger;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class PlayerControllerTest extends WebTestCase
@@ -56,7 +56,7 @@ class PlayerControllerTest extends WebTestCase
     private $cr;
 
     /**
-     * @var TestLogger
+     * @var Logger
      */
     private $log;
 
@@ -71,7 +71,7 @@ class PlayerControllerTest extends WebTestCase
         $this->pr = $rf->getPlayerRepository();
         $this->cr = $rf->getCharacterRepository();
 
-        $this->log = new TestLogger('test');
+        $this->log = new Logger('test');
     }
 
     public function testShow403()
@@ -85,7 +85,7 @@ class PlayerControllerTest extends WebTestCase
         $this->h->emptyDb();
         $groups = $this->h->addGroups(['group1', 'another-group']);
         $char = $this->h->addCharacterMain(
-            'TUser', 123456, [Roles::USER, Roles::USER_ADMIN], ['group1', 'another-group']);
+            'TUser', 123456, [Role::USER, Role::USER_ADMIN], ['group1', 'another-group']);
         $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
         $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
         $char->setCorporation($corp);
@@ -100,7 +100,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $char->getPlayer()->getId(),
             'name' => 'TUser',
-            'roles' => [Roles::USER, Roles::USER_ADMIN],
+            'roles' => [Role::USER, Role::USER_ADMIN],
             'characters' => [
                 [
                     'id' => 123456,
@@ -316,7 +316,7 @@ class PlayerControllerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Admin', 12, [Roles::APP_ADMIN]);
+        $h->addCharacterMain('Admin', 12, [Role::APP_ADMIN]);
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/app-managers', null, null, [
@@ -361,7 +361,7 @@ class PlayerControllerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Admin', 12, [Roles::GROUP_ADMIN]);
+        $h->addCharacterMain('Admin', 12, [Role::GROUP_ADMIN]);
         $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/group-managers', null, null, [
@@ -416,11 +416,11 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response1 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::APP_ADMIN);
-        $response2 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::APP_MANAGER);
-        $response3 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::GROUP_ADMIN);
-        $response4 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::GROUP_MANAGER);
-        $response5 = $this->runApp('GET', '/api/user/player/with-role/'.Roles::USER_ADMIN);
+        $response1 = $this->runApp('GET', '/api/user/player/with-role/'.Role::APP_ADMIN);
+        $response2 = $this->runApp('GET', '/api/user/player/with-role/'.Role::APP_MANAGER);
+        $response3 = $this->runApp('GET', '/api/user/player/with-role/'.Role::GROUP_ADMIN);
+        $response4 = $this->runApp('GET', '/api/user/player/with-role/'.Role::GROUP_MANAGER);
+        $response5 = $this->runApp('GET', '/api/user/player/with-role/'.Role::USER_ADMIN);
 
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
@@ -463,11 +463,11 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(12);
 
         $response1 = $this->runApp('PUT', '/api/user/player/101/add-role/r');
-        $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Roles::APP_MANAGER);
+        $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Role::APP_MANAGER);
         $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/role');
 
         // app is a valid role, but not for users
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/'.Roles::APP);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/'.Role::APP);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -480,8 +480,8 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Roles::APP_MANAGER);
-        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Roles::APP_MANAGER);
+        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Role::APP_MANAGER);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Role::APP_MANAGER);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
@@ -489,7 +489,7 @@ class PlayerControllerTest extends WebTestCase
 
         $player = $this->pr->find($this->player->getId());
         $this->assertSame(
-            [Roles::APP_ADMIN, Roles::APP_MANAGER, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
+            [Role::APP_ADMIN, Role::APP_MANAGER, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
         );
     }
@@ -512,11 +512,11 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(12);
 
         $response1 = $this->runApp('PUT', '/api/user/player/101/remove-role/a');
-        $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Roles::APP_MANAGER);
+        $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Role::APP_MANAGER);
         $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/a');
 
         // user is a valid role, but may not be removed
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::USER);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::USER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -533,7 +533,7 @@ class PlayerControllerTest extends WebTestCase
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
         $res = $this->runApp('PUT',
-            '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::APP_ADMIN, null, null, [
+            '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN, null, null, [
             EntityManagerInterface::class => $em,
             LoggerInterface::class => $this->log
         ]);
@@ -545,8 +545,8 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $r1 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::APP_ADMIN);
-        $r2 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Roles::APP_ADMIN);
+        $r1 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
@@ -554,7 +554,7 @@ class PlayerControllerTest extends WebTestCase
 
         $player = $this->pr->find($this->player->getId());
         $this->assertSame(
-            [Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
+            [Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
         );
     }
@@ -591,7 +591,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $this->player->getId(),
             'name' => 'Admin',
-            'roles' => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::USER, Roles::USER_ADMIN],
+            'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             'characters' => [
                 [
                     'id' => 12,
@@ -700,7 +700,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
 
         // deactivate deletion feature
-        $setting = new SystemVariable(Variables::ALLOW_CHARACTER_DELETION);
+        $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
         $this->h->getEm()->persist($setting);
         $this->h->getEm()->flush();
@@ -740,13 +740,13 @@ class PlayerControllerTest extends WebTestCase
         $this->h->emptyDb();
 
         $this->h->addRoles([
-            Roles::USER,
-            Roles::APP,
-            Roles::APP_ADMIN,
-            Roles::APP_MANAGER,
-            Roles::GROUP_ADMIN,
-            Roles::GROUP_MANAGER,
-            Roles::USER_ADMIN
+            Role::USER,
+            Role::APP,
+            Role::APP_ADMIN,
+            Role::APP_MANAGER,
+            Role::GROUP_ADMIN,
+            Role::GROUP_MANAGER,
+            Role::USER_ADMIN
         ]);
 
         $gs = $this->h->addGroups(['test-pub', 'test-private']);
@@ -754,16 +754,16 @@ class PlayerControllerTest extends WebTestCase
         $this->group = $gs[0];
         $this->gPrivateId = $gs[1]->getId();
 
-        $this->userId = $this->h->addCharacterMain('User', 10, [Roles::USER])->getPlayer()->getId();
+        $this->userId = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer()->getId();
 
         $this->managerId = $this->h->addCharacterMain(
-            'Manager', 11, [Roles::USER, Roles::APP_MANAGER, Roles::GROUP_MANAGER])->getPlayer()->getId();
+            'Manager', 11, [Role::USER, Role::APP_MANAGER, Role::GROUP_MANAGER])->getPlayer()->getId();
 
         $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
         $corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
 
         $char = $this->h->addCharacterMain('Admin', 12,
-            [Roles::USER, Roles::APP_ADMIN, Roles::USER_ADMIN, Roles::GROUP_ADMIN]);
+            [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]);
         $char->setCorporation($corp);
         $this->player = $char->getPlayer();
 

@@ -1,5 +1,5 @@
 <?php
-namespace Brave\Core;
+namespace Brave\Core\Service;
 
 /**
  * Wraps the config array to make it injectable.

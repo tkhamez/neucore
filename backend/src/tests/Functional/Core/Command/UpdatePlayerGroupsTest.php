@@ -5,7 +5,7 @@ namespace Tests\Functional\Core\Command;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
-use Tests\Functional\ConsoleTestCase;
+use Tests\ConsoleTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;

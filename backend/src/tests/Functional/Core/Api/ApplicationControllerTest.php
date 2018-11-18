@@ -2,12 +2,11 @@
 
 namespace Tests\Functional\Core\Api;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Entity\Group;
-use Brave\Core\Variables;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Alliance;
@@ -113,7 +112,7 @@ class ApplicationControllerTest extends WebTestCase
         $this->setUpDb();
 
         // activate "deactivated accounts"
-        $setting = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
         $setting->setValue('1');
         $this->helper->getEm()->persist($setting);
         $this->helper->getEm()->flush();
@@ -133,7 +132,7 @@ class ApplicationControllerTest extends WebTestCase
         $this->setUpDb();
 
         // activate "deactivated accounts"
-        $setting = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
         $setting->setValue('1');
         $this->helper->getEm()->persist($setting);
         $this->helper->getEm()->flush();
@@ -201,7 +200,7 @@ class ApplicationControllerTest extends WebTestCase
         $this->setUpDb();
 
         // activate "deactivated accounts"
-        $setting = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
         $setting->setValue('1');
         $this->helper->getEm()->persist($setting);
         $this->helper->getEm()->flush();
@@ -428,7 +427,7 @@ class ApplicationControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
 
-        $char = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $char->setMain(false);
         $this->helper->getEm()->flush();
 
@@ -442,7 +441,7 @@ class ApplicationControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
-        $char = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
@@ -491,7 +490,7 @@ class ApplicationControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $aid = $this->helper->addApp('A1', 's1', ['app'])->getId();
-        $char = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':s1')];
@@ -539,7 +538,7 @@ class ApplicationControllerTest extends WebTestCase
         $app->addGroup($groups[4]);
         $this->appId = $app->getId();
 
-        $char1 = $this->helper->addCharacterMain('C1', 123, [Roles::USER]);
+        $char1 = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $char1->setValidToken(true);
         $char2 = $this->helper->addCharacterToPlayer('C2', 456, $char1->getPlayer());
         $char2->setValidToken(true);

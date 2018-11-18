@@ -23,10 +23,51 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('nam', $var->getName());
     }
 
-    public function testSetGetValue()
+    public function testSetValueAllowCharacterDeletion()
+    {
+        $var = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
+        $this->assertSame('0', $var->setValue('0')->getValue());
+        $this->assertSame('1', $var->setValue('1')->getValue());
+        $this->assertSame('1', $var->setValue('some text')->getValue());
+        $this->assertSame('0', $var->setValue('')->getValue());
+    }
+
+    public function testSetValueGroupsRequireValidToken()
+    {
+        $var = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        $this->assertSame('0', $var->setValue('0')->getValue());
+        $this->assertSame('1', $var->setValue('1')->getValue());
+        $this->assertSame('1', $var->setValue('some text')->getValue());
+        $this->assertSame('0', $var->setValue('')->getValue());
+    }
+
+    public function testSetValueShowPreviewBanner()
+    {
+        $var = new SystemVariable(SystemVariable::SHOW_PREVIEW_BANNER);
+        $this->assertSame('0', $var->setValue('0')->getValue());
+        $this->assertSame('1', $var->setValue('1')->getValue());
+        $this->assertSame('1', $var->setValue('some text')->getValue());
+        $this->assertSame('0', $var->setValue('')->getValue());
+    }
+
+    public function testSetValueMailCharacter()
+    {
+        $var = new SystemVariable(SystemVariable::MAIL_CHARACTER);
+        $this->assertSame('', $var->setValue('')->getValue());
+        $this->assertSame('Char name', $var->setValue('Char name')->getValue());
+    }
+
+    public function testSetValueMailToken()
+    {
+        $var = new SystemVariable(SystemVariable::MAIL_CHARACTER);
+        $this->assertSame('', $var->setValue('')->getValue());
+        $this->assertSame('{}', $var->setValue('{}')->getValue());
+    }
+
+    public function testSetGetScope()
     {
         $var = new SystemVariable('nam');
-        $this->assertSame($var, $var->setValue('val'));
-        $this->assertSame('val', $var->getValue());
+        $this->assertSame($var, $var->setScope(SystemVariable::SCOPE_PUBLIC));
+        $this->assertSame(SystemVariable::SCOPE_PUBLIC, $var->getScope());
     }
 }

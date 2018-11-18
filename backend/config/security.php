@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Roles;
+use Brave\Core\Entity\Role;
 
 /**
  * Required roles for routes.
@@ -8,50 +8,49 @@ use Brave\Core\Roles;
  * First match will be used, matched by "starts-with"
  */
 return [
-    '/api/app' => [Roles::APP],
+    '/api/app' => [Role::APP],
 
-    '/api/user/alliance' => [Roles::GROUP_ADMIN],
+    '/api/user/alliance' => [Role::GROUP_ADMIN],
 
-    '/api/user/app/{id}/change-secret' => [Roles::APP_MANAGER],
-    '/api/user/app/{id}/groups'        => [Roles::APP_MANAGER, Roles::APP_ADMIN],
-    '/api/user/app'                    => [Roles::APP_ADMIN],
+    '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
+    '/api/user/app/{id}/groups'        => [Role::APP_MANAGER, Role::APP_ADMIN],
+    '/api/user/app'                    => [Role::APP_ADMIN],
 
-    '/api/user/auth/login-alt' => [Roles::USER],
-    '/api/user/auth/login'     => [Roles::ANONYMOUS, Roles::USER],
-    '/api/user/auth/callback'  => [Roles::ANONYMOUS, Roles::USER],
-    '/api/user/auth/result'    => [Roles::ANONYMOUS, Roles::USER],
+    '/api/user/auth/login'     => [Role::ANONYMOUS, Role::USER],
+    '/api/user/auth/callback'  => [Role::ANONYMOUS, Role::USER],
+    '/api/user/auth/result'    => [Role::ANONYMOUS, Role::USER],
 
-    '/api/user/character/find-by'        => [Roles::USER_ADMIN, Roles::GROUP_MANAGER],
-    '/api/user/character/find-player-of' => [Roles::USER_ADMIN, Roles::GROUP_MANAGER],
-    '/api/user/character/{id}/update'    => [Roles::USER, Roles::USER_ADMIN],
+    '/api/user/character/find-by'        => [Role::USER_ADMIN, Role::GROUP_MANAGER],
+    '/api/user/character/find-player-of' => [Role::USER_ADMIN, Role::GROUP_MANAGER],
+    '/api/user/character/{id}/update'    => [Role::USER, Role::USER_ADMIN],
 
-    '/api/user/corporation' => [Roles::GROUP_ADMIN],
+    '/api/user/corporation' => [Role::GROUP_ADMIN],
 
-    '/api/user/esi/request' => [Roles::ESI],
+    '/api/user/esi/request' => [Role::ESI],
 
-    '/api/user/group/public'                => [Roles::USER],
-    '/api/user/group/all'                   => [Roles::APP_ADMIN, Roles::GROUP_ADMIN],
-    '/api/user/group/{id}/applicants'       => [Roles::GROUP_MANAGER],
-    '/api/user/group/{id}/remove-applicant' => [Roles::GROUP_MANAGER],
-    '/api/user/group/{id}/add-member'       => [Roles::GROUP_MANAGER],
-    '/api/user/group/{id}/remove-member'    => [Roles::GROUP_MANAGER],
-    '/api/user/group/{id}/members'          => [Roles::GROUP_MANAGER],
-    '/api/user/group'                       => [Roles::GROUP_ADMIN],
+    '/api/user/group/public'                => [Role::USER],
+    '/api/user/group/all'                   => [Role::APP_ADMIN, Role::GROUP_ADMIN],
+    '/api/user/group/{id}/applicants'       => [Role::GROUP_MANAGER],
+    '/api/user/group/{id}/remove-applicant' => [Role::GROUP_MANAGER],
+    '/api/user/group/{id}/add-member'       => [Role::GROUP_MANAGER],
+    '/api/user/group/{id}/remove-member'    => [Role::GROUP_MANAGER],
+    '/api/user/group/{id}/members'          => [Role::GROUP_MANAGER],
+    '/api/user/group'                       => [Role::GROUP_ADMIN],
 
-    '/api/user/player/show'                  => [Roles::USER],
-    '/api/user/player/add-application'       => [Roles::USER],
-    '/api/user/player/remove-application'    => [Roles::USER],
-    '/api/user/player/leave-group'           => [Roles::USER],
-    '/api/user/player/set-main'              => [Roles::USER],
-    '/api/user/player/delete-character/{id}' => [Roles::USER],
-    '/api/user/player/app-managers'          => [Roles::APP_ADMIN],
-    '/api/user/player/group-managers'        => [Roles::GROUP_ADMIN],
-    '/api/user/player/all'                   => [Roles::USER_ADMIN, Roles::GROUP_MANAGER],
-    '/api/user/player/{id}/characters'       => [Roles::APP_ADMIN, Roles::GROUP_ADMIN, Roles::GROUP_MANAGER],
-    '/api/user/player'                       => [Roles::USER_ADMIN],
+    '/api/user/player/show'                  => [Role::USER],
+    '/api/user/player/add-application'       => [Role::USER],
+    '/api/user/player/remove-application'    => [Role::USER],
+    '/api/user/player/leave-group'           => [Role::USER],
+    '/api/user/player/set-main'              => [Role::USER],
+    '/api/user/player/delete-character/{id}' => [Role::USER],
+    '/api/user/player/app-managers'          => [Role::APP_ADMIN],
+    '/api/user/player/group-managers'        => [Role::GROUP_ADMIN],
+    '/api/user/player/all'                   => [Role::USER_ADMIN, Role::GROUP_MANAGER],
+    '/api/user/player/{id}/characters'       => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::GROUP_MANAGER],
+    '/api/user/player'                       => [Role::USER_ADMIN],
 
-    '/api/user/settings/system/list' => [Roles::ANONYMOUS, Roles::USER],
-    '/api/user/settings/system'      => [Roles::SETTINGS],
+    '/api/user/settings/system/list' => [Role::ANONYMOUS, Role::USER],
+    '/api/user/settings/system'      => [Role::SETTINGS],
 
-    '/api/user' => [Roles::USER],
+    '/api/user' => [Role::USER],
 ];

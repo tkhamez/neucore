@@ -2,13 +2,13 @@
 
 namespace Tests\Functional\Core\Command;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\ConsoleTestCase;
+use Tests\ConsoleTestCase;
 use Tests\Helper;
-use Tests\TestLogger;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class MakeAdminTest extends ConsoleTestCase
@@ -24,15 +24,15 @@ class MakeAdminTest extends ConsoleTestCase
         $h->emptyDb();
 
         $h->addRoles([
-            Roles::APP,
-            Roles::APP_ADMIN,
-            Roles::APP_MANAGER,
-            Roles::GROUP_ADMIN,
-            Roles::GROUP_MANAGER,
-            Roles::USER_ADMIN,
-            Roles::ESI,
+            Role::APP,
+            Role::APP_ADMIN,
+            Role::APP_MANAGER,
+            Role::GROUP_ADMIN,
+            Role::GROUP_MANAGER,
+            Role::USER_ADMIN,
+            Role::ESI,
         ]);
-        $h->addCharacterMain('Admin', 1234, [Roles::USER, Roles::APP_ADMIN]);
+        $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN]);
 
         self::$em = $h->getEm();
     }
@@ -45,13 +45,13 @@ class MakeAdminTest extends ConsoleTestCase
         $this->assertSame('Added all applicable roles to the player account "Admin"'."\n", $output);
 
         $expected = [
-            Roles::APP_ADMIN,
-            Roles::APP_MANAGER,
-            Roles::ESI,
-            Roles::GROUP_ADMIN,
-            Roles::GROUP_MANAGER,
-            Roles::USER,
-            Roles::USER_ADMIN,
+            Role::APP_ADMIN,
+            Role::APP_MANAGER,
+            Role::ESI,
+            Role::GROUP_ADMIN,
+            Role::GROUP_MANAGER,
+            Role::USER,
+            Role::USER_ADMIN,
         ];
         $actual = (new RepositoryFactory(self::$em))
             ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();
@@ -70,7 +70,7 @@ class MakeAdminTest extends ConsoleTestCase
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $log = new TestLogger('Test');
+        $log = new Logger('Test');
 
         $output = $this->runConsoleApp('make-admin', ['id' => 1234], [
             EntityManagerInterface::class => $em,

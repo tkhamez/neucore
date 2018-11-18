@@ -15,8 +15,8 @@ use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Tests\Helper;
-use Tests\OAuthTestProvider;
-use Tests\TestClient;
+use Tests\OAuthProvider;
+use Tests\Client;
 
 class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -26,7 +26,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     private $helper;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -54,8 +54,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->client = new TestClient();
-        $this->token = new OAuthToken(new OAuthTestProvider($this->client), new ObjectManager($em, $log), $log);
+        $this->client = new Client();
+        $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $log), $log);
         $this->service = new CharacterService($log, new ObjectManager($em, $log));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
     }

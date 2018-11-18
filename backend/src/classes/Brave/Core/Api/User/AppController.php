@@ -3,8 +3,8 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\App;
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
@@ -130,9 +130,9 @@ class AppController
             return $this->res->withStatus(400);
         }
 
-        $appRole = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Roles::APP]);
+        $appRole = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::APP]);
         if ($appRole === null) {
-            $this->log->critical('AppController->create(): Role "'.Roles::APP.'" not found.');
+            $this->log->critical('AppController->create(): Role "'.Role::APP.'" not found.');
             return $this->res->withStatus(500);
         }
 
@@ -455,7 +455,7 @@ class AppController
 
         // check if logged in user is manager of this app or has the role app-admin
         $player = $uas->getUser()->getPlayer();
-        if (! $player->hasRole(Roles::APP_ADMIN) && ! $app->isManager($player)) {
+        if (! $player->hasRole(Role::APP_ADMIN) && ! $app->isManager($player)) {
             return $this->res->withStatus(403);
         }
 

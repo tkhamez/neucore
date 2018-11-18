@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Core;
 
-use Brave\Core\Config;
+use Brave\Core\Service\Config;
 
 class ConfigTest extends \PHPUnit\Framework\TestCase
 {

@@ -4,14 +4,14 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Service\ObjectManager;
 use Tests\Helper;
-use Tests\TestLogger;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class ObjectManagerTest extends \PHPUnit\Framework\TestCase
 {
     public function testFlush()
     {
-        $om = new ObjectManager((new Helper())->getEm(), new TestLogger('Test'));
+        $om = new ObjectManager((new Helper())->getEm(), new Logger('Test'));
 
         $this->assertTrue($om->flush());
     }
@@ -21,7 +21,7 @@ class ObjectManagerTest extends \PHPUnit\Framework\TestCase
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $log = new TestLogger('Test');
+        $log = new Logger('Test');
 
         $om = new ObjectManager($em, $log);
 

@@ -16,7 +16,7 @@ use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Tests\Helper;
-use Tests\TestClient;
+use Tests\Client;
 use Tests\WriteErrorListener;
 
 class EsiDataTest extends \PHPUnit\Framework\TestCase
@@ -32,7 +32,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     private $em;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -69,7 +69,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
-        $this->client = new TestClient();
+        $this->client = new Client();
         $esi = new EsiApi($log, (new EsiApiFactory())->setClient($this->client));
 
         $repositoryFactory = new RepositoryFactory($this->em);

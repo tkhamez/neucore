@@ -2,8 +2,8 @@
 
 namespace Brave\Core\Migrations;
 
-use Brave\Core\Roles;
-use Brave\Core\Variables;
+use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -19,10 +19,10 @@ final class Version20181105182238 extends AbstractMigration
 
         $this->addSql('CREATE TABLE settings (name VARCHAR(255) NOT NULL, value TEXT DEFAULT NULL, PRIMARY KEY(name)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
 
-        $this->addSql('INSERT INTO roles (id, name) VALUES (9, "'.Roles::SETTINGS.'")');
-        $this->addSql('INSERT INTO settings (name, value) VALUES ("'.Variables::ALLOW_CHARACTER_DELETION.'", "0")');
-        $this->addSql('INSERT INTO settings (name, value) VALUES ("'.Variables::GROUPS_REQUIRE_VALID_TOKEN.'", "0")');
-        $this->addSql('INSERT INTO settings (name, value) VALUES ("'.Variables::SHOW_PREVIEW_BANNER.'", "0")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (9, "'.Role::SETTINGS.'")');
+        $this->addSql('INSERT INTO settings (name, value) VALUES ("'.SystemVariable::ALLOW_CHARACTER_DELETION.'", "0")');
+        $this->addSql('INSERT INTO settings (name, value) VALUES ("'.SystemVariable::GROUPS_REQUIRE_VALID_TOKEN.'", "0")');
+        $this->addSql('INSERT INTO settings (name, value) VALUES ("'.SystemVariable::SHOW_PREVIEW_BANNER.'", "0")');
     }
 
     public function down(Schema $schema) : void

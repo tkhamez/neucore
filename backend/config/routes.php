@@ -45,7 +45,6 @@ return [
     '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
 
     '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
-    '/api/user/auth/login-alt-url' => ['GET',  AuthController::class.'::loginAltUrl'],
     '/api/user/auth/callback'      => ['GET',  AuthController::class.'::callback'],
     '/api/user/auth/result'        => ['GET',  AuthController::class.'::result'],
     '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],

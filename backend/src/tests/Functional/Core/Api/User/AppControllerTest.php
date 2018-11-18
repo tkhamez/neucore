@@ -2,8 +2,8 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
@@ -12,9 +12,9 @@ use Brave\Core\Entity\App;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
-use Tests\TestLogger;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class AppControllerTest extends WebTestCase
@@ -116,14 +116,14 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $log = new TestLogger('test');
+        $log = new Logger('test');
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], null, [
             LoggerInterface::class => $log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertSame(
-            'AppController->create(): Role "'.Roles::APP.'" not found.',
+            'AppController->create(): Role "'.Role::APP.'" not found.',
             $log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -131,7 +131,7 @@ class AppControllerTest extends WebTestCase
     public function testCreate201()
     {
         $this->setupDb();
-        $this->helper->addRoles([Roles::APP]);
+        $this->helper->addRoles([Role::APP]);
         $this->loginUser(8);
 
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"]);
@@ -147,7 +147,7 @@ class AppControllerTest extends WebTestCase
 
         $this->assertSame(60, strlen($na->getSecret())); // the hash (blowfish) is 60 chars atm, may change.
         $this->assertSame(1, count($na->getRoles()));
-        $this->assertSame(Roles::APP, $na->getRoles()[0]->getName());
+        $this->assertSame(Role::APP, $na->getRoles()[0]->getName());
     }
 
     public function testRename403()
@@ -491,7 +491,7 @@ class AppControllerTest extends WebTestCase
         $em = $this->helper->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
 
-        $log = new TestLogger('Test');
+        $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
         $res = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid, null, null, [
@@ -565,9 +565,9 @@ class AppControllerTest extends WebTestCase
         $a->setSecret(password_hash('abc123', PASSWORD_DEFAULT));
         $this->em->persist($a);
 
-        $char = $this->helper->addCharacterMain('Admin', 8, [Roles::USER, Roles::APP_ADMIN]);
-        $char2 = $this->helper->addCharacterMain('Manager', 9, [Roles::USER, Roles::APP_MANAGER]);
-        $char3 = $this->helper->addCharacterMain('Manager', 10, [Roles::USER, Roles::APP_MANAGER]);
+        $char = $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::APP_ADMIN]);
+        $char2 = $this->helper->addCharacterMain('Manager', 9, [Role::USER, Role::APP_MANAGER]);
+        $char3 = $this->helper->addCharacterMain('Manager', 10, [Role::USER, Role::APP_MANAGER]);
         $this->pid = $char->getPlayer()->getId();
         $this->pid2 = $char2->getPlayer()->getId();
         $this->pid3 = $char3->getPlayer()->getId();

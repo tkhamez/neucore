@@ -70,16 +70,6 @@ composer test
 
 ### Doctrine
 
-Generate constructor, getters and setters:
-```
-vendor/bin/doctrine orm:generate-entities src/classes
-```
-
-Generate repository classes:
-```
-vendor/bin/doctrine orm:generate-repositories src/classes
-```
-
 Validate the mapping files
 ```
 vendor/bin/doctrine orm:validate-schema

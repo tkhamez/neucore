@@ -2,12 +2,11 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\SystemVariableRepository;
-use Brave\Core\Roles;
-use Brave\Core\Variables;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
 
 class SettingsControllerTest extends WebTestCase
@@ -43,9 +42,9 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/settings/system/list');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
-            ['name' => Variables::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => Variables::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
-            ['name' => Variables::SHOW_PREVIEW_BANNER, 'value' => '0'],
+            ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
+            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
+            ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
         ], $this->parseJsonBody($response));
     }
 
@@ -57,9 +56,24 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/settings/system/list');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
-            ['name' => Variables::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => Variables::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
-            ['name' => Variables::SHOW_PREVIEW_BANNER, 'value' => '0'],
+            ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
+            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
+            ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testSystemList200RoleSetting()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // roles: USER, SETTINGS
+
+        $response = $this->runApp('GET', '/api/user/settings/system/list');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
+            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
+            ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
+            ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
         ], $this->parseJsonBody($response));
     }
 
@@ -67,7 +81,7 @@ class SettingsControllerTest extends WebTestCase
     {
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.Variables::ALLOW_CHARACTER_DELETION,
+            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1']
         );
         $this->assertEquals(403, $response1->getStatusCode());
@@ -77,7 +91,7 @@ class SettingsControllerTest extends WebTestCase
 
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.Variables::ALLOW_CHARACTER_DELETION,
+            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1']
         );
         $this->assertEquals(403, $response2->getStatusCode());
@@ -103,18 +117,18 @@ class SettingsControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'PUT',
-            '/api/user/settings/system/change/'.Variables::ALLOW_CHARACTER_DELETION,
+            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1']
         );
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            ['name' => Variables::ALLOW_CHARACTER_DELETION, 'value' => '1'],
+            ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '1'],
             $this->parseJsonBody($response)
         );
 
         $this->em->clear();
-        $changed = $this->systemVariableRepository->find(Variables::ALLOW_CHARACTER_DELETION);
+        $changed = $this->systemVariableRepository->find(SystemVariable::ALLOW_CHARACTER_DELETION);
         $this->assertSame("1", $changed->getValue());
     }
 
@@ -122,20 +136,29 @@ class SettingsControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $this->helper->addCharacterMain('User', 5, [Roles::USER]);
-        $this->helper->addCharacterMain('Admin', 6, [Roles::SETTINGS]);
+        $this->helper->addCharacterMain('User', 5, [Role::USER]);
+        $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
 
-        $var1 = new SystemVariable(Variables::ALLOW_CHARACTER_DELETION);
-        $var2 = new SystemVariable(Variables::GROUPS_REQUIRE_VALID_TOKEN);
-        $var3 = new SystemVariable(Variables::SHOW_PREVIEW_BANNER);
+        $var1 = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
+        $var2 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        $var3 = new SystemVariable(SystemVariable::SHOW_PREVIEW_BANNER);
+        $var4 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
+        $var5 = new SystemVariable(SystemVariable::MAIL_TOKEN);
 
         $var1->setValue("0");
         $var2->setValue("1");
         $var3->setValue("0");
+        $var4->setValue("The char");
+        $var5->setValue('{"ID": "123", "TOKEN": "abc"}');
+
+        $var4->setScope(SystemVariable::SCOPE_SETTINGS);
+        $var5->setScope(SystemVariable::SCOPE_BACKEND);
 
         $this->em->persist($var1);
         $this->em->persist($var2);
         $this->em->persist($var3);
+        $this->em->persist($var4);
+        $this->em->persist($var5);
 
         $this->em->flush();
     }

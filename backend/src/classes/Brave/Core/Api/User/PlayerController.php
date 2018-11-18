@@ -3,11 +3,11 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
-use Brave\Core\Roles;
-use Brave\Core\Variables;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
 
@@ -45,13 +45,13 @@ class PlayerController
     private $objectManager;
 
     private $availableRoles = [
-        Roles::APP_ADMIN,
-        Roles::APP_MANAGER,
-        Roles::GROUP_ADMIN,
-        Roles::GROUP_MANAGER,
-        Roles::USER_ADMIN,
-        Roles::ESI,
-        Roles::SETTINGS,
+        Role::APP_ADMIN,
+        Role::APP_MANAGER,
+        Role::GROUP_ADMIN,
+        Role::GROUP_MANAGER,
+        Role::USER_ADMIN,
+        Role::ESI,
+        Role::SETTINGS,
     ];
 
     public function __construct(
@@ -303,7 +303,7 @@ class PlayerController
      */
     public function appManagers(): Response
     {
-        $ret = $this->getPlayerByRole(Roles::APP_MANAGER);
+        $ret = $this->getPlayerByRole(Role::APP_MANAGER);
 
         return $this->res->withJson($ret);
     }
@@ -329,7 +329,7 @@ class PlayerController
      */
     public function groupManagers(): Response
     {
-        $ret = $this->getPlayerByRole(Roles::GROUP_MANAGER);
+        $ret = $this->getPlayerByRole(Role::GROUP_MANAGER);
 
         return $this->res->withJson($ret);
     }
@@ -611,7 +611,7 @@ class PlayerController
     {
         // check "allow deletion" settings
         $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => Variables::ALLOW_CHARACTER_DELETION]
+            ['name' => SystemVariable::ALLOW_CHARACTER_DELETION]
         );
         if ($allowDeletion && $allowDeletion->getValue() === '0') {
             return $this->res->withStatus(403);

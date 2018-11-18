@@ -3,8 +3,8 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Psr\Http\Message\ServerRequestInterface;
@@ -73,7 +73,7 @@ class UserAuth implements RoleProviderInterface
             }
         }
         if (count($roles) === 0) {
-            $roles[] = Roles::ANONYMOUS;
+            $roles[] = Role::ANONYMOUS;
         }
 
         return $roles;
@@ -108,9 +108,9 @@ class UserAuth implements RoleProviderInterface
 
         if ($char === null || $char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
             // first login or changed owner, create account
-            $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Roles::USER]);
+            $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
             if (count($userRole) !== 1) {
-                $this->log->critical('UserAuth::authenticate(): Role "'.Roles::USER.'" not found.');
+                $this->log->critical('UserAuth::authenticate(): Role "'.Role::USER.'" not found.');
                 return false;
             }
             if ($char === null) {

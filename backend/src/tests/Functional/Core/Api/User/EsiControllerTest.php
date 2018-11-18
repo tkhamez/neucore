@@ -2,11 +2,11 @@
 
 namespace Tests\Functional\Core\Api\User;
 
-use Brave\Core\Roles;
+use Brave\Core\Entity\Role;
 use GuzzleHttp\ClientInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
-use Tests\TestClient;
+use Tests\Client;
 
 class EsiControllerTest extends WebTestCase
 {
@@ -48,7 +48,7 @@ class EsiControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $httpClient = new TestClient();
+        $httpClient = new Client();
         $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
             200,
             [
@@ -81,7 +81,7 @@ class EsiControllerTest extends WebTestCase
         $helper = new Helper();
         $helper->emptyDb();
 
-        $helper->addCharacterMain('Admin', 6, [Roles::USER_ADMIN]);
-        $helper->addCharacterMain('Esi', 7, [Roles::ESI]);
+        $helper->addCharacterMain('Admin', 6, [Role::USER_ADMIN]);
+        $helper->addCharacterMain('Esi', 7, [Role::ESI]);
     }
 }

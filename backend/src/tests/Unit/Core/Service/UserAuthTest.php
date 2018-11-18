@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -12,7 +12,7 @@ use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
-use Tests\TestLogger;
+use Tests\Logger;
 
 class UserAuthTest extends \PHPUnit\Framework\TestCase
 {
@@ -27,7 +27,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     private $em;
 
     /**
-     * @var TestLogger
+     * @var Logger
      */
     private $log;
 
@@ -44,7 +44,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->helper->resetSessionData();
         $_SESSION = []; // "start" session for SessionData object and reset data
 
-        $this->log = new TestLogger('test');
+        $this->log = new Logger('test');
         $this->em = $this->helper->getEm();
 
         $objManager = new ObjectManager($this->em, $this->log);
@@ -60,17 +60,17 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testGetRolesNoAuth()
     {
         $roles = $this->service->getRoles();
-        $this->assertSame([Roles::ANONYMOUS], $roles);
+        $this->assertSame([Role::ANONYMOUS], $roles);
     }
 
     public function testGetRoles()
     {
-        $this->helper->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $this->helper->addCharacterMain('Test User', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $_SESSION['character_id'] = 9013;
 
         $roles = $this->service->getRoles();
 
-        $this->assertSame([Roles::USER, Roles::GROUP_MANAGER], $roles);
+        $this->assertSame([Role::USER, Role::GROUP_MANAGER], $roles);
     }
 
     public function testGetUserNoAuth()
@@ -81,7 +81,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testGetUser()
     {
-        $this->helper->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $this->helper->addCharacterMain('Test User', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $_SESSION['character_id'] = 9013;
 
         $user = $this->service->getUser();
@@ -96,14 +96,14 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
             new EveAuthentication(888, 'New User', 'char-owner-hash', $token, [])
         ));
         $this->assertSame(
-            'UserAuth::authenticate(): Role "'.Roles::USER.'" not found.',
+            'UserAuth::authenticate(): Role "'.Role::USER.'" not found.',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
 
     public function testAuthenticateNewUser()
     {
-        $this->helper->addRoles([Roles::USER]);
+        $this->helper->addRoles([Role::USER]);
         (new SessionData())->setReadOnly(false);
 
         $this->assertFalse(isset($_SESSION['character_id']));
@@ -125,7 +125,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($user->getValidToken());
         $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame($_SESSION['character_id'], $user->getId());
-        $this->assertSame([Roles::USER], $this->service->getRoles());
+        $this->assertSame([Role::USER], $this->service->getRoles());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
         #$this->assertTrue((new \DateTime())->diff($user->getLastLogin())->format('%s') < 2);
     }
@@ -133,7 +133,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAuthenticateExistingUser()
     {
         (new SessionData())->setReadOnly(false);
-        $char = $this->helper->addCharacterMain('Test User', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $char = $this->helper->addCharacterMain('Test User', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $player = $char->getPlayer();
 
         $this->assertSame('123', $char->getCharacterOwnerHash());
@@ -167,7 +167,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAuthenticateNewOwner()
     {
         (new SessionData())->setReadOnly(false);
-        $char1 = $this->helper->addCharacterMain('Test User1', 9013, [Roles::USER, Roles::GROUP_MANAGER]);
+        $char1 = $this->helper->addCharacterMain('Test User1', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $player = $char1->getPlayer();
         $char2 = $this->helper->addCharacterToPlayer('Test User2', 9014, $player);
 
@@ -194,7 +194,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAddAlt()
     {
         $_SESSION['character_id'] = 100;
-        $main = $this->helper->addCharacterMain('Main', 100, [Roles::USER]);
+        $main = $this->helper->addCharacterMain('Main', 100, [Role::USER]);
         $player = $main->getPlayer();
 
         $this->assertSame(1, count($player->getCharacters()));
@@ -220,8 +220,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAddAltExistingChar()
     {
         $_SESSION['character_id'] = 100;
-        $main1 = $this->helper->addCharacterMain('Main1', 100, [Roles::USER]);
-        $main2 = $this->helper->addCharacterMain('Main2', 200, [Roles::USER]);
+        $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+        $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
         $result = $this->service->addAlt(new EveAuthentication(200, 'Main2 renamed', 'hash', $token, ['scope1', 's2']));
@@ -243,7 +243,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
     public function testAddAltLoggedInChar()
     {
         $_SESSION['character_id'] = 100;
-        $main = $this->helper->addCharacterMain('Main1', 100, [Roles::USER]);
+        $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
         $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));
@@ -256,7 +256,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
     public function testAddAltNotAuthenticated()
     {
-        $this->helper->addCharacterMain('Main1', 100, [Roles::USER]);
+        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
         $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));

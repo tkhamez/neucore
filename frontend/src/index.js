@@ -73,7 +73,25 @@ window.Vue.mixin({
                 }
             }
             return fixed;
-        }
+        },
+
+        authResult: function() {
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.AuthApi().result(function(error, data) {
+                vm.loading(false);
+                if (error) {
+                    window.console.error(error);
+                    return;
+                }
+                if (data.success) {
+                    window.console.log(data.message);
+                } else {
+                    vm.message(data.message, 'error');
+                }
+            });
+        },
+
     }
 });
 
@@ -202,10 +220,7 @@ const app = new window.Vue({
             this.route = window.location.hash.substr(1).split('/');
 
             // handle routes that do not have a page
-            if (this.route[0] === 'login' || this.route[0] === 'login-alt') {
-                this.getAuthResult();
-                window.location.hash = '';
-            } else if (this.route[0] === 'logout') {
+            if (this.route[0] === 'logout') {
                 this.logout();
             }
 
@@ -224,22 +239,6 @@ const app = new window.Vue({
                     return;
                 }
                 app.settings = data;
-            });
-        },
-
-        getAuthResult: function() {
-            this.loading(true);
-            new this.swagger.AuthApi().result(function(error, data) {
-                app.loading(false);
-                if (error) {
-                    window.console.error(error);
-                    return;
-                }
-                if (data.success) {
-                    console.log(data.message);
-                } else {
-                    app.message(data.message, 'error');
-                }
             });
         },
 

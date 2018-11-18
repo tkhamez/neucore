@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Functional;
+namespace Tests;
 
 use Brave\Core\Application;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Runs the application.
  */
-class ConsoleTestCase extends \PHPUnit\Framework\TestCase
+class ConsoleTestCase extends TestCase
 {
     protected function runConsoleApp($name, $input = [], array $mocks = [])
     {

@@ -5,7 +5,7 @@ namespace Tests;
 use GuzzleHttp\ClientInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
 
-class OAuthTestProvider extends GenericProvider
+class OAuthProvider extends GenericProvider
 {
     public function __construct(ClientInterface $client = null)
     {

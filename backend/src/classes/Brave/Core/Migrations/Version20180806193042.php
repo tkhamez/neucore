@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Migrations;
 
-use Brave\Core\Roles;
+use Brave\Core\Entity\Role;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -15,7 +15,7 @@ final class Version20180806193042 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('INSERT INTO roles (id, name) VALUES (8, "'.Roles::ESI.'")');
+        $this->addSql('INSERT INTO roles (id, name) VALUES (8, "'.Role::ESI.'")');
     }
 
     public function down(Schema $schema) : void

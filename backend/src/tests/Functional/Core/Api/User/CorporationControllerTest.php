@@ -2,22 +2,22 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
-use Tests\TestClient;
+use Tests\Client;
 use Tests\WriteErrorListener;
 
 class CorporationControllerTest extends WebTestCase
@@ -51,7 +51,7 @@ class CorporationControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -72,7 +72,7 @@ class CorporationControllerTest extends WebTestCase
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $this->client = new TestClient();
+        $this->client = new Client();
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
@@ -386,8 +386,8 @@ class CorporationControllerTest extends WebTestCase
     {
         $this->h->emptyDb();
 
-        $this->h->addCharacterMain('User', 6, [Roles::USER]);
-        $this->h->addCharacterMain('Admin', 7, [Roles::USER, Roles::GROUP_ADMIN]);
+        $this->h->addCharacterMain('User', 6, [Role::USER]);
+        $this->h->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');

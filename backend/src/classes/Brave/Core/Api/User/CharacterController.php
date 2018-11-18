@@ -2,8 +2,8 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\EsiData;
@@ -221,7 +221,7 @@ class CharacterController
 
         // find character
         $char = null;
-        if ($player->hasRole(Roles::USER_ADMIN)) {
+        if ($player->hasRole(Role::USER_ADMIN)) {
             $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
             foreach ($player->getCharacters() as $c) {

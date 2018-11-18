@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Migrations;
 
-use Brave\Core\Roles;
+use Brave\Core\Entity\Role;
 use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
@@ -16,8 +16,8 @@ class Version20180218160551 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('UPDATE roles SET name = "'.Roles::USER.'" WHERE id = 1');
-        $this->addSql('UPDATE roles SET name = "'.Roles::APP.'" WHERE id = 2');
+        $this->addSql('UPDATE roles SET name = "'.Role::USER.'" WHERE id = 1');
+        $this->addSql('UPDATE roles SET name = "'.Role::APP.'" WHERE id = 2');
     }
 
     public function down(Schema $schema)

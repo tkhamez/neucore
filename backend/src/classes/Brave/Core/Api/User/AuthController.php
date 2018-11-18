@@ -2,8 +2,9 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Config;
-use Brave\Core\Roles;
+use Brave\Core\Service\Config;
+use Brave\Core\Entity\Role;
+use Brave\Core\Service\EveMail;
 use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
@@ -17,7 +18,6 @@ use Slim\Http\Response;
  *     name="Auth",
  *     description="User authentication."
  * )
- *
  * @SWG\Definition(
  *     definition="LoginResult",
  *     required={"success", "message"},
@@ -34,9 +34,24 @@ use Slim\Http\Response;
 class AuthController
 {
     /**
+     * A prefix for the OAuth state parameter that identifies an alt login.
+     *
+     * @var string
+     */
+    const STATE_PREFIX_ALT = 'a.';
+
+    /**
+     * A prefix for the OAuth state parameter that identifies an login
+     * of the character that is used to send mails.
+     *
+     * @var string
+     */
+    const STATE_PREFIX_MAIL = 'm.';
+
+    /**
      * @var Response
      */
-    private $res;
+    private $response;
 
     /**
      * @var SessionData
@@ -56,44 +71,27 @@ class AuthController
     /**
      * @var UserAuth
      */
-    private $auth;
+    private $userAuth;
 
     /**
-     * A prefix for the OAuth state parameter that identifies an alt login.
-     *
-     * @var string
+     * @var Config
      */
-    private $altLoginPrefix = '*';
-
-    /**
-     * Scopes for EVE SSO login.
-     *
-     * @var array
-     */
-    private $scopes;
+    private $config;
 
     public function __construct(
-        Response $res,
+        Response $response,
         SessionData $session,
         AuthenticationProvider $authProvider,
         LoggerInterface $log,
-        UserAuth $auth,
+        UserAuth $userAuth,
         Config $config
     ) {
-        $this->res = $res;
+        $this->response = $response;
         $this->session = $session;
-        $this->log = $log;
-        $this->auth = $auth;
-
-        $scopes = $config->get('eve')['scopes'];
-        if (trim((string) $scopes) !== '') {
-            $this->scopes = explode(' ', (string) $config->get('eve')['scopes']);
-        } else {
-            $this->scopes = ['publicData'];
-        }
-
-        $authProvider->setScopes($this->scopes);
         $this->authProvider = $authProvider;
+        $this->log = $log;
+        $this->userAuth = $userAuth;
+        $this->config = $config;
     }
 
     /**
@@ -108,64 +106,57 @@ class AuthController
      *         description="Optional URL for redirect after EVE login.",
      *         type="string"
      *     ),
+     *     @SWG\Parameter(
+     *         name="type",
+     *         in="query",
+     *         type="string",
+     *         description="Optional type of the login",
+     *         enum={"alt", "mail"}
+     *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="The EVE SSO login URL.",
      *         @SWG\Schema(type="string")
-     *     ),
-     *     @SWG\Response(
-     *         response="204",
-     *         description="No URL is returned if the user is already logged in."
      *     )
      * )
      */
     public function loginUrl(Request $request): Response
     {
-        // return empty string if already logged in
-        if (in_array(Roles::USER, $this->auth->getRoles($request))) {
-            return $this->res->withStatus(204);
+        switch ($request->getQueryParam('type', '')) {
+            case 'alt':
+                $prefix = self::STATE_PREFIX_ALT;
+                break;
+            case 'mail':
+                $prefix = self::STATE_PREFIX_MAIL;
+                break;
+            default:
+                $prefix = '';
         }
+        $state = $prefix . Random::chars(12);
 
-        return $this->res->withJson($this->getLoginUrl($request, false));
+        $this->session->set('auth_state', $state);
+        $this->session->set('auth_redirect', $request->getQueryParam('redirect', '/'));
+
+        $this->authProvider->setScopes($this->getLoginScopes($state));
+
+        return $this->response->withJson($this->authProvider->buildLoginUrl($state));
     }
 
     /**
-     * @SWG\Get(
-     *     path="/user/auth/login-alt-url",
-     *     operationId="loginAltUrl",
-     *     summary="EVE SSO login URL to add additional characters to an account.",
-     *     description="Needs role: user",
-     *     tags={"Auth"},
-     *     security={{"Session"={}}},
-     *     @SWG\Parameter(
-     *         name="redirect",
-     *         in="query",
-     *         description="Optional URL for redirect after EVE login.",
-     *         type="string"
-     *     ),
-     *     @SWG\Response(
-     *         response="200",
-     *         description="The EVE SSO login URL.",
-     *         @SWG\Schema(type="string")
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
+     * EVE SSO callback URL.
+     *
+     * @param Request $request
+     * @return Response
      */
-    public function loginAltUrl(Request $request): Response
-    {
-        return $this->res->withJson($this->getLoginUrl($request, true));
-    }
-
-    public function callback(Request $request): Response
+    public function callback(Request $request, EveMail $mailService): Response
     {
         $redirectUrl = $this->session->get('auth_redirect', '/');
         $this->session->delete('auth_redirect');
 
         $state = (string) $this->session->get('auth_state');
         $this->session->delete('auth_state');
+
+        $this->authProvider->setScopes($this->getLoginScopes($state));
 
         try {
             $eveAuth = $this->authProvider->validateAuthentication(
@@ -178,35 +169,40 @@ class AuthController
                 'success' => false,
                 'message' => $uve->getMessage(),
             ]);
-            return $this->res->withRedirect($redirectUrl);
+            return $this->response->withRedirect($redirectUrl);
         }
 
-        // normal or alt login?
-        $alt = $state[0] === $this->altLoginPrefix;
-
-        if ($alt) {
-            $success = $this->auth->addAlt($eveAuth);
-        } else {
-            $success = $this->auth->authenticate($eveAuth);
+        // handle login
+        switch (substr($state, 0, 2)) {
+            case self::STATE_PREFIX_ALT:
+                $success = $this->userAuth->addAlt($eveAuth);
+                $successMessage = 'Character added to player account.';
+                $errorMessage = 'Failed to add alt to account.';
+                break;
+            case self::STATE_PREFIX_MAIL:
+                if (in_array(Role::SETTINGS, $this->userAuth->getRoles())) {
+                    $success = $mailService->storeMailCharacter($eveAuth);
+                } else {
+                    $success = false;
+                }
+                $successMessage = 'Mail character authenticated.';
+                $errorMessage = 'Failed to store character.';
+                break;
+            default:
+                $success = $this->userAuth->authenticate($eveAuth);
+                $successMessage = 'Login successful.';
+                $errorMessage = 'Failed to authenticate user.';
         }
 
-        if ($success) {
-            $this->session->set('auth_result', [
-                'success' => true,
-                'message' => $alt ? 'Character added to player account.' : 'Login successful.'
-            ]);
-        } else {
-            $this->session->set('auth_result', [
-                'success' => false,
-                'message' => 'Could not authenticate user.'
-            ]);
-        }
+        $this->session->set('auth_result', [
+            'success' => $success,
+            'message' => $success ? $successMessage : $errorMessage
+        ]);
 
-        return $this->res->withRedirect($redirectUrl);
+        return $this->response->withRedirect($redirectUrl);
     }
 
     /**
-     *
      * @SWG\Get(
      *     path="/user/auth/result",
      *     operationId="result",
@@ -228,7 +224,7 @@ class AuthController
             'message' => 'No login attempt recorded.',
         ];
 
-        return $this->res->withJson($result ?: $default);
+        return $this->response->withJson($result ?: $default);
     }
 
     /**
@@ -253,19 +249,22 @@ class AuthController
     {
         $this->session->clear();
 
-        return $this->res->withStatus(204);
+        return $this->response->withStatus(204);
     }
 
-    private function getLoginUrl(Request $request, bool $altLogin): string
+    private function getLoginScopes($state)
     {
-        $statePrefix = $altLogin ? $this->altLoginPrefix : '';
-        $state = $statePrefix . Random::chars(12);
+        if (substr($state, 0, 2) === self::STATE_PREFIX_MAIL) {
+            return ['esi-mail.send_mail.v1'];
+        }
 
-        $url =  $this->authProvider->buildLoginUrl($state);
+        $scopes = (string) $this->config->get('eve')['scopes'];
+        if (trim($scopes) !== '') {
+            $scopes = explode(' ', $scopes);
+        } else {
+            $scopes = ['publicData'];
+        }
 
-        $this->session->set('auth_state', $state);
-        $this->session->set('auth_redirect', $request->getQueryParam('redirect', '/'));
-
-        return $url;
+        return $scopes;
     }
 }

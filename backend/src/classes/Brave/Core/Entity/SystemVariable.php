@@ -10,10 +10,61 @@ namespace Brave\Core\Entity;
  *     required={"name", "value"}
  * )
  * @Entity
- * @Table(name="settings")
+ * @Table(name="system_variables")
  */
 class SystemVariable implements \JsonSerializable
 {
+    /**
+     * Public variables.
+     */
+    const SCOPE_PUBLIC = 'public';
+
+    /**
+     * Variables that are only visible on the settings page.
+     */
+    const SCOPE_SETTINGS = 'settings';
+
+    /**
+     * Variables that are not exposed to the frontend.
+     */
+    const SCOPE_BACKEND = 'backend';
+
+    /**
+     * System settings variable, "0" or "1".
+     *
+     * Allow users to delete their character.
+     */
+    const ALLOW_CHARACTER_DELETION = 'allow_character_deletion';
+
+    /**
+     * System settings variable, "0" or "1".
+     *
+     * 1: The API for application does not return groups for a player account
+     *    if one or more of their characters has an invalid token.
+     *
+     * 0: ignore invalid tokens.
+     */
+    const GROUPS_REQUIRE_VALID_TOKEN = 'groups_require_valid_token';
+
+    /**
+     * System settings variable, "0" or "1"
+     *
+     * Shows or hides the "preview" banner on the Home screen.
+     */
+    const SHOW_PREVIEW_BANNER = 'show_preview_banner';
+
+    /**
+     * EVE character name for the character that can be used to send mails.
+     */
+    const MAIL_CHARACTER = 'mail_character';
+
+    /**
+     * ESI token to send mails.
+     *
+     * JSON with character ID, access token, expire time and refresh token.
+     */
+    const MAIL_TOKEN = 'mail_token';
+
     /**
      * Variable name.
      *
@@ -35,9 +86,11 @@ class SystemVariable implements \JsonSerializable
     private $value;
 
     /**
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
+     * @Column(type="string", length=16, options={"default" : "public"})
+     * @var string
      */
+    private $scope = self::SCOPE_PUBLIC;
+
     public function jsonSerialize()
     {
         return [
@@ -46,37 +99,48 @@ class SystemVariable implements \JsonSerializable
         ];
     }
 
-    /**
-     * Constructor
-     */
     public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * @param string $value
-     * @return SystemVariable
-     */
     public function setValue(string $value): SystemVariable
     {
+        switch ($this->name) {
+            case SystemVariable::ALLOW_CHARACTER_DELETION:
+            case SystemVariable::GROUPS_REQUIRE_VALID_TOKEN:
+            case SystemVariable::SHOW_PREVIEW_BANNER:
+                $value = ((bool) $value) ? '1' : '0';
+                break;
+            case SystemVariable::MAIL_CHARACTER:
+            case SystemVariable::MAIL_TOKEN:
+                break;
+        }
+
         $this->value = $value;
+
+        return $this;
+    }
+
+    public function getScope(): string
+    {
+        return $this->scope;
+    }
+
+    public function setScope(string $scope): SystemVariable
+    {
+        $this->scope = $scope;
+
         return $this;
     }
 }

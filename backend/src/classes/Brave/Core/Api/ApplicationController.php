@@ -2,9 +2,9 @@
 
 namespace Brave\Core\Api;
 
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
-use Brave\Core\Variables;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
@@ -694,7 +694,7 @@ class ApplicationController
 
         // check "deactivated" settings
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => Variables::GROUPS_REQUIRE_VALID_TOKEN]
+            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
         );
         if ($requireToken && $requireToken->getValue() === '1') {
             foreach ($char->getPlayer()->getCharacters() as $character) {

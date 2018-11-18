@@ -8,18 +8,18 @@ use GuzzleHttp\Psr7\Response;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
-use Tests\TestLogger;
-use Tests\TestClient;
+use Tests\Logger;
+use Tests\Client;
 
 class EsiApiTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var TestLogger
+     * @var Logger
      */
     private $log;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -30,8 +30,8 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->log = new TestLogger('Test');
-        $this->client = new TestClient();
+        $this->log = new Logger('Test');
+        $this->client = new Client();
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 

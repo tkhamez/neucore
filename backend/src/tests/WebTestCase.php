@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Functional;
+namespace Tests;
 
 use Brave\Core\Application;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -11,9 +12,8 @@ use Slim\Http\Response;
 /**
  * Runs the application.
  */
-class WebTestCase extends \PHPUnit\Framework\TestCase
+class WebTestCase extends TestCase
 {
-
     /**
      * Process the application given a request method and URI
      *

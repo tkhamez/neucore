@@ -2,8 +2,10 @@
 
 namespace Tests\Functional\Core\Api\User;
 
-use Brave\Core\Config;
-use Brave\Core\Roles;
+use Brave\Core\Api\User\AuthController;
+use Brave\Core\Service\Config;
+use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Slim\Session\SessionData;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -11,21 +13,21 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Helper;
-use Tests\Functional\WebTestCase;
-use Tests\OAuthTestProvider;
-use Tests\TestClient;
+use Tests\WebTestCase;
+use Tests\OAuthProvider;
+use Tests\Client;
 
 class AuthControllerTest extends WebTestCase
 {
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
     public function setUp()
     {
         $_SESSION = null;
-        $this->client = new TestClient();
+        $this->client = new Client();
     }
 
     public function testLoginUrl200()
@@ -45,27 +47,11 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(12, strlen($sess->get('auth_state')));
     }
 
-    public function testLoginUrl204()
+    public function testLoginUrl200Alt()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('U2', 2, [Roles::USER]);
-        $this->loginUser(2);
-
-        $response = $this->runApp('GET', '/api/user/auth/login-url');
-        $this->assertSame(204, $response->getStatusCode());
-        $this->assertSame('', $response->getBody()->__toString());
-    }
-
-    public function testLoginAltUrl200()
-    {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('User 1', 456, [Roles::USER], ['group-1']);
-        $this->loginUser(456);
-
         $redirect = '/index.html#auth-alt';
-        $response = $this->runApp('GET', '/api/user/auth/login-alt-url?redirect='.urlencode($redirect));
+        $params = 'redirect=' . urlencode($redirect) . '&type=alt';
+        $response = $this->runApp('GET', '/api/user/auth/login-url?' . $params);
 
         $this->assertSame(200, $response->getStatusCode());
 
@@ -75,14 +61,26 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame($redirect, $sess->get('auth_redirect'));
-        $this->assertSame('*', substr($sess->get('auth_state'), 0, 1));
-        $this->assertSame(13, strlen($sess->get('auth_state')));
+        $this->assertSame(AuthController::STATE_PREFIX_ALT, substr($sess->get('auth_state'), 0, 2));
+        $this->assertSame(14, strlen($sess->get('auth_state')));
     }
 
-    public function testLoginAltUrl403()
+    public function testLoginUrl200Mail()
     {
-        $response = $this->runApp('GET', '/api/user/auth/login-alt-url');
-        $this->assertSame(403, $response->getStatusCode());
+        $redirect = '/index.html#auth-mail';
+        $params = 'redirect=' . urlencode($redirect) . '&type=mail';
+        $response = $this->runApp('GET', '/api/user/auth/login-url?' . $params);
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $this->assertContains('https://login.eveonline.com', $body);
+
+        $sess = new SessionData();
+        $this->assertSame($redirect, $sess->get('auth_redirect'));
+        $this->assertSame(AuthController::STATE_PREFIX_MAIL, substr($sess->get('auth_state'), 0, 2));
+        $this->assertSame(14, strlen($sess->get('auth_state')));
     }
 
     public function testCallbackException()
@@ -93,11 +91,10 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/auth/callback?state=INVALID'); // fail early
         $this->assertSame(302, $response->getStatusCode());
 
-        $sess = new SessionData();
-        $this->assertSame(null, $sess->get('auth_state')); // test that it was deleted
+        $this->assertfalse(isset($_SESSION['auth_state'])); // test that it was deleted
         $this->assertSame(
             ['success' => false, 'message' => 'OAuth state mismatch.'],
-            $sess->get('auth_result')
+            $_SESSION['auth_result']
         );
     }
 
@@ -123,7 +120,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
             null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $log,
             Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
         ]);
@@ -131,10 +128,9 @@ class AuthControllerTest extends WebTestCase
 
         // fails because Role "user" is missing in database
 
-        $sess = new SessionData();
         $this->assertSame(
-            ['success' => false, 'message' => 'Could not authenticate user.'],
-            $sess->get('auth_result')
+            ['success' => false, 'message' => 'Failed to authenticate user.'],
+            $_SESSION['auth_result']
         );
     }
 
@@ -142,7 +138,7 @@ class AuthControllerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles([Roles::USER]);
+        $h->addRoles([Role::USER]);
 
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
@@ -159,13 +155,48 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
             null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
-        $sess = new SessionData();
-        $this->assertSame(['success' => true, 'message' => 'Login successful.'], $sess->get('auth_result'));
+        $this->assertSame(['success' => true, 'message' => 'Login successful.'], $_SESSION['auth_result']);
+    }
+
+    public function testCallbackAltLoginError()
+    {
+        (new Helper())->emptyDb();
+
+        $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
+        $_SESSION = ['auth_state' => $state];
+
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
+            new Response(200, [], '{
+                "CharacterID": 123,
+                "CharacterName": "Na",
+                "CharacterOwnerHash": "a",
+                "Scopes": "read-this"
+            }') // for getResourceOwner
+        );
+
+        $log = new Logger('ignore');
+        $log->pushHandler(new TestHandler());
+
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
+                GenericProvider::class => new OAuthProvider($this->client),
+                LoggerInterface::class => $log,
+                Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
+            ]);
+        $this->assertSame(302, $response->getStatusCode());
+
+        // fails because Role "user" is missing in database
+
+        $this->assertSame(
+            ['success' => false, 'message' => 'Failed to add alt to account.'],
+            $_SESSION['auth_result']
+        );
     }
 
     public function testCallbackAltLogin()
@@ -173,10 +204,10 @@ class AuthControllerTest extends WebTestCase
         $h = new Helper();
         $h->emptyDb();
 
-        $h->addCharacterMain('User1', 654, [Roles::USER], ['group1']);
+        $h->addCharacterMain('User1', 654, [Role::USER], ['group1']);
         $this->loginUser(654);
 
-        $state = '*1jdHR64hSdYf';
+        $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
@@ -191,15 +222,92 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
             null, null, [
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
         ]);
         $this->assertSame(302, $response->getStatusCode());
 
-        $sess = new SessionData();
         $this->assertSame(
             ['success' => true, 'message' => 'Character added to player account.'],
-            $sess->get('auth_result')
+            $_SESSION['auth_result']
+        );
+    }
+
+    public function testCallbackMailLoginNotAuthorized()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+
+        $var1 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
+        $var2 = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $h->getEm()->persist($var1);
+        $h->getEm()->persist($var2);
+        $h->getEm()->flush();
+
+        $h->addCharacterMain('Test User', 123456, [Role::USER]);
+        $this->loginUser(123456);
+
+        $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
+            new Response(200, [], '{
+                "CharacterID": 3,
+                "CharacterName": "N3",
+                "CharacterOwnerHash": "hs",
+                "Scopes": "esi-mail.send_mail.v1"
+            }') // for getResourceOwner()
+        );
+
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
+                GenericProvider::class => new OAuthProvider($this->client),
+            ]);
+        $this->assertSame(302, $response->getStatusCode());
+
+        $this->assertSame(
+            ['success' => false, 'message' => 'Failed to store character.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    public function testCallbackMailLogin()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+
+        $var1 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
+        $var2 = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $h->getEm()->persist($var1);
+        $h->getEm()->persist($var2);
+        $h->getEm()->flush();
+
+        $h->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
+        $this->loginUser(123456);
+
+        $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
+            new Response(200, [], '{
+                "CharacterID": 3,
+                "CharacterName": "N3",
+                "CharacterOwnerHash": "hs",
+                "Scopes": "esi-mail.send_mail.v1"
+            }') // for getResourceOwner()
+        );
+
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+            null, null, [
+                GenericProvider::class => new OAuthProvider($this->client),
+            ]);
+        $this->assertSame(302, $response->getStatusCode());
+
+        $this->assertSame(
+            ['success' => true, 'message' => 'Mail character authenticated.'],
+            $_SESSION['auth_result']
         );
     }
 
@@ -224,7 +332,7 @@ class AuthControllerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addCharacterMain('Test User', 123456, [Roles::USER]);
+        $h->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
         $response = $this->runApp('POST', '/api/user/auth/logout');

@@ -2,11 +2,10 @@
 
 namespace Tests;
 
-use GuzzleHttp\Client;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class TestClient extends Client
+class Client extends \GuzzleHttp\Client
 {
     /**
      * @var ResponseInterface[]

@@ -3,16 +3,16 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Tests\Helper;
-use Tests\TestLogger;
-use Tests\OAuthTestProvider;
-use Tests\TestClient;
+use Tests\Logger;
+use Tests\OAuthProvider;
+use Tests\Client;
 use Tests\WriteErrorListener;
 
 class OAuthTokenTest extends \PHPUnit\Framework\TestCase
@@ -23,12 +23,12 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     private $em;
 
     /**
-     * @var TestLogger
+     * @var Logger
      */
     private $log;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -46,14 +46,14 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles([Roles::USER]);
+        $h->addRoles([Role::USER]);
 
         $this->em = $h->getEm();
 
-        $this->log = new TestLogger('Test');
+        $this->log = new Logger('Test');
 
-        $this->client = new TestClient();
-        $oauth = new OAuthTestProvider($this->client);
+        $this->client = new Client();
+        $oauth = new OAuthProvider($this->client);
 
         $this->es = new OAuthToken($oauth, new ObjectManager($this->em, $this->log), $this->log);
 

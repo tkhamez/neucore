@@ -3,9 +3,8 @@
 namespace Tests;
 
 use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 
-class TestLogger extends Logger
+class Logger extends \Monolog\Logger
 {
     public function __construct(string $name, $handlers = array(), $processors = array())
     {

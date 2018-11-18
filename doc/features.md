@@ -10,6 +10,7 @@
 * Group and app manager
 * Group member management
 * Automatic group assignment for players based on corporations and alliances from all of their characters
+* Optional account deactivation when ESI tokens are invalid
 * An API for applications to query group membership of characters, corporations and alliances
 * Limit groups that an app can see
 * ESI request for authorized scopes for any character (very basic implementation so far)
@@ -112,7 +113,7 @@ Settings API
 This role is added to all player accounts.
 
 Auth API
-- EVE SSO login URL to add additional characters to an account. `/user/auth/login-alt-url`
+- EVE SSO login URL. `/user/auth/login-url`
 - User logout. `/user/auth/logout`
 
 Character API

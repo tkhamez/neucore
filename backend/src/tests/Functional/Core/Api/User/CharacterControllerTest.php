@@ -3,18 +3,18 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
-use Tests\OAuthTestProvider;
-use Tests\TestClient;
+use Tests\OAuthProvider;
+use Tests\Client;
 
 class CharacterControllerTest extends WebTestCase
 {
@@ -32,7 +32,7 @@ class CharacterControllerTest extends WebTestCase
     private $corpTicker = '-TTT-';
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -40,7 +40,7 @@ class CharacterControllerTest extends WebTestCase
     {
         $_SESSION = null;
         $this->helper = new Helper();
-        $this->client = new TestClient();
+        $this->client = new Client();
     }
 
     public function testShow403()
@@ -186,7 +186,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -219,7 +219,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -275,7 +275,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
-            GenericProvider::class => new OAuthTestProvider($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -285,11 +285,11 @@ class CharacterControllerTest extends WebTestCase
     private function setupDb()
     {
         $this->helper->emptyDb();
-        $char = $this->helper->addCharacterMain('User', 96061222, [Roles::USER]);
+        $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER]);
         $char->setValidToken(true)->setCharacterOwnerHash('coh1');
         $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();
-        $this->helper->addCharacterMain('Admin', 9, [Roles::USER, Roles::USER_ADMIN]);
+        $this->helper->addCharacterMain('Admin', 9, [Role::USER, Role::USER_ADMIN]);
 
         $groups = $this->helper->addGroups(['auto.bni']);
 

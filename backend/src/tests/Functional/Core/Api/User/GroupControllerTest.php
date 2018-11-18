@@ -5,16 +5,16 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Role;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 
@@ -743,14 +743,14 @@ class GroupControllerTest extends WebTestCase
         $this->gid2 = $g[1]->getId();
         $g[1]->setVisibility(Group::VISIBILITY_PUBLIC);
 
-        $this->helper->addCharacterMain('User', 6, [Roles::USER]);
+        $this->helper->addCharacterMain('User', 6, [Role::USER]);
 
         // group manager, but not of any group
-        $user = $this->helper->addCharacterMain('Group', 7, [Roles::USER, Roles::GROUP_MANAGER], ['group-one']);
+        $user = $this->helper->addCharacterMain('Group', 7, [Role::USER, Role::GROUP_MANAGER], ['group-one']);
         $this->pid2 = $user->getPlayer()->getId();
 
         $admin = $this->helper->addCharacterMain('Admin', 8,
-            [Roles::USER, Roles::GROUP_MANAGER, Roles::GROUP_ADMIN]);
+            [Role::USER, Role::GROUP_MANAGER, Role::GROUP_ADMIN]);
         $this->pid = $admin->getPlayer()->getId();
 
         $g[0]->addManager($admin->getPlayer());

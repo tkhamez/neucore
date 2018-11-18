@@ -2,9 +2,11 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
-use Brave\Core\Variables;
+use Brave\Core\Service\UserAuth;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -33,14 +35,21 @@ class SettingsController
      */
     private $objectManager;
 
+    /**
+     * @var UserAuth
+     */
+    private $userAuth;
+
     public function __construct(
         Response $response,
         RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
+        UserAuth $userAuth
     ) {
         $this->response = $response;
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
+        $this->userAuth = $userAuth;
     }
 
     /**
@@ -48,6 +57,7 @@ class SettingsController
      *     path="/user/settings/system/list",
      *     operationId="systemList",
      *     summary="List all settings.",
+     *     description="Some variables need the role 'settings'",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -59,9 +69,14 @@ class SettingsController
      */
     public function systemList(): Response
     {
-        return $this->response->withJson(
-            $this->repositoryFactory->getSystemVariableRepository()->findBy([], ['name' => 'ASC'])
-        );
+        $repository = $this->repositoryFactory->getSystemVariableRepository();
+        if (in_array(Role::SETTINGS, $this->userAuth->getRoles())) {
+            $scopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
+        } else {
+            $scopes = [SystemVariable::SCOPE_PUBLIC];
+        }
+
+        return $this->response->withJson($repository->findBy(['scope' => $scopes], ['name' => 'ASC']));
     }
 
     /**
@@ -110,8 +125,7 @@ class SettingsController
             return $this->response->withStatus(404);
         }
 
-        $value = (string) $request->getParam('value');
-        $variable->setValue(Variables::sanitizeValue($variable->getName(), $value));
+        $variable->setValue((string) $request->getParam('value'));
 
         if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);

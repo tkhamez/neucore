@@ -9,6 +9,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Config;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -17,32 +18,25 @@ use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use Tkhamez\Slim\RoleAuth\RoleMiddleware;
-use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
-
 use DI\Container;
 use DI\ContainerBuilder;
-
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
-
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use League\OAuth2\Client\Provider\GenericProvider;
-
 use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-
 use Slim\App;
-
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
+use Tkhamez\Slim\RoleAuth\RoleMiddleware;
+use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
 
 /**
  * App bootstrapping
@@ -260,7 +254,6 @@ class Application
             'route_include_pattern' => ['/api/user'],
             'route_blocking_pattern' => [
                 '/api/user/auth/login-url',
-                '/api/user/auth/login-alt-url',
                 '/api/user/auth/callback',
                 '/api/user/auth/logout'
             ],

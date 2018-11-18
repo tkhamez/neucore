@@ -4,18 +4,18 @@ namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Roles;
 use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\Functional\WebTestCase;
+use Tests\WebTestCase;
 use Tests\Helper;
-use Tests\TestClient;
+use Tests\Client;
 use Tests\WriteErrorListener;
 
 class AllianceControllerTest extends WebTestCase
@@ -44,7 +44,7 @@ class AllianceControllerTest extends WebTestCase
     private $alliRepo;
 
     /**
-     * @var TestClient
+     * @var Client
      */
     private $client;
 
@@ -63,7 +63,7 @@ class AllianceControllerTest extends WebTestCase
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
-        $this->client = new TestClient();
+        $this->client = new Client();
         $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
     }
 
@@ -338,8 +338,8 @@ class AllianceControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $this->helper->addCharacterMain('User', 6, [Roles::USER]);
-        $this->helper->addCharacterMain('Admin', 7, [Roles::USER, Roles::GROUP_ADMIN]);
+        $this->helper->addCharacterMain('User', 6, [Role::USER]);
+        $this->helper->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN]);
 
         $alli1 = (new Alliance())->setId(111)->setTicker('a1')->setName('alli 1');
         $alli2 = (new Alliance())->setId(222)->setTicker('a2')->setName('alli 2');

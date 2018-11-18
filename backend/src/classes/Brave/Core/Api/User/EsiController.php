@@ -2,7 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
-use Brave\Core\Config;
+use Brave\Core\Service\Config;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
