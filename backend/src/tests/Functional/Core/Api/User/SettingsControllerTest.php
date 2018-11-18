@@ -97,7 +97,20 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
-    public function testSystemChange404()
+    public function testSystemChange404InvalidName()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/settings/system/change/' . SystemVariable::MAIL_TOKEN,
+            ['value' => '']
+        );
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testSystemChange404InvalidScope()
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -130,6 +143,43 @@ class SettingsControllerTest extends WebTestCase
         $this->em->clear();
         $changed = $this->systemVariableRepository->find(SystemVariable::ALLOW_CHARACTER_DELETION);
         $this->assertSame("1", $changed->getValue());
+    }
+
+    public function testSystemChange200MailCharacterIsRemoveOnlyAndAlsoRemovesToken()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/settings/system/change/'.SystemVariable::MAIL_CHARACTER,
+            ['value' => 'does-not-matter']
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $changed1 = $this->systemVariableRepository->find(SystemVariable::MAIL_CHARACTER);
+        $changed2 = $this->systemVariableRepository->find(SystemVariable::MAIL_TOKEN);
+        $this->assertSame('', $changed1->getValue());
+        $this->assertSame('', $changed2->getValue());
+    }
+
+    public function testSendAccountDisabledMail403()
+    {
+        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testSendAccountDisabledMail200()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame('This mail is deactivated.', $this->parseJsonBody($response));
     }
 
     private function setupDb()

@@ -9,7 +9,6 @@ use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
 use Brave\Sso\Basics\AuthenticationProvider;
-use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -64,16 +63,6 @@ class AuthController
     private $authProvider;
 
     /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
-
-    /**
      * @var Config
      */
     private $config;
@@ -82,15 +71,11 @@ class AuthController
         Response $response,
         SessionData $session,
         AuthenticationProvider $authProvider,
-        LoggerInterface $log,
-        UserAuth $userAuth,
         Config $config
     ) {
         $this->response = $response;
         $this->session = $session;
         $this->authProvider = $authProvider;
-        $this->log = $log;
-        $this->userAuth = $userAuth;
         $this->config = $config;
     }
 
@@ -144,11 +129,8 @@ class AuthController
 
     /**
      * EVE SSO callback URL.
-     *
-     * @param Request $request
-     * @return Response
      */
-    public function callback(Request $request, EveMail $mailService): Response
+    public function callback(Request $request, UserAuth $userAuth, EveMail $mailService): Response
     {
         $redirectUrl = $this->session->get('auth_redirect', '/');
         $this->session->delete('auth_redirect');
@@ -175,12 +157,12 @@ class AuthController
         // handle login
         switch (substr($state, 0, 2)) {
             case self::STATE_PREFIX_ALT:
-                $success = $this->userAuth->addAlt($eveAuth);
+                $success = $userAuth->addAlt($eveAuth);
                 $successMessage = 'Character added to player account.';
                 $errorMessage = 'Failed to add alt to account.';
                 break;
             case self::STATE_PREFIX_MAIL:
-                if (in_array(Role::SETTINGS, $this->userAuth->getRoles())) {
+                if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
                     $success = $mailService->storeMailCharacter($eveAuth);
                 } else {
                     $success = false;
@@ -189,7 +171,7 @@ class AuthController
                 $errorMessage = 'Failed to store character.';
                 break;
             default:
-                $success = $this->userAuth->authenticate($eveAuth);
+                $success = $userAuth->authenticate($eveAuth);
                 $successMessage = 'Login successful.';
                 $errorMessage = 'Failed to authenticate user.';
         }

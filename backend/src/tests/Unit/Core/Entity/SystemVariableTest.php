@@ -50,18 +50,13 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('0', $var->setValue('')->getValue());
     }
 
-    public function testSetValueMailCharacter()
+    public function testSetValueMailAccountDisabledActive()
     {
-        $var = new SystemVariable(SystemVariable::MAIL_CHARACTER);
-        $this->assertSame('', $var->setValue('')->getValue());
-        $this->assertSame('Char name', $var->setValue('Char name')->getValue());
-    }
-
-    public function testSetValueMailToken()
-    {
-        $var = new SystemVariable(SystemVariable::MAIL_CHARACTER);
-        $this->assertSame('', $var->setValue('')->getValue());
-        $this->assertSame('{}', $var->setValue('{}')->getValue());
+        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE);
+        $this->assertSame('0', $var->setValue('0')->getValue());
+        $this->assertSame('1', $var->setValue('1')->getValue());
+        $this->assertSame('1', $var->setValue('some text')->getValue());
+        $this->assertSame('0', $var->setValue('')->getValue());
     }
 
     public function testSetGetScope()

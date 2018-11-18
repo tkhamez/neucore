@@ -117,4 +117,13 @@ class EsiApiTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(GetCharactersCharacterIdOk::class, $result);
         $this->assertSame('The Char.', $result->getName());
     }
+
+    public function testSendMail()
+    {
+        $this->client->setResponse(new Response(200, [], 373515628));
+
+        $result = $this->esi->sendMail(123, 'access-token', 'subject', 'body', [456]);
+
+        $this->assertSame(373515628, $result);
+    }
 }

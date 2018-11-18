@@ -6,6 +6,7 @@ use GuzzleHttp\ClientInterface;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
+use Swagger\Client\Eve\Api\MailApi;
 use Swagger\Client\Eve\Configuration;
 
 class EsiApiFactory
@@ -18,31 +19,11 @@ class EsiApiFactory
     private $client = null;
 
     /**
-     * @var Configuration
-     */
-    private $configuration;
-
-    /**
      * Optionally set a client.
      */
     public function setClient(ClientInterface $client): self
     {
         $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Set the access token for requests that need it.
-     *
-     * @param string $token Access token from OAuthToken->getToken()
-     * @return EsiApiFactory
-     * @see OAuthToken::getToken()
-     */
-    public function setToken(string $token): self
-    {
-        $this->configuration = Configuration::getDefaultConfiguration();
-        $this->configuration->setAccessToken($token);
 
         return $this;
     }
@@ -62,22 +43,28 @@ class EsiApiFactory
         return $this->getInstance(CharacterApi::class);
     }
 
-    private function getInstance(string $class)
+    /**
+     * @param string $accessToken
+     * @return MailApi
+     * @see OAuthToken::getToken()
+     */
+    public function getMailApi(string $accessToken): MailApi
     {
-        if (! isset($this->instances[$class])) {
-            switch ($class) {
-                case AllianceApi::class:
-                    $this->instances[$class] = new AllianceApi($this->client);
-                    break;
-                case CorporationApi::class:
-                    $this->instances[$class] = new CorporationApi($this->client);
-                    break;
-                case CharacterApi::class:
-                    $this->instances[$class] = new CharacterApi($this->client);
-                    break;
+        return $this->getInstance(MailApi::class, $accessToken);
+    }
+
+    private function getInstance(string $class, string $token = '')
+    {
+        $key = $class.$token;
+
+        if (! isset($this->instances[$key])) {
+            $configuration = new Configuration();
+            if ($token !== '') {
+                $configuration->setAccessToken($token);
             }
+            $this->instances[$key] = new $class($this->client, $configuration);
         }
 
-        return $this->instances[$class];
+        return $this->instances[$key];
     }
 }

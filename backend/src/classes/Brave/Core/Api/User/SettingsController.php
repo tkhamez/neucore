@@ -5,6 +5,7 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Service\EveMail;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Request;
@@ -40,6 +41,11 @@ class SettingsController
      */
     private $userAuth;
 
+    /**
+     * @var array
+     */
+    private $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
+
     public function __construct(
         Response $response,
         RepositoryFactory $repositoryFactory,
@@ -71,7 +77,7 @@ class SettingsController
     {
         $repository = $this->repositoryFactory->getSystemVariableRepository();
         if (in_array(Role::SETTINGS, $this->userAuth->getRoles())) {
-            $scopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
+            $scopes = $this->validScopes;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
         }
@@ -121,16 +127,51 @@ class SettingsController
     {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
-        if ($variable === null) {
+        if ($variable === null || ! in_array($variable->getScope(), $this->validScopes)) {
             return $this->response->withStatus(404);
         }
 
-        $variable->setValue((string) $request->getParam('value'));
+        if ($variable->getName() === SystemVariable::MAIL_CHARACTER) {
+            // if the mail character has been removed, delete the corresponding token as well
+            $variable->setValue(''); // only removal is allowed here
+            $var2 = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::MAIL_TOKEN);
+            $var2->setValue('');
+        } else {
+            $variable->setValue((string) $request->getParam('value'));
+        }
 
         if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 
         return $this->response->withJson($variable);
+    }
+
+    /**
+     * @SWG\Post(
+     *     path="/user/settings/system/send-account-disabled-mail",
+     *     operationId="sendAccountDisabledMail",
+     *     summary="Sends a 'Account disabled' test mail to the logged-in character.",
+     *     description="Needs role: settings",
+     *     tags={"Settings"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Error message, if available.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function sendAccountDisabledMail(EveMail $eveMail): Response
+    {
+        $charId = $this->userAuth->getUser()->getId();
+
+        $result = $eveMail->sendAccountDeactivatedMail($charId);
+
+        return $this->response->withJson($result);
     }
 }

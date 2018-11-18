@@ -66,6 +66,21 @@ class SystemVariable implements \JsonSerializable
     const MAIL_TOKEN = 'mail_token';
 
     /**
+     * Activate the "account disabled" EVE mail notification
+     */
+    const MAIL_ACCOUNT_DISABLED_ACTIVE = 'mail_account_disabled_active';
+
+    /**
+     * Subject for "account disabled" EVE mail notification
+     */
+    const MAIL_ACCOUNT_DISABLED_SUBJECT = 'mail_account_disabled_subject';
+
+    /**
+     * Body for "account disabled" EVE mail notification
+     */
+    const MAIL_ACCOUNT_DISABLED_BODY = 'mail_account_disabled_body';
+
+    /**
      * Variable name.
      *
      * @SWG\Property(maxLength=255)
@@ -120,10 +135,8 @@ class SystemVariable implements \JsonSerializable
             case SystemVariable::ALLOW_CHARACTER_DELETION:
             case SystemVariable::GROUPS_REQUIRE_VALID_TOKEN:
             case SystemVariable::SHOW_PREVIEW_BANNER:
+            case SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE:
                 $value = ((bool) $value) ? '1' : '0';
-                break;
-            case SystemVariable::MAIL_CHARACTER:
-            case SystemVariable::MAIL_TOKEN:
                 break;
         }
 

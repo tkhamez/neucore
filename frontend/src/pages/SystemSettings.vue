@@ -14,69 +14,95 @@
                     General
                 </div>
                 <div class="card-body">
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox"
-                                   name="groups_require_valid_token" value="1"
-                                   :checked="variables['groups_require_valid_token'] === '1'"
-                                   @change="changeSetting('groups_require_valid_token',
-                                                          $event.target.checked ? '1' : '0')"
-                            >
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" value="1"
+                               id="groups_require_valid_token" name="groups_require_valid_token"
+                               :checked="variables['groups_require_valid_token'] === '1'"
+                               @change="changeSetting('groups_require_valid_token',
+                                                      $event.target.checked ? '1' : '0')"
+                        >
+                        <label class="custom-control-label" for="groups_require_valid_token">
                             <em>Deactivate Accounts:</em>
                             Check this if the API for third-party applications should not return groups
                             for a player account if one or more of its characters have an invalid token.
                         </label>
                     </div>
                     <hr>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox"
-                                   name="allow_character_deletion" value="1"
-                                   :checked="variables['allow_character_deletion'] === '1'"
-                                   @change="changeSetting('allow_character_deletion',
-                                                          $event.target.checked ? '1' : '0')"
-                            >
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" value="1"
+                               id="allow_character_deletion" name="allow_character_deletion"
+                               :checked="variables['allow_character_deletion'] === '1'"
+                               @change="changeSetting('allow_character_deletion',
+                                                      $event.target.checked ? '1' : '0')"
+                        >
+                        <label class="custom-control-label" for="allow_character_deletion">
                             <em>Delete characters:</em>
                             Check to allow users to delete their character.
                         </label>
                     </div>
                     <hr>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox"
-                                   name="show_preview_banner" value="1"
-                                   :checked="variables['show_preview_banner'] === '1'"
-                                   @change="changeSetting('show_preview_banner',
-                                                          $event.target.checked ? '1' : '0')"
-                            >
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" value="1"
+                               id="show_preview_banner" name="show_preview_banner"
+                               :checked="variables['show_preview_banner'] === '1'"
+                               @change="changeSetting('show_preview_banner',
+                                                      $event.target.checked ? '1' : '0')"
+                        >
+                        <label class="custom-control-label" for="show_preview_banner">
                             <em>Preview:</em>
                             Check to shows the "preview" banner on the Home screen.
                         </label>
                     </div>
+
                 </div>
                 <div class="card-header">
                     Mail
                 </div>
                 <div class="card-body">
+                    <h4>Character</h4>
                     <p>
-                        Character:
-                        <span v-if="variables['mail_character'] === ''">
+                        <span v-if="mailCharacter === ''">
                             <a :href="loginUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
                         </span>
                         <span v-else>
-                            {{ variables['mail_character'] }}
-                            <button type="button" class="btn btn-danger"
-                                    v-on:click="changeSetting('mail_character', '')">
+                            <span class="text-info">{{ mailCharacter }}</span>
+                            <button type="button" class="btn btn-danger btn-sm ml-1"
+                                    v-on:click="mailCharacter = ''; changeSetting('mail_character', '')">
                                 remove
                             </button>
                         </span>
                     </p>
+
+                    <h4 class="mt-4">"Account disabled" Notification</h4>
                     <p>
-                        Subject:
+                        This EVE mail is sent when an account has been deactivated
+                        because one of its characters contains an invalid ESI token.
                     </p>
-                    <p>
-                        Body:
-                    </p>
+
+                    <button class="btn btn-success btn-sm" v-on:click="sendMailAccountDisabledTestMail()">
+                        Send test mail
+                    </button>
+                    Mail will be send to the logged-in user.
+
+                    <div class="custom-control custom-checkbox mb-2 mt-3">
+                        <input class="custom-control-input" type="checkbox" value="1"
+                               id="mail_account_disabled_active" name="mail_account_disabled_active"
+                               v-model="mailAccountDisabledActive"
+                               @change="changeSetting('mail_account_disabled_active',
+                                                      mailAccountDisabledActive ? '1' : '0')"
+                        >
+                        <label class="custom-control-label" for="mail_account_disabled_active">Activate mail</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label" for="mailAccountDisabledSubject">Subject</label>
+                        <input v-model="mailAccountDisabledSubject" type="text" class="form-control"
+                               id="mailAccountDisabledSubject">
+                    </div>
+                    <div class="form-group">
+                        <label for="mailAccountDisabledBody">Body</label>
+                        <textarea v-model="mailAccountDisabledBody" class="form-control"
+                                  id="mailAccountDisabledBody" rows="6"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,6 +126,10 @@ module.exports = {
             variables: {},
             api: null,
             loginUrl: null,
+            mailCharacter: '',
+            mailAccountDisabledActive: false,
+            mailAccountDisabledSubject: '',
+            mailAccountDisabledBody: '',
         }
     },
 
@@ -107,7 +137,7 @@ module.exports = {
         if (this.initialized) { // on page change
             this.init();
         }
-        this.readSettings();
+        this.$root.$emit('settingsChange'); // make sure the data is up to date
     },
 
     watch: {
@@ -118,7 +148,15 @@ module.exports = {
 
         settings: function() {
             this.readSettings();
-        }
+        },
+
+        mailAccountDisabledSubject: function() {
+            this.changeSettingDelayed(this, 'mail_account_disabled_subject', this.mailAccountDisabledSubject);
+        },
+
+        mailAccountDisabledBody: function() {
+            this.changeSettingDelayed(this, 'mail_account_disabled_body', this.mailAccountDisabledBody);
+        },
     },
 
     methods: {
@@ -132,7 +170,15 @@ module.exports = {
             for (let variable of this.settings) {
                 this.variables[variable.name] = variable.value;
             }
+            this.mailCharacter = this.variables['mail_character'];
+            this.mailAccountDisabledActive = this.variables['mail_account_disabled_active'] === '1';
+            this.mailAccountDisabledSubject = this.variables['mail_account_disabled_subject'];
+            this.mailAccountDisabledBody = this.variables['mail_account_disabled_body'];
         },
+
+        changeSettingDelayed: _.debounce((vm, name, value) => {
+            vm.changeSetting(name, value);
+        }, 250),
 
         changeSetting: function(name, value) {
             const vm = this;
@@ -142,7 +188,14 @@ module.exports = {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.$root.$emit('settingsChange');
+
+                // propagate only the change of variables that are used elsewhere
+                if (['groups_require_valid_token',
+                    'allow_character_deletion',
+                    'show_preview_banner'].indexOf(name) !== -1
+                ) {
+                    vm.$root.$emit('settingsChange');
+                }
             });
         },
 
@@ -151,7 +204,8 @@ module.exports = {
             vm.loginUrl = null;
 
             vm.loading(true);
-            new this.swagger.AuthApi().loginUrl({ redirect: '/#SystemSettings/login', type: 'mail' }, function(error, data) {
+            const params = { redirect: '/#SystemSettings/login', type: 'mail' };
+            new this.swagger.AuthApi().loginUrl(params, function(error, data) {
                 vm.loading(false);
                 if (error) { // 403 usually
                     return;
@@ -165,6 +219,22 @@ module.exports = {
                 return;
             }
             this.$root.authResult();
+        },
+
+        sendMailAccountDisabledTestMail: function() {
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.SettingsApi().sendAccountDisabledMail(function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                if (data !== '') {
+                    vm.$root.message(data, 'error');
+                } else {
+                    vm.$root.message('Mail sent.', 'success');
+                }
+            });
         },
     },
 }

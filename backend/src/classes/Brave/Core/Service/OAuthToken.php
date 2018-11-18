@@ -35,6 +35,31 @@ class OAuthToken
     }
 
     /**
+     * Refreshes the access token if necessary.
+     *
+     * @param AccessToken $existingToken
+     * @return \League\OAuth2\Client\Token\AccessToken
+     */
+    public function refreshAccessToken(AccessToken $existingToken): ?AccessToken
+    {
+        $token = $existingToken;
+        if ($existingToken->getExpires() && $existingToken->hasExpired()) {
+            try {
+                $token = $this->oauth->getAccessToken('refresh_token', [
+                    'refresh_token' => (string) $existingToken->getRefreshToken()
+                ]);
+            } catch (\Exception $e) {
+                // don't log "invalid_token" message as this is expected when the token is revoked
+                if ($e->getMessage() !== 'invalid_token') {
+                    $this->log->error($e->getMessage(), ['exception' => $e]);
+                }
+            }
+        }
+
+        return $token;
+    }
+
+    /**
      * Returns the access token for an EVE character.
      *
      * If the existing token has expired, a new one is fetched with the
@@ -52,7 +77,7 @@ class OAuthToken
 
         $newAccessToken = $this->refreshAccessToken($existingToken);
 
-        if ($newAccessToken) {
+        if ($newAccessToken->getToken() !== $existingToken->getToken()) {
             $character->setAccessToken($newAccessToken->getToken());
             $character->setExpires($newAccessToken->getExpires());
             if (! $this->objectManager->flush()) {
@@ -76,8 +101,7 @@ class OAuthToken
             return null;
         }
 
-        $newAccessToken = $this->refreshAccessToken($existingToken);
-        $token = $newAccessToken ? $newAccessToken : $existingToken;
+        $token = $this->refreshAccessToken($existingToken);
 
         $owner = null;
         try {
@@ -109,30 +133,5 @@ class OAuthToken
         }
 
         return $token;
-    }
-
-    /**
-     * Returns a new token only if the old was is expired.
-     *
-     * @param AccessToken $existingToken
-     * @return NULL|\League\OAuth2\Client\Token\AccessToken
-     */
-    private function refreshAccessToken(AccessToken $existingToken): ?AccessToken
-    {
-        $newAccessToken = null;
-        if ($existingToken->getExpires() && $existingToken->hasExpired()) {
-            try {
-                $newAccessToken = $this->oauth->getAccessToken('refresh_token', [
-                    'refresh_token' => (string) $existingToken->getRefreshToken()
-                ]);
-            } catch (\Exception $e) {
-                // don't log "invalid_token" message as this is expected when the token is revoked
-                if ($e->getMessage() !== 'invalid_token') {
-                    $this->log->error($e->getMessage(), ['exception' => $e]);
-                }
-            }
-        }
-
-        return $newAccessToken;
     }
 }

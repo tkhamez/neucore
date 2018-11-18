@@ -9,6 +9,7 @@ use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use League\OAuth2\Client\Token\AccessToken;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\OAuthProvider;
@@ -63,35 +64,86 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->esError = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
     }
 
-    public function testGetTokenNoExistingTokenException()
-    {
-        $this->es->getToken(new Character());
-
-        $this->assertSame(
-            'Required option not passed: "access_token"',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-    }
-
-    public function testGetTokenNewTokenException()
+    public function testRefreshAccessTokenNewTokenException()
     {
         $this->client->setResponse(new Response(500));
 
-        $c = new Character();
-        $c->setAccessToken('at');
-        $c->setExpires(1349067601); // 2012-10-01 + 1
+        $token = new AccessToken([
+            'access_token' => 'at',
+            'refresh_token' => '',
+            'expires' => 1349067601 // 2012-10-01 + 1
+        ]);
 
-        $this->es->getToken($c);
+        $tokenResult = $this->es->refreshAccessToken($token);
 
+        $this->assertSame($token, $tokenResult);
         $this->assertStringStartsWith(
             'An OAuth server error ',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
 
+    public function testRefreshAccessTokenNoRefresh()
+    {
+        $token = new AccessToken([
+            'access_token' => 'old-token',
+            'refresh_token' => '',
+            'expires' => time() + 10000
+        ]);
+
+        $this->assertSame('old-token', $this->es->refreshAccessToken($token)->getToken());
+    }
+
+    public function testRefreshAccessTokenNewToken()
+    {
+        $this->client->setResponse(new Response(200, [], '{
+            "access_token": "new-token",
+            "refresh_token": "",
+            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+        ));
+
+        $token = new AccessToken([
+            'access_token' => 'old-token',
+            'refresh_token' => '',
+            'expires' => 1519933545 // 03/01/2018 @ 7:45pm (UTC)
+        ]);
+
+        $tokenResult = $this->es->refreshAccessToken($token);
+
+        $this->assertNotSame($token, $tokenResult);
+        $this->assertSame('new-token', $tokenResult->getToken());
+    }
+
+    public function testGetTokenNoExistingTokenException()
+    {
+        $token = $this->es->getToken(new Character());
+
+        $this->assertSame('', $token);
+
+        // from Exception in createAccessTokenFromCharacter()
+        $this->assertSame(
+            'Required option not passed: "access_token"',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
     public function testGetTokenNewTokenUpdateDatabaseOk()
     {
-        $char = $this->setUpData();
+        $char = new Character();
+        $char->setId(123);
+        $char->setName('n');
+        $char->setMain(true);
+        $char->setCharacterOwnerHash('coh');
+        $char->setAccessToken('old-token');
+        $char->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
+        $this->em->persist($char);
+        $this->em->flush();
+
+        $this->client->setResponse(new Response(200, [], '{
+            "access_token": "new-token",
+            "refresh_token": "",
+            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+        ));
 
         $token = $this->es->getToken($char);
 
@@ -107,27 +159,27 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     public function testGetTokenNewTokenUpdateDatabaseError()
     {
-        $char = $this->setUpData();
+        $c = new Character();
+        $c->setId(123);
+        $c->setName('n');
+        $c->setMain(true);
+        $c->setCharacterOwnerHash('coh');
+        $c->setAccessToken('old-token');
+        $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
 
-        $token = $this->esError->getToken($char);
+        $this->client->setResponse(new Response(200, [], '{
+            "access_token": "new-token",
+            "refresh_token": "",
+            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+        ));
+
+        $token = $this->esError->getToken($c);
 
         $this->assertSame('', $token);
     }
 
-    public function testGetTokenNoRefresh()
-    {
-        $c = new Character();
-        $c->setAccessToken('old-token');
-        $c->setExpires(time() + 10000);
-
-        $this->assertSame('old-token', $this->es->getToken($c));
-    }
-
     public function testVerify()
     {
-        // can't really test "refreshAccessToken()" method here,
-        // but that is done above in testGetToken*() tests
-
         $this->client->setResponse(
             // for refreshAccessToken()
             new Response(200, [], '{
@@ -162,27 +214,5 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
         // check that the new token is *not* updated on the character
         $this->assertSame('at', $c->getAccessToken());
-    }
-
-    private function setUpData(): Character
-    {
-        $this->client->setResponse(new Response(200, [], '{
-            "access_token": "new-token",
-            "refresh_token": "",
-            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
-        ));
-
-        $c = new Character();
-        $c->setId(123);
-        $c->setName('n');
-        $c->setMain(true);
-        $c->setCharacterOwnerHash('coh');
-        $c->setAccessToken('old-token');
-        $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
-
-        $this->em->persist($c);
-        $this->em->flush();
-
-        return $c;
     }
 }
