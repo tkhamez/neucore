@@ -35,16 +35,17 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $em->flush();
 
         // run
-        $output = $this->runConsoleApp('update-player-groups', ['--sleep' => 0]);
+        $output = $this->runConsoleApp('update-player-groups');
 
         $em->clear();
 
-        $expectedOutput = [
-            'Updated '.$p1->getId(),
-            'Updated '.$p2->getId(),
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('update-player-groups: starting.', $actual[0]);
+        $this->assertStringEndsWith('Account '.$p1->getId().' groups updated', $actual[1]);
+        $this->assertStringEndsWith('Account '.$p2->getId().' groups updated', $actual[2]);
+        $this->assertStringEndsWith('update-player-groups: finished.', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
 
         # read result
         $actual = (new RepositoryFactory($em))->getPlayerRepository()->findBy([]);

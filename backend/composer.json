@@ -8,13 +8,11 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
-        "ext-zend-opcache": "*",
         "bravecollective/sso-basics": "0.1.0",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
         "league/oauth2-client": "^2.2",
         "monolog/monolog": "^1.17",
-        "ocramius/proxy-manager": "^2.1 <2.2.0",
         "php-di/slim-bridge": "^2.0",
         "slim/slim": "^3.1",
         "symfony/console": "^4.0",
@@ -30,7 +28,8 @@
     },
     "suggest": {
         "ext-apcu": "*",
-        "ext-xdebug": "*"
+        "ext-xdebug": "*",
+        "ext-zend-opcache": "*"
     },
     "autoload": {
         "psr-4": {

@@ -179,7 +179,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame('This mail is deactivated.', $this->parseJsonBody($response));
+        $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response));
     }
 
     private function setupDb()

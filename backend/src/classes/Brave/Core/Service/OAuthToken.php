@@ -49,7 +49,7 @@ class OAuthToken
                     'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
-                // don't log "invalid_token" message as this is expected when the token is revoked
+                // don't log an "invalid_token" message, as this is expected if the token was revoked
                 if ($e->getMessage() !== 'invalid_token') {
                     $this->log->error($e->getMessage(), ['exception' => $e]);
                 }
@@ -62,8 +62,8 @@ class OAuthToken
     /**
      * Returns the access token for an EVE character.
      *
-     * If the existing token has expired, a new one is fetched with the
-     * refresh token and saved in the database for the character.
+     * When the existing token has expired, a new one is fetched using the
+     * refresh token and stored in the database for the character.
      *
      * @param Character $character The entity should already be saved to the database.
      * @return string
@@ -75,17 +75,17 @@ class OAuthToken
             return "";
         }
 
-        $newAccessToken = $this->refreshAccessToken($existingToken);
+        $token = $this->refreshAccessToken($existingToken);
 
-        if ($newAccessToken->getToken() !== $existingToken->getToken()) {
-            $character->setAccessToken($newAccessToken->getToken());
-            $character->setExpires($newAccessToken->getExpires());
+        if ($token->getToken() !== $existingToken->getToken()) {
+            $character->setAccessToken($token->getToken());
+            $character->setExpires($token->getExpires());
             if (! $this->objectManager->flush()) {
                 return ""; // old token is invalid, new token could not be saved
             }
         }
 
-        return $newAccessToken ? $newAccessToken->getToken() : $existingToken->getToken();
+        return $token->getToken();
     }
 
     /**

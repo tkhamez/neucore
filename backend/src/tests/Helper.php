@@ -15,6 +15,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Slim\Session\SessionData;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
@@ -40,12 +41,16 @@ class Helper
     {
         unset($_SESSION);
 
-        $rp = new \ReflectionProperty(SessionData::class, 'readOnly');
+        try {
+            $rp = new \ReflectionProperty(SessionData::class, 'readOnly');
+        } catch (\ReflectionException $e) {
+            return;
+        }
         $rp->setAccessible(true);
         $rp->setValue(null, true);
     }
 
-    public function getEm(bool $discrete = false): EntityManagerInterface
+    public function getEm(bool $discrete = false): ?EntityManagerInterface
     {
         if (self::$em === null || $discrete) {
             $settings = (new Application())->loadSettings(true);
@@ -56,7 +61,11 @@ class Helper
                 $settings['config']['doctrine']['meta']['proxy_dir']
             );
 
-            $em = EntityManager::create($settings['config']['doctrine']['connection'], $config);
+            $em = null;
+            try {
+                $em = EntityManager::create($settings['config']['doctrine']['connection'], $config);
+            } catch (ORMException $e) {
+            }
 
             if ($discrete) {
                 return $em;

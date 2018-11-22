@@ -2,6 +2,10 @@
 
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
@@ -40,6 +44,11 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
      */
     private $client;
 
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     public function setUp()
     {
         $helper = new Helper();
@@ -49,16 +58,16 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->repoFactory = new RepositoryFactory($this->em);
         $this->client = new Client();
 
-        $logger = new Logger('test');
-        $objManager = new ObjectManager($this->em, $logger);
+        $this->logger = new Logger('test');
+        $objManager = new ObjectManager($this->em, $this->logger);
 
         $esiFactory = (new EsiApiFactory())->setClient($this->client);
-        $esiApi = new EsiApi($logger, $esiFactory);
+        $esiApi = new EsiApi($this->logger, $esiFactory);
 
         $oauth = new OAuthProvider($this->client);
-        $oauthToken = new OAuthToken($oauth, $objManager, $logger);
+        $oauthToken = new OAuthToken($oauth, $objManager, $this->logger);
 
-        $this->eveMail = new EveMail($this->repoFactory, $objManager, $oauthToken, $esiApi);
+        $this->eveMail = new EveMail($this->repoFactory, $objManager, $oauthToken, $esiApi, $this->logger);
     }
 
     public function testStoreMailCharacterFail()
@@ -104,27 +113,194 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         ], json_decode($tokenActual->getValue(), true));
     }
 
-    public function testSendMailDeactivated()
+    public function testAccountDeactivateFindCharacterPlayerNotFound()
     {
+        $result = $this->eveMail->accountDeactivatedFindCharacter(100100);
+        $this->assertNull($result);
+    }
+
+    public function testAccountDeactivateFindCharacterNoInvalidToken()
+    {
+        $player = (new Player())->setName('n');
+        $char = (new Character())->setId(100100)->setName('n')->setPlayer($player);
+        $char->setValidToken(true);
+        $this->em->persist($player);
+        $this->em->persist($char);
+        $this->em->flush();
+        $playerId = $player->getId();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+        $this->assertNull($result);
+    }
+
+    public function testAccountDeactivateFindCharacterMain()
+    {
+        $player = (new Player())->setName('n');
+        $char1 = (new Character())->setId(100100)->setName('n')->setPlayer($player);
+        $char2 = (new Character())->setId(100101)->setName('n')->setPlayer($player)->setMain(true);
+        $this->em->persist($player);
+        $this->em->persist($char1);
+        $this->em->persist($char2);
+        $this->em->flush();
+        $playerId = $player->getId();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+        $this->assertSame(100101, $result);
+    }
+
+    public function testAccountDeactivateFindCharacterNotMain()
+    {
+        $player = (new Player())->setName('n');
+        $char1 = (new Character())->setId(100100)->setName('n')->setPlayer($player);
+        $char2 = (new Character())->setId(100101)->setName('n')->setPlayer($player);
+        $this->em->persist($player);
+        $this->em->persist($char1);
+        $this->em->persist($char2);
+        $this->em->flush();
+        $playerId = $player->getId();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+        $this->assertSame(100100, $result);
+    }
+
+    public function testAccountDeactivateMaySendAllianceSettingsNotFound()
+    {
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('Alliance settings variable not found.', $result);
+    }
+
+    public function testAccountDeactivateMaySendCharacterNotFound()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $this->em->persist($varAlli);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('Character not found.', $result);
+    }
+
+    public function testAccountDeactivateMaySendPlayerNotFound()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $char = (new Character())->setName('n')->setId(100100);
+        $this->em->persist($varAlli);
+        $this->em->persist($char);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('Player account not found.', $result);
+    }
+
+    public function testAccountDeactivateMaySendAllianceDoesNotMatch()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $player = (new Player())->setName('n');
+        $char = (new Character())->setName('n')->setId(100100)->setPlayer($player);
+        $this->em->persist($varAlli);
+        $this->em->persist($player);
+        $this->em->persist($char);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('No character found on account that belongs to one of the configured alliances.', $result);
+    }
+
+    public function testAccountDeactivateMaySendTrue()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $player = (new Player())->setName('n');
+        $alli = (new Alliance())->setId(456);
+        $corp = (new Corporation())->setId(2020)->setAlliance($alli);
+        $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);
+        $this->em->persist($varAlli);
+        $this->em->persist($player);
+        $this->em->persist($alli);
+        $this->em->persist($corp);
+        $this->em->persist($char);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('', $result);
+    }
+
+    public function testAccountDeactivateIsActiveNotRequired()
+    {
+        $varToken = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('0');
+        $this->em->persist($varToken);
+        $this->em->flush();
+
+        $result = $this->eveMail->accountDeactivatedIsActive();
+        $this->assertSame('"Deactivate Accounts" settings is not enabled.', $result);
+    }
+
+    public function testAccountDeactivateIsActiveDeactivated()
+    {
+        $varToken = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('0');
+        $this->em->persist($varToken);
         $this->em->persist($varActive);
         $this->em->flush();
 
-        $result = $this->eveMail->sendAccountDeactivatedMail(123);
-        $this->assertSame('This mail is deactivated.', $result);
+        $result = $this->eveMail->accountDeactivatedIsActive();
+        $this->assertSame('Mail is deactivated.', $result);
     }
 
-    public function testSendMailMissingData()
+    public function testAccountDeactivateIsActive()
+    {
+        $varToken = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $this->em->persist($varToken);
+        $this->em->persist($varActive);
+        $this->em->flush();
+
+        $result = $this->eveMail->accountDeactivatedIsActive();
+        $this->assertSame('', $result);
+    }
+
+    public function testAccountDeactivatedSendMissingCharacter()
     {
         $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
         $this->em->persist($varActive);
         $this->em->flush();
 
-        $result = $this->eveMail->sendAccountDeactivatedMail(123);
-        $this->assertSame('Missing data.', $result);
+        $result = $this->eveMail->accountDeactivatedSend(123);
+        $this->assertSame('Missing character that can send mails.', $result);
     }
 
-    public function testSendMailMissingTokenData()
+    public function testAccountDeactivatedSendMissingSubject()
+    {
+        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
+        $this->em->persist($varActive);
+        $this->em->persist($varToken);
+        $this->em->flush();
+
+        $result = $this->eveMail->accountDeactivatedSend(123);
+        $this->assertSame('Missing subject.', $result);
+    }
+
+    public function testAccountDeactivatedSendMissingBody()
+    {
+        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
+        $this->em->persist($varActive);
+        $this->em->persist($varToken);
+        $this->em->persist($varSubject);
+        $this->em->flush();
+
+        $result = $this->eveMail->accountDeactivatedSend(123);
+        $this->assertSame('Missing body text.', $result);
+    }
+
+    public function testAccountDeactivatedSendMissingTokenData()
     {
         $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
         $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
@@ -136,11 +312,11 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->em->persist($varToken);
         $this->em->flush();
 
-        $result = $this->eveMail->sendAccountDeactivatedMail(123);
+        $result = $this->eveMail->accountDeactivatedSend(123);
         $this->assertSame('Missing token data.', $result);
     }
 
-    public function testSendMail()
+    public function testAccountDeactivatedSend()
     {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
         $varToken->setValue(\json_encode([
@@ -170,7 +346,12 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
             new Response(200, [], 373515628)
         );
 
-        $result = $this->eveMail->sendAccountDeactivatedMail(456);
+        $result = $this->eveMail->accountDeactivatedSend(456);
         $this->assertSame('', $result);
+    }
+
+    public function testAccountDeactivatedMailSent()
+    {
+
     }
 }

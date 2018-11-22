@@ -253,14 +253,7 @@ class ApplicationController
      */
     public function corpGroupsV1(string $cid, ServerRequestInterface $request): Response
     {
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
-        $result = $this->getGroupsFor('Corporation', (int) $cid, $appGroups);
-
-        if ($result === null) {
-            return $this->response->withStatus(404);
-        }
-
-        return $this->response->withJson($result['groups']);
+        return $this->corpOrAllianceGroups($cid, 'Corporation', $request);
     }
 
     /**
@@ -338,31 +331,7 @@ class ApplicationController
      */
     public function corpGroupsBulkV1(ServerRequestInterface $request): Response
     {
-        $corpIds = $this->getIntegerArrayFromBody($request);
-        if ($corpIds === null) {
-            return $this->response->withStatus(400);
-        }
-        if (count($corpIds) === 0) {
-            return $this->response->withJson([]);
-        }
-
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
-
-        $result = [];
-        foreach ($corpIds as $corpId) {
-            if ($corpId <= 0) {
-                continue;
-            }
-
-            $corpGroups = $this->getGroupsFor('Corporation', $corpId, $appGroups);
-            if ($corpGroups === null) {
-                continue;
-            }
-
-            $result[] = $corpGroups;
-        }
-
-        return $this->response->withJson($result);
+        return $this->corpOrAllianceGroupsBulkV1('Corporation', $request);
     }
 
     /**
@@ -397,14 +366,7 @@ class ApplicationController
      */
     public function allianceGroupsV1(string $aid, ServerRequestInterface $request): Response
     {
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
-        $result = $this->getGroupsFor('Alliance', (int) $aid, $appGroups);
-
-        if ($result === null) {
-            return $this->response->withStatus(404);
-        }
-
-        return $this->response->withJson($result['groups']);
+        return $this->corpOrAllianceGroups($aid, 'Alliance', $request);
     }
 
     /**
@@ -482,31 +444,7 @@ class ApplicationController
      */
     public function allianceGroupsBulkV1(ServerRequestInterface $request): Response
     {
-        $allianceIds = $this->getIntegerArrayFromBody($request);
-        if ($allianceIds === null) {
-            return $this->response->withStatus(400);
-        }
-        if (count($allianceIds) === 0) {
-            return $this->response->withJson([]);
-        }
-
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
-
-        $result = [];
-        foreach ($allianceIds as $allianceId) {
-            if ($allianceId <= 0) {
-                continue;
-            }
-
-            $allianceGroups = $this->getGroupsFor('Alliance', $allianceId, $appGroups);
-            if ($allianceGroups === null) {
-                continue;
-            }
-
-            $result[] = $allianceGroups;
-        }
-
-        return $this->response->withJson($result);
+        return $this->corpOrAllianceGroupsBulkV1('Alliance', $request);
     }
 
     /**
@@ -546,23 +484,16 @@ class ApplicationController
     public function mainV1(string $cid): Response
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
-
         if ($char === null) {
             return $this->response->withStatus(404);
         }
 
-        $result = null;
-        foreach ($char->getPlayer()->getCharacters() as $character) {
-            if ($character->getMain()) {
-                $result = $character;
-            }
-        }
-
-        if ($result === null) {
+        $main = $char->getPlayer()->getMain();
+        if ($main === null) {
             return $this->response->withStatus(204);
         }
 
-        return $this->response->withJson($result);
+        return $this->response->withJson($main);
     }
 
     /**
@@ -656,6 +587,46 @@ class ApplicationController
         return $this->response->withJson($result);
     }
 
+    private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request)
+    {
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+        $result = $this->getGroupsFor($type, (int) $id, $appGroups);
+
+        if ($result === null) {
+            return $this->response->withStatus(404);
+        }
+
+        return $this->response->withJson($result['groups']);
+    }
+
+    private function corpOrAllianceGroupsBulkV1(string $type, ServerRequestInterface $request): Response
+    {
+        $ids = $this->getIntegerArrayFromBody($request);
+        if ($ids === null) {
+            return $this->response->withStatus(400);
+        }
+        if (count($ids) === 0) {
+            return $this->response->withJson([]);
+        }
+
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+
+        $result = [];
+        foreach ($ids as $id) {
+            if ($id <= 0) {
+                continue;
+            }
+
+            $groups = $this->getGroupsFor($type, $id, $appGroups);
+            if ($groups === null) {
+                continue;
+            }
+
+            $result[] = $groups;
+        }
+
+        return $this->response->withJson($result);
+    }
 
     private function getIntegerArrayFromBody(ServerRequestInterface $request)
     {
@@ -696,12 +667,10 @@ class ApplicationController
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
         );
-        if ($requireToken && $requireToken->getValue() === '1') {
-            foreach ($char->getPlayer()->getCharacters() as $character) {
-                if (! $character->getValidToken()) {
-                    return $result;
-                }
-            }
+        if ($requireToken && $requireToken->getValue() === '1' &&
+            $char->getPlayer()->hasCharacterWithInvalidToken()
+        ) {
+            return $result;
         }
 
         foreach ($appGroups as $appGroup) {

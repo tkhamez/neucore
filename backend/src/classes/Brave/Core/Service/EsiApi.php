@@ -41,12 +41,12 @@ class EsiApi
         $this->esiApiFactory = $esiApiFactory;
     }
 
-    public function getLastErrorCode()
+    public function getLastErrorCode(): ?int
     {
         return $this->lastErrorCode;
     }
 
-    public function getLastErrorMessage()
+    public function getLastErrorMessage(): ?string
     {
         return $this->lastErrorMessage;
     }

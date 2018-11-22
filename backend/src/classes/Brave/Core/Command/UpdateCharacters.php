@@ -54,6 +54,11 @@ class UpdateCharacters extends Command
      */
     private $sleep;
 
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
@@ -80,21 +85,24 @@ class UpdateCharacters extends Command
                 'If the character owner hash has changed, that character will be deleted.'
             )
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each character update', 200);
+                'Time to sleep in milliseconds after each update', 200);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = (int) $input->getOption('sleep');
+        $this->output = $output;
 
-        $this->updateChars($output);
-        $this->updateCorps($output);
-        $this->updateAlliances($output);
+        $this->writeln('update-chars: starting.');
 
-        $output->writeln('All done.');
+        $this->updateChars();
+        $this->updateCorps();
+        $this->updateAlliances();
+
+        $this->writeln('update-chars: finished.');
     }
 
-    private function updateChars(OutputInterface $output)
+    private function updateChars()
     {
         $charIds = [];
         $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
@@ -104,30 +112,31 @@ class UpdateCharacters extends Command
 
         foreach ($charIds as $charId) {
             $this->objectManager->clear(); // detaches all objects from Doctrine
-            usleep($this->sleep * 1000);
 
             // update name, corp and alliance from ESI
             $updatedChar = $this->esiData->fetchCharacter($charId);
             if ($updatedChar === null) {
-                $output->writeln('Character ' . $charId.': error updating.');
+                $this->writeln('Character ' . $charId.': error updating.');
                 continue;
             }
 
             // check token and character owner hash - this may delete the character!
             $result = $this->charService->checkAndUpdateCharacter($updatedChar, $this->tokenService);
             if ($result === CharacterService::CHECK_TOKEN_OK) {
-                $output->writeln('Character ' . $charId.': update OK, token OK');
+                $this->writeln('Character ' . $charId.': update OK, token OK');
             } elseif ($result === CharacterService::CHECK_TOKEN_NOK) {
-                $output->writeln('Character ' . $charId.': update OK, token NOK');
+                $this->writeln('Character ' . $charId.': update OK, token NOK');
             } elseif ($result === CharacterService::CHECK_CHAR_DELETED) {
-                $output->writeln('Character ' . $charId.': update OK, character deleted');
+                $this->writeln('Character ' . $charId.': update OK, character deleted');
             } else {
-                $output->writeln('Character ' . $charId.': unknown result');
+                $this->writeln('Character ' . $charId.': unknown result');
             }
+
+            usleep($this->sleep * 1000);
         }
     }
 
-    private function updateCorps(OutputInterface $output)
+    private function updateCorps()
     {
         $corpIds = [];
         $corps = $this->corpRepo->findBy([], ['lastUpdate' => 'ASC']);
@@ -137,19 +146,20 @@ class UpdateCharacters extends Command
 
         foreach ($corpIds as $corpId) {
             $this->objectManager->clear();
-            usleep($this->sleep * 1000);
 
             $updatedCorp = $this->esiData->fetchCorporation($corpId);
             if ($updatedCorp === null) {
-                $output->writeln('Corporation ' . $corpId.': update NOK');
+                $this->writeln('Corporation ' . $corpId.': update NOK');
                 continue;
             } else {
-                $output->writeln('Corporation ' . $corpId.': update OK');
+                $this->writeln('Corporation ' . $corpId.': update OK');
             }
+
+            usleep($this->sleep * 1000);
         }
     }
 
-    private function updateAlliances(OutputInterface $output)
+    private function updateAlliances()
     {
         $alliIds = [];
         $allis = $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']);
@@ -159,15 +169,21 @@ class UpdateCharacters extends Command
 
         foreach ($alliIds as $alliId) {
             $this->objectManager->clear();
-            usleep($this->sleep * 1000);
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
-                $output->writeln('Alliance ' . $alliId.': update NOK');
+                $this->writeln('Alliance ' . $alliId.': update NOK');
                 continue;
             } else {
-                $output->writeln('Alliance ' . $alliId.': update OK');
+                $this->writeln('Alliance ' . $alliId.': update OK');
             }
+
+            usleep($this->sleep * 1000);
         }
+    }
+
+    private function writeln($text)
+    {
+        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
     }
 }

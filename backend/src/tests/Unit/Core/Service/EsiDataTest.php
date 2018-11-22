@@ -187,6 +187,9 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($char);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testFetchCharacterNoFlush()
     {
         $this->testHelper->emptyDb();
@@ -210,6 +213,9 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($charDb->getCorporation());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testFetchCharacter()
     {
         $this->testHelper->emptyDb();

@@ -83,6 +83,9 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('nam', $play->getName());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testSetGetLastUpdate()
     {
         $dt1 = new \DateTime('2018-04-26 18:59:36');
@@ -141,6 +144,9 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$c1], $play->getCharacters());
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testHasCharacter()
     {
         $char1 = new Character();
@@ -156,6 +162,34 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($player->hasCharacter($char1->getId()));
         $this->assertFalse($player->hasCharacter($char2->getId()));
+    }
+
+    public function testHasCharacterWithInvalidToken()
+    {
+        $char1 = (new Character())->setValidToken(true);
+        $char2 = new Character();
+
+        $player1 = (new Player())->addCharacter($char1);
+        $player2 = (new Player())->addCharacter($char1)->addCharacter($char2);
+
+        $this->assertFalse($player1->hasCharacterWithInvalidToken());
+        $this->assertTrue($player2->hasCharacterWithInvalidToken());
+
+    }
+
+    public function testGetMain()
+    {
+        $player = new Player();
+        $char1 = new Character();
+        $char2 = new Character();
+        $player->addCharacter($char1);
+        $player->addCharacter($char2);
+
+        $this->assertNull($player->getMain());
+
+        $char1->setMain(true);
+
+        $this->assertSame($char1,$player->getMain());
     }
 
     public function testAddGetRemoveApplication()
@@ -190,6 +224,9 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$g1], $play->getGroups());
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testRemoveGroupById()
     {
         $group1 = new Group();
@@ -213,6 +250,9 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($player->removeGroupById(3));
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testGetGroupIds()
     {
         $group1 = new Group();
@@ -230,6 +270,9 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([1, 2], $player->getGroupIds());
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testHasGroup()
     {
         $group1 = new Group();

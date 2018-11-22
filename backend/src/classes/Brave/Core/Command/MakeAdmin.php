@@ -47,11 +47,11 @@ class MakeAdmin extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $arg = $input->getArgument('id');
+        $charId = (int) $input->getArgument('id');
 
-        $char = $this->charRepo->find($arg);
+        $char = $this->charRepo->find($charId);
         if ($char === null) {
-            $output->writeln('Character with ID "' . $arg .'" not found');
+            $output->writeln('Character with ID "' . $charId .'" not found');
             return;
         }
 
@@ -64,6 +64,7 @@ class MakeAdmin extends Command
             Role::GROUP_MANAGER,
             Role::USER_ADMIN,
             Role::ESI,
+            Role::SETTINGS,
         ];
         foreach ($this->roleRepo->findBy(['name' => $newRoles]) as $newRole) {
             if (! $player->hasRole($newRole->getName())) {

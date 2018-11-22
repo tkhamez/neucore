@@ -10,7 +10,7 @@
 * Group and app manager
 * Group member management
 * Automatic group assignment for players based on corporations and alliances from all of their characters
-* Optional account deactivation when ESI tokens are invalid
+* Optional account deactivation with mail notification when ESI tokens are invalid
 * An API for applications to query group membership of characters, corporations and alliances
 * Limit groups that an app can see
 * ESI request for authorized scopes for any character (very basic implementation so far)
@@ -48,6 +48,10 @@ If the ESI token of one or more characters on an account is invalid, the account
 This means that the API for apps no longer returns groups for that account.
 
 As soon as the token is updated by logging in with this character, the account will be reactivated.
+
+A mail notification can be sent for deactivated accounts. This mail will only be sent once and 
+only if one of the characters in the account is a member of an alliance that was 
+previously configured.
 
 ## Automatic group assignment
 

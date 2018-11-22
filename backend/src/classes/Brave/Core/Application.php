@@ -3,6 +3,7 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\MakeAdmin;
+use Brave\Core\Command\SendAccountDisabledMail;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdatePlayerGroups;
 use Brave\Core\Factory\RepositoryFactory;
@@ -11,6 +12,7 @@ use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\EsiData;
+use Brave\Core\Service\EveMail;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -426,6 +428,12 @@ class Application
         $console->add(new UpdatePlayerGroups(
             $this->container->get(RepositoryFactory::class),
             $this->container->get(AutoGroupAssignment::class),
+            $this->container->get(ObjectManager::class)
+        ));
+
+        $console->add(new SendAccountDisabledMail(
+            $this->container->get(EveMail::class),
+            $this->container->get(RepositoryFactory::class),
             $this->container->get(ObjectManager::class)
         ));
     }

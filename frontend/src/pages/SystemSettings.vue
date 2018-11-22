@@ -82,7 +82,7 @@
                     <button class="btn btn-success btn-sm" v-on:click="sendMailAccountDisabledTestMail()">
                         Send test mail
                     </button>
-                    Mail will be send to the logged-in user.
+                    <small>Mail will be send to the logged-in user.</small>
 
                     <div class="custom-control custom-checkbox mb-2 mt-3">
                         <input class="custom-control-input" type="checkbox" value="1"
@@ -94,12 +94,22 @@
                         <label class="custom-control-label" for="mail_account_disabled_active">Activate mail</label>
                     </div>
                     <div class="form-group">
+                        <label class="col-form-label" for="mailAccountDisabledAlliances">Alliances</label>
+                        <input v-model="mailAccountDisabledAlliances" type="text" class="form-control"
+                               id="mailAccountDisabledAlliances">
+                        <small class="form-text text-muted">
+                            Comma-separated list of EVE alliance IDs.
+                            The mail is only sent if at least one character in a player account
+                            belongs to one of these alliances.
+                        </small>
+                    </div>
+                    <div class="form-group">
                         <label class="col-form-label" for="mailAccountDisabledSubject">Subject</label>
                         <input v-model="mailAccountDisabledSubject" type="text" class="form-control"
                                id="mailAccountDisabledSubject">
                     </div>
                     <div class="form-group">
-                        <label for="mailAccountDisabledBody">Body</label>
+                        <label for="mailAccountDisabledBody">Message</label>
                         <textarea v-model="mailAccountDisabledBody" class="form-control"
                                   id="mailAccountDisabledBody" rows="6"></textarea>
                     </div>
@@ -128,6 +138,7 @@ module.exports = {
             loginUrl: null,
             mailCharacter: '',
             mailAccountDisabledActive: false,
+            mailAccountDisabledAlliances: '',
             mailAccountDisabledSubject: '',
             mailAccountDisabledBody: '',
         }
@@ -148,6 +159,10 @@ module.exports = {
 
         settings: function() {
             this.readSettings();
+        },
+
+        mailAccountDisabledAlliances: function() {
+            this.changeSettingDelayed(this, 'mail_account_disabled_alliances', this.mailAccountDisabledAlliances);
         },
 
         mailAccountDisabledSubject: function() {
@@ -172,6 +187,7 @@ module.exports = {
             }
             this.mailCharacter = this.variables['mail_character'];
             this.mailAccountDisabledActive = this.variables['mail_account_disabled_active'] === '1';
+            this.mailAccountDisabledAlliances = this.variables['mail_account_disabled_alliances'];
             this.mailAccountDisabledSubject = this.variables['mail_account_disabled_subject'];
             this.mailAccountDisabledBody = this.variables['mail_account_disabled_body'];
         },

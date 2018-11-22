@@ -88,6 +88,9 @@ class AppTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$p1], $app->getManagers());
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testIsManager()
     {
         $app = new App();

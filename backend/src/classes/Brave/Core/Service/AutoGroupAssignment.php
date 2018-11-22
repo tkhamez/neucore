@@ -120,10 +120,15 @@ class AutoGroupAssignment
         // add groups
         foreach ($addIds as $addId) {
             $addGroup = $this->groupRepo->find($addId);
-            $player->addGroup($addGroup);
+            if ($addGroup) {
+                $player->addGroup($addGroup);
+            }
         }
 
-        $player->setLastUpdate(new \DateTime());
+        try {
+            $player->setLastUpdate(new \DateTime());
+        } catch (\Exception $e) {
+        }
 
         if (! $this->objectManager->flush()) {
             return null;

@@ -97,7 +97,10 @@ class CharacterService
         $token = $eveAuth->getToken();
 
         $char->setName($eveAuth->getCharacterName());
-        $char->setLastLogin(new \DateTime());
+        try {
+            $char->setLastLogin(new \DateTime());
+        } catch (\Exception $e) {
+        }
         $char->setValidToken(true);
 
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());

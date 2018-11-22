@@ -8,7 +8,6 @@ use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
 
 class UpdatePlayerGroups extends Command
 {
@@ -27,6 +26,11 @@ class UpdatePlayerGroups extends Command
      */
     private $objectManager;
 
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
     public function __construct(
         RepositoryFactory $repositoryFactory,
         AutoGroupAssignment $autoGroup,
@@ -42,14 +46,14 @@ class UpdatePlayerGroups extends Command
     protected function configure()
     {
         $this->setName('update-player-groups')
-            ->setDescription('Assigns groups to players based on corporation configuration.')
-            ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each character update', 200);
+            ->setDescription('Assigns groups to players based on corporation configuration.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $sleep = (int) $input->getOption('sleep');
+        $this->output = $output;
+
+        $this->writeln('update-player-groups: starting.');
 
         $playerIds = [];
         $players = $this->playerRepo->findBy([], ['lastUpdate' => 'ASC']);
@@ -62,13 +66,17 @@ class UpdatePlayerGroups extends Command
             $player = $this->autoGroup->assign($playerId);
             $this->objectManager->clear();
             if ($player === null) {
-                $output->writeln('Error updating ' . $playerId);
+                $this->writeln('Error updating ' . $playerId);
             } else {
-                $output->writeln('Updated ' . $playerId);
+                $this->writeln('Account ' . $playerId . ' groups updated');
             }
-            usleep($sleep * 1000);
         }
 
-        $output->writeln('All done.');
+        $this->writeln('update-player-groups: finished.');
+    }
+
+    private function writeln($text)
+    {
+        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
     }
 }

@@ -170,7 +170,13 @@ class SettingsController
     {
         $charId = $this->userAuth->getUser()->getId();
 
-        $result = $eveMail->sendAccountDeactivatedMail($charId);
+        $result = $eveMail->accountDeactivatedIsActive();
+        if ($result === '') {
+            $result = $eveMail->accountDeactivatedMaySend($charId);
+        }
+        if ($result === '') {
+            $result = $eveMail->accountDeactivatedSend($charId);
+        }
 
         return $this->response->withJson($result);
     }

@@ -133,8 +133,12 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $corp2 = (new Corporation())->setId(2)->setName('c2')->setTicker('t2')->addGroup($group1)->addGroup($group3)
             ->addGroup($group7)->setAlliance($alliance);
         $corp3 = (new Corporation())->setId(3)->setName('c2')->setTicker('t3')->addGroup($group4);
-        $player = (new Player())->setName('p')->addGroup($group4)->addGroup($group5)
-            ->setLastUpdate(new \DateTime('2018-04-28 17:56:54'));
+        $date = null;
+        try {
+            $date = new \DateTime('2018-04-28 17:56:54');
+        } catch (\Exception $e) {
+        }
+        $player = (new Player())->setName('p')->addGroup($group4)->addGroup($group5)->setLastUpdate($date);
         $char1 = (new Character())->setId(1)->setName('ch1')->setMain(true)->setPlayer($player)
             ->setCharacterOwnerHash('h1')->setAccessToken('t1')->setCorporation($corp1);
         $char2 = (new Character())->setId(2)->setName('ch2')->setMain(false)->setPlayer($player)

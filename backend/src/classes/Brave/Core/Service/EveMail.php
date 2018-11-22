@@ -3,10 +3,10 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Token\AccessToken;
+use Psr\Log\LoggerInterface;
 
 class EveMail
 {
@@ -26,20 +26,27 @@ class EveMail
     private $oauthToken;
 
     /**
-     * @var EsiApiFactory
+     * @var EsiApi
      */
     private $esiApi;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager,
         OAuthToken $oauthToken,
-        EsiApi $esiApi
+        EsiApi $esiApi,
+        LoggerInterface $logger
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
         $this->oauthToken = $oauthToken;
         $this->esiApi = $esiApi;
+        $this->logger = $logger;
     }
 
     public function storeMailCharacter(EveAuthentication $eveAuth)
@@ -64,27 +71,123 @@ class EveMail
     }
 
     /**
+     * Checks if the account has a character with an invalid token
+     * and finds the best character to send the mail to.
+     */
+    public function accountDeactivatedFindCharacter(int $playerId): ?int
+    {
+        // find player
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
+        if ($player === null) {
+            return null;
+        }
+
+        // Check if a token is invalid
+        $invalidChars = [];
+        foreach ($player->getCharacters() as $character) {
+            if (! $character->getValidToken()) {
+                $invalidChars[] = $character->getId();
+            }
+        }
+        if (count($invalidChars) === 0) {
+            return null;
+        }
+
+        // find the character to send the mail to, prefer main
+        $main = $player->getMain();
+        if ($main !== null) {
+            return $main->getId();
+        }
+        return $invalidChars[0];
+    }
+
+    /**
+     * @param int $characterId
+     * @return string The reason why the mail may not be send or empty
+     */
+    public function accountDeactivatedMaySend(int $characterId): string
+    {
+        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
+
+        // get configured alliances
+        $allianceVar = $sysVarRepo->find(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES);
+        if ($allianceVar === null) {
+            return 'Alliance settings variable not found.';
+        }
+        $alliances = explode(',', $allianceVar->getValue());
+
+        // get player
+        $charRepo = $this->repositoryFactory->getCharacterRepository();
+        $char = $charRepo->find($characterId);
+        if ($char === null) {
+            return 'Character not found.';
+        }
+        $player = $char->getPlayer();
+        if ($player === null) {
+            return 'Player account not found.';
+        }
+
+        // check if player account has at least one character in one of the configured alliances
+        $valid = false;
+        foreach ($player->getCharacters() as $character) {
+            if ($character->getCorporation() !== null &&
+                $character->getCorporation()->getAlliance() !== null &&
+                in_array($character->getCorporation()->getAlliance()->getId(), $alliances)
+            ) {
+                $valid = true;
+                break;
+            }
+        }
+        if (! $valid) {
+            return 'No character found on account that belongs to one of the configured alliances.';
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string The reason why the mail is not active or empty
+     */
+    public function accountDeactivatedIsActive(): string
+    {
+        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
+
+        // check if accounts will be disabled if a token is invalid
+        $validTokenRequired = $sysVarRepo->find(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        if ($validTokenRequired === null || $validTokenRequired->getValue() !== '1') {
+            return '"Deactivate Accounts" settings is not enabled.';
+        }
+
+        // check whether "account deactivated" mail is activated
+        $active = $sysVarRepo->find(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE);
+        if ($active === null || $active->getValue() !== '1') {
+            return 'Mail is deactivated.';
+        }
+
+        return '';
+    }
+
+    /**
      * @param int $recipient EVE character ID
      * @return string Error message or empty string on success
      */
-    public function sendAccountDeactivatedMail(int $recipient): string
+    public function accountDeactivatedSend(int $recipient): string
     {
         $repo = $this->repositoryFactory->getSystemVariableRepository();
 
-        $active = $repo->find(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE);
-        if ($active === null || $active->getValue() !== '1') {
-            return 'This mail is deactivated.';
+        $token = $repo->find(SystemVariable::MAIL_TOKEN);
+        if ($token === null || $token->getValue() === '') {
+            return 'Missing character that can send mails.';
         }
 
-        $token = $repo->find(SystemVariable::MAIL_TOKEN);
         $subject = $repo->find(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT);
-        $body = $repo->find(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY);
+        if ($subject === null || trim($subject->getValue()) === '') {
+            return 'Missing subject.';
+        }
 
-        if ($token === null || $token->getValue() === '' ||
-            $subject === null || trim($subject->getValue()) === '' ||
-            $body === null || trim($body->getValue()) === ''
-        ) {
-            return 'Missing data.';
+        $body = $repo->find(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY);
+        if ($body === null || trim($body->getValue()) === '') {
+            return 'Missing body text.';
         }
 
         $tokenValues = json_decode($token->getValue(), true);
@@ -114,7 +217,15 @@ class EveMail
         if ($result > 0) {
             return '';
         } else {
-            return $this->esiApi->getLastErrorMessage();
+            return (string) $this->esiApi->getLastErrorMessage();
         }
+    }
+
+    /**
+     * Mark account so that this mail will not be resent.
+     */
+    public function accountDeactivatedMailSent(int $playerId): void
+    {
+        # TODO implement
     }
 }

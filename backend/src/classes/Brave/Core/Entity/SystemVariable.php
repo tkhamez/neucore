@@ -71,6 +71,12 @@ class SystemVariable implements \JsonSerializable
     const MAIL_ACCOUNT_DISABLED_ACTIVE = 'mail_account_disabled_active';
 
     /**
+     * The "account disabled" EVE mail is only send to accounts that have a character in one of these alliances
+     * (comma separated list of EVE alliance IDs).
+     */
+    CONST MAIL_ACCOUNT_DISABLED_ALLIANCES = 'mail_account_disabled_alliances';
+
+    /**
      * Subject for "account disabled" EVE mail notification
      */
     const MAIL_ACCOUNT_DISABLED_SUBJECT = 'mail_account_disabled_subject';
@@ -132,15 +138,24 @@ class SystemVariable implements \JsonSerializable
     public function setValue(string $value): SystemVariable
     {
         switch ($this->name) {
-            case SystemVariable::ALLOW_CHARACTER_DELETION:
-            case SystemVariable::GROUPS_REQUIRE_VALID_TOKEN:
-            case SystemVariable::SHOW_PREVIEW_BANNER:
-            case SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE:
-                $value = ((bool) $value) ? '1' : '0';
+            case self::ALLOW_CHARACTER_DELETION:
+            case self::GROUPS_REQUIRE_VALID_TOKEN:
+            case self::SHOW_PREVIEW_BANNER:
+            case self::MAIL_ACCOUNT_DISABLED_ACTIVE:
+                $this->value = ((bool) $value) ? '1' : '0';
                 break;
+            case self::MAIL_ACCOUNT_DISABLED_ALLIANCES:
+                $allianceIds = [];
+                foreach (explode(',', $value) as $allianceId) {
+                    if ((int) $allianceId > 0) {
+                        $allianceIds[] = (int) $allianceId;
+                    }
+                }
+                $this->value = implode(',', $allianceIds);
+                break;
+            default:
+                $this->value = $value;
         }
-
-        $this->value = $value;
 
         return $this;
     }

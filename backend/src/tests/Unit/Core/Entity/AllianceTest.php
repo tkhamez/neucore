@@ -43,6 +43,9 @@ class AllianceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('ABC', $alli->getTicker());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testSetGetLastUpdate()
     {
         $dt1 = new \DateTime('2018-04-26 18:59:36');
@@ -87,6 +90,9 @@ class AllianceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$g1], $alli->getGroups());
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testHasGroup()
     {
         $group1 = new Group();

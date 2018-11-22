@@ -106,6 +106,9 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('esi.one esi.two', $char->getScopes());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testSetGetLastLogin()
     {
         $dt1 = new \DateTime('2018-04-26 18:59:35');
@@ -118,6 +121,9 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testSetGetLastUpdate()
     {
         $dt1 = new \DateTime('2018-04-26 18:59:36');

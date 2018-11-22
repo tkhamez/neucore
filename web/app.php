@@ -2,7 +2,7 @@
 
 use Brave\Core\Application;
 
-// For the built-in PHP dev server, check for request that should be served as a static file
+// For the built-in PHP dev server, check for requests to be served as static files
 if (PHP_SAPI == 'cli-server') {
     $url = parse_url($_SERVER['REQUEST_URI']);
     $file = __DIR__ . $url['path'];

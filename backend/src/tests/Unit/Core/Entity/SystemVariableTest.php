@@ -23,6 +23,13 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('nam', $var->getName());
     }
 
+    public function testSetValue()
+    {
+        // testing a variable that has no validation
+        $var = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $this->assertSame('abc', $var->setValue('abc')->getValue());
+    }
+
     public function testSetValueAllowCharacterDeletion()
     {
         $var = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
@@ -57,6 +64,12 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('1', $var->setValue('1')->getValue());
         $this->assertSame('1', $var->setValue('some text')->getValue());
         $this->assertSame('0', $var->setValue('')->getValue());
+    }
+
+    public function testSetValueMailAccountDisabledAlliances()
+    {
+        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES);
+        $this->assertSame('123,456', $var->setValue(' 123 , 456 , abc, ')->getValue());
     }
 
     public function testSetGetScope()

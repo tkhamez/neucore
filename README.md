@@ -72,6 +72,21 @@ Then install the dependencies and build the backend and frontend by executing:
 
 `./install.sh prod`
 
+#### Cron jobs
+
+Set up necessary cron jobs:
+
+```
+backend/bin/console update-chars
+backend/bin/console update-player-groups
+backend/bin/console send-account-disabled-mail
+```
+
+Or all in one:
+```
+backend/bin/run-jobs.sh
+```
+
 ### Heroku
 
 - Create a new app

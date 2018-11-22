@@ -8,11 +8,11 @@ use Brave\Core\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
+use Tests\Client;
 use Tests\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\OAuthProvider;
-use Tests\Client;
 
 class UpdateCharactersTest extends ConsoleTestCase
 {
@@ -54,11 +54,12 @@ class UpdateCharactersTest extends ConsoleTestCase
             LoggerInterface::class => $this->log
         ]);
 
-        $expectedOutput = [
-            'Character 1: error updating.',
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+        $actual = explode("\n", $output);
+        $this->assertSame(4, count($actual));
+        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('Character 1: error updating.', $actual[1]);
+        $this->assertStringEndsWith('update-chars: finished.', $actual[2]);
+        $this->assertStringEndsWith('', $actual[3]);
     }
 
     public function testExecuteInvalidToken()
@@ -86,12 +87,13 @@ class UpdateCharactersTest extends ConsoleTestCase
             LoggerInterface::class => $this->log
         ]);
 
-        $expectedOutput = [
-            'Character 3: update OK, token NOK',
-            'Corporation 1: update OK',
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('Character 3: update OK, token NOK', $actual[1]);
+        $this->assertStringEndsWith('Corporation 1: update OK', $actual[2]);
+        $this->assertStringEndsWith('update-chars: finished.', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
     }
 
     public function testExecuteCharacterDeleted()
@@ -120,12 +122,13 @@ class UpdateCharactersTest extends ConsoleTestCase
             GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
-        $expectedOutput = [
-            'Character 3: update OK, character deleted',
-            'Corporation 101: update OK',
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('Character 3: update OK, character deleted', $actual[1]);
+        $this->assertStringEndsWith('Corporation 101: update OK', $actual[2]);
+        $this->assertStringEndsWith('update-chars: finished.', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
 
         # read result
         $this->em->clear();
@@ -167,13 +170,14 @@ class UpdateCharactersTest extends ConsoleTestCase
             GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
-        $expectedOutput = [
-            'Character 3: update OK, token OK',
-            'Corporation 101: update OK',
-            'Alliance 212: update OK',
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+        $actual = explode("\n", $output);
+        $this->assertSame(6, count($actual));
+        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('Character 3: update OK, token OK', $actual[1]);
+        $this->assertStringEndsWith('Corporation 101: update OK', $actual[2]);
+        $this->assertStringEndsWith('Alliance 212: update OK', $actual[3]);
+        $this->assertStringEndsWith('update-chars: finished.', $actual[4]);
+        $this->assertStringEndsWith('', $actual[5]);
 
         # read result
         $this->em->clear();
@@ -222,12 +226,13 @@ class UpdateCharactersTest extends ConsoleTestCase
             LoggerInterface::class => $this->log,
         ]);
 
-        $expectedOutput = [
-            'Character 3: update OK, token OK',
-            'Corporation 1: update OK',
-            'All done.',
-        ];
-        $this->assertSame(implode("\n", $expectedOutput)."\n", $output);
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('Character 3: update OK, token OK', $actual[1]);
+        $this->assertStringEndsWith('Corporation 1: update OK', $actual[2]);
+        $this->assertStringEndsWith('update-chars: finished.', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
         $this->assertSame(
             'Unexpected result from OAuth verify.',
             $this->log->getHandler()->getRecords()[0]['message']

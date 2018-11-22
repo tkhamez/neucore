@@ -299,6 +299,26 @@ class Player implements \JsonSerializable
         return false;
     }
 
+    public function hasCharacterWithInvalidToken(): bool
+    {
+        foreach ($this->getCharacters() as $character) {
+            if (! $character->getValidToken()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getMain(): ?Character
+    {
+        foreach ($this->getCharacters() as $c) {
+            if ($c->getMain()) {
+                return $c;
+            }
+        }
+        return null;
+    }
+
     /**
      * Add application.
      *
