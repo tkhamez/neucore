@@ -74,7 +74,7 @@ class SystemVariable implements \JsonSerializable
      * The "account disabled" EVE mail is only send to accounts that have a character in one of these alliances
      * (comma separated list of EVE alliance IDs).
      */
-    CONST MAIL_ACCOUNT_DISABLED_ALLIANCES = 'mail_account_disabled_alliances';
+    const MAIL_ACCOUNT_DISABLED_ALLIANCES = 'mail_account_disabled_alliances';
 
     /**
      * Subject for "account disabled" EVE mail notification

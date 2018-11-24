@@ -56,10 +56,10 @@
 
                 </div>
                 <div class="card-header">
-                    Mail
+                    EVE Mails
                 </div>
                 <div class="card-body">
-                    <h4>Character</h4>
+                    <h4>Sender</h4>
                     <p>
                         <span v-if="mailCharacter === ''">
                             <a :href="loginUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
@@ -72,6 +72,8 @@
                             </button>
                         </span>
                     </p>
+
+                    <hr>
 
                     <h4 class="mt-4">"Account disabled" Notification</h4>
                     <p>

@@ -174,7 +174,6 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse($player1->hasCharacterWithInvalidToken());
         $this->assertTrue($player2->hasCharacterWithInvalidToken());
-
     }
 
     public function testGetMain()
@@ -189,7 +188,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $char1->setMain(true);
 
-        $this->assertSame($char1,$player->getMain());
+        $this->assertSame($char1, $player->getMain());
     }
 
     public function testAddGetRemoveApplication()
