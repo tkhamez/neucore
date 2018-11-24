@@ -211,6 +211,44 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('No character found on account that belongs to one of the configured alliances.', $result);
     }
 
+    public function testAccountDeactivateMaySendAlreadySent()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $player = (new Player())->setName('n')->setDeactivationMailSent(true);
+        $alli = (new Alliance())->setId(456);
+        $corp = (new Corporation())->setId(2020)->setAlliance($alli);
+        $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);
+        $this->em->persist($varAlli);
+        $this->em->persist($player);
+        $this->em->persist($alli);
+        $this->em->persist($corp);
+        $this->em->persist($char);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('Mail already sent.', $result);
+    }
+
+    public function testAccountDeactivateMaySendIgnoreAlreadySent()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $player = (new Player())->setName('n')->setDeactivationMailSent(true);
+        $alli = (new Alliance())->setId(456);
+        $corp = (new Corporation())->setId(2020)->setAlliance($alli);
+        $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);
+        $this->em->persist($varAlli);
+        $this->em->persist($player);
+        $this->em->persist($alli);
+        $this->em->persist($corp);
+        $this->em->persist($char);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100, true);
+        $this->assertSame('', $result);
+    }
+
     public function testAccountDeactivateMaySendTrue()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
@@ -352,6 +390,21 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
 
     public function testAccountDeactivatedMailSent()
     {
+        $player = (new Player())->setName('n');
+        $this->assertFalse($player->getDeactivationMailSent());
 
+        $this->em->persist($player);
+        $this->em->flush();
+        $playerId = $player->getId();
+
+        $this->eveMail->accountDeactivatedMailSent($playerId, true);
+        $this->em->clear();
+        $player2 = $this->repoFactory->getPlayerRepository()->find($playerId);
+        $this->assertTrue($player2->getDeactivationMailSent());
+
+        $this->eveMail->accountDeactivatedMailSent($playerId, false);
+        $this->em->clear();
+        $player3 = $this->repoFactory->getPlayerRepository()->find($playerId);
+        $this->assertFalse($player3->getDeactivationMailSent());
     }
 }

@@ -41,10 +41,10 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
-        $this->assertStringEndsWith('update-player-groups: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "update-player-groups"', $actual[0]);
         $this->assertStringEndsWith('Account '.$p1->getId().' groups updated', $actual[1]);
         $this->assertStringEndsWith('Account '.$p2->getId().' groups updated', $actual[2]);
-        $this->assertStringEndsWith('update-player-groups: finished.', $actual[3]);
+        $this->assertStringEndsWith('* Finished "update-player-groups"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
 
         # read result

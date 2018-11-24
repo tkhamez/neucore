@@ -172,7 +172,7 @@ class SettingsController
 
         $result = $eveMail->accountDeactivatedIsActive();
         if ($result === '') {
-            $result = $eveMail->accountDeactivatedMaySend($charId);
+            $result = $eveMail->accountDeactivatedMaySend($charId, true);
         }
         if ($result === '') {
             $result = $eveMail->accountDeactivatedSend($charId);

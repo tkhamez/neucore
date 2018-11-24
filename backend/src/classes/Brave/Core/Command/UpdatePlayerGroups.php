@@ -53,7 +53,7 @@ class UpdatePlayerGroups extends Command
     {
         $this->output = $output;
 
-        $this->writeln('update-player-groups: starting.');
+        $this->writeln('* Started "update-player-groups"');
 
         $playerIds = [];
         $players = $this->playerRepo->findBy([], ['lastUpdate' => 'ASC']);
@@ -72,7 +72,7 @@ class UpdatePlayerGroups extends Command
             }
         }
 
-        $this->writeln('update-player-groups: finished.');
+        $this->writeln('* Finished "update-player-groups"');
     }
 
     private function writeln($text)

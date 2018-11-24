@@ -134,10 +134,8 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
             ->addGroup($group7)->setAlliance($alliance);
         $corp3 = (new Corporation())->setId(3)->setName('c2')->setTicker('t3')->addGroup($group4);
         $date = null;
-        try {
-            $date = new \DateTime('2018-04-28 17:56:54');
-        } catch (\Exception $e) {
-        }
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $date = new \DateTime('2018-04-28 17:56:54');
         $player = (new Player())->setName('p')->addGroup($group4)->addGroup($group5)->setLastUpdate($date);
         $char1 = (new Character())->setId(1)->setName('ch1')->setMain(true)->setPlayer($player)
             ->setCharacterOwnerHash('h1')->setAccessToken('t1')->setCorporation($corp1);

@@ -56,9 +56,9 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('Character 1: error updating.', $actual[1]);
-        $this->assertStringEndsWith('update-chars: finished.', $actual[2]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -89,10 +89,10 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
-        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('Character 3: update OK, token NOK', $actual[1]);
         $this->assertStringEndsWith('Corporation 1: update OK', $actual[2]);
-        $this->assertStringEndsWith('update-chars: finished.', $actual[3]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
     }
 
@@ -124,10 +124,10 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
-        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('Character 3: update OK, character deleted', $actual[1]);
         $this->assertStringEndsWith('Corporation 101: update OK', $actual[2]);
-        $this->assertStringEndsWith('update-chars: finished.', $actual[3]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
 
         # read result
@@ -172,11 +172,11 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(6, count($actual));
-        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('Character 3: update OK, token OK', $actual[1]);
         $this->assertStringEndsWith('Corporation 101: update OK', $actual[2]);
         $this->assertStringEndsWith('Alliance 212: update OK', $actual[3]);
-        $this->assertStringEndsWith('update-chars: finished.', $actual[4]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[4]);
         $this->assertStringEndsWith('', $actual[5]);
 
         # read result
@@ -228,10 +228,10 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
-        $this->assertStringEndsWith('update-chars: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
         $this->assertStringEndsWith('Character 3: update OK, token OK', $actual[1]);
         $this->assertStringEndsWith('Corporation 1: update OK', $actual[2]);
-        $this->assertStringEndsWith('update-chars: finished.', $actual[3]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
         $this->assertSame(
             'Unexpected result from OAuth verify.',

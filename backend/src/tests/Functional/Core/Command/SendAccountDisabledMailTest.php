@@ -47,9 +47,9 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('send-account-disabled-mail: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
         $this->assertStringEndsWith('"Deactivate Accounts" settings is not enabled.', $actual[1]);
-        $this->assertStringEndsWith('send-account-disabled-mail: finished.', $actual[2]);
+        $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -75,9 +75,9 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('send-account-disabled-mail: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
         $this->assertStringEndsWith('Missing character that can send mails.', $actual[1]);
-        $this->assertStringEndsWith('send-account-disabled-mail: finished.', $actual[2]);
+        $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -95,8 +95,10 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $p1 = (new Player())->setName('p1'); // no character
         $p2 = (new Player())->setName('p2');
         $p3 = (new Player())->setName('p3');
+        $p4 = (new Player())->setName('p4')->setDeactivationMailSent(true);
         $c2 = (new Character())->setId(20)->setName('c2')->setPlayer($p2); // not in correct alliance
         $c3 = (new Character())->setId(30)->setName('c3')->setPlayer($p3)->setCorporation($corp); // sends mail
+        $c4 = (new Character())->setId(40)->setName('c4')->setPlayer($p4)->setCorporation($corp); // already sent
         $this->em->persist($deactivateAccounts);
         $this->em->persist($active);
         $this->em->persist($alliances);
@@ -108,8 +110,10 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $this->em->persist($p1);
         $this->em->persist($p2);
         $this->em->persist($p3);
+        $this->em->persist($p4);
         $this->em->persist($c2);
         $this->em->persist($c3);
+        $this->em->persist($c4);
         $this->em->flush();
 
         $this->client->setResponse(new Response(200, [], 373515628));
@@ -120,9 +124,9 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('send-account-disabled-mail: starting.', $actual[0]);
+        $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
         $this->assertStringEndsWith('Mail send to 30', $actual[1]);
-        $this->assertStringEndsWith('send-account-disabled-mail: finished.', $actual[2]);
+        $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 }

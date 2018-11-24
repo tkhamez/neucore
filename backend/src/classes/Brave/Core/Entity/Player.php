@@ -44,6 +44,18 @@ class Player implements \JsonSerializable
     private $lastUpdate;
 
     /**
+     * Set to true when the "account deactivated" mail was sent.
+     *
+     * Reset to false when all characters on the account
+     * have valid tokens.
+     *
+     * @SWG\Property()
+     * @Column(type="boolean", name="deactivation_mail_sent")
+     * @var bool
+     */
+    private $deactivationMailSent = false;
+
+    /**
      * Roles for authorization.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
@@ -191,6 +203,25 @@ class Player implements \JsonSerializable
     public function getLastUpdate()
     {
         return $this->lastUpdate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDeactivationMailSent(): bool
+    {
+        return $this->deactivationMailSent;
+    }
+
+    /**
+     * @param bool $deactivationMailSent
+     * @return Player
+     */
+    public function setDeactivationMailSent(bool $deactivationMailSent): self
+    {
+        $this->deactivationMailSent = $deactivationMailSent;
+
+        return $this;
     }
 
     /**

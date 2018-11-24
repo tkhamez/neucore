@@ -88,6 +88,7 @@ class CharacterService
      * Updates character with the data provided and persists player
      * and character in the database. Both Entities can be new.
      *
+     * @noinspection PhpDocMissingThrowsInspection
      * @param Character $char Character with Player object attached.
      * @param EveAuthentication $eveAuth
      * @return bool
@@ -97,10 +98,10 @@ class CharacterService
         $token = $eveAuth->getToken();
 
         $char->setName($eveAuth->getCharacterName());
-        try {
-            $char->setLastLogin(new \DateTime());
-        } catch (\Exception $e) {
-        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $char->setLastLogin(new \DateTime());
+
         $char->setValidToken(true);
 
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());

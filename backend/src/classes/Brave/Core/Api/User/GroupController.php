@@ -165,11 +165,8 @@ class GroupController
         $group->setName($name);
 
         $this->objectManager->persist($group);
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
 
-        return $this->res->withStatus(201)->withJson($group);
+        return $this->flushAndReturn(201, $group);
     }
 
     /**
@@ -236,11 +233,8 @@ class GroupController
         }
 
         $this->group->setName($name);
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
 
-        return $this->res->withJson($this->group);
+        return $this->flushAndReturn(200, $this->group);
     }
 
     /**
@@ -296,11 +290,7 @@ class GroupController
             return $this->res->withStatus(400);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withJson($this->group);
+        return $this->flushAndReturn(200, $this->group);
     }
 
     /**
@@ -339,11 +329,8 @@ class GroupController
         }
 
         $this->objectManager->remove($this->group);
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
 
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -739,6 +726,25 @@ class GroupController
     }
 
     /**
+     * @param int $status
+     * @param mixed|null $json
+     * @return Response
+     */
+    private function flushAndReturn(int $status, $json = null): Response
+    {
+        if (! $this->objectManager->flush()) {
+            return $this->res->withStatus(500);
+        }
+
+        $response = $this->res->withStatus($status);
+        if ($json !== null) {
+            return $response->withJson($json);
+        } else {
+            return $response;
+        }
+    }
+
+    /**
      * Returns true if another group with that name already exists.
      *
      * @param string $name Group name.
@@ -806,11 +812,7 @@ class GroupController
             $this->player->addGroup($this->group);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     private function removePlayerFrom(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
@@ -831,11 +833,7 @@ class GroupController
             $this->player->removeApplication($this->group);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     private function findGroup(string $id): bool

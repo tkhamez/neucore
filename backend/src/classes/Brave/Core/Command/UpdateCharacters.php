@@ -93,13 +93,13 @@ class UpdateCharacters extends Command
         $this->sleep = (int) $input->getOption('sleep');
         $this->output = $output;
 
-        $this->writeln('update-chars: starting.');
+        $this->writeln('* Started "update-chars"');
 
         $this->updateChars();
         $this->updateCorps();
         $this->updateAlliances();
 
-        $this->writeln('update-chars: finished.');
+        $this->writeln('* Finished "update-chars"');
     }
 
     private function updateChars()

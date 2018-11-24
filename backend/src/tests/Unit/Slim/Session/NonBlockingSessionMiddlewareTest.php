@@ -80,7 +80,7 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
 
         $nbs = new NonBlockingSessionMiddleware($conf);
 
-        $next = function ($req, $res) {
+        $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
             return $res;
         };
 

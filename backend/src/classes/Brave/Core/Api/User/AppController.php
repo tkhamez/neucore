@@ -142,11 +142,8 @@ class AppController
         $app->addRole($appRole);
 
         $this->objectManager->persist($app);
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
 
-        return $this->res->withStatus(201)->withJson($app);
+        return $this->flushAndReturn(201, $app);
     }
 
     /**
@@ -205,11 +202,8 @@ class AppController
         }
 
         $app->setName($name);
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
 
-        return $this->res->withJson($app);
+        return $this->flushAndReturn(200, $app);
     }
 
     /**
@@ -249,11 +243,8 @@ class AppController
         }
 
         $this->objectManager->remove($app);
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
 
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -355,11 +346,7 @@ class AppController
             $this->app->addManager($this->player);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -406,11 +393,7 @@ class AppController
 
         $this->app->removeManager($this->player);
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -516,11 +499,7 @@ class AppController
             $this->app->addGroup($this->group);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -567,11 +546,7 @@ class AppController
 
         $this->app->removeGroup($this->group);
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -620,11 +595,26 @@ class AppController
         $secret = Random::hex(64);
         $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
 
+        return $this->flushAndReturn(200, $secret);
+    }
+
+    /**
+     * @param int $status
+     * @param mixed|null $json
+     * @return Response
+     */
+    private function flushAndReturn(int $status, $json = null): Response
+    {
         if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withJson($secret);
+        $response = $this->res->withStatus($status);
+        if ($json !== null) {
+            return $response->withJson($json);
+        } else {
+            return $response;
+        }
     }
 
     private function findAppAndPlayer(string $id, string $player): bool

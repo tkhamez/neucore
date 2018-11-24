@@ -103,9 +103,10 @@ class EveMail
 
     /**
      * @param int $characterId
+     * @param bool $ignoreAlreadySent If set to true, allow the mail even if it has already been sent.
      * @return string The reason why the mail may not be send or empty
      */
-    public function accountDeactivatedMaySend(int $characterId): string
+    public function accountDeactivatedMaySend(int $characterId, bool $ignoreAlreadySent = false): string
     {
         $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
 
@@ -140,6 +141,11 @@ class EveMail
         }
         if (! $valid) {
             return 'No character found on account that belongs to one of the configured alliances.';
+        }
+
+        // check if mail was sent before
+        if (! $ignoreAlreadySent && $player->getDeactivationMailSent()) {
+            return 'Mail already sent.';
         }
 
         return '';
@@ -222,10 +228,19 @@ class EveMail
     }
 
     /**
-     * Mark account so that this mail will not be resent.
+     * Mark account so that this mail will not be resent, or reset the flag
      */
-    public function accountDeactivatedMailSent(int $playerId): void
+    public function accountDeactivatedMailSent(int $playerId, bool $sent): void
     {
-        # TODO implement
+        // find player
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
+        if ($player === null) {
+            return;
+        }
+
+        if ($player->getDeactivationMailSent() !== $sent) {
+            $player->setDeactivationMailSent($sent);
+            $this->objectManager->flush();
+        }
     }
 }

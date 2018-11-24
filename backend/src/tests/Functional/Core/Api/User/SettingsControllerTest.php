@@ -2,12 +2,19 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\SystemVariableRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Handler\TestHandler;
+use Psr\Log\LoggerInterface;
+use Tests\Logger;
 use Tests\WebTestCase;
 use Tests\Helper;
+use Tests\WriteErrorListener;
 
 class SettingsControllerTest extends WebTestCase
 {
@@ -31,6 +38,8 @@ class SettingsControllerTest extends WebTestCase
         $_SESSION = null;
 
         $this->helper = new Helper();
+        $this->helper->emptyDb();
+
         $this->em = $this->helper->getEm();
         $this->systemVariableRepository = (new RepositoryFactory($this->em))->getSystemVariableRepository();
     }
@@ -123,6 +132,27 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(404, $response2->getStatusCode());
     }
 
+    public function testSystemChange500()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $em = $this->helper->getEm(true);
+        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+
+        $log = new Logger('Test');
+        $log->pushHandler(new TestHandler());
+
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
+            ['value' => '1'],
+            null,
+            [EntityManagerInterface::class => $em, LoggerInterface::class => $log]
+        );
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
     public function testSystemChange200()
     {
         $this->setupDb();
@@ -171,7 +201,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testSendAccountDisabledMail200()
+    public function testSendAccountDisabledMail200Deactivated()
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -182,12 +212,44 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response));
     }
 
+    public function testSendAccountDisabledMail200MissingSettings()
+    {
+        $var = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $this->em->persist($var);
+
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame('Alliance settings variable not found.', $this->parseJsonBody($response));
+    }
+
+    public function testSendAccountDisabledMail200MissingChar()
+    {
+        $var1 = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $var2 = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $this->em->persist($var1);
+        $this->em->persist($var2);
+
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame('Missing subject.', $this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
-        $this->helper->emptyDb();
-
         $this->helper->addCharacterMain('User', 5, [Role::USER]);
-        $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
+        $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
+
+        $alli = (new Alliance())->setId(456);
+        $corp = (new Corporation())->setId(2020)->setAlliance($alli);
+        $admin->setCorporation($corp);
 
         $var1 = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $var2 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
@@ -209,6 +271,8 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($var3);
         $this->em->persist($var4);
         $this->em->persist($var5);
+        $this->em->persist($alli);
+        $this->em->persist($corp);
 
         $this->em->flush();
     }

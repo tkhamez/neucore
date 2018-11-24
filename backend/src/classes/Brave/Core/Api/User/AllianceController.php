@@ -166,11 +166,7 @@ class AllianceController
             }
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->response->withStatus(500);
-        }
-
-        return $this->response->withStatus(201)->withJson($alliance);
+        return $this->flushAndReturn(201, $alliance);
     }
 
     /**
@@ -219,11 +215,7 @@ class AllianceController
             $this->alliance->addGroup($this->group);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->response->withStatus(500);
-        }
-
-        return $this->response->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -270,11 +262,26 @@ class AllianceController
 
         $this->alliance->removeGroup($this->group);
 
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @param int $status
+     * @param mixed|null $json
+     * @return Response
+     */
+    private function flushAndReturn(int $status, $json = null): Response
+    {
         if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 
-        return $this->response->withStatus(204);
+        $response = $this->response->withStatus($status);
+        if ($json !== null) {
+            return $response->withJson($json);
+        } else {
+            return $response;
+        }
     }
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool

@@ -59,11 +59,11 @@ class SendAccountDisabledMail extends Command
         $this->sleep = (int) $input->getOption('sleep');
         $this->output = $output;
 
-        $this->writeln('send-account-disabled-mail: starting.');
+        $this->writeln('* Started "send-account-disabled-mail"');
 
         $this->send();
 
-        $this->writeln('send-account-disabled-mail: finished.');
+        $this->writeln('* Finished "send-account-disabled-mail"');
     }
 
     private function send()
@@ -84,6 +84,7 @@ class SendAccountDisabledMail extends Command
         foreach ($playerIds as $playerId) {
             $characterId = $this->eveMail->accountDeactivatedFindCharacter($playerId);
             if ($characterId === null) {
+                $this->eveMail->accountDeactivatedMailSent($playerId, false);
                 continue;
             }
 
@@ -94,7 +95,7 @@ class SendAccountDisabledMail extends Command
 
             $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
             if ($errMessage === '') { // success
-                $this->eveMail->accountDeactivatedMailSent($playerId);
+                $this->eveMail->accountDeactivatedMailSent($playerId, true);
                 $this->writeln('Mail send to ' . $characterId);
                 usleep($this->sleep * 1000);
             } else {

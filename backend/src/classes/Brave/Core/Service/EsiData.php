@@ -87,6 +87,7 @@ class EsiData
      * Returns null if the ESI requests fails or if the character
      * does not exist in the local database.
      *
+     * @noinspection PhpDocMissingThrowsInspection
      * @param int $id
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine entity manager.
@@ -109,10 +110,9 @@ class EsiData
             return null;
         }
         $char->setName($eveChar->getName());
-        try {
-            $char->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
-        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $char->setLastUpdate(new \DateTime());
 
         // update char with corp entity - does not fetch data from ESI
         $corpId = (int) $eveChar->getCorporationId();
@@ -138,6 +138,7 @@ class EsiData
      *
      * Returns null if the ESI requests fails.
      *
+     * @noinspection PhpDocMissingThrowsInspection
      * @param int $id EVE corporation ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine entity manager.
@@ -160,10 +161,9 @@ class EsiData
         // update entity
         $corp->setName($eveCorp->getName());
         $corp->setTicker($eveCorp->getTicker());
-        try {
-            $corp->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
-        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $corp->setLastUpdate(new \DateTime());
 
         // update corporation with alliance entity - does not fetch data from ESI
         $alliId = (int) $eveCorp->getAllianceId();
@@ -191,6 +191,7 @@ class EsiData
      *
      * Returns null if the ESI requests fails.
      *
+     * @noinspection PhpDocMissingThrowsInspection
      * @param int $id EVE alliance ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine entity manager.
@@ -213,10 +214,9 @@ class EsiData
         // update entity
         $alliance->setName($eveAlli->getName());
         $alliance->setTicker($eveAlli->getTicker());
-        try {
-            $alliance->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
-        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $alliance->setLastUpdate(new \DateTime());
 
         // flush
         if ($flush && ! $this->objectManager->flush()) {

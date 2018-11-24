@@ -159,22 +159,27 @@ class Application
             $this->env = self::ENV_DEV;
         }
 
+        /** @noinspection PhpIncludeInspection */
         $this->settings = require self::ROOT_DIR . '/config/settings.php';
 
         if (PHP_SAPI === 'cli') {
+            /** @noinspection PhpIncludeInspection */
             $cli = require self::ROOT_DIR . '/config/settings_cli.php';
             $this->settings = array_replace_recursive($this->settings, $cli);
         } elseif (strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
+            /** @noinspection PhpIncludeInspection */
             $heroku = require self::ROOT_DIR . '/config/settings_heroku.php';
             $this->settings = array_replace_recursive($this->settings, $heroku);
         }
 
         if ($this->env === self::ENV_DEV) {
+            /** @noinspection PhpIncludeInspection */
             $dev = require self::ROOT_DIR . '/config/settings_dev.php';
             $this->settings = array_replace_recursive($this->settings, $dev);
         }
 
         if ($unitTest) {
+            /** @noinspection PhpIncludeInspection */
             $test = include self::ROOT_DIR . '/config/settings_tests.php';
             $this->settings = array_replace_recursive($this->settings, $test);
         }
@@ -244,6 +249,7 @@ class Application
     {
         // Add middleware, last added are executed first.
 
+        /** @noinspection PhpIncludeInspection */
         $security = include self::ROOT_DIR . '/config/security.php';
         $app->add(new SecureRouteMiddleware($security));
 
@@ -272,6 +278,7 @@ class Application
     {
         // include config.php from php-di/slim-bridge
         $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
+        /** @noinspection PhpIncludeInspection */
         $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
 
         $containerBuilder = new ContainerBuilder();
@@ -391,6 +398,7 @@ class Application
 
     private function registerRoutes(App $app): void
     {
+        /** @noinspection PhpIncludeInspection */
         $routes = include self::ROOT_DIR . '/config/routes.php';
 
         foreach ($routes as $route => $conf) {

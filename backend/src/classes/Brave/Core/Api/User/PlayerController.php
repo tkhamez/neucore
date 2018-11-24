@@ -242,11 +242,7 @@ class PlayerController
             return $this->res->withStatus(404);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withJson($main);
+        return $this->flushAndReturn(200, $main);
     }
 
     /**
@@ -426,11 +422,7 @@ class PlayerController
             $player->addRole($role);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -481,11 +473,7 @@ class PlayerController
 
         $player->removeRole($role);
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -639,11 +627,26 @@ class PlayerController
         $player->removeCharacter($char);
         $this->objectManager->remove($char);
 
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @param int $status
+     * @param mixed|null $json
+     * @return Response
+     */
+    private function flushAndReturn(int $status, $json = null): Response
+    {
         if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withStatus(204);
+        $response = $this->res->withStatus($status);
+        if ($json !== null) {
+            return $response->withJson($json);
+        } else {
+            return $response;
+        }
     }
 
     private function getPlayerByRole(string $roleName): array
@@ -698,10 +701,6 @@ class PlayerController
             $player->removeGroup($group);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 }

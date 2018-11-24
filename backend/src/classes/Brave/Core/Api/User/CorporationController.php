@@ -172,11 +172,7 @@ class CorporationController
             $service->fetchAlliance($corporation->getAlliance()->getId(), false);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(201)->withJson($corporation);
+        return $this->flushAndReturn(201, $corporation);
     }
 
     /**
@@ -225,11 +221,7 @@ class CorporationController
             $this->corp->addGroup($this->group);
         }
 
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        return $this->res->withStatus(204);
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -276,11 +268,26 @@ class CorporationController
 
         $this->corp->removeGroup($this->group);
 
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @param int $status
+     * @param mixed|null $json
+     * @return Response
+     */
+    private function flushAndReturn(int $status, $json = null): Response
+    {
         if (! $this->objectManager->flush()) {
             return $this->res->withStatus(500);
         }
 
-        return $this->res->withStatus(204);
+        $response = $this->res->withStatus($status);
+        if ($json !== null) {
+            return $response->withJson($json);
+        } else {
+            return $response;
+        }
     }
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool

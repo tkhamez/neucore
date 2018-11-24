@@ -13,7 +13,7 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['https://domain.tld']);
 
-        $next = function ($req, $res) {
+        $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
             return $res;
         };
 
@@ -33,7 +33,7 @@ class CorsTest extends \PHPUnit\Framework\TestCase
         $req = $this->createMock(ServerRequestInterface::class);
         $req->method('getHeader')->willReturn(['http://domain.tld']);
 
-        $next = function ($req, $res) {
+        $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
             return $res;
         };
 

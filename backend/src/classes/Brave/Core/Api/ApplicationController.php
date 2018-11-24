@@ -194,31 +194,7 @@ class ApplicationController
      */
     public function groupsBulkV1(ServerRequestInterface $request): Response
     {
-        $charIds = $this->getIntegerArrayFromBody($request);
-        if ($charIds === null) {
-            return $this->response->withStatus(400);
-        }
-        if (count($charIds) === 0) {
-            return $this->response->withJson([]);
-        }
-
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
-
-        $result = [];
-        foreach ($charIds as $charId) {
-            if ($charId <= 0) {
-                continue;
-            }
-
-            $charGroups = $this->getGroupsForPlayer($charId, $appGroups);
-            if ($charGroups === null) {
-                continue;
-            }
-
-            $result[] = $charGroups;
-        }
-
-        return $this->response->withJson($result);
+        return $this->groupsBulkFor('Player', $request);
     }
 
     /**
@@ -331,7 +307,7 @@ class ApplicationController
      */
     public function corpGroupsBulkV1(ServerRequestInterface $request): Response
     {
-        return $this->corpOrAllianceGroupsBulkV1('Corporation', $request);
+        return $this->groupsBulkFor('Corporation', $request);
     }
 
     /**
@@ -444,7 +420,7 @@ class ApplicationController
      */
     public function allianceGroupsBulkV1(ServerRequestInterface $request): Response
     {
-        return $this->corpOrAllianceGroupsBulkV1('Alliance', $request);
+        return $this->groupsBulkFor('Alliance', $request);
     }
 
     /**
@@ -599,7 +575,12 @@ class ApplicationController
         return $this->response->withJson($result['groups']);
     }
 
-    private function corpOrAllianceGroupsBulkV1(string $type, ServerRequestInterface $request): Response
+    /**
+     * @param string $type "Player", "Corporation" or "Alliance"
+     * @param ServerRequestInterface $request
+     * @return Response
+     */
+    private function groupsBulkFor(string $type, ServerRequestInterface $request): Response
     {
         $ids = $this->getIntegerArrayFromBody($request);
         if ($ids === null) {
@@ -617,7 +598,11 @@ class ApplicationController
                 continue;
             }
 
-            $groups = $this->getGroupsFor($type, $id, $appGroups);
+            if ($type === 'Player') {
+                $groups = $this->getGroupsForPlayer($id, $appGroups);
+            } else {
+                $groups = $this->getGroupsFor($type, $id, $appGroups);
+            }
             if ($groups === null) {
                 continue;
             }
