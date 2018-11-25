@@ -116,18 +116,20 @@ class UpdateCharacters extends Command
             // update name, corp and alliance from ESI
             $updatedChar = $this->esiData->fetchCharacter($charId);
             if ($updatedChar === null) {
-                $this->writeln('Character ' . $charId.': error updating.');
+                $this->writeln('Character ' . $charId.': update failed');
                 continue;
             }
 
             // check token and character owner hash - this may delete the character!
-            $result = $this->charService->checkAndUpdateCharacter($updatedChar, $this->tokenService);
+            $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
             if ($result === CharacterService::CHECK_TOKEN_OK) {
                 $this->writeln('Character ' . $charId.': update OK, token OK');
             } elseif ($result === CharacterService::CHECK_TOKEN_NOK) {
                 $this->writeln('Character ' . $charId.': update OK, token NOK');
             } elseif ($result === CharacterService::CHECK_CHAR_DELETED) {
                 $this->writeln('Character ' . $charId.': update OK, character deleted');
+            } elseif ($result === CharacterService::CHECK_REQUEST_ERROR) {
+                $this->writeln('Character ' . $charId.': update OK, token failed');
             } else {
                 $this->writeln('Character ' . $charId.': unknown result');
             }

@@ -84,8 +84,8 @@
         </div>
 
         <div v-cloak v-if="deactivated" class="alert alert-danger">
-            This account is <strong>deactivated</strong> because one or more characters do not
-            have a valid ESI token.
+            Groups for this account are <strong>disabled</strong> (or will be disabled soon)
+            because one or more characters do not have a valid ESI token.
         </div>
 
         <div v-cloak v-if="this.player">

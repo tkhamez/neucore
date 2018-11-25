@@ -5,24 +5,30 @@ namespace Brave\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
 use Brave\Sso\Basics\EveAuthentication;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Log\LoggerInterface;
 
 class CharacterService
 {
     /**
-     * Result for checkAndUpdateCharacter() if token is valid.
+     * Result for checkCharacter() if token is valid.
      */
     const CHECK_TOKEN_OK = 1;
 
     /**
-     * Result for checkAndUpdateCharacter() if token is invalid.
+     * Result for checkCharacter() if token is invalid.
      */
     const CHECK_TOKEN_NOK = 2;
 
     /**
-     * Result for checkAndUpdateCharacter() if owner hash changed and character was deleted.
+     * Result for checkCharacter() if the character was deleted.
      */
     const CHECK_CHAR_DELETED = 3;
+
+    /**
+     * Result for checkCharacter() if a request failed.
+     */
+    const CHECK_REQUEST_ERROR = 4;
 
     /**
      * @var LoggerInterface
@@ -118,44 +124,76 @@ class CharacterService
     }
 
     /**
-     * Checks access/refresh token and owner hash.
+     * Checks if char was biomassed, the access/refresh token and the owner hash.
      *
      * The refresh token is verified by requesting a new access token
      * (If the access token is still valid the refresh token is not validated).
      *
-     * If the character owner hash of the character changed the character is deleted!
+     * The character is deleted if:
+     * - the character owner hash changed
+     * - the character was biomassed
      *
      * This only updates the validToken property (true/false), not the access token itself.
      *
-     * All objects are saved.
+     * The character is saved if it was changed.
      *
      * @param Character $char An instance that is attached to the Doctrine entity manager.
      * @param OAuthToken $tokenService
      * @return int self::TOKEN_NOK, self::TOKEN_OK or self::CHARACTER_DELETED
      */
-    public function checkAndUpdateCharacter(Character $char, OAuthToken $tokenService): int
+    public function checkCharacter(Character $char, OAuthToken $tokenService): int
     {
-        $resourceOwner = $tokenService->verify($char);
+        // check if character is in Doomheim (biomassed)
+        if ($char->getCorporation() && $char->getCorporation()->getId() === 1000001) {
+            $this->objectManager->remove($char);
+            $this->objectManager->flush();
+            return self::CHECK_CHAR_DELETED;
+        }
 
-        if ($resourceOwner === null) {
+        // does the char has a token?
+        $existingToken = $tokenService->createAccessTokenFromCharacter($char);
+        if ($existingToken === null) {
             $char->setValidToken(false);
-            $result = self::CHECK_TOKEN_NOK;
-        } else {
-            $char->setValidToken(true);
-            $result = self::CHECK_TOKEN_OK;
-            $data = $resourceOwner->toArray();
-            if (isset($data['CharacterOwnerHash'])) {
-                if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
-                    $this->objectManager->remove($char);
-                    $result = self::CHECK_CHAR_DELETED;
-                    $char = null;
-                }
-            } else {
-                // that's an error, CCP changed resource owner data
-                $this->log->error('Unexpected result from OAuth verify.', [
-                    'data' => $data
-                ]);
+            $this->objectManager->flush();
+            return self::CHECK_TOKEN_NOK;
+        }
+
+        // validate token
+        try {
+            $token = $tokenService->refreshAccessToken($existingToken);
+        } catch (IdentityProviderException $e) {
+            $char->setValidToken(false);
+            $this->objectManager->flush();
+            return self::CHECK_TOKEN_NOK;
+        }
+
+        // get owner
+        $resourceOwner = $tokenService->getResourceOwner($token);
+        if ($resourceOwner === null) {
+            // could be an invalid token because refreshAccessToken() request failed
+            // or getResourceOwner request failed
+            // don't change the valid flag in this case.
+            return self::CHECK_REQUEST_ERROR;
+
+        }
+
+        // token is valid here
+        $char->setValidToken(true);
+        $result = self::CHECK_TOKEN_OK;
+
+        // check owner change
+        $data = $resourceOwner->toArray();
+        if (isset($data['CharacterOwnerHash'])) {
+            if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
+                $this->objectManager->remove($char);
+                $result = self::CHECK_CHAR_DELETED;
+                $char = null;
             }
+        } else {
+            // that's an error, CCP changed resource owner data
+            $this->log->error('Unexpected result from OAuth verify.', [
+                'data' => $data
+            ]);
         }
 
         $this->objectManager->flush();

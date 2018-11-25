@@ -45,13 +45,15 @@ Characters can also be manually removed from a player's account.
 ### Deactivation
 
 If the ESI token of one or more characters on an account is invalid, the account is disabled. 
-This means that the API for apps no longer returns groups for that account.
+This means that the API for apps no longer returns groups for that account. The deactivation 
+of the account can be delayed, e. g. by 24 hours after a token became invalid.
 
 As soon as the token is updated by logging in with this character, the account will be reactivated.
 
 A mail notification can be sent for deactivated accounts. This mail will only be sent once and 
 only if one of the characters in the account is a member of an alliance that was 
-previously configured.
+previously configured. It will be sent to the main character, if any, or to any of the characters 
+that have an invalid token.
 
 ## Automatic group assignment
 

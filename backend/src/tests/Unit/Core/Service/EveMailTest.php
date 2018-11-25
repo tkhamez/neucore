@@ -354,6 +354,36 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Missing token data.', $result);
     }
 
+    public function testAccountDeactivatedSendInvalidToken()
+    {
+        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY))->setValue('b');
+        $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $varToken->setValue(\json_encode([
+            'id' => 123,
+            'access' => 'access-token',
+            'refresh' => 'refresh-token',
+            'expires' => 1542546430,
+        ]));
+        $this->em->persist($varActive);
+        $this->em->persist($varSubject);
+        $this->em->persist($varBody);
+        $this->em->persist($varToken);
+        $this->em->flush();
+
+        $this->client->setResponse(
+            // for getAccessToken() (refresh)
+            new Response(400, [], '{
+                "error": "invalid_token",
+                "error_description": "The refresh token is expired."
+            }')
+        );
+
+        $result = $this->eveMail->accountDeactivatedSend(123);
+        $this->assertSame('Invalid token.', $result);
+    }
+
     public function testAccountDeactivatedSend()
     {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);

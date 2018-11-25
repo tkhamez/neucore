@@ -47,6 +47,11 @@ class SystemVariable implements \JsonSerializable
     const GROUPS_REQUIRE_VALID_TOKEN = 'groups_require_valid_token';
 
     /**
+     * How long the deactivation of the account will be delayed after a token became invalid.
+     */
+    const ACCOUNT_DEACTIVATION_DELAY = 'account_deactivation_delay';
+
+    /**
      * System settings variable, "0" or "1"
      *
      * Shows or hides the "preview" banner on the Home screen.
@@ -143,6 +148,9 @@ class SystemVariable implements \JsonSerializable
             case self::SHOW_PREVIEW_BANNER:
             case self::MAIL_ACCOUNT_DISABLED_ACTIVE:
                 $this->value = ((bool) $value) ? '1' : '0';
+                break;
+            case self::ACCOUNT_DEACTIVATION_DELAY:
+                $this->value = (string) abs((int) $value);
                 break;
             case self::MAIL_ACCOUNT_DISABLED_ALLIANCES:
                 $allianceIds = [];

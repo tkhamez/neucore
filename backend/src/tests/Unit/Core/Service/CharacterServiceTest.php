@@ -3,6 +3,7 @@
 namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
@@ -121,18 +122,74 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('scope1 scope2', $character->getScopes());
     }
 
-    public function testCheckAndUpdateCharacterInvalid()
+    public function testCheckTokenUpdateCharacterDeletesBiomassedChar()
     {
-        // can't really test the difference between no token and revoked token
-        // here, but that is done in OAuthTokenTest class
+        $em = $this->helper->getEm();
+        $corp = (new Corporation())->setId(1000001); // Doomheim
+        $char = (new Character())->setId(31)->setName('n31')->setCorporation($corp);
+        $em->persist($corp);
+        $em->persist($char);
+        $em->flush();
 
-        $this->client->setResponse(new Response());
+        $result = $this->service->checkCharacter($char, $this->token);
+        $this->assertSame(CharacterService::CHECK_CHAR_DELETED, $result);
 
-        $result = $this->service->checkAndUpdateCharacter(new Character(), $this->token);
+        $em->clear();
+        $character = $this->charRepo->find(31);
+        $this->assertNull($character);
+    }
+
+    public function testCheckCharacterNoToken()
+    {
+        $result = $this->service->checkCharacter(new Character(), $this->token);
         $this->assertSame(CharacterService::CHECK_TOKEN_NOK, $result);
     }
 
-    public function testCheckAndUpdateCharacterValid()
+    public function testCheckCharacterInvalidToken()
+    {
+        $em = $this->helper->getEm();
+        $char = (new Character())
+            ->setId(31)->setName('n31')
+            ->setValidToken(false) // it's also the default
+            ->setCharacterOwnerHash('hash')
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires(time() - 1000);
+        $em->persist($char);
+        $em->flush();
+
+        $this->client->setResponse(
+            // for refreshAccessToken()
+            new Response(400, [], '{"error": "invalid_token"}')
+        );
+
+        $result = $this->service->checkCharacter($char, $this->token);
+        $this->assertSame(CharacterService::CHECK_TOKEN_NOK, $result);
+    }
+
+    public function testCheckCharacterRequestError()
+    {
+        $this->client->setResponse(
+            // for refreshAccessToken()
+            new Response(200, [], '{"access_token": "new-at"}'),
+
+            // for getResourceOwner()
+            new Response(500)
+        );
+
+        $em = $this->helper->getEm();
+        $expires = time() - 1000;
+        $char = (new Character())
+            ->setId(31)->setName('n31')
+            ->setValidToken(false) // it's also the default
+            ->setCharacterOwnerHash('hash')
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+        $em->persist($char);
+        $em->flush();
+
+        $result = $this->service->checkCharacter($char, $this->token);
+        $this->assertSame(CharacterService::CHECK_REQUEST_ERROR, $result);
+    }
+
+    public function testCheckCharacterValid()
     {
         $this->client->setResponse(
             // for refreshAccessToken()
@@ -156,7 +213,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->persist($char);
         $em->flush();
 
-        $result = $this->service->checkAndUpdateCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(CharacterService::CHECK_TOKEN_OK, $result);
 
         $em->clear();
@@ -167,7 +224,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expires, $character->getExpires()); // not updated
     }
 
-    public function testCheckTokenUpdateCharacterDeletesChar()
+    public function testCheckTokenUpdateCharacterDeletesMovedChar()
     {
         $this->client->setResponse(
         // for refreshAccessToken()
@@ -190,7 +247,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->persist($char);
         $em->flush();
 
-        $result = $this->service->checkAndUpdateCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(CharacterService::CHECK_CHAR_DELETED, $result);
 
         $em->clear();

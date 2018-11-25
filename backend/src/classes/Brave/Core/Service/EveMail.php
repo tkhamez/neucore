@@ -5,6 +5,7 @@ namespace Brave\Core\Service;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
 
@@ -206,11 +207,15 @@ class EveMail
             return 'Missing token data.';
         }
 
-        $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
-            'access_token' => $tokenValues['access'],
-            'refresh_token' => $tokenValues['refresh'],
-            'expires' => (int) $tokenValues['expires']
-        ]));
+        try {
+            $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
+                'access_token' => $tokenValues['access'],
+                'refresh_token' => $tokenValues['refresh'],
+                'expires' => (int)$tokenValues['expires']
+            ]));
+        } catch (IdentityProviderException $e) {
+            return 'Invalid token.';
+        }
 
         $result = $this->esiApi->sendMail(
             $tokenValues['id'],

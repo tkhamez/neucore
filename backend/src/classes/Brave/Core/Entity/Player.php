@@ -330,10 +330,22 @@ class Player implements \JsonSerializable
         return false;
     }
 
-    public function hasCharacterWithInvalidToken(): bool
+    /**
+     * @noinspection PhpDocMissingThrowsInspection
+     * @param int $hours
+     * @return bool
+     */
+    public function hasCharacterWithInvalidTokenOlderThan(int $hours): bool
     {
-        foreach ($this->getCharacters() as $character) {
-            if (! $character->getValidToken()) {
+        foreach ($this->getCharacters() as $char) {
+            if ($char->getValidToken()) {
+                continue;
+            }
+            if ($char->getValidTokenTime() === null) {
+                return true;
+            }
+            $time = $char->getValidTokenTime()->getTimestamp();
+            if (time() - $time > 60 * 60 * $hours) {
                 return true;
             }
         }

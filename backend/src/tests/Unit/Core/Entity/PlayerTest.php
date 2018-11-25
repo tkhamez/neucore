@@ -164,16 +164,29 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($player->hasCharacter($char2->getId()));
     }
 
-    public function testHasCharacterWithInvalidToken()
+    /**
+     * @throws \Exception
+     */
+    public function testHasCharacterWithInvalidTokenOlderThan()
     {
         $char1 = (new Character())->setValidToken(true);
         $char2 = new Character();
+        $char3 = (new Character())->setValidTokenTime(new \DateTime('now -36 hours'));
+        $char4 = (new Character())->setValidTokenTime(new \DateTime('now +12 hours'));
 
         $player1 = (new Player())->addCharacter($char1);
-        $player2 = (new Player())->addCharacter($char1)->addCharacter($char2);
+        $player2 = (new Player())->addCharacter($char2);
+        $player3 = (new Player())->addCharacter($char1)->addCharacter($char3);
+        $player4 = (new Player())->addCharacter($char1)->addCharacter($char4);
 
-        $this->assertFalse($player1->hasCharacterWithInvalidToken());
-        $this->assertTrue($player2->hasCharacterWithInvalidToken());
+        $this->assertFalse($player1->hasCharacterWithInvalidTokenOlderThan(24));
+        $this->assertTrue($player2->hasCharacterWithInvalidTokenOlderThan(24)); // true because date is missing
+
+        $this->assertFalse($player3->hasCharacterWithInvalidTokenOlderThan(48));
+        $this->assertTrue($player3->hasCharacterWithInvalidTokenOlderThan(24));
+        $this->assertTrue($player3->hasCharacterWithInvalidTokenOlderThan(6));
+
+        $this->assertFalse($player4->hasCharacterWithInvalidTokenOlderThan(6));
     }
 
     public function testGetMain()

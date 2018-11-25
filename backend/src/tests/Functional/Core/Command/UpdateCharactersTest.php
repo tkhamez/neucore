@@ -41,7 +41,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->client = new Client();
     }
 
-    public function testExecuteErrorUpdate()
+    public function testExecuteErrorUpdateChar()
     {
         $c = (new Character())->setId(1)->setName('c1')
             ->setCharacterOwnerHash('coh1')->setAccessToken('at1');
@@ -57,24 +57,105 @@ class UpdateCharactersTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
-        $this->assertStringEndsWith('Character 1: error updating.', $actual[1]);
+        $this->assertStringEndsWith('Character 1: update failed', $actual[1]);
         $this->assertStringEndsWith('* Finished "update-chars"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
-    public function testExecuteInvalidToken()
+    public function testExecuteDeleteCharBiomassed()
     {
-        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false);
+        $char = (new Character())->setId(3)->setName('char1');
+        $this->em->persist($char);
+        $this->em->flush();
+
+        $this->client->setResponse(
+        // for getCharactersCharacterId()
+            new Response(200, [], '{
+                "name": "char1",
+                "corporation_id": 1000001
+            }'),
+
+            // for getCorporationsCorporationId()
+            new Response(200, [], '{
+                "name": "corp1",
+                "ticker": "t"
+            }')
+        );
+
+        $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
+        ]);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
+        $this->assertStringEndsWith('Character 3: update OK, character deleted', $actual[1]);
+        $this->assertStringEndsWith('Corporation 1000001: update OK', $actual[2]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
+
+        # read result
+        $this->em->clear();
+        $repositoryFactory = new RepositoryFactory($this->em);
+        $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
+        $this->assertSame(0, count($actualChars));
+    }
+
+    public function testExecuteErrorUpdateToken()
+    {
+        $c = (new Character())->setId(3)->setName('char1')->setAccessToken('at3')->setRefreshToken('at3');
         $this->em->persist($c);
         $this->em->flush();
 
         $this->client->setResponse(
+            // for getCharactersCharacterId()
             new Response(200, [], '{
                 "name": "char1",
                 "corporation_id": 1
             }'),
-            new Response(200, [], 'invalid'), // for getResourceOwner()
+
+            new Response(400), // for getResourceOwner()
+
+            // for getCorporationsCorporationId()
+            new Response(200, [], '{
+                "name": "corp1",
+                "ticker": "t"
+            }')
+        );
+
+        $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            GenericProvider::class => new OAuthProvider($this->client),
+            LoggerInterface::class => $this->log
+        ]);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
+        $this->assertStringEndsWith('Character 3: update OK, token failed', $actual[1]);
+        $this->assertStringEndsWith('Corporation 1: update OK', $actual[2]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
+    }
+
+    public function testExecuteInvalidToken()
+    {
+        $c = (new Character())->setId(3)->setName('char1')
+            ->setAccessToken('at3')->setRefreshToken('at3')->setExpires(time() - 1000);
+        $this->em->persist($c);
+        $this->em->flush();
+
+        $this->client->setResponse(
+            // for getCharactersCharacterId()
+            new Response(200, [], '{
+                "name": "char1",
+                "corporation_id": 1
+            }'),
+
+            new Response(400, [], '{"error": "invalid_token"}'), // for getAccessToken()
+
+            // for getCorporationsCorporationId()
             new Response(200, [], '{
                 "name": "corp1",
                 "ticker": "t"

@@ -84,6 +84,14 @@ class Character implements \JsonSerializable
     private $validToken = false;
 
     /**
+     * Date and time when that valid token property was changed.
+     *
+     * @Column(type="datetime", name="valid_token_time", nullable=true)
+     * @var \DateTime
+     */
+    private $validTokenTime;
+
+    /**
      * OAuth scopes.
      *
      * @Column(type="text", length=65535, nullable=true)
@@ -308,27 +316,39 @@ class Character implements \JsonSerializable
     }
 
     /**
-     * Set validToken.
+     * Set validToken and updates validTokenTime.
      *
+     * @noinspection PhpDocMissingThrowsInspection
      * @param bool $validToken
-     *
      * @return Character
      */
-    public function setValidToken($validToken)
+    public function setValidToken(bool $validToken): self
     {
+        if ($this->validToken !== $validToken) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $this->validTokenTime = new \DateTime();
+        }
+
         $this->validToken = $validToken;
 
         return $this;
     }
 
-    /**
-     * Get validToken.
-     *
-     * @return bool
-     */
-    public function getValidToken()
+    public function getValidToken(): bool
     {
         return $this->validToken;
+    }
+
+    public function setValidTokenTime(\DateTime $validTokenTime): self
+    {
+        $this->validTokenTime = clone $validTokenTime;
+
+        return $this;
+    }
+
+    public function getValidTokenTime(): ?\DateTime
+    {
+        return $this->validTokenTime;
     }
 
     /**

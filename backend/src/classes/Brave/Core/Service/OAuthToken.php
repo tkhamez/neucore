@@ -3,7 +3,9 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
 
@@ -38,7 +40,8 @@ class OAuthToken
      * Refreshes the access token if necessary.
      *
      * @param AccessToken $existingToken
-     * @return \League\OAuth2\Client\Token\AccessToken
+     * @return \League\OAuth2\Client\Token\AccessToken A new object if the token was refreshed
+     * @throws IdentityProviderException For "invalid_token" error, other exceptions are caught.
      */
     public function refreshAccessToken(AccessToken $existingToken): ?AccessToken
     {
@@ -49,8 +52,9 @@ class OAuthToken
                     'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
-                // don't log an "invalid_token" message, as this is expected if the token was revoked
-                if ($e->getMessage() !== 'invalid_token') {
+                if ($e instanceof IdentityProviderException && $e->getMessage() === 'invalid_token') {
+                    throw $e;
+                } else {
                     $this->log->error($e->getMessage(), ['exception' => $e]);
                 }
             }
@@ -75,7 +79,11 @@ class OAuthToken
             return "";
         }
 
-        $token = $this->refreshAccessToken($existingToken);
+        try {
+            $token = $this->refreshAccessToken($existingToken);
+        } catch (IdentityProviderException $e) {
+            return "";
+        }
 
         if ($token->getToken() !== $existingToken->getToken()) {
             $character->setAccessToken($token->getToken());
@@ -90,25 +98,15 @@ class OAuthToken
 
     /**
      * Returns resource owner.
-     *
-     * @param Character $character It must contain a refresh token
-     * @return null|\League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
-    public function verify(Character $character)
+    public function getResourceOwner(AccessToken $token): ?ResourceOwnerInterface
     {
-        $existingToken = $this->createAccessTokenFromCharacter($character);
-        if ($existingToken === null) {
-            return null;
-        }
-
-        $token = $this->refreshAccessToken($existingToken);
-
         $owner = null;
         try {
             $owner = $this->oauth->getResourceOwner($token);
         } catch (\Exception $e) {
-            // don't log "invalid_token" message as this is expected when the token is revoked
-            if ($e->getMessage() !== 'invalid_token') {
+            if (! $e instanceof IdentityProviderException || $e->getMessage() !== 'invalid_token') {
+                // don't log "invalid_token" error as this is expected if the token was revoked
                 $this->log->error($e->getMessage(), ['exception' => $e]);
             }
         }
@@ -119,7 +117,7 @@ class OAuthToken
     /**
      * @return AccessToken|null
      */
-    private function createAccessTokenFromCharacter(Character $character)
+    public function createAccessTokenFromCharacter(Character $character)
     {
         $token = null;
         try {

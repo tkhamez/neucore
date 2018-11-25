@@ -14,6 +14,7 @@
                     General
                 </div>
                 <div class="card-body">
+                    <em>Deactivate Accounts:</em>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"
                                id="groups_require_valid_token" name="groups_require_valid_token"
@@ -22,10 +23,15 @@
                                                       $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="groups_require_valid_token">
-                            <em>Deactivate Accounts:</em>
+
                             Check this if the API for third-party applications should not return groups
                             for a player account if one or more of its characters have an invalid token.
                         </label>
+                    </div>
+                    <div class="form-group mt-1">
+                        <input type="text" pattern="[0-9]*" class="form-control input-delay"
+                               v-model="accountDeactivationDelay">
+                        Delay the deactivation after a token became invalid (hours).
                     </div>
                     <hr>
                     <div class="custom-control custom-checkbox">
@@ -37,7 +43,7 @@
                         >
                         <label class="custom-control-label" for="allow_character_deletion">
                             <em>Delete characters:</em>
-                            Check to allow users to delete their character.
+                            Check to allow users to delete their characters.
                         </label>
                     </div>
                     <hr>
@@ -138,6 +144,7 @@ module.exports = {
             variables: {},
             api: null,
             loginUrl: null,
+            accountDeactivationDelay: '',
             mailCharacter: '',
             mailAccountDisabledActive: false,
             mailAccountDisabledAlliances: '',
@@ -161,6 +168,11 @@ module.exports = {
 
         settings: function() {
             this.readSettings();
+        },
+
+        accountDeactivationDelay: function() {
+            this.accountDeactivationDelay = parseInt(this.accountDeactivationDelay);
+            this.changeSettingDelayed(this, 'account_deactivation_delay', this.accountDeactivationDelay);
         },
 
         mailAccountDisabledAlliances: function() {
@@ -188,6 +200,7 @@ module.exports = {
                 this.variables[variable.name] = variable.value;
             }
             this.mailCharacter = this.variables['mail_character'];
+            this.accountDeactivationDelay = this.variables['account_deactivation_delay'];
             this.mailAccountDisabledActive = this.variables['mail_account_disabled_active'] === '1';
             this.mailAccountDisabledAlliances = this.variables['mail_account_disabled_alliances'];
             this.mailAccountDisabledSubject = this.variables['mail_account_disabled_subject'];
@@ -259,5 +272,8 @@ module.exports = {
 </script>
 
 <style scoped>
-
+.input-delay {
+    display: inline;
+    width: 70px;
+}
 </style>

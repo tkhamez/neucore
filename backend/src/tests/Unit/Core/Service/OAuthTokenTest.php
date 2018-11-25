@@ -64,6 +64,9 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->esError = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testRefreshAccessTokenNewTokenException()
     {
         $this->client->setResponse(new Response(500));
@@ -83,6 +86,28 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    /**
+     * @expectedException \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     */
+    public function testRefreshAccessTokenIdentityProviderException()
+    {
+        $this->client->setResponse(new Response(400, [], '{
+            "error": "invalid_token",
+            "error_description": "The refresh token is expired."
+        }'));
+
+        $token = new AccessToken([
+            'access_token' => 'at',
+            'refresh_token' => 'rt',
+            'expires' => 1349067601 // 2012-10-01 + 1
+        ]);
+
+        $this->es->refreshAccessToken($token);
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testRefreshAccessTokenNoRefresh()
     {
         $token = new AccessToken([
@@ -94,6 +119,9 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('old-token', $this->es->refreshAccessToken($token)->getToken());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testRefreshAccessTokenNewToken()
     {
         $this->client->setResponse(new Response(200, [], '{
@@ -125,6 +153,26 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
             'Required option not passed: "access_token"',
             $this->log->getHandler()->getRecords()[0]['message']
         );
+    }
+
+    public function testGetTokenInvalidToken()
+    {
+        $char = new Character();
+        $char->setId(123);
+        $char->setName('n');
+        $char->setMain(true);
+        $char->setCharacterOwnerHash('coh');
+        $char->setAccessToken('old-token');
+        $char->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
+        $this->em->persist($char);
+        $this->em->flush();
+
+        // response for refreshAccessToken()
+        $this->client->setResponse(new Response(400, [], '{"error": "invalid_token"}'));
+
+        $token = $this->es->getToken($char);
+
+        $this->assertSame('', $token);
     }
 
     public function testGetTokenNewTokenUpdateDatabaseOk()
@@ -178,16 +226,25 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $token);
     }
 
-    public function testVerify()
+    public function testGetResourceOwnerError()
     {
         $this->client->setResponse(
-            // for refreshAccessToken()
-            new Response(200, [], '{
-                "access_token": "new-at",
-                "refresh_token": "",
-                "expires": '.(time() + 1800).'}'
-            ),
+            // for getResourceOwner()
+            new Response(500)
+        );
 
+        $owner = $this->es->getResourceOwner(new AccessToken([
+            'access_token' => 'at',
+            'expires' => time() - 1800,
+            'refresh_token' => 'rt',
+        ]));
+
+        $this->assertNull($owner);
+    }
+
+    public function testGetResourceOwner()
+    {
+        $this->client->setResponse(
             // for getResourceOwner()
             new Response(200, [], '{
                 "CharacterID": "123",
@@ -197,12 +254,11 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
             }')
         );
 
-        $c = new Character();
-        $c->setAccessToken('at');
-        $c->setExpires(time() - 1800);
-        $c->setRefreshToken('rt');
-
-        $owner = $this->es->verify($c);
+        $owner = $this->es->getResourceOwner(new AccessToken([
+            'access_token' => 'at',
+            'expires' => time() - 1800,
+            'refresh_token' => 'rt',
+        ]));
 
         $this->assertInstanceOf(ResourceOwnerInterface::class, $owner);
         $this->assertSame([
@@ -211,8 +267,5 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
             'ExpiresOn' => '2018-05-03T20:27:38.7999223',
             'CharacterOwnerHash' => 'coh',
         ], $owner->toArray());
-
-        // check that the new token is *not* updated on the character
-        $this->assertSame('at', $c->getAccessToken());
     }
 }

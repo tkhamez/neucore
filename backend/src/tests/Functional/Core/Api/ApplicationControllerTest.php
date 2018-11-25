@@ -107,9 +107,34 @@ class ApplicationControllerTest extends WebTestCase
         ], $body1);
     }
 
+    public function testGroupsV1200DeactivatedInvalidTokenButActive()
+    {
+        // feature "deactivated accounts" is active, account has invalid token but but only for a short time
+
+        $this->setUpDb(12);
+
+        // activate "deactivated accounts"
+        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        $delay = new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY);
+        $setting->setValue('1');
+        $delay->setValue('24');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->persist($delay);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            ['id' => $this->group0Id, 'name' => 'g0', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+        ], $this->parseJsonBody($response));
+    }
+
     public function testGroupsV1200DeactivatedInvalidToken()
     {
-        $this->setUpDb();
+        $this->setUpDb(36);
 
         // activate "deactivated accounts"
         $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
@@ -121,10 +146,7 @@ class ApplicationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
-
-        $body = $this->parseJsonBody($response);
-
-        $this->assertSame([], $body);
+        $this->assertSame([], $this->parseJsonBody($response));
     }
 
     public function testGroupsV1200DeactivatedValidToken()
@@ -197,12 +219,12 @@ class ApplicationControllerTest extends WebTestCase
 
     public function testGroupsBulkV1200Deactivated()
     {
-        $this->setUpDb();
+        $this->setUpDb(48);
 
         // activate "deactivated accounts"
-        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $setting->setValue('1');
-        $this->helper->getEm()->persist($setting);
+        $active = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        $active->setValue('1');
+        $this->helper->getEm()->persist($active);
         $this->helper->getEm()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
@@ -523,7 +545,7 @@ class ApplicationControllerTest extends WebTestCase
         );
     }
 
-    private function setUpDb()
+    private function setUpDb($invalidHours = 0)
     {
         $this->helper->emptyDb();
 
@@ -572,7 +594,13 @@ class ApplicationControllerTest extends WebTestCase
         $char3->setCorporation($corp);
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
+        try {
+            $char3->setValidTokenTime(new \DateTime("now -{$invalidHours} hours"));
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
 
         $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
     }
 }

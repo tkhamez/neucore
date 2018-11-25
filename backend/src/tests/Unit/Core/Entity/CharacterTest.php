@@ -99,6 +99,35 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($char->getValidToken());
     }
 
+    public function testSetValidTokenUpdatesTime()
+    {
+        $char = new Character();
+
+        $this->assertNull($char->getValidTokenTime());
+        $this->assertFalse($char->getValidToken());
+
+        $char->setValidToken(false);
+        $this->assertNull($char->getValidTokenTime());
+
+        $char->setValidToken(true);
+        $this->assertNotNull($char->getValidTokenTime());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testSetGetValidTokenTime()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:35');
+
+        $char = new Character();
+        $char->setValidTokenTime($dt1);
+        $dt2 = $char->getValidTokenTime();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
     public function testSetGetScopes()
     {
         $char = new Character();

@@ -243,7 +243,7 @@ class CharacterController
         }
 
         // check token and character owner hash - this may delete the character!
-        $result = $this->charService->checkAndUpdateCharacter($updatedChar, $this->tokenService);
+        $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
         if ($result === CharacterService::CHECK_CHAR_DELETED) {
             $updatedChar = null;
         }

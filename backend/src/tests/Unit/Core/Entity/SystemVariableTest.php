@@ -66,6 +66,15 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('0', $var->setValue('')->getValue());
     }
 
+    public function testSetValueAccountDeactivationDelay()
+    {
+        $var = new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY);
+        $this->assertSame('0', $var->setValue('abc')->getValue());
+        $this->assertSame('10', $var->setValue('-10')->getValue());
+        $this->assertSame('10', $var->setValue('10')->getValue());
+        $this->assertSame('0', $var->setValue('')->getValue());
+    }
+
     public function testSetValueMailAccountDisabledAlliances()
     {
         $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES);

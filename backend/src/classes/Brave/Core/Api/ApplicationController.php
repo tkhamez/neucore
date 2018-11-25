@@ -652,8 +652,12 @@ class ApplicationController
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
         );
+        $delay = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_DELAY]
+        );
+        $hours = $delay !== null ? (int) $delay->getValue() : 0;
         if ($requireToken && $requireToken->getValue() === '1' &&
-            $char->getPlayer()->hasCharacterWithInvalidToken()
+            $char->getPlayer()->hasCharacterWithInvalidTokenOlderThan($hours)
         ) {
             return $result;
         }
