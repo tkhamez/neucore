@@ -4,6 +4,7 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Log\LoggerInterface;
@@ -75,8 +76,7 @@ class CharacterService
      */
     public function moveCharacterToNewAccount(Character $char): Character
     {
-        $oldPlayer = $char->getPlayer();
-        $oldPlayer->removeCharacter($char);
+        $this->removeCharacterFromPlayer($char);
 
         $player = new Player();
         $player->setName($char->getName());
@@ -145,7 +145,7 @@ class CharacterService
     {
         // check if character is in Doomheim (biomassed)
         if ($char->getCorporation() && $char->getCorporation()->getId() === 1000001) {
-            $this->objectManager->remove($char);
+            $this->deleteCharacter($char);
             $this->objectManager->flush();
             return self::CHECK_CHAR_DELETED;
         }
@@ -174,7 +174,6 @@ class CharacterService
             // or getResourceOwner request failed
             // don't change the valid flag in this case.
             return self::CHECK_REQUEST_ERROR;
-
         }
 
         // token is valid here
@@ -185,7 +184,7 @@ class CharacterService
         $data = $resourceOwner->toArray();
         if (isset($data['CharacterOwnerHash'])) {
             if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
-                $this->objectManager->remove($char);
+                $this->deleteCharacter($char);
                 $result = self::CHECK_CHAR_DELETED;
                 $char = null;
             }
@@ -199,5 +198,44 @@ class CharacterService
         $this->objectManager->flush();
 
         return $result;
+    }
+
+    /**
+     * Removes a character from a player account and creates a RemovedCharacter record.
+     *
+     * **Make sure to add another player to the character!**
+     *
+     * Does not flush the entity manager.
+     */
+    public function removeCharacterFromPlayer(Character $character): void
+    {
+        $this->createRemovedCharacter($character);
+        $character->getPlayer()->removeCharacter($character);
+    }
+
+    /**
+     * Deletes a character and creates a RemovedCharacter record.
+     *
+     * Does not flush the entity manager.
+     */
+    public function deleteCharacter(Character $character): void
+    {
+        $this->createRemovedCharacter($character);
+        $this->objectManager->remove($character);
+    }
+
+    private function createRemovedCharacter(Character $character): void
+    {
+        $player = $character->getPlayer();
+
+        $removedCharacter = new RemovedCharacter();
+        $removedCharacter->setPlayer($player);
+        $player->addRemovedCharacter($removedCharacter);
+        $removedCharacter->setCharacterId($character->getId());
+        $removedCharacter->setCharacterName($character->getName());
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $removedCharacter->setRemovedDate(new \DateTime());
+
+        $this->objectManager->persist($removedCharacter);
     }
 }

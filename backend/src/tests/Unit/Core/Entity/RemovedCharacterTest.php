@@ -1,0 +1,68 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Unit\Core\Entity;
+
+use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
+
+class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
+{
+    /**
+     * @throws \Exception
+     */
+    public function testJsonSerialize()
+    {
+        $char = new RemovedCharacter();
+        $char->setCharacterId(123);
+        $char->setCharacterName('test char');
+        $char->setRemovedDate(new \DateTime('2018-04-26 18:59:35'));
+
+        $this->assertSame([
+            'characterId' => 123,
+            'characterName' => 'test char',
+            'removedDate' => '2018-04-26T18:59:35Z',
+        ], json_decode(json_encode($char), true));
+    }
+
+    public function testGetId()
+    {
+        $this->assertNull((new RemovedCharacter())->getId());
+    }
+
+    public function testSetGetPlayer()
+    {
+        $rm = new RemovedCharacter();
+        $player = new Player();
+        $rm->setPlayer($player);
+        $this->assertSame($player, $rm->getPlayer());
+    }
+
+    public function testSetGetId()
+    {
+        $rm = new RemovedCharacter();
+        $rm->setCharacterId(123);
+        $this->assertSame(123, $rm->getCharacterId());
+    }
+
+    public function testSetGetName()
+    {
+        $rm = new RemovedCharacter();
+        $rm->setCharacterName('nam');
+        $this->assertSame('nam', $rm->getCharacterName());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testSetGetRemovedDate()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:35');
+
+        $rm = new RemovedCharacter();
+        $rm->setRemovedDate($dt1);
+        $dt2 = $rm->getRemovedDate();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
+    }
+}

@@ -222,6 +222,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $_SESSION['character_id'] = 100;
         $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
         $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
+        $oldPlayerId = $main2->getPlayer()->getId();
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
         $result = $this->service->addAlt(new EveAuthentication(200, 'Main2 renamed', 'hash', $token, ['scope1', 's2']));
@@ -238,6 +239,15 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
         $this->assertTrue($chars[1]->getValidToken());
+
+        // check RemovedCharacter
+        $removedChar = (new RepositoryFactory($this->helper->getEm()))
+            ->getRemovedCharacterRepository()->findOneBy(['characterId' => 200]);
+        $this->assertSame($main2->getId(), $removedChar->getcharacterId());
+        $this->assertNotSame($main2->getPlayer()->getId(), $removedChar->getPlayer()->getId());
+        $this->assertNotNull($main2->getPlayer()->getId());
+        $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
+        $this->assertNotNull($oldPlayerId);
     }
 
     public function testAddAltLoggedInChar()

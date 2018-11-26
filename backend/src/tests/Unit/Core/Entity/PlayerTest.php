@@ -8,6 +8,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 
 class PlayerTest extends \PHPUnit\Framework\TestCase
@@ -343,5 +344,21 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $play->removeManagerApp($a2);
         $this->assertSame([$a1], $play->getManagerApps());
+    }
+
+    public function testAddGetRemoveRemovedCharacters()
+    {
+        $play = new Player();
+        $rc1 = new RemovedCharacter();
+        $rc2 = new RemovedCharacter();
+
+        $this->assertSame([], $play->getRemovedCharacters());
+
+        $play->addRemovedCharacter($rc1);
+        $play->addRemovedCharacter($rc2);
+        $this->assertSame([$rc1, $rc2], $play->getRemovedCharacters());
+
+        $play->removeRemovedCharacter($rc2);
+        $this->assertSame([$rc1], $play->getRemovedCharacters());
     }
 }

@@ -70,6 +70,11 @@ composer test
 
 ### Doctrine
 
+Generate constructor, getters and setters:
+```
+vendor/bin/doctrine orm:generate-entities src/classes
+```
+
 Validate the mapping files
 ```
 vendor/bin/doctrine orm:validate-schema

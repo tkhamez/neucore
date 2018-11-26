@@ -27,7 +27,8 @@ class Player implements \JsonSerializable
     /**
      * A name for the player.
      *
-     * This is the EVE character name of the main character.
+     * This is the EVE character name of the current main character or of
+     * the last main character if there is currently none.
      *
      * @SWG\Property()
      * @Column(type="string", length=255)
@@ -49,7 +50,6 @@ class Player implements \JsonSerializable
      * Reset to false when all characters on the account
      * have valid tokens.
      *
-     * @SWG\Property()
      * @Column(type="boolean", name="deactivation_mail_sent")
      * @var bool
      */
@@ -115,6 +115,16 @@ class Player implements \JsonSerializable
     private $managerApps;
 
     /**
+     * Characters that were removed from a player (API: not included by default).
+     *
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
+     * @OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
+     * @OrderBy({"characterName" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $removedCharacters;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -131,6 +141,7 @@ class Player implements \JsonSerializable
             'groups' => $this->getGroups(),
             'managerGroups' => $this->getManagerGroups(),
             'managerApps' => $this->getManagerApps(),
+            // API: removedCharacters are not included by default
         ];
     }
 
@@ -145,6 +156,7 @@ class Player implements \JsonSerializable
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->managerGroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->managerApps = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->removedCharacters = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -548,5 +560,28 @@ class Player implements \JsonSerializable
     public function getManagerApps()
     {
         return $this->managerApps->toArray();
+    }
+
+    public function addRemovedCharacter(RemovedCharacter $removedCharacter): self
+    {
+        $this->removedCharacters[] = $removedCharacter;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeRemovedCharacter(RemovedCharacter $removedCharacter): bool
+    {
+        return $this->removedCharacters->removeElement($removedCharacter);
+    }
+
+    /**
+     * @return RemovedCharacter[]
+     */
+    public function getRemovedCharacters(): array
+    {
+        return $this->removedCharacters->toArray();
     }
 }

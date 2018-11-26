@@ -194,6 +194,25 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <h4>Removed Characters</h4>
+                    <table class="table table-hover table-sm">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>CharacterId</th>
+                            <th>CharacterName</th>
+                            <th>removedDate</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="removedCharacter in playerEdit.removedCharacters">
+                                <td>{{ removedCharacter.characterId }}</td>
+                                <td>{{ removedCharacter.characterName }}</td>
+                                <td>{{ removedCharacter.removedDate }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
         </div>

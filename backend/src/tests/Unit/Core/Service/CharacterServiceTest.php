@@ -7,6 +7,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -46,6 +47,11 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
      */
     private $charRepo;
 
+    /**
+     * @var RemovedCharacterRepository
+     */
+    private $removedCharRepo;
+
     public function setUp()
     {
         $this->helper = new Helper();
@@ -59,6 +65,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $log), $log);
         $this->service = new CharacterService($log, new ObjectManager($em, $log));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
+        $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
     }
 
     public function testCreateNewPlayerWithMain()
@@ -87,6 +94,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($char, $character);
         $this->assertNotSame($player, $character->getPlayer());
         $this->assertSame('char name', $character->getPlayer()->getName());
+
+        $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
     }
 
     public function testUpdateAndStoreCharacterWithPlayer()
@@ -126,8 +135,10 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     {
         $em = $this->helper->getEm();
         $corp = (new Corporation())->setId(1000001); // Doomheim
-        $char = (new Character())->setId(31)->setName('n31')->setCorporation($corp);
+        $player = (new Player())->setName('p');
+        $char = (new Character())->setId(31)->setName('n31')->setCorporation($corp)->setPlayer($player);
         $em->persist($corp);
+        $em->persist($player);
         $em->persist($char);
         $em->flush();
 
@@ -137,6 +148,9 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character);
+
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
+        $this->assertSame(31, $removedChar->getCharacterId());
     }
 
     public function testCheckCharacterNoToken()
@@ -240,10 +254,13 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $em = $this->helper->getEm();
         $expires = time() - 1000;
+        $player = (new Player())->setName('p');
         $char = (new Character())
+            ->setPlayer($player)
             ->setId(31)->setName('n31')
             ->setCharacterOwnerHash('old-hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+        $em->persist($player);
         $em->persist($char);
         $em->flush();
 
@@ -253,5 +270,58 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character);
+
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
+        $this->assertSame(31, $removedChar->getCharacterId());
+    }
+
+    public function testRemoveCharacterFromPlayer()
+    {
+        $player = (new Player())->setName('player 1');
+        $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
+        $player->addCharacter($char);
+        $this->helper->getEm()->persist($player);
+        $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->flush();
+
+        $this->service->removeCharacterFromPlayer($char);
+        $this->helper->getEm()->flush();
+
+        $this->helper->getEm()->clear();
+
+        $this->assertSame(0, count($player->getCharacters()));
+        $this->assertSame(10, $player->getRemovedCharacters()[0]->getCharacterId());
+        $this->assertSame('char', $player->getRemovedCharacters()[0]->getCharacterName());
+        $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
+        $this->assertLessThanOrEqual(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp());
+
+        // tests that the new object was persisted.
+        $removedChars = $this->removedCharRepo->findBy([]);
+        $this->assertSame(10, $removedChars[0]->getCharacterId());
+    }
+
+    public function testDeleteCharacter()
+    {
+        $player = (new Player())->setName('player 1');
+        $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
+        $player->addCharacter($char);
+        $this->helper->getEm()->persist($player);
+        $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->flush();
+
+        $this->service->deleteCharacter($char);
+        $this->helper->getEm()->flush();
+
+        $this->assertSame(0, count($player->getCharacters()));
+
+        $chars = $this->charRepo->findBy([]);
+        $this->assertSame(0, count($chars));
+        $removedChars = $this->removedCharRepo->findBy([]);
+        $this->assertSame(1, count($removedChars));
+        $this->assertSame(10, $removedChars[0]->getCharacterId());
+        $this->assertSame('char', $removedChars[0]->getCharacterName());
+        $this->assertSame($player->getId(), $removedChars[0]->getPlayer()->getId());
+        $this->assertSame('player 1', $removedChars[0]->getPlayer()->getName());
+        $this->assertLessThanOrEqual(time(), $removedChars[0]->getRemovedDate()->getTimestamp());
     }
 }

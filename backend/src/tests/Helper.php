@@ -9,6 +9,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -29,6 +30,7 @@ class Helper
     private $entities = [
         App::class,
         Character::class,
+        RemovedCharacter::class,
         Player::class,
         Group::class,
         Role::class,

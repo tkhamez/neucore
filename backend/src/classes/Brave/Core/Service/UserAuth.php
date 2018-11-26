@@ -157,7 +157,7 @@ class UserAuth implements RoleProviderInterface
         if ($alt !== null) {
             $oldPlayer = $alt->getPlayer();
             if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
-                $oldPlayer->removeCharacter($alt);
+                $this->characterService->removeCharacterFromPlayer($alt);
                 $alt->setPlayer(null); // the current player will be added below
             }
         } else {

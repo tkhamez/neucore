@@ -6,6 +6,7 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Psr\Log\LoggerInterface;
@@ -493,7 +494,7 @@ class PlayerController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The player information.",
+     *         description="The player information (this one includes the removedCharacters property).",
      *         @SWG\Schema(ref="#/definitions/Player")
      *     ),
      *     @SWG\Response(
@@ -514,7 +515,10 @@ class PlayerController
             return $this->res->withStatus(404);
         }
 
-        return $this->res->withJson($player);
+        $json = $player->jsonSerialize();
+        $json['removedCharacters'] = $player->getRemovedCharacters();
+
+        return $this->res->withJson($json);
     }
 
     /**
@@ -595,7 +599,7 @@ class PlayerController
      *     )
      * )
      */
-    public function deleteCharacter(string $id): Response
+    public function deleteCharacter(string $id, CharacterService $characterService): Response
     {
         // check "allow deletion" settings
         $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
@@ -624,8 +628,7 @@ class PlayerController
         }
 
         // delete char
-        $player->removeCharacter($char);
-        $this->objectManager->remove($char);
+        $characterService->deleteCharacter($char);
 
         return $this->flushAndReturn(204);
     }

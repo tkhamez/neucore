@@ -3,6 +3,7 @@
 namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Player;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
@@ -64,7 +65,9 @@ class UpdateCharactersTest extends ConsoleTestCase
 
     public function testExecuteDeleteCharBiomassed()
     {
-        $char = (new Character())->setId(3)->setName('char1');
+        $player = (new Player())->setName('p');
+        $char = (new Character())->setId(3)->setName('char1')->setPlayer($player);
+        $this->em->persist($player);
         $this->em->persist($char);
         $this->em->flush();
 
@@ -100,6 +103,8 @@ class UpdateCharactersTest extends ConsoleTestCase
         $repositoryFactory = new RepositoryFactory($this->em);
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(0, count($actualChars));
+        $removedChar = $repositoryFactory->getRemovedCharacterRepository()->findBy([]);
+        $this->assertSame(1, count($removedChar));
     }
 
     public function testExecuteErrorUpdateToken()
@@ -179,9 +184,11 @@ class UpdateCharactersTest extends ConsoleTestCase
 
     public function testExecuteCharacterDeleted()
     {
+        $player = (new Player())->setName('p');
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
-            ->setExpires(time() - 60*60);
+            ->setExpires(time() - 60*60)->setPlayer($player);
+        $this->em->persist($player);
         $this->em->persist($c);
         $this->em->flush();
 
@@ -213,11 +220,11 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         # read result
         $this->em->clear();
-
         $repositoryFactory = new RepositoryFactory($this->em);
-
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(0, count($actualChars));
+        $removedChar = $repositoryFactory->getRemovedCharacterRepository()->findBy([]);
+        $this->assertSame(1, count($removedChar));
     }
 
     public function testExecuteValidTokenWithAlliance()

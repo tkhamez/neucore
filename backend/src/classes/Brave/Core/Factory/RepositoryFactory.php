@@ -8,6 +8,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\AllianceRepository;
@@ -16,6 +17,7 @@ use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -69,6 +71,11 @@ class RepositoryFactory
     public function getSystemVariableRepository(): SystemVariableRepository
     {
         return $this->getInstance(SystemVariableRepository::class, SystemVariable::class);
+    }
+
+    public function getRemovedCharacterRepository(): RemovedCharacterRepository
+    {
+        return $this->getInstance(RemovedCharacterRepository::class, RemovedCharacter::class);
     }
 
     private function getInstance(string $repositoryClass, string $entityClass)

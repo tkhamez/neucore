@@ -10,6 +10,7 @@ use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\RemovedCharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Tests\WebTestCase;
@@ -48,12 +49,17 @@ class PlayerControllerTest extends WebTestCase
     /**
      * @var PlayerRepository
      */
-    private $pr;
+    private $playerRepo;
 
     /**
      * @var CharacterRepository
      */
-    private $cr;
+    private $charRepo;
+
+    /**
+     * @var RemovedCharacterRepository
+     */
+    private $removedCharRepo;
 
     /**
      * @var Logger
@@ -68,8 +74,9 @@ class PlayerControllerTest extends WebTestCase
         $this->em = $this->h->getEm();
 
         $rf = new RepositoryFactory($this->em);
-        $this->pr = $rf->getPlayerRepository();
-        $this->cr = $rf->getCharacterRepository();
+        $this->playerRepo = $rf->getPlayerRepository();
+        $this->charRepo = $rf->getCharacterRepository();
+        $this->removedCharRepo = $rf->getRemovedCharacterRepository();
 
         $this->log = new Logger('test');
     }
@@ -154,7 +161,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();
-        $p = $this->pr->find($this->player->getId());
+        $p = $this->playerRepo->find($this->player->getId());
         $this->assertSame(1, count($p->getApplications()));
     }
 
@@ -185,7 +192,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
-        $p = $this->pr->find($this->player->getId());
+        $p = $this->playerRepo->find($this->player->getId());
         $this->assertSame(0, count($p->getApplications()));
     }
 
@@ -216,7 +223,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
-        $p = $this->pr->find($this->player->getId());
+        $p = $this->playerRepo->find($this->player->getId());
         $this->assertSame(0, count($p->getGroups()));
     }
 
@@ -240,7 +247,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $charsBefore = $this->pr->find($this->player->getId())->getCharacters();
+        $charsBefore = $this->playerRepo->find($this->player->getId())->getCharacters();
         $this->assertSame(12, $charsBefore[0]->getId());
         $this->assertSame(13, $charsBefore[1]->getId());
         $this->assertTrue($charsBefore[0]->getMain());
@@ -264,7 +271,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $playerAfter = $this->pr->find($this->player->getId());
+        $playerAfter = $this->playerRepo->find($this->player->getId());
         $charsAfter = $playerAfter->getCharacters();
         $this->assertSame(12, $charsAfter[0]->getId());
         $this->assertSame(13, $charsAfter[1]->getId());
@@ -487,7 +494,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $player = $this->pr->find($this->player->getId());
+        $player = $this->playerRepo->find($this->player->getId());
         $this->assertSame(
             [Role::APP_ADMIN, Role::APP_MANAGER, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
@@ -552,7 +559,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $player = $this->pr->find($this->player->getId());
+        $player = $this->playerRepo->find($this->player->getId());
         $this->assertSame(
             [Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
@@ -618,6 +625,7 @@ class PlayerControllerTest extends WebTestCase
             'groups' => [],
             'managerGroups' => [],
             'managerApps' => [],
+            'removedCharacters' => [],
         ], $this->parseJsonBody($response));
     }
 
@@ -731,8 +739,13 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
-        $deleted = $this->cr->find(13);
+
+        $deleted = $this->charRepo->find(13);
         $this->assertNull($deleted);
+
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 13]);
+        $this->assertSame(13, $removedChar->getCharacterId());
+        $this->assertSame($this->player->getId(), $removedChar->getPlayer()->getId());
     }
 
     private function setupDb()
