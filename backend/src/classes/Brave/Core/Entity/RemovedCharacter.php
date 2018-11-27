@@ -5,7 +5,9 @@ namespace Brave\Core\Entity;
 /**
  * @SWG\Definition(
  *     definition="RemovedCharacter",
- *     required={"characterId", "characterName", "removedDate"}
+ *     required={"characterId", "characterName", "removedDate", "action"},
+ *     @SWG\Property(property="newPlayerId", type="integer"),
+ *     @SWG\Property(property="newPlayerName", type="string")
  * )
  * @Entity
  * @Table(name="removed_characters")
@@ -29,9 +31,18 @@ class RemovedCharacter implements \JsonSerializable
     private $player;
 
     /**
+     * The new player account.
+     *
+     * @ManyToOne(targetEntity="Player")
+     * @JoinColumn(name="new_player_id")
+     * @var Player
+     */
+    private $newPlayer;
+
+    /**
      * EVE character ID.
      *
-     * @SWG\Property()
+     * @SWG\Property(format="int64")
      * @Column(type="bigint", name="character_id")
      * @var integer
      */
@@ -56,6 +67,15 @@ class RemovedCharacter implements \JsonSerializable
     private $removedDate;
 
     /**
+     * How it was removed (deleted or moved to another account).
+     *
+     * @SWG\Property()
+     * @Column(type="string", length=255)
+     * @var string
+     */
+    private $action;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -67,6 +87,9 @@ class RemovedCharacter implements \JsonSerializable
             'characterId' => $this->characterId,
             'characterName' => $this->characterName,
             'removedDate' => $this->removedDate ? $this->removedDate->format('Y-m-d\TH:i:s\Z') : null,
+            'action' => $this->action,
+            'newPlayerId' => $this->newPlayer ? $this->newPlayer->getId() : null,
+            'newPlayerName' => $this->newPlayer ? $this->newPlayer->getName() : null,
         ];
     }
 
@@ -112,6 +135,18 @@ class RemovedCharacter implements \JsonSerializable
         return $this->removedDate;
     }
 
+    public function setAction(string $action): self
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    public function getAction(): string
+    {
+        return (string) $this->action;
+    }
+
     public function setPlayer(Player $player = null): self
     {
         $this->player = $player;
@@ -122,5 +157,17 @@ class RemovedCharacter implements \JsonSerializable
     public function getPlayer(): ?Player
     {
         return $this->player;
+    }
+
+    public function setNewPlayer(Player $newPlayer = null): self
+    {
+        $this->newPlayer = $newPlayer;
+
+        return $this;
+    }
+
+    public function getNewPlayer(): ?Player
+    {
+        return $this->newPlayer;
     }
 }

@@ -96,6 +96,9 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('char name', $character->getPlayer()->getName());
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
+        $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
+        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getAction());
+        $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
     }
 
     public function testUpdateAndStoreCharacterWithPlayer()
@@ -151,6 +154,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
         $this->assertSame(31, $removedChar->getCharacterId());
+        $this->assertSame('deleted (biomassed)', $removedChar->getAction());
     }
 
     public function testCheckCharacterNoToken()
@@ -238,7 +242,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expires, $character->getExpires()); // not updated
     }
 
-    public function testCheckTokenUpdateCharacterDeletesMovedChar()
+    public function testCheckCharacterDeletesMovedChar()
     {
         $this->client->setResponse(
         // for refreshAccessToken()
@@ -273,6 +277,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
         $this->assertSame(31, $removedChar->getCharacterId());
+        $this->assertSame('deleted (EVE account changed)', $removedChar->getAction());
     }
 
     public function testRemoveCharacterFromPlayer()
@@ -284,7 +289,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->helper->getEm()->persist($char);
         $this->helper->getEm()->flush();
 
-        $this->service->removeCharacterFromPlayer($char);
+        $this->service->removeCharacterFromPlayer($char, $player);
         $this->helper->getEm()->flush();
 
         $this->helper->getEm()->clear();
@@ -294,6 +299,8 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('char', $player->getRemovedCharacters()[0]->getCharacterName());
         $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
         $this->assertLessThanOrEqual(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp());
+        $this->assertSame($player, $player->getRemovedCharacters()[0]->getNewPlayer());
+        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getAction());
 
         // tests that the new object was persisted.
         $removedChars = $this->removedCharRepo->findBy([]);
@@ -309,7 +316,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->helper->getEm()->persist($char);
         $this->helper->getEm()->flush();
 
-        $this->service->deleteCharacter($char);
+        $this->service->deleteCharacter($char, 'manually');
         $this->helper->getEm()->flush();
 
         $this->assertSame(0, count($player->getCharacters()));
@@ -323,5 +330,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($player->getId(), $removedChars[0]->getPlayer()->getId());
         $this->assertSame('player 1', $removedChars[0]->getPlayer()->getName());
         $this->assertLessThanOrEqual(time(), $removedChars[0]->getRemovedDate()->getTimestamp());
+        $this->assertNull($removedChars[0]->getNewPlayer());
+        $this->assertSame('deleted (manually)', $removedChars[0]->getAction());
     }
 }

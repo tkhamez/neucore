@@ -746,6 +746,8 @@ class PlayerControllerTest extends WebTestCase
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 13]);
         $this->assertSame(13, $removedChar->getCharacterId());
         $this->assertSame($this->player->getId(), $removedChar->getPlayer()->getId());
+        $this->assertNull($removedChar->getNewPlayer());
+        $this->assertSame('deleted (manually)', $removedChar->getAction());
     }
 
     private function setupDb()

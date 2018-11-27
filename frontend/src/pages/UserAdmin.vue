@@ -98,8 +98,8 @@
                                 <th>Corporation</th>
                                 <th>Alliance</th>
                                 <th>main</th>
-                                <th>validToken</th>
-                                <th>lastUpdate</th>
+                                <th>Valid Token</th>
+                                <th>Last Update</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -120,7 +120,7 @@
                                 </td>
                                 <td>{{ character.main }}</td>
                                 <td>{{ character.validToken }}</td>
-                                <td>{{ character.lastUpdate }}</td>
+                                <td>{{ new Date(character.lastUpdate).toUTCString() }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -131,7 +131,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>visibility</th>
+                                <th>Visibility</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -149,7 +149,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>visibility</th>
+                                <th>Visibility</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -183,7 +183,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>visibility</th>
+                                <th>Visibility</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -198,17 +198,26 @@
                     <h4>Removed Characters</h4>
                     <table class="table table-hover table-sm">
                         <thead class="thead-dark">
-                        <tr>
-                            <th>CharacterId</th>
-                            <th>CharacterName</th>
-                            <th>removedDate</th>
-                        </tr>
+                            <tr>
+                                <th>Character Id</th>
+                                <th>Character Name</th>
+                                <th>Date Removed</th>
+                                <th>Action</th>
+                                <th>New Player</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr v-for="removedCharacter in playerEdit.removedCharacters">
                                 <td>{{ removedCharacter.characterId }}</td>
                                 <td>{{ removedCharacter.characterName }}</td>
-                                <td>{{ removedCharacter.removedDate }}</td>
+                                <td>{{ new Date(removedCharacter.removedDate).toUTCString() }}</td>
+                                <td>{{ removedCharacter.action }}</td>
+                                <td>
+                                    <a v-if="removedCharacter.newPlayerId"
+                                       :href="'#UserAdmin/' + removedCharacter.newPlayerId">
+                                        {{ removedCharacter.newPlayerName }}
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

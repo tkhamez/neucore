@@ -4,6 +4,7 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -36,6 +37,11 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
      */
     private $service;
 
+    /**
+     * @var RemovedCharacterRepository
+     */
+    private $removedCharRepo;
+
     public function setUp()
     {
         $this->helper = new Helper();
@@ -47,14 +53,18 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->log = new Logger('test');
         $this->em = $this->helper->getEm();
 
+        $repoFactory = new RepositoryFactory($this->em);
+
         $objManager = new ObjectManager($this->em, $this->log);
         $characterService = new CharacterService($this->log, $objManager);
         $this->service = new UserAuth(
             new SessionData(),
             $characterService,
-            new RepositoryFactory($this->em),
+            $repoFactory,
             $this->log
         );
+
+        $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
     }
 
     public function testGetRolesNoAuth()
@@ -189,6 +199,13 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(9014, $user->getId());
         $this->assertSame('789', $user->getCharacterOwnerHash());
         $this->assertNotSame($newPlayer->getId(), $player->getId());
+
+        // check RemovedCharacter
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 9014]);
+        $this->assertSame($user->getId(), $removedChar->getcharacterId());
+        $this->assertSame($player->getId(), $removedChar->getPlayer()->getId());
+        $this->assertSame($newPlayer->getId(), $removedChar->getNewPlayer()->getId());
+        $this->assertSame('moved', $removedChar->getAction());
     }
 
     public function testAddAlt()
@@ -222,6 +239,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $_SESSION['character_id'] = 100;
         $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
         $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
+        $newPlayerId = $main1->getPlayer()->getId();
         $oldPlayerId = $main2->getPlayer()->getId();
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
@@ -241,13 +259,15 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($chars[1]->getValidToken());
 
         // check RemovedCharacter
-        $removedChar = (new RepositoryFactory($this->helper->getEm()))
-            ->getRemovedCharacterRepository()->findOneBy(['characterId' => 200]);
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 200]);
         $this->assertSame($main2->getId(), $removedChar->getcharacterId());
         $this->assertNotSame($main2->getPlayer()->getId(), $removedChar->getPlayer()->getId());
         $this->assertNotNull($main2->getPlayer()->getId());
         $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
         $this->assertNotNull($oldPlayerId);
+        $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
+        $this->assertSame('moved', $removedChar->getAction());
+        $this->assertNotNull($newPlayerId);
     }
 
     public function testAddAltLoggedInChar()

@@ -628,7 +628,7 @@ class PlayerController
         }
 
         // delete char
-        $characterService->deleteCharacter($char);
+        $characterService->deleteCharacter($char, 'manually');
 
         return $this->flushAndReturn(204);
     }

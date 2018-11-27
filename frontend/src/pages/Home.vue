@@ -333,7 +333,8 @@ module.exports = {
                 }
                 if (response.statusCode === 204) {
                     vm.message(
-                        'The character was removed because it does no longer belong to the same EVE account.',
+                        'The character was removed because it was deleted or ' +
+                            'no longer belongs to the same EVE account.',
                         'info'
                     );
                 } else {

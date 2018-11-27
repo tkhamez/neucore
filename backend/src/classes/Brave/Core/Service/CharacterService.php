@@ -76,10 +76,10 @@ class CharacterService
      */
     public function moveCharacterToNewAccount(Character $char): Character
     {
-        $this->removeCharacterFromPlayer($char);
-
         $player = new Player();
         $player->setName($char->getName());
+
+        $this->removeCharacterFromPlayer($char, $player);
 
         $char->setMain(true);
         $char->setPlayer($player);
@@ -145,7 +145,7 @@ class CharacterService
     {
         // check if character is in Doomheim (biomassed)
         if ($char->getCorporation() && $char->getCorporation()->getId() === 1000001) {
-            $this->deleteCharacter($char);
+            $this->deleteCharacter($char, 'biomassed');
             $this->objectManager->flush();
             return self::CHECK_CHAR_DELETED;
         }
@@ -184,7 +184,7 @@ class CharacterService
         $data = $resourceOwner->toArray();
         if (isset($data['CharacterOwnerHash'])) {
             if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
-                $this->deleteCharacter($char);
+                $this->deleteCharacter($char, 'EVE account changed');
                 $result = self::CHECK_CHAR_DELETED;
                 $char = null;
             }
@@ -207,9 +207,9 @@ class CharacterService
      *
      * Does not flush the entity manager.
      */
-    public function removeCharacterFromPlayer(Character $character): void
+    public function removeCharacterFromPlayer(Character $character, Player $newPlayer): void
     {
-        $this->createRemovedCharacter($character);
+        $this->createRemovedCharacter($character, $newPlayer);
         $character->getPlayer()->removeCharacter($character);
     }
 
@@ -218,14 +218,23 @@ class CharacterService
      *
      * Does not flush the entity manager.
      */
-    public function deleteCharacter(Character $character): void
+    public function deleteCharacter(Character $character, string $reason): void
     {
-        $this->createRemovedCharacter($character);
+        $this->createRemovedCharacter($character, null, $reason);
         $this->objectManager->remove($character);
     }
 
-    private function createRemovedCharacter(Character $character): void
-    {
+    /**
+     * @noinspection PhpDocMissingThrowsInspection
+     * @param Character $character
+     * @param Player|null $newPlayer
+     * @param string|null $reason should be string if $newPlayer is null otherwise null
+     */
+    private function createRemovedCharacter(
+        Character $character,
+        Player $newPlayer = null,
+        string $reason = null
+    ): void {
         $player = $character->getPlayer();
 
         $removedCharacter = new RemovedCharacter();
@@ -235,6 +244,12 @@ class CharacterService
         $removedCharacter->setCharacterName($character->getName());
         /** @noinspection PhpUnhandledExceptionInspection */
         $removedCharacter->setRemovedDate(new \DateTime());
+        if ($newPlayer) {
+            $removedCharacter->setNewPlayer($newPlayer);
+            $removedCharacter->setAction('moved');
+        } else {
+            $removedCharacter->setAction('deleted (' . $reason . ')');
+        }
 
         $this->objectManager->persist($removedCharacter);
     }

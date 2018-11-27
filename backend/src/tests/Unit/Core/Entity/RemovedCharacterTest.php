@@ -16,17 +16,31 @@ class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
         $char->setCharacterId(123);
         $char->setCharacterName('test char');
         $char->setRemovedDate(new \DateTime('2018-04-26 18:59:35'));
+        $char->setAction('moved');
+        $char->setNewPlayer((new Player())->setName('New Player'));
 
         $this->assertSame([
             'characterId' => 123,
             'characterName' => 'test char',
             'removedDate' => '2018-04-26T18:59:35Z',
+            'action' => 'moved',
+            'newPlayerId' => null,
+            'newPlayerName' => 'New Player',
         ], json_decode(json_encode($char), true));
     }
 
     public function testGetId()
     {
         $this->assertNull((new RemovedCharacter())->getId());
+    }
+
+    public function testSetGetNewPlayer()
+    {
+        $rm = new RemovedCharacter();
+        $player = new Player();
+        $retVal = $rm->setNewPlayer($player);
+        $this->assertSame($rm, $retVal);
+        $this->assertSame($player, $rm->getNewPlayer());
     }
 
     public function testSetGetPlayer()
@@ -44,11 +58,19 @@ class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(123, $rm->getCharacterId());
     }
 
-    public function testSetGetName()
+    public function testSetGetCharacterName()
     {
         $rm = new RemovedCharacter();
         $rm->setCharacterName('nam');
         $this->assertSame('nam', $rm->getCharacterName());
+    }
+
+    public function testSetGetAction()
+    {
+        $rm = new RemovedCharacter();
+        $retVal = $rm->setAction('nam');
+        $this->assertSame($rm, $retVal);
+        $this->assertSame('nam', $rm->getAction());
     }
 
     /**
