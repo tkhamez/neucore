@@ -18,7 +18,6 @@ final class Version20181127205718 extends AbstractMigration
         $this->addSql('ALTER TABLE removed_characters ADD new_player_id INT DEFAULT NULL, ADD action VARCHAR(255) NOT NULL');
         $this->addSql('ALTER TABLE removed_characters ADD CONSTRAINT FK_129104F7AB79F0B0 FOREIGN KEY (new_player_id) REFERENCES players (id)');
         $this->addSql('CREATE INDEX IDX_129104F7AB79F0B0 ON removed_characters (new_player_id)');
-        $this->addSql('ALTER TABLE removed_characters RENAME INDEX idx_2987d70c99e6f5df TO IDX_129104F799E6F5DF');
     }
 
     public function down(Schema $schema) : void
@@ -29,6 +28,5 @@ final class Version20181127205718 extends AbstractMigration
         $this->addSql('ALTER TABLE removed_characters DROP FOREIGN KEY FK_129104F7AB79F0B0');
         $this->addSql('DROP INDEX IDX_129104F7AB79F0B0 ON removed_characters');
         $this->addSql('ALTER TABLE removed_characters DROP new_player_id, DROP action');
-        $this->addSql('ALTER TABLE removed_characters RENAME INDEX idx_129104f799e6f5df TO IDX_2987D70C99E6F5DF');
     }
 }
