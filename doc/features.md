@@ -37,10 +37,12 @@ yet been added to the main account.
 
 ### Removing Characters
 
-When a character is transferred to another EVE account, it is removed from its current 
-player account and deleted.
+If an EVE character is deleted or transferred to another EVE account, 
+it will also be removed from its current player account.
 
-Characters can also be manually removed from a player's account.
+A player can also manually delete a character if that is enabled in the system setting.
+
+All character removals are recorded and visible to the user admin.
 
 ### Deactivation
 
