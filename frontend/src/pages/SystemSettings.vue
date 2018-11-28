@@ -23,16 +23,15 @@
                                                       $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="groups_require_valid_token">
-
                             Check this if the API for third-party applications should not return groups
                             for a player account if one or more of its characters have an invalid token.
                         </label>
                     </div>
-                    <div class="form-group mt-1">
+                    <label class="mt-2">
                         <input type="text" pattern="[0-9]*" class="form-control input-delay"
-                               v-model="accountDeactivationDelay">
+                           v-model="accountDeactivationDelay">
                         Delay the deactivation after a token became invalid (hours).
-                    </div>
+                    </label>
                     <hr>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"

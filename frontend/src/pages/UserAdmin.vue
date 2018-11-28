@@ -34,7 +34,7 @@
                 <div class="card-body">
                     <button v-for="role in availableRoles"
                         type="button" class="btn mr-1 mb-1"
-                        :class="{ 'btn-secondary': activeRole !== role, 'btn-primary': activeRole === role }"
+                        :class="{ 'btn-secondary': activeButton !== role, 'btn-primary': activeButton === role }"
                         v-on:click="getPlayerByRole(role)">
                         {{ role }}
                     </button>
@@ -44,6 +44,37 @@
                         :class="{ active: playerEdit && playerEdit.id === pr.id }"
                         :href="'#UserAdmin/' + pr.id">
                         {{ pr.name }}
+                    </a>
+                </div>
+            </div>
+            <div class="card border-secondary mb-3" >
+                <h3 class="card-header">
+                    Player accounts
+                </h3>
+                <div class="card-body">
+                    <button type="button" class="btn mr-1 mb-1"
+                            :class="{
+                                'btn-secondary': activeButton !== 'withCharacters',
+                                'btn-primary': activeButton === 'withCharacters'
+                            }"
+                            v-on:click="getPlayers('withCharacters')">
+                        with characters
+                    </button>
+                    <button type="button" class="btn mr-1 mb-1"
+                            :class="{
+                                'btn-secondary': activeButton !== 'withoutCharacters',
+                                'btn-primary': activeButton === 'withoutCharacters'
+                            }"
+                            v-on:click="getPlayers('withoutCharacters')">
+                        without characters
+                    </button>
+                </div>
+                <div class="list-group">
+                    <a v-for="emptyAcc in playersChars"
+                       class="list-group-item list-group-item-action"
+                       :class="{ active: playerEdit && playerEdit.id === emptyAcc.id }"
+                       :href="'#UserAdmin/' + emptyAcc.id">
+                        {{ emptyAcc.name }}
                     </a>
                 </div>
             </div>
@@ -61,7 +92,7 @@
                 <div v-cloak v-if="playerEdit" class="card-body">
                     <h4>Roles</h4>
 
-                    <div class="input-group input-group-sm mb-1">
+                    <div class="input-group mb-1">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Add role</span>
                         </div>
@@ -97,7 +128,7 @@
                                 <th>Name</th>
                                 <th>Corporation</th>
                                 <th>Alliance</th>
-                                <th>main</th>
+                                <th>Main</th>
                                 <th>Valid Token</th>
                                 <th>Last Update</th>
                             </tr>
@@ -201,7 +232,7 @@
                     <table class="table table-hover table-sm">
                         <thead class="thead-dark">
                             <tr>
-                                <th>Character Id</th>
+                                <th>Character ID</th>
                                 <th>Character Name</th>
                                 <th>Date Removed</th>
                                 <th>Action</th>
@@ -251,7 +282,8 @@ module.exports = {
     data: function() {
         return {
             playersRole: [],
-            activeRole: '',
+            playersChars: [],
+            activeButton: '',
             playerId: null, // player ID from route
             playerEdit: null,// player being edited
             availableRoles: [
@@ -306,8 +338,9 @@ module.exports = {
         },
 
         getPlayerByRole: function(roleName) {
-            this.activeRole = roleName;
             const vm = this;
+            vm.activeButton = roleName;
+            vm.playersChars = [];
             vm.loading(true);
             new this.swagger.PlayerApi().withRole(roleName, function(error, data) {
                 vm.loading(false);
@@ -316,6 +349,21 @@ module.exports = {
                 }
                 vm.playersRole = data;
             });
+        },
+
+        getPlayers: function(withOutChars) {
+            const vm = this;
+            vm.activeButton = withOutChars;
+            vm.playersRole = [];
+            const api = new this.swagger.PlayerApi();
+            vm.loading(true);
+            api[withOutChars].apply(api, [function(error, data) {
+                vm.loading(false);
+                if (error) {
+                    return;
+                }
+                vm.playersChars = data;
+            }]);
         },
 
         getPlayer: function() {

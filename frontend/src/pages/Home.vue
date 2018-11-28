@@ -278,7 +278,7 @@ module.exports = {
 
             for (let character of this.player.characters) {
                 if (! character.validToken) {
-                    this.deactivated = true
+                    this.deactivated = true;
                     return;
                 }
             }

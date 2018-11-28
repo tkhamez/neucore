@@ -151,7 +151,8 @@ Character API
 - Update a character with data from ESI. `/user/character/{id}/update`
 
 Player API
-- List all players. `/user/player/all`
+- List all players with characters. `/user/player/with-characters`
+- List all players without characters. `/user/player/without-characters`
 - Add a role to the player. `/user/player/{id}/add-role/{name}`
 - Remove a role from a player. `/user/player/{id}/remove-role/{name}`
 - Show all data from a player. `/user/player/{id}/show`
@@ -198,7 +199,6 @@ Group API
 - List all members of a group. `/user/group/{id}/members`
 
 Player API
-- List all players. `/user/player/all`
 - Show all characters from a player. `/user/player/{id}/characters`
 
 Character API

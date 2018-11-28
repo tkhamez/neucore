@@ -23,7 +23,7 @@ class PlayerController
     /**
      * @var Response
      */
-    private $res;
+    private $response;
 
     /**
      * @var LoggerInterface
@@ -62,7 +62,7 @@ class PlayerController
         UserAuth $uas,
         ObjectManager $objectManager
     ) {
-        $this->res = $response;
+        $this->response = $response;
         $this->log = $log;
         $this->repositoryFactory = $repositoryFactory;
         $this->userAuthService = $uas;
@@ -90,7 +90,7 @@ class PlayerController
      */
     public function show(): Response
     {
-        return $this->res->withJson($this->userAuthService->getUser()->getPlayer());
+        return $this->response->withJson($this->userAuthService->getUser()->getPlayer());
     }
 
     /**
@@ -240,7 +240,7 @@ class PlayerController
         }
 
         if ($main === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         return $this->flushAndReturn(200, $main);
@@ -248,10 +248,10 @@ class PlayerController
 
     /**
      * @SWG\Get(
-     *     path="/user/player/all",
-     *     operationId="all",
-     *     summary="List all players.",
-     *     description="Needs role: user-admin or group-manager",
+     *     path="/user/player/with-characters",
+     *     operationId="withCharacters",
+     *     summary="List all players with characters.",
+     *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -265,18 +265,33 @@ class PlayerController
      *     )
      * )
      */
-    public function all(): Response
+    public function withCharacters(): Response
     {
-        $ret = [];
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->getAllWithCharacters());
+    }
 
-        foreach ($this->repositoryFactory->getPlayerRepository()->findBy([], ['name' => 'ASC']) as $player) {
-            $ret[] = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
-        }
-
-        return $this->res->withJson($ret);
+    /**
+     * @SWG\Get(
+     *     path="/user/player/without-characters",
+     *     operationId="withoutCharacters",
+     *     summary="List all players without characters.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function withoutCharacters(): Response
+    {
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->getAllWithoutCharacters());
     }
 
     /**
@@ -302,7 +317,7 @@ class PlayerController
     {
         $ret = $this->getPlayerByRole(Role::APP_MANAGER);
 
-        return $this->res->withJson($ret);
+        return $this->response->withJson($ret);
     }
 
     /**
@@ -328,7 +343,7 @@ class PlayerController
     {
         $ret = $this->getPlayerByRole(Role::GROUP_MANAGER);
 
-        return $this->res->withJson($ret);
+        return $this->response->withJson($ret);
     }
 
     /**
@@ -365,12 +380,12 @@ class PlayerController
     public function withRole(string $name): Response
     {
         if (! in_array($name, $this->availableRoles)) {
-            return $this->res->withStatus(400);
+            return $this->response->withStatus(400);
         }
 
         $players = $this->getPlayerByRole($name);
 
-        return $this->res->withJson($players);
+        return $this->response->withJson($players);
     }
 
     /**
@@ -416,7 +431,7 @@ class PlayerController
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         if (! $player->hasRole($role->getName())) {
@@ -469,7 +484,7 @@ class PlayerController
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
         if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $player->removeRole($role);
@@ -512,13 +527,13 @@ class PlayerController
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $json = $player->jsonSerialize();
         $json['removedCharacters'] = $player->getRemovedCharacters();
 
-        return $this->res->withJson($json);
+        return $this->response->withJson($json);
     }
 
     /**
@@ -556,10 +571,10 @@ class PlayerController
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
-        return $this->res->withJson([
+        return $this->response->withJson([
             'id' => $player->getId(),
             'name' => $player->getName(),
             'characters' => $player->getCharacters(),
@@ -606,25 +621,25 @@ class PlayerController
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION]
         );
         if ($allowDeletion && $allowDeletion->getValue() === '0') {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
         // check if character to delete is logged in
         $user = $this->userAuthService->getUser();
         if ((int) $id === $user->getId()) {
-            return $this->res->withStatus(409);
+            return $this->response->withStatus(409);
         }
 
         // get logged in player and character to delete
         $player = $user->getPlayer();
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         if ($player === null || $char === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         // check if character belongs to the logged in player account
         if (! $player->hasCharacter($char->getId())) {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
         // delete char
@@ -641,10 +656,10 @@ class PlayerController
     private function flushAndReturn(int $status, $json = null): Response
     {
         if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
+            return $this->response->withStatus(500);
         }
 
-        $response = $this->res->withStatus($status);
+        $response = $this->response->withStatus($status);
         if ($json !== null) {
             return $response->withJson($json);
         } else {
@@ -682,7 +697,7 @@ class PlayerController
         }
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
         if ($group === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $player = $this->userAuthService->getUser()->getPlayer();
@@ -705,5 +720,22 @@ class PlayerController
         }
 
         return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @param \Brave\Core\Entity\Player[] $players
+     * @return Response
+     */
+    private function playerList(array $players): Response
+    {
+        $ret = [];
+        foreach ($players as $player) {
+            $ret[] = [
+                'id' => $player->getId(),
+                'name' => $player->getName()
+            ];
+        }
+
+        return $this->response->withJson($ret);
     }
 }

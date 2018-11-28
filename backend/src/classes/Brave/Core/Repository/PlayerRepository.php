@@ -16,4 +16,29 @@ use Brave\Core\Entity\Player;
  */
 class PlayerRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @return \Brave\Core\Entity\Player[]
+     */
+    public function getAllWithoutCharacters()
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c')
+            ->andWhere('c.id IS NULL')
+            ->orderBy('p.name')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return \Brave\Core\Entity\Player[]
+     */
+    public function getAllWithCharacters()
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c')
+            ->andWhere('c.id IS NOT NULL')
+            ->orderBy('p.name')
+            ->getQuery()
+            ->getResult();
+    }
 }

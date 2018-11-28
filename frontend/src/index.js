@@ -132,6 +132,11 @@ const app = new window.Vue({
         ],
 
         /**
+         * Current page
+         */
+        page: null,
+
+        /**
          * The authenticated character
          */
         authChar: null,
@@ -190,7 +195,6 @@ const app = new window.Vue({
             this.getSettings();
         });
 
-        this.getSettings();
         this.getAuthenticatedCharacter();
 
         // refresh session every 5 minutes
@@ -201,6 +205,7 @@ const app = new window.Vue({
 
     watch: {
         initialized: function() {
+            this.getSettings();
             this.getPlayer();
         }
     },

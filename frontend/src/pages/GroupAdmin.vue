@@ -17,8 +17,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>{{ addType }} EVE ID</label>
-                        <input class="form-control" v-model="addTypeId" type="text" title="">
+                        <label>
+                            {{ addType }} EVE ID
+                            <input class="form-control" v-model="addTypeId" type="text" title="">
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">

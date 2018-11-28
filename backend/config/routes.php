@@ -79,7 +79,8 @@ return [
     '/api/user/group/{id}/remove-member/{pid}'     => ['PUT',    GroupController::class.'::removeMember'],
     '/api/user/group/{id}/members'                 => ['GET',    GroupController::class.'::members'],
 
-    '/api/user/player/all'                      => ['GET',    PlayerController::class.'::all'],
+    '/api/user/player/with-characters'          => ['GET',    PlayerController::class.'::withCharacters'],
+    '/api/user/player/without-characters'       => ['GET',    PlayerController::class.'::withoutCharacters'],
     '/api/user/player/show'                     => ['GET',    PlayerController::class.'::show'],
     '/api/user/player/add-application/{gid}'    => ['PUT',    PlayerController::class.'::addApplication'],
     '/api/user/player/remove-application/{gid}' => ['PUT',    PlayerController::class.'::removeApplication'],

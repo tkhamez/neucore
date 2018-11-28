@@ -38,7 +38,7 @@
                     <ul v-if="searchResult.length > 0" class="list-group search-result">
                         <li v-for="character in searchResult" v-on:click="findPlayer(character.id)"
                                 class="list-group-item list-group-item-action search-result-item">
-                            <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'">
+                            <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'" alt="">
                             {{ character.name }}
                         </li>
                     </ul>
@@ -130,10 +130,11 @@ module.exports = {
             if (! this.player) {
                 return;
             }
+            const vm = this;
 
             // reset variables
-            this.groupMembers = [];
-            this.searchResult = [];
+            vm.groupMembers = [];
+            vm.searchResult = [];
             this.newMember = null;
 
             // group id
@@ -143,15 +144,14 @@ module.exports = {
             }
 
             // set group name variable
-            this.groupName = null;
-            for (var group of this.player.managerGroups) {
+            vm.groupName = null;
+            for (let group of this.player.managerGroups) {
                 if (group.id === this.groupId) {
-                    this.groupName = group.name;
+                    vm.groupName = group.name;
                 }
             }
 
             // get members
-            var vm = this;
             vm.loading(true);
             new this.swagger.GroupApi().members(this.groupId, function(error, data) {
                 vm.loading(false);
@@ -163,7 +163,7 @@ module.exports = {
         },
 
         findPlayer: function(characterId) {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.CharacterApi().findPlayerOf(characterId, function(error, data) {
                 vm.loading(false);
@@ -183,9 +183,9 @@ module.exports = {
             if (this.groupId === null || this.newMember === null) {
                 return;
             }
-            var vm = this;
+            const vm = this;
             vm.loading(true);
-            new this.swagger.GroupApi().addMember(this.groupId, this.newMember.id, function(error, data) {
+            new this.swagger.GroupApi().addMember(this.groupId, this.newMember.id, function(error) {
                 vm.loading(false);
                 if (error) {
                     return;
@@ -202,9 +202,9 @@ module.exports = {
             if (this.groupId === null) {
                 return;
             }
-            var vm = this;
+            const vm = this;
             vm.loading(true);
-            new this.swagger.GroupApi().removeMember(this.groupId, playerId, function(error, data) {
+            new this.swagger.GroupApi().removeMember(this.groupId, playerId, function(error) {
                 vm.loading(false);
                 if (error) {
                     return;

@@ -5,6 +5,7 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\CharacterRepository;
@@ -33,6 +34,8 @@ class PlayerControllerTest extends WebTestCase
     private $userId;
 
     private $managerId;
+
+    private $emptyAccId;
 
     /**
      * @var \Brave\Core\Entity\Player
@@ -280,30 +283,55 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame('Alt', $playerAfter->getName());
     }
 
-    public function testAll403()
+    public function testWithCharacters403()
     {
-        $response = $this->runApp('GET', '/api/user/player/all');
+        $response = $this->runApp('GET', '/api/user/player/with-characters');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(10); // not user-admin, group-admin or group-manager
+        $this->loginUser(11); // not user-admin
 
-        $response = $this->runApp('GET', '/api/user/player/all');
+        $response = $this->runApp('GET', '/api/user/player/with-characters');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testAll200()
+    public function testWithCharacters200()
     {
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/all');
+        $response = $this->runApp('GET', '/api/user/player/with-characters');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
             ['id' => $this->player->getId(), 'name' => 'Admin'],
             ['id' => $this->managerId, 'name' => 'Manager'],
             ['id' => $this->userId, 'name' => 'User'],
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testWithoutCharacters403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/without-characters');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin
+
+        $response = $this->runApp('GET', '/api/user/player/without-characters');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testWithoutCharacters200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/without-characters');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->emptyAccId, 'name' => 'empty account'],
         ], $this->parseJsonBody($response));
     }
 
@@ -782,9 +810,14 @@ class PlayerControllerTest extends WebTestCase
         $char->setCorporation($corp);
         $this->player = $char->getPlayer();
 
+        $emptyAcc = (new Player())->setName('empty account');
+
         $this->h->getEm()->persist($corp);
         $this->h->getEm()->persist($alli);
+        $this->h->getEm()->persist($emptyAcc);
         $this->h->getEm()->flush();
+
+        $this->emptyAccId = $emptyAcc->getId();
 
         $this->h->addCharacterToPlayer('Alt', 13, $this->player);
     }
