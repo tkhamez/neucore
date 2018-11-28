@@ -120,7 +120,9 @@
                                 </td>
                                 <td>{{ character.main }}</td>
                                 <td>{{ character.validToken }}</td>
-                                <td>{{ new Date(character.lastUpdate).toUTCString() }}</td>
+                                <td v-if="character.lastUpdate">
+                                    {{ new Date(character.lastUpdate).toUTCString() }}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -210,7 +212,9 @@
                             <tr v-for="removedCharacter in playerEdit.removedCharacters">
                                 <td>{{ removedCharacter.characterId }}</td>
                                 <td>{{ removedCharacter.characterName }}</td>
-                                <td>{{ new Date(removedCharacter.removedDate).toUTCString() }}</td>
+                                <td v-if="removedCharacter.removedDate">
+                                    {{ new Date(removedCharacter.removedDate).toUTCString() }}
+                                </td>
                                 <td>{{ removedCharacter.action }}</td>
                                 <td>
                                     <a v-if="removedCharacter.newPlayerId"

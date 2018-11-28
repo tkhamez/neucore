@@ -119,7 +119,7 @@ class Player implements \JsonSerializable
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
      * @OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
-     * @OrderBy({"characterName" = "ASC"})
+     * @OrderBy({"removedDate" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
      */
     private $removedCharacters;
