@@ -36,8 +36,8 @@
                             Here you can generate a new application secret.
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
-                            <a href="https://github.com/bravecollective/brvneucore/tree/master/backend#app-auth"
-                                target="_blank">Backend - App Auth</a>.
+                            <a href="https://github.com/bravecollective/brvneucore/blob/master/doc/documentation.md#authentication-of-third-party-applications"
+                                target="_blank">Authentication of third-party applications</a>.
                         </p>
                         <p>
                             <button type="button" class="btn btn-warning" v-on:click="generateSecret()">

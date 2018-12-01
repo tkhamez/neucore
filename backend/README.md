@@ -7,21 +7,9 @@ with the [PHP-DI container](http://php-di.org/).
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
 
-## App Auth
-
-Authentication for apps is done via an HTTP Authorization header.
-
-The authorization string is composed of the word Bearer followed by a base64-encoded
-string containing the app ID and secret separated by a colon (1:my awesome secret).
-
-Example:
-```
-curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://brave.core.tld/api/app/v1/show
-```
-
 ## Install
 
-See main [**README.md**](../README.md) for prerequisites.
+See also main [**README**](../README.md) for prerequisites.
 
 dev:
 ```
@@ -35,12 +23,7 @@ composer install --no-dev --optimize-autoloader --no-interaction
 composer compile:prod --no-dev --no-interaction
 ```
 
-## Command-Line App
-
-The console application is available at
-```
-bin/console
-```
+## Useful console commands
 
 ### Making yourself an admin
 
@@ -52,8 +35,6 @@ bin/console make-admin 1234
 ```
 
 This will add all available roles to your player account.
-
-## Other Commands
 
 ### Unit Tests
 
