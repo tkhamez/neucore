@@ -23,7 +23,13 @@ composer install --no-dev --optimize-autoloader --no-interaction
 composer compile:prod --no-dev --no-interaction
 ```
 
-## Useful console commands
+## Console commands
+
+The console application is available at
+
+```
+bin/console
+```
 
 ### Making yourself an admin
 
