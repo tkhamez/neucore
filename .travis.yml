@@ -3,6 +3,7 @@ language: php
 php:
   - 7.1
   - 7.2
+  - 7.3
   - nightly
 
 addons:
@@ -19,23 +20,22 @@ env:
     - BRAVECORE_EVE_SCOPES=
     - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
   matrix:
-    - NODE_VERSION="6.11.4"
-    - NODE_VERSION="8.10.0"
-    - NODE_VERSION="10.10.0"
+    - NODE_VERSION="8.14.0"
+    - NODE_VERSION="10.14.2"
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
   exclude:
+    - php: 7.1
+      env: NODE_VERSION="10.14.2"
     - php: 7.2
-      env: NODE_VERSION="6.11.4"
-    - php: 7.2
-      env: NODE_VERSION="10.10.0"
+      env: NODE_VERSION="8.14.0"
+    - php: 7.3
+      env: NODE_VERSION="8.14.0"
     - php: nightly
-      env: NODE_VERSION="6.11.4"
-    - php: nightly
-      env: NODE_VERSION="10.10.0"
+      env: NODE_VERSION="8.14.0"
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
