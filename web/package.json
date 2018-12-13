@@ -2,6 +2,6 @@
     "name": "brvneucore-api",
     "private": true,
     "dependencies": {
-        "swagger-ui-dist": "^3.14.2"
+        "swagger-ui-dist": "^3.20.2"
     }
 }
