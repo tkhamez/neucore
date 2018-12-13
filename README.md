@@ -48,7 +48,7 @@ The values for the EVE application must be adjusted.
 ### Local dev Requirements
 
 * PHP 7.1+ with Composer, see `backend/composer.json` for necessary extensions
-* Node.js 6 or 8 + npm (use npm 5.6.0 with node 8 if there are "write after end" errors)
+* Node.js 8 or 10 + npm (use npm 5.6.0 with node 8 if there are "write after end" errors)
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
     * set the document root to the `web` directory.
