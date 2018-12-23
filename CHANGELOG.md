@@ -1,4 +1,12 @@
 
+## 0.5.1
+
+23 Dec 2018
+
+- Waiting time between sending mails increased in order not to trigger the ESI rate limit.
+- Dropped Node.js 6.x support
+- Updated dependencies
+
 ## 0.5.0
 
 8 Dec 2018

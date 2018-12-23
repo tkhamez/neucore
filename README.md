@@ -75,9 +75,9 @@ Then install the dependencies and build the backend and frontend by executing:
 
 #### Cron jobs
 
-Set up necessary cron jobs, e.g. hourly with flock (adjust path):
+Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths):
 ```
-00 * * * * neucore /usr/bin/flock -n /tmp/neucore-jobs.lockfile backend/bin/run-jobs.sh
+0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-jobs.lockfile backend/bin/run-jobs.sh
 ```
 
 ### Heroku

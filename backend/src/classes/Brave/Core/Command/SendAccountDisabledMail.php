@@ -51,7 +51,7 @@ class SendAccountDisabledMail extends Command
         $this->setName('send-account-disabled-mail')
             ->setDescription('Sends "account disabled" EVE mail notification.')
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each mail sent', 200);
+                'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)', 20);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -97,7 +97,7 @@ class SendAccountDisabledMail extends Command
             if ($errMessage === '') { // success
                 $this->eveMail->accountDeactivatedMailSent($playerId, true);
                 $this->writeln('Mail send to ' . $characterId);
-                usleep($this->sleep * 1000);
+                usleep($this->sleep * 1000 * 1000);
             } else {
                 $this->writeln($errMessage);
             }
