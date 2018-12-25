@@ -151,8 +151,10 @@
                                 </td>
                                 <td>{{ character.main }}</td>
                                 <td>{{ character.validToken }}</td>
-                                <td v-if="character.lastUpdate">
-                                    {{ new Date(character.lastUpdate).toUTCString() }}
+                                <td>
+                                    <span v-if="character.lastUpdate">
+                                        {{ character.lastUpdate.toUTCString() }}
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
@@ -243,8 +245,10 @@
                             <tr v-for="removedCharacter in playerEdit.removedCharacters">
                                 <td>{{ removedCharacter.characterId }}</td>
                                 <td>{{ removedCharacter.characterName }}</td>
-                                <td v-if="removedCharacter.removedDate">
-                                    {{ new Date(removedCharacter.removedDate).toUTCString() }}
+                                <td>
+                                    <span v-if="removedCharacter.removedDate">
+                                        {{ removedCharacter.removedDate.toUTCString() }}
+                                    </span>
                                 </td>
                                 <td>{{ removedCharacter.action }}</td>
                                 <td>
@@ -293,7 +297,8 @@ module.exports = {
                 'group-manager',
                 'user-admin',
                 'esi',
-                'settings'
+                'settings',
+                'tracking',
             ],
             newRole: '',
             searchResult: [],

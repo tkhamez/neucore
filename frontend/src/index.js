@@ -11,6 +11,7 @@ import AppAdmin        from './pages/AppAdmin.vue';
 import UserAdmin       from './pages/UserAdmin.vue';
 import Esi             from './pages/Esi.vue';
 import SystemSettings  from './pages/SystemSettings.vue';
+import Tracking        from './pages/Tracking.vue';
 
 window.Vue.mixin({
     methods: {
@@ -24,12 +25,13 @@ window.Vue.mixin({
 
         /**
          * @param text
-         * @param {string} type One of: error, info or success
+         * @param {string} type One of: error, warning, info or success
          */
         message: function(text, type) {
             switch (type) {
                 case 'error':
                 case 'info':
+                case 'warning':
                     type = type === 'error' ? 'danger' : type;
                     this.$root.showMessage(text, type);
                     break;
@@ -75,23 +77,16 @@ window.Vue.mixin({
             return fixed;
         },
 
-        authResult: function() {
-            const vm = this;
-            vm.loading(true);
-            new this.swagger.AuthApi().result(function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    window.console.error(error);
-                    return;
-                }
-                if (data.success) {
-                    window.console.log(data.message);
-                } else {
-                    vm.message(data.message, 'error');
-                }
-            });
-        },
-
+        /**
+         * @param {Date} date
+         * @returns {string}
+         */
+        formatDate: function(date) {
+            let str = date.toISOString();
+            str = str.replace('T', ' ');
+            str = str.replace('.000Z', '');
+            return str.substr(0, str.length - 3);
+        }
     }
 });
 
@@ -108,6 +103,7 @@ const app = new window.Vue({
         UserAdmin,
         Esi,
         SystemSettings,
+        Tracking,
     },
 
     data: {
@@ -128,7 +124,8 @@ const app = new window.Vue({
             'AppAdmin',
             'UserAdmin',
             'Esi',
-            'SystemSettings'
+            'SystemSettings',
+            'Tracking',
         ],
 
         /**
@@ -225,8 +222,15 @@ const app = new window.Vue({
             this.route = window.location.hash.substr(1).split('/');
 
             // handle routes that do not have a page
+            const vm = this;
             if (this.route[0] === 'logout') {
                 this.logout();
+            } else if (['login', 'login-alt'].indexOf(this.route[0]) !== -1) {
+                authResult();
+            } else if (this.route[0] === 'login-director') {
+                authResult('info');
+            }  else if (this.route[0] === 'login-mail') {
+                location.hash = 'SystemSettings';
             }
 
             // set page, fallback to Home
@@ -234,6 +238,29 @@ const app = new window.Vue({
                 this.route[0] = 'Home';
             }
             this.page = this.route[0];
+
+            /**
+             * @param {string} [successMessageType]
+             */
+            function authResult(successMessageType) {
+                vm.loading(true);
+                new vm.swagger.AuthApi().result(function(error, data) {
+                    vm.loading(false);
+                    if (error) {
+                        window.console.error(error);
+                        return;
+                    }
+                    if (data.success) {
+                        if (successMessageType) {
+                            vm.message(data.message, successMessageType);
+                        } else {
+                            window.console.log(data.message);
+                        }
+                    } else {
+                        vm.message(data.message, 'error');
+                    }
+                });
+            }
         },
 
         getSettings: function() {

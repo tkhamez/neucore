@@ -51,6 +51,10 @@
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
+                <li v-cloak v-if="hasRole('tracking')"
+                    class="nav-item" :class="{ active: page === 'Tracking' }">
+                    <a class="nav-link" href="#Tracking">Member Tracking</a>
+                </li>
                 <li v-cloak v-if="hasRole('esi')"
                     class="nav-item" :class="{ active: page === 'Esi' }">
                     <a class="nav-link" href="#Esi">ESI</a>

@@ -26,7 +26,7 @@ class NonBlockingSessionMiddleware
      * Available options (all optional):
      * name <string>: the session name
      * secure <bool>: session.cookie_secure option runtime configuration
-     * route_blocking_pattern <array>: patterns of routes that allow writing to the session, exact match
+     * route_blocking_pattern <array>: patterns of routes that allow writing to the session, matched by "starts-with"
      * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with"
      *
      * Example
@@ -130,7 +130,7 @@ class NonBlockingSessionMiddleware
             is_array($this->options['route_blocking_pattern'])
         ) {
             foreach ($this->options['route_blocking_pattern'] as $blockingPattern) {
-                if ($blockingPattern === $routePattern) {
+                if (strpos($routePattern, $blockingPattern) === 0) {
                     $readOnly = false;
                     break;
                 }

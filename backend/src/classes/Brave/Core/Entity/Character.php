@@ -129,21 +129,31 @@ class Character implements \JsonSerializable
     private $corporation;
 
     /**
+     * @OneToOne(targetEntity="CorporationMember", mappedBy="character")
+     * @var CorporationMember
+     */
+    private $corporationMember;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize()
+    public function jsonSerialize($withRelations = true)
     {
-        return [
+        $result = [
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
             'lastUpdate' => $this->lastUpdate ? $this->lastUpdate->format('Y-m-d\TH:i:s\Z') : null,
             'validToken' => $this->validToken,
-            'corporation' => $this->corporation
         ];
+        if ($withRelations) {
+            $result['corporation'] = $this->corporation;
+        }
+
+        return $result;
     }
 
     /**
@@ -469,5 +479,29 @@ class Character implements \JsonSerializable
     public function getCorporation()
     {
         return $this->corporation;
+    }
+
+    /**
+     * Set corporationMember.
+     *
+     * @param \Brave\Core\Entity\CorporationMember|null $corporationMember
+     *
+     * @return Character
+     */
+    public function setCorporationMember(CorporationMember $corporationMember = null)
+    {
+        $this->corporationMember = $corporationMember;
+
+        return $this;
+    }
+
+    /**
+     * Get corporationMember.
+     *
+     * @return \Brave\Core\Entity\CorporationMember|null
+     */
+    public function getCorporationMember()
+    {
+        return $this->corporationMember;
     }
 }

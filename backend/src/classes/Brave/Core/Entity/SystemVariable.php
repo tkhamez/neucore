@@ -92,6 +92,23 @@ class SystemVariable implements \JsonSerializable
     const MAIL_ACCOUNT_DISABLED_BODY = 'mail_account_disabled_body';
 
     /**
+     * Character with director role for member tracking.
+     *
+     * This is the base name of this variable, the actual variable must have a number suffix
+     * because there can be several director characters.
+     *
+     * Scope = settings
+     */
+    const DIRECTOR_CHAR = 'director_char_';
+
+    /**
+     * Tokens for DIRECTOR_CHAR
+     *
+     * Scope = backend
+     */
+    const DIRECTOR_TOKEN = 'director_token_';
+
+    /**
      * Variable name.
      *
      * @SWG\Property(maxLength=255)
@@ -137,7 +154,7 @@ class SystemVariable implements \JsonSerializable
 
     public function getValue(): string
     {
-        return $this->value;
+        return (string) $this->value;
     }
 
     public function setValue(string $value): SystemVariable

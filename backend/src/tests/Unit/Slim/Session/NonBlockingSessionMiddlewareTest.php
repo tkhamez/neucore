@@ -68,6 +68,18 @@ class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse((new SessionData())->isReadOnly());
     }
 
+    public function testStartWritableStartsWith()
+    {
+        $conf = [
+            'route_include_pattern' => ['/sess'],
+            'route_blocking_pattern' => ['/sess', '/sess/delete'],
+        ];
+        $this->invokeMiddleware('/sess/set', $conf, true);
+
+        $this->assertTrue(isset($_SESSION));
+        $this->assertFalse((new SessionData())->isReadOnly());
+    }
+
     private function invokeMiddleware($path, $conf, $addRoute)
     {
         $route = $this->createMock(RouteInterface::class);

@@ -13,4 +13,16 @@ use Brave\Core\Entity\SystemVariable;
  */
 class SystemVariableRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @return SystemVariable[]
+     */
+    public function getDirectors(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.name LIKE :name')
+            ->setParameter('name', SystemVariable::DIRECTOR_CHAR . '%')
+            ->orderBy('s.name')
+            ->getQuery()
+            ->getResult();
+    }
 }

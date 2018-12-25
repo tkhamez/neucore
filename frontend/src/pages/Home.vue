@@ -62,11 +62,11 @@
             </p>
             <hr class="my-4">
 
-            <div v-cloak v-if="loginUrl">
+            <div v-cloak v-if="! authChar">
                 <p class="lead">
                     Click the button below to login through <i>EVE Online SSO</i>.
                 </p>
-                <a :href="loginUrl">
+                <a href="/login">
                     <img src="/images/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
                 </a>
                 <p class="small">
@@ -77,9 +77,9 @@
                 </p>
             </div>
 
-            <div v-cloak v-if="loginAltUrl">
+            <div v-cloak v-if="authChar">
                 <p>Please add all your characters by logging in with EVE SSO.</p>
-                <p><a :href="loginAltUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
+                <p><a href="/login-alt"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
             </div>
         </div>
 
@@ -203,33 +203,18 @@ module.exports = {
             deleteButton: false,
             accountDeactivation: false,
             deactivated: false,
-            loginUrl: null,
-            loginAltUrl: null,
             charToDelete: null,
         }
     },
 
     mounted: function() { // after "redirect" from another page
-        if (this.initialized) {
-            this.getLoginUrl();
-        }
         this.adjustSettings();
         this.checkDeactivated();
     },
 
     watch: {
         authChar: function() { // for primary login and logout
-            if (this.initialized) {
-                this.getLoginUrl();
-            }
             this.checkDeactivated();
-        },
-
-        initialized: function() { // on refresh
-            if (! this.authChar) {
-                this.getLoginUrl();
-            }
-            this.checkLoginResult();
         },
 
         player: function() {
@@ -282,30 +267,6 @@ module.exports = {
                     return;
                 }
             }
-        },
-
-        checkLoginResult: function() {
-            if (this.route[1] !== 'login') {
-                return;
-            }
-            this.$root.authResult();
-        },
-
-        getLoginUrl: function() {
-            const vm = this;
-            const type = vm.authChar ? 'alt' : '';
-            vm.loginUrl = null;
-            vm.loginAltUrl = null;
-
-            vm.loading(true);
-            new this.swagger.AuthApi().loginUrl({ redirect: '/#Home/login', type: type }, function(error, data) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.loginUrl = type === 'alt' ? null : data;
-                vm.loginAltUrl = type === 'alt' ? data : null;
-            });
         },
 
         makeMain: function(characterId) {

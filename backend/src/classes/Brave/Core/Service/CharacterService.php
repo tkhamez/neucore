@@ -5,6 +5,7 @@ namespace Brave\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Log\LoggerInterface;
@@ -37,16 +38,23 @@ class CharacterService
     private $log;
 
     /**
+     * @var RepositoryFactory
+     */
+    private $repositoryFactory;
+
+    /**
      * @var ObjectManager
      */
     private $objectManager;
 
     public function __construct(
         LoggerInterface $log,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -221,6 +229,13 @@ class CharacterService
     public function deleteCharacter(Character $character, string $reason): void
     {
         $this->createRemovedCharacter($character, null, $reason);
+
+        // remove corporation member reference
+        $corporationMember = $this->repositoryFactory->getCorporationMemberRepository()->find($character->getId());
+        if ($corporationMember !== null) {
+            $corporationMember->setCharacter(null);
+        }
+
         $this->objectManager->remove($character);
     }
 

@@ -19,7 +19,10 @@ class Client extends \GuzzleHttp\Client
 
     public function send(RequestInterface $request, array $options = []): ResponseInterface
     {
-        return array_shift($this->responses);
+        $response = array_shift($this->responses);
+        #var_Dump($request->getUri()->getPath());
+        #var_Dump((string)$response->getBody());
+        return $response;
     }
 
     public function request($method, $uri = '', array $options = []): ResponseInterface

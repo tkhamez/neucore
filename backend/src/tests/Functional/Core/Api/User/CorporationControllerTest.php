@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Core\Api\User;
 
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Repository\AllianceRepository;
@@ -382,12 +383,74 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(204, $response2->getStatusCode());
     }
 
+    public function testTrackedCorporations403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(6); # not role tracking
+
+        $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testTrackedCorporations200()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([[
+            'id' => 222,
+            'name' => 'corp 2',
+            'ticker' => 't2',
+            'alliance' => null,
+        ]], $this->parseJsonBody($response));
+    }
+
+    public function testMembers403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('GET', '/api/user/corporation/222/members');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(6); # not role tracking
+
+        $response = $this->runApp('GET', '/api/user/corporation/222/members');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testMembers200()
+    {
+        $this->setupDb();
+
+        $this->loginUser(7);
+
+        $response = $this->runApp('GET', '/api/user/corporation/222/members');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([[
+            'id' => 101,
+            'name' => 'm1',
+            'locationId' => null,
+            'logoffDate' => null,
+            'logonDate' => null,
+            'shipTypeId' => null,
+            'startDate' => null,
+            'character' => null,
+            'player' => null,
+        ]], $this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
         $this->h->emptyDb();
 
         $this->h->addCharacterMain('User', 6, [Role::USER]);
-        $this->h->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN]);
+        $this->h->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');
@@ -395,6 +458,8 @@ class CorporationControllerTest extends WebTestCase
 
         $group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');
+
+        $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2);
 
         $corp1->addGroup($group1);
         $corp2->addGroup($group1);
@@ -405,6 +470,7 @@ class CorporationControllerTest extends WebTestCase
         $this->em->persist($corp3);
         $this->em->persist($group1);
         $this->em->persist($group2);
+        $this->em->persist($member);
 
         $this->em->flush();
 

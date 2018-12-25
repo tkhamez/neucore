@@ -28,4 +28,17 @@ class CorporationRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return \Brave\Core\Entity\Corporation[]
+     */
+    public function getAllWithMemberTrackingData()
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.members', 'm')
+            ->andWhere('m.corporation IS NOT NULL')
+            ->orderBy('c.name')
+            ->getQuery()
+            ->getResult();
+    }
 }

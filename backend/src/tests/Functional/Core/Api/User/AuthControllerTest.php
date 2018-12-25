@@ -3,6 +3,7 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Api\User\AuthController;
+use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Service\Config;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
@@ -30,57 +31,55 @@ class AuthControllerTest extends WebTestCase
         $this->client = new Client();
     }
 
-    public function testLoginUrl200()
+    public function testLogin()
     {
-        $redirect = '/index.html#auth';
-        $response = $this->runApp('GET', '/api/user/auth/login-url?redirect='.urlencode($redirect));
+        $response = $this->runApp('GET', '/login');
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame(['application/json;charset=utf-8'], $response->getHeader('Content-Type'));
-
-        $body = $this->parseJsonBody($response);
-
-        $this->assertContains('https://login.eveonline.com', $body);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame($redirect, $sess->get('auth_redirect'));
+        $this->assertSame('/#login', $sess->get('auth_redirect'));
         $this->assertSame(12, strlen($sess->get('auth_state')));
     }
 
-    public function testLoginUrl200Alt()
+    public function testLoginAlt()
     {
-        $redirect = '/index.html#auth-alt';
-        $params = 'redirect=' . urlencode($redirect) . '&type=alt';
-        $response = $this->runApp('GET', '/api/user/auth/login-url?' . $params);
+        $response = $this->runApp('GET', '/login-alt');
 
-        $this->assertSame(200, $response->getStatusCode());
-
-        $body = $this->parseJsonBody($response);
-
-        $this->assertContains('https://login.eveonline.com', $body);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame($redirect, $sess->get('auth_redirect'));
-        $this->assertSame(AuthController::STATE_PREFIX_ALT, substr($sess->get('auth_state'), 0, 2));
+        $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
         $this->assertSame(14, strlen($sess->get('auth_state')));
+        $this->assertStringStartsWith(AuthController::STATE_PREFIX_ALT, $sess->get('auth_state'));
     }
 
-    public function testLoginUrl200Mail()
+    public function testLoginMail()
     {
-        $redirect = '/index.html#auth-mail';
-        $params = 'redirect=' . urlencode($redirect) . '&type=mail';
-        $response = $this->runApp('GET', '/api/user/auth/login-url?' . $params);
+        $response = $this->runApp('GET', '/login-mail');
 
-        $this->assertSame(200, $response->getStatusCode());
-
-        $body = $this->parseJsonBody($response);
-
-        $this->assertContains('https://login.eveonline.com', $body);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame($redirect, $sess->get('auth_redirect'));
-        $this->assertSame(AuthController::STATE_PREFIX_MAIL, substr($sess->get('auth_state'), 0, 2));
+        $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
         $this->assertSame(14, strlen($sess->get('auth_state')));
+        $this->assertStringStartsWith(AuthController::STATE_PREFIX_MAIL, $sess->get('auth_state'));
+    }
+
+    public function testLoginDirector()
+    {
+        $response = $this->runApp('GET', '/login-director');
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
+
+        $sess = new SessionData();
+        $this->assertSame('/#login-director', $sess->get('auth_redirect'));
+        $this->assertSame(14, strlen($sess->get('auth_state')));
+        $this->assertStringStartsWith(AuthController::STATE_PREFIX_DIRECTOR, $sess->get('auth_state'));
     }
 
     public function testCallbackException()
@@ -307,6 +306,71 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(
             ['success' => true, 'message' => 'Mail character authenticated.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    public function testCallbackDirectorLoginWrongScopes()
+    {
+        $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
+        $_SESSION['auth_state'] = $state;
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": "tk"}'), // for getAccessToken()
+
+            // for getResourceOwner()
+            new Response(200, [], '{
+                "CharacterID": 3,
+                "CharacterName": "N3",
+                "CharacterOwnerHash": "hs",
+                "Scopes": "esi-characters.read_corporation_roles.v1"
+            }')
+        );
+
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+            GenericProvider::class => new OAuthProvider($this->client)
+        ]);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            ['success' => false, 'message' => 'Required scopes do not match.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    public function testCallbackDirectorLoginSuccess()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
+        $_SESSION['auth_state'] = $state;
+        $this->client->setResponse(
+            // for getAccessToken()
+            new Response(200, [], '{"access_token": "tk"}'),
+
+            // for getResourceOwner()
+            new Response(200, [], '{
+                "CharacterID": 3,
+                "CharacterName": "N3",
+                "CharacterOwnerHash": "hs",
+                "Scopes": "esi-characters.read_corporation_roles.v1 esi-corporations.track_members.v1"
+            }'),
+
+            // for getCharactersCharacterId
+            new Response(200, [], '{"corporation_id": 123}'),
+
+            // for getCharactersCharacterIdRoles
+            new Response(200, [], '{"roles": ["Director"]}'),
+
+            // for getCorporation
+            new Response(200, [], '{"name": "c123", "ticker": "-c-"}')
+        );
+
+        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+            GenericProvider::class => new OAuthProvider($this->client),
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
+        ]);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            ['success' => true, 'message' => 'Character with director roles added.'],
             $_SESSION['auth_result']
         );
     }

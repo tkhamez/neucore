@@ -3,6 +3,7 @@
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Character;
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Corporation;
 
@@ -23,6 +24,14 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'validToken' => false,
             'corporation' => null
         ], json_decode(json_encode($char), true));
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'main' => false,
+            'lastUpdate' => null,
+            'validToken' => false
+        ], $char->jsonSerialize(false));
     }
 
     public function testSetGetId()
@@ -61,6 +70,14 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $corp = new Corporation();
         $char->setCorporation($corp);
         $this->assertSame($corp, $char->getCorporation());
+    }
+
+    public function testSetGetCorporationMember()
+    {
+        $char = new Character();
+        $member = new CorporationMember();
+        $char->setCorporationMember($member);
+        $this->assertSame($member, $char->getCorporationMember());
     }
 
     public function testSetGetCharacterOwnerHash()

@@ -10,7 +10,7 @@ use Slim\Http\Response;
 /**
  * @SWG\Tag(
  *     name="Corporation",
- *     description="Corporation management (for automatic group assignment)."
+ *     description="Corporation management (for automatic group assignment) and tracking."
  * )
  */
 class CorporationController
@@ -18,7 +18,7 @@ class CorporationController
     /**
      * @var Response
      */
-    private $res;
+    private $response;
 
     /**
      * @var ObjectManager
@@ -42,7 +42,7 @@ class CorporationController
 
     public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
     {
-        $this->res = $response;
+        $this->response = $response;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
     }
@@ -68,7 +68,7 @@ class CorporationController
      */
     public function all(): Response
     {
-        return $this->res->withJson(
+        return $this->response->withJson(
             $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC']));
     }
 
@@ -101,7 +101,7 @@ class CorporationController
             $result[] = $json;
         }
 
-        return $this->res->withJson($result);
+        return $this->response->withJson($result);
     }
 
     /**
@@ -153,7 +153,7 @@ class CorporationController
         $corpId = (int) $id;
 
         if ($this->repositoryFactory->getCorporationRepository()->find($corpId)) {
-            return $this->res->withStatus(409);
+            return $this->response->withStatus(409);
         }
 
         // get corporation
@@ -161,9 +161,9 @@ class CorporationController
         if ($corporation === null) {
             $code = $service->getEsiApi()->getLastErrorCode();
             if ($code === 404 || $code === 400) {
-                return $this->res->withStatus($code);
+                return $this->response->withStatus($code);
             } else {
-                return $this->res->withStatus(503);
+                return $this->response->withStatus(503);
             }
         }
 
@@ -214,7 +214,7 @@ class CorporationController
     public function addGroup(string $id, string $gid): Response
     {
         if (! $this->findCorpAndGroup($id, $gid)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         if (! $this->corp->hasGroup($this->group->getId())) {
@@ -263,12 +263,72 @@ class CorporationController
     public function removeGroup(string $id, string $gid): Response
     {
         if (! $this->findCorpAndGroup($id, $gid)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $this->corp->removeGroup($this->group);
 
         return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/corporation/tracked-corporations",
+     *     operationId="trackedCorporations",
+     *     summary="Returns all corporations that have member tracking data.",
+     *     description="Needs role: tracking",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of characters.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function trackedCorporations()
+    {
+        $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
+
+        return $this->response->withJson($corporations);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/corporation/{id}/members",
+     *     operationId="members",
+     *     summary="Returns tracking data of corporation members.",
+     *     description="Needs role: tracking",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the corporation.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of corporation members.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CorporationMember"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function members(string $id)
+    {
+        $members = $this->repositoryFactory->getCorporationMemberRepository()
+            ->findBy(['corporation' => $id], ['logonDate' => 'desc']);
+
+        return $this->response->withJson($members);
     }
 
     /**
@@ -279,10 +339,10 @@ class CorporationController
     private function flushAndReturn(int $status, $json = null): Response
     {
         if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
+            return $this->response->withStatus(500);
         }
 
-        $response = $this->res->withStatus($status);
+        $response = $this->response->withStatus($status);
         if ($json !== null) {
             return $response->withJson($json);
         } else {

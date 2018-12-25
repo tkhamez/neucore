@@ -53,6 +53,7 @@ class PlayerController
         Role::USER_ADMIN,
         Role::ESI,
         Role::SETTINGS,
+        Role::TRACKING,
     ];
 
     public function __construct(
@@ -541,7 +542,7 @@ class PlayerController
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
-     *     description="Needs role: app-admin, group-admin, group-manager",
+     *     description="Needs role: app-admin, group-admin, group-manager, tracking",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(

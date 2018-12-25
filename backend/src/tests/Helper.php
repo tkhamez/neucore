@@ -7,6 +7,7 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
@@ -29,6 +30,7 @@ class Helper
 
     private $entities = [
         App::class,
+        CorporationMember::class,
         Character::class,
         RemovedCharacter::class,
         Player::class,

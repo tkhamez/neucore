@@ -47,7 +47,6 @@ class Alliance implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @SWG\Property()
      * @Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */

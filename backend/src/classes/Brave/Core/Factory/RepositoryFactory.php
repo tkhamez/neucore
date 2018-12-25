@@ -6,6 +6,7 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
@@ -14,6 +15,7 @@ use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Repository\AppRepository;
 use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationMemberRepository;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
@@ -51,6 +53,11 @@ class RepositoryFactory
     public function getCorporationRepository(): CorporationRepository
     {
         return $this->getInstance(CorporationRepository::class, Corporation::class);
+    }
+
+    public function getCorporationMemberRepository(): CorporationMemberRepository
+    {
+        return $this->getInstance(CorporationMemberRepository::class, CorporationMember::class);
     }
 
     public function getGroupRepository(): GroupRepository

@@ -10,9 +10,8 @@
     <div class="row mb-3">
         <div class="col-lg-12">
             <div class="card border-secondary mb-3">
-                <div class="card-header">
-                    General
-                </div>
+
+                <div class="card-header">General</div>
                 <div class="card-body">
                     <em>Deactivate Accounts:</em>
                     <div class="custom-control custom-checkbox">
@@ -60,19 +59,18 @@
                     </div>
 
                 </div>
-                <div class="card-header">
-                    EVE Mails
-                </div>
+
+                <div class="card-header">EVE Mails</div>
                 <div class="card-body">
                     <h4>Sender</h4>
                     <p>
-                        <span v-if="mailCharacter === ''">
-                            <a :href="loginUrl"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                        <span v-if="variables['mail_character'] === ''">
+                            <a href="/login-mail"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
                         </span>
                         <span v-else>
-                            <span class="text-info">{{ mailCharacter }}</span>
+                            <span class="text-info">{{ variables['mail_character'] }}</span>
                             <button type="button" class="btn btn-danger btn-sm ml-1"
-                                    v-on:click="mailCharacter = ''; changeSetting('mail_character', '')">
+                                    v-on:click="removeMailChar()">
                                 remove
                             </button>
                         </span>
@@ -121,6 +119,48 @@
                                   id="mailAccountDisabledBody" rows="6"></textarea>
                     </div>
                 </div>
+
+                <div class="card-header">Directors</div>
+                <div class="card-body">
+                    <p>
+                        Login URL for characters with director role:
+                        <a :href="loginUrlDirector">{{ loginUrlDirector }}</a>
+                    </p>
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Character</th>
+                                <th>Corporation</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="director in directors">
+                                <td>{{ director.value['character_name'] }}</td>
+                                <td>
+                                    [{{ director.value['corporation_ticker'] }}]
+                                    {{ director.value['corporation_name'] }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info"
+                                            v-on:click="validateDirector(director.name)">
+                                        <i class="fas fa-check"></i>
+                                        validate
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger"
+                                            v-on:click="removeDirector(director.name)">
+                                        <i class="fas fa-minus-circle"></i>
+                                        remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>
@@ -142,13 +182,13 @@ module.exports = {
         return {
             variables: {},
             api: null,
-            loginUrl: null,
+            loginUrlDirector: null,
             accountDeactivationDelay: '',
-            mailCharacter: '',
             mailAccountDisabledActive: false,
             mailAccountDisabledAlliances: '',
             mailAccountDisabledSubject: '',
             mailAccountDisabledBody: '',
+            directors: []
         }
     },
 
@@ -157,12 +197,18 @@ module.exports = {
             this.init();
         }
         this.$root.$emit('settingsChange'); // make sure the data is up to date
+
+        // login URL for director chars
+        let port = '';
+        if (location.port !== "" && location.port !== 80 && location.port !== 443) {
+            port = ':' + location.port;
+        }
+        this.loginUrlDirector = location.protocol + "//" + location.hostname + port + "/login-director"
     },
 
     watch: {
         initialized: function() { // on refresh
             this.init();
-            this.checkLoginResult();
         },
 
         settings: function() {
@@ -190,20 +236,56 @@ module.exports = {
     methods: {
         init: function() {
             this.api = new this.swagger.SettingsApi();
-            this.getLoginUrl();
         },
 
         readSettings: function() {
-            this.variables = {};
+            this.directors = [];
             for (let variable of this.settings) {
-                this.variables[variable.name] = variable.value;
+                if (variable.name === 'account_deactivation_delay') {
+                    this.accountDeactivationDelay = variable.value;
+                } else if (variable.name === 'mail_account_disabled_active') {
+                    this.mailAccountDisabledActive = variable.value === '1';
+                } else if (variable.name === 'mail_account_disabled_alliances') {
+                    this.mailAccountDisabledAlliances = variable.value;
+                } else if (variable.name === 'mail_account_disabled_subject') {
+                    this.mailAccountDisabledSubject = variable.value;
+                } else if (variable.name === 'mail_account_disabled_body') {
+                    this.mailAccountDisabledBody = variable.value;
+                } else if (variable.name.indexOf('director_char_') !== -1) {
+                    try {
+                        this.directors.push({
+                            'name': variable.name,
+                            'value': JSON.parse(variable.value)
+                        });
+                    } catch(err) {}
+                } else {
+                    this.variables[variable.name] = variable.value;
+                }
             }
-            this.mailCharacter = this.variables['mail_character'];
-            this.accountDeactivationDelay = this.variables['account_deactivation_delay'];
-            this.mailAccountDisabledActive = this.variables['mail_account_disabled_active'] === '1';
-            this.mailAccountDisabledAlliances = this.variables['mail_account_disabled_alliances'];
-            this.mailAccountDisabledSubject = this.variables['mail_account_disabled_subject'];
-            this.mailAccountDisabledBody = this.variables['mail_account_disabled_body'];
+        },
+
+        removeMailChar: function() {
+            this.variables['mail_character'] = '';
+            this.changeSetting('mail_character', '');
+        },
+
+        removeDirector: function(name) {
+            this.changeSetting(name, '');
+        },
+
+        validateDirector: function(name) {
+            const vm = this;
+            vm.loading(true);
+            this.api.validateDirector(name, function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.$root.message(
+                    data ? 'The Token is valid and character has director role.' : 'The token is invalid.',
+                    data ? 'info' : 'warning'
+                );
+            });
         },
 
         changeSettingDelayed: _.debounce((vm, name, value) => {
@@ -219,36 +301,18 @@ module.exports = {
                     return;
                 }
 
-                // propagate only the change of variables that are used elsewhere
-                if (['groups_require_valid_token',
-                    'allow_character_deletion',
-                    'show_preview_banner'].indexOf(name) !== -1
+                // propagate only the change of variables that are used elsewhere or were deleted
+                if ([
+                        'groups_require_valid_token',
+                        'allow_character_deletion',
+                        'show_preview_banner',
+                        'mail_character',
+                    ].indexOf(name) !== -1 ||
+                    name.indexOf('director_char_') !== -1
                 ) {
                     vm.$root.$emit('settingsChange');
                 }
             });
-        },
-
-        getLoginUrl: function() {
-            const vm = this;
-            vm.loginUrl = null;
-
-            vm.loading(true);
-            const params = { redirect: '/#SystemSettings/login', type: 'mail' };
-            new this.swagger.AuthApi().loginUrl(params, function(error, data) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.loginUrl = data;
-            });
-        },
-
-        checkLoginResult: function() {
-            if (this.route[1] !== 'login') {
-                return;
-            }
-            this.$root.authResult();
         },
 
         sendMailAccountDisabledTestMail: function() {

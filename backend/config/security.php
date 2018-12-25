@@ -24,7 +24,9 @@ return [
     '/api/user/character/find-player-of' => [Role::USER_ADMIN, Role::GROUP_MANAGER],
     '/api/user/character/{id}/update'    => [Role::USER, Role::USER_ADMIN],
 
-    '/api/user/corporation' => [Role::GROUP_ADMIN],
+    '/api/user/corporation/tracked-corporations' => [Role::TRACKING],
+    '/api/user/corporation/members'              => [Role::TRACKING],
+    '/api/user/corporation'                      => [Role::GROUP_ADMIN],
 
     '/api/user/esi/request' => [Role::ESI],
 
@@ -47,7 +49,7 @@ return [
     '/api/user/player/group-managers'        => [Role::GROUP_ADMIN],
     '/api/user/player/with-characters'       => [Role::USER_ADMIN],
     '/api/user/player/without-characters'    => [Role::USER_ADMIN],
-    '/api/user/player/{id}/characters'       => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::GROUP_MANAGER],
+    '/api/user/player/{id}/characters'       => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::GROUP_MANAGER, Role::TRACKING],
     '/api/user/player'                       => [Role::USER_ADMIN],
 
     '/api/user/settings/system/list' => [Role::ANONYMOUS, Role::USER],

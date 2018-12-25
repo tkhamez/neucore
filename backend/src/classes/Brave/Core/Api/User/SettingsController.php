@@ -6,6 +6,7 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EveMail;
+use Brave\Core\Service\MemberTracking;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Request;
@@ -114,6 +115,10 @@ class SettingsController
      *         @SWG\Schema(ref="#/definitions/SystemVariable")
      *     ),
      *     @SWG\Response(
+     *         response="204",
+     *         description="Variable removed."
+     *     ),
+     *     @SWG\Response(
      *         response="404",
      *         description="Variable not found."
      *     ),
@@ -123,7 +128,7 @@ class SettingsController
      *     )
      * )
      */
-    public function systemChange(string $name, Request $request): Response
+    public function systemChange(string $name, Request $request, MemberTracking $memberTracking): Response
     {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
@@ -136,6 +141,10 @@ class SettingsController
             $variable->setValue(''); // only removal is allowed here
             $var2 = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::MAIL_TOKEN);
             $var2->setValue('');
+        } elseif (strpos($variable->getName(), SystemVariable::DIRECTOR_CHAR) !== false) {
+            if ($memberTracking->removeDirector($variable)) {
+                $variable = null;
+            }
         } else {
             $variable->setValue((string) $request->getParam('value'));
         }
@@ -144,7 +153,11 @@ class SettingsController
             return $this->response->withStatus(500);
         }
 
-        return $this->response->withJson($variable);
+        if ($variable !== null) {
+            return $this->response->withJson($variable);
+        } else {
+            return $this->response->withStatus(204);
+        }
     }
 
     /**
@@ -179,5 +192,46 @@ class SettingsController
         }
 
         return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/settings/system/validate-director/{name}",
+     *     operationId="validateDirector",
+     *     summary="Validates the ESI token from a director.",
+     *     description="Needs role: settings",
+     *     tags={"Settings"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the director variable.",
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="True if the access token is valid, otherwise false",
+     *         @SWG\Schema(type="boolean")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function validateDirector(string $name, MemberTracking $memberTracking): Response
+    {
+        $valid = false;
+
+        $accessToken = $memberTracking->refreshDirectorToken($name);
+        if ($accessToken !== null) {
+            $valid = $memberTracking->verifyDirectorRole(
+                (int) $accessToken->getResourceOwnerId(),
+                $accessToken->getToken()
+            );
+        }
+
+        return $this->response->withJson($valid);
     }
 }

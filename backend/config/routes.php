@@ -12,6 +12,12 @@ use Brave\Core\Api\User\PlayerController;
 use Brave\Core\Api\User\SettingsController;
 
 return [
+
+    '/login'          => ['GET',  AuthController::class.'::login'],
+    '/login-alt'      => ['GET',  AuthController::class.'::loginAlt'],
+    '/login-mail'     => ['GET',  AuthController::class.'::loginMail'],
+    '/login-director' => ['GET',  AuthController::class.'::loginDirector'],
+
     '/api/app/v1/show'                     => ['GET',  ApplicationController::class.'::showV1'],
     '/api/app/v1/groups/{cid}'             => ['GET',  ApplicationController::class.'::groupsV1'],
     '/api/app/v2/groups/{cid}'             => ['GET',  ApplicationController::class.'::groupsV2'],
@@ -44,7 +50,6 @@ return [
     '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
     '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
 
-    '/api/user/auth/login-url'     => ['GET',  AuthController::class.'::loginUrl'],
     '/api/user/auth/callback'      => ['GET',  AuthController::class.'::callback'],
     '/api/user/auth/result'        => ['GET',  AuthController::class.'::result'],
     '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],
@@ -59,6 +64,8 @@ return [
     '/api/user/corporation/add/{id}'                => ['POST', CorporationController::class.'::add'],
     '/api/user/corporation/{id}/add-group/{gid}'    => ['PUT',  CorporationController::class.'::addGroup'],
     '/api/user/corporation/{id}/remove-group/{gid}' => ['PUT',  CorporationController::class.'::removeGroup'],
+    '/api/user/corporation/tracked-corporations'    => ['GET',  CorporationController::class.'::trackedCorporations'],
+    '/api/user/corporation/{id}/members'            => ['GET',  CorporationController::class.'::members'],
 
     '/api/user/esi/request' => ['GET', EsiController::class.'::request'],
 
@@ -98,4 +105,5 @@ return [
     '/api/user/settings/system/list'                       => ['GET',  SettingsController::class.'::systemList'],
     '/api/user/settings/system/change/{name}'              => ['PUT',  SettingsController::class.'::systemChange'],
     '/api/user/settings/system/send-account-disabled-mail' => ['POST', SettingsController::class.'::sendAccountDisabledMail'],
+    '/api/user/settings/system/validate-director/{name}'   => ['GET',  SettingsController::class.'::validateDirector'],
 ];

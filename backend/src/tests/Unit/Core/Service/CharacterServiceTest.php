@@ -4,6 +4,7 @@ namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
@@ -63,7 +64,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->client = new Client();
         $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $log), $log);
-        $this->service = new CharacterService($log, new ObjectManager($em, $log));
+        $this->service = new CharacterService($log, new ObjectManager($em, $log), new RepositoryFactory($em));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
         $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
     }
@@ -311,9 +312,11 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     {
         $player = (new Player())->setName('player 1');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
+        $member = (new CorporationMember())->setId(10)->setCharacter($char);
         $player->addCharacter($char);
         $this->helper->getEm()->persist($player);
         $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->persist($member);
         $this->helper->getEm()->flush();
 
         $this->service->deleteCharacter($char, 'manually');

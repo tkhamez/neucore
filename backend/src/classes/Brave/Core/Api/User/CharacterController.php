@@ -197,8 +197,7 @@ class CharacterController
      *     ),
      *     @SWG\Response(
      *         response="204",
-     *         description="If the character was deleted because the owner hash changed.",
-     *         @SWG\Schema(ref="#/definitions/Character")
+     *         description="If the character was deleted because the owner hash changed."
      *     ),
      *     @SWG\Response(
      *         response="404",

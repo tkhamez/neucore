@@ -12,7 +12,6 @@ This role is added automatically to every unauthenticated client, it
 cannot be added to player accounts.
 
 Auth API
-- EVE SSO login URL. `/user/auth/login-url`
 - Result of last SSO attempt. `/user/auth/result`
 
 Settings API
@@ -23,7 +22,6 @@ Settings API
 This role is added to all player accounts.
 
 Auth API
-- EVE SSO login URL. `/user/auth/login-url`
 - User logout. `/user/auth/logout`
 
 Character API
@@ -146,6 +144,14 @@ ESI API
 Settings API
 - Change a system settings variable. `/user/settings/system/change/{name}`
 - Sends a 'Account disabled' test mail to the logged-in character. `/user/settings/system/send-account-disabled-mail`
+- Validates the ESI token from a director. `/user/settings/system/validate-director`
+
+### tracking
+
+Corporation API
+- Returns all corporations that have member tracking data. `/user/corporation/tracked-corporations`
+- Returns tracking data of corporation members. `/user/corporation/{id}/members`
+- Show all characters from a player. `/user/player/{id}/characters`
 
 ### app
 

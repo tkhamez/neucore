@@ -6,9 +6,11 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
+use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Logger;
@@ -80,6 +82,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
+            ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": "100"}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
@@ -195,6 +198,24 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame('', $changed2->getValue());
     }
 
+    public function testSystemChange204RemoveDirector()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response = $this->runApp(
+            'PUT',
+            '/api/user/settings/system/change/'.SystemVariable::DIRECTOR_CHAR . 1,
+            ['value' => 'does-not-matter']
+        );
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $actual = $this->systemVariableRepository->find(SystemVariable::DIRECTOR_CHAR . 1);
+        $this->assertNull($actual);
+    }
+
     public function testSendAccountDisabledMail403()
     {
         $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
@@ -242,6 +263,34 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame('Missing subject.', $this->parseJsonBody($response));
     }
 
+    public function testValidateDirector403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/settings/system/validate-director/director_char_1');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(5);
+
+        $response2 = $this->runApp('GET', '/api/user/settings/system/validate-director/director_char_1');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testValidateDirector200()
+    {
+        $this->setupDb();
+        $this->loginUser(6);
+
+        $client = new \Tests\Client();
+        $client->setResponse(new Response(200)); // /characters/100/roles
+
+        $response = $this->runApp('GET', '/api/user/settings/system/validate-director/director_char_1', null, null, [
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($client)
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertFalse($this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
         $this->helper->addCharacterMain('User', 5, [Role::USER]);
@@ -256,21 +305,29 @@ class SettingsControllerTest extends WebTestCase
         $var3 = new SystemVariable(SystemVariable::SHOW_PREVIEW_BANNER);
         $var4 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var5 = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $var6 = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
+        $var7 = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
 
         $var1->setValue("0");
         $var2->setValue("1");
         $var3->setValue("0");
         $var4->setValue("The char");
         $var5->setValue('{"ID": "123", "TOKEN": "abc"}');
+        $var6->setValue('{"character_id": "100"}');
+        $var7->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
 
         $var4->setScope(SystemVariable::SCOPE_SETTINGS);
         $var5->setScope(SystemVariable::SCOPE_BACKEND);
+        $var6->setScope(SystemVariable::SCOPE_SETTINGS);
+        $var7->setScope(SystemVariable::SCOPE_BACKEND);
 
         $this->em->persist($var1);
         $this->em->persist($var2);
         $this->em->persist($var3);
         $this->em->persist($var4);
         $this->em->persist($var5);
+        $this->em->persist($var6);
+        $this->em->persist($var7);
         $this->em->persist($alli);
         $this->em->persist($corp);
 

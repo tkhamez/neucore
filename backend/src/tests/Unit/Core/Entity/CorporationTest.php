@@ -5,6 +5,7 @@ namespace Tests\Unit\Core\Entity;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Group;
 
 class CorporationTest extends \PHPUnit\Framework\TestCase
@@ -118,5 +119,21 @@ class CorporationTest extends \PHPUnit\Framework\TestCase
 
         $corp->removeCharacter($c2);
         $this->assertSame([$c1], $corp->getCharacters());
+    }
+
+    public function testAddGetRemoveMember()
+    {
+        $corp = new Corporation();
+        $cm1 = new CorporationMember();
+        $cm2 = new CorporationMember();
+
+        $this->assertSame([], $corp->getMembers());
+
+        $corp->addMember($cm1);
+        $corp->addMember($cm2);
+        $this->assertSame([$cm1, $cm2], $corp->getMembers());
+
+        $this->assertTrue($corp->removeMember($cm2));
+        $this->assertSame([$cm1], $corp->getMembers());
     }
 }

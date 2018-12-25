@@ -47,7 +47,6 @@ class Corporation implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @SWG\Property()
      * @Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
@@ -81,6 +80,13 @@ class Corporation implements \JsonSerializable
     private $characters;
 
     /**
+     * @OneToMany(targetEntity="CorporationMember", mappedBy="corporation")
+     * @OrderBy({"name" = "ASC"})
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $members;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -104,6 +110,7 @@ class Corporation implements \JsonSerializable
     {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->characters = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->members = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -307,5 +314,41 @@ class Corporation implements \JsonSerializable
     public function getCharacters()
     {
         return $this->characters->toArray();
+    }
+
+    /**
+     * Add member.
+     *
+     * @param \Brave\Core\Entity\CorporationMember $member
+     *
+     * @return Corporation
+     */
+    public function addMember(CorporationMember $member)
+    {
+        $this->members[] = $member;
+
+        return $this;
+    }
+
+    /**
+     * Remove member.
+     *
+     * @param \Brave\Core\Entity\CorporationMember $member
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeMember(CorporationMember $member)
+    {
+        return $this->members->removeElement($member);
+    }
+
+    /**
+     * Get members.
+     *
+     * @return CorporationMember[]
+     */
+    public function getMembers()
+    {
+        return $this->members->toArray();
     }
 }

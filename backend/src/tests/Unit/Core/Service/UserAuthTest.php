@@ -56,7 +56,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $repoFactory = new RepositoryFactory($this->em);
 
         $objManager = new ObjectManager($this->em, $this->log);
-        $characterService = new CharacterService($this->log, $objManager);
+        $characterService = new CharacterService($this->log, $objManager, $repoFactory);
         $this->service = new UserAuth(
             new SessionData(),
             $characterService,

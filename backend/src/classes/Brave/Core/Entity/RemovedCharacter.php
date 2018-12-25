@@ -88,6 +88,9 @@ class RemovedCharacter implements \JsonSerializable
             'characterName' => $this->characterName,
             'removedDate' => $this->removedDate ? $this->removedDate->format('Y-m-d\TH:i:s\Z') : null,
             'action' => $this->action,
+
+            // Cannot add Player object because the Swagger UI can't deal with recursive references.
+            // (should be fixed in 3.0)
             'newPlayerId' => $this->newPlayer ? $this->newPlayer->getId() : null,
             'newPlayerName' => $this->newPlayer ? $this->newPlayer->getName() : null,
         ];

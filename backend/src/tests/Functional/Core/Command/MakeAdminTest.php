@@ -31,6 +31,8 @@ class MakeAdminTest extends ConsoleTestCase
             Role::GROUP_MANAGER,
             Role::USER_ADMIN,
             Role::ESI,
+            Role::SETTINGS,
+            Role::TRACKING,
         ]);
         $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN]);
 
@@ -50,6 +52,8 @@ class MakeAdminTest extends ConsoleTestCase
             Role::ESI,
             Role::GROUP_ADMIN,
             Role::GROUP_MANAGER,
+            Role::SETTINGS,
+            Role::TRACKING,
             Role::USER,
             Role::USER_ADMIN,
         ];

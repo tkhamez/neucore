@@ -5,6 +5,7 @@ namespace Brave\Core;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\SendAccountDisabledMail;
 use Brave\Core\Command\UpdateCharacters;
+use Brave\Core\Command\UpdateMemberTracking;
 use Brave\Core\Command\UpdatePlayerGroups;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
@@ -13,6 +14,7 @@ use Brave\Core\Service\CharacterService;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\EveMail;
+use Brave\Core\Service\MemberTracking;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -49,7 +51,7 @@ use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
  *       description="Client library of Brave Collective Core Services API",
- *       version="0.5.0"
+ *       version="0.6.0"
  *     ),
  *     @SWG\SecurityScheme(
  *         securityDefinition="Bearer",
@@ -259,12 +261,8 @@ class Application
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'BCSESS',
             'secure' => $this->env === self::ENV_PROD,
-            'route_include_pattern' => ['/api/user'],
-            'route_blocking_pattern' => [
-                '/api/user/auth/login-url',
-                '/api/user/auth/callback',
-                '/api/user/auth/logout'
-            ],
+            'route_include_pattern' => ['/api/user', '/login'],
+            'route_blocking_pattern' => ['/api/user/auth', '/login'],
         ]));
 
         $app->add(new Cors($this->container->get('config')['CORS']['allow_origin']));
@@ -443,6 +441,12 @@ class Application
             $this->container->get(EveMail::class),
             $this->container->get(RepositoryFactory::class),
             $this->container->get(ObjectManager::class)
+        ));
+
+        $console->add(new UpdateMemberTracking(
+            $this->container->get(RepositoryFactory::class),
+            $this->container->get(MemberTracking::class),
+            $this->container->get(EsiData::class)
         ));
     }
 }

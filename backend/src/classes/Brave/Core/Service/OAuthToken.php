@@ -41,7 +41,8 @@ class OAuthToken
      *
      * @param AccessToken $existingToken
      * @return \League\OAuth2\Client\Token\AccessToken A new object if the token was refreshed
-     * @throws IdentityProviderException For "invalid_token" error, other exceptions are caught.
+     * @throws IdentityProviderException For "invalid_token" error (refresh token is expired),
+     *         other exceptions are caught.
      */
     public function refreshAccessToken(AccessToken $existingToken): ?AccessToken
     {

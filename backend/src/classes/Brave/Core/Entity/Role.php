@@ -87,6 +87,13 @@ class Role implements \JsonSerializable
     const SETTINGS = 'settings';
 
     /**
+     * Allows a player to view corporation member tracking data.
+     *
+     * @var string
+     */
+    const TRACKING = 'tracking';
+
+    /**
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
