@@ -309,13 +309,16 @@ class Application
 
         // EVE OAuth
         $this->container->set(GenericProvider::class, function (ContainerInterface $c) {
+            $domain = $c->get('config')['eve']['datasource'] === 'singularity' ?
+                'sisilogin.testeveonline.com' :
+                'login.eveonline.com';
             return new GenericProvider([
                 'clientId'                => $c->get('config')['eve']['client_id'],
                 'clientSecret'            => $c->get('config')['eve']['secret_key'],
                 'redirectUri'             => $c->get('config')['eve']['callback_url'],
-                'urlAuthorize'            => 'https://login.eveonline.com/oauth/authorize',
-                'urlAccessToken'          => 'https://login.eveonline.com/oauth/token',
-                'urlResourceOwnerDetails' => 'https://login.eveonline.com/oauth/verify'
+                'urlAuthorize'            => 'https://' . $domain . '/oauth/authorize',
+                'urlAccessToken'          => 'https://' . $domain . '/oauth/token',
+                'urlResourceOwnerDetails' => 'https://' . $domain . '/oauth/verify',
             ]);
         });
 

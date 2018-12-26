@@ -4,7 +4,9 @@ namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
+use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
+use Psr\Log\LoggerInterface;
 
 /**
  * Fetch and process data from ESI.
@@ -12,9 +14,14 @@ use Brave\Core\Factory\RepositoryFactory;
 class EsiData
 {
     /**
-     * @var EsiApi
+     * @var LoggerInterface
      */
-    private $esi;
+    private $log;
+
+    /**
+     * @var EsiApiFactory
+     */
+    private $esiApiFactory;
 
     /**
      * @var ObjectManager
@@ -26,19 +33,34 @@ class EsiData
      */
     private $repositoryFactory;
 
-    public function __construct(EsiApi $esi, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
-    {
-        $this->esi = $esi;
-        $this->objectManager = $objectManager;
-        $this->repositoryFactory = $repositoryFactory;
-    }
+    /**
+     * @var int
+     */
+    private $lastErrorCode;
 
     /**
-     * @return \Brave\Core\Service\EsiApi
+     * @var string
      */
-    public function getEsiApi()
+    private $datasource;
+
+    public function __construct(
+        LoggerInterface $log,
+        EsiApiFactory $esiApiFactory,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        Config $config
+    ) {
+        $this->log = $log;
+        $this->esiApiFactory = $esiApiFactory;
+        $this->objectManager = $objectManager;
+        $this->repositoryFactory = $repositoryFactory;
+
+        $this->datasource = $config->get('eve', 'datasource');
+    }
+
+    public function getLastErrorCode(): ?int
     {
-        return $this->esi;
+        return $this->lastErrorCode;
     }
 
     /**
@@ -105,8 +127,12 @@ class EsiData
         }
 
         // get data from ESI
-        $eveChar = $this->esi->getCharacter($id);
-        if ($eveChar === null) {
+        $this->lastErrorCode = null;
+        try {
+            $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
+        } catch (\Exception $e) {
+            $this->lastErrorCode = $e->getCode();
+            $this->log->error($e->getMessage(), ['exception' => $e]);
             return null;
         }
         $char->setName($eveChar->getName());
@@ -150,8 +176,12 @@ class EsiData
         }
 
         // get data from ESI
-        $eveCorp = $this->esi->getCorporation($id);
-        if ($eveCorp === null) {
+        $this->lastErrorCode = null;
+        try {
+            $eveCorp = $this->esiApiFactory->getCorporationApi()->getCorporationsCorporationId($id, $this->datasource);
+        } catch (\Exception $e) {
+            $this->lastErrorCode = $e->getCode();
+            $this->log->error($e->getMessage(), ['exception' => $e]);
             return null;
         }
 
@@ -203,8 +233,12 @@ class EsiData
         }
 
         // get data from ESI
-        $eveAlli = $this->esi->getAlliance($id);
-        if ($eveAlli === null) {
+        $this->lastErrorCode = null;
+        try {
+            $eveAlli = $this->esiApiFactory->getAllianceApi()->getAlliancesAllianceId($id, $this->datasource);
+        } catch (\Exception $e) {
+            $this->lastErrorCode = $e->getCode();
+            $this->log->error($e->getMessage(), ['exception' => $e]);
             return null;
         }
 

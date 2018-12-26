@@ -3,11 +3,14 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\SystemVariable;
+use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailMail;
+use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailRecipient;
 
 class EveMail
 {
@@ -27,27 +30,35 @@ class EveMail
     private $oauthToken;
 
     /**
-     * @var EsiApi
+     * @var EsiApiFactory
      */
-    private $esiApi;
+    private $esiApiFactory;
 
     /**
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var string
+     */
+    private $datasource;
+
     public function __construct(
         RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager,
         OAuthToken $oauthToken,
-        EsiApi $esiApi,
-        LoggerInterface $logger
+        EsiApiFactory $esiApiFactory,
+        LoggerInterface $logger,
+        Config $config
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
         $this->oauthToken = $oauthToken;
-        $this->esiApi = $esiApi;
+        $this->esiApiFactory = $esiApiFactory;
         $this->logger = $logger;
+
+        $this->datasource = $config->get('eve', 'datasource');
     }
 
     public function storeMailCharacter(EveAuthentication $eveAuth)
@@ -217,19 +228,13 @@ class EveMail
             return 'Invalid token.';
         }
 
-        $result = $this->esiApi->sendMail(
+        return $this->sendMail(
             $tokenValues['id'],
             $accessToken->getToken(),
             $subject->getValue(),
             $body->getValue(),
             [$recipient]
         );
-
-        if ($result > 0) {
-            return '';
-        } else {
-            return (string) $this->esiApi->getLastErrorMessage();
-        }
     }
 
     /**
@@ -247,5 +252,49 @@ class EveMail
             $player->setDeactivationMailSent($sent);
             $this->objectManager->flush();
         }
+    }
+
+    /**
+     * @param int $senderId EVE character ID
+     * @param string $token A valid access token
+     * @param string $subject max length 1000
+     * @param string $body max length 10000
+     * @param int[] $characterRecipients EVE character IDs
+     * @param int $approvedCost
+     * @return string Error message or empty string on success
+     * @see OAuthToken::getToken()
+     */
+    public function sendMail(
+        int $senderId,
+        string $token,
+        string $subject,
+        string $body,
+        array $characterRecipients,
+        int $approvedCost = 0
+    ): string {
+        $recipients = [];
+        foreach ($characterRecipients as $characterRecipient) {
+            $recipients[] = new PostCharactersCharacterIdMailRecipient([
+                'recipient_id' => (int) $characterRecipient,
+                'recipient_type' => PostCharactersCharacterIdMailRecipient::RECIPIENT_TYPE_CHARACTER,
+            ]);
+        }
+        $mail = new PostCharactersCharacterIdMailMail([
+            'recipients'    => $recipients,
+            'subject'       => substr($subject, 0, 1000),
+            'body'          => substr($body, 0, 10000),
+            'approved_cost' => $approvedCost,
+        ]);
+
+        try {
+            $this->esiApiFactory
+                ->getMailApi($token)
+                ->postCharactersCharacterIdMail($senderId, $mail, $this->datasource);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]); // message includes the status code
+            return $e->getMessage();
+        }
+
+        return '';
     }
 }

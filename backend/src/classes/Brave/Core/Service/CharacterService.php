@@ -33,6 +33,11 @@ class CharacterService
     const CHECK_REQUEST_ERROR = 4;
 
     /**
+     * Result for checkCharacter() if there is no refresh token.
+     */
+    const CHECK_TOKEN_NA = 5;
+
+    /**
      * @var LoggerInterface
      */
     private $log;
@@ -97,7 +102,7 @@ class CharacterService
     }
 
     /**
-     * Update and save character and player.
+     * Update and save character and player after a successful login.
      *
      * Updates character with the data provided and persists player
      * and character in the database. Both Entities can be new.
@@ -116,7 +121,11 @@ class CharacterService
         /** @noinspection PhpUnhandledExceptionInspection */
         $char->setLastLogin(new \DateTime());
 
-        $char->setValidToken(true);
+        if (! empty($eveAuth->getToken()->getRefreshToken())) {
+            $char->setValidToken(true);
+        } else {
+            $char->setValidToken(null);
+        }
 
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
         $char->setScopes(implode(' ', $eveAuth->getScopes()));
@@ -160,10 +169,10 @@ class CharacterService
 
         // does the char has a token?
         $existingToken = $tokenService->createAccessTokenFromCharacter($char);
-        if ($existingToken === null) {
-            $char->setValidToken(false);
+        if ($existingToken === null || empty($existingToken->getRefreshToken())) {
+            $char->setValidToken(null);
             $this->objectManager->flush();
-            return self::CHECK_TOKEN_NOK;
+            return self::CHECK_TOKEN_NA;
         }
 
         // validate token

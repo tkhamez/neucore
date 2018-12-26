@@ -96,7 +96,7 @@ class SendAccountDisabledMail extends Command
             $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
             if ($errMessage === '') { // success
                 $this->eveMail->accountDeactivatedMailSent($playerId, true);
-                $this->writeln('Mail send to ' . $characterId);
+                $this->writeln('Mail sent to ' . $characterId);
                 usleep($this->sleep * 1000 * 1000);
             } else {
                 $this->writeln($errMessage);

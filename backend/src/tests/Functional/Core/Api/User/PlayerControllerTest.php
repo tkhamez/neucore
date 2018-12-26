@@ -117,7 +117,7 @@ class PlayerControllerTest extends WebTestCase
                     'name' => 'TUser',
                     'main' => true,
                     'lastUpdate' => null,
-                    'validToken' => false,
+                    'validToken' => null,
                     'corporation' => [
                         'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
                             'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
@@ -266,7 +266,7 @@ class PlayerControllerTest extends WebTestCase
                 'name' => 'Alt',
                 'main' => true,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => true,
                 'corporation' => null
             ],
             $this->parseJsonBody($response)
@@ -645,7 +645,7 @@ class PlayerControllerTest extends WebTestCase
                     'name' => 'Alt',
                     'main' => false,
                     'lastUpdate' => null,
-                    'validToken' => false,
+                    'validToken' => true,
                     'corporation' => null
                 ],
             ],
@@ -704,7 +704,7 @@ class PlayerControllerTest extends WebTestCase
                     'name' => 'Alt',
                     'main' => false,
                     'lastUpdate' => null,
-                    'validToken' => false,
+                    'validToken' => true,
                     'corporation' => null
                 ],
             ],
@@ -784,7 +784,6 @@ class PlayerControllerTest extends WebTestCase
 
         $this->h->addRoles([
             Role::USER,
-            Role::APP,
             Role::APP_ADMIN,
             Role::APP_MANAGER,
             Role::GROUP_ADMIN,
@@ -807,6 +806,7 @@ class PlayerControllerTest extends WebTestCase
 
         $char = $this->h->addCharacterMain('Admin', 12,
             [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]);
+        $char->setValidToken(false);
         $char->setCorporation($corp);
         $this->player = $char->getPlayer();
 
@@ -815,10 +815,11 @@ class PlayerControllerTest extends WebTestCase
         $this->h->getEm()->persist($corp);
         $this->h->getEm()->persist($alli);
         $this->h->getEm()->persist($emptyAcc);
+
+        $char2 = $this->h->addCharacterToPlayer('Alt', 13, $this->player);
+        $char2->setValidToken(true);
+
         $this->h->getEm()->flush();
-
         $this->emptyAccId = $emptyAcc->getId();
-
-        $this->h->addCharacterToPlayer('Alt', 13, $this->player);
     }
 }

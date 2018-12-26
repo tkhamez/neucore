@@ -9,14 +9,14 @@ use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Service\Config;
 use Brave\Core\Service\EsiData;
-use Brave\Core\Service\EsiApi;
 use Brave\Core\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
-use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Tests\Helper;
 use Tests\Client;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 
 class EsiDataTest extends \PHPUnit\Framework\TestCase
@@ -61,33 +61,45 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
      */
     private $csError;
 
+    /**
+     * @var Logger
+     */
+    private $log;
+
     public function setUp()
     {
         $this->testHelper = new Helper();
         $this->em = $this->testHelper->getEm();
 
-        $log = new Logger('Test');
-        $log->pushHandler(new TestHandler());
+        $this->log = new Logger('Test');
+        $this->log->pushHandler(new TestHandler());
 
         $this->client = new Client();
-        $esi = new EsiApi($log, (new EsiApiFactory())->setClient($this->client));
+        $esiApiFactory = (new EsiApiFactory())->setClient($this->client);
 
-        $repositoryFactory = new RepositoryFactory($this->em);
-        $this->alliRepo = $repositoryFactory->getAllianceRepository();
-        $this->corpRepo = $repositoryFactory->getCorporationRepository();
-        $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $repoFactory = new RepositoryFactory($this->em);
+        $this->alliRepo = $repoFactory->getAllianceRepository();
+        $this->corpRepo = $repoFactory->getCorporationRepository();
+        $this->charRepo = $repoFactory->getCharacterRepository();
 
-        $this->cs = new EsiData($esi, new ObjectManager($this->em, $log), $repositoryFactory);
+        $this->cs = new EsiData(
+            $this->log,
+            $esiApiFactory,
+            new ObjectManager($this->em, $this->log),
+            $repoFactory,
+            new Config([])
+        );
 
         // a second EsiData instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->csError = new EsiData($esi, new ObjectManager($em, $log), $repositoryFactory);
-    }
-
-    public function testGetEsiApi()
-    {
-        $this->assertInstanceOf(EsiApi::class, $this->cs->getEsiApi());
+        $this->csError = new EsiData(
+            $this->log,
+            $esiApiFactory,
+            new ObjectManager($em, $this->log),
+            $repoFactory,
+            new Config([])
+        );
     }
 
     public function testFetchCharacterWithCorporationAndAllianceCharInvalid()
@@ -185,6 +197,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertNull($char);
+        $this->assertStringStartsWith('[404] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     /**
@@ -245,6 +258,15 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $corp = $this->cs->fetchCorporation(-1);
         $this->assertNull($corp);
+    }
+
+    public function testFetchCorporationError500()
+    {
+        $this->client->setResponse(new Response(500));
+
+        $corp = $this->cs->fetchCorporation(123);
+        $this->assertNull($corp);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testFetchCorporationNoFlushNoAlliance()
@@ -331,6 +353,15 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     {
         $alli = $this->cs->fetchAlliance(-1);
         $this->assertNull($alli);
+    }
+
+    public function testFetchAllianceError500()
+    {
+        $this->client->setResponse(new Response(500));
+
+        $alli = $this->cs->fetchAlliance(123);
+        $this->assertNull($alli);
+        $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testFetchAllianceNoFlush()

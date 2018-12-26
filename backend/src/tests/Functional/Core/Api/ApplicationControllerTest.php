@@ -483,7 +483,7 @@ class ApplicationControllerTest extends WebTestCase
                 'name' => 'C1',
                 'main' => true,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => null,
                 'corporation' => null
             ],
             $body1
@@ -531,14 +531,14 @@ class ApplicationControllerTest extends WebTestCase
                 'name' => 'C1',
                 'main' => true,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => null,
                 'corporation' => null
             ],[
                 'id' => 456,
                 'name' => 'C2',
                 'main' => false,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => null,
                 'corporation' => null
             ]],
             $body1
@@ -591,7 +591,7 @@ class ApplicationControllerTest extends WebTestCase
         $this->helper->getEm()->persist($corp2);
 
         $char3 = $this->helper->addCharacterMain('C3', 789); // no roles
-        $char3->setCorporation($corp);
+        $char3->setValidToken(false)->setCorporation($corp);
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
         try {

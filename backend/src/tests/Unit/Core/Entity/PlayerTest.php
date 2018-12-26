@@ -48,7 +48,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 'name' => 'eve one',
                 'main' => true,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => null,
                 'corporation' => ['id' => null, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
                     'id' => null, 'name' => 'alli1', 'ticker' => 'DEF'
                 ]]
@@ -58,7 +58,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 'eve two',
                 'main' => false,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => null,
                 'corporation' => null
             ]],
             'applications' => [
@@ -171,23 +171,27 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
     public function testHasCharacterWithInvalidTokenOlderThan()
     {
         $char1 = (new Character())->setValidToken(true);
-        $char2 = new Character();
-        $char3 = (new Character())->setValidTokenTime(new \DateTime('now -36 hours'));
-        $char4 = (new Character())->setValidTokenTime(new \DateTime('now +12 hours'));
+        $char2 = (new Character())->setValidToken(false);
+        $char3 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now -36 hours'));
+        $char4 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now +12 hours'));
+        $char5 = (new Character())->setValidTokenTime(new \DateTime('now -36 hours')); // validToken is null
 
         $player1 = (new Player())->addCharacter($char1);
         $player2 = (new Player())->addCharacter($char2);
         $player3 = (new Player())->addCharacter($char1)->addCharacter($char3);
         $player4 = (new Player())->addCharacter($char1)->addCharacter($char4);
+        $player5 = (new Player())->addCharacter($char5);
 
         $this->assertFalse($player1->hasCharacterWithInvalidTokenOlderThan(24));
-        $this->assertTrue($player2->hasCharacterWithInvalidTokenOlderThan(24)); // true because date is missing
+        $this->assertFalse($player2->hasCharacterWithInvalidTokenOlderThan(24)); // false because time is NOW
 
         $this->assertFalse($player3->hasCharacterWithInvalidTokenOlderThan(48));
         $this->assertTrue($player3->hasCharacterWithInvalidTokenOlderThan(24));
         $this->assertTrue($player3->hasCharacterWithInvalidTokenOlderThan(6));
 
         $this->assertFalse($player4->hasCharacterWithInvalidTokenOlderThan(6));
+
+        $this->assertTrue($player5->hasCharacterWithInvalidTokenOlderThan(6)); // true because token is NULL
     }
 
     public function testGetMain()

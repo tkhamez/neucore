@@ -282,7 +282,7 @@ module.exports = {
                     return;
                 }
                 vm.$root.message(
-                    data ? 'The Token is valid and character has director role.' : 'The token is invalid.',
+                    data ? 'The Token is valid and character has the director role.' : 'The token is invalid.',
                     data ? 'info' : 'warning'
                 );
             });

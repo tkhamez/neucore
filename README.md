@@ -25,11 +25,11 @@ More documentation is available in the `doc` directory:
 
 ### EVE API setup
 
-- visit https://developers.eveonline.com/applications
-- create a new application (eg: brvneucore-dev)
+- visit https://developers.eveonline.com/applications or https://developers.testeveonline.com
+- create a new application (eg: Brave Core DEV)
 - Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core backend
-are configured with the environment variable BRAVECORE_EVE_SCOPES.
-- set the callback to https://localhost/api/user/auth/callback (change domain/port as required)
+  are configured with the environment variable BRAVECORE_EVE_SCOPES.
+- set the callback to https://localhost/login-callback (change domain/port as required)
 
 ### Vagrant (optional)
 

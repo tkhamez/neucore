@@ -343,14 +343,13 @@ class Player implements \JsonSerializable
     }
 
     /**
-     * @noinspection PhpDocMissingThrowsInspection
      * @param int $hours
      * @return bool
      */
     public function hasCharacterWithInvalidTokenOlderThan(int $hours): bool
     {
         foreach ($this->getCharacters() as $char) {
-            if ($char->getValidToken()) {
+            if ($char->getValidToken() === true) {
                 continue;
             }
             if ($char->getValidTokenTime() === null) {

@@ -8,7 +8,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
-        "bravecollective/sso-basics": "0.1.0",
+        "bravecollective/sso-basics": "0.1.2",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
         "league/oauth2-client": "^2.2",

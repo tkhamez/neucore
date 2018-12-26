@@ -21,7 +21,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'test char',
             'main' => false,
             'lastUpdate' => null,
-            'validToken' => false,
+            'validToken' => null,
             'corporation' => null
         ], json_decode(json_encode($char), true));
 
@@ -30,7 +30,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'name' => 'test char',
             'main' => false,
             'lastUpdate' => null,
-            'validToken' => false
+            'validToken' => null
         ], $char->jsonSerialize(false));
     }
 
@@ -111,9 +111,11 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
     public function testSetGetValidToken()
     {
         $char = new Character();
-        $this->assertFalse($char->getValidToken());
-        $char->setValidToken(true);
-        $this->assertTrue($char->getValidToken());
+
+        $this->assertNull($char->getValidToken());
+        $this->assertTrue($char->setValidToken(true)->getValidToken());
+        $this->assertFalse($char->setValidToken(false)->getValidToken());
+        $this->assertNull($char->setValidToken(null)->getValidToken());
     }
 
     public function testSetValidTokenUpdatesTime()
@@ -121,12 +123,23 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $char = new Character();
 
         $this->assertNull($char->getValidTokenTime());
-        $this->assertFalse($char->getValidToken());
+        $this->assertNull($char->getValidToken());
 
-        $char->setValidToken(false);
+        $char->setValidToken(null);
         $this->assertNull($char->getValidTokenTime());
 
+        $char->setValidToken(false);
+        $time1 = $char->getValidTokenTime();
+        $this->assertNotNull($time1);
+
         $char->setValidToken(true);
+        $time2 = $char->getValidTokenTime();
+        $this->assertNotSame($time1, $time2);
+        $this->assertNotNull($time2);
+
+        $char->setValidToken(null);
+        $time3 = $char->getValidTokenTime();
+        $this->assertNotSame($time2, $time3);
         $this->assertNotNull($char->getValidTokenTime());
     }
 

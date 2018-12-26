@@ -150,7 +150,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('abc', $char->getAccessToken());
         $this->assertSame(123456, $char->getExpires());
         $this->assertSame('def', $char->getRefreshToken());
-        $this->assertFalse($char->getValidToken());
+        $this->assertNull($char->getValidToken());
         $this->assertNull($char->getLastLogin());
 
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
@@ -208,7 +208,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('moved', $removedChar->getAction());
     }
 
-    public function testAddAlt()
+    public function testAddAltNoRefreshToken()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main', 100, [Role::USER]);
@@ -216,7 +216,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(1, count($player->getCharacters()));
 
-        $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
+        $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785]);
         $result = $this->service->addAlt(new EveAuthentication(101, 'Alt 1', 'hash', $token, ['scope1', 's2']));
         $this->assertTrue($result);
 
@@ -229,8 +229,8 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('tk', $chars[1]->getAccessToken());
         $this->assertSame('scope1 s2', $chars[1]->getScopes());
         $this->assertSame(1525456785, $chars[1]->getExpires());
-        $this->assertSame('rf', $chars[1]->getRefreshToken());
-        $this->assertTrue($chars[1]->getValidToken());
+        $this->assertSame(null, $chars[1]->getRefreshToken());
+        $this->assertNull($chars[1]->getValidToken());
         $this->assertFalse($chars[1]->getMain());
     }
 

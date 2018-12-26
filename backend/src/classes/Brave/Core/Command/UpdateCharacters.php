@@ -122,7 +122,9 @@ class UpdateCharacters extends Command
 
             // check token and character owner hash - this may delete the character!
             $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
-            if ($result === CharacterService::CHECK_TOKEN_OK) {
+            if ($result === CharacterService::CHECK_TOKEN_NA) {
+                $this->writeln('Character ' . $charId.': update OK, token N/A');
+            } elseif ($result === CharacterService::CHECK_TOKEN_OK) {
                 $this->writeln('Character ' . $charId.': update OK, token OK');
             } elseif ($result === CharacterService::CHECK_TOKEN_NOK) {
                 $this->writeln('Character ' . $charId.': update OK, token NOK');

@@ -40,10 +40,11 @@ return [
         ],
 
         'eve' => [
-            'client_id' => getenv('BRAVECORE_EVE_CLIENT_ID'),
-            'secret_key' => getenv('BRAVECORE_EVE_SECRET_KEY'),
+            'client_id'    => getenv('BRAVECORE_EVE_CLIENT_ID'),
+            'secret_key'   => getenv('BRAVECORE_EVE_SECRET_KEY'),
             'callback_url' => getenv('BRAVECORE_EVE_CALLBACK_URL'),
-            'scopes' => getenv('BRAVECORE_EVE_SCOPES')
+            'scopes'       => getenv('BRAVECORE_EVE_SCOPES'),
+            'datasource'   => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility',
         ],
 
         'session' => [

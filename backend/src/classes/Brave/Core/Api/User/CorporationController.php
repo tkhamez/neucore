@@ -159,7 +159,7 @@ class CorporationController
         // get corporation
         $corporation = $service->fetchCorporation($corpId, false);
         if ($corporation === null) {
-            $code = $service->getEsiApi()->getLastErrorCode();
+            $code = $service->getLastErrorCode();
             if ($code === 404 || $code === 400) {
                 return $this->response->withStatus($code);
             } else {

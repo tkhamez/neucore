@@ -113,20 +113,23 @@
                                 </p>
                             </div>
                             <div class="card-footer">
-                                <span v-if="char.main" class="fas fa-star text-warning mr-2" title="Main"
-                                    aria-hidden="true"></span>
-                                <button v-if="! char.validToken"
+                                <span v-if="char.main" class="fas fa-star text-warning mr-2" title="Main"></span>
+                                <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <button v-if="! char.main && char.validToken"
+                                <button v-if="accountDeactivation && char.validToken === null"
+                                        disabled type="button" class="btn btn-warning btn-sm mt-1">
+                                    No ESI token
+                                </button>
+                                <button v-if="! char.main && char.validToken !== false"
                                         type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="makeMain(char.id)">
+                                    <i class="fas fa-star"></i>
                                     Make Main
                                 </button>
-                                <button v-if="char.validToken"
-                                        type="button" class="btn btn-primary btn-sm mt-1"
+                                <button type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="update(char.id)">
                                     <i class="fas fa-sync small"></i>
                                     Update

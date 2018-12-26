@@ -17,6 +17,7 @@ return [
     '/login-alt'      => ['GET',  AuthController::class.'::loginAlt'],
     '/login-mail'     => ['GET',  AuthController::class.'::loginMail'],
     '/login-director' => ['GET',  AuthController::class.'::loginDirector'],
+    '/login-callback' => ['GET',  AuthController::class.'::callback'],
 
     '/api/app/v1/show'                     => ['GET',  ApplicationController::class.'::showV1'],
     '/api/app/v1/groups/{cid}'             => ['GET',  ApplicationController::class.'::groupsV1'],
@@ -50,9 +51,9 @@ return [
     '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
     '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
 
-    '/api/user/auth/callback'      => ['GET',  AuthController::class.'::callback'],
-    '/api/user/auth/result'        => ['GET',  AuthController::class.'::result'],
-    '/api/user/auth/logout'        => ['POST', AuthController::class.'::logout'],
+    '/api/user/auth/callback' => ['GET',  AuthController::class.'::callback'], // only for backwards compatibility
+    '/api/user/auth/result'   => ['GET',  AuthController::class.'::result'],
+    '/api/user/auth/logout'   => ['POST', AuthController::class.'::logout'],
 
     '/api/user/character/find-by/{name}'      => ['GET',  CharacterController::class.'::findBy'],
     '/api/user/character/find-player-of/{id}' => ['GET',  CharacterController::class.'::findPlayerOf'],

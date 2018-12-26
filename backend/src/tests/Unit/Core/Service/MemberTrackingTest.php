@@ -8,7 +8,7 @@ use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\Config;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\MemberTracking;
 use Brave\Core\Service\OAuthToken;
@@ -59,13 +59,15 @@ class MemberTrackingTest extends \PHPUnit\Framework\TestCase
         $objectManager = new ObjectManager($this->em, $this->logger);
         $this->repositoryFactory = new RepositoryFactory($this->em);
         $esiApiFactory = (new EsiApiFactory())->setClient($this->client);
+        $config = new Config([]);
         $this->memberTracking = new MemberTracking(
             $this->logger,
             $esiApiFactory,
             $this->repositoryFactory,
             $objectManager,
-            new EsiData(new EsiApi($this->logger, $esiApiFactory), $objectManager, $this->repositoryFactory),
-            new OAuthToken(new OAuthProvider($this->client), $objectManager, $this->logger)
+            new EsiData($this->logger, $esiApiFactory, $objectManager, $this->repositoryFactory, $config),
+            new OAuthToken(new OAuthProvider($this->client), $objectManager, $this->logger),
+            $config
         );
     }
 
@@ -93,7 +95,7 @@ class MemberTrackingTest extends \PHPUnit\Framework\TestCase
         $this->client->setResponse(
             new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
             new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
-            new Response(200, [], '') // getCorporation
+            new Response(404) // getCorporation
         );
 
         $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));

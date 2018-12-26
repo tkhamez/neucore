@@ -7,7 +7,6 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiApi;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
@@ -48,7 +47,7 @@ class AllianceControllerTest extends WebTestCase
      */
     private $client;
 
-    private $esi;
+    private $esiApiFactory;
 
     private $log;
 
@@ -64,7 +63,7 @@ class AllianceControllerTest extends WebTestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = new Client();
-        $this->esi = new EsiApi($this->log, (new EsiApiFactory())->setClient($this->client));
+        $this->esiApiFactory = (new EsiApiFactory())->setClient($this->client);
     }
 
     public function testAll403()
@@ -156,7 +155,10 @@ class AllianceControllerTest extends WebTestCase
             '/api/user/alliance/add/123456789123',
             null,
             null,
-            [EsiApi::class => $this->esi]
+            [
+                EsiApiFactory::class => $this->esiApiFactory,
+                LoggerInterface::class => $this->log
+            ]
         );
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -173,7 +175,11 @@ class AllianceControllerTest extends WebTestCase
             'POST',
             '/api/user/alliance/add/123',
             null,
-            null, [EsiApi::class => $this->esi]
+            null,
+            [
+                EsiApiFactory::class => $this->esiApiFactory,
+                LoggerInterface::class => $this->log
+            ]
         );
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -200,7 +206,10 @@ class AllianceControllerTest extends WebTestCase
             '/api/user/alliance/add/123',
             null,
             null,
-            [EsiApi::class => $this->esi]
+            [
+                EsiApiFactory::class => $this->esiApiFactory,
+                LoggerInterface::class => $this->log
+            ]
         );
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -220,7 +229,7 @@ class AllianceControllerTest extends WebTestCase
             'POST',
             '/api/user/alliance/add/123456',
             null,
-            null, [EsiApi::class => $this->esi]
+            null, [EsiApiFactory::class => $this->esiApiFactory]
         );
 
         $this->assertEquals(201, $response->getStatusCode());

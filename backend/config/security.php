@@ -16,9 +16,8 @@ return [
     '/api/user/app/{id}/groups'        => [Role::APP_MANAGER, Role::APP_ADMIN],
     '/api/user/app'                    => [Role::APP_ADMIN],
 
-    '/api/user/auth/login'     => [Role::ANONYMOUS, Role::USER],
-    '/api/user/auth/callback'  => [Role::ANONYMOUS, Role::USER],
-    '/api/user/auth/result'    => [Role::ANONYMOUS, Role::USER],
+    '/api/user/auth/callback' => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility
+    '/api/user/auth/result'   => [Role::ANONYMOUS, Role::USER],
 
     '/api/user/character/find-by'        => [Role::USER_ADMIN, Role::GROUP_MANAGER],
     '/api/user/character/find-player-of' => [Role::USER_ADMIN, Role::GROUP_MANAGER],

@@ -53,7 +53,11 @@ class OAuthToken
                     'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
-                if ($e instanceof IdentityProviderException && $e->getMessage() === 'invalid_token') {
+                if ($e instanceof IdentityProviderException &&
+                    in_array($e->getMessage(), ['invalid_token', 'invalid_request'])
+                ) {
+                    // invalid_token = e. g. revoked refresh token
+                    // invalid_request = e. g. no refresh token
                     throw $e;
                 } else {
                     $this->log->error($e->getMessage(), ['exception' => $e]);
@@ -71,7 +75,7 @@ class OAuthToken
      * refresh token and stored in the database for the character.
      *
      * @param Character $character The entity should already be saved to the database.
-     * @return string
+     * @return string The access token or empty string on error or if the character has no token.
      */
     public function getToken(Character $character): string
     {

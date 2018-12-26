@@ -4,15 +4,14 @@
 
 * EVE SSO login with configurable permission scopes
 * Player accounts with alts
-* Cron job for character updates from ESI
+* CLI commands for data updates from ESI
 * Role based permission system
 * Creation of groups and apps
-* Group and app manager
-* Group member management
+* Group and app manager for member management
 * Automatic group assignment for players based on corporations and alliances from all of their characters
+* An API for applications to query group membership of characters and other data
 * Optional account deactivation with mail notification when ESI tokens are invalid
-* An API for applications to query group membership of characters, corporations and alliances
-* Limit groups that an app can see
+* Corporation member tracking
 * ESI request for authorized scopes for any character (very basic implementation so far)
 
 Most functions are available in the frontend. Administrators can use the 
@@ -60,8 +59,10 @@ All character removals are recorded and visible to the user admin.
 ### Deactivation
 
 If the ESI token of one or more characters on an account is invalid, the account is disabled. 
-This means that the API for apps no longer returns groups for that account. The deactivation 
-of the account can be delayed, e. g. by 24 hours after a token became invalid.
+A character without a token (no ESI scopes requested during login) counts as invalid.
+
+This means that the API for apps no longer returns groups for that account (if this feature is enabled). 
+The deactivation of the account can be delayed, e. g. by 24 hours after a token became invalid.
 
 As soon as the token is updated by logging in with this character, the account will be reactivated.
 
@@ -86,6 +87,7 @@ who can then manually remove all members.
 The console application has commands to:
 - update characters with information from ESI, like corporation etc. and checks ESI tokens.
 - perform automatic group assignment based on corporation and alliance to group configuration.
+- update member tracking data
 - send EVE mail to deactivated accounts
 
 ## Data Structure (Backend)

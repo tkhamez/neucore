@@ -18,7 +18,8 @@ Modal window with all characters of one player.
                     <li v-for="character in selectedPlayer.characters" class="list-group-item">
                         <div class="badges">
                             <span v-if="character.validToken" class="badge badge-success ml-1">Valid token</span>
-                            <span v-if="! character.validToken" class="badge badge-danger ml-1">Invalid token</span>
+                            <span v-if="character.validToken === false" class="badge badge-danger ml-1">Invalid token</span>
+                            <span v-if="character.validToken === null" class="badge badge-info ml-1">No token</span>
                             <a class="badge badge-secondary ml-1"
                                :href="'https://evewho.com/pilot/' + character.name"
                                target="_blank">Eve Who</a>

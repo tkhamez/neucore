@@ -54,7 +54,7 @@ class CorporationMemberTest extends \PHPUnit\Framework\TestCase
                 'name' => 'test char',
                 'main' => false,
                 'lastUpdate' => null,
-                'validToken' => false,
+                'validToken' => null,
             ],
             'player' => [
                 'id' => null,

@@ -133,6 +133,31 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('r-t', $character->getRefreshToken());
         $this->assertSame($expires, $character->getExpires());
         $this->assertSame('scope1 scope2', $character->getScopes());
+        $this->assertTrue($character->getValidToken());
+    }
+
+    public function testUpdateAndStoreCharacterWithPlayerNoToken()
+    {
+        $player = (new Player())->setName('name');
+        $char = (new Character())->setId(12)->setPlayer($player);
+
+        $result = $this->service->updateAndStoreCharacterWithPlayer(
+            $char,
+            new EveAuthentication(
+                null,
+                'name',
+                'character-owner-hash',
+                new AccessToken(['access_token' => 'a-t']),
+                []
+            )
+        );
+        $this->assertTrue($result);
+
+        $this->helper->getEm()->clear();
+
+        $character = $this->charRepo->find(12);
+        $this->assertNull($character->getRefreshToken());
+        $this->assertNull($character->getValidToken());
     }
 
     public function testCheckTokenUpdateCharacterDeletesBiomassedChar()
@@ -160,8 +185,14 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testCheckCharacterNoToken()
     {
-        $result = $this->service->checkCharacter(new Character(), $this->token);
-        $this->assertSame(CharacterService::CHECK_TOKEN_NOK, $result);
+        $char = (new Character())->setId(100)->setName('name')->setValidToken(false);
+        $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->flush();
+
+        $result = $this->service->checkCharacter($char, $this->token);
+        $this->assertSame(CharacterService::CHECK_TOKEN_NA, $result);
+
+        $this->assertNull($char->getValidToken()); // no token = NULL
     }
 
     public function testCheckCharacterInvalidToken()

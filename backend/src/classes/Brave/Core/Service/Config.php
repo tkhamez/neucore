@@ -19,8 +19,14 @@ class Config
     /**
      * @return array|null
      */
-    public function get(string $key)
+    public function get(string $key, string $key2 = null)
     {
-        return isset($this->config[$key]) ? $this->config[$key] : null;
+        $value = isset($this->config[$key]) ? $this->config[$key] : null;
+
+        if ($key2 !== null && $value !== null) {
+            return isset($value[$key2]) ? $value[$key2] : null;
+        }
+
+        return $value;
     }
 }

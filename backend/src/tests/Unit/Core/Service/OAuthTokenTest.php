@@ -106,13 +106,29 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @throws \Exception
+     * @expectedException \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     public function testRefreshAccessTokenNoRefresh()
     {
+        $this->client->setResponse(new Response(400, [], '{"error": "invalid_request"}'));
+
         $token = new AccessToken([
             'access_token' => 'old-token',
-            'refresh_token' => '',
+            'refresh_token' => null,
+            'expires' => time() - 10000
+        ]);
+
+        $this->es->refreshAccessToken($token);
+    }
+
+    /**
+     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     */
+    public function testRefreshAccessTokenNotExpired()
+    {
+        $token = new AccessToken([
+            'access_token' => 'old-token',
+            'refresh_token' => 're-tk',
             'expires' => time() + 10000
         ]);
 

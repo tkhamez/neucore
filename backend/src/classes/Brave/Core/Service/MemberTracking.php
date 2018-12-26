@@ -45,13 +45,19 @@ class MemberTracking
      */
     private $oauthToken;
 
+    /**
+     * @var string
+     */
+    private $datasource;
+
     public function __construct(
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
         RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager,
         EsiData $esiData,
-        OAuthToken $oauthToken
+        OAuthToken $oauthToken,
+        Config $config
     ) {
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
@@ -59,6 +65,8 @@ class MemberTracking
         $this->objectManager = $objectManager;
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
+
+        $this->datasource = $config->get('eve', 'datasource');
     }
 
     /**
@@ -69,7 +77,7 @@ class MemberTracking
         // get corporation ID from character
         $characterApi = $this->esiApiFactory->getCharacterApi();
         try {
-            $char = $characterApi->getCharactersCharacterId($eveAuth->getCharacterId());
+            $char = $characterApi->getCharactersCharacterId($eveAuth->getCharacterId(), $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
             return false;
@@ -143,9 +151,8 @@ class MemberTracking
     public function verifyDirectorRole(int $characterId, string $accessToken): bool
     {
         $characterApi = $this->esiApiFactory->getCharacterApi($accessToken);
-
         try {
-            $roles = $characterApi->getCharactersCharacterIdRoles($characterId);
+            $roles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
             return false;
@@ -164,9 +171,9 @@ class MemberTracking
      */
     public function fetchData(string $accessToken, int $corporationId): ?array
     {
-        $corporationApi = $this->esiApiFactory->getCorporationApi($accessToken);
+        $corpApi = $this->esiApiFactory->getCorporationApi($accessToken);
         try {
-            $memberTracking = $corporationApi->getCorporationsCorporationIdMembertracking($corporationId);
+            $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking($corporationId, $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
             return null;
@@ -192,7 +199,9 @@ class MemberTracking
             try {
                 // it's possible that postUniverseNames() returns null
                 /** @noinspection PhpParamsInspection */
-                $names = $this->esiApiFactory->getUniverseApi()->postUniverseNames(\json_encode($charIds));
+                $names = $this->esiApiFactory
+                    ->getUniverseApi()
+                    ->postUniverseNames(\json_encode($charIds), $this->datasource);
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), ['exception' => $e]);
             }

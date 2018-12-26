@@ -14,10 +14,6 @@ env:
     - BRAVECORE_APP_ENV=dev
     - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
-    - BRAVECORE_EVE_CLIENT_ID=123
-    - BRAVECORE_EVE_SECRET_KEY=abc
-    - BRAVECORE_EVE_CALLBACK_URL=https://brave.core.tld/api/user/auth/callback
-    - BRAVECORE_EVE_SCOPES=
     - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
   matrix:
     - NODE_VERSION="8.14.0"

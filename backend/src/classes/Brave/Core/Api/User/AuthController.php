@@ -261,7 +261,7 @@ class AuthController
         if (trim($scopes) !== '') {
             $scopes = explode(' ', $scopes);
         } else {
-            $scopes = ['publicData'];
+            $scopes = [];
         }
 
         return $scopes;

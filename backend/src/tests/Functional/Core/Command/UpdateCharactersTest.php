@@ -63,6 +63,28 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
     }
 
+    public function testExecuteUpdateCharNoTokenInvalidCorp()
+    {
+        $c = (new Character())->setId(1)->setName('c1')
+            ->setCharacterOwnerHash('coh1')->setAccessToken('at1');
+        $this->em->persist($c);
+        $this->em->flush();
+        $this->client->setResponse(new Response(200, [], '{"name": "char1"}')); // getCharactersCharacterId
+
+        $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
+            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            LoggerInterface::class => $this->log
+        ]);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(5, count($actual));
+        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
+        $this->assertStringEndsWith('Character 1: update OK, token N/A', $actual[1]);
+        $this->assertStringEndsWith('Corporation 0: update NOK', $actual[2]);
+        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
+        $this->assertStringEndsWith('', $actual[4]);
+    }
+
     public function testExecuteDeleteCharBiomassed()
     {
         $player = (new Player())->setName('p');

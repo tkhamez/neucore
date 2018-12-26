@@ -36,7 +36,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -48,7 +48,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-alt');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
@@ -61,7 +61,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-mail');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
@@ -74,7 +74,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-director');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('https://login.eveonline.com', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-director', $sess->get('auth_redirect'));
@@ -87,7 +87,7 @@ class AuthControllerTest extends WebTestCase
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state];
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state=INVALID'); // fail early
+        $response = $this->runApp('GET', '/login-callback?state=INVALID'); // fail early
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertfalse(isset($_SESSION['auth_state'])); // test that it was deleted
@@ -117,7 +117,7 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+        $response = $this->runApp('GET', '/login-callback?state='.$state,
             null, null, [
             GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $log,
@@ -152,7 +152,7 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+        $response = $this->runApp('GET', '/login-callback?state='.$state,
             null, null, [
             GenericProvider::class => new OAuthProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
@@ -182,7 +182,7 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+        $response = $this->runApp('GET', '/login-callback?state='.$state,
             null, null, [
                 GenericProvider::class => new OAuthProvider($this->client),
                 LoggerInterface::class => $log,
@@ -219,7 +219,7 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+        $response = $this->runApp('GET', '/login-callback?state='.$state,
             null, null, [
             GenericProvider::class => new OAuthProvider($this->client),
             Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
@@ -259,7 +259,7 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+        $response = $this->runApp('GET', '/login-callback?state='.$state,
             null, null, [
                 GenericProvider::class => new OAuthProvider($this->client),
             ]);
@@ -298,7 +298,7 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state,
+        $response = $this->runApp('GET', '/login-callback?state='.$state,
             null, null, [
                 GenericProvider::class => new OAuthProvider($this->client),
             ]);
@@ -326,7 +326,7 @@ class AuthControllerTest extends WebTestCase
             }')
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
             GenericProvider::class => new OAuthProvider($this->client)
         ]);
         $this->assertSame(302, $response->getStatusCode());
@@ -364,7 +364,7 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"name": "c123", "ticker": "-c-"}')
         );
 
-        $response = $this->runApp('GET', '/api/user/auth/callback?state='.$state, null, null, [
+        $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
             GenericProvider::class => new OAuthProvider($this->client),
             EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
         ]);

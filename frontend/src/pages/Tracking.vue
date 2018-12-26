@@ -22,7 +22,7 @@
                         <tr>
                             <th>Character ID</th>
                             <th>Character Name</th>
-                            <th>Player</th>
+                            <th>Player Account</th>
                             <th>ESI Token</th>
                             <th>Logon Date (UTC)</th>
                             <th>Logoff Date (UTC)</th>
@@ -42,7 +42,9 @@
                             </td>
                             <td>
                                 <span v-if="member.character">
-                                    {{ member.character.validToken }}
+                                    <span v-if="member.character.validToken">valid</span>
+                                    <span v-if="member.character.validToken === false">invalid</span>
+                                    <span v-if="member.character.validToken === null">n/a</span>
                                 </span>
                             </td>
                             <td>

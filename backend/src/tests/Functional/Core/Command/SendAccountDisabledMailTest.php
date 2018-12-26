@@ -125,7 +125,7 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
-        $this->assertStringEndsWith('Mail send to 30', $actual[1]);
+        $this->assertStringEndsWith('Mail sent to 30', $actual[1]);
         $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }

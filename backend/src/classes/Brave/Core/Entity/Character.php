@@ -75,13 +75,13 @@ class Character implements \JsonSerializable
     /**
      * Shows if character's refresh token is valid or not.
      *
-     * If there is no refresh token it is considered valid.
+     * If there is no refresh token this is null.
      *
      * @SWG\Property()
-     * @Column(type="boolean", name="valid_token")
+     * @Column(type="boolean", name="valid_token", nullable=true)
      * @var bool
      */
-    private $validToken = false;
+    private $validToken;
 
     /**
      * Date and time when that valid token property was changed.
@@ -329,10 +329,10 @@ class Character implements \JsonSerializable
      * Set validToken and updates validTokenTime.
      *
      * @noinspection PhpDocMissingThrowsInspection
-     * @param bool $validToken
+     * @param bool|null $validToken
      * @return Character
      */
-    public function setValidToken(bool $validToken): self
+    public function setValidToken(bool $validToken = null): self
     {
         if ($this->validToken !== $validToken) {
             /** @noinspection PhpUnhandledExceptionInspection */
@@ -344,7 +344,7 @@ class Character implements \JsonSerializable
         return $this;
     }
 
-    public function getValidToken(): bool
+    public function getValidToken(): ?bool
     {
         return $this->validToken;
     }

@@ -9,7 +9,7 @@ use Brave\Core\Entity\Player;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiApi;
+use Brave\Core\Service\Config;
 use Brave\Core\Service\EveMail;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -62,12 +62,18 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $objManager = new ObjectManager($this->em, $this->logger);
 
         $esiFactory = (new EsiApiFactory())->setClient($this->client);
-        $esiApi = new EsiApi($this->logger, $esiFactory);
 
         $oauth = new OAuthProvider($this->client);
         $oauthToken = new OAuthToken($oauth, $objManager, $this->logger);
 
-        $this->eveMail = new EveMail($this->repoFactory, $objManager, $oauthToken, $esiApi, $this->logger);
+        $this->eveMail = new EveMail(
+            $this->repoFactory,
+            $objManager,
+            $oauthToken,
+            $esiFactory,
+            $this->logger,
+            new Config([])
+        );
     }
 
     public function testStoreMailCharacterFail()
@@ -436,5 +442,15 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->em->clear();
         $player3 = $this->repoFactory->getPlayerRepository()->find($playerId);
         $this->assertFalse($player3->getDeactivationMailSent());
+    }
+
+
+    public function testSendMail()
+    {
+        $this->client->setResponse(new Response(200, [], 373515628));
+
+        $result = $this->eveMail->sendMail(123, 'access-token', 'subject', 'body', [456]);
+
+        $this->assertSame('', $result);
     }
 }
