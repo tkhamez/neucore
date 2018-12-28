@@ -5,7 +5,7 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
@@ -35,7 +35,7 @@ class CharacterController
     private $esiData;
 
     /**
-     * @var CharacterService
+     * @var Account
      */
     private $charService;
 
@@ -53,7 +53,7 @@ class CharacterController
         Response $response,
         UserAuth $uas,
         EsiData $esiData,
-        CharacterService $charService,
+        Account $charService,
         OAuthToken $tokenService,
         RepositoryFactory $repositoryFactory
     ) {
@@ -243,7 +243,7 @@ class CharacterController
 
         // check token and character owner hash - this may delete the character!
         $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
-        if ($result === CharacterService::CHECK_CHAR_DELETED) {
+        if ($result === Account::CHECK_CHAR_DELETED) {
             $updatedChar = null;
         }
 

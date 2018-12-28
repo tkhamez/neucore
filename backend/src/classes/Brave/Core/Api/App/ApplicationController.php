@@ -4,6 +4,7 @@ namespace Brave\Core\Api\App;
 
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
@@ -45,11 +46,21 @@ class ApplicationController
      */
     private $repositoryFactory;
 
-    public function __construct(Response $response, AppAuth $appAuthService, RepositoryFactory $repositoryFactory)
-    {
+    /**
+     * @var Account
+     */
+    private $accountService;
+
+    public function __construct(
+        Response $response,
+        AppAuth $appAuthService,
+        RepositoryFactory $repositoryFactory,
+        Account $accountService
+    ) {
         $this->response = $response;
         $this->appAuthService = $appAuthService;
         $this->repositoryFactory = $repositoryFactory;
+        $this->accountService = $accountService;
     }
 
     /**
@@ -686,17 +697,7 @@ class ApplicationController
             'groups' => []
         ];
 
-        // check "deactivated" settings
-        $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
-        );
-        $delay = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => SystemVariable::ACCOUNT_DEACTIVATION_DELAY]
-        );
-        $hours = $delay !== null ? (int) $delay->getValue() : 0;
-        if ($requireToken && $requireToken->getValue() === '1' &&
-            $char->getPlayer()->hasCharacterWithInvalidTokenOlderThan($hours)
-        ) {
+        if ($this->accountService->groupsDeactivated($char->getPlayer())) {
             return $result;
         }
 

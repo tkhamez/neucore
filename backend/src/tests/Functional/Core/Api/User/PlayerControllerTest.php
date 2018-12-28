@@ -33,6 +33,8 @@ class PlayerControllerTest extends WebTestCase
 
     private $userId;
 
+    private $player3Id;
+
     private $managerId;
 
     private $emptyAccId;
@@ -307,6 +309,7 @@ class PlayerControllerTest extends WebTestCase
             ['id' => $this->player->getId(), 'name' => 'Admin'],
             ['id' => $this->managerId, 'name' => 'Manager'],
             ['id' => $this->userId, 'name' => 'User'],
+            ['id' => $this->player3Id, 'name' => 'User3'],
         ], $this->parseJsonBody($response));
     }
 
@@ -778,6 +781,44 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame('deleted (manually)', $removedChar->getAction());
     }
 
+    public function testGroupsDisabled403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/groups-disabled');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testGroupsDisabled200True()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        // activate feature
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $response = $this->runApp('GET', '/api/user/player/groups-disabled');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertTrue($this->parseJsonBody($response));
+    }
+
+    public function testGroupsDisabled200False()
+    {
+        $this->setupDb();
+        $this->loginUser(14);
+
+        // activate feature
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $response = $this->runApp('GET', '/api/user/player/groups-disabled');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertFalse($this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
         $this->h->emptyDb();
@@ -818,6 +859,9 @@ class PlayerControllerTest extends WebTestCase
 
         $char2 = $this->h->addCharacterToPlayer('Alt', 13, $this->player);
         $char2->setValidToken(true);
+
+        $this->player3Id = $this->h->addCharacterMain('User3', 14, [Role::USER])
+            ->setValidToken(true)->getPlayer()->getId();
 
         $this->h->getEm()->flush();
         $this->emptyAccId = $emptyAcc->getId();

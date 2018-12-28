@@ -113,32 +113,7 @@ class ApplicationControllerTest extends WebTestCase
         ], $body1);
     }
 
-    public function testGroupsV1200DeactivatedInvalidTokenButActive()
-    {
-        // feature "deactivated accounts" is active, account has invalid token but but only for a short time
-
-        $this->setUpDb(12);
-
-        // activate "deactivated accounts"
-        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $delay = new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY);
-        $setting->setValue('1');
-        $delay->setValue('24');
-        $this->helper->getEm()->persist($setting);
-        $this->helper->getEm()->persist($delay);
-        $this->helper->getEm()->flush();
-
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([
-            ['id' => $this->group0Id, 'name' => 'g0', 'visibility' => Group::VISIBILITY_PRIVATE],
-            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
-        ], $this->parseJsonBody($response));
-    }
-
-    public function testGroupsV1200DeactivatedInvalidToken()
+    public function testGroupsV1200Deactivated()
     {
         $this->setUpDb(36);
 
@@ -153,28 +128,6 @@ class ApplicationControllerTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response));
-    }
-
-    public function testGroupsV1200DeactivatedValidToken()
-    {
-        $this->setUpDb();
-
-        // activate "deactivated accounts"
-        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $setting->setValue('1');
-        $this->helper->getEm()->persist($setting);
-        $this->helper->getEm()->flush();
-
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/groups/123', null, $headers);
-
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $body = $this->parseJsonBody($response);
-
-        $this->assertSame([
-            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
-        ], $body);
     }
 
     public function testGroupsBulkV1403()

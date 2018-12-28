@@ -34,6 +34,7 @@ Group API
 
 Player API
 - Return the logged in player with all properties. `/user/player/show`
+- Check whether groups for this account are disabled or will be disabled soon. `/user/player/groups-disabled`
 - Submit a group application. `/user/player/add-application/{gid}`
 - Cancel a group application. `/user/player/remove-application/{gid}`
 - Leave a group. `/user/player/leave-group/{gid}`

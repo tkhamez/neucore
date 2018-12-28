@@ -356,7 +356,7 @@ class Player implements \JsonSerializable
                 return true;
             }
             $time = $char->getValidTokenTime()->getTimestamp();
-            if (time() - $time > 60 * 60 * $hours) {
+            if (time() - $time >= 60 * 60 * $hours) {
                 return true;
             }
         }

@@ -5,12 +5,13 @@ namespace Brave\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Log\LoggerInterface;
 
-class CharacterService
+class Account
 {
     /**
      * Result for checkCharacter() if token is valid.
@@ -246,6 +247,33 @@ class CharacterService
         }
 
         $this->objectManager->remove($character);
+    }
+
+    /**
+     * Checks if groups are deactivated for this player.
+     */
+    public function groupsDeactivated(Player $player, bool $ignoreDelay = false): bool
+    {
+        $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
+        );
+
+        if ($ignoreDelay) {
+            $hours = 0;
+        } else {
+            $delay = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+                ['name' => SystemVariable::ACCOUNT_DEACTIVATION_DELAY]
+            );
+            $hours = $delay !== null ? (int) $delay->getValue() : 0;
+        }
+
+        if ($requireToken && $requireToken->getValue() === '1' &&
+            $player->hasCharacterWithInvalidTokenOlderThan($hours)
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

@@ -40,6 +40,7 @@ return [
     '/api/user/group'                       => [Role::GROUP_ADMIN],
 
     '/api/user/player/show'                  => [Role::USER],
+    '/api/user/player/groups-disabled'       => [Role::USER],
     '/api/user/player/add-application'       => [Role::USER],
     '/api/user/player/remove-application'    => [Role::USER],
     '/api/user/player/leave-group'           => [Role::USER],

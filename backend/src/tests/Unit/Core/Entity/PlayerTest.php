@@ -201,6 +201,8 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($player4->hasCharacterWithInvalidTokenOlderThan(6));
 
         $this->assertTrue($player5->hasCharacterWithInvalidTokenOlderThan(6)); // true because token is NULL
+
+        $this->assertTrue($player2->hasCharacterWithInvalidTokenOlderThan(0)); // it's older or equal 0
     }
 
     public function testGetMain()

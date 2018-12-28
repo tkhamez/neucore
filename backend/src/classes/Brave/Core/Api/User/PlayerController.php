@@ -7,7 +7,7 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Psr\Log\LoggerInterface;
@@ -83,6 +83,36 @@ class PlayerController extends BaseController
     public function show(): Response
     {
         return $this->response->withJson($this->userAuthService->getUser()->getPlayer());
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/groups-disabled",
+     *     operationId="groupsDisabled",
+     *     summary="Check whether groups for this account are disabled or will be disabled soon.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="True if groups are disabled, otherwise false.",
+     *         @SWG\Schema(type="boolean")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupsDisabled(Account $accountService): Response
+    {
+        $player = $this->userAuthService->getUser()->getPlayer();
+
+        if ($accountService->groupsDeactivated($player, true)) { // true = ignore delay
+            return $this->response->withJson(true);
+        }
+
+        return $this->response->withJson(false);
     }
 
     /**
@@ -606,7 +636,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function deleteCharacter(string $id, CharacterService $characterService): Response
+    public function deleteCharacter(string $id, Account $characterService): Response
     {
         // check "allow deletion" settings
         $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(

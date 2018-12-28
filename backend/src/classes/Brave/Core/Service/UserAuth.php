@@ -27,7 +27,7 @@ class UserAuth implements RoleProviderInterface
     private $session;
 
     /**
-     * @var CharacterService
+     * @var Account
      */
     private $characterService;
 
@@ -48,7 +48,7 @@ class UserAuth implements RoleProviderInterface
 
     public function __construct(
         SessionData $session,
-        CharacterService $charService,
+        Account $charService,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log
     ) {

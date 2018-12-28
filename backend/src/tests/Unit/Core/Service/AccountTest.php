@@ -5,11 +5,12 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationMember;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
@@ -21,7 +22,7 @@ use Tests\Helper;
 use Tests\OAuthProvider;
 use Tests\Client;
 
-class CharacterServiceTest extends \PHPUnit\Framework\TestCase
+class AccountTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Helper
@@ -39,7 +40,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
     private $token;
 
     /**
-     * @var CharacterService
+     * @var Account
      */
     private $service;
 
@@ -64,7 +65,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->client = new Client();
         $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $log), $log);
-        $this->service = new CharacterService($log, new ObjectManager($em, $log), new RepositoryFactory($em));
+        $this->service = new Account($log, new ObjectManager($em, $log), new RepositoryFactory($em));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
         $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
     }
@@ -172,7 +173,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->flush();
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(CharacterService::CHECK_CHAR_DELETED, $result);
+        $this->assertSame(Account::CHECK_CHAR_DELETED, $result);
 
         $em->clear();
         $character = $this->charRepo->find(31);
@@ -190,7 +191,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->helper->getEm()->flush();
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(CharacterService::CHECK_TOKEN_NA, $result);
+        $this->assertSame(Account::CHECK_TOKEN_NA, $result);
 
         $this->assertNull($char->getValidToken()); // no token = NULL
     }
@@ -212,7 +213,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         );
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(CharacterService::CHECK_TOKEN_NOK, $result);
+        $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
     }
 
     public function testCheckCharacterRequestError()
@@ -236,7 +237,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->flush();
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(CharacterService::CHECK_REQUEST_ERROR, $result);
+        $this->assertSame(Account::CHECK_REQUEST_ERROR, $result);
     }
 
     public function testCheckCharacterValid()
@@ -264,7 +265,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->flush();
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(CharacterService::CHECK_TOKEN_OK, $result);
+        $this->assertSame(Account::CHECK_TOKEN_OK, $result);
 
         $em->clear();
         $character = $this->charRepo->find(31);
@@ -301,7 +302,7 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $em->flush();
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(CharacterService::CHECK_CHAR_DELETED, $result);
+        $this->assertSame(Account::CHECK_CHAR_DELETED, $result);
 
         $em->clear();
         $character = $this->charRepo->find(31);
@@ -366,5 +367,88 @@ class CharacterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual(time(), $removedChars[0]->getRemovedDate()->getTimestamp());
         $this->assertNull($removedChars[0]->getNewPlayer());
         $this->assertSame('deleted (manually)', $removedChars[0]->getAction());
+    }
+
+    public function testGroupsDisabledValidToken()
+    {
+        // activate "deactivated accounts"
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $player = (new Player())->addCharacter(
+            (new Character())->setValidToken(true)
+        );
+
+        $this->assertFalse($this->service->groupsDeactivated($player));
+    }
+
+    public function testGroupsDisabledInvalidToken()
+    {
+        // activate "deactivated accounts"
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $player = (new Player())->addCharacter(
+            (new Character())->setValidToken(false)
+        );
+
+        $this->assertTrue($this->service->groupsDeactivated($player));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGroupsDisabledInvalidTokenWithDelay()
+    {
+        // feature "deactivated accounts" is active, account has invalid token but only for a short time
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $delay = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->persist($delay);
+        $this->helper->getEm()->flush();
+
+        $player = (new Player())->addCharacter(
+            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
+        );
+
+        $this->assertFalse($this->service->groupsDeactivated($player));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGroupsDisabledInvalidTokenIgnoreDelay()
+    {
+        // feature "deactivated accounts" is active, account has invalid token but only for a short time
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $delay = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->persist($delay);
+        $this->helper->getEm()->flush();
+
+        $player = (new Player())->addCharacter(
+            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
+        );
+
+        $this->assertTrue($this->service->groupsDeactivated($player, true));
+    }
+
+    public function testGroupsDisabledInvalidTokenSettingNotActive()
+    {
+        $player = (new Player())->addCharacter(
+            (new Character())->setValidToken(false)
+        );
+
+        // test with missing setting
+        $this->assertFalse($this->service->groupsDeactivated($player));
+
+        // add "deactivated accounts" setting set to 0
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('0');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $this->assertFalse($this->service->groupsDeactivated($player));
     }
 }

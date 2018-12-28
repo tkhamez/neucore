@@ -3,7 +3,7 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -35,7 +35,7 @@ class UpdateCharacters extends Command
     private $esiData;
 
     /**
-     * @var CharacterService
+     * @var Account
      */
     private $charService;
 
@@ -62,7 +62,7 @@ class UpdateCharacters extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
-        CharacterService $charService,
+        Account $charService,
         OAuthToken $tokenService,
         ObjectManager $objectManager
     ) {
@@ -122,15 +122,15 @@ class UpdateCharacters extends Command
 
             // check token and character owner hash - this may delete the character!
             $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
-            if ($result === CharacterService::CHECK_TOKEN_NA) {
+            if ($result === Account::CHECK_TOKEN_NA) {
                 $this->writeln('Character ' . $charId.': update OK, token N/A');
-            } elseif ($result === CharacterService::CHECK_TOKEN_OK) {
+            } elseif ($result === Account::CHECK_TOKEN_OK) {
                 $this->writeln('Character ' . $charId.': update OK, token OK');
-            } elseif ($result === CharacterService::CHECK_TOKEN_NOK) {
+            } elseif ($result === Account::CHECK_TOKEN_NOK) {
                 $this->writeln('Character ' . $charId.': update OK, token NOK');
-            } elseif ($result === CharacterService::CHECK_CHAR_DELETED) {
+            } elseif ($result === Account::CHECK_CHAR_DELETED) {
                 $this->writeln('Character ' . $charId.': update OK, character deleted');
-            } elseif ($result === CharacterService::CHECK_REQUEST_ERROR) {
+            } elseif ($result === Account::CHECK_REQUEST_ERROR) {
                 $this->writeln('Character ' . $charId.': update OK, token failed');
             } else {
                 $this->writeln('Character ' . $charId.': unknown result');

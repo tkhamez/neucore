@@ -5,7 +5,7 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Slim\Session\SessionData;
@@ -56,7 +56,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $repoFactory = new RepositoryFactory($this->em);
 
         $objManager = new ObjectManager($this->em, $this->log);
-        $characterService = new CharacterService($this->log, $objManager, $repoFactory);
+        $characterService = new Account($this->log, $objManager, $repoFactory);
         $this->service = new UserAuth(
             new SessionData(),
             $characterService,

@@ -119,7 +119,7 @@
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <button v-if="accountDeactivation && char.validToken === null"
+                                <button v-if="deactivated && char.validToken === null"
                                         disabled type="button" class="btn btn-warning btn-sm mt-1">
                                     No ESI token
                                 </button>
@@ -204,7 +204,6 @@ module.exports = {
         return {
             preview: false,
             deleteButton: false,
-            accountDeactivation: false,
             deactivated: false,
             charToDelete: null,
         }
@@ -248,28 +247,25 @@ module.exports = {
                 if (variable.name === 'allow_character_deletion') {
                     this.deleteButton = variable.value === '1';
                 }
-                if (variable.name === 'groups_require_valid_token') {
-                    this.accountDeactivation = variable.value === '1';
-                }
             }
         },
 
         checkDeactivated: function() {
             this.deactivated = false;
 
-            if (! this.accountDeactivation) {
-                return;
-            }
             if (! this.player) {
                 return;
             }
 
-            for (let character of this.player.characters) {
-                if (! character.validToken) {
-                    this.deactivated = true;
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.PlayerApi().groupsDisabled(function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
                     return;
                 }
-            }
+                vm.deactivated = data;
+            });
         },
 
         makeMain: function(characterId) {

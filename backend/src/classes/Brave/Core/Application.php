@@ -10,7 +10,7 @@ use Brave\Core\Command\UpdatePlayerGroups;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\CharacterService;
+use Brave\Core\Service\Account;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\EveMail;
@@ -406,7 +406,7 @@ class Application
         $console->add(new UpdateCharacters(
             $this->container->get(RepositoryFactory::class),
             $this->container->get(EsiData::class),
-            $this->container->get(CharacterService::class),
+            $this->container->get(Account::class),
             $this->container->get(OAuthToken::class),
             $this->container->get(ObjectManager::class)
         ));
