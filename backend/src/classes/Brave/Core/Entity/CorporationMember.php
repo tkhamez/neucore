@@ -91,9 +91,9 @@ class CorporationMember implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize()
+    public function jsonSerialize($forUser = true)
     {
-        return [
+        $result = [
             'id' => $this->getId(),
             'name' => $this->name,
             'locationId' => $this->locationId,
@@ -101,12 +101,19 @@ class CorporationMember implements \JsonSerializable
             'logonDate' => $this->logonDate ? $this->logonDate->format('Y-m-d\TH:i:s\Z') : null,
             'shipTypeId' => $this->shipTypeId,
             'startDate' => $this->startDate ? $this->startDate->format('Y-m-d\TH:i:s\Z') : null,
-            'character' => $this->character ? $this->character->jsonSerialize(false) : null,
-            'player' => $this->character && $this->character->getPlayer() ? [
-                'id' => $this->character->getPlayer()->getId(),
-                'name' => $this->character->getPlayer()->getName(),
-            ] : null,
         ];
+
+        if ($forUser) {
+            $result = array_merge($result, [
+                'character' => $this->character ? $this->character->jsonSerialize(false) : null,
+                'player' => $this->character && $this->character->getPlayer() ? [
+                    'id' => $this->character->getPlayer()->getId(),
+                    'name' => $this->character->getPlayer()->getName(),
+                ] : null,
+            ]);
+        }
+
+        return $result;
     }
 
     /**

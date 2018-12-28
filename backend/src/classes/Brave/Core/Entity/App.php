@@ -12,7 +12,6 @@ namespace Brave\Core\Entity;
  */
 class App implements \JsonSerializable
 {
-
     /**
      * App ID
      *
@@ -42,6 +41,7 @@ class App implements \JsonSerializable
     /**
      * Roles for authorization.
      *
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
      * @ManyToMany(targetEntity="Role", inversedBy="apps")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
@@ -51,6 +51,7 @@ class App implements \JsonSerializable
     /**
      * Groups the app can see.
      *
+     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", inversedBy="apps")
      * @OrderBy({"name" = "ASC"})
      * @var \Doctrine\Common\Collections\Collection
@@ -76,6 +77,8 @@ class App implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'groups' => $this->getGroups(),
+            'roles' => $this->getRoles(),
         ];
     }
 
@@ -181,6 +184,28 @@ class App implements \JsonSerializable
     public function getRoles()
     {
         return $this->roles->toArray();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoleNames()
+    {
+        $names = [];
+        foreach ($this->getRoles() as $role) {
+            $names[] = $role->getName();
+        }
+
+        return $names;
+    }
+
+    /**
+     * @param string $name
+     * @return boolean
+     */
+    public function hasRole(string $name)
+    {
+        return in_array($name, $this->getRoleNames());
     }
 
     /**

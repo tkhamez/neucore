@@ -24,6 +24,11 @@ class Role implements \JsonSerializable
     const APP = 'app';
 
     /**
+     * Allows an app to get corporation member tracking data.
+     */
+    const APP_TRACKING = 'app-tracking';
+
+    /**
      * This role is given to unauthenticated user.
      *
      * @var string
@@ -38,42 +43,42 @@ class Role implements \JsonSerializable
     const USER = 'user';
 
     /**
-     * Allows to add and remove roles from players.
+     * Allows a player to add and remove roles from players.
      *
      * @var string
      */
     const USER_ADMIN = 'user-admin';
 
     /**
-     * Allows to create apps and assign them to players (managers).
+     * Allows a player to create apps and add and remove managers and roles.
      *
      * @var string
      */
     const APP_ADMIN = 'app-admin';
 
     /**
-     * Allows a player to change the password of his apps.
+     * Allows a player to change the secret of his apps.
      *
      * @var string
      */
     const APP_MANAGER = 'app-manager';
 
     /**
-     * Allows to create groups and assign them to players (managers).
+     * Allows a player to create groups and add and remove managers or corporation and alliances.
      *
      * @var string
      */
     const GROUP_ADMIN = 'group-admin';
 
     /**
-     * Allows a player to add and remove players to his groups.
+     * Allows a player to add and remove members to his groups.
      *
      * @var string
      */
     const GROUP_MANAGER = 'group-manager';
 
     /**
-     * Allows a player to make ESI request for any character in the database.
+     * Allows a player to make an ESI request on behalf of a character from the database.
      *
      * @var string
      */

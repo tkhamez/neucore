@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\App;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
@@ -18,13 +19,8 @@ use Slim\Http\Response;
  *     description="Application management."
  * )
  */
-class AppController
+class AppController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $res;
-
     /**
      * @var LoggerInterface
      */
@@ -34,11 +30,6 @@ class AppController
      * @var RepositoryFactory
      */
     private $repositoryFactory;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
 
     /**
      * @var \Brave\Core\Entity\App
@@ -55,16 +46,25 @@ class AppController
      */
     private $group;
 
+    /**
+     * @var \Brave\Core\Entity\Role
+     */
+    private $role;
+
+    private $availableRoles = [
+        Role::APP_TRACKING,
+    ];
+
     public function __construct(
-        Response $res,
+        Response $response,
+        ObjectManager $objectManager,
         LoggerInterface $log,
-        RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager)
-    {
-        $this->res = $res;
+        RepositoryFactory $repositoryFactory
+    ) {
+        parent::__construct($response, $objectManager);
+
         $this->log = $log;
         $this->repositoryFactory = $repositoryFactory;
-        $this->objectManager = $objectManager;
     }
 
     /**
@@ -77,7 +77,7 @@ class AppController
      *     security={{"Session"={}}},
      *     @SWG\Response(
      *         response="200",
-     *         description="List of apps.",
+     *         description="List of apps (only id and name properties are returned).",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/App"))
      *     ),
      *     @SWG\Response(
@@ -88,7 +88,14 @@ class AppController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->repositoryFactory->getAppRepository()->findAll());
+        $apps = [];
+        foreach ($this->repositoryFactory->getAppRepository()->findBy([]) as $app) {
+            $apps[] = [
+                'id' => $app->getId(),
+                'name' => $app->getName(),
+            ];
+        }
+        return $this->response->withJson($apps);
     }
 
     /**
@@ -127,13 +134,13 @@ class AppController
     {
         $name = $this->sanitize($request->getParam('name', ''));
         if ($name === '') {
-            return $this->res->withStatus(400);
+            return $this->response->withStatus(400);
         }
 
         $appRole = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::APP]);
         if ($appRole === null) {
             $this->log->critical('AppController->create(): Role "'.Role::APP.'" not found.');
-            return $this->res->withStatus(500);
+            return $this->response->withStatus(500);
         }
 
         $app = new App();
@@ -193,12 +200,12 @@ class AppController
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $name = $this->sanitize($request->getParam('name', ''));
         if ($name === '') {
-            return $this->res->withStatus(400);
+            return $this->response->withStatus(400);
         }
 
         $app->setName($name);
@@ -239,7 +246,7 @@ class AppController
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $this->objectManager->remove($app);
@@ -283,7 +290,7 @@ class AppController
 
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         foreach ($app->getManagers() as $player) {
@@ -293,7 +300,7 @@ class AppController
             ];
         }
 
-        return $this->res->withJson($ret);
+        return $this->response->withJson($ret);
     }
 
     /**
@@ -335,7 +342,7 @@ class AppController
     public function addManager(string $id, string $pid): Response
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $isManager = [];
@@ -388,7 +395,7 @@ class AppController
     public function removeManager(string $id, string $pid): Response
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $this->app->removeManager($this->player);
@@ -398,9 +405,9 @@ class AppController
 
     /**
      * @SWG\Get(
-     *     path="/user/app/{id}/groups",
-     *     operationId="groups",
-     *     summary="List all groups of an app.",
+     *     path="/user/app/{id}/show",
+     *     operationId="show",
+     *     summary="Shows app information.",
      *     description="Needs role: app-admin, app-manager
      *                  Managers can only see groups of their own apps.",
      *     tags={"App"},
@@ -414,8 +421,8 @@ class AppController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         description="The app information",
+     *         @SWG\Schema(ref="#/definitions/App")
      *     ),
      *     @SWG\Response(
      *         response="404",
@@ -427,26 +434,20 @@ class AppController
      *     )
      * )
      */
-    public function groups(string $id, UserAuth $uas): Response
+    public function show(string $id, UserAuth $uas): Response
     {
-        $ret = [];
-
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         // check if logged in user is manager of this app or has the role app-admin
         $player = $uas->getUser()->getPlayer();
         if (! $player->hasRole(Role::APP_ADMIN) && ! $app->isManager($player)) {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
-        foreach ($app->getGroups() as $group) {
-            $ret[] = $group;
-        }
-
-        return $this->res->withJson($ret);
+        return $this->response->withJson($app);
     }
 
     /**
@@ -488,7 +489,7 @@ class AppController
     public function addGroup(string $id, string $gid): Response
     {
         if (! $this->findAppAndGroup($id, $gid)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $hasGroups = [];
@@ -541,10 +542,108 @@ class AppController
     public function removeGroup(string $id, string $gid): Response
     {
         if (! $this->findAppAndGroup($id, $gid)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $this->app->removeGroup($this->group);
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/app/{id}/add-role/{name}",
+     *     operationId="addRole",
+     *     summary="Add a role to the app.",
+     *     description="Needs role: app-admin",
+     *     tags={"App"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the app.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the role.",
+     *         type="string",
+     *         enum={"app-tracking"}
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Role added."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="App and/or role not found or invalid."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function addRole(string $id, string $name)
+    {
+        if (! $this->findAppAndRole($id, $name)) {
+            return $this->response->withStatus(404);
+        }
+
+        if (! $this->app->hasRole($this->role->getName())) {
+            $this->app->addRole($this->role);
+        }
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/app/{id}/remove-role/{name}",
+     *     operationId="removeRole",
+     *     summary="Remove a role from an app.",
+     *     description="Needs role: app-admin",
+     *     tags={"App"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the app.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the role.",
+     *         type="string",
+     *         enum={"app-tracking"}
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Role removed."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="App and/or role not found or invalid."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function removeRole(string $id, string $name)
+    {
+        if (! $this->findAppAndRole($id, $name)) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->app->removeRole($this->role);
 
         return $this->flushAndReturn(204);
     }
@@ -583,38 +682,19 @@ class AppController
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         // check if logged in user is manager
         $player = $uas->getUser()->getPlayer();
         if (! $app->isManager($player)) {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
         $secret = Random::hex(64);
         $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
 
         return $this->flushAndReturn(200, $secret);
-    }
-
-    /**
-     * @param int $status
-     * @param mixed|null $json
-     * @return Response
-     */
-    private function flushAndReturn(int $status, $json = null): Response
-    {
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        $response = $this->res->withStatus($status);
-        if ($json !== null) {
-            return $response->withJson($json);
-        } else {
-            return $response;
-        }
     }
 
     private function findAppAndPlayer(string $id, string $player): bool
@@ -629,13 +709,24 @@ class AppController
         return true;
     }
 
-
     private function findAppAndGroup(string $id, string $gid): bool
     {
         $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $gid);
 
         if ($this->app === null || $this->group === null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function findAppAndRole(string $id, string $name): bool
+    {
+        $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $this->role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
+
+        if (! $this->app || ! $this->role || ! in_array($this->role->getName(), $this->availableRoles)) {
             return false;
         }
 

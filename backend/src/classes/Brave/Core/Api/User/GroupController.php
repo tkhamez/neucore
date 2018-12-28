@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
@@ -15,13 +16,8 @@ use Slim\Http\Response;
  *     description="Group management."
  * )
  */
-class GroupController
+class GroupController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $res;
-
     /**
      * @var RepositoryFactory
      */
@@ -30,12 +26,7 @@ class GroupController
     /**
      * @var UserAuth
      */
-    private $uas;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private $userAuth;
 
     /**
      * @var string
@@ -53,15 +44,15 @@ class GroupController
     private $player;
 
     public function __construct(
-        Response $res,
+        Response $response,
+        ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        UserAuth $uas,
-        ObjectManager $objectManager
+        UserAuth $userAuth
     ) {
-        $this->res = $res;
+        parent::__construct($response, $objectManager);
+
         $this->repositoryFactory = $repositoryFactory;
-        $this->uas = $uas;
-        $this->objectManager = $objectManager;
+        $this->userAuth = $userAuth;
     }
 
     /**
@@ -85,7 +76,7 @@ class GroupController
      */
     public function all(): Response
     {
-        return $this->res->withJson($this->repositoryFactory->getGroupRepository()->findBy([], ['name' => 'ASC']));
+        return $this->response->withJson($this->repositoryFactory->getGroupRepository()->findBy([], ['name' => 'ASC']));
     }
 
     /**
@@ -109,7 +100,7 @@ class GroupController
      */
     public function public(): Response
     {
-        return $this->res->withJson($this->repositoryFactory->getGroupRepository()->findBy(
+        return $this->response->withJson($this->repositoryFactory->getGroupRepository()->findBy(
             ['visibility' => Group::VISIBILITY_PUBLIC], ['name' => 'ASC']));
     }
 
@@ -154,11 +145,11 @@ class GroupController
     {
         $name = $request->getParam('name', '');
         if (! preg_match($this->namePattern, $name)) {
-            return $this->res->withStatus(400);
+            return $this->response->withStatus(400);
         }
 
         if ($this->otherGroupExists($name)) {
-            return $this->res->withStatus(409);
+            return $this->response->withStatus(409);
         }
 
         $group = new Group();
@@ -220,16 +211,16 @@ class GroupController
     public function rename(string $id, Request $request): Response
     {
         if (! $this->findGroup($id)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $name = $request->getParam('name', '');
         if (! preg_match($this->namePattern, $name)) {
-            return $this->res->withStatus(400);
+            return $this->response->withStatus(400);
         }
 
         if ($this->otherGroupExists($name, $this->group->getId())) {
-            return $this->res->withStatus(409);
+            return $this->response->withStatus(409);
         }
 
         $this->group->setName($name);
@@ -281,13 +272,13 @@ class GroupController
     public function setVisibility(string $id, string $choice): Response
     {
         if (! $this->findGroup($id)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         try {
             $this->group->setVisibility($choice);
         } catch (\Exception $e) {
-            return $this->res->withStatus(400);
+            return $this->response->withStatus(400);
         }
 
         return $this->flushAndReturn(200, $this->group);
@@ -325,7 +316,7 @@ class GroupController
     public function delete(string $id): Response
     {
         if (! $this->findGroup($id)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $this->objectManager->remove($this->group);
@@ -401,12 +392,12 @@ class GroupController
     public function corporations(string $id): Response
     {
         if (! $this->findGroup($id)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $corps = $this->group->getCorporations();
 
-        return $this->res->withJson($corps);
+        return $this->response->withJson($corps);
     }
 
     /**
@@ -442,12 +433,12 @@ class GroupController
     public function alliances(string $id): Response
     {
         if (! $this->findGroup($id)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         $allis = $this->group->getAlliances();
 
-        return $this->res->withJson($allis);
+        return $this->response->withJson($allis);
     }
 
     /**
@@ -726,25 +717,6 @@ class GroupController
     }
 
     /**
-     * @param int $status
-     * @param mixed|null $json
-     * @return Response
-     */
-    private function flushAndReturn(int $status, $json = null): Response
-    {
-        if (! $this->objectManager->flush()) {
-            return $this->res->withStatus(500);
-        }
-
-        $response = $this->res->withStatus($status);
-        if ($json !== null) {
-            return $response->withJson($json);
-        } else {
-            return $response;
-        }
-    }
-
-    /**
      * Returns true if another group with that name already exists.
      *
      * @param string $name Group name.
@@ -769,11 +741,11 @@ class GroupController
     private function getPlayersFromGroup(string $groupId, string $type, bool $onlyIfManager): Response
     {
         if (! $this->findGroup($groupId)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         if ($onlyIfManager && ! $this->checkManager($this->group)) {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
         $players = [];
@@ -793,17 +765,17 @@ class GroupController
             ];
         }
 
-        return $this->res->withJson($ret);
+        return $this->response->withJson($ret);
     }
 
     private function addPlayerAs(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
     {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         if ($onlyIfManager && ! $this->checkManager($this->group)) {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
         if ($type === 'manager' && ! $this->player->hasManagerGroup($this->group)) {
@@ -818,11 +790,11 @@ class GroupController
     private function removePlayerFrom(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
     {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         if ($onlyIfManager && ! $this->checkManager($this->group)) {
-            return $this->res->withStatus(403);
+            return $this->response->withStatus(403);
         }
 
         if ($type === 'managers') {
@@ -866,7 +838,7 @@ class GroupController
      */
     private function checkManager(Group $group): bool
     {
-        $currentPlayer = $this->uas->getUser()->getPlayer();
+        $currentPlayer = $this->userAuth->getUser()->getPlayer();
         foreach ($currentPlayer->getManagerGroups() as $mg) {
             if ($mg->getId() === $group->getId()) {
                 return true;

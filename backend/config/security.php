@@ -8,12 +8,13 @@ use Brave\Core\Entity\Role;
  * First match will be used, matched by "starts-with"
  */
 return [
-    '/api/app' => [Role::APP],
+    '/api/app/v1/corporation/{id}/member-tracking' => [Role::APP_TRACKING],
+    '/api/app'                                      => [Role::APP],
 
     '/api/user/alliance' => [Role::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
-    '/api/user/app/{id}/groups'        => [Role::APP_MANAGER, Role::APP_ADMIN],
+    '/api/user/app/{id}/show'          => [Role::APP_MANAGER, Role::APP_ADMIN],
     '/api/user/app'                    => [Role::APP_ADMIN],
 
     '/api/user/auth/callback' => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility

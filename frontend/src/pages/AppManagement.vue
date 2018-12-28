@@ -11,11 +11,11 @@
                     <h3 class="card-header">Apps</h3>
                     <div v-cloak v-if="player" class="list-group">
                         <a
-                            v-for="app in player.managerApps"
+                            v-for="playerApp in player.managerApps"
                             class="list-group-item list-group-item-action"
-                            :class="{ active: appId === app.id }"
-                            :href="'#AppManagement/' + app.id">
-                            {{ app.name }}
+                            :class="{ active: app && app.id === playerApp.id }"
+                            :href="'#AppManagement/' + playerApp.id">
+                            {{ playerApp.name }}
                         </a>
                     </div>
                 </div>
@@ -25,9 +25,9 @@
                     <h3 class="card-header">
                         Details
                     </h3>
-                    <div v-cloak v-if="appId" class="card-body">
-                        <p>ID: {{ appId }}</p>
-                        <p>Name: {{ appName }}</p>
+                    <div v-cloak v-if="app" class="card-body">
+                        <p>ID: {{ app.id }}</p>
+                        <p>Name: {{ app.name }}</p>
 
                         <hr>
 
@@ -63,10 +63,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="group in appGroups">
+                                <tr v-for="group in app.groups">
                                     <td>{{ group.id }}</td>
                                     <td>{{ group.name }}</td>
                                     <td>{{ group.visibility }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h5>Roles</h5>
+                        <table class="table table-hover table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="role in app.roles" v-if="role !== 'app'">
+                                    <td>{{ role }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -88,9 +102,7 @@ module.exports = {
 
     data: function() {
         return {
-            appId: null,
-            appName: null,
-            appGroups: [],
+            app: null,
             secret: null,
         }
     },
@@ -108,38 +120,32 @@ module.exports = {
     methods: {
         setRoute: function() {
             this.secret = null;
-            this.appName = null;
+            this.app = null;
 
-            this.appId = this.route[1] ? parseInt(this.route[1], 10) : null;
-
-            // set group name variable
-            for (let app of this.player.managerApps) {
-                if (app.id === this.appId) {
-                    this.appName = app.name;
-                    this.getGroups();
-                    break;
-                }
+            const appId = this.route[1] ? parseInt(this.route[1], 10) : null;
+            if (appId) {
+                this.getApp(appId);
             }
         },
 
-        getGroups: function() {
+        getApp: function(id) {
             const vm = this;
-            vm.appGroups = [];
 
             vm.loading(true);
-            new this.swagger.AppApi().groups(this.appId, function(error, data) {
+            new this.swagger.AppApi().show(id, function(error, data) {
                 vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
-                vm.appGroups = data;
+                data.roles = vm.fixRoles(data.roles);
+                vm.app = data;
             });
         },
 
         generateSecret: function() {
             const vm = this;
             vm.loading(true);
-            new this.swagger.AppApi().changeSecret(this.appId, function(error, data) {
+            new this.swagger.AppApi().changeSecret(this.app.id, function(error, data) {
                 vm.loading(false);
                 if (error) { // 403 usually
                     return;

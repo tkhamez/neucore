@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Api\BaseController;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
@@ -13,18 +14,8 @@ use Slim\Http\Response;
  *     description="Alliance management (for automatic group assignment)."
  * )
  */
-class AllianceController
+class AllianceController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     /**
      * @var RepositoryFactory
      */
@@ -42,8 +33,8 @@ class AllianceController
 
     public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
     {
-        $this->response = $response;
-        $this->objectManager = $objectManager;
+        parent::__construct($response, $objectManager);
+
         $this->repositoryFactory = $repositoryFactory;
     }
 
@@ -263,25 +254,6 @@ class AllianceController
         $this->alliance->removeGroup($this->group);
 
         return $this->flushAndReturn(204);
-    }
-
-    /**
-     * @param int $status
-     * @param mixed|null $json
-     * @return Response
-     */
-    private function flushAndReturn(int $status, $json = null): Response
-    {
-        if (! $this->objectManager->flush()) {
-            return $this->response->withStatus(500);
-        }
-
-        $response = $this->response->withStatus($status);
-        if ($json !== null) {
-            return $response->withJson($json);
-        } else {
-            return $response;
-        }
     }
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool

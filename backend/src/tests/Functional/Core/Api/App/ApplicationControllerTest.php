@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Functional\Core\Api;
+namespace Tests\Functional\Core\Api\App;
 
+use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -46,15 +47,20 @@ class ApplicationControllerTest extends WebTestCase
     public function testShowV1200()
     {
         $this->helper->emptyDb();
-        $aid = $this->helper->addApp('Test App', 'boring-test-secret', ['app'])->getId();
+        $group = (new Group())->setName('g1');
+        $this->helper->getEm()->persist($group);
+        $app = $this->helper->addApp('Test App', 'boring-test-secret', ['app'])->addGroup($group);
+        $this->helper->getEm()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($aid.':boring-test-secret')];
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':boring-test-secret')];
         $response = $this->runApp('GET', '/api/app/v1/show', null, $headers);
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            'id' => $aid,
+            'id' => $app->getId(),
             'name' => 'Test App',
+            'groups' => [['id' => $group->getId(), 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            'roles' => ['app'],
         ], $this->parseJsonBody($response));
     }
 
@@ -542,6 +548,59 @@ class ApplicationControllerTest extends WebTestCase
                 'corporation' => null
             ]],
             $body1
+        );
+    }
+
+    public function testMemberTrackingV1403()
+    {
+        $response1 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', ['app'])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking', null, $headers);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testMemberTrackingV1200()
+    {
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', ['app', 'app-tracking'])->getId();
+        $corp = (new Corporation())->setId(10)->setTicker('t1')->setName('corp 1');
+        $member1 = (new CorporationMember())->setId(110)->setName('m1')->setCorporation($corp);
+        $member2 = (new CorporationMember())->setId(111)->setName('m2')->setCorporation($corp);
+        $this->helper->getEm()->persist($corp);
+        $this->helper->getEm()->persist($member1);
+        $this->helper->getEm()->persist($member2);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response1 = $this->runApp('GET', '/api/app/v1/corporation/11/member-tracking', null, $headers);
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response1));
+
+        $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking', null, $headers);
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertSame([[
+                'id' => 110,
+                'name' => 'm1',
+                'locationId' => null,
+                'logoffDate' => null,
+                'logonDate' => null,
+                'shipTypeId' => null,
+                'startDate' => null,
+            ], [
+                'id' => 111,
+                'name' => 'm2',
+                'locationId' => null,
+                'logoffDate' => null,
+                'logonDate' => null,
+                'shipTypeId' => null,
+                'startDate' => null,
+            ]], $this->parseJsonBody($response2)
         );
     }
 

@@ -68,7 +68,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
             'managerGroups' => [['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]],
-            'managerApps' => [['id' => null, 'name' => 'app-one']],
+            'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [],]],
         ], json_decode(json_encode($play), true));
     }
 
@@ -112,10 +112,19 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $player->addRole($r1);
         $player->addRole($r2);
         $this->assertSame([$r1, $r2], $player->getRoles());
-        $this->assertSame(['n1', 'n2'], $player->getRoleNames());
 
         $player->removeRole($r2);
         $this->assertSame([$r1], $player->getRoles());
+    }
+
+    public function testGetRoleNames()
+    {
+        $player = new Player();
+        $r1 = (new Role())->setName('n1');
+        $r2 = (new Role())->setName('n2');
+        $player->addRole($r1)->addRole($r2);
+
+        $this->assertSame(['n1', 'n2'], $player->getRoleNames());
     }
 
     public function testHasRole()

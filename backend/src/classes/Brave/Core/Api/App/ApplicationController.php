@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Api;
+namespace Brave\Core\Api\App;
 
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
 /**
- *
  * @SWG\Tag(
  *     name="Application",
  *     description="API for 3rd party apps.",
@@ -476,7 +475,7 @@ class ApplicationController
      * @SWG\Get(
      *     path="/app/v2/main/{cid}",
      *     operationId="mainV2",
-     *     summary="Returns the main character of the player account to which the character ID belongs.",
+     *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app<br>It is possible that an account has no main character.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
@@ -521,7 +520,7 @@ class ApplicationController
      * @SWG\Get(
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",
-     *     summary="Returns all characters of the player account to which the character ID belongs.",
+     *     summary="Return all characters of the player account to which the character ID belongs.",
      *     description="Needs role: app",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
@@ -534,7 +533,7 @@ class ApplicationController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The main character",
+     *         description="All characters from the player account.",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
      *     ),
      *     @SWG\Response(
@@ -558,6 +557,45 @@ class ApplicationController
         $result = [];
         foreach ($char->getPlayer()->getCharacters() as $character) {
             $result[] = $character;
+        }
+
+        return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/corporation/{id}/member-tracking",
+     *     operationId="memberTrackingV1",
+     *     summary="Return corporation member tracking data.",
+     *     description="Needs role: app-tracking",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="EVE corporation ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The member data (character and player properties are not included).",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CorporationMember"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function memberTrackingV1(string $id)
+    {
+        $members = $this->repositoryFactory->getCorporationMemberRepository()
+            ->findBy(['corporation' => (int) $id], ['logonDate' => 'desc']);
+
+        $result = [];
+        foreach ($members as $member) {
+            $result[] = $member->jsonSerialize(false);
         }
 
         return $this->response->withJson($result);

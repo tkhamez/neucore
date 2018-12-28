@@ -32,12 +32,12 @@ class AppControllerTest extends WebTestCase
     /**
      * @var AppRepository
      */
-    private $ar;
+    private $appRepo;
 
     /**
      * @var GroupRepository
      */
-    private $gr;
+    private $groupRepo;
 
     private $gid;
 
@@ -57,8 +57,8 @@ class AppControllerTest extends WebTestCase
         $this->em = $this->helper->getEm();
 
         $repositoryFactory = new RepositoryFactory($this->em);
-        $this->ar = $repositoryFactory->getAppRepository();
-        $this->gr = $repositoryFactory->getGroupRepository();
+        $this->appRepo = $repositoryFactory->getAppRepository();
+        $this->groupRepo = $repositoryFactory->getGroupRepository();
     }
 
     public function testAll403()
@@ -113,7 +113,7 @@ class AppControllerTest extends WebTestCase
 
     public function testCreate500()
     {
-        $this->setupDb();
+        $this->setupDb([]); // do not add any roles to DB
         $this->loginUser(8);
 
         $log = new Logger('test');
@@ -137,11 +137,11 @@ class AppControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"]);
         $this->assertEquals(201, $response->getStatusCode());
 
-        $na = $this->ar->findOneBy(['name' => 'new app']);
+        $na = $this->appRepo->findOneBy(['name' => 'new app']);
         $this->assertNotNull($na);
 
         $this->assertSame(
-            ['id' => $na->getId(), 'name' => 'new app'],
+            ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'roles' => [Role::APP]],
             $this->parseJsonBody($response)
         );
 
@@ -190,17 +190,17 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
 
+        $expectedGroup = ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE];
         $this->assertSame(
-            ['id' => $this->aid, 'name' => 'n  a n'],
+            ['id' => $this->aid, 'name' => 'n  a n', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
             $this->parseJsonBody($response1)
         );
-
         $this->assertSame(
-            ['id' => $this->aid, 'name' => 'new name'],
+            ['id' => $this->aid, 'name' => 'new name', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
             $this->parseJsonBody($response2)
         );
 
-        $renamed = $this->ar->findOneBy(['name' => 'new name']);
+        $renamed = $this->appRepo->findOneBy(['name' => 'new name']);
         $this->assertInstanceOf(App::class, $renamed);
     }
 
@@ -235,7 +235,7 @@ class AppControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $deleted = $this->ar->find($this->aid);
+        $deleted = $this->appRepo->find($this->aid);
         $this->assertNull($deleted);
     }
 
@@ -316,7 +316,7 @@ class AppControllerTest extends WebTestCase
         $this->em->clear();
 
         $actual = [];
-        $app = $this->ar->find($this->aid);
+        $app = $this->appRepo->find($this->aid);
         foreach ($app->getManagers() as $mg) {
             $actual[] = $mg->getId();
         }
@@ -362,51 +362,61 @@ class AppControllerTest extends WebTestCase
         $this->assertSame([], $actual);
     }
 
-    public function testGroups403()
+    public function testShow403()
     {
-        $response = $this->runApp('GET', '/api/user/app/1/groups');
+        $response = $this->runApp('GET', '/api/user/app/1/show');
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(9); // not app-admin and not manager of tested group
+        $this->loginUser(9); // not app-admin and not manager of tested app
 
-        $response = $this->runApp('GET', '/api/user/app/'.($this->aid).'/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.($this->aid).'/show');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testGroups404()
+    public function testShow404()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/app/'.($this->aid + 1).'/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.($this->aid + 1).'/show');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testGroups200()
+    public function testShow200()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/show');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            [
+                'id' => $this->aid,
+                'name' => 'app one',
+                'groups' => [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+                'roles' => [Role::APP]
+            ],
             $this->parseJsonBody($response)
         );
     }
 
-    public function testGroups200Manager()
+    public function testShow200Manager()
     {
         $this->setupDb();
         $this->loginUser(10); // manager of tested group, not an admin
 
-        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/groups');
+        $response = $this->runApp('GET', '/api/user/app/'.$this->aid.'/show');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            [
+                'id' => $this->aid,
+                'name' => 'app one',
+                'groups' => [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+                'roles' => [Role::APP]
+            ],
             $this->parseJsonBody($response)
         );
     }
@@ -453,7 +463,7 @@ class AppControllerTest extends WebTestCase
         $this->em->clear();
 
         $actual = [];
-        $app = $this->ar->find($this->aid);
+        $app = $this->appRepo->find($this->aid);
         foreach ($app->getGroups() as $gp) {
             $actual[] = $gp->getId();
         }
@@ -509,12 +519,110 @@ class AppControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid);
         $this->assertEquals(204, $response->getStatusCode());
 
-        $group = $this->gr->find($this->gid);
+        $group = $this->groupRepo->find($this->gid);
         $actual = [];
         foreach ($group->getApps() as $a) {
             $actual[] = $a->getId();
         }
         $this->assertSame([], $actual);
+    }
+
+    public function testAddRole403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/101/add-role/r');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/101/add-role/r');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAddRole404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/app/101/add-role/r');
+        $response2 = $this->runApp('PUT', '/api/user/app/101/add-role/'.Role::APP_TRACKING);
+        $response3 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/role');
+
+        // user is a valid role, but not for apps
+        $response4 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/'.Role::USER);
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response3->getStatusCode());
+        $this->assertEquals(404, $response4->getStatusCode());
+    }
+
+    public function testAddRole204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $r1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/'.Role::APP_TRACKING);
+        $r2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-role/'.Role::APP_TRACKING);
+        $this->assertEquals(204, $r1->getStatusCode());
+        $this->assertEquals(204, $r2->getStatusCode());
+
+        $this->em->clear();
+
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame(
+            [Role::APP, Role::APP_TRACKING],
+            $app->getRoleNames()
+        );
+    }
+
+    public function testRemoveRole403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/101/remove-role/r');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', '/api/user/app/101/remove-role/r');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRemoveRole404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/app/101/remove-role/a');
+        $response2 = $this->runApp('PUT', '/api/user/app/101/remove-role/'.Role::APP_TRACKING);
+        $response3 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/a');
+
+        // app is a valid role, but may not be removed
+        $response4 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/'.Role::APP);
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response3->getStatusCode());
+        $this->assertEquals(404, $response4->getStatusCode());
+    }
+
+    public function testRemoveRole204()
+    {
+        $this->setupDb(['app', 'tracking']); // also add role APP_TRACKING to app
+        $this->loginUser(8);
+
+        $r1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/'.Role::APP_TRACKING);
+        $r2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-role/'.Role::APP_TRACKING);
+        $this->assertEquals(204, $r1->getStatusCode());
+        $this->assertEquals(204, $r2->getStatusCode());
+
+        $this->em->clear();
+
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame(
+            [Role::APP],
+            $app->getRoleNames()
+        );
     }
 
     public function testChangeSecret403()
@@ -553,9 +661,17 @@ class AppControllerTest extends WebTestCase
         $this->assertSame(64, strlen($this->parseJsonBody($response)));
     }
 
-    private function setupDb()
+    private function setupDb($addRoles = ['app'])
     {
         $this->helper->emptyDb();
+
+        $roles = [];
+        if (count($addRoles) > 0) {
+            $roles = $this->helper->addRoles([
+                Role::APP,
+                Role::APP_TRACKING
+            ]);
+        }
 
         $g = $this->helper->addGroups(['group-one']);
         $this->gid = $g[0]->getId();
@@ -563,6 +679,12 @@ class AppControllerTest extends WebTestCase
         $a = new App();
         $a->setName('app one');
         $a->setSecret(password_hash('abc123', PASSWORD_DEFAULT));
+        if (in_array('app', $addRoles)) {
+            $a->addRole($roles[0]); // Role::APP
+        }
+        if (in_array('tracking', $addRoles)) {
+            $a->addRole($roles[1]); // Role::APP_TRACKING
+        }
         $this->em->persist($a);
 
         $char = $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::APP_ADMIN]);

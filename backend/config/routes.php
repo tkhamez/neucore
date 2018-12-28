@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Api\ApplicationController;
+use Brave\Core\Api\App\ApplicationController;
 use Brave\Core\Api\User\AllianceController;
 use Brave\Core\Api\User\AppController;
 use Brave\Core\Api\User\AuthController;
@@ -19,30 +19,33 @@ return [
     '/login-director' => ['GET',  AuthController::class.'::loginDirector'],
     '/login-callback' => ['GET',  AuthController::class.'::callback'],
 
-    '/api/app/v1/show'                     => ['GET',  ApplicationController::class.'::showV1'],
-    '/api/app/v1/groups/{cid}'             => ['GET',  ApplicationController::class.'::groupsV1'],
-    '/api/app/v2/groups/{cid}'             => ['GET',  ApplicationController::class.'::groupsV2'],
-    '/api/app/v1/groups'                   => ['POST', ApplicationController::class.'::groupsBulkV1'],
-    '/api/app/v1/corp-groups/{cid}'        => ['GET',  ApplicationController::class.'::corpGroupsV1'],
-    '/api/app/v2/corp-groups/{cid}'        => ['GET',  ApplicationController::class.'::corpGroupsV2'],
-    '/api/app/v1/corp-groups'              => ['POST', ApplicationController::class.'::corpGroupsBulkV1'],
-    '/api/app/v1/alliance-groups/{aid}'    => ['GET',  ApplicationController::class.'::allianceGroupsV1'],
-    '/api/app/v2/alliance-groups/{aid}'    => ['GET',  ApplicationController::class.'::allianceGroupsV2'],
-    '/api/app/v1/alliance-groups'          => ['POST', ApplicationController::class.'::allianceGroupsBulkV1'],
-    '/api/app/v1/main/{cid}'               => ['GET',  ApplicationController::class.'::mainV1'],
-    '/api/app/v2/main/{cid}'               => ['GET',  ApplicationController::class.'::mainV2'],
-    '/api/app/v1/characters/{characterId}' => ['GET',  ApplicationController::class.'::charactersV1'],
+    '/api/app/v1/show'                             => ['GET',  ApplicationController::class.'::showV1'],
+    '/api/app/v1/groups/{cid}'                     => ['GET',  ApplicationController::class.'::groupsV1'],
+    '/api/app/v2/groups/{cid}'                     => ['GET',  ApplicationController::class.'::groupsV2'],
+    '/api/app/v1/groups'                           => ['POST', ApplicationController::class.'::groupsBulkV1'],
+    '/api/app/v1/corp-groups/{cid}'                => ['GET',  ApplicationController::class.'::corpGroupsV1'],
+    '/api/app/v2/corp-groups/{cid}'                => ['GET',  ApplicationController::class.'::corpGroupsV2'],
+    '/api/app/v1/corp-groups'                      => ['POST', ApplicationController::class.'::corpGroupsBulkV1'],
+    '/api/app/v1/alliance-groups/{aid}'            => ['GET',  ApplicationController::class.'::allianceGroupsV1'],
+    '/api/app/v2/alliance-groups/{aid}'            => ['GET',  ApplicationController::class.'::allianceGroupsV2'],
+    '/api/app/v1/alliance-groups'                  => ['POST', ApplicationController::class.'::allianceGroupsBulkV1'],
+    '/api/app/v1/main/{cid}'                       => ['GET',  ApplicationController::class.'::mainV1'],
+    '/api/app/v2/main/{cid}'                       => ['GET',  ApplicationController::class.'::mainV2'],
+    '/api/app/v1/characters/{characterId}'         => ['GET',  ApplicationController::class.'::charactersV1'],
+    '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  ApplicationController::class.'::memberTrackingV1'],
 
     '/api/user/app/all'                       => ['GET',    AppController::class.'::all'],
     '/api/user/app/create'                    => ['POST',   AppController::class.'::create'],
+    '/api/user/app/{id}/show'                 => ['GET',    AppController::class.'::show'],
     '/api/user/app/{id}/rename'               => ['PUT',    AppController::class.'::rename'],
     '/api/user/app/{id}/delete'               => ['DELETE', AppController::class.'::delete'],
-    '/api/user/app/{id}/groups'               => ['GET',    AppController::class.'::groups'],
     '/api/user/app/{id}/add-group/{gid}'      => ['PUT',    AppController::class.'::addGroup'],
     '/api/user/app/{id}/remove-group/{gid}'   => ['PUT',    AppController::class.'::removeGroup'],
     '/api/user/app/{id}/managers'             => ['GET',    AppController::class.'::managers'],
     '/api/user/app/{id}/add-manager/{pid}'    => ['PUT',    AppController::class.'::addManager'],
     '/api/user/app/{id}/remove-manager/{pid}' => ['PUT',    AppController::class.'::removeManager'],
+    '/api/user/app/{id}/add-role/{name}'      => ['PUT',    AppController::class.'::addRole'],
+    '/api/user/app/{id}/remove-role/{name}'   => ['PUT',    AppController::class.'::removeRole'],
     '/api/user/app/{id}/change-secret'        => ['PUT',    AppController::class.'::changeSecret'],
 
     '/api/user/alliance/all'                     => ['GET',  AllianceController::class.'::all'],

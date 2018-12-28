@@ -46,6 +46,11 @@ Content page for group and app administration
                     Add all groups to app
                 </button>
             </p>
+            <p v-if="contentType === 'roles'">
+                See
+                <a href="https://github.com/bravecollective/brvneucore/blob/master/doc/API.md" target="_blank">
+                    doc/API.md</a> for permissions for each role.
+            </p>
 
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
@@ -54,6 +59,7 @@ Content page for group and app administration
                         <span v-if="contentType === 'alliances'">Add alliance</span>
                         <span v-if="contentType === 'corporations'">Add corporation</span>
                         <span v-if="contentType === 'groups'">Add group</span>
+                        <span v-if="contentType === 'roles'">Add role</span>
                     </span>
                 </div>
                 <select class="custom-select" v-model="newObject" title="">
@@ -61,6 +67,7 @@ Content page for group and app administration
                     <option v-if="contentType === 'alliances'" value="">Select alliance ...</option>
                     <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>
                     <option v-if="contentType === 'groups'" value="">Select group ...</option>
+                    <option v-if="contentType === 'roles'" value="">Select role ...</option>
                     <option v-for="option in selectContent" v-bind:value="option"
                             v-if="! tableHas(option)">
                         <template v-if="contentType === 'corporations' || contentType === 'alliances'">
@@ -77,58 +84,62 @@ Content page for group and app administration
 
         <table v-cloak v-if="typeId" class="table table-striped table-hover mb-0">
             <thead>
-            <tr>
-                <th v-if="contentType === 'managers'">Player ID</th>
-                <th v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
-                <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
-                <th>Name</th>
-                <th v-if="contentType === 'managers'">Characters</th>
-                <th v-if="contentType === 'corporations'">Alliance</th>
-                <th v-if="contentType === 'corporations' || contentType === 'alliances'">Groups</th>
-                <th></th>
-            </tr>
+                <tr>
+                    <th v-if="contentType === 'managers'">Player ID</th>
+                    <th v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
+                    <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
+                    <th>Name</th>
+                    <th v-if="contentType === 'managers'">Characters</th>
+                    <th v-if="contentType === 'corporations'">Alliance</th>
+                    <th v-if="contentType === 'corporations' || contentType === 'alliances'">Groups</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-            <tr v-for="row in tableContent">
-                <td v-if="contentType === 'managers'">{{ row.id }}</td>
-                <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.id }}</td>
-                <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
-                <td>{{ row.name }}</td>
-                <td v-if="contentType === 'managers'">
-                    <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
-                        Show characters
-                    </button>
-                </td>
-                <td v-if="contentType === 'corporations'">
-                    <span v-if="row.alliance">
-                        [{{ row.alliance.ticker }}]
-                        {{ row.alliance.name }}
-                    </span>
-                </td>
-                <td v-if="contentType === 'corporations' || contentType === 'alliances'">
-                    <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">
-                        Show groups
-                    </button>
-                </td>
-                <td>
-                    <button v-if="contentType === 'managers'"
-                            class="btn btn-danger btn-sm"
-                            v-on:click="addOrRemoveManagerToGroupOrApp(row.id, 'remove')">
-                        Remove manager
-                    </button>
-                    <button v-if="contentType === 'corporations' || contentType === 'alliances'"
-                            class="btn btn-danger btn-sm"
-                            v-on:click="addOrRemoveCorporationOrAllianceToGroup(row.id, 'remove')">
-                        <span v-if="contentType === 'corporations'">Remove corporation</span>
-                        <span v-if="contentType === 'alliances'">Remove alliance</span>
-                    </button>
-                    <button v-if="contentType === 'groups'"
-                            class="btn btn-danger btn-sm"
-                            v-on:click="addOrRemoveGroupToApp(row.id, 'remove')">
-                        Remove group
-                    </button>
-                </td>
-            </tr>
+                <tr v-for="row in tableContent">
+                    <td v-if="contentType === 'managers'">{{ row.id }}</td>
+                    <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.id }}</td>
+                    <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
+                    <td>{{ row.name }}</td>
+                    <td v-if="contentType === 'managers'">
+                        <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
+                            Show characters
+                        </button>
+                    </td>
+                    <td v-if="contentType === 'corporations'">
+                        <span v-if="row.alliance">
+                            [{{ row.alliance.ticker }}]
+                            {{ row.alliance.name }}
+                        </span>
+                    </td>
+                    <td v-if="contentType === 'corporations' || contentType === 'alliances'">
+                        <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">
+                            Show groups
+                        </button>
+                    </td>
+                    <td>
+                        <button v-if="contentType === 'managers'"
+                                class="btn btn-danger btn-sm"
+                                v-on:click="addOrRemoveManagerToGroupOrApp(row.id, 'remove')">
+                            Remove manager
+                        </button>
+                        <button v-if="contentType === 'corporations' || contentType === 'alliances'"
+                                class="btn btn-danger btn-sm"
+                                v-on:click="addOrRemoveCorporationOrAllianceToGroup(row.id, 'remove')">
+                            <span v-if="contentType === 'corporations'">Remove corporation</span>
+                            <span v-if="contentType === 'alliances'">Remove alliance</span>
+                        </button>
+                        <button v-if="contentType === 'groups' || contentType === 'roles'"
+                                class="btn btn-danger btn-sm"
+                                v-on:click="addOrRemoveTypeToApp(
+                                    row.id,
+                                    contentType === 'groups' ? 'Group' : 'Role',
+                                    'remove'
+                                )">
+                            Remove {{ contentType === 'groups' ? 'group' : 'role '}}
+                        </button>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div> <!-- card -->
@@ -193,8 +204,12 @@ module.exports = {
                 this.addOrRemoveManagerToGroupOrApp(this.newObject.id, 'add');
             } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
                 this.addOrRemoveCorporationOrAllianceToGroup(this.newObject.id, 'add');
-            } else if (this.contentType === 'groups') {
-                this.addOrRemoveGroupToApp(this.newObject.id, 'add');
+            } else if (this.contentType === 'groups' || this.contentType === 'roles') {
+                this.addOrRemoveTypeToApp(
+                    this.newObject.id,
+                    this.contentType === 'groups' ? 'Group' : 'Role',
+                    'add'
+                );
             }
         },
     },
@@ -223,6 +238,11 @@ module.exports = {
             } else if (this.contentType === 'groups') {
                 api = new this.swagger.GroupApi();
                 method = 'all';
+            } else if (this.contentType === 'roles') {
+                vm.selectContent = [
+                    { id: 'app-tracking', name: 'app-tracking' }
+                ];
+                return;
             }
             if (! api || ! method) {
                 return;
@@ -255,6 +275,8 @@ module.exports = {
                 method = 'corporations';
             } else if (this.contentType === 'alliances') {
                 method = 'alliances';
+            } else if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
+                method = 'show';
             } else if (this.contentType === 'groups') {
                 method = 'groups';
             }
@@ -268,7 +290,20 @@ module.exports = {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.tableContent = data;
+                if (vm.type === 'App' && vm.contentType === 'groups') {
+                    vm.tableContent = data.groups;
+                } else if (vm.type === 'App' && vm.contentType === 'roles') {
+                    // transform string to object and remove "app" role
+                    const roles = [];
+                    for (let role of vm.fixRoles(data.roles)) {
+                        if (role !== 'app') {
+                            roles.push({ id: role, name: role });
+                        }
+                    }
+                    vm.tableContent = roles;
+                }  else {
+                    vm.tableContent = data;
+                }
             }]);
         },
 
@@ -387,18 +422,10 @@ module.exports = {
             }]);
         },
 
-        addOrRemoveGroupToApp: function(id, action) {
+        addOrRemoveTypeToApp: function(id, type, action) {
             const vm = this;
             const api = new this.swagger.AppApi();
-
-            let method;
-            if (action === 'add') {
-                method = 'addGroup';
-            } else if (action === 'remove') {
-                method = 'removeGroup';
-            } else {
-                return;
-            }
+            const method = action + type; // add/remove + Group/Role
 
             vm.loading(true);
             api[method].apply(api, [this.typeId, id, function(error) {
@@ -442,7 +469,6 @@ module.exports = {
                 }
             }
         },
-
     },
 }
 </script>

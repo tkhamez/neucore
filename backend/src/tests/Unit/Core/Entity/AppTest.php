@@ -17,6 +17,8 @@ class AppTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([
             'id' => null,
             'name' => 'test app',
+            'groups' => [],
+            'roles' => [],
         ], json_decode(json_encode($app), true));
     }
 
@@ -54,6 +56,27 @@ class AppTest extends \PHPUnit\Framework\TestCase
 
         $app->removeRole($r2);
         $this->assertSame([$r1], $app->getRoles());
+    }
+
+    public function testGetRoleNames()
+    {
+        $app = new App();
+        $r1 = (new Role())->setName('n1');
+        $r2 = (new Role())->setName('n2');
+        $app->addRole($r1)->addRole($r2);
+
+        $this->assertSame(['n1', 'n2'], $app->getRoleNames());
+    }
+
+    public function testHasRole()
+    {
+        $app = new App();
+        $role = new Role();
+        $role->setName('role1');
+        $app->addRole($role);
+
+        $this->assertTrue($app->hasRole('role1'));
+        $this->assertFalse($app->hasRole('role2'));
     }
 
     public function testAddGetRemoveGroup()

@@ -22,6 +22,7 @@ Settings API
 This role is added to all player accounts.
 
 Auth API
+- Result of last SSO attempt. `/user/auth/result`
 - User logout. `/user/auth/logout`
 
 Character API
@@ -44,6 +45,8 @@ Settings API
 
 ### user-admin
 
+Allows a player to add and remove roles from players.
+
 Character API
 - Return a list of characters that matches the name (partial matching, minimum 3 characters).
   `/user/character/find-by/{name}`
@@ -58,6 +61,8 @@ Player API
 - Show all data from a player. `/user/player/{id}/show`
 
 ### group-admin
+
+Allows a player to create groups and add and remove managers or corporation and alliances.
 
 Alliance API
 - List all alliances. `/user/alliance/all`
@@ -91,6 +96,8 @@ Player API
 
 ### group-manager
 
+Allows a player to add and remove members to his groups.
+
 Group API
 - List all applicants of a group. `/user/group/{id}/applicants`
 - Remove a player's request to join a group. `/user/group/{id}/remove-applicant/{pid}`
@@ -108,17 +115,21 @@ Character API
 
 ### app-admin
 
+Allows a player to create apps and add and remove managers and roles.
+
 App API
 - List all apps. `/user/app/all`
 - Create an app. `/user/app/create`
+- Shows app information. `/user/app/{id}/show`
 - Rename an app. `/user/app/{id}/rename`
 - Delete an app. `/user/app/{id}/delete`
 - List all managers of an app. `/user/app/{id}/managers`
 - Assign a player as manager to an app. `/user/app/{id}/add-manager/{pid}`
 - Remove a manager (player) from an app. `/user/app/{id}/remove-manager/{pid}`
-- List all groups of an app. `/user/app/{id}/groups`
 - Add a group to an app. `/user/app/{id}/add-group/{gid}`
 - Remove a group from an app. `/user/app/{id}/remove-group/{gid}`
+- Add a role to the app. `/user/app/{id}/add-role/{name}`
+- Remove a role from an app. `/user/app/{id}/remove-role/{name}`
 
 Group API
 - List all groups. `/user/group/all`
@@ -129,17 +140,23 @@ Player API
 
 ### app-manager
 
+Allows a player to change the secret of his apps.
+
 App API
 - Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.
   `/user/app/{id}/change-secret`
-- List all groups of an app. `/user/app/{id}/groups` (Managers can only see groups of their own apps.)
+- Shows app information. `/user/app/{id}/show` (Managers can only see groups of their own apps.)
 
 ### esi
+
+Allows a player to make an ESI request on behalf of a character from the database.
 
 ESI API
 - ESI request. `/user/esi/request`
 
 ### settings
+
+Allows a player to change the system settings.
 
 Settings API
 - Change a system settings variable. `/user/settings/system/change/{name}`
@@ -147,6 +164,8 @@ Settings API
 - Validates the ESI token from a director. `/user/settings/system/validate-director`
 
 ### tracking
+
+Allows a player to view corporation member tracking data.
 
 Corporation API
 - Returns all corporations that have member tracking data. `/user/corporation/tracked-corporations`
@@ -166,5 +185,12 @@ Application API
 - Return groups of multiple corporations. `/app/v1/corp-groups`
 - Return groups of the alliance. `/app/v2/alliance-groups/{aid}`
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
-- Returns the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
-- Returns all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
+- Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
+- Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
+
+### app-tracking
+
+Allows an app to get corporation member tracking data.
+
+Application API
+- Return corporation member tracking data. `/app/v1/corporation/{id}/member-tracking`

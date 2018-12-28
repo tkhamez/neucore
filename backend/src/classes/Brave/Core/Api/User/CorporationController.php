@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Api\BaseController;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
@@ -13,18 +14,8 @@ use Slim\Http\Response;
  *     description="Corporation management (for automatic group assignment) and tracking."
  * )
  */
-class CorporationController
+class CorporationController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     /**
      * @var RepositoryFactory
      */
@@ -42,8 +33,8 @@ class CorporationController
 
     public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
     {
-        $this->response = $response;
-        $this->objectManager = $objectManager;
+        parent::__construct($response, $objectManager);
+
         $this->repositoryFactory = $repositoryFactory;
     }
 
@@ -329,25 +320,6 @@ class CorporationController
             ->findBy(['corporation' => $id], ['logonDate' => 'desc']);
 
         return $this->response->withJson($members);
-    }
-
-    /**
-     * @param int $status
-     * @param mixed|null $json
-     * @return Response
-     */
-    private function flushAndReturn(int $status, $json = null): Response
-    {
-        if (! $this->objectManager->flush()) {
-            return $this->response->withStatus(500);
-        }
-
-        $response = $this->response->withStatus($status);
-        if ($json !== null) {
-            return $response->withJson($json);
-        } else {
-            return $response;
-        }
     }
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool

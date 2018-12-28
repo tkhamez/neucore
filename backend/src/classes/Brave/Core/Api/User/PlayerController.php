@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
@@ -18,13 +19,8 @@ use Slim\Http\Response;
  *     description="Player management."
  * )
  */
-class PlayerController
+class PlayerController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
     /**
      * @var LoggerInterface
      */
@@ -40,11 +36,6 @@ class PlayerController
      */
     private $userAuthService;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     private $availableRoles = [
         Role::APP_ADMIN,
         Role::APP_MANAGER,
@@ -58,16 +49,16 @@ class PlayerController
 
     public function __construct(
         Response $response,
+        ObjectManager $objectManager,
         LoggerInterface $log,
         RepositoryFactory $repositoryFactory,
-        UserAuth $uas,
-        ObjectManager $objectManager
+        UserAuth $uas
     ) {
-        $this->response = $response;
+        parent::__construct($response, $objectManager);
+
         $this->log = $log;
         $this->repositoryFactory = $repositoryFactory;
         $this->userAuthService = $uas;
-        $this->objectManager = $objectManager;
     }
 
     /**
@@ -647,25 +638,6 @@ class PlayerController
         $characterService->deleteCharacter($char, 'manually');
 
         return $this->flushAndReturn(204);
-    }
-
-    /**
-     * @param int $status
-     * @param mixed|null $json
-     * @return Response
-     */
-    private function flushAndReturn(int $status, $json = null): Response
-    {
-        if (! $this->objectManager->flush()) {
-            return $this->response->withStatus(500);
-        }
-
-        $response = $this->response->withStatus($status);
-        if ($json !== null) {
-            return $response->withJson($json);
-        } else {
-            return $response;
-        }
     }
 
     private function getPlayerByRole(string $roleName): array

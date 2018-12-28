@@ -48,6 +48,11 @@
                        :class="{ 'bg-primary': contentType === 'groups' }"
                        :href="'#AppAdmin/' + appId + '/groups'">Groups</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       :class="{ 'bg-primary': contentType === 'roles' }"
+                       :href="'#AppAdmin/' + appId + '/roles'">Roles</a>
+                </li>
             </ul>
 
             <admin v-cloak v-if="appId" ref="admin"

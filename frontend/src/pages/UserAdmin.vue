@@ -91,7 +91,11 @@
 
                 <div v-cloak v-if="playerEdit" class="card-body">
                     <h4>Roles</h4>
-
+                    <p>
+                        See
+                        <a href="https://github.com/bravecollective/brvneucore/blob/master/doc/API.md" target="_blank">
+                            doc/API.md</a> for permissions for each role.
+                    </p>
                     <div class="input-group mb-1">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Add role</span>
@@ -105,9 +109,7 @@
                         </select>
                     </div>
 
-                    <div v-for="role in playerEdit.roles"
-                        v-if="role !== 'user'"
-                        class="list-group-item">
+                    <div v-for="role in playerEdit.roles" v-if="role !== 'user'" class="list-group-item">
                         <button type="button" class="btn btn-danger mr-5"
                                 :disabled="role === 'user-admin' && playerEdit.id === player.id"
                                 v-on:click="removeRole(role)">
