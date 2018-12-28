@@ -1,4 +1,10 @@
 
+## NEXT
+
+DD mmm YYYY
+
+- Added corporation member tracking
+
 ## 0.5.1
 
 23 Dec 2018
