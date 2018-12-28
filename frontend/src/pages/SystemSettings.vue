@@ -242,7 +242,7 @@ module.exports = {
             this.directors = [];
             for (let variable of this.settings) {
                 if (variable.name === 'account_deactivation_delay') {
-                    this.accountDeactivationDelay = variable.value;
+                    this.accountDeactivationDelay = parseInt(variable.value);
                 } else if (variable.name === 'mail_account_disabled_active') {
                     this.mailAccountDisabledActive = variable.value === '1';
                 } else if (variable.name === 'mail_account_disabled_alliances') {
@@ -282,9 +282,10 @@ module.exports = {
                     return;
                 }
                 vm.$root.message(
-                    data ? 'The Token is valid and character has the director role.' : 'The token is invalid.',
+                    data ? 'The Token is valid and character has the director role.' : 'Validation failed.',
                     data ? 'info' : 'warning'
                 );
+                vm.$root.$emit('settingsChange');
             });
         },
 

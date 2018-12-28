@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
+use Tests\Client;
 use Tests\Logger;
 use Tests\WebTestCase;
 use Tests\Helper;
@@ -82,7 +83,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": "100"}'],
+            ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": "10", "corporation_id": "101"}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
@@ -267,12 +268,12 @@ class SettingsControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('GET', '/api/user/settings/system/validate-director/director_char_1');
+        $response1 = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1');
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(5);
 
-        $response2 = $this->runApp('GET', '/api/user/settings/system/validate-director/director_char_1');
+        $response2 = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1');
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
@@ -281,14 +282,18 @@ class SettingsControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(6);
 
-        $client = new \Tests\Client();
-        $client->setResponse(new Response(200)); // /characters/100/roles
+        $client = new Client();
+        $client->setResponse(
+            new Response(200, [], '{"name": "changed", "corporation_id": 102}'), // getCharactersCharacterId()
+            new Response(200, [], '{"name": "n", "ticker": "t"}'), // getCorporationsCorporationId()
+            new Response(200, [], '{"roles": ["Director"]}') // /characters/10/roles
+        );
 
-        $response = $this->runApp('GET', '/api/user/settings/system/validate-director/director_char_1', null, null, [
+        $response = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1', null, null, [
             EsiApiFactory::class => (new EsiApiFactory())->setClient($client)
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertFalse($this->parseJsonBody($response));
+        $this->assertTrue($this->parseJsonBody($response));
     }
 
     private function setupDb()
@@ -313,7 +318,7 @@ class SettingsControllerTest extends WebTestCase
         $var3->setValue("0");
         $var4->setValue("The char");
         $var5->setValue('{"ID": "123", "TOKEN": "abc"}');
-        $var6->setValue('{"character_id": "100"}');
+        $var6->setValue('{"character_id": "10", "corporation_id": "101"}');
         $var7->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
 
         $var4->setScope(SystemVariable::SCOPE_SETTINGS);

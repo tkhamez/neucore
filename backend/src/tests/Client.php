@@ -21,7 +21,6 @@ class Client extends \GuzzleHttp\Client
     {
         $response = array_shift($this->responses);
         #var_Dump($request->getUri()->getPath());
-        #var_Dump((string)$response->getBody());
         return $response;
     }
 

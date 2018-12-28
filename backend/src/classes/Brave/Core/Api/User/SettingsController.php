@@ -195,10 +195,10 @@ class SettingsController
     }
 
     /**
-     * @SWG\Get(
+     * @SWG\Put(
      *     path="/user/settings/system/validate-director/{name}",
      *     operationId="validateDirector",
-     *     summary="Validates the ESI token from a director.",
+     *     summary="Validates ESI token from a director and updates name and corporation.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
@@ -222,6 +222,11 @@ class SettingsController
      */
     public function validateDirector(string $name, MemberTracking $memberTracking): Response
     {
+        $success = $memberTracking->updateDirector($name);
+        if (! $success) {
+            return $this->response->withJson(false);
+        }
+
         $valid = false;
 
         $accessToken = $memberTracking->refreshDirectorToken($name);

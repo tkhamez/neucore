@@ -110,5 +110,5 @@ return [
     '/api/user/settings/system/list'                       => ['GET',  SettingsController::class.'::systemList'],
     '/api/user/settings/system/change/{name}'              => ['PUT',  SettingsController::class.'::systemChange'],
     '/api/user/settings/system/send-account-disabled-mail' => ['POST', SettingsController::class.'::sendAccountDisabledMail'],
-    '/api/user/settings/system/validate-director/{name}'   => ['GET',  SettingsController::class.'::validateDirector'],
+    '/api/user/settings/system/validate-director/{name}'   => ['PUT',  SettingsController::class.'::validateDirector'],
 ];

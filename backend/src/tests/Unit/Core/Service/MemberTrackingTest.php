@@ -151,6 +151,36 @@ class MemberTrackingTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 1));
     }
 
+    public function testUpdateDirector()
+    {
+        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{
+            "character_id": 10, 
+            "character_name": "char name", 
+            "corporation_id": 101,
+            "corporation_name": "corp name",
+            "corporation_ticker": "-CT-"
+        }');
+        $this->em->persist($char);
+        $this->em->flush();
+
+        $this->client->setResponse(
+            new Response(200, [], '{"name": "name char", "corporation_id": 102}'), // getCharactersCharacterId()
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+        );
+
+        $this->assertTrue($this->memberTracking->updateDirector(SystemVariable::DIRECTOR_CHAR . 1));
+
+        $charDb = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::DIRECTOR_CHAR . 1);
+        $data = \json_decode($charDb->getValue(), true);
+        $this->assertSame([
+            'character_id' => 10,
+            'character_name' => 'name char',
+            'corporation_id' => 102,
+            'corporation_name' => 'name corp',
+            'corporation_ticker' => '-TC-',
+        ], $data);
+    }
+
     public function testRefreshDirectorTokenNoData()
     {
         $this->assertNull($this->memberTracking->refreshDirectorToken(SystemVariable::DIRECTOR_CHAR . 1));

@@ -75,9 +75,9 @@ class MemberTracking
     public function verifyAndStoreDirector(EveAuthentication $eveAuth): bool
     {
         // get corporation ID from character
-        $characterApi = $this->esiApiFactory->getCharacterApi();
         try {
-            $char = $characterApi->getCharactersCharacterId($eveAuth->getCharacterId(), $this->datasource);
+            $char = $this->esiApiFactory->getCharacterApi()
+                ->getCharactersCharacterId($eveAuth->getCharacterId(), $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
             return false;
@@ -108,6 +108,40 @@ class MemberTracking
         if ($token) {
             $this->objectManager->remove($token);
         }
+
+        return $this->objectManager->flush();
+    }
+
+    /**
+     * Updates name and corporation of director char.
+     */
+    public function updateDirector(string $variableName): bool
+    {
+        $variable = $this->repositoryFactory->getSystemVariableRepository()->find($variableName);
+        $data = \json_decode($variable ? $variable->getValue() : '', true);
+        if (! isset($data['character_id'])) {
+            return false;
+        }
+
+        try {
+            $char = $this->esiApiFactory->getCharacterApi()
+                ->getCharactersCharacterId($data['character_id'], $this->datasource);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+            return false;
+        }
+
+        $corporation = $this->esiData->fetchCorporation($char->getCorporationId());
+        if ($corporation === null) {
+            return false;
+        }
+
+        $data['character_name'] = $char->getName();
+        $data['corporation_id'] = $corporation->getId();
+        $data['corporation_name'] = $corporation->getName();
+        $data['corporation_ticker'] = $corporation->getTicker();
+
+        $variable->setValue(\json_encode($data));
 
         return $this->objectManager->flush();
     }

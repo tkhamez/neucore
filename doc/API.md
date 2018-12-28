@@ -162,7 +162,7 @@ Allows a player to change the system settings.
 Settings API
 - Change a system settings variable. `/user/settings/system/change/{name}`
 - Sends a 'Account disabled' test mail to the logged-in character. `/user/settings/system/send-account-disabled-mail`
-- Validates the ESI token from a director. `/user/settings/system/validate-director`
+- Validates ESI token from a director and updates name and corporation. `/user/settings/system/validate-director/{name}`
 
 ### tracking
 
