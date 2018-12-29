@@ -422,25 +422,27 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testMembers200()
     {
         $this->setupDb();
 
         $this->loginUser(7);
 
-        $response = $this->runApp('GET', '/api/user/corporation/222/members');
+        $params = '?inactive=7&active=12';
+        $response = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([[
-            'id' => 101,
-            'name' => 'm1',
-            'locationId' => null,
-            'logoffDate' => null,
-            'logonDate' => null,
-            'shipTypeId' => null,
-            'startDate' => null,
-            'character' => null,
-            'player' => null,
-        ]], $this->parseJsonBody($response));
+        $result = $this->parseJsonBody($response);
+        $this->assertSame(1, count($result));
+        $this->assertSame(101, $result[0]['id']);
+        $this->assertSame('m1', $result[0]['name']);
+        $this->assertSame(null, $result[0]['locationId']);
+        $this->assertSame(null, $result[0]['logoffDate']);
+        $this->assertStringStartsWith((new \DateTime('now -10 days'))->format('Y-m-d'), $result[0]['logonDate']);
+        $this->assertSame(null, $result[0]['shipTypeId']);
+        $this->assertSame(null, $result[0]['startDate']);
     }
 
     private function setupDb()
@@ -457,7 +459,12 @@ class CorporationControllerTest extends WebTestCase
         $group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');
 
-        $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2);
+        try {
+            $date = new \DateTime('now -10 days');
+        } catch (\Exception $e) {
+            $date = null;
+        }
+        $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2)->setLogonDate($date);
 
         $corp1->addGroup($group1);
         $corp2->addGroup($group1);

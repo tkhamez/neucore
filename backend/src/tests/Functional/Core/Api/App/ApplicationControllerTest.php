@@ -517,44 +517,44 @@ class ApplicationControllerTest extends WebTestCase
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testMemberTrackingV1200()
     {
         $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', ['app', 'app-tracking'])->getId();
         $corp = (new Corporation())->setId(10)->setTicker('t1')->setName('corp 1');
-        $member1 = (new CorporationMember())->setId(110)->setName('m1')->setCorporation($corp);
-        $member2 = (new CorporationMember())->setId(111)->setName('m2')->setCorporation($corp);
+        $member1 = (new CorporationMember())->setId(110)->setName('m1')->setCorporation($corp)
+            ->setLogonDate(new \DateTime('now -5 days'));
+        $member2 = (new CorporationMember())->setId(111)->setName('m2')->setCorporation($corp)
+            ->setLogonDate(new \DateTime('now -10 days'));
+        $member3 = (new CorporationMember())->setId(112)->setName('m3')->setCorporation($corp)
+            ->setLogonDate(new \DateTime('now -15 days'));
         $this->helper->getEm()->persist($corp);
         $this->helper->getEm()->persist($member1);
         $this->helper->getEm()->persist($member2);
+        $this->helper->getEm()->persist($member3);
         $this->helper->getEm()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
-        $response1 = $this->runApp('GET', '/api/app/v1/corporation/11/member-tracking', null, $headers);
+        $params = '?inactive=7&active=12';
+        $response1 = $this->runApp('GET', '/api/app/v1/corporation/11/member-tracking'.$params, null, $headers);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response1));
 
-        $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking', null, $headers);
+        $response2 = $this->runApp('GET', '/api/app/v1/corporation/10/member-tracking'.$params, null, $headers);
         $this->assertEquals(200, $response2->getStatusCode());
-        $this->assertSame([[
-                'id' => 110,
-                'name' => 'm1',
-                'locationId' => null,
-                'logoffDate' => null,
-                'logonDate' => null,
-                'shipTypeId' => null,
-                'startDate' => null,
-            ], [
-                'id' => 111,
-                'name' => 'm2',
-                'locationId' => null,
-                'logoffDate' => null,
-                'logonDate' => null,
-                'shipTypeId' => null,
-                'startDate' => null,
-            ]], $this->parseJsonBody($response2)
-        );
+        $result2 = $this->parseJsonBody($response2);
+        $this->assertSame(1, count($result2));
+        $this->assertSame(111, $result2[0]['id']);
+        $this->assertSame('m2', $result2[0]['name']);
+        $this->assertSame(null, $result2[0]['locationId']);
+        $this->assertSame(null, $result2[0]['logoffDate']);
+        $this->assertStringStartsWith((new \DateTime('now -10 days'))->format('Y-m-d'), $result2[0]['logonDate']);
+        $this->assertSame(null, $result2[0]['shipTypeId']);
+        $this->assertSame(null, $result2[0]['startDate']);
     }
 
     private function setUpDb($invalidHours = 0)

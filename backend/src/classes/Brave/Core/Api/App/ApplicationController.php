@@ -2,11 +2,12 @@
 
 namespace Brave\Core\Api\App;
 
-use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
@@ -51,16 +52,23 @@ class ApplicationController
      */
     private $accountService;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $log;
+
     public function __construct(
         Response $response,
         AppAuth $appAuthService,
         RepositoryFactory $repositoryFactory,
-        Account $accountService
+        Account $accountService,
+        LoggerInterface $log
     ) {
         $this->response = $response;
         $this->appAuthService = $appAuthService;
         $this->repositoryFactory = $repositoryFactory;
         $this->accountService = $accountService;
+        $this->log = $log;
     }
 
     /**
@@ -588,9 +596,21 @@ class ApplicationController
      *         description="EVE corporation ID.",
      *         type="integer"
      *     ),
+     *     @SWG\Parameter(
+     *         name="inactive",
+     *         in="query",
+     *         description="Limit to members who have been inactive for x days or longer.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="active",
+     *         in="query",
+     *         description="Limit to members who were active in the last x days.",
+     *         type="integer"
+     *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="The member data (character and player properties are not included).",
+     *         description="Members ordered by logonDate descending (character and player properties excluded).",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CorporationMember"))
      *     ),
      *     @SWG\Response(
@@ -599,10 +619,18 @@ class ApplicationController
      *     )
      * )
      */
-    public function memberTrackingV1(string $id)
+    public function memberTrackingV1(string $id, Request $request)
     {
-        $members = $this->repositoryFactory->getCorporationMemberRepository()
-            ->findBy(['corporation' => (int) $id], ['logonDate' => 'desc']);
+        $inactive = (int) $request->getParam('inactive', 0);
+        $active = (int) $request->getParam('active', 0);
+
+        try {
+            $members = $this->repositoryFactory->getCorporationMemberRepository()
+                ->findByLogonDate((int) $id, $inactive, $active);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $members = [];
+        }
 
         $result = [];
         foreach ($members as $member) {

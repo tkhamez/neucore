@@ -7,14 +7,27 @@
             <div class="col-lg-12">
                 <h1>Member Tracking</h1>
 
-                <label>
-                    Select corporation
-                    <select class="custom-select" v-model="corporation" title="">
+                <div class="input-group">
+                    <label class="input-group-prepend" for="corporation-select">
+                        <span class="input-group-text">Select corporation</span>
+                    </label>
+                    <select class="custom-select" v-model="corporation" id="corporation-select">
                         <option value=""></option>
                         <option v-for="option in corporations" v-bind:value="option">
                             [{{ option.ticker }}] {{ option.name }}
                         </option>
                     </select>
+                </div>
+                <label class="mt-2">
+                    <input type="text" pattern="[0-9]*" class="form-control input-days"
+                           v-model="daysInactive">
+                    Limit to members who have been inactive for days x or longer.
+                </label>
+                <br>
+                <label class="mt-2">
+                    <input type="text" pattern="[0-9]*" class="form-control input-days"
+                           v-model="daysActive">
+                    Limit to members who were active in the last x days.
                 </label>
 
                 <table class="table table-hover table-sm">
@@ -93,6 +106,8 @@ module.exports = {
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],
             members: [],
+            daysActive: null,
+            daysInactive: null,
         }
     },
 
@@ -120,6 +135,14 @@ module.exports = {
                 window.location.hash = '#Tracking';
             }
         },
+
+        daysActive: function() {
+            this.getMembersDelayed(this);
+        },
+
+        daysInactive: function() {
+            this.getMembersDelayed(this);
+        }
     },
 
     methods: {
@@ -150,6 +173,10 @@ module.exports = {
             }
         },
 
+        getMembersDelayed: _.debounce((vm) => {
+            vm.getMembers();
+        }, 250),
+
         getMembers: function() {
             this.members = [];
             if (! this.route[1]) {
@@ -157,9 +184,14 @@ module.exports = {
             }
 
             const corporationId = parseInt(this.route[1], 10);
+            const opts = {
+                inactive: this.daysInactive,
+                active: this.daysActive
+            };
+
             const vm = this;
             vm.loading(true);
-            new this.swagger.CorporationApi().members(corporationId, function(error, data) {
+            new this.swagger.CorporationApi().members(corporationId, opts, function(error, data) {
                 vm.loading(false);
                 if (error) { // 403 usually
                     return;
@@ -178,5 +210,9 @@ module.exports = {
 <style scoped>
     table {
         font-size: 90%;
+    }
+    .input-days {
+        display: inline;
+        width: 70px;
     }
 </style>

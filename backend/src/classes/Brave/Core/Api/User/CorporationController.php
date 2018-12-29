@@ -6,6 +6,8 @@ use Brave\Core\Api\BaseController;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
+use Psr\Log\LoggerInterface;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
@@ -22,6 +24,11 @@ class CorporationController extends BaseController
     private $repositoryFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    private $log;
+
+    /**
      * @var \Brave\Core\Entity\Corporation
      */
     private $corp;
@@ -31,11 +38,16 @@ class CorporationController extends BaseController
      */
     private $group;
 
-    public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
-    {
+    public function __construct(
+        Response $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        LoggerInterface $log
+    ) {
         parent::__construct($response, $objectManager);
 
         $this->repositoryFactory = $repositoryFactory;
+        $this->log = $log;
     }
 
     /**
@@ -303,6 +315,18 @@ class CorporationController extends BaseController
      *         description="ID of the corporation.",
      *         type="integer"
      *     ),
+     *     @SWG\Parameter(
+     *         name="inactive",
+     *         in="query",
+     *         description="Limit to members who have been inactive for x days or longer.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="active",
+     *         in="query",
+     *         description="Limit to members who were active in the last x days.",
+     *         type="integer"
+     *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="List of corporation members.",
@@ -314,10 +338,18 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function members(string $id)
+    public function members(string $id, Request $request)
     {
-        $members = $this->repositoryFactory->getCorporationMemberRepository()
-            ->findBy(['corporation' => $id], ['logonDate' => 'desc']);
+        $inactive = (int) $request->getParam('inactive', 0);
+        $active = (int) $request->getParam('active', 0);
+
+        try {
+            $members = $this->repositoryFactory->getCorporationMemberRepository()
+                ->findByLogonDate((int) $id, $inactive, $active);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $members = [];
+        }
 
         return $this->response->withJson($members);
     }
