@@ -435,14 +435,14 @@ class Player implements \JsonSerializable
         return $this->groups->removeElement($group);
     }
 
-    public function removeGroupById(int $groupId): bool
+    public function findGroupById(int $groupId): ?Group
     {
         foreach ($this->getGroups() as $group) {
             if ($group->getId() === $groupId) {
-                return $this->groups->removeElement($group);
+                return $group;
             }
         }
-        return false;
+        return null;
     }
 
     /**

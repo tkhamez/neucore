@@ -3,6 +3,7 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Factory\RepositoryFactory;
+use Psr\Log\LoggerInterface;
 
 class AutoGroupAssignment
 {
@@ -32,6 +33,11 @@ class AutoGroupAssignment
     private $playerRepo;
 
     /**
+     * @var LoggerInterface
+     */
+    private $log;
+
+    /**
      * Alliance ID to group IDs mapping.
      *
      * @var array
@@ -52,13 +58,17 @@ class AutoGroupAssignment
      */
     private $autoGroups;
 
-    public function __construct(ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
-    {
+    public function __construct(
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        LoggerInterface $logger
+    ) {
         $this->objectManager = $objectManager;
         $this->allianceRepo = $repositoryFactory->getAllianceRepository();
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->groupRepo = $repositoryFactory->getGroupRepository();
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
+        $this->log = $logger;
     }
 
     /**
@@ -115,7 +125,14 @@ class AutoGroupAssignment
 
         // remove groups
         foreach ($removeIds as $removeId) {
-            $player->removeGroupById($removeId);
+            $removeGroup = $player->findGroupById($removeId);
+            if ($removeGroup) {
+                $player->removeGroup($removeGroup);
+                $this->log->debug(
+                    'AutoGroupAssignment: removed group ' . $removeGroup->getName() . ' [' . $removeId . '] ' .
+                    'from player ' . $player->getName() . ' [' . $player->getId() . ']'
+                );
+            }
         }
 
         // add groups
@@ -123,6 +140,10 @@ class AutoGroupAssignment
             $addGroup = $this->groupRepo->find($addId);
             if ($addGroup) {
                 $player->addGroup($addGroup);
+                $this->log->debug(
+                    'AutoGroupAssignment: added group ' . $addGroup->getName() . ' [' . $addId . '] ' .
+                    'to player ' . $player->getName() . ' [' . $player->getId() . ']'
+                );
             }
         }
 

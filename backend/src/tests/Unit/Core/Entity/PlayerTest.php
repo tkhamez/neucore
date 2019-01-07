@@ -255,7 +255,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
     /**
      * @throws \ReflectionException
      */
-    public function testRemoveGroupById()
+    public function testFindGroupById()
     {
         $group1 = new Group();
         $group2 = new Group();
@@ -269,13 +269,8 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $player->addGroup($group1);
         $player->addGroup($group2);
 
-        $player->removeGroupById(2);
-
-        $groups = $player->getGroups();
-        $this->assertSame(1, count($groups));
-        $this->assertSame(1, $groups[0]->getId());
-
-        $this->assertFalse($player->removeGroupById(3));
+        $this->assertSame(2, $player->findGroupById(2)->getId());
+        $this->assertNull($player->findGroupById(3));
     }
 
     /**

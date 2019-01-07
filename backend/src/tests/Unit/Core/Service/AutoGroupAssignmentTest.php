@@ -10,9 +10,8 @@ use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\WriteErrorListener;
 use Brave\Core\Entity\Alliance;
 
@@ -37,6 +36,11 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
      * @var AutoGroupAssignment
      */
     private $aga;
+
+    /**
+     * @var Logger
+     */
+    private $log;
 
     /**
      * @var AutoGroupAssignment
@@ -64,18 +68,17 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->th = new Helper();
         $this->em = $this->th->getEm();
 
-        $log = new Logger('Test');
-        $log->pushHandler(new TestHandler());
+        $this->log = new Logger('Test');
 
         $repositoryFactory = new RepositoryFactory($this->em);
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $this->aga = new AutoGroupAssignment(new ObjectManager($this->em, $log), $repositoryFactory);
+        $this->aga = new AutoGroupAssignment(new ObjectManager($this->em, $this->log), $repositoryFactory, $this->log);
 
         // a second AutoGroupAssignment instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
-        $this->agaError = new AutoGroupAssignment(new ObjectManager($em, $log), $repositoryFactory);
+        $this->agaError = new AutoGroupAssignment(new ObjectManager($em, $this->log), $repositoryFactory, $this->log);
     }
 
     public function testAssignNotFound()
@@ -88,7 +91,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
     {
         $this->setUpData();
 
-        // Player belongs to corps with groups 1, 2, 3 and 7
+        // Player belongs to corps 1 and 2 with groups 1, 2, 3 and 7
         // Group 4 belongs to another corp
         // Group 5 does not belong to any corp or alliance and is assigned to the player directly
         // Group 6 belongs to the player's alliance
@@ -108,6 +111,15 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
             $groupIds
         );
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
+
+        $logs = $this->log->getHandler()->getRecords();
+        $this->assertSame(6, count($logs));
+        $this->assertContains('removed group g4 ['.$this->group4Id.']', $logs[0]['message']);
+        $this->assertContains('added group g1 ['.$this->group1Id.']', $logs[1]['message']);
+        $this->assertContains('added group g2 ['.$this->group2Id.']', $logs[2]['message']);
+        $this->assertContains('added group g3 ['.$this->group3Id.']', $logs[3]['message']);
+        $this->assertContains('added group g7 ['.$this->group7Id.']', $logs[4]['message']);
+        $this->assertContains('added group g6 ['.$this->group6Id.']', $logs[5]['message']);
     }
 
     public function testAssignFlushError()
