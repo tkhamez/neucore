@@ -10,9 +10,11 @@ else
     composer compile
 fi
 
-# build frontend
+# generate Swagger JS client
 cd ../frontend
 ./swagger.sh
+
+# build frontend
 npm install
 if [[ $1 = prod ]]; then
     npm run build:prod

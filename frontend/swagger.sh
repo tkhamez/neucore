@@ -2,14 +2,16 @@
 
 # generate the Swagger client
 
-if [[ ! -f swagger-codegen-cli.jar ]]; then
-    wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar \
-        -O swagger-codegen-cli.jar
+VERSION=2.4.0
+
+if [[ ! -f swagger-codegen-cli-${VERSION}.jar ]]; then
+    wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/${VERSION}/swagger-codegen-cli-${VERSION}.jar \
+        -O swagger-codegen-cli-${VERSION}.jar
 fi
 
 rm -Rf brvneucore-js-client/*
 
-java -jar swagger-codegen-cli.jar generate \
+java -jar swagger-codegen-cli-${VERSION}.jar generate \
     -c brvneucore-js-client-config.json \
     -i ../web/swagger.json \
     -l javascript \
