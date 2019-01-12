@@ -194,7 +194,6 @@ module.exports = {
                 } else if (error) {
                     vm.message('Error adding ' + vm.addType, 'error');
                 } else {
-                    console.log(data);
                     window.jQuery('#addAlliCorpModal').modal('hide');
                     vm.message(vm.addType + ' "['+ data.ticker +'] '+ data.name +'" added.', 'success');
                     vm.$refs.admin.getSelectContent();

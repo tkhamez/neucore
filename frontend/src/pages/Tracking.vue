@@ -21,7 +21,7 @@
                 <label class="mt-2">
                     <input type="text" pattern="[0-9]*" class="form-control input-days"
                            v-model="daysInactive">
-                    Limit to members who have been inactive for days x or longer.
+                    Limit to members who have been inactive for x days or longer.
                 </label>
                 <br>
                 <label class="mt-2">
