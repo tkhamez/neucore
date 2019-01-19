@@ -2,7 +2,10 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with Swagger, it is available at `https://[domain]/swagger.json`.
+The API is documented with OpenAPI, it is available at `https://[domain]/swagger.json`.
+
+There is also an interface file available that contains only the API for applications at
+`https://[domain]/application-api.json`.
 
 ## Roles Overview
 

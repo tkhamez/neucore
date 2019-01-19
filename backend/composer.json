@@ -43,12 +43,14 @@
     "scripts": {
         "compile": [
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,var,vendor --output ../web"
+            "swagger --exclude bin,config,var,vendor --output ../web",
+            "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
         ],
         "compile:prod": [
             "doctrine orm:generate-proxies",
             "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,var,vendor --output ../web"
+            "swagger --exclude bin,config,var,vendor --output ../web",
+            "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
         ],
         "test": "phpunit",
         "test:cov": "phpunit --coverage-html var/phpunit",

@@ -82,4 +82,5 @@ vendor/bin/doctrine-migrations migrations:migrate
 Generate swagger.json:
 ```
 vendor/bin/swagger --exclude bin,config,var,vendor --output ../web
+vendor/bin/swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json
 ```

@@ -6,13 +6,14 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/test_coverage)](https://codeclimate.com/github/tkhamez/brvneucore/test_coverage)
 [![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 
-Preview: https://brvneucore.herokuapp.com, https://brvneucore.herokuapp.com/api
+Preview https://brvneucore.herokuapp.com, https://brvneucore.herokuapp.com/api,
+https://brvneucore.herokuapp.com/application-api.json
 
 ## Overview
 
 Objectives
 - Manage alliance specific groups for players.
-- Provide an API for authorized third-party applications to query these groups.
+- Provide an API to query these groups.
 
 This project consists of two applications, the backend and the frontend.
 For more information, see the Readme for 
