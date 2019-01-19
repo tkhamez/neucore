@@ -13,20 +13,6 @@ use Slim\Http\Response;
  *       title="Brave Collective Core Services API",
  *       description="Client library of Brave Collective Core Services API",
  *       version="0.6.0"
- *     ),
- *     @SWG\SecurityScheme(
- *         securityDefinition="Bearer",
- *         type="apiKey",
- *         name="Authorization",
- *         in="header",
- *         description="Example: Bearer ABC"
- *     ),
- *     @SWG\SecurityScheme(
- *         securityDefinition="Session",
- *         type="apiKey",
- *         name="Cookie",
- *         in="header",
- *         description="Example: BCSESS=123"
  *     )
  * )
  */

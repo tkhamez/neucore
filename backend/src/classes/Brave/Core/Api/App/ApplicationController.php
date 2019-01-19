@@ -16,6 +16,14 @@ use Slim\Http\Response;
  *     description="API for 3rd party apps.",
  * )
  *
+ * @SWG\SecurityScheme(
+ *     securityDefinition="Bearer",
+ *     type="apiKey",
+ *     name="Authorization",
+ *     in="header",
+ *     description="Example: Bearer ABC"
+ * )
+ *
  * @SWG\Definition(
  *     definition="CharacterGroups",
  *     required={"character", "groups"},
