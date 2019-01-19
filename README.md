@@ -51,8 +51,10 @@ The values for the EVE application must be adjusted.
 * Node.js 8 or 10 + npm (use npm 5.6.0 with node 8 if there are "write after end" errors)
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
-    * set the document root to the `web` directory.
-    * for Nginx config see https://www.slimframework.com/docs/v3/start/web-servers.html#nginx-configuration,
+    * Set the document root to the `web` directory.
+    * A sample Apache configuration in included in the [Vagrantfile](Vagrantfile) file and there 
+      is a [.htaccess](web/.htaccess) file in the web directory.
+    * For Nginx config see https://www.slimframework.com/docs/v3/start/web-servers.html#nginx-configuration,
       but rewrite to app.php instead of index.php.
 * Java (only for swagger-codegen)
 
