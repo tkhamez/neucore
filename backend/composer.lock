@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fdf45304587262a66af938dae8100389",
+    "content-hash": "ab2474b062a6fd80374523f2ace982d2",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -2756,6 +2756,12 @@
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
                 "reference": "c4958b945bba16d41f617440c3672f11b56a7942"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/c4958b945bba16d41f617440c3672f11b56a7942",
+                "reference": "c4958b945bba16d41f617440c3672f11b56a7942",
+                "shasum": ""
+            },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
@@ -2774,11 +2780,7 @@
                     "Swagger\\Client\\Eve\\": "lib/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Swagger\\Client\\Eve\\": "test/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
