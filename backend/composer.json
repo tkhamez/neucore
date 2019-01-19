@@ -39,7 +39,6 @@
     },
     "repositories": [
         { "type": "git", "url": "https://github.com/bravecollective/sso-basics.git" },
-        { "type": "git", "url": "https://github.com/tkhamez/slim-role-auth.git" },
         { "type": "git", "url": "https://github.com/tkhamez/swagger-eve-php.git" }
     ],
     "scripts": {

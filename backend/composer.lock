@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "71a9e15a1a8fa98bff45ae8fb4304099",
+    "content-hash": "fdf45304587262a66af938dae8100389",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -763,12 +763,12 @@
             "version": "v2.6.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
+                "url": "https://github.com/doctrine/orm.git",
                 "reference": "434820973cadf2da2d66e7184be370084cc32ca8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/434820973cadf2da2d66e7184be370084cc32ca8",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/434820973cadf2da2d66e7184be370084cc32ca8",
                 "reference": "434820973cadf2da2d66e7184be370084cc32ca8",
                 "shasum": ""
             },
@@ -2471,7 +2471,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -2718,6 +2718,12 @@
                 "url": "https://github.com/tkhamez/slim-role-auth.git",
                 "reference": "b1d6d26a6c6e65522339c125db80fd177bdfb14e"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tkhamez/slim-role-auth/zipball/b1d6d26a6c6e65522339c125db80fd177bdfb14e",
+                "reference": "b1d6d26a6c6e65522339c125db80fd177bdfb14e",
+                "shasum": ""
+            },
             "require": {
                 "php": ">=5.5.0",
                 "psr/http-message": "^1.0",
@@ -2735,19 +2741,12 @@
                     "Tkhamez\\Slim\\RoleAuth\\": "RoleAuth"
                 }
             },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ],
-                "test:coverage": [
-                    "phpunit --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Role based authorization for the Slim framework",
-            "time": "2018-09-08T13:19:48+00:00"
+            "time": "2018-09-08T14:20:54+00:00"
         },
         {
             "name": "tkhamez/swagger-eve-php",
