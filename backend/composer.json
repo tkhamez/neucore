@@ -8,7 +8,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
-        "bravecollective/sso-basics": "0.1.2",
+        "bravecollective/sso-basics": "^0.1.2",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^1.6",
         "league/oauth2-client": "^2.2",
@@ -19,8 +19,8 @@
         "symfony/dotenv": "^4.0",
         "symfony/http-foundation": "^4.0",
         "symfony/yaml": "^4.0",
-        "tkhamez/slim-role-auth": "0.3.0",
-        "tkhamez/swagger-eve-php": "1.0.0",
+        "tkhamez/slim-role-auth": "^0.3.0",
+        "tkhamez/swagger-eve-php": "~1.0.0",
         "zircote/swagger-php": "^2.0"
     },
     "require-dev": {
