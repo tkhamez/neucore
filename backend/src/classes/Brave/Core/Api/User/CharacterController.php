@@ -187,7 +187,7 @@ class CharacterController
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="Character ID.",
+     *         description="EVE character ID.",
      *         type="integer"
      *     ),
      *     @SWG\Response(
