@@ -1,0 +1,26 @@
+pipeline:
+
+  install:
+    image: composer
+    commands:
+      - cd backend
+      - composer install --ignore-platform-reqs
+
+  test:
+    image: php:7.1
+    environment:
+      - BRAVECORE_APP_ENV=dev
+      - BRAVECORE_TEST_DATABASE_URL=mysql://root:@database/test
+    commands:
+      - docker-php-ext-install pdo_mysql
+      - cd backend
+      - vendor/bin/phpunit
+
+services:
+  database:
+    image: mariadb
+    ports:
+      - 3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: test
