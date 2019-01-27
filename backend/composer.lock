@@ -2750,16 +2750,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "c4958b945bba16d41f617440c3672f11b56a7942"
+                "reference": "4bf841c7a2366e0100c58593643dc41f642de0da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/c4958b945bba16d41f617440c3672f11b56a7942",
-                "reference": "c4958b945bba16d41f617440c3672f11b56a7942",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/4bf841c7a2366e0100c58593643dc41f642de0da",
+                "reference": "4bf841c7a2366e0100c58593643dc41f642de0da",
                 "shasum": ""
             },
             "require": {
@@ -2790,6 +2790,7 @@
                     "homepage": "https://github.com/swagger-api/swagger-codegen"
                 }
             ],
+            "description": "EVE Online API (ESI) Client Library for PHP",
             "homepage": "http://swagger.io",
             "keywords": [
                 "api",
@@ -2797,7 +2798,7 @@
                 "sdk",
                 "swagger"
             ],
-            "time": "2018-12-24T09:33:51+00:00"
+            "time": "2019-01-27T11:23:58+00:00"
         },
         {
             "name": "zendframework/zend-code",
