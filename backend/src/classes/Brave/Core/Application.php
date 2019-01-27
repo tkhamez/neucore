@@ -111,6 +111,7 @@ class Application
      * Both should only be true for the development environment.
      *
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
+     * @throws \RuntimeException
      * @return array
      */
     public function loadSettings(bool $unitTest = false): array

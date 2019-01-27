@@ -42,13 +42,16 @@
     ],
     "scripts": {
         "compile": [
-            "doctrine-migrations migrations:migrate --no-interaction",
-            "swagger --exclude bin,config,var,vendor --output ../web",
-            "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
+            "composer migrate",
+            "composer openapi"
         ],
         "compile:prod": [
             "doctrine orm:generate-proxies",
-            "doctrine-migrations migrations:migrate --no-interaction",
+            "composer migrate",
+            "composer openapi"
+        ],
+        "migrate": "doctrine-migrations migrations:migrate --no-interaction",
+        "openapi": [
             "swagger --exclude bin,config,var,vendor --output ../web",
             "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
         ],

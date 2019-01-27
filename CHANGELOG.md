@@ -4,6 +4,7 @@
 dd mm yyyy
 
 - Added application-api.json interface file that contains only the API for applications.
+- Added a script that creates a distribution.
 
 ## 0.6.0
 

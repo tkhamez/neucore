@@ -6,8 +6,9 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/90884db4cd12869fdcfe/test_coverage)](https://codeclimate.com/github/tkhamez/brvneucore/test_coverage)
 [![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 
-Preview https://brvneucore.herokuapp.com, https://brvneucore.herokuapp.com/api,
-https://brvneucore.herokuapp.com/application-api.json
+Preview https://brvneucore.herokuapp.com
+([Swagger UI](https://brvneucore.herokuapp.com/api), 
+[OpenAPI for apps](https://brvneucore.herokuapp.com/application-api.json))
 
 ## Overview
 
@@ -32,19 +33,42 @@ More documentation is available in the `doc` directory:
   are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://localhost/login-callback (change domain/port as required)
 
-### Vagrant (optional)
+### App setup
 
-Only tested with Vagrant 2 + libvirt.
+Clone the repository or download the distribution (the distribution does not require Composer, Node.js or Java).
 
-- `vagrant up` creates and configures the virtual machine.
-- If the Vagrant file changes, run `vagrant provision` to update the VM.
-- `vagrant destroy` will completely remove the VM.
+Copy `backend/.env.dist` file to `backend/.env` and adjust values or
+set the required environment variables accordingly.
 
-Please note that the `rsync` that is used is a one way sync from the host to the virtual
-machine which is done every time `vagrant up` or `vagrant reload` is executed.
+Make sure that the web server can write in `backend/var/logs`.
 
-The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
-The values for the EVE application must be adjusted.
+In `dev` mode both the web server and SSH user write the same files to `backend/var/cache`,
+so make sure they can override each other's files, e. g. by putting them into each other's group
+(the app uses umask 0002 when writing files and directories).
+
+##### Distribution
+
+If you are using the distribution, you only need to apply the database migrations:
+
+```
+cd backend
+vendor/bin/doctrine-migrations migrations:migrate --no-interaction
+```
+
+##### Git
+
+If you have cloned the repository, you must install the dependencies and build the backend and frontend:
+
+`./install.sh` or
+
+`./install.sh prod`
+
+#### Cron jobs
+
+Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths):
+```
+0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-jobs.lockfile backend/bin/run-jobs.sh
+```
 
 ### Local dev Requirements
 
@@ -59,34 +83,24 @@ The values for the EVE application must be adjusted.
       but rewrite to app.php instead of index.php.
 * Java (only for swagger-codegen)
 
-### App setup
+### Using Vagrant
 
-Copy `backend/.env.dist` file to `backend/.env` and adjust values or
-set the required environment variables accordingly.
+Only tested with Vagrant 2 + libvirt.
 
-Make sure that the web server can write in `backend/var/logs`.
+- `vagrant up` creates and configures the virtual machine.
+- If the Vagrant file changes, run `vagrant provision` to update the VM.
+- `vagrant destroy` will completely remove the VM.
 
-In `dev` mode both the web server and SSH user write the same files to `backend/var/cache`,
-so make sure they can override each other's files, e. g. by putting them into each other's group
-(the app uses umask 0002 when writing files and directories).
+Please note that the `rsync` that is used is a one way sync from the host to the virtual
+machine which is done every time `vagrant up` or `vagrant reload` is executed.
 
-Then install the dependencies and build the backend and frontend by executing:
+The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
+The values for the EVE application must be adjusted.
 
-`./install.sh` or
-
-`./install.sh prod`
-
-#### Cron jobs
-
-Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths):
-```
-0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-jobs.lockfile backend/bin/run-jobs.sh
-```
-
-### Heroku
+## Deploy on Heroku
 
 - Create a new app
-- Add a database, e. g. JawsDB Maria.
+- Add a compatible database, e. g. JawsDB Maria.
 - Add the necessary Config Vars (see `backend/.env.dist` file)
 - Add build packs in this order:
 

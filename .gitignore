@@ -1,11 +1,8 @@
-# backend
-/vendor/
-
-# vagrant
+# app
 /.vagrant
-
-# frontend
-npm-debug.log*
+/dist
+/vendor/
+/npm-debug.log*
 
 # IDEs
 /.settings

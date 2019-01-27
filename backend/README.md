@@ -20,7 +20,7 @@ composer compile
 prod:
 ```
 composer install --no-dev --optimize-autoloader --no-interaction
-composer compile:prod --no-dev --no-interaction
+composer compile:prod
 ```
 
 ## Console commands
