@@ -14,7 +14,7 @@ env:
     - BRAVECORE_APP_ENV=dev
     - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
-    - CC_TEST_REPORTER_ID=c84a0a91cfa81997bac8afcd50ef25ca4bc07f86a83f061fdce4646ac62ca986
+    #- CC_TEST_REPORTER_ID= travis-ci.org > repo > settings
   matrix:
     - NODE_VERSION="8.14.0"
     - NODE_VERSION="10.14.2"
