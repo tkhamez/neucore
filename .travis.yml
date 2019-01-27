@@ -11,7 +11,7 @@ addons:
 
 env:
   global:
-    - BRAVECORE_APP_ENV=dev
+    - BRAVECORE_APP_ENV=prod
     - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
     #- CC_TEST_REPORTER_ID= travis-ci.org > repo > settings
@@ -39,6 +39,7 @@ before_install:
 
 install:
   - ./install.sh
+  - cd backend && vendor/bin/doctrine orm:generate-proxies && cd ..
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > backend/cc-test-reporter
@@ -54,3 +55,17 @@ after_script:
   - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT; fi
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover backend/var/logs/clover.xml
+
+before_deploy:
+  - ./dist.sh
+
+deploy:
+  provider: releases
+  api_key:
+    secure: iBxrWwgMkSm07Pd3EAtnhhK6EyiKdvXKja415HysHTrQpNs0hvezUrOgTNP/u6L1q+TmW6EiuA7nVeh80c6PjSTEC6sK5ZsB+G7bT0auCHd3GDylc2QOcPfSRJTGhQSkMb3h7v1B/s3R2m8qModHOx9702vxaJoRHpP0Y5e6NqlnY9VH3OpI+O1345iqaIGPFk95/hrySeZaW6UIeHTG7K6WQn2vQuur9Bm04hpHYgEJp30gDnYHMQXkfF66Up7zA6vgpUprZLQU16IND29WEZojRXdlO1PX2VVxROudGbKYUVc+hrf2THw2BA2uFhQfRhix/2UkvxyCfgfOfMGyP63v8zY0ta19V9iW4BB/P7SxUFZn+VyJLlDPlyoOtcxkyE7FzmA0VxYnuzIy4zw1s5hWXYhH26AoiUlrB50mViPpNAD9vmTPCVHOKCVd+fO+NBntiiMSef/MO+8Ju4cEey5SbhCZKa49l0Q4aNZQy2M68RzLVPDAm/G4mhYc350X432Uy/mYiVxfAu18oEuCcUiXMjixdxuE5YdWBACVwazxZ1KD1r2Za2qOoDJ8JaETIEX3ks+Zq5G/AfsHAyHCc4gSA8cAtpPLUBkmxI7TBWLf9mCHW7RTrARzesiUGJl9WrxDVOgBUTUSDeVDWln2ye/XHUP7XTe+8egEq00gL2A=
+  file_glob: true
+  file: dist/*.tar.gz
+  skip_cleanup: true
+  on:
+    repo: tkhamez/brvneucore
+    tags: true

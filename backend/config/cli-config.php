@@ -13,14 +13,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-try {
-    $settings = (new Application())->loadSettings();
-} catch(\Exception $e) {
-    // The .env file could not be loaded, but some commands (orm:generate-proxies specifically)
-    // don't need a connection, so this works:
-    $settings = include 'settings.php';
-    $settings['config']['doctrine']['connection']['url'] = 'mysql://core:brave@localhost/core';
-}
+$settings = (new Application())->loadSettings();
 
 $conf = $settings['config']['doctrine'];
 

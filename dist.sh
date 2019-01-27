@@ -9,6 +9,7 @@ git checkout-index -a -f --prefix=./dist/build/
 
 cd dist/build/backend
 composer install --no-dev --optimize-autoloader --no-interaction
+cp ../../../backend/.env .env
 vendor/bin/doctrine orm:generate-proxies
 composer openapi
 
