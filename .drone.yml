@@ -41,6 +41,8 @@ steps:
   - cd frontend
   - npm install
   - npm run build:prod
+  - cd ../web
+  - npm install
 
 - name: distribution
   image: composer:1.8
