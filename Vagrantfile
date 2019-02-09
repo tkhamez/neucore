@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
         echo "LC_ALL=en_US.UTF-8" > /etc/environment
 
         apt-get update
-        apt-get upgrade -y
+        apt-get upgrade -y -o Dpkg::Options::="--force-confold"
         apt-get autoremove -y
 
         # install php + composer
@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
 
         # install node + npm (npm version in Ubuntu does not yet support package-lock.json)
         apt-get install -y nodejs npm
-        npm install -y npm@5.6 -g
+        npm install -y npm@6.4.1 -g
         apt-get remove -y npm
         apt-get autoremove -y
 
@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
         apt-get install apache2 -y
         a2enmod rewrite proxy_fcgi setenvif
         a2enconf php7.2-fpm
-        cat > /etc/apache2/sites-enabled/010-brvneucore.conf <<EOL
+        cat > /etc/apache2/sites-available/010-brvneucore.conf <<EOL
 <VirtualHost *:80>
     ServerName brvneucore
     DocumentRoot /var/www/brvneucore/web
@@ -97,8 +97,8 @@ EOL
         echo " "
         echo "--------------------------------------------------------------------------------"
         echo "-- URLs (change IP as needed):                                                --"
-        echo "-- Brave Core  http://192.168.121.111                                        --"
-        echo "-- Adminer: http://192.168.121.111/adminer/adminer/designs.php (core/brave)  --"
+        echo "-- Brave Core http://192.168.121.111                                          --"
+        echo "-- Adminer http://192.168.121.111/adminer/adminer/designs.php (core/brave)    --"
         echo "-- SSH user: vagrant/vagrant                                                  --"
         echo "-- mount: sshfs vagrant@192.168.121.111:/ /mnt/brvneucore                     --"
         echo "-- unmount: fusermount -u /mnt/brvneucore                                     --"
