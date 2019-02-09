@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-cd $(dirname "$(realpath "$0")")
+if [[ ! -f dist.sh ]]; then
+    echo "The script must be called from the same directory where it is located."
+    exit 1
+fi
 
 mkdir -p dist
 rm -Rf dist/*
 
 git checkout-index -a -f --prefix=./dist/build/
+if [[ -f backend/.env ]]; then
+    cp backend/.env dist/build/backend/.env
+fi
 
 cd dist/build/backend
 composer install --no-dev --optimize-autoloader --no-interaction
-cp ../../../backend/.env .env
 vendor/bin/doctrine orm:generate-proxies
 composer openapi
 

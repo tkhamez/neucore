@@ -14,4 +14,8 @@ if (PHP_SAPI == 'cli-server') {
 require __DIR__ . '/../backend/vendor/autoload.php';
 
 // Run the web application.
-(new Application())->getApp()->run();
+try {
+    (new Application())->getApp()->run();
+} catch (\Exception $e) {
+    error_log((string) $e);
+}

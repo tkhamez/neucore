@@ -41,6 +41,7 @@ Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
 
 Make sure that the web server can write in `backend/var/logs`.
+In dev mode it also needs write permission for the Doctrine proxy directory `backend/var/cache/proxies`.
 
 In `dev` mode both the web server and SSH user write the same files to `backend/var/cache`,
 so make sure they can override each other's files, e. g. by putting them into each other's group
