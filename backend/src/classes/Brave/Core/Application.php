@@ -146,7 +146,7 @@ class Application
             /** @noinspection PhpIncludeInspection */
             $cli = require self::ROOT_DIR . '/config/settings_cli.php';
             $this->settings = array_replace_recursive($this->settings, $cli);
-        } elseif (strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
+        } elseif (getenv('PATH') !== false && strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
             /** @noinspection PhpIncludeInspection */
             $heroku = require self::ROOT_DIR . '/config/settings_heroku.php';
             $this->settings = array_replace_recursive($this->settings, $heroku);
