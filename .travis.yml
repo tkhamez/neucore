@@ -8,6 +8,10 @@ php:
 
 addons:
   mariadb: '10.1'
+  sonarcloud:
+    organization: "tkhamez-github"
+    token:
+      secure: "tsB4V6vv5hmA2LLt3pymHm8yWwfxAXujju8fXqYTGzC2n+8sKtCy+rMacsybdYJKL3ks+u5mwWW7mxuYWt5dcHMRu8ckgQhgH477XWCJgJzhvqAaxUh18z+OMKmSNN28aKb6J1Cq5MCxubxS1v498KR5wpXZj7QSFNPhH+jhAgH3fFN8Y9ED+wRUBBy+O1yUt0S1wQDfWmZ7MGruwu9mhqVnHCy7hWid6ojoWwyczwbJGHGb5bOqoitabaW8YLIFzmFQ5+Eu52h1WzC44JhYNYvLTyR5MKpGHQAow/MDTalyXWJihx8w0Oo1AGS3M9cTrUWyW82c6a3lEJaIqlCDZig/CjkXZPjJjF3vuSmiyz696nRceXwQKjTxDLdpgBKRdV6F9NnEMyBFdGVmA/RNNaEbi5vKYqWsh62MZzOa6wOSfSvrnLtGD4nYIwxauNugXzdgTGtaP6S48eKqiB4MXAwLIDIQmE4IFEWNEFCGD+Xw6rhtAnyK2iMDwgLPWvyQfTdCpikQ+oUvqAh1iGiDiJBMTOKFqIRt1jWLC7tHglWg5ts5l9zr+qX/R0jhSNfhvdfv8pdVXdJqPlAz+pZ1nQ8MWUrjdoGSPvCT+4cEnopdSdGjyUiJJdmbf5ZbN7DTVbov7jYitfW3DqLhr11ygI1jwdwz42EaT7/uWUAZBbU="
 
 env:
   global:
@@ -48,6 +52,7 @@ before_script:
 
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
+  - if [ $(phpenv version-name) = "7.2" ]; then sonar-scanner; fi
 
 after_script:
   - mkdir -p build/logs
