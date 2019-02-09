@@ -80,8 +80,7 @@ Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths
     * Set the document root to the `web` directory.
     * A sample Apache configuration in included in the [Vagrantfile](Vagrantfile) file and there 
       is a [.htaccess](web/.htaccess) file in the web directory.
-    * For Nginx config see https://www.slimframework.com/docs/v3/start/web-servers.html#nginx-configuration,
-      but rewrite to app.php instead of index.php.
+    * A sample Nginx configuration can be found in the doc directory [nginx.conf](doc/nginx.conf)
 * Java (only for swagger-codegen)
 
 ### Using Vagrant
