@@ -142,14 +142,14 @@ class Application
         /** @noinspection PhpIncludeInspection */
         $this->settings = require self::ROOT_DIR . '/config/settings.php';
 
-        if (PHP_SAPI === 'cli') {
-            /** @noinspection PhpIncludeInspection */
-            $cli = require self::ROOT_DIR . '/config/settings_cli.php';
-            $this->settings = array_replace_recursive($this->settings, $cli);
-        } elseif (getenv('PATH') !== false && strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
+        if (getenv('PATH') !== false && strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
             /** @noinspection PhpIncludeInspection */
             $heroku = require self::ROOT_DIR . '/config/settings_heroku.php';
             $this->settings = array_replace_recursive($this->settings, $heroku);
+        } elseif (PHP_SAPI === 'cli') {
+            /** @noinspection PhpIncludeInspection */
+            $cli = require self::ROOT_DIR . '/config/settings_cli.php';
+            $this->settings = array_replace_recursive($this->settings, $cli);
         }
 
         if ($this->env === self::ENV_DEV) {
