@@ -1,85 +1,86 @@
-pipeline:
+kind: pipeline
+name: default
 
-  backend-build:
-    image: composer:1.8
-    commands:
-      - cd backend
-      - composer install --ignore-platform-reqs
-      - composer openapi
+steps:
+- name: backend-build
+  image: composer:1.8
+  commands:
+  - cd backend
+  - composer install --ignore-platform-reqs
+  - composer openapi
 
-  backend-test-71:
-    image: php:7.1
-    environment:
-      - BRAVECORE_APP_ENV=dev
-      - BRAVECORE_TEST_DATABASE_URL=mysql://root:@database/test
-    commands:
-      - docker-php-ext-install pdo_mysql
-      - cd backend
-      - vendor/bin/phpunit
+- name: backend-test-71
+  image: php:7.1
+  environment:
+    BRAVECORE_APP_ENV: dev
+    BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
+  commands:
+  - docker-php-ext-install pdo_mysql
+  - cd backend
+  - vendor/bin/phpunit
 
-  backend-test-72:
-    image: php:7.2
-    environment:
-      - BRAVECORE_APP_ENV=dev
-      - BRAVECORE_TEST_DATABASE_URL=mysql://root:@database/test
-    commands:
-      - docker-php-ext-install pdo_mysql
-      - cd backend
-      - vendor/bin/phpunit
+- name: backend-test-72
+  image: php:7.2
+  environment:
+    BRAVECORE_APP_ENV: dev
+    BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
+  commands:
+  - docker-php-ext-install pdo_mysql
+  - cd backend
+  - vendor/bin/phpunit
 
-  generate-api-client:
-    image: openjdk:11
-    commands:
-      - cd frontend
-      - ./swagger.sh
+- name: generate-api-client
+  image: openjdk:11
+  commands:
+  - cd frontend
+  - ./swagger.sh
 
-  frontend-build:
-    image: node:10
-    commands:
-      - cd frontend
-      - npm install
-      - npm run build:prod
+- name: frontend-build
+  image: node:10
+  commands:
+  - cd frontend
+  - npm install
+  - npm run build:prod
 
-  distribution:
-    image: composer:1.8
-    environment:
-      - BRAVECORE_APP_ENV=prod
-      - BRAVECORE_DATABASE_URL=mysql://root:@database/test
-    commands:
-      - docker-php-ext-install pdo_mysql
-      - cd backend
-      - composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
-      - vendor/bin/doctrine orm:generate-proxies
-      - cd ..
-      - mkdir -p dist/brvneucore
-      - cp -R backend dist/brvneucore/backend
-      - cp -R doc dist/brvneucore/doc
-      - cp -R web dist/brvneucore/web
-      - cp LICENSE dist/brvneucore/LICENSE
-      - cp CHANGELOG.md dist/brvneucore/CHANGELOG.md
-      - cp README.md dist/brvneucore/README.md
-      - cd dist
-      - tar -czf brvneucore-`git rev-parse --short HEAD`-`date '+%Y%m%d'`.tar.gz brvneucore
-    when:
-      event: tag
+- name: distribution
+  image: composer:1.8
+  environment:
+    BRAVECORE_APP_ENV: prod
+    BRAVECORE_DATABASE_URL: mysql://root:@database/test
+  commands:
+  - docker-php-ext-install pdo_mysql
+  - cd backend
+  - composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
+  - vendor/bin/doctrine orm:generate-proxies
+  - cd ..
+  - mkdir -p dist/brvneucore
+  - cp -R backend dist/brvneucore/backend
+  - cp -R doc dist/brvneucore/doc
+  - cp -R web dist/brvneucore/web
+  - cp LICENSE dist/brvneucore/LICENSE
+  - cp CHANGELOG.md dist/brvneucore/CHANGELOG.md
+  - cp README.md dist/brvneucore/README.md
+  - cd dist
+  - tar -czf brvneucore-`git rev-parse --short HEAD`-`date '+%Y%m%d'`.tar.gz brvneucore
+  when:
+    event: tag
 
-#  release:
-#    image: plugins/gitea-release:1.1
-#    settings:
-#      api_key:
-#        from_secret: GITEA_TOKEN
-#      base_url:
-#        from_secret: GITEA_URL
-#      files:
-#        - dist/*.tar.gz
-#    when:
-#      event: tag
+- name: release
+  image: plugins/gitea-release:1.1
+  settings:
+    api_key:
+      from_secret: GITEA_TOKEN
+    base_url:
+      from_secret: GITEA_URL
+    files: dist/*.tar.gz
+  when:
+    event: tag
 
 services:
-  database:
-    image: mariadb:10.1
-    ports:
-      - 3306
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-      MYSQL_DATABASE: test
+- name: database
+  image: mariadb:10.1
+  ports:
+  - 3306
+  environment:
+    MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    MYSQL_DATABASE: test
