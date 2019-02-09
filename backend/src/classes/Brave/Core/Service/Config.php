@@ -17,7 +17,7 @@ class Config
     }
 
     /**
-     * @return array|null
+     * @return string|array|null
      */
     public function get(string $key, string $key2 = null)
     {

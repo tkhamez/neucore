@@ -18,7 +18,7 @@ class SendAccountDisabledMail extends Command
     private $eveMail;
 
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var \Brave\Core\Repository\PlayerRepository
      */
     private $playerRepository;
 
