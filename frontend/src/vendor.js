@@ -1,8 +1,10 @@
 
-// bootstrap with bootswatch and required jquery + popper
+// bootstrap with bootswatch
+import './vendor.scss';
+
+// bootstrap and required jquery + popper
 window.jQuery = require('jquery');
 window.popper = require('popper.js');
-require('../node_modules/bootswatch/dist/darkly/bootstrap.min.css');
 require('bootstrap');
 window.jQuery(function() {
     window.jQuery('[data-toggle="popover"]').popover();
