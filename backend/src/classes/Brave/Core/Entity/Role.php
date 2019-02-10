@@ -29,6 +29,11 @@ class Role implements \JsonSerializable
     const APP_TRACKING = 'app-tracking';
 
     /**
+     * Allows an app to make an ESI request on behalf of a character from the database.
+     */
+    const APP_ESI = 'app-esi';
+
+    /**
      * This role is given to unauthenticated user.
      *
      * @var string

@@ -12,7 +12,8 @@
 * An API for applications to query group membership of characters and other data
 * Optional account deactivation with mail notification when ESI tokens are invalid
 * Corporation member tracking
-* ESI request for authorized scopes for any character (very basic implementation so far)
+* ESI request for authorized scopes for any character 
+  (via frontend and for apps, see [Examples](app-esi-examples.php))
 
 Most functions are available in the frontend. Administrators can use the 
 Swagger interface for the missing functions at `https://[domain]/api.html`,

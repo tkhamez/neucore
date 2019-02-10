@@ -240,7 +240,8 @@ module.exports = {
                 method = 'all';
             } else if (this.contentType === 'roles') {
                 vm.selectContent = [
-                    { id: 'app-tracking', name: 'app-tracking' }
+                    { id: 'app-tracking', name: 'app-tracking' },
+                    { id: 'app-esi', name: 'app-esi' }
                 ];
                 return;
             }

@@ -177,6 +177,7 @@ class EsiController
             'X-Esi-Error-Limit-Reset' => $response->hasHeader('X-Esi-Error-Limit-Reset') ?
                 $response->getHeader('X-Esi-Error-Limit-Reset')[0] : null,
             'X-Pages' => $response->hasHeader('X-Pages') ? $response->getHeader('X-Pages')[0] : null,
+            'warning' => $response->hasHeader('warning') ? $response->getHeader('warning')[0] : null,
         ];
     }
 }

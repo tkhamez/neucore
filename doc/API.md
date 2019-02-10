@@ -198,3 +198,10 @@ Allows an app to get corporation member tracking data.
 
 Application API
 - Return corporation member tracking data. `/app/v1/corporation/{id}/member-tracking`
+
+### app-esi
+
+Allows an app to query ESI on behalf of an EVE user.
+
+Application API
+- Makes an ESI request and returns the result. `/app/v1/esi`

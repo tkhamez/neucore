@@ -9,7 +9,8 @@ use Brave\Core\Entity\Role;
  */
 return [
     '/api/app/v1/corporation/{id}/member-tracking' => [Role::APP_TRACKING],
-    '/api/app'                                      => [Role::APP],
+    '/api/app/v1/esi'                              => [Role::APP_ESI],
+    '/api/app'                                     => [Role::APP],
 
     '/api/user/alliance' => [Role::GROUP_ADMIN],
 

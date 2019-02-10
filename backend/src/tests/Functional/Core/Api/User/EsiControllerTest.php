@@ -71,6 +71,7 @@ class EsiControllerTest extends WebTestCase
                 'X-Esi-Error-Limit-Remain' => '100',
                 'X-Esi-Error-Limit-Reset' => '60',
                 'X-Pages' => null,
+                'warning' => null,
             ],
             'body' => ['key' => 'value']
         ], $this->parseJsonBody($response));

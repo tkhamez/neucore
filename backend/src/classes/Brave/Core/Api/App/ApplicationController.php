@@ -5,6 +5,11 @@ namespace Brave\Core\Api\App;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\AppAuth;
+use Brave\Core\Service\Config;
+use Brave\Core\Service\OAuthToken;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
@@ -65,18 +70,40 @@ class ApplicationController
      */
     private $log;
 
+    /**
+     * @var OAuthToken
+     */
+    private $token;
+
+    /**
+     * @var string
+     */
+    private $datasource;
+
+    /**
+     * @var ClientInterface
+     */
+    private $httpClient;
+
     public function __construct(
         Response $response,
         AppAuth $appAuthService,
         RepositoryFactory $repositoryFactory,
         Account $accountService,
-        LoggerInterface $log
+        LoggerInterface $log,
+        OAuthToken $token,
+        Config $config,
+        ClientInterface $httpClient
     ) {
         $this->response = $response;
         $this->appAuthService = $appAuthService;
         $this->repositoryFactory = $repositoryFactory;
         $this->accountService = $accountService;
         $this->log = $log;
+        $this->token = $token;
+        $this->httpClient = $httpClient;
+
+        $this->datasource = $config->get('eve', 'datasource');
     }
 
     /**
@@ -646,6 +673,143 @@ class ApplicationController
         }
 
         return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/esi",
+     *     operationId="esiV1",
+     *     summary="Makes an ESI request and returns the result.",
+     *     description="Needs role: app-esi
+     *                  Instead of the path parameter, you can also simply append it to the URL,
+                        but that does not work with OpenAPI clients since path parameters are always URL encoded.
+     *                  This supports the 'If-None-Match' header.
+     *                  The following headers from ESI are passed through to the response:
+                        Content-Type ETag Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="path",
+     *         in="query",
+     *         required=true,
+     *         description="The ESI path.",
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="datasource",
+     *         in="query",
+     *         required=true,
+     *         description="The EVE character ID those token is used to make the ESI request",
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Passed through to ESI",
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The data from ESI.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Request error, see reason phrase."
+     *     )
+     * )
+     */
+    public function esiV1(Request $request, $path = null)
+    {
+        // validate input
+
+        if (empty($path)) {
+            $path = $request->getParam('path', '');
+        }
+        if (empty($path)) {
+            return $this->response->withStatus(400, 'Path cannot be empty.');
+        }
+
+        $characterId = $request->getParam('datasource', '');
+        if (empty($characterId)) {
+            return $this->response->withStatus(
+                400,
+                'The datasource parameter cannot be empty, it must contain an EVE character IDs'
+            );
+        }
+
+        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
+        if ($character === null) {
+            return $this->response->withStatus(400, 'Character not found.');
+        }
+
+        // build URL and add optional parameters
+        $url = 'https://esi.evetech.net' . $path.
+            (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->datasource;
+        if ($request->getParam('page', '') !== '') {
+            $url .= '&page=' . $request->getParam('page');
+        }
+
+        // get the token and set header options
+        $token = $this->token->getToken($character);
+        $options = ['headers' => []];
+        if ($token !== '') {
+            $options['headers']['Authorization'] = 'Bearer ' . $token;
+        }
+        if ($request->hasHeader('If-None-Match')) {
+            $options['headers']['If-None-Match'] = $request->getHeader('If-None-Match')[0];
+        }
+
+        // send the request
+        $esiResponse = null;
+        try {
+            $esiResponse = $this->httpClient->request('GET', $url, $options);
+        } catch (RequestException $re) {
+            $esiResponse = $re->getResponse();
+        } catch (GuzzleException $ge) {
+            $esiResponse = new \GuzzleHttp\Psr7\Response(
+                500, // status
+                [], // header
+                $ge->getMessage(), // body
+                '1.1', // version
+                null // reason
+            );
+        }
+
+        // build the response
+
+        $body = null;
+        try {
+            $body = $esiResponse->getBody()->getContents();
+        } catch (\RuntimeException $runtimeEx) {
+            $this->log->error('ApplicationController->esiV1(): ' . $runtimeEx->getMessage());
+        }
+        if ($body !== null) {
+            $this->response->write($body);
+        }
+
+        $response = $this->response->withStatus($esiResponse->getStatusCode());
+
+        $headerWhiteList = [
+            'Content-Type',
+            'ETag',
+            'Expires',
+            'X-Esi-Error-Limit-Remain',
+            'X-Esi-Error-Limit-Reset',
+            'X-Pages',
+            'warning',
+        ];
+        foreach ($esiResponse->getHeaders() as $name => $value) {
+            if (in_array($name, $headerWhiteList)) {
+                $response = $response->withHeader($name, $value);
+            }
+        };
+
+        return $response;
     }
 
     private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request)

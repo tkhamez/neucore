@@ -53,6 +53,7 @@ class AppController extends BaseController
 
     private $availableRoles = [
         Role::APP_TRACKING,
+        Role::APP_ESI,
     ];
 
     public function __construct(

@@ -33,6 +33,7 @@ return [
     '/api/app/v2/main/{cid}'                       => ['GET',  ApplicationController::class.'::mainV2'],
     '/api/app/v1/characters/{characterId}'         => ['GET',  ApplicationController::class.'::charactersV1'],
     '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  ApplicationController::class.'::memberTrackingV1'],
+    '/api/app/v1/esi[{path:.*}]'                   => ['GET',  ApplicationController::class.'::esiV1'],
 
     '/api/user/app/all'                       => ['GET',    AppController::class.'::all'],
     '/api/user/app/create'                    => ['POST',   AppController::class.'::create'],

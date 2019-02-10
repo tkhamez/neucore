@@ -1,0 +1,12 @@
+{
+    "name": "brv/neucore-examples",
+    "type": "project",
+    "require": {
+        "tkhamez/swagger-eve-php": "^1.0",
+        "eveseat/eseye": "^1.1",
+        "bravecollective/neucore-api": "*@dev"
+    },
+    "repositories": [
+        { "type": "git", "url": "https://github.com/bravecollective/neucore-api.git" }
+    ]
+}
