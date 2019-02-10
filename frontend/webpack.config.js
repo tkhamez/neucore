@@ -70,7 +70,8 @@ module.exports = (env, argv) => {
         ],
         optimization: {
             runtimeChunk: true,
-            splitChunks: { chunks: 'all' },
+            //splitChunks: { chunks: 'all' }, // font-awesome does not work anymore with this options
+                                              // since I added vendor.scss
             minimizer: [
                 new UglifyJsPlugin({
                     sourceMap: true
