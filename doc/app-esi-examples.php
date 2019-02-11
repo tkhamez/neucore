@@ -60,7 +60,7 @@ try {
     }
     print_r($header);
     $body = $result[0]; /* @var $body \Swagger\Client\Eve\Model\GetCharactersCharacterIdAssets200Ok[] */
-    #echo 'item id: ', $body[0]->getItemId(), PHP_EOL;
+    echo 'item id: ', $body[0]->getItemId(), PHP_EOL;
 } catch (\Swagger\Client\Eve\ApiException $e) {
     echo $e->getMessage(), PHP_EOL;
 }
