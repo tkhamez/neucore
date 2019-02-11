@@ -48,7 +48,6 @@ steps:
 
 - name: code-analysis
   image: aosapps/drone-sonar-plugin
-  sources: backend/src/classes,frontend/src
   environment:
     SONAR_HOST:
       from_secret: sonar_host
