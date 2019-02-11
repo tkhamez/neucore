@@ -1,11 +1,13 @@
 
-## NEXT
+## 0.7.0
 
 dd mm yyyy
 
 - Added application-api.json interface file that contains only the API for applications.
 - Added a script that creates a distribution.
 - Added ESI proxy endpoint for apps.
+
+- TODO add endpoint that combines groups/alliGroups/corpGroups with params: charID, alliID, corpID
 
 ## 0.6.0
 

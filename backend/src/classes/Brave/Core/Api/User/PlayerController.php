@@ -382,7 +382,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Role name.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="200",
@@ -431,7 +431,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -484,7 +484,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="204",

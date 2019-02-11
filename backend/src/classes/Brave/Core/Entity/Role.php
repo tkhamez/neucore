@@ -8,7 +8,7 @@ namespace Brave\Core\Entity;
  * @SWG\Definition(
  *     definition="Role",
  *     type="string",
- *     enum={"app-admin", "app-manager", "group-admin", "group-manager", "user", "user-admin", "esi"})
+ *     enum={"app-admin", "app-manager", "group-admin", "group-manager", "user", "user-admin", "esi", "settings", "tracking"})
  * )
  *
  * @Entity
