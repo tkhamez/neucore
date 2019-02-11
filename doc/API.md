@@ -205,3 +205,6 @@ Allows an app to query ESI on behalf of an EVE user.
 
 Application API
 - Makes an ESI request and returns the result. `/app/v1/esi`
+
+  This endpoint can also be used with OpenAPI clients generated for ESI, 
+  see [app-esi-examples.php](app-esi-examples.php) for more.

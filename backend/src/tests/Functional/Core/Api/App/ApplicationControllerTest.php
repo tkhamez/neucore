@@ -660,7 +660,7 @@ class ApplicationControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v1/esi?path='. urlencode('/v3/characters/96061222/assets/') . '&page=1&datasource=123',
+            '/api/app/v1/esi?esi-path-query='. urlencode('/v3/characters/96061222/assets/?page=1') . '&datasource=123',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
             [ClientInterface::class => $httpClient]

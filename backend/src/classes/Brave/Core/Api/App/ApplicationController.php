@@ -218,7 +218,7 @@ class ApplicationController
      *     path="/app/v1/groups",
      *     operationId="groupsBulkV1",
      *     summary="Return groups of multiple players, identified by one of their character IDs.",
-     *     description="Needs role: app.
+     *     description="Needs role: app.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips characters that are not found in the local database.",
      *     tags={"Application"},
@@ -679,33 +679,25 @@ class ApplicationController
      * @SWG\Get(
      *     path="/app/v1/esi",
      *     operationId="esiV1",
-     *     summary="Makes an ESI request and returns the result.",
-     *     description="Needs role: app-esi
-     *                  Instead of the path parameter, you can also simply append it to the URL,
-                        but that does not work with OpenAPI clients since path parameters are always URL encoded.
-     *                  This supports the 'If-None-Match' header.
+     *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
+     *     description="Needs role: app-esi<br>
+     *                  This supports the 'If-None-Match' header, i. e. it is passed through to ESI.<br>
      *                  The following headers from ESI are passed through to the response:
                         Content-Type ETag Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
-     *         name="path",
+     *         name="esi-path-query",
      *         in="query",
      *         required=true,
-     *         description="The ESI path.",
+     *         description="The ESI path and query string (without the datasource parameter).",
      *         type="string"
      *     ),
      *     @SWG\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         description="The EVE character ID those token is used to make the ESI request",
-     *         type="string"
-     *     ),
-     *     @SWG\Parameter(
-     *         name="page",
-     *         in="query",
-     *         description="Passed through to ESI",
+     *         description="The EVE character ID those token should be used to make the ESI request",
      *         type="string"
      *     ),
      *     @SWG\Response(
@@ -720,17 +712,32 @@ class ApplicationController
      *     @SWG\Response(
      *         response="400",
      *         description="Request error, see reason phrase."
+     *     ),
+     *     @SWG\Response(
+     *         response="500",
+     *         description="Server error."
      *     )
      * )
      */
     public function esiV1(Request $request, $path = null)
     {
-        // validate input
+        // get/validate input
 
+        $esiParams = [];
         if (empty($path)) {
-            $path = $request->getParam('path', '');
+            // for URLs like: /api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
+            $esiPath = $request->getParam('esi-path-query'); // this includes the ESI params
+        } else {
+            // for URLs like /api/app/v1/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
+            $esiPath = $path;
+            foreach ($request->getQueryParams() as $key => $value) {
+                if ($key !== 'datasource') {
+                    $esiParams[] = $key . '=' . $value;
+                }
+            }
         }
-        if (empty($path)) {
+
+        if (empty($esiPath)) {
             return $this->response->withStatus(400, 'Path cannot be empty.');
         }
 
@@ -747,12 +754,10 @@ class ApplicationController
             return $this->response->withStatus(400, 'Character not found.');
         }
 
-        // build URL and add optional parameters
-        $url = 'https://esi.evetech.net' . $path.
-            (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->datasource;
-        if ($request->getParam('page', '') !== '') {
-            $url .= '&page=' . $request->getParam('page');
-        }
+        // build ESI URL
+        $url = 'https://esi.evetech.net' . $esiPath.
+            (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->datasource .
+            (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
 
         // get the token and set header options
         $token = $this->token->getToken($character);
