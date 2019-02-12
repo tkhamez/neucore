@@ -183,6 +183,12 @@ cannot be added to player accounts.
 
 Application API
 - Show app information. `/app/v1/show`
+
+### app-groups
+
+Allows an app to get groups from a player account.
+
+Application API
 - Return groups of the character's player account. `/app/v2/groups/{cid}`
 - Return groups of multiple players, identified by one of their character IDs. `/app/v1/groups`
 - Return groups of the corporation. `/app/v2/corp-groups/{cid}`
@@ -191,6 +197,12 @@ Application API
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
 - Returns groups from the character's account, if available, or the corporation and alliance. 
   `/app/v1/groups-with-fallback`
+
+### app-chars
+
+Allows an app to get characters from a player account.
+
+Application API
 - Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
 
@@ -203,7 +215,7 @@ Application API
 
 ### app-esi
 
-Allows an app to query ESI on behalf of an EVE user.
+Allows an app to make an ESI request on behalf of a character from the database.
 
 Application API
 - Makes an ESI request and returns the result. `/app/v1/esi`

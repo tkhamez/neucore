@@ -30,7 +30,7 @@ class CharController
      *     path="/app/v1/main/{cid}",
      *     operationId="mainV1",
      *     summary="Returns the main character of the player account to which the character ID belongs.",
-     *     description="Needs role: app<br>It is possible that an account has no main character.",
+     *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -79,7 +79,7 @@ class CharController
      *     path="/app/v2/main/{cid}",
      *     operationId="mainV2",
      *     summary="Return the main character of the player account to which the character ID belongs.",
-     *     description="Needs role: app<br>It is possible that an account has no main character.",
+     *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -124,7 +124,7 @@ class CharController
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",
      *     summary="Return all characters of the player account to which the character ID belongs.",
-     *     description="Needs role: app",
+     *     description="Needs role: app-chars.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(

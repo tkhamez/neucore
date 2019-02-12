@@ -52,6 +52,8 @@ class AppController extends BaseController
     private $role;
 
     private $availableRoles = [
+        Role::APP_GROUPS,
+        Role::APP_CHARS,
         Role::APP_TRACKING,
         Role::APP_ESI,
     ];
@@ -572,7 +574,7 @@ class AppController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-tracking"}
+     *         enum={"app-groups", "app-chars", "app-tracking", "app-esi"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -622,7 +624,7 @@ class AppController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-tracking"}
+     *         enum={"app-groups", "app-chars", "app-tracking", "app-esi"}
      *     ),
      *     @SWG\Response(
      *         response="204",

@@ -63,7 +63,7 @@ class GroupController
      *     path="/app/v1/groups/{cid}",
      *     operationId="groupsV1",
      *     summary="Return groups of the character's player account.",
-     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -105,7 +105,7 @@ class GroupController
      *     path="/app/v2/groups/{cid}",
      *     operationId="groupsV2",
      *     summary="Return groups of the character's player account.",
-     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -146,7 +146,7 @@ class GroupController
      *     path="/app/v1/groups",
      *     operationId="groupsBulkV1",
      *     summary="Return groups of multiple players, identified by one of their character IDs.",
-     *     description="Needs role: app.<br>
+     *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips characters that are not found in the local database.",
      *     tags={"Application"},
@@ -183,7 +183,7 @@ class GroupController
      *     path="/app/v1/corp-groups/{cid}",
      *     operationId="corpGroupsV1",
      *     summary="Return groups of the corporation.",
-     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -218,7 +218,7 @@ class GroupController
      *     path="/app/v2/corp-groups/{cid}",
      *     operationId="corpGroupsV2",
      *     summary="Return groups of the corporation.",
-     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -259,7 +259,7 @@ class GroupController
      *     path="/app/v1/corp-groups",
      *     operationId="corpGroupsBulkV1",
      *     summary="Return groups of multiple corporations.",
-     *     description="Needs role: app.
+     *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips corporations that are not found in the local database.",
      *     tags={"Application"},
@@ -296,7 +296,7 @@ class GroupController
      *     path="/app/v1/alliance-groups/{aid}",
      *     operationId="allianceGroupsV1",
      *     summary="Return groups of the alliance.",
-     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -331,7 +331,7 @@ class GroupController
      *     path="/app/v2/alliance-groups/{aid}",
      *     operationId="allianceGroupsV2",
      *     summary="Return groups of the alliance.",
-     *     description="Needs role: app<br>Returns only groups that have been added to the app as well.",
+     *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -372,7 +372,7 @@ class GroupController
      *     path="/app/v1/alliance-groups",
      *     operationId="allianceGroupsBulkV1",
      *     summary="Return groups of multiple alliances.",
-     *     description="Needs role: app.
+     *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips alliances that are not found in the local database.",
      *     tags={"Application"},
@@ -409,7 +409,7 @@ class GroupController
      *     path="/app/v1/groups-with-fallback",
      *     operationId="groupsWithFallbackV1",
      *     summary="Returns groups from the character's account, if available, or the corporation and alliance.",
-     *     description="Needs role: app<br>
+     *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.<br>
      *                  It is not checked if character, corporation and alliance match.",
      *     tags={"Application"},

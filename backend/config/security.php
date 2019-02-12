@@ -10,6 +10,19 @@ use Brave\Core\Entity\Role;
 return [
     '/api/app/v1/corporation/{id}/member-tracking' => [Role::APP_TRACKING],
     '/api/app/v1/esi'                              => [Role::APP_ESI],
+
+    '/api/app/v1/groups'                           => [Role::APP_GROUPS],
+    '/api/app/v2/groups'                           => [Role::APP_GROUPS],
+    '/api/app/v1/corp-groups'                      => [Role::APP_GROUPS],
+    '/api/app/v2/corp-groups'                      => [Role::APP_GROUPS],
+    '/api/app/v1/alliance-groups'                  => [Role::APP_GROUPS],
+    '/api/app/v2/alliance-groups'                  => [Role::APP_GROUPS],
+    '/api/app/v1/groups-with-fallback'             => [Role::APP_GROUPS],
+
+    '/api/app/v1/main'                             => [Role::APP_CHARS],
+    '/api/app/v2/main'                             => [Role::APP_CHARS],
+    '/api/app/v1/characters'                       => [Role::APP_CHARS],
+
     '/api/app'                                     => [Role::APP],
 
     '/api/user/alliance' => [Role::GROUP_ADMIN],

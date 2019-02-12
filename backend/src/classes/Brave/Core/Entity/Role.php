@@ -24,12 +24,30 @@ class Role implements \JsonSerializable
     const APP = 'app';
 
     /**
+     * Allows an app to get groups from a player account.
+     *
+     * @var string
+     */
+    const APP_GROUPS = 'app-groups';
+
+    /**
+     * Allows an app to get characters from a player account.
+     *
+     * @var string
+     */
+    const APP_CHARS = 'app-chars';
+
+    /**
      * Allows an app to get corporation member tracking data.
+     *
+     * @var string
      */
     const APP_TRACKING = 'app-tracking';
 
     /**
      * Allows an app to make an ESI request on behalf of a character from the database.
+     *
+     * @var string
      */
     const APP_ESI = 'app-esi';
 
