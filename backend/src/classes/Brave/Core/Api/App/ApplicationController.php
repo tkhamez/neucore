@@ -32,7 +32,8 @@ class ApplicationController
      */
     private $appAuthService;
 
-    public function __construct(Response $response, AppAuth $appAuthService) {
+    public function __construct(Response $response, AppAuth $appAuthService)
+    {
         $this->response = $response;
         $this->appAuthService = $appAuthService;
     }
