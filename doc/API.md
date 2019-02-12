@@ -189,6 +189,8 @@ Application API
 - Return groups of multiple corporations. `/app/v1/corp-groups`
 - Return groups of the alliance. `/app/v2/alliance-groups/{aid}`
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
+- Returns groups from the character's account, if available, or the corporation and alliance. 
+  `/app/v1/groups-with-fallback`
 - Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
 

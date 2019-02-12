@@ -6,8 +6,9 @@ dd mm yyyy
 - Added application-api.json interface file that contains only the API for applications.
 - Added a script that creates a distribution.
 - Added ESI proxy endpoint for apps.
+- Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
 
-- TODO add endpoint that combines groups/alliGroups/corpGroups with params: charID, alliID, corpID
+- TODO ESI cache
 
 ## 0.6.0
 

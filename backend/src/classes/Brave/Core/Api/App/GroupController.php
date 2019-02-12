@@ -6,6 +6,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
@@ -401,6 +402,87 @@ class GroupController
     public function allianceGroupsBulkV1(ServerRequestInterface $request): Response
     {
         return $this->groupsBulkFor('Alliance', $request);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/groups-with-fallback",
+     *     operationId="groupsWithFallbackV1",
+     *     summary="Returns groups from the character's account, if available, or the corporation and alliance.",
+     *     description="Needs role: app<br>
+     *                  Returns only groups that have been added to the app as well.<br>
+     *                  It is not checked if character, corporation and alliance match.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="character",
+     *         in="query",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="corporation",
+     *         in="query",
+     *         required=true,
+     *         description="EVE corporation ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="alliance",
+     *         in="query",
+     *         description="EVE alliance ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupsWithFallbackV1(Request $request): Response
+    {
+        $characterId = (int) $request->getParam('character');
+        $corporationId = (int) $request->getParam('corporation');
+        $allianceId = (int) $request->getParam('alliance');
+
+        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+
+        $characterResult = $this->getGroupsForPlayer($characterId, $appGroups);
+        if ($characterResult !== null) {
+            // could be an empty result
+            return $this->response->withJson($characterResult['groups']);
+        }
+
+        $fallbackGroups = [];
+
+        $corporationResult = $this->getGroupsFor('Corporation', $corporationId, $appGroups);
+        if ($corporationResult !== null) {
+            $fallbackGroups = $corporationResult['groups'];
+        }
+
+        $allianceResult = $this->getGroupsFor('Alliance', $allianceId, $appGroups);
+        if ($allianceResult !== null) {
+            // add groups that are not already in the result set
+            foreach ($allianceResult['groups'] as $allianceGroup) {
+                $addGroup = true;
+                foreach ($fallbackGroups as $fallbackGroup) {
+                    if ($allianceGroup['id'] === $fallbackGroup['id']) {
+                        $addGroup = false;
+                    }
+                }
+                if ($addGroup) {
+                    $fallbackGroups[] = $allianceGroup;
+                }
+            }
+        }
+
+        return $this->response->withJson($fallbackGroups);
     }
 
     private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request)

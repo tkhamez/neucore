@@ -33,6 +33,7 @@ return [
     '/api/app/v1/alliance-groups/{aid}'            => ['GET',  AppGroupController::class.'::allianceGroupsV1'],
     '/api/app/v2/alliance-groups/{aid}'            => ['GET',  AppGroupController::class.'::allianceGroupsV2'],
     '/api/app/v1/alliance-groups'                  => ['POST', AppGroupController::class.'::allianceGroupsBulkV1'],
+    '/api/app/v1/groups-with-fallback'             => ['GET',  AppGroupController::class.'::groupsWithFallbackV1'],
     '/api/app/v1/main/{cid}'                       => ['GET',  CharController::class.'::mainV1'],
     '/api/app/v2/main/{cid}'                       => ['GET',  CharController::class.'::mainV2'],
     '/api/app/v1/characters/{characterId}'         => ['GET',  CharController::class.'::charactersV1'],

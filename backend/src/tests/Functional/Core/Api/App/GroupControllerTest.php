@@ -220,7 +220,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]
+            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
         ], $this->parseJsonBody($response));
     }
 
@@ -254,6 +255,7 @@ class GroupControllerTest extends WebTestCase
         $expected = [[
             'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+                ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
             ]
         ], [
             'id' => 501, 'name' => 'f1', 'ticker' => '-51-', 'groups' => [
@@ -346,6 +348,78 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame($expected, $body);
     }
 
+    public function testGroupsWithFallbackV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/groups-with-fallback');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testGroupsWithFallbackV1200FromCharacter()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/groups-with-fallback?character=123&corporation=500&alliance=100',
+            null,
+            $headers
+        );
+
+        # app: g0, g1, g4
+        # char 123: g1, g2,
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+        $this->assertSame([
+            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+        ], $body);
+    }
+
+    public function testGroupsWithFallbackV1200FromCorpAndAlliance()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/groups-with-fallback?character=987&corporation=500&alliance=100',
+            null,
+            $headers
+        );
+
+        # app: g0, g1, g4
+        # corp 500: g1, g2, g4
+        # alli 100: g2, g4
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+        $this->assertSame([
+            ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
+        ], $body);
+    }
+
+    public function testGroupsWithFallbackV1200CharacerWithoutGroupsDoesNotReturnCorpGroups()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/groups-with-fallback?character=1010&corporation=500&alliance=100',
+            null,
+            $headers
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+        $this->assertSame([], $body);
+    }
+
     private function setUpDb($invalidHours = 0)
     {
         $this->helper->emptyDb();
@@ -380,6 +454,7 @@ class GroupControllerTest extends WebTestCase
         $corp = (new Corporation())->setId(500)->setName('five')->setTicker('-5-');
         $corp->addGroup($groups[2]);
         $corp->addGroup($groups[1]);
+        $corp->addGroup($groups[4]);
         $corp->setAlliance($alli);
 
         $corp2 = (new Corporation())->setId(501)->setName('f1')->setTicker('-51-');
@@ -400,6 +475,8 @@ class GroupControllerTest extends WebTestCase
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
+
+        $this->helper->addCharacterMain('C4', 1010, [Role::USER]); // no groups
 
         $this->helper->getEm()->flush();
         $this->helper->getEm()->clear();
