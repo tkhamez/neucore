@@ -70,12 +70,12 @@ Content page for group and app administration
                     <option v-if="contentType === 'roles'" value="">Select role ...</option>
                     <option v-for="option in selectContent" v-bind:value="option"
                             v-if="! tableHas(option)">
+                        {{ option.name }}
                         <template v-if="contentType === 'corporations' || contentType === 'alliances'">
                             [{{ option.ticker }}]
                         </template>
-                        {{ option.name }}
                         <template v-if="contentType === 'corporations' && option.alliance">
-                            ({{ option.alliance.name }})
+                            ({{ option.alliance.name }}, [{{ option.alliance.ticker }}])
                         </template>
                     </option>
                 </select>
