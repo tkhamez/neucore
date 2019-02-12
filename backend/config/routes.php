@@ -1,6 +1,10 @@
 <?php declare(strict_types=1);
 
 use Brave\Core\Api\App\ApplicationController;
+use Brave\Core\Api\App\CharController;
+use Brave\Core\Api\App\CorporationController as AppCorporationController;
+use Brave\Core\Api\App\EsiController as AppEsiController;
+use Brave\Core\Api\App\GroupController as AppGroupController;
 use Brave\Core\Api\User\AllianceController;
 use Brave\Core\Api\User\AppController;
 use Brave\Core\Api\User\AuthController;
@@ -20,20 +24,20 @@ return [
     '/login-callback' => ['GET',  AuthController::class.'::callback'],
 
     '/api/app/v1/show'                             => ['GET',  ApplicationController::class.'::showV1'],
-    '/api/app/v1/groups/{cid}'                     => ['GET',  ApplicationController::class.'::groupsV1'],
-    '/api/app/v2/groups/{cid}'                     => ['GET',  ApplicationController::class.'::groupsV2'],
-    '/api/app/v1/groups'                           => ['POST', ApplicationController::class.'::groupsBulkV1'],
-    '/api/app/v1/corp-groups/{cid}'                => ['GET',  ApplicationController::class.'::corpGroupsV1'],
-    '/api/app/v2/corp-groups/{cid}'                => ['GET',  ApplicationController::class.'::corpGroupsV2'],
-    '/api/app/v1/corp-groups'                      => ['POST', ApplicationController::class.'::corpGroupsBulkV1'],
-    '/api/app/v1/alliance-groups/{aid}'            => ['GET',  ApplicationController::class.'::allianceGroupsV1'],
-    '/api/app/v2/alliance-groups/{aid}'            => ['GET',  ApplicationController::class.'::allianceGroupsV2'],
-    '/api/app/v1/alliance-groups'                  => ['POST', ApplicationController::class.'::allianceGroupsBulkV1'],
-    '/api/app/v1/main/{cid}'                       => ['GET',  ApplicationController::class.'::mainV1'],
-    '/api/app/v2/main/{cid}'                       => ['GET',  ApplicationController::class.'::mainV2'],
-    '/api/app/v1/characters/{characterId}'         => ['GET',  ApplicationController::class.'::charactersV1'],
-    '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  ApplicationController::class.'::memberTrackingV1'],
-    '/api/app/v1/esi[{path:.*}]'                   => ['GET',  ApplicationController::class.'::esiV1'],
+    '/api/app/v1/groups/{cid}'                     => ['GET',  AppGroupController::class.'::groupsV1'],
+    '/api/app/v2/groups/{cid}'                     => ['GET',  AppGroupController::class.'::groupsV2'],
+    '/api/app/v1/groups'                           => ['POST', AppGroupController::class.'::groupsBulkV1'],
+    '/api/app/v1/corp-groups/{cid}'                => ['GET',  AppGroupController::class.'::corpGroupsV1'],
+    '/api/app/v2/corp-groups/{cid}'                => ['GET',  AppGroupController::class.'::corpGroupsV2'],
+    '/api/app/v1/corp-groups'                      => ['POST', AppGroupController::class.'::corpGroupsBulkV1'],
+    '/api/app/v1/alliance-groups/{aid}'            => ['GET',  AppGroupController::class.'::allianceGroupsV1'],
+    '/api/app/v2/alliance-groups/{aid}'            => ['GET',  AppGroupController::class.'::allianceGroupsV2'],
+    '/api/app/v1/alliance-groups'                  => ['POST', AppGroupController::class.'::allianceGroupsBulkV1'],
+    '/api/app/v1/main/{cid}'                       => ['GET',  CharController::class.'::mainV1'],
+    '/api/app/v2/main/{cid}'                       => ['GET',  CharController::class.'::mainV2'],
+    '/api/app/v1/characters/{characterId}'         => ['GET',  CharController::class.'::charactersV1'],
+    '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
+    '/api/app/v1/esi[{path:.*}]'                   => ['GET',  AppEsiController::class.'::esiV1'],
 
     '/api/user/app/all'                       => ['GET',    AppController::class.'::all'],
     '/api/user/app/create'                    => ['POST',   AppController::class.'::create'],
