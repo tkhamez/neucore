@@ -76,7 +76,7 @@ steps:
   - cp README.md dist/brvneucore/README.md
   - cd dist
   - tar -czf brvneucore-${DRONE_TAG}.tar.gz brvneucore
-  - sha256sum brvneucore-${DRONE_TAG}.tar.gz > sha256sum.txt
+  - sha256sum brvneucore-${DRONE_TAG}.tar.gz > brvneucore-${DRONE_TAG}.sha256
   when:
     event: tag
 

@@ -41,7 +41,7 @@ else
     NAME=`git rev-parse --short HEAD`
 fi
 tar -czf brvneucore-${NAME}.tar.gz brvneucore
-sha256sum brvneucore-${NAME}.tar.gz > sha256sum.txt
+sha256sum brvneucore-${NAME}.tar.gz > brvneucore-${NAME}.sha256
 
 rm -Rf build
 rm -Rf brvneucore

@@ -8,8 +8,7 @@ dd mm yyyy
 - Added ESI proxy endpoint for apps.
 - Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
 - Implemented more fine grained permissions for apps (new roles app-groups and app-chars).
-
-- TODO ESI cache
+- Added cache for ESI data
 
 ## 0.6.0
 
