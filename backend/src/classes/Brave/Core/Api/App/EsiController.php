@@ -98,35 +98,45 @@ class EsiController
      *     @SWG\Response(
      *         response="304",
      *         description="Not modified",
-     *         @SWG\Schema(type="string")
+     *         @SWG\Header(header="Expires",
+     *             description="RFC7231 formatted datetime string",
+     *             type="integer"
+     *         )
      *     ),
      *     @SWG\Response(
      *         response="400",
-     *         description="Bad request, see reason phrase and/or body for more."
+     *         description="Bad request, see reason phrase and/or body for more.",
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="401",
-     *         description="Unauthorized"
+     *         description="Unauthorized",
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="403",
-     *         description="Forbidden"
+     *         description="Forbidden",
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="420",
-     *         description="Error limited"
+     *         description="Error limited",
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="500",
-     *         description="Internal server error"
+     *         description="Internal server error",
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="503",
-     *         description="Service unavailable"
+     *         description="Service unavailable",
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="504",
-     *         description="Gateway timeout"
+     *         description="Gateway timeout",
+     *         @SWG\Schema(type="string")
      *     )
      * )
      */
