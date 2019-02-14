@@ -75,7 +75,8 @@ steps:
   - cp CHANGELOG.md dist/brvneucore/CHANGELOG.md
   - cp README.md dist/brvneucore/README.md
   - cd dist
-  - tar -czf brvneucore-`git rev-parse --short HEAD`-`date '+%Y%m%d'`.tar.gz brvneucore
+  - tar -czf brvneucore-${DRONE_TAG}.tar.gz brvneucore
+  - sha256sum brvneucore-${DRONE_TAG}.tar.gz > sha256sum.txt
   when:
     event: tag
 
@@ -86,7 +87,9 @@ steps:
       from_secret: GITEA_TOKEN
     base_url:
       from_secret: GITEA_URL
-    files: dist/*.tar.gz
+    files:
+    - dist/*.gz
+    - dist/*.txt
   when:
     event: tag
 

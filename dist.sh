@@ -35,9 +35,13 @@ cp build/LICENSE brvneucore/LICENSE
 cp build/CHANGELOG.md brvneucore/CHANGELOG.md
 cp build/README.md brvneucore/README.md
 
-COMMIT=`git rev-parse --short HEAD`
-DATE=`date '+%Y%m%d'`
-tar -czf brvneucore-${COMMIT}-${DATE}.tar.gz brvneucore
+if [[ "$1" ]]; then
+    NAME=$1
+else
+    NAME=`git rev-parse --short HEAD`
+fi
+tar -czf brvneucore-${NAME}.tar.gz brvneucore
+sha256sum brvneucore-${NAME}.tar.gz > sha256sum.txt
 
 rm -Rf build
 rm -Rf brvneucore
