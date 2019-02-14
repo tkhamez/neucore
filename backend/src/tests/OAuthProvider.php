@@ -7,7 +7,7 @@ use League\OAuth2\Client\Provider\GenericProvider;
 
 class OAuthProvider extends GenericProvider
 {
-    public function __construct(ClientInterface $client = null)
+    public function __construct(ClientInterface $client)
     {
         parent::__construct([
             'urlAuthorize'            => 'http://localhost/auth',
@@ -15,8 +15,6 @@ class OAuthProvider extends GenericProvider
             'urlResourceOwnerDetails' => 'http://localhost/owner'
         ]);
 
-        if ($client) {
-            $this->setHttpClient($client);
-        }
+        $this->setHttpClient($client);
     }
 }

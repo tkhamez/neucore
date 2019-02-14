@@ -4,7 +4,7 @@ namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\EsiApiFactory;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Tests\Client;
 use Tests\ConsoleTestCase;
@@ -95,7 +95,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->client->setResponse(new Response(204));
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
+            ClientInterface::class => $this->client
         ]);
 
         $actual = explode("\n", $output);
@@ -133,7 +133,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         );
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
+            ClientInterface::class => $this->client
         ]);
 
         $actual = explode("\n", $output);

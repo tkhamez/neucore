@@ -83,7 +83,6 @@ class EsiControllerTest extends WebTestCase
             200,
             [
                 'Content-Type' => ['application/json; charset=UTF-8'],
-                'ETag' => ['686897696a7c876b7e'],
                 'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
                 'X-Esi-Error-Limit-Remain' => [100],
                 'X-Esi-Error-Limit-Reset' => [60],
@@ -108,7 +107,6 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
         $this->assertSame([
             'Content-Type' => ['application/json; charset=UTF-8'],
-            'ETag' => ['686897696a7c876b7e'],
             'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
             'X-Esi-Error-Limit-Remain' => ['100'],
             'X-Esi-Error-Limit-Reset' => ['60'],

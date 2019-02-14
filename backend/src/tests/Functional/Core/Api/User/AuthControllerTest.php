@@ -3,11 +3,11 @@
 namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Api\User\AuthController;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Service\Config;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Slim\Session\SessionData;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
@@ -366,7 +366,7 @@ class AuthControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
             GenericProvider::class => new OAuthProvider($this->client),
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
+            ClientInterface::class => $this->client
         ]);
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(

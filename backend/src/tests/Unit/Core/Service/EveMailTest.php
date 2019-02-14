@@ -61,7 +61,7 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->logger = new Logger('test');
         $objManager = new ObjectManager($this->em, $this->logger);
 
-        $esiFactory = (new EsiApiFactory())->setClient($this->client);
+        $esiFactory = new EsiApiFactory($this->client);
 
         $oauth = new OAuthProvider($this->client);
         $oauthToken = new OAuthToken($oauth, $objManager, $this->logger);

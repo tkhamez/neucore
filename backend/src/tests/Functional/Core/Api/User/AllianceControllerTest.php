@@ -5,9 +5,9 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Role;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
@@ -47,8 +47,6 @@ class AllianceControllerTest extends WebTestCase
      */
     private $client;
 
-    private $esiApiFactory;
-
     private $log;
 
     public function setUp()
@@ -63,7 +61,6 @@ class AllianceControllerTest extends WebTestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = new Client();
-        $this->esiApiFactory = (new EsiApiFactory())->setClient($this->client);
     }
 
     public function testAll403()
@@ -156,7 +153,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                EsiApiFactory::class => $this->esiApiFactory,
+                ClientInterface::class => $this->client,
                 LoggerInterface::class => $this->log
             ]
         );
@@ -177,7 +174,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                EsiApiFactory::class => $this->esiApiFactory,
+                ClientInterface::class => $this->client,
                 LoggerInterface::class => $this->log
             ]
         );
@@ -207,7 +204,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                EsiApiFactory::class => $this->esiApiFactory,
+                ClientInterface::class => $this->client,
                 LoggerInterface::class => $this->log
             ]
         );
@@ -229,7 +226,8 @@ class AllianceControllerTest extends WebTestCase
             'POST',
             '/api/user/alliance/add/123456',
             null,
-            null, [EsiApiFactory::class => $this->esiApiFactory]
+            null,
+            [ClientInterface::class => $this->client]
         );
 
         $this->assertEquals(201, $response->getStatusCode());

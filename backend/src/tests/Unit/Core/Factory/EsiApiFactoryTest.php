@@ -12,23 +12,16 @@ use Swagger\Client\Eve\Api\UniverseApi;
 
 class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSetClient()
-    {
-        $factory = new EsiApiFactory();
-        $client = new Client();
-        $this->assertInstanceOf(EsiApiFactory::class, $factory->setClient($client));
-    }
-
     public function testGetAllianceApi()
     {
-        $factory = new EsiApiFactory();
+        $factory = new EsiApiFactory(new Client());
         $api = $factory->getAllianceApi();
         $this->assertInstanceOf(AllianceApi::class, $api);
     }
 
     public function testGetCorporationApi()
     {
-        $factory = new EsiApiFactory();
+        $factory = new EsiApiFactory(new Client());
         $api1 = $factory->getCorporationApi();
         $api2 = $factory->getCorporationApi();
         $api3 = $factory->getCorporationApi('access-token');
@@ -42,7 +35,7 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetCharacterApi()
     {
-        $factory = new EsiApiFactory();
+        $factory = new EsiApiFactory(new Client());
         $api1 = $factory->getCharacterApi();
         $api2 = $factory->getCharacterApi('access-token');
 
@@ -53,7 +46,7 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetMailApi()
     {
-        $factory = new EsiApiFactory();
+        $factory = new EsiApiFactory(new Client());
         $api1 = $factory->getMailApi('token');
         $api2 = $factory->getMailApi('token');
         $api3 = $factory->getMailApi('token2');
@@ -71,7 +64,7 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetUniverseApi()
     {
-        $factory = new EsiApiFactory();
+        $factory = new EsiApiFactory(new Client());
         $api = $factory->getUniverseApi();
         $this->assertInstanceOf(UniverseApi::class, $api);
     }

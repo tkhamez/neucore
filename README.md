@@ -43,10 +43,9 @@ Clone the repository or download the distribution (the distribution does not req
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
 
-Make sure that the web server can write in `backend/var/logs`.
-In dev mode it also needs write permission for the Doctrine proxy directory `backend/var/cache/proxies`.
+Make sure that the web server can write in `backend/var/logs` and `backend/var/cache`.
 
-In `dev` mode both the web server and SSH user write the same files to `backend/var/cache`,
+Please note that both the web server and SSH user write the same files to `backend/var/cache`,
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
@@ -70,6 +69,7 @@ If you have cloned the repository, you must install the dependencies and build t
 #### Cron jobs
 
 Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths):
+
 ```
 0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-jobs.lockfile backend/bin/run-jobs.sh
 ```

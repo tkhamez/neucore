@@ -15,18 +15,13 @@ class EsiApiFactory
     private $instances = [];
 
     /**
-     * @var ClientInterface|null
+     * @var ClientInterface
      */
-    private $client = null;
+    private $client;
 
-    /**
-     * Optionally set a client.
-     */
-    public function setClient(ClientInterface $client): self
+    public function __construct(ClientInterface $client)
     {
         $this->client = $client;
-
-        return $this;
     }
 
     public function getAllianceApi(): AllianceApi

@@ -75,7 +75,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->log->pushHandler(new TestHandler());
 
         $this->client = new Client();
-        $esiApiFactory = (new EsiApiFactory())->setClient($this->client);
+        $esiApiFactory = new EsiApiFactory($this->client);
 
         $repoFactory = new RepositoryFactory($this->em);
         $this->alliRepo = $repoFactory->getAllianceRepository();
@@ -104,6 +104,10 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
 
     public function testFetchCharacterWithCorporationAndAllianceCharInvalid()
     {
+        $this->client->setResponse(
+            new Response(404)
+        );
+
         $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertNull($char);
     }

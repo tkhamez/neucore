@@ -6,10 +6,10 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
@@ -290,7 +290,7 @@ class SettingsControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/settings/system/validate-director/director_char_1', null, null, [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($client)
+            ClientInterface::class => $client
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($this->parseJsonBody($response));

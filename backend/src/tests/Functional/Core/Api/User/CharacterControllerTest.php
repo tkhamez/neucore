@@ -4,8 +4,8 @@ namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Role;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
@@ -158,7 +158,7 @@ class CharacterControllerTest extends WebTestCase
         $this->client->setResponse(new Response(500));
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            ClientInterface::class => $this->client,
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -185,7 +185,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            ClientInterface::class => $this->client,
             GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
@@ -218,7 +218,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            ClientInterface::class => $this->client,
             GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
@@ -274,7 +274,7 @@ class CharacterControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client),
+            ClientInterface::class => $this->client,
             GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);

@@ -4,13 +4,13 @@ namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Role;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Repository\AllianceRepository;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Entity\Group;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
@@ -51,8 +51,6 @@ class CorporationControllerTest extends WebTestCase
      */
     private $client;
 
-    private $esiApiFactory;
-
     private $log;
 
     public function setUp()
@@ -69,7 +67,6 @@ class CorporationControllerTest extends WebTestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = new Client();
-        $this->esiApiFactory = (new EsiApiFactory())->setClient($this->client);
     }
 
     public function testAll403()
@@ -157,7 +154,7 @@ class CorporationControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123456789123',
             null, null, [
-            EsiApiFactory::class => $this->esiApiFactory,
+            ClientInterface::class => $this->client,
             LoggerInterface::class => $this->log
         ]);
 
@@ -173,7 +170,7 @@ class CorporationControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123',
             null, null, [
-            EsiApiFactory::class => $this->esiApiFactory,
+                ClientInterface::class => $this->client,
             LoggerInterface::class => $this->log
         ]);
 
@@ -198,7 +195,7 @@ class CorporationControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123',
             null, null, [
-            EsiApiFactory::class => $this->esiApiFactory,
+            ClientInterface::class => $this->client,
             LoggerInterface::class => $this->log
         ]);
 
@@ -218,7 +215,7 @@ class CorporationControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', '/api/user/corporation/add/456123',
             null, null, [
-            EsiApiFactory::class => $this->esiApiFactory
+            ClientInterface::class => $this->client
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -256,7 +253,7 @@ class CorporationControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', '/api/user/corporation/add/456123',
             null, null, [
-            EsiApiFactory::class => $this->esiApiFactory
+            ClientInterface::class => $this->client
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());

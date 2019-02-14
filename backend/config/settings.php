@@ -49,6 +49,12 @@ return [
 
         'session' => [
             'gc_maxlifetime' => 1440 // 24 minutes
+        ],
+
+        'guzzle' => [
+            'cache' => [
+                'dir' => Application::ROOT_DIR . '/var/cache/http'
+            ]
         ]
     ],
 ];

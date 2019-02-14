@@ -7,9 +7,9 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Tests\Client;
 use Tests\ConsoleTestCase;
@@ -119,7 +119,7 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $this->client->setResponse(new Response(200, [], 373515628));
 
         $output = $this->runConsoleApp('send-account-disabled-mail', ['--sleep' => 0], [
-            EsiApiFactory::class => (new EsiApiFactory())->setClient($this->client)
+            ClientInterface::class => $this->client
         ]);
 
         $actual = explode("\n", $output);

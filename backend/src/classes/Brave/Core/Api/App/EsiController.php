@@ -67,10 +67,9 @@ class EsiController
      *     operationId="esiV1",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi<br>
-     *         This supports the 'If-None-Match' header, i. e. it is passed through to ESI.<br>
      *         The following headers from ESI are passed through to the response:
-               Content-Type ETag Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
-     *         The HTTP status code from ESI is also passed through, so there might be other codes to the documented ones.",
+               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
+     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -90,7 +89,11 @@ class EsiController
      *     @SWG\Response(
      *         response="200",
      *         description="The data from ESI.",
-     *         @SWG\Schema(type="string")
+     *         @SWG\Schema(type="string"),
+     *         @SWG\Header(header="Expires",
+     *             description="RFC7231 formatted datetime string",
+     *             type="integer"
+     *         )
      *     ),
      *     @SWG\Response(
      *         response="304",
@@ -209,7 +212,6 @@ class EsiController
 
         $headerWhiteList = [
             'Content-Type',
-            'ETag',
             'Expires',
             'X-Esi-Error-Limit-Remain',
             'X-Esi-Error-Limit-Reset',

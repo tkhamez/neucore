@@ -480,7 +480,7 @@ class GroupControllerTest extends WebTestCase
         ], $body);
     }
 
-    public function testGroupsWithFallbackV1200CharacerWithoutGroupsDoesNotReturnCorpGroups()
+    public function testGroupsWithFallbackV1200CharacterWithoutGroupsDoesNotReturnCorpGroups()
     {
         $this->setUpDb();
 
