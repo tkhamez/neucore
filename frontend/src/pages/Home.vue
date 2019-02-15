@@ -281,27 +281,7 @@ module.exports = {
         },
 
         update: function(characterId) {
-            const vm = this;
-            vm.loading(true);
-            new this.swagger.CharacterApi().update(characterId, function(error, data, response) {
-                vm.loading(false);
-                if (error) { // usually 403 (from Core) or 503 (ESI down)
-                    if (error.message) {
-                        vm.message(error.message, 'error');
-                    }
-                    return;
-                }
-                if (response.statusCode === 204) {
-                    vm.message(
-                        'The character was removed because it was deleted or ' +
-                            'no longer belongs to the same EVE account.',
-                        'info'
-                    );
-                } else {
-                    vm.message('Update done.', 'success');
-                }
-                vm.$root.$emit('playerChange');
-            });
+            this.updateCharacter(characterId);
         },
 
         askDeleteChar(characterId, characterName) {

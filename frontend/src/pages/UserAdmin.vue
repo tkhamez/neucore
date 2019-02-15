@@ -87,6 +87,10 @@
                     <span v-cloak v-if="playerEdit">
                         {{ playerEdit.name }}
                     </span>
+                    <span v-cloak v-if="playerEdit"
+                          v-on:click="updateCharacters"
+                          class="fas fa-sync update-char"
+                          title="update characters"></span>
                 </h3>
 
                 <div v-cloak v-if="playerEdit" class="card-body">
@@ -98,9 +102,9 @@
                     </p>
                     <div class="input-group mb-1">
                         <div class="input-group-prepend">
-                            <span class="input-group-text">Add role</span>
+                            <label class="input-group-text" for="userAdminSelectRole">Add role</label>
                         </div>
-                        <select class="custom-select" v-model="newRole">
+                        <select class="custom-select" v-model="newRole" id="userAdminSelectRole">
                             <option value="">Select role ...</option>
                             <option v-for="role in availableRoles"
                                 v-if="! hasRole(role, playerEdit)" v-bind:value="role">
@@ -419,6 +423,18 @@ module.exports = {
                 }
             });
         },
+
+        updateCharacters: function() {
+            if (! this.playerEdit) {
+                return;
+            }
+            const vm = this;
+            this.playerEdit.characters.forEach(function(character) {
+                vm.updateCharacter(character.id, function() {
+                    vm.getPlayer();
+                });
+            });
+        },
     },
 }
 </script>
@@ -426,5 +442,9 @@ module.exports = {
 <style scoped>
     table {
         font-size: 90%;
+    }
+    .update-char {
+        float: right;
+        cursor: pointer;
     }
 </style>

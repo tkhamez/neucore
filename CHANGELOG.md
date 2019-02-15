@@ -9,6 +9,7 @@ dd mm yyyy
 - Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
 - Implemented more fine grained permissions for apps (new roles app-groups and app-chars).
 - Added cache for ESI data
+- Other small improvements
 
 ## 0.6.0
 
