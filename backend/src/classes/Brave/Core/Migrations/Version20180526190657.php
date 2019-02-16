@@ -10,6 +10,9 @@ use Doctrine\DBAL\Schema\Schema;
  */
 final class Version20180526190657 extends AbstractMigration
 {
+    /**
+     * @throws \Exception
+     */
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -20,6 +23,9 @@ final class Version20180526190657 extends AbstractMigration
         $this->addSql('ALTER TABLE alliance_group ADD CONSTRAINT FK_29B50591FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs

@@ -10,7 +10,10 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20180421142134 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    /**
+     * @throws \Exception
+     */
+    public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -18,7 +21,10 @@ class Version20180421142134 extends AbstractMigration
         $this->addSql('ALTER TABLE groups ADD public TINYINT(1) NOT NULL');
     }
 
-    public function down(Schema $schema)
+    /**
+     * @throws \Exception
+     */
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

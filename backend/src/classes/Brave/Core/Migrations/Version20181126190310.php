@@ -10,6 +10,9 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20181126190310 extends AbstractMigration
 {
+    /**
+     * @throws \Exception
+     */
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -19,6 +22,9 @@ final class Version20181126190310 extends AbstractMigration
         $this->addSql('ALTER TABLE removed_characters ADD CONSTRAINT FK_2987D70C99E6F5DF FOREIGN KEY (player_id) REFERENCES players (id)');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs

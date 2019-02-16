@@ -25,8 +25,7 @@ $config = Setup::createAnnotationMetadataConfiguration(
 
 $em = EntityManager::create($conf['connection'], $config);
 
-/* @var $helpers HelperSet */
-$helpers = new HelperSet(array(
+return new HelperSet(array(
     'db' => new ConnectionHelper($em->getConnection()),
     'em' => new EntityManagerHelper($em)
 ));

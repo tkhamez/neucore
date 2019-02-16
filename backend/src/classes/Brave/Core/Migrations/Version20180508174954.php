@@ -10,6 +10,9 @@ use Doctrine\DBAL\Schema\Schema;
  */
 final class Version20180508174954 extends AbstractMigration
 {
+    /**
+     * @throws \Exception
+     */
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -18,6 +21,9 @@ final class Version20180508174954 extends AbstractMigration
         $this->addSql('ALTER TABLE characters CHANGE character_owner_hash character_owner_hash TEXT DEFAULT NULL, CHANGE access_token access_token TEXT DEFAULT NULL');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs

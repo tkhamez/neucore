@@ -10,6 +10,9 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20180729175153 extends AbstractMigration
 {
+    /**
+     * @throws \Exception
+     */
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -19,6 +22,9 @@ final class Version20180729175153 extends AbstractMigration
         $this->addSql('ALTER TABLE corporations ADD last_update DATETIME DEFAULT NULL, CHANGE name name VARCHAR(255) DEFAULT NULL, CHANGE ticker ticker VARCHAR(16) DEFAULT NULL');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs

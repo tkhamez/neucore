@@ -11,12 +11,12 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20180416212822 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         $this->addSql('DELETE FROM apps WHERE id = :id', array('id' => 1));
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
     }

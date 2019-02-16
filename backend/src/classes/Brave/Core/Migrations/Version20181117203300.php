@@ -11,6 +11,9 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20181117203300 extends AbstractMigration
 {
+    /**
+     * @throws \Exception
+     */
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -23,6 +26,9 @@ final class Version20181117203300 extends AbstractMigration
         $this->addSql('INSERT INTO system_variables (name, value, scope) VALUES ("'.SystemVariable::MAIL_TOKEN.'", "", "backend")');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs

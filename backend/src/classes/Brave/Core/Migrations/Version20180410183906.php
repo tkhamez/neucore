@@ -11,7 +11,7 @@ use Doctrine\DBAL\Schema\Schema;
  */
 class Version20180410183906 extends AbstractMigration
 {
-    public function up(Schema $schema)
+    public function up(Schema $schema) : void
     {
         $this->addSql('INSERT INTO roles (id, name) VALUES (3, "'.Role::USER_ADMIN.'")');
         $this->addSql('INSERT INTO roles (id, name) VALUES (4, "'.Role::GROUP_ADMIN.'")');
@@ -20,7 +20,7 @@ class Version20180410183906 extends AbstractMigration
         $this->addSql('INSERT INTO roles (id, name) VALUES (7, "'.Role::APP_MANAGER.'")');
     }
 
-    public function down(Schema $schema)
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
     }

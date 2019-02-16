@@ -12,6 +12,9 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20181105182238 extends AbstractMigration
 {
+    /**
+     * @throws \Exception
+     */
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -25,6 +28,9 @@ final class Version20181105182238 extends AbstractMigration
         $this->addSql('INSERT INTO settings (name, value) VALUES ("'.SystemVariable::SHOW_PREVIEW_BANNER.'", "0")');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs

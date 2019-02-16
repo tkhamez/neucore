@@ -11,7 +11,7 @@
         "bravecollective/sso-basics": "^0.1.2",
         "doctrine/cache": "^1.8",
         "doctrine/orm": "^2.6",
-        "doctrine/migrations": "^1.6",
+        "doctrine/migrations": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
         "kevinrob/guzzle-cache-middleware": "^3.2",
         "league/oauth2-client": "^2.2",
