@@ -50,7 +50,7 @@ class SessionData
      *
      * @param string $key
      * @param mixed $value
-     * @throws \RuntimeException If session is read-only
+     * @throws \RuntimeException If session is read-only or not started
      * @return $this
      */
     public function set(string $key, $value): self

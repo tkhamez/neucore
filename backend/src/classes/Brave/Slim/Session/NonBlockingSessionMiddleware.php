@@ -31,7 +31,7 @@ class NonBlockingSessionMiddleware
      *
      * Example
      * [
-     *      'cc' => 'MY_SESS',
+     *      'name' => 'MY_SESS',
      *      'secure' => true,
      *      'route_include_pattern' => ['/path/one'],
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
@@ -111,7 +111,7 @@ class NonBlockingSessionMiddleware
             ]);
 
             // write something to the session so that the Set-Cookie header is send
-            $_SESSION['_started'] = isset($_SESSION['_started']) ?: time();
+            $_SESSION['_started'] = isset($_SESSION['_started']) ? $_SESSION['_started'] : time();
         } else {
             // allow unit tests to inject values in the session
             $_SESSION = isset($_SESSION) ? $_SESSION : array();
