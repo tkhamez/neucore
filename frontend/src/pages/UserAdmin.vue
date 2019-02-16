@@ -429,9 +429,14 @@ module.exports = {
                 return;
             }
             const vm = this;
+            const charsCount = this.playerEdit.characters.length;
+            let charsUpdated = 0;
             this.playerEdit.characters.forEach(function(character) {
                 vm.updateCharacter(character.id, function() {
-                    vm.getPlayer();
+                    charsUpdated ++;
+                    if (charsUpdated === charsCount) {
+                        vm.getPlayer();
+                    }
                 });
             });
         },
