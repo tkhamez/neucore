@@ -269,7 +269,7 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->pid3, 'name' => 'Manager']],
+            [['id' => $this->pid3, 'name' => 'Manager', 'roles' => [Role::APP_MANAGER, Role::USER]]],
             $this->parseJsonBody($response)
         );
     }

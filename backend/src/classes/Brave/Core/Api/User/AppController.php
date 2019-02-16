@@ -274,7 +274,7 @@ class AppController extends BaseController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         description="List of players ordered by name. Only id, name and roles properties are returned.",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
      *     ),
      *     @SWG\Response(
@@ -299,7 +299,8 @@ class AppController extends BaseController
         foreach ($app->getManagers() as $player) {
             $ret[] = [
                 'id' => $player->getId(),
-                'name' => $player->getName()
+                'name' => $player->getName(),
+                'roles' => $player->getRoles(),
             ];
         }
 

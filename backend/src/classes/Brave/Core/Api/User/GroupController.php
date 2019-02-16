@@ -341,7 +341,7 @@ class GroupController extends BaseController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         description="List of players ordered by name. Only id, name and roles properties are returned.",
      *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
      *     ),
      *     @SWG\Response(
@@ -759,10 +759,14 @@ class GroupController extends BaseController
 
         $ret = [];
         foreach ($players as $player) {
-            $ret[] = [
+            $result = [
                 'id' => $player->getId(),
                 'name' => $player->getName()
             ];
+            if ($type === 'managers') {
+                $result['roles'] = $player->getRoles();
+            }
+            $ret[] = $result;
         }
 
         return $this->response->withJson($ret);

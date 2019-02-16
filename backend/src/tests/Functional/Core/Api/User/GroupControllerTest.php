@@ -336,7 +336,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->pid, 'name' => 'Admin']],
+            [['id' => $this->pid, 'name' => 'Admin', 'roles' => [Role::GROUP_ADMIN, Role::GROUP_MANAGER, Role::USER]]],
             $this->parseJsonBody($response)
         );
     }

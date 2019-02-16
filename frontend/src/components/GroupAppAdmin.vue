@@ -54,22 +54,21 @@ Content page for group and app administration
 
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">
+                    <label class="input-group-text" for="groupAppAdminSelect">
                         <span v-if="contentType === 'managers'">Add manager</span>
                         <span v-if="contentType === 'alliances'">Add alliance</span>
                         <span v-if="contentType === 'corporations'">Add corporation</span>
                         <span v-if="contentType === 'groups'">Add group</span>
                         <span v-if="contentType === 'roles'">Add role</span>
-                    </span>
+                    </label>
                 </div>
-                <select class="custom-select" v-model="newObject" title="">
+                <select class="custom-select" v-model="newObject" id="groupAppAdminSelect">
                     <option v-if="contentType === 'managers'" value="">Select player ...</option>
                     <option v-if="contentType === 'alliances'" value="">Select alliance ...</option>
                     <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>
                     <option v-if="contentType === 'groups'" value="">Select group ...</option>
                     <option v-if="contentType === 'roles'" value="">Select role ...</option>
-                    <option v-for="option in selectContent" v-bind:value="option"
-                            v-if="! tableHas(option)">
+                    <option v-if="! tableHas(option)" v-for="option in selectContent" v-bind:value="option">
                         {{ option.name }}
                         <template v-if="contentType === 'corporations' || contentType === 'alliances'">
                             [{{ option.ticker }}]
@@ -89,6 +88,7 @@ Content page for group and app administration
                     <th v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
                     <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
                     <th>Name</th>
+                    <th v-if="contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
                     <th v-if="contentType === 'managers'">Characters</th>
                     <th v-if="contentType === 'corporations'">Alliance</th>
                     <th v-if="contentType === 'corporations' || contentType === 'alliances'">Groups</th>
@@ -101,6 +101,9 @@ Content page for group and app administration
                     <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.id }}</td>
                     <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
                     <td>{{ row.name }}</td>
+                    <td v-if="contentType === 'managers'">
+                        {{ hasRequiredRole(row) }}
+                    </td>
                     <td v-if="contentType === 'managers'">
                         <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
                             Show characters
@@ -305,6 +308,11 @@ module.exports = {
                     }
                     vm.tableContent = roles;
                 }  else {
+                    if (vm.contentType === 'managers') {
+                        for (const [idx, manager] of data.entries()) {
+                            data[idx].roles = vm.fixRoles(manager.roles);
+                        }
+                    }
                     vm.tableContent = data;
                 }
             }]);
@@ -344,6 +352,16 @@ module.exports = {
                 }
             }
             return false;
+        },
+
+        hasRequiredRole: function(row) {
+            if ((this.type === 'App' && row.roles.indexOf('app-manager') !== -1) ||
+                (this.type === 'Group' && row.roles.indexOf('group-manager') !== -1)
+            ) {
+                return 'yes';
+            } else {
+                return 'no';
+            }
         },
 
         showCharacters: function(managerId) {
