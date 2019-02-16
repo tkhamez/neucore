@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Factory;
 
+use Brave\Core\Service\Config;
 use GuzzleHttp\ClientInterface;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
@@ -19,9 +20,12 @@ class EsiApiFactory
      */
     private $client;
 
-    public function __construct(ClientInterface $client)
+    private $config;
+
+    public function __construct(ClientInterface $client, Config $config)
     {
         $this->client = $client;
+        $this->config = $config;
     }
 
     public function getAllianceApi(): AllianceApi
@@ -70,6 +74,7 @@ class EsiApiFactory
             if ($token !== '') {
                 $configuration->setAccessToken($token);
             }
+            $configuration->setHost($this->config->get('eve', 'esi_host'));
             $this->instances[$key] = new $class($this->client, $configuration);
         }
 

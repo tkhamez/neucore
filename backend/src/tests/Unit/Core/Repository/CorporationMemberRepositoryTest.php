@@ -44,9 +44,6 @@ class CorporationMemberRepositoryTest extends \PHPUnit\Framework\TestCase
         self::$em->flush();
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testFindByLogonDateActive()
     {
         $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
@@ -68,9 +65,6 @@ class CorporationMemberRepositoryTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Corp 1', $actual3[1]->getCorporation()->getName());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testFindByLogonDateInactive()
     {
         $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
@@ -93,9 +87,6 @@ class CorporationMemberRepositoryTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Corp 1', $actual2[0]->getCorporation()->getName());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testFindByLogonDateActiveRange()
     {
         $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();

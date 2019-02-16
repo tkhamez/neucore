@@ -3,6 +3,7 @@
 namespace Tests\Unit\Core\Factory;
 
 use Brave\Core\Factory\EsiApiFactory;
+use Brave\Core\Service\Config;
 use GuzzleHttp\Client;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
@@ -14,14 +15,14 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetAllianceApi()
     {
-        $factory = new EsiApiFactory(new Client());
+        $factory = new EsiApiFactory(new Client(), new Config([]));
         $api = $factory->getAllianceApi();
         $this->assertInstanceOf(AllianceApi::class, $api);
     }
 
     public function testGetCorporationApi()
     {
-        $factory = new EsiApiFactory(new Client());
+        $factory = new EsiApiFactory(new Client(), new Config([]));
         $api1 = $factory->getCorporationApi();
         $api2 = $factory->getCorporationApi();
         $api3 = $factory->getCorporationApi('access-token');
@@ -35,7 +36,7 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetCharacterApi()
     {
-        $factory = new EsiApiFactory(new Client());
+        $factory = new EsiApiFactory(new Client(), new Config([]));
         $api1 = $factory->getCharacterApi();
         $api2 = $factory->getCharacterApi('access-token');
 
@@ -46,7 +47,7 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetMailApi()
     {
-        $factory = new EsiApiFactory(new Client());
+        $factory = new EsiApiFactory(new Client(), new Config([]));
         $api1 = $factory->getMailApi('token');
         $api2 = $factory->getMailApi('token');
         $api3 = $factory->getMailApi('token2');
@@ -64,7 +65,7 @@ class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetUniverseApi()
     {
-        $factory = new EsiApiFactory(new Client());
+        $factory = new EsiApiFactory(new Client(), new Config([]));
         $api = $factory->getUniverseApi();
         $this->assertInstanceOf(UniverseApi::class, $api);
     }

@@ -58,7 +58,7 @@ class MemberTrackingTest extends \PHPUnit\Framework\TestCase
         $this->client = new Client();
         $objectManager = new ObjectManager($this->em, $this->logger);
         $this->repositoryFactory = new RepositoryFactory($this->em);
-        $esiApiFactory = new EsiApiFactory($this->client);
+        $esiApiFactory = new EsiApiFactory($this->client, new Config([]));
         $config = new Config([]);
         $this->memberTracking = new MemberTracking(
             $this->logger,

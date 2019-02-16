@@ -45,6 +45,7 @@ return [
             'callback_url' => getenv('BRAVECORE_EVE_CALLBACK_URL'),
             'scopes'       => getenv('BRAVECORE_EVE_SCOPES'),
             'datasource'   => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility',
+            'esi_host'     => 'https://esi.evetech.net'
         ],
 
         'session' => [

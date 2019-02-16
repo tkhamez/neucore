@@ -35,9 +35,9 @@ class EsiController
     private $token;
 
     /**
-     * @var string
+     * @var Config
      */
-    private $datasource;
+    private $config;
 
     /**
      * @var ClientInterface
@@ -56,9 +56,8 @@ class EsiController
         $this->repositoryFactory = $repositoryFactory;
         $this->log = $log;
         $this->token = $token;
+        $this->config = $config;
         $this->httpClient = $httpClient;
-
-        $this->datasource = $config->get('eve', 'datasource');
     }
 
     /**
@@ -147,7 +146,7 @@ class EsiController
         $esiParams = [];
         if (empty($path)) {
             // for URLs like: /api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
-            $esiPath = $request->getParam('esi-path-query'); // this includes the ESI params
+            $esiPath = $request->getParam('esi-path-query');
         } else {
             // for URLs like /api/app/v1/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
             $esiPath = $path;
@@ -175,11 +174,6 @@ class EsiController
             return $this->response->withStatus(400, 'Character not found.');
         }
 
-        // build ESI URL
-        $url = 'https://esi.evetech.net' . $esiPath.
-            (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->datasource .
-            (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
-
         // get the token and set header options
         $token = $this->token->getToken($character);
         $options = ['headers' => []];
@@ -189,6 +183,11 @@ class EsiController
         if ($request->hasHeader('If-None-Match')) {
             $options['headers']['If-None-Match'] = $request->getHeader('If-None-Match')[0];
         }
+
+        // build ESI URL
+        $url = $this->config->get('eve', 'datasource') . $esiPath.
+            (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource') .
+            (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
 
         // send the request
         $esiResponse = null;

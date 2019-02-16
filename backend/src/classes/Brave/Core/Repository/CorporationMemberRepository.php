@@ -17,7 +17,6 @@ class CorporationMemberRepository extends \Doctrine\ORM\EntityRepository
      * @param int $inactive Inactive for days
      * @param int $active Active within days
      * @return CorporationMember[]
-     * @throws \Exception
      */
     public function findByLogonDate(int $corporationId, int $inactive = null, int $active = null): array
     {
@@ -27,12 +26,12 @@ class CorporationMemberRepository extends \Doctrine\ORM\EntityRepository
             ->orderBy(['logonDate' => 'DESC']);
 
         if ($active > 0) {
-            $activeDate = new \DateTime('now -'.$active.' days');
+            $activeDate = date_create('now -'.$active.' days');
             $criteria->andWhere($criteria->expr()->gte('logonDate', $activeDate));
         }
 
         if ($inactive > 0) {
-            $inactiveDate = new \DateTime('now -'.$inactive.' days');
+            $inactiveDate = date_create('now -'.$inactive.' days');
             $criteria->andWhere($criteria->expr()->lt('logonDate', $inactiveDate));
         }
 

@@ -75,7 +75,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
         $this->log->pushHandler(new TestHandler());
 
         $this->client = new Client();
-        $esiApiFactory = new EsiApiFactory($this->client);
+        $esiApiFactory = new EsiApiFactory($this->client, new Config([]));
 
         $repoFactory = new RepositoryFactory($this->em);
         $this->alliRepo = $repoFactory->getAllianceRepository();

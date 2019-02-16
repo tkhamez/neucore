@@ -77,13 +77,9 @@ class CorporationController
         $inactive = (int) $request->getParam('inactive', 0);
         $active = (int) $request->getParam('active', 0);
 
-        try {
-            $members = $this->repositoryFactory->getCorporationMemberRepository()
-                ->findByLogonDate((int) $id, $inactive, $active);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
-            $members = [];
-        }
+        $members = $this->repositoryFactory
+            ->getCorporationMemberRepository()
+            ->findByLogonDate((int) $id, $inactive, $active);
 
         $result = [];
         foreach ($members as $member) {

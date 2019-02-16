@@ -45,11 +45,6 @@ class EsiController
      */
     private $config;
 
-    /**
-     * @var string
-     */
-    private $datasource;
-
     public function __construct(
         Response $response,
         RepositoryFactory $repositoryFactory,
@@ -62,8 +57,6 @@ class EsiController
         $this->token = $token;
         $this->httpClient = $httpClient;
         $this->config = $config;
-
-        $this->datasource = $config->get('eve', 'datasource');
     }
 
     /**
@@ -121,13 +114,9 @@ class EsiController
 
         $token = $this->token->getToken($character);
 
-        $baseUri = 'https://esi.evetech.net';
+        $baseUri = $this->config->get('eve', 'esi_host');
         $path = '/latest' . str_replace('{character_id}', $character->getId(), $route);
-        if (strpos($path, '?') === false) {
-            $path .= '?datasource=' . $this->datasource;
-        } else {
-            $path .= '&datasource=' . $this->datasource;
-        }
+        $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource');
 
         $response = null;
         try {
