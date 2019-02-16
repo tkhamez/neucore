@@ -49,12 +49,18 @@ Please note that both the web server and SSH user write the same files to `backe
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
+### Install/Update
+
+If available, the app uses the APCu cache in production mode. This must be cleared during an update
+(depending on the configuration, restart the web server or php-fpm).
+
 ##### Distribution
 
-If you are using the distribution, you only need to apply the database migrations:
+If you are using the distribution, you only need to clear the cache apply the database migrations:
 
 ```
 cd backend
+rm -rf var/cache/{di,http,proxies}
 vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 ```
 

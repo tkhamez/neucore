@@ -183,7 +183,6 @@ class Application
         $this->loadSettings();
         if ($this->container === null) {
             $this->buildContainer();
-            $this->addDependencies();
         }
 
         return $this->container;
@@ -264,94 +263,114 @@ class Application
         $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
 
         $containerBuilder = new ContainerBuilder();
+
+        if ($this->env === self::ENV_PROD) {
+            $containerBuilder->enableCompilation($this->settings['config']['di']['cache_dir']);
+            if (extension_loaded('apcu')) {
+                $containerBuilder->enableDefinitionCache();
+            }
+        }
+
         $containerBuilder->addDefinitions($bridgeConfig);
         $containerBuilder->addDefinitions($this->settings);
+        $containerBuilder->addDefinitions($this->getDependencies());
 
         $this->container = $containerBuilder->build();
     }
 
     /**
-     * Add dependencies to DI container.
+     * Definitions for the DI container.
      */
-    private function addDependencies(): void
+    private function getDependencies()
     {
-        // Configuration class
-        $this->container->set(Config::class, function (ContainerInterface $c) {
-            return new Config($c->get('config'));
-        });
+        return [
 
-        // Doctrine
-        $this->container->set(EntityManagerInterface::class, function (ContainerInterface $c) {
-            $conf = $c->get('config')['doctrine'];
-            $config = Setup::createAnnotationMetadataConfiguration(
-                $conf['meta']['entity_paths'],
-                $conf['meta']['dev_mode'],
-                $conf['meta']['proxy_dir']
-            );
-            return EntityManager::create($conf['connection'], $config);
-        });
+            // Configuration class
+            Config::class => function (ContainerInterface $c) {
+                return new Config($c->get('config'));
+            },
 
-        // EVE OAuth
-        $this->container->set(GenericProvider::class, function (ContainerInterface $c) {
-            $domain = $c->get('config')['eve']['datasource'] === 'singularity' ?
-                'sisilogin.testeveonline.com' :
-                'login.eveonline.com';
-            return new GenericProvider([
-                'clientId'                => $c->get('config')['eve']['client_id'],
-                'clientSecret'            => $c->get('config')['eve']['secret_key'],
-                'redirectUri'             => $c->get('config')['eve']['callback_url'],
-                'urlAuthorize'            => 'https://' . $domain . '/oauth/authorize',
-                'urlAccessToken'          => 'https://' . $domain . '/oauth/token',
-                'urlResourceOwnerDetails' => 'https://' . $domain . '/oauth/verify',
-            ]);
-        });
+            // Doctrine
+            EntityManagerInterface::class => function (ContainerInterface $c) {
+                $conf = $c->get('config')['doctrine'];
+                $config = Setup::createAnnotationMetadataConfiguration(
+                    $conf['meta']['entity_paths'],
+                    $conf['meta']['dev_mode'],
+                    $conf['meta']['proxy_dir']
+                );
+                return EntityManager::create($conf['connection'], $config);
+            },
 
-        // Monolog
-        $this->container->set(LoggerInterface::class, function (ContainerInterface $c) {
-            $conf = $c->get('config')['monolog'];
-            if (strpos($conf['path'], 'php://') === false) {
-                $dir = realpath(dirname($conf['path']));
-                if (! is_writable($dir)) {
-                    throw new \Exception('The log directory ' . $dir . ' must be writable by the web server.');
+            // EVE OAuth
+            GenericProvider::class => function (ContainerInterface $c) {
+                $domain = $c->get('config')['eve']['datasource'] === 'singularity' ?
+                    'sisilogin.testeveonline.com' :
+                    'login.eveonline.com';
+                return new GenericProvider([
+                    'clientId'                => $c->get('config')['eve']['client_id'],
+                    'clientSecret'            => $c->get('config')['eve']['secret_key'],
+                    'redirectUri'             => $c->get('config')['eve']['callback_url'],
+                    'urlAuthorize'            => 'https://' . $domain . '/oauth/authorize',
+                    'urlAccessToken'          => 'https://' . $domain . '/oauth/token',
+                    'urlResourceOwnerDetails' => 'https://' . $domain . '/oauth/verify',
+                ]);
+            },
+
+            // Monolog
+            LoggerInterface::class => function (ContainerInterface $c) {
+                $conf = $c->get('config')['monolog'];
+                if (strpos($conf['path'], 'php://') === false) {
+                    $dir = realpath(dirname($conf['path']));
+                    if (! is_writable($dir)) {
+                        throw new \Exception('The log directory ' . $dir . ' must be writable by the web server.');
+                    }
                 }
-            }
-            $formatter = new LineFormatter();
-            $formatter->allowInlineLineBreaks();
-            $handler = (new StreamHandler($conf['path'], $conf['level']))->setFormatter($formatter);
-            $logger = (new Logger($conf['name']))->pushHandler($handler);
-            return $logger;
-        });
+                $formatter = new LineFormatter();
+                $formatter->allowInlineLineBreaks();
+                $handler = (new StreamHandler($conf['path'], $conf['level']))->setFormatter($formatter);
+                $logger = (new Logger($conf['name']))->pushHandler($handler);
+                return $logger;
+            },
 
-        // Guzzle
-        $this->container->set(ClientInterface::class, function (ContainerInterface $c) {
-            /*$debugFunc = function (\Psr\Http\Message\MessageInterface $r) use ($c) {
-                if ($r instanceof \Psr\Http\Message\ResponseInterface) {
-                    $c->get(LoggerInterface::class)->debug('Status Code: ' . $r->getStatusCode());
-                }
-                $headers = [];
-                foreach ($r->getHeaders() as $name => $val) {
-                    $headers[$name] = $val[0];
-                }
-                $c->get(LoggerInterface::class)->debug(print_r($headers, true));
-                return $r;
-            };*/
-            $stack = HandlerStack::create();
-            #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
-            #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
-            $stack->push(
-                new CacheMiddleware(
-                    new PrivateCacheStrategy(
-                        new DoctrineCacheStorage(
-                            new FilesystemCache($c->get('config')['guzzle']['cache']['dir'])
+            // Guzzle
+            ClientInterface::class => function (ContainerInterface $c) {
+                /*$debugFunc = function (\Psr\Http\Message\MessageInterface $r) use ($c) {
+                    if ($r instanceof \Psr\Http\Message\ResponseInterface) {
+                        $c->get(LoggerInterface::class)->debug('Status Code: ' . $r->getStatusCode());
+                    }
+                    $headers = [];
+                    foreach ($r->getHeaders() as $name => $val) {
+                        $headers[$name] = $val[0];
+                    }
+                    $c->get(LoggerInterface::class)->debug(print_r($headers, true));
+                    return $r;
+                };*/
+                $stack = HandlerStack::create();
+                #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
+                #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
+                $stack->push(
+                    new CacheMiddleware(
+                        new PrivateCacheStrategy(
+                            new DoctrineCacheStorage(
+                                new FilesystemCache($c->get('config')['guzzle']['cache']['dir'])
+                            )
                         )
-                    )
-                ),
-                'cache'
-            );
-            #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
-            #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
-            return new Client(['handler' => $stack]);
-        });
+                    ),
+                    'cache'
+                );
+                #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
+                #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
+                return new Client(['handler' => $stack]);
+            },
+
+            // Extend Slim's error and php error handler.
+            'errorHandler' => function (Container $c) {
+                return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+            },
+            'phpErrorHandler' => function (Container $c) {
+                return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+            },
+        ];
     }
 
     /**
@@ -389,14 +408,6 @@ class Application
      */
     private function errorHandling(): void
     {
-        // Extend Slim's error and php error handler.
-        $this->container->set('errorHandler', function (Container $c) {
-            return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-        });
-        $this->container->set('phpErrorHandler', function (Container $c) {
-            return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-        });
-
         // logs errors that are not converted to exceptions by Slim
         ErrorHandler::register($this->container->get(LoggerInterface::class));
 

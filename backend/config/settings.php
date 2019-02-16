@@ -56,6 +56,10 @@ return [
             'cache' => [
                 'dir' => Application::ROOT_DIR . '/var/cache/http'
             ]
+        ],
+
+        'di' => [
+            'cache_dir' => Application::ROOT_DIR . '/var/cache/di'
         ]
     ],
 ];

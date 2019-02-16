@@ -45,19 +45,22 @@
     ],
     "scripts": {
         "compile": [
-            "composer migrate",
-            "composer openapi"
+            "@cache:clear",
+            "@migrate",
+            "@openapi"
         ],
         "compile:prod": [
+            "@cache:clear",
             "doctrine orm:generate-proxies",
-            "composer migrate",
-            "composer openapi"
+            "@migrate",
+            "@openapi"
         ],
         "migrate": "doctrine-migrations migrations:migrate --no-interaction",
         "openapi": [
             "swagger --exclude bin,config,var,vendor --output ../web",
             "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
         ],
+        "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",
         "test": "phpunit",
         "test:cov": "phpunit --coverage-html var/phpunit",
         "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"
