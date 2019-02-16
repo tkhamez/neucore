@@ -304,6 +304,7 @@ module.exports = {
                 vm.message('Deleted character.', 'success');
                 vm.update(vm.authChar.id);
             });
+            window.jQuery('#deleteCharModal').modal('hide');
             this.charToDelete = null;
         },
     }
