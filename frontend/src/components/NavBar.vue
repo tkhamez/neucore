@@ -87,5 +87,10 @@ module.exports = {
 </script>
 
 <style scoped>
-
+    .dropdown:hover .dropdown-menu {
+        display: block;
+    }
+    .dropdown-menu {
+        margin: 0;
+    }
 </style>
