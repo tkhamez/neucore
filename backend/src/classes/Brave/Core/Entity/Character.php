@@ -328,15 +328,13 @@ class Character implements \JsonSerializable
     /**
      * Set validToken and updates validTokenTime.
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param bool|null $validToken
      * @return Character
      */
     public function setValidToken(bool $validToken = null): self
     {
         if ($this->validToken !== $validToken) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            $this->validTokenTime = new \DateTime();
+            $this->validTokenTime = date_create();
         }
 
         $this->validToken = $validToken;
@@ -449,6 +447,8 @@ class Character implements \JsonSerializable
 
     /**
      * Get player.
+     *
+     * A character should always belong to a player at the moment.
      *
      * @return \Brave\Core\Entity\Player|null
      */

@@ -369,6 +369,23 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('deleted (manually)', $removedChars[0]->getAction());
     }
 
+    public function testDeleteCharacterWithoutPlayer()
+    {
+        $char = (new Character())->setId(10)->setName('char');
+        $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->flush();
+
+        $this->service->deleteCharacter($char, 'manually');
+        $this->helper->getEm()->flush();
+
+        $chars = $this->charRepo->findBy([]);
+        $this->assertSame(0, count($chars));
+        $removedChars = $this->removedCharRepo->findBy([]);
+        $this->assertSame(1, count($removedChars));
+        $this->assertSame(10, $removedChars[0]->getCharacterId());
+        $this->assertNull($removedChars[0]->getPlayer());
+    }
+
     public function testGroupsDisabledValidToken()
     {
         // activate "deactivated accounts"

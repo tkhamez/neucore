@@ -109,7 +109,6 @@ class EsiData
      * Returns null if the ESI requests fails or if the character
      * does not exist in the local database.
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param int $id
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine entity manager.
@@ -137,8 +136,7 @@ class EsiData
         }
         $char->setName($eveChar->getName());
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $char->setLastUpdate(new \DateTime());
+        $char->setLastUpdate(date_create());
 
         // update char with corp entity - does not fetch data from ESI
         $corpId = (int) $eveChar->getCorporationId();
@@ -164,7 +162,6 @@ class EsiData
      *
      * Returns null if the ESI requests fails.
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param int $id EVE corporation ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine entity manager.
@@ -192,8 +189,7 @@ class EsiData
         $corp->setName($eveCorp->getName());
         $corp->setTicker($eveCorp->getTicker());
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $corp->setLastUpdate(new \DateTime());
+        $corp->setLastUpdate(date_create());
 
         // update corporation with alliance entity - does not fetch data from ESI
         $alliId = (int) $eveCorp->getAllianceId();
@@ -221,7 +217,6 @@ class EsiData
      *
      * Returns null if the ESI requests fails.
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param int $id EVE alliance ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine entity manager.
@@ -249,8 +244,7 @@ class EsiData
         $alliance->setName($eveAlli->getName());
         $alliance->setTicker($eveAlli->getTicker());
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $alliance->setLastUpdate(new \DateTime());
+        $alliance->setLastUpdate(date_create());
 
         // flush
         if ($flush && ! $this->objectManager->flush()) {

@@ -90,14 +90,14 @@ class Account
      */
     public function moveCharacterToNewAccount(Character $char): Character
     {
-        $player = new Player();
-        $player->setName($char->getName());
+        $newPlayer = new Player();
+        $newPlayer->setName($char->getName());
 
-        $this->removeCharacterFromPlayer($char, $player);
+        $this->removeCharacterFromPlayer($char, $newPlayer);
 
         $char->setMain(true);
-        $char->setPlayer($player);
-        $player->addCharacter($char);
+        $char->setPlayer($newPlayer);
+        $newPlayer->addCharacter($char);
 
         return $char;
     }
@@ -108,7 +108,6 @@ class Account
      * Updates character with the data provided and persists player
      * and character in the database. Both Entities can be new.
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param Character $char Character with Player object attached.
      * @param EveAuthentication $eveAuth
      * @return bool
@@ -119,8 +118,7 @@ class Account
 
         $char->setName($eveAuth->getCharacterName());
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $char->setLastLogin(new \DateTime());
+        $char->setLastLogin(date_create());
 
         if (! empty($eveAuth->getToken()->getRefreshToken())) {
             $char->setValidToken(true);
@@ -135,7 +133,9 @@ class Account
         $char->setExpires($token->getExpires());
         $char->setRefreshToken($token->getRefreshToken());
 
-        $this->objectManager->persist($char->getPlayer()); // could be a new player
+        if ($char->getPlayer()) { // should always be true
+            $this->objectManager->persist($char->getPlayer()); // could be a new player
+        }
         $this->objectManager->persist($char); // could be a new character
 
         return $this->objectManager->flush();
@@ -228,7 +228,10 @@ class Account
     public function removeCharacterFromPlayer(Character $character, Player $newPlayer): void
     {
         $this->createRemovedCharacter($character, $newPlayer);
-        $character->getPlayer()->removeCharacter($character);
+
+        if ($character->getPlayer()) {
+            $character->getPlayer()->removeCharacter($character);
+        }
     }
 
     /**
@@ -277,25 +280,28 @@ class Account
     }
 
     /**
-     * @noinspection PhpDocMissingThrowsInspection
      * @param Character $character
      * @param Player|null $newPlayer
      * @param string|null $reason should be string if $newPlayer is null otherwise null
+     * @return void
      */
     private function createRemovedCharacter(
         Character $character,
         Player $newPlayer = null,
         string $reason = null
     ): void {
-        $player = $character->getPlayer();
-
         $removedCharacter = new RemovedCharacter();
-        $removedCharacter->setPlayer($player);
-        $player->addRemovedCharacter($removedCharacter);
+
+        $player = $character->getPlayer();
+        if ($player) { // should always be true at the moment
+            $removedCharacter->setPlayer($player);
+            $player->addRemovedCharacter($removedCharacter);
+        }
+
         $removedCharacter->setCharacterId($character->getId());
         $removedCharacter->setCharacterName($character->getName());
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $removedCharacter->setRemovedDate(new \DateTime());
+        $removedCharacter->setRemovedDate(date_create());
+
         if ($newPlayer) {
             $removedCharacter->setNewPlayer($newPlayer);
             $removedCharacter->setAction('moved');

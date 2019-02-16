@@ -84,7 +84,6 @@ class AutoGroupAssignment
      * from a player when he no longer is a member of that corporation
      * or alliance.
      *
-     * @noinspection PhpDocMissingThrowsInspection
      * @param int $playerId
      * @return \Brave\Core\Entity\Player|null
      */
@@ -147,8 +146,7 @@ class AutoGroupAssignment
             }
         }
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $player->setLastUpdate(new \DateTime());
+        $player->setLastUpdate(date_create());
 
         if (! $this->objectManager->flush()) {
             return null;

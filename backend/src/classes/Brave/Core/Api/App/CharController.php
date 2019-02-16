@@ -51,7 +51,7 @@ class CharController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Character not found. (default reason phrase)"
+     *         description="Character (or player) not found. (default reason phrase)"
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -62,7 +62,7 @@ class CharController
     public function mainV1(string $cid): Response
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
-        if ($char === null) {
+        if ($char === null || $char->getPlayer() === null) {
             return $this->response->withStatus(404);
         }
 
@@ -141,7 +141,7 @@ class CharController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Character not found."
+     *         description="Character (or player) not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -153,7 +153,7 @@ class CharController
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
 
-        if ($char === null) {
+        if ($char === null || $char->getPlayer() === null) {
             return $this->response->withStatus(404, 'Character not found.');
         }
 

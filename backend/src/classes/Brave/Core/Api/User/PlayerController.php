@@ -652,15 +652,14 @@ class PlayerController extends BaseController
             return $this->response->withStatus(409);
         }
 
-        // get logged in player and character to delete
-        $player = $user->getPlayer();
+        // get character to delete
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
-        if ($player === null || $char === null) {
+        if ($char === null) {
             return $this->response->withStatus(404);
         }
 
         // check if character belongs to the logged in player account
-        if (! $player->hasCharacter($char->getId())) {
+        if (! $user->getPlayer()->hasCharacter($char->getId())) {
             return $this->response->withStatus(403);
         }
 

@@ -164,7 +164,7 @@ class CharacterController
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
 
-        if ($char === null) {
+        if ($char === null || $char->getPlayer() === null) {
             return $this->res->withStatus(204);
         }
 

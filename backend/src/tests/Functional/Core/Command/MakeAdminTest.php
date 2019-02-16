@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Core\Command;
 
+use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +38,10 @@ class MakeAdminTest extends ConsoleTestCase
         $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN]);
 
         self::$em = $h->getEm();
+
+        $char = (new Character())->setId(666)->setName('Orphan');
+        self::$em->persist($char);
+        self::$em->flush();
     }
 
     public function testExecute()
@@ -67,6 +72,13 @@ class MakeAdminTest extends ConsoleTestCase
         $output = $this->runConsoleApp('make-admin', ['id' => 5678]);
 
         $this->assertSame('Character with ID "5678" not found'."\n", $output);
+    }
+
+    public function testExecuteCharWithoutPlayer()
+    {
+        $output = $this->runConsoleApp('make-admin', ['id' => 666]);
+
+        $this->assertSame('Player not found for character.'."\n", $output);
     }
 
     public function testExecuteException()
