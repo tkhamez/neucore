@@ -2,12 +2,14 @@
 
 namespace Brave\Core\Api\App;
 
+use Brave\Core\Application;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -143,7 +145,45 @@ class EsiController
     {
         // get/validate input
 
+        list($esiPath, $esiParams) = $this->getEsiPathAndQueryParams($request, $path);
+
+        if (empty($esiPath)) {
+            return $this->response->withStatus(400, 'Path cannot be empty.');
+        }
+
+        if ($this->isPublicPath($esiPath)) {
+            return $this->response->withStatus(400, 'This cannot be used for public ESI paths.');
+        }
+
+        $characterId = $request->getParam('datasource', '');
+        if (empty($characterId)) {
+            return $this->response->withStatus(
+                400,
+                'The datasource parameter cannot be empty, it must contain an EVE character ID'
+            );
+        }
+
+        // get character
+        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
+        if ($character === null) {
+            return $this->response->withStatus(400, 'Character not found.');
+        }
+
+        // get the token
+        $token = $this->token->getToken($character);
+        if ($token === '') {
+            return $this->response->withStatus(400, 'Character has no token.');
+        }
+
+        $esiResponse = $this->sendRequest($esiPath, $esiParams, $token);
+
+        return $this->buildResponse($esiResponse);
+    }
+
+    private function getEsiPathAndQueryParams(Request $request, $path): array
+    {
         $esiParams = [];
+
         if (empty($path)) {
             // for URLs like: /api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
             $esiPath = $request->getParam('esi-path-query');
@@ -157,45 +197,37 @@ class EsiController
             }
         }
 
-        if (empty($esiPath)) {
-            return $this->response->withStatus(400, 'Path cannot be empty.');
-        }
+        return [$esiPath, $esiParams];
+    }
 
-        $characterId = $request->getParam('datasource', '');
-        if (empty($characterId)) {
-            return $this->response->withStatus(
-                400,
-                'The datasource parameter cannot be empty, it must contain an EVE character ID'
-            );
-        }
+    private function isPublicPath($esiPath)
+    {
+        /** @noinspection PhpIncludeInspection */
+        $publicPaths = include Application::ROOT_DIR . '/config/public-esi-paths.php';
 
-        $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($character === null) {
-            return $this->response->withStatus(400, 'Character not found.');
-        }
+        #$this->log->debug(print_r($publicPaths, true));
+        #$this->log->debug($esiPath);
 
-        // get the token and set header options
-        $token = $this->token->getToken($character);
-        $options = ['headers' => []];
-        if ($token !== '') {
-            $options['headers']['Authorization'] = 'Bearer ' . $token;
-        }
-        if ($request->hasHeader('If-None-Match')) {
-            $options['headers']['If-None-Match'] = $request->getHeader('If-None-Match')[0];
-        }
+        # TODO implement
 
-        // build ESI URL
-        $url = $this->config->get('eve', 'datasource') . $esiPath.
+        return false;
+    }
+
+    private function sendRequest(string $esiPath, array $esiParams, string $token): ?ResponseInterface
+    {
+        $url = $this->config->get('eve', 'esi_host') . $esiPath.
             (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource') .
             (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
+        $options = ['headers' => ['Authorization' => 'Bearer ' . $token]];
 
-        // send the request
         $esiResponse = null;
         try {
             $esiResponse = $this->httpClient->request('GET', $url, $options);
         } catch (RequestException $re) {
-            $esiResponse = $re->getResponse();
+            $this->log->error($re->getMessage(), ['exception' => $re]);
+            $esiResponse = $re->getResponse(); // may still be null
         } catch (GuzzleException $ge) {
+            $this->log->error($ge->getMessage(), ['exception' => $ge]);
             $esiResponse = new \GuzzleHttp\Psr7\Response(
                 500, // status
                 [], // header
@@ -205,16 +237,21 @@ class EsiController
             );
         }
 
-        // build the response
+        return $esiResponse;
+    }
 
-        $body = null;
-        try {
-            $body = $esiResponse->getBody()->getContents();
-        } catch (\RuntimeException $runtimeEx) {
-            $this->log->error('ApplicationController->esiV1(): ' . $runtimeEx->getMessage());
-        }
-        if ($body !== null) {
-            $this->response->write($body);
+    private function buildResponse(ResponseInterface $esiResponse = null): ResponseInterface
+    {
+        if ($esiResponse !== null) {
+            $body = null;
+            try {
+                $body = $esiResponse->getBody()->getContents();
+            } catch (\RuntimeException $runtimeEx) {
+                $this->log->error('ApplicationController->esiV1(): ' . $runtimeEx->getMessage());
+            }
+            if ($body !== null) {
+                $this->response->write($body);
+            }
         }
 
         $response = $this->response->withStatus($esiResponse->getStatusCode());
