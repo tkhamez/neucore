@@ -57,6 +57,8 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
+            ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
     }
 
@@ -71,6 +73,8 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
+            ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
     }
 
@@ -87,6 +91,8 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
+            ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
     }
 

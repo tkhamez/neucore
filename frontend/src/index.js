@@ -114,9 +114,6 @@ window.Vue.mixin({
                 } else {
                     vm.message('Update done.', 'success');
                 }
-                if(vm.$root.authChar.id === characterId) {
-                    vm.$root.$emit('playerChange');
-                }
                 if (typeof callback === typeof Function) {
                     callback();
                 }
@@ -288,8 +285,6 @@ const app = new window.Vue({
                     if (data.success) {
                         if (successMessageType) {
                             vm.message(data.message, successMessageType);
-                        } else {
-                            window.console.log(data.message);
                         }
                     } else {
                         vm.message(data.message, 'error');
@@ -299,6 +294,7 @@ const app = new window.Vue({
         },
 
         getSettings: function() {
+            this.settings = [];
             this.loading(true);
             new this.swagger.SettingsApi().systemList(function(error, data) {
                 app.loading(false);

@@ -99,13 +99,14 @@
                         <label class="custom-control-label" for="mail_account_disabled_active">Activate mail</label>
                     </div>
                     <div class="form-group">
-                        <label class="col-form-label" for="mailAccountDisabledAlliances">Alliances</label>
-                        <input v-model="mailAccountDisabledAlliances" type="text" class="form-control"
-                               id="mailAccountDisabledAlliances">
+                        <label class="col-form-label">Alliances</label>
+                        <multiselect v-model="mailAccountDisabledAlliances" :options="alliances" :loading="false"
+                                     label="name" track-by="id" :multiple="true"
+                                     placeholder="Select alliances"></multiselect>
                         <small class="form-text text-muted">
-                            Comma-separated list of EVE alliance IDs.
                             The mail is only sent if at least one character in a player account
-                            belongs to one of these alliances.
+                            belongs to one of these alliances.<br>
+                            You can add missing alliances in the <a href="#GroupAdmin">Group Administration</a>.
                         </small>
                     </div>
                     <div class="form-group">
@@ -180,15 +181,17 @@ module.exports = {
 
     data: function() {
         return {
+            settingsLoaded: false,
             variables: {},
             api: null,
+            alliances: [],
             loginUrlDirector: null,
-            accountDeactivationDelay: '',
+            accountDeactivationDelay: null,
             mailAccountDisabledActive: false,
-            mailAccountDisabledAlliances: '',
-            mailAccountDisabledSubject: '',
-            mailAccountDisabledBody: '',
-            directors: []
+            mailAccountDisabledAlliances: null,
+            mailAccountDisabledSubject: null,
+            mailAccountDisabledBody: null,
+            directors: [],
         }
     },
 
@@ -215,20 +218,35 @@ module.exports = {
             this.readSettings();
         },
 
-        accountDeactivationDelay: function() {
-            this.accountDeactivationDelay = parseInt(this.accountDeactivationDelay);
+        accountDeactivationDelay: function(newValue, oldValue) {
+            if (oldValue === null) {
+                return;
+            }
             this.changeSettingDelayed(this, 'account_deactivation_delay', this.accountDeactivationDelay);
         },
 
-        mailAccountDisabledAlliances: function() {
-            this.changeSettingDelayed(this, 'mail_account_disabled_alliances', this.mailAccountDisabledAlliances);
+        mailAccountDisabledAlliances: function(newValue, oldValue) {
+            const allianceIds = [];
+            for (let alliance of this.mailAccountDisabledAlliances) {
+                allianceIds.push(alliance.id);
+            }
+            if (oldValue === null) {
+                return;
+            }
+            this.changeSetting('mail_account_disabled_alliances', allianceIds.join(','));
         },
 
-        mailAccountDisabledSubject: function() {
+        mailAccountDisabledSubject: function(newValue, oldValue) {
+            if (oldValue === null) {
+                return;
+            }
             this.changeSettingDelayed(this, 'mail_account_disabled_subject', this.mailAccountDisabledSubject);
         },
 
-        mailAccountDisabledBody: function() {
+        mailAccountDisabledBody: function(newValue, oldValue) {
+            if (oldValue === null) {
+                return;
+            }
             this.changeSettingDelayed(this, 'mail_account_disabled_body', this.mailAccountDisabledBody);
         },
     },
@@ -236,17 +254,46 @@ module.exports = {
     methods: {
         init: function() {
             this.api = new this.swagger.SettingsApi();
+
+            // get alliances
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.AllianceApi().all(function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.alliances = data;
+                vm.readSettings();
+            });
         },
 
         readSettings: function() {
+            if (this.settings.length === 0) {
+                this.settingsLoaded = false; // reset state after "settingsChange" event
+            }
+            if (this.alliances.length === 0 || this.settings.length === 0 || this.settingsLoaded) {
+                return; // wait for alliance list and settings
+            }
+
             this.directors = [];
+            this.mailAccountDisabledAlliances = [];
+
             for (let variable of this.settings) {
                 if (variable.name === 'account_deactivation_delay') {
-                    this.accountDeactivationDelay = parseInt(variable.value);
+                    this.accountDeactivationDelay = variable.value.toString();
                 } else if (variable.name === 'mail_account_disabled_active') {
                     this.mailAccountDisabledActive = variable.value === '1';
                 } else if (variable.name === 'mail_account_disabled_alliances') {
-                    this.mailAccountDisabledAlliances = variable.value;
+                    for (let allianceId of variable.value.split(',')) {
+                        allianceId = parseInt(allianceId);
+                        for (let alliance of this.alliances) {
+                            if (alliance.id === allianceId) {
+                                this.mailAccountDisabledAlliances.push(alliance);
+                                break;
+                            }
+                        }
+                    }
                 } else if (variable.name === 'mail_account_disabled_subject') {
                     this.mailAccountDisabledSubject = variable.value;
                 } else if (variable.name === 'mail_account_disabled_body') {
@@ -262,6 +309,8 @@ module.exports = {
                     this.variables[variable.name] = variable.value;
                 }
             }
+
+            this.settingsLoaded = true;
         },
 
         removeMailChar: function() {

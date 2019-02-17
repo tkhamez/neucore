@@ -281,7 +281,10 @@ module.exports = {
         },
 
         update: function(characterId) {
-            this.updateCharacter(characterId);
+            const vm = this;
+            this.updateCharacter(characterId, function() {
+                vm.$root.$emit('playerChange');
+            });
         },
 
         askDeleteChar(characterId, characterName) {

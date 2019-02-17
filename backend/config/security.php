@@ -25,7 +25,8 @@ return [
 
     '/api/app'                                     => [Role::APP],
 
-    '/api/user/alliance' => [Role::GROUP_ADMIN],
+    '/api/user/alliance/all' => [Role::GROUP_ADMIN, Role::SETTINGS],
+    '/api/user/alliance'     => [Role::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
     '/api/user/app/{id}/show'          => [Role::APP_MANAGER, Role::APP_ADMIN],

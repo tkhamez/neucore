@@ -5,6 +5,7 @@ namespace Brave\Core\Api\User;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Service\Config;
 use Brave\Core\Service\EveMail;
 use Brave\Core\Service\MemberTracking;
 use Brave\Core\Service\ObjectManager;
@@ -43,6 +44,11 @@ class SettingsController
     private $userAuth;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @var array
      */
     private $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
@@ -51,12 +57,14 @@ class SettingsController
         Response $response,
         RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager,
-        UserAuth $userAuth
+        UserAuth $userAuth,
+        Config $config
     ) {
         $this->response = $response;
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
         $this->userAuth = $userAuth;
+        $this->config = $config;
     }
 
     /**
@@ -83,7 +91,17 @@ class SettingsController
             $scopes = [SystemVariable::SCOPE_PUBLIC];
         }
 
-        return $this->response->withJson($repository->findBy(['scope' => $scopes], ['name' => 'ASC']));
+        $result = $repository->findBy(['scope' => $scopes], ['name' => 'ASC']);
+        $result[] = [
+            'name' => 'esiDataSource',
+            'value' => $this->config->get('eve', 'datasource')
+        ];
+        $result[] = [
+            'name' => 'esiHost',
+            'value' => $this->config->get('eve', 'esi_host')
+        ];
+
+        return $this->response->withJson($result);
     }
 
     /**

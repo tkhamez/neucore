@@ -19,6 +19,12 @@ window.brvneucoreJsClient = require('brvneucore-js-client');
 // Vue.js - runtime + compiler
 window.Vue = require('vue/dist/vue.min.js');
 
+// vue-multiselect
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+window.Vue.component('multiselect', Multiselect);
+
+// lodash
 window._ = require('lodash');
 
 import "babel-polyfill"; // for useBuiltIns: true

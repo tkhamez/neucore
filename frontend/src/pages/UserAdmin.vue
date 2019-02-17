@@ -434,8 +434,12 @@ module.exports = {
             this.playerEdit.characters.forEach(function(character) {
                 vm.updateCharacter(character.id, function() {
                     charsUpdated ++;
-                    if (charsUpdated === charsCount) {
-                        vm.getPlayer();
+                    if (charsUpdated < charsCount) {
+                        return;
+                    }
+                    vm.getPlayer();
+                    if (vm.playerEdit.id === vm.playerId) {
+                        vm.$root.$emit('playerChange');
                     }
                 });
             });

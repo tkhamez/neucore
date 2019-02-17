@@ -162,6 +162,9 @@ ESI API
 
 Allows a player to change the system settings.
 
+Alliance API
+- List all alliances. `/user/alliance/all`
+
 Settings API
 - Change a system settings variable. `/user/settings/system/change/{name}`
 - Sends a 'Account disabled' test mail to the logged-in character. `/user/settings/system/send-account-disabled-mail`

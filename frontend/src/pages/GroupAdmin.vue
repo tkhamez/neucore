@@ -17,10 +17,23 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>
-                            {{ addType }} EVE ID
-                            <input class="form-control" v-model="addTypeId" type="text" title="">
-                        </label>
+                        <label>Search {{ addType }}</label>
+                        <multiselect v-model="searchSelected" :options="searchResults"
+                                 label="name" track-by="id"
+                                 placeholder="Type to search"
+                                 :searchable="true"
+                                 :loading="searchIsLoading"
+                                 :internal-search="false"
+                                 :max-height="600"
+                                 :show-no-results="false"
+                                 @search-change="searchAlliCorp">
+                        </multiselect>
+                        <div class="form-check mt-2">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" value="" v-model="searchStrict">
+                                Strict search
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -108,6 +121,7 @@ module.exports = {
     },
 
     props: {
+        settings: Array,
         route: Array,
         swagger: Object,
         initialized: Boolean,
@@ -120,7 +134,10 @@ module.exports = {
             groupId: null, // current group
             contentType: '',
             addType: '', // alliance or corp
-            addTypeId: null,
+            searchIsLoading: false,
+            searchResults: [],
+            searchSelected: null,
+            searchStrict: false,
         }
     },
 
@@ -169,9 +186,64 @@ module.exports = {
 
         showAddAlliCorpModal: function(addType) {
             this.addType = addType;
-            this.addTypeId = '';
+            this.searchResults = [];
+            this.searchSelected = null;
             window.jQuery('#addAlliCorpModal').modal('show');
         },
+
+        searchAlliCorp (query) {
+            if (query.length < 3) {
+                return;
+            }
+            this.searchAlliCorpDelayed(this, query);
+        },
+
+        searchAlliCorpDelayed: _.debounce((vm, query) => {
+            let category;
+            if (vm.addType === 'Corporation') {
+                category = 'corporation';
+            } else if (vm.addType === 'Alliance') {
+                category = 'alliance';
+            } else {
+                return;
+            }
+
+            let host, dataSource;
+            for (let variable of vm.settings) {
+                if (variable.name === 'esiHost') {
+                    host = variable.value;
+                }
+                if (variable.name === 'esiDataSource') {
+                    dataSource = variable.value;
+                }
+            }
+
+            const url = host + '/latest/search/?categories=' + category +
+                '&datasource=' + dataSource +
+                '&search=' + encodeURIComponent(query) + '&strict=' + vm.searchStrict;
+
+            vm.searchIsLoading = true;
+            vm.searchResults = [];
+            window.jQuery.get(url).always(response1 => {
+                if (typeof response1[category] !== typeof []) {
+                    vm.searchIsLoading = false;
+                    return;
+                }
+                window.jQuery.post(
+                    host + '/latest/universe/names/?datasource=' + dataSource,
+                    JSON.stringify(response1[category])
+                ).always(response2 => {
+                    vm.searchIsLoading = false;
+                    if (typeof response2 !== typeof []) {
+                        return;
+                    }
+                    vm.searchResults = []; // reset again because of parallel request
+                    for (let result of response2) {
+                        vm.searchResults.push(result);
+                    }
+                });
+            });
+        }, 250),
 
         addAlliCorp: function() {
             const vm = this;
@@ -185,10 +257,10 @@ module.exports = {
             }
 
             vm.loading(true);
-            api['add'].apply(api, [this.addTypeId, function(error, data, response) {
+            api['add'].apply(api, [this.searchSelected.id, function(error, data, response) {
                 vm.loading(false);
                 if (response.statusCode === 409) {
-                    vm.message(vm.addType + ' already exists.', 'error');
+                    vm.message(vm.addType + ' already exists.', 'warning');
                 } else if (response.statusCode === 404) {
                     vm.message(vm.addType + ' not found.', 'error');
                 } else if (error) {
@@ -196,7 +268,9 @@ module.exports = {
                 } else {
                     window.jQuery('#addAlliCorpModal').modal('hide');
                     vm.message(vm.addType + ' "['+ data.ticker +'] '+ data.name +'" added.', 'success');
-                    vm.$refs.admin.getSelectContent();
+                    if (vm.$refs.admin) {
+                        vm.$refs.admin.getSelectContent();
+                    }
                 }
             }]);
         },
