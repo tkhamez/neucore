@@ -58,6 +58,7 @@
         "migrate": "doctrine-migrations migrations:migrate --no-interaction",
         "openapi": [
             "swagger --exclude bin,config,var,vendor --output ../web",
+            "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/App --output ../web/frontend-api.json",
             "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
         ],
         "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",

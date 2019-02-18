@@ -178,7 +178,7 @@ class EsiController
      *         in="body",
      *         required=true,
      *         description="JSON encoded data.",
-     *         type="string"
+     *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
      *         response="200",

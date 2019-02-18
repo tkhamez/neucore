@@ -13,6 +13,6 @@ rm -Rf brvneucore-js-client/*
 
 java -jar swagger-codegen-cli-${VERSION}.jar generate \
     -c brvneucore-js-client-config.json \
-    -i ../web/swagger.json \
+    -i ../web/frontend-api.json \
     -l javascript \
     -o brvneucore-js-client

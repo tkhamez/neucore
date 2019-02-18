@@ -1,6 +1,7 @@
 # backend
-/swagger.json
 /application-api.json
+/frontend-api.json
+/swagger.json
 
 # frontend
 /dist
