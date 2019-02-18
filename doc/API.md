@@ -221,7 +221,8 @@ Application API
 Allows an app to make an ESI request on behalf of a character from the database.
 
 Application API
-- Makes an ESI request and returns the result. `/app/v1/esi`
+- Makes an ESI GET request on behalf on an EVE character and returns the result. `/app/v1/esi`
+- Makes an ESI POST request on behalf on an EVE character and returns the result. `/app/v1/esi`
 
   This endpoint can also be used with OpenAPI clients generated for ESI, 
   see [app-esi-examples.php](app-esi-examples.php) for more.

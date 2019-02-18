@@ -68,6 +68,7 @@ class EsiController
      *     operationId="esiV1",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi<br>
+     *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
      *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.",
@@ -152,6 +153,7 @@ class EsiController
      *     operationId="esiPostV1",
      *     summary="Makes an ESI POST request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi<br>
+     *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
      *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.",
@@ -253,7 +255,7 @@ class EsiController
         }
 
         if ($this->isPublicPath($esiPath)) {
-            return $this->response->withStatus(400, 'This cannot be used for public ESI paths.');
+            return $this->response->withStatus(400, 'Public ESI routes are not allowed.');
         }
 
         $characterId = $request->getParam('datasource', '');
@@ -303,13 +305,17 @@ class EsiController
 
     private function isPublicPath($esiPath): bool
     {
+        $path = substr($esiPath, strpos($esiPath, '/', 1));
+
         /** @noinspection PhpIncludeInspection */
-        $publicPaths = include Application::ROOT_DIR . '/config/public-esi-paths.php';
+        $publicPaths = include Application::ROOT_DIR . '/config/esi-paths-public.php';
 
-        #$this->log->debug(print_r($publicPaths, true));
-        #$this->log->debug($esiPath);
-
-        # TODO implement
+        foreach ($publicPaths as $pattern) {
+            if (preg_match("@^$pattern$@", $path) === 1) {
+                #$this->log->debug(print_r([$pattern, $path], true));
+                return true;
+            }
+        }
 
         return false;
     }

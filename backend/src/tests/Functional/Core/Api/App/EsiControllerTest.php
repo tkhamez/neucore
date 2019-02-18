@@ -50,29 +50,45 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(400, $response1->getStatusCode());
         $this->assertSame('Path cannot be empty.', $response1->getReasonPhrase());
 
-        # TODO test: "This cannot be used for public ESI paths."
-        $response2 = null;
-
-        $response3 = $this->runApp(
+        $response2 = $this->runApp(
             'GET',
             '/api/app/v1/esi/latest/characters/96061222/stats/',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
         );
-        $this->assertSame(400, $response3->getStatusCode());
+        $this->assertSame(400, $response2->getStatusCode());
         $this->assertSame(
             'The datasource parameter cannot be empty, it must contain an EVE character ID',
-            $response3->getReasonPhrase()
+            $response2->getReasonPhrase()
         );
 
-        $response4 = $this->runApp(
+        $response3 = $this->runApp(
             'GET',
             '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=96061222',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
         );
-        $this->assertSame(400, $response4->getStatusCode());
-        $this->assertSame('Character not found.', $response4->getReasonPhrase());
+        $this->assertSame(400, $response3->getStatusCode());
+        $this->assertSame('Character not found.', $response3->getReasonPhrase());
+    }
+
+    public function testEsiV1400PublicRoute()
+    {
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response1 = $this->runApp('GET', '/api/app/v1/esi/lastest/alliances/', null, $headers);
+        $this->assertSame(400, $response1->getStatusCode());
+        $this->assertSame('Public ESI routes are not allowed.', $response1->getReasonPhrase());
+
+        $response2 = $this->runApp('GET', '/api/app/v1/esi/lastest/alliances/123456/icons/', null, $headers);
+        $this->assertSame(400, $response2->getStatusCode());
+        $this->assertSame('Public ESI routes are not allowed.', $response2->getReasonPhrase());
+
+        $response3 = $this->runApp('GET', '/api/app/v1/esi/lastest/killmails/123456/123abc/', null, $headers);
+        $this->assertSame(400, $response3->getStatusCode());
+        $this->assertSame('Public ESI routes are not allowed.', $response3->getReasonPhrase());
     }
 
     public function testEsiV1200()

@@ -94,6 +94,18 @@ echo PHP_EOL;
 
 
 //
+// Example 3: Public ESI routes are not passed through:
+//
+
+try {
+    $apiInstance->esiV1('/lastest/alliances/', $coreCharId);
+} catch (\Brave\NeucoreApi\ApiException $e) {
+    echo $e->getMessage(), PHP_EOL;
+}
+echo PHP_EOL;
+
+
+//
 // Example using Eseye
 //
 
