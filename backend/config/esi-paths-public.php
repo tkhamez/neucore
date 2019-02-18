@@ -1,5 +1,5 @@
 <?php
-return array (
+return array(
   0 => '/alliances/',
   1 => '/alliances/[0-9]+/corporations/',
   2 => '/alliances/[0-9]+/icons/',
