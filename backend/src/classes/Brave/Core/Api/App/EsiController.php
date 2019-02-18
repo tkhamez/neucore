@@ -141,11 +141,112 @@ class EsiController
      *     )
      * )
      */
-    public function esiV1(Request $request, $path = null)
+    public function esiV1(Request $request, $path = null): ResponseInterface
+    {
+        return $this->esiRequest($request, 'GET', $path);
+    }
+
+    /**
+     * @SWG\Post(
+     *     path="/app/v1/esi",
+     *     operationId="esiPostV1",
+     *     summary="Makes an ESI POST request on behalf on an EVE character and returns the result.",
+     *     description="Needs role: app-esi<br>
+     *         The following headers from ESI are passed through to the response:
+               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
+     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="esi-path-query",
+     *         in="query",
+     *         required=true,
+     *         description="The ESI path and query string (without the datasource parameter).",
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="datasource",
+     *         in="query",
+     *         required=true,
+     *         description="The EVE character ID those token should be used to make the ESI request",
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="data",
+     *         in="body",
+     *         required=true,
+     *         description="JSON encoded data.",
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The data from ESI.",
+     *         @SWG\Schema(type="string"),
+     *         @SWG\Header(header="Expires",
+     *             description="RFC7231 formatted datetime string",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="304",
+     *         description="Not modified",
+     *         @SWG\Header(header="Expires",
+     *             description="RFC7231 formatted datetime string",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Bad request, see reason phrase and/or body for more.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Forbidden",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="420",
+     *         description="Error limited",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="500",
+     *         description="Internal server error",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="503",
+     *         description="Service unavailable",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
+     *         response="504",
+     *         description="Gateway timeout",
+     *         @SWG\Schema(type="string")
+     *     )
+     * )
+     */
+    public function esiPostV1(Request $request, $path = null): ResponseInterface
+    {
+        return $this->esiRequest($request, 'POST', $path);
+    }
+
+    private function esiRequest(Request $request, string $method, $path = null): ResponseInterface
     {
         // get/validate input
 
         list($esiPath, $esiParams) = $this->getEsiPathAndQueryParams($request, $path);
+
+        $body = null;
+        if ($method === 'POST') {
+            $body = $request->getBody()->__toString();
+        }
 
         if (empty($esiPath)) {
             return $this->response->withStatus(400, 'Path cannot be empty.');
@@ -175,7 +276,7 @@ class EsiController
             return $this->response->withStatus(400, 'Character has no token.');
         }
 
-        $esiResponse = $this->sendRequest($esiPath, $esiParams, $token);
+        $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $method, $body);
 
         return $this->buildResponse($esiResponse);
     }
@@ -200,7 +301,7 @@ class EsiController
         return [$esiPath, $esiParams];
     }
 
-    private function isPublicPath($esiPath)
+    private function isPublicPath($esiPath): bool
     {
         /** @noinspection PhpIncludeInspection */
         $publicPaths = include Application::ROOT_DIR . '/config/public-esi-paths.php';
@@ -213,16 +314,32 @@ class EsiController
         return false;
     }
 
-    private function sendRequest(string $esiPath, array $esiParams, string $token): ?ResponseInterface
-    {
+    /**
+     * @param string $esiPath
+     * @param array $esiParams
+     * @param string $token
+     * @param string $method GET or POST
+     * @param string|null $body
+     * @return ResponseInterface|null
+     */
+    private function sendRequest(
+        string $esiPath,
+        array $esiParams,
+        string $token,
+        string $method,
+        string $body = null
+    ): ?ResponseInterface {
         $url = $this->config->get('eve', 'esi_host') . $esiPath.
             (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource') .
             (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
-        $options = ['headers' => ['Authorization' => 'Bearer ' . $token]];
+        $options = [
+            'headers' => ['Authorization' => 'Bearer ' . $token],
+            'body' => $body
+        ];
 
         $esiResponse = null;
         try {
-            $esiResponse = $this->httpClient->request('GET', $url, $options);
+            $esiResponse = $this->httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
             $this->log->error($re->getMessage(), ['exception' => $re]);
             $esiResponse = $re->getResponse(); // may still be null

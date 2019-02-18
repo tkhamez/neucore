@@ -38,7 +38,10 @@ return [
     '/api/app/v2/main/{cid}'                       => ['GET',  CharController::class.'::mainV2'],
     '/api/app/v1/characters/{characterId}'         => ['GET',  CharController::class.'::charactersV1'],
     '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
-    '/api/app/v1/esi[{path:.*}]'                   => ['GET',  AppEsiController::class.'::esiV1'],
+    '/api/app/v1/esi[{path:.*}]'                   => [
+        'GET' => AppEsiController::class.'::esiV1',
+        'POST' => AppEsiController::class.'::esiPostV1',
+    ],
 
     '/api/user/app/all'                       => ['GET',    AppController::class.'::all'],
     '/api/user/app/create'                    => ['POST',   AppController::class.'::create'],

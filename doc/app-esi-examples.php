@@ -34,7 +34,7 @@ $coreCharId = '96061222'; // Character with token in Core
 
 
 //
-// Example 1: using a generated OpenAPI client from the ESI API file
+// Example 1: making a GET request using a generated OpenAPI client from the ESI API file
 //            (e. g. https://packagist.org/packages/tkhamez/swagger-eve-php)
 //
 
@@ -47,20 +47,14 @@ $configuration->setHost($coreHttpScheme .'://'. $coreDomain . '/api/app/v1/esi')
 $configuration->setAccessToken($coreAppToken);
 
 $apiInstance = new Swagger\Client\Eve\Api\AssetsApi(null, $configuration);
+$itemId = 0; // used in example 2
 try {
     // The first parameter (character_id) is the EVE character ID for ESI,
     // the second (datasource) the EVE character ID for Core for the ESI token.
-    $result = $apiInstance->getCharactersCharacterIdAssetsWithHttpInfo($coreCharId, $coreCharId, null, 1);
+    $result = $apiInstance->getCharactersCharacterIdAssets($coreCharId, $coreCharId);
 
-    echo 'Status: ', $result[1], PHP_EOL;
-    echo 'Headers: ';
-    $header = [];
-    foreach ($result[2] as $name => $value) {
-        $header[$name] = $value[0];
-    }
-    print_r($header);
-    $body = $result[0]; /* @var $body \Swagger\Client\Eve\Model\GetCharactersCharacterIdAssets200Ok[] */
-    echo 'item id: ', $body[0]->getItemId(), PHP_EOL;
+    $itemId = $result[0]->getItemId();
+    echo 'item id: ', $itemId, PHP_EOL;
 } catch (\Swagger\Client\Eve\ApiException $e) {
     echo $e->getMessage(), PHP_EOL;
 }
@@ -68,7 +62,7 @@ echo PHP_EOL;
 
 
 //
-// Example 2: using a generated OpenAPI client from the Brave Core API file
+// Example 2: making a POST request using a generated OpenAPI client from the Brave Core API file
 //            (e. g. https://github.com/bravecollective/neucore-api)
 
 // Change the host to the Brave Core domain including the API path and add the app token
@@ -79,7 +73,11 @@ $config->setApiKey('Authorization', $coreAppToken);
 
 $apiInstance = new Brave\NeucoreApi\Api\ApplicationApi(null, $config);
 try {
-    $result = $apiInstance->esiV1WithHttpInfo('/latest/characters/'.$coreCharId.'/assets/?page=1', $coreCharId);
+    $result = $apiInstance->esiPostV1WithHttpInfo(
+        '/latest/characters/'.$coreCharId.'/assets/names/',
+        $coreCharId,
+        \json_encode([$itemId])
+    );
 
     echo 'Status: ', $result[1], PHP_EOL;
     echo 'Headers: ';
@@ -88,7 +86,7 @@ try {
         $header[$name] = $value[0];
     }
     print_r($header);
-    echo 'item id: ', \json_decode($result[0], true)[0]['item_id'], PHP_EOL;
+    echo 'name: ', \json_decode($result[0], true)[0]['name'], PHP_EOL;
 } catch (Exception $e) {
     echo 'Exception when calling ApplicationApi->esiV1: ', $e->getMessage(), PHP_EOL;
 }

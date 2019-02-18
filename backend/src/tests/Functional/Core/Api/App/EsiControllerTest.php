@@ -50,26 +50,29 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(400, $response1->getStatusCode());
         $this->assertSame('Path cannot be empty.', $response1->getReasonPhrase());
 
-        $response2 = $this->runApp(
+        # TODO test: "This cannot be used for public ESI paths."
+        $response2 = null;
+
+        $response3 = $this->runApp(
             'GET',
             '/api/app/v1/esi/latest/characters/96061222/stats/',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
         );
-        $this->assertSame(400, $response2->getStatusCode());
+        $this->assertSame(400, $response3->getStatusCode());
         $this->assertSame(
             'The datasource parameter cannot be empty, it must contain an EVE character ID',
-            $response2->getReasonPhrase()
+            $response3->getReasonPhrase()
         );
 
-        $response3 = $this->runApp(
+        $response4 = $this->runApp(
             'GET',
             '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=96061222',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
         );
-        $this->assertSame(400, $response3->getStatusCode());
-        $this->assertSame('Character not found.', $response3->getReasonPhrase());
+        $this->assertSame(400, $response4->getStatusCode());
+        $this->assertSame('Character not found.', $response4->getReasonPhrase());
     }
 
     public function testEsiV1200()
@@ -133,5 +136,46 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
+    }
+
+    public function testEsiPostV1403()
+    {
+        $response1 = $this->runApp('POST', '/api/app/v1/esi');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response2 = $this->runApp('POST', '/api/app/v1/esi', null, $headers);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testEsiPostV1200()
+    {
+        $this->helper->emptyDb();
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
+            200,
+            [],
+            '[{ "item_id": 12345,"name": "Awesome Name" }]'
+        ));
+
+        $response = $this->runApp(
+            'POST',
+            '/api/app/v1/esi/v1/characters/96061222/assets/names/?datasource=123',
+            [123456],
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            [ClientInterface::class => $httpClient]
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(
+            [['item_id' => 12345, 'name' => 'Awesome Name']],
+            \json_decode($response->getBody()->__toString(), true)
+        );
     }
 }

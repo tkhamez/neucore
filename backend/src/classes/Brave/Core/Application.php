@@ -422,15 +422,27 @@ class Application
         /** @noinspection PhpIncludeInspection */
         $routes = include self::ROOT_DIR . '/config/routes.php';
 
-        foreach ($routes as $route => $conf) {
-            if ($conf[0] === 'GET') {
-                $app->get($route, $conf[1]);
-            } elseif ($conf[0] === 'POST') {
-                $app->post($route, $conf[1]);
-            } elseif ($conf[0] === 'DELETE') {
-                $app->delete($route, $conf[1]);
-            } elseif ($conf[0] === 'PUT') {
-                $app->put($route, $conf[1]);
+        foreach ($routes as $pattern => $conf) {
+            #if (is_array($conf[0])) {
+            #    $app->map($conf[0], $pattern, $conf[1]);
+            #    continue;
+            #}
+
+            if (isset($conf[0])) { // e. g. ['GET', 'method']
+                $config = [$conf[0] => $conf[1]];
+            } else { // e. g. ['GET' => 'method', 'POST' => 'method']
+                $config = $conf;
+            }
+            foreach ($config as $method => $callable) {
+                if ($method === 'GET') {
+                    $app->get($pattern, $callable);
+                } elseif ($method === 'POST') {
+                    $app->post($pattern, $callable);
+                } elseif ($method === 'DELETE') {
+                    $app->delete($pattern, $callable);
+                } elseif ($method === 'PUT') {
+                    $app->put($pattern, $callable);
+                }
             }
         }
     }
