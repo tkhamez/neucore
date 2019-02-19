@@ -24,6 +24,7 @@ use Brave\Slim\Handlers\PhpError;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
 use DI\Container;
 use DI\ContainerBuilder;
+use DI\Definition\Source\SourceCache;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -266,7 +267,7 @@ class Application
 
         if ($this->env === self::ENV_PROD) {
             $containerBuilder->enableCompilation($this->settings['config']['di']['cache_dir']);
-            if (extension_loaded('apcu')) {
+            if (SourceCache::isSupported()) {
                 $containerBuilder->enableDefinitionCache();
             }
         }
