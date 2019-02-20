@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -311,6 +312,67 @@ class PlayerController extends BaseController
         }
 
         return $this->flushAndReturn(200, $main);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/player/{id}/set-status/{status}",
+     *     operationId="setStatus",
+     *     summary="Change the player's account status.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="path",
+     *         required=true,
+     *         description="The new status.",
+     *         type="string",
+     *         enum={"default", "managed"}
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Status changed."
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid player or status."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function setStatus(string $id, string $status): Response
+    {
+        $authPlayer = $this->userAuthService->getUser()->getPlayer();
+        if (! $authPlayer->hasRole(Role::USER_ADMIN)) {
+            return $this->response->withStatus(403);
+        }
+
+        $validStatus = [
+            Player::STATUS_DEFAULT,
+            Player::STATUS_MANAGED,
+        ];
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        if (! in_array($status, $validStatus) || ! $player) {
+            return $this->response->withStatus(400);
+        }
+
+        if ($status !== $player->getStatus()) {
+            // TODO remove all groups
+            $player->setStatus($status);
+        }
+
+        return $this->flushAndReturn(204);
     }
 
     /**

@@ -14,6 +14,15 @@ namespace Brave\Core\Entity;
  */
 class Player implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
+    const STATUS_DEFAULT = 'default';
+
+    /**
+     * @var string
+     */
+    const STATUS_MANAGED = 'managed';
 
     /**
      * @SWG\Property()
@@ -43,6 +52,17 @@ class Player implements \JsonSerializable
      * @var \DateTime
      */
     private $lastUpdate;
+
+    /**
+     * Player account status.
+     *
+     * @SWG\Property(
+     *     enum={"default", "managed"})
+     * )
+     * @Column(type="string", length=16)
+     * @var string
+     */
+    private $status = self::STATUS_DEFAULT;
 
     /**
      * Set to true when the "account deactivated" mail was sent.
@@ -135,6 +155,7 @@ class Player implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'status' => $this->status,
             'roles' => $this->getRoles(),
             'characters' => $this->getCharacters(),
             'applications' => $this->getApplications(),
@@ -215,6 +236,18 @@ class Player implements \JsonSerializable
     public function getLastUpdate()
     {
         return $this->lastUpdate;
+    }
+
+    public function setStatus(string $status): Player
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
     }
 
     /**

@@ -39,7 +39,7 @@ return [
     '/api/app/v1/characters/{characterId}'         => ['GET',  CharController::class.'::charactersV1'],
     '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
     '/api/app/v1/esi[{path:.*}]'                   => [
-        'GET' => AppEsiController::class.'::esiV1',
+        'GET'  => AppEsiController::class.'::esiV1',
         'POST' => AppEsiController::class.'::esiPostV1',
     ],
 
@@ -111,6 +111,7 @@ return [
     '/api/user/player/delete-character/{id}'    => ['DELETE', PlayerController::class.'::deleteCharacter'],
     '/api/user/player/app-managers'             => ['GET',    PlayerController::class.'::appManagers'],
     '/api/user/player/group-managers'           => ['GET',    PlayerController::class.'::groupManagers'],
+    '/api/user/player/{id}/set-status/{status}' => ['PUT',    PlayerController::class.'::setStatus'],
     '/api/user/player/{id}/add-role/{name}'     => ['PUT',    PlayerController::class.'::addRole'],
     '/api/user/player/{id}/remove-role/{name}'  => ['PUT',    PlayerController::class.'::removeRole'],
     '/api/user/player/{id}/show'                => ['GET',    PlayerController::class.'::showById'],

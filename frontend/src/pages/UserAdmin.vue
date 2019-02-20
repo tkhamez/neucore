@@ -95,6 +95,11 @@
                 </h3>
 
                 <div v-cloak v-if="playerEdit" class="card-body">
+                    <h4>Account Status</h4>
+                    <p>
+                        {{ playerEdit.status }}
+                    </p>
+
                     <h4>Roles</h4>
                     <p>
                         See
