@@ -3,7 +3,7 @@
 include __DIR__ . '/vendor/autoload.php';
 
 /**
- * The endpoint /api/app/v1/esi can be used for any ESI GET request.
+ * The endpoint /api/app/v1/esi can be used for any protected ESI GET or POST request.
  *
  * There are two ways to call it, the following examples are for the ESI path and query string:
  * /v3/characters/96061222/assets/?page=1
@@ -16,8 +16,8 @@ include __DIR__ . '/vendor/autoload.php';
  *    the query parameter "esi-path-query" contains the url-encoded ESI path and query string:
  *    https://brave.core.tld/api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
  *
- * Both use the "datasource" parameter to tell Core from which character the ESI token should be use for the request.
- * The ESI datasource (tranquility or singularity) is decided by the Core configuration.
+ * Both use the "datasource" parameter to tell Core from which character the ESI token should be used for the request.
+ * (The ESI datasource (tranquility or singularity) is decided by the Core configuration.)
  *
  * See doc/documentation.md -> "Authentication of third-party applications" for details about the token.
  */
@@ -93,9 +93,7 @@ try {
 echo PHP_EOL;
 
 
-//
-// Example 3: Public ESI routes are not passed through:
-//
+// Example 2a: Public ESI routes are not passed through:
 
 try {
     $apiInstance->esiV1('/lastest/alliances/', $coreCharId);
