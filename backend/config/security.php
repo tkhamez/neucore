@@ -40,7 +40,7 @@ return [
     '/api/user/character/{id}/update'    => [Role::USER, Role::USER_ADMIN],
 
     '/api/user/corporation/tracked-corporations' => [Role::TRACKING],
-    '/api/user/corporation/members'              => [Role::TRACKING],
+    '/api/user/corporation/{id}/members'         => [Role::TRACKING],
     '/api/user/corporation'                      => [Role::GROUP_ADMIN],
 
     '/api/user/esi/request' => [Role::ESI],

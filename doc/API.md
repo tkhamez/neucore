@@ -52,8 +52,7 @@ Settings API
 Allows a player to add and remove roles from players.
 
 Character API
-- Return a list of characters that matches the name (partial matching, minimum 3 characters).
-  `/user/character/find-by/{name}`
+- Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
 - Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 - Update a character with data from ESI. `/user/character/{id}/update`
 
@@ -63,6 +62,7 @@ Player API
 - Add a role to the player. `/user/player/{id}/add-role/{name}`
 - Remove a role from a player. `/user/player/{id}/remove-role/{name}`
 - Show all data from a player. `/user/player/{id}/show`
+- List all players with a role. `/user/player/with-role/{name}`
 
 ### group-admin
 
@@ -96,11 +96,15 @@ Group API
 
 Player API
 - List all players with the role group-manger. `/user/player/group-managers`
-- Show all characters from a player. `/user/player/{id}/characters`
+- Show player with characters. `/user/player/{id}/characters`
 
 ### group-manager
 
 Allows a player to add and remove members to his groups.
+
+Character API
+- Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
+- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 
 Group API
 - List all applicants of a group. `/user/group/{id}/applicants`
@@ -110,12 +114,7 @@ Group API
 - List all members of a group. `/user/group/{id}/members`
 
 Player API
-- Show all characters from a player. `/user/player/{id}/characters`
-
-Character API
-- Return a list of characters that matches the name (partial matching, minimum 3 characters).
-  `/user/character/find-by/{name}`
-- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
+- Show player with characters. `/user/player/{id}/characters`
 
 ### app-admin
 
@@ -127,11 +126,11 @@ App API
 - Shows app information. `/user/app/{id}/show`
 - Rename an app. `/user/app/{id}/rename`
 - Delete an app. `/user/app/{id}/delete`
+- Add a group to an app. `/user/app/{id}/add-group/{gid}`
+- Remove a group from an app. `/user/app/{id}/remove-group/{gid}`
 - List all managers of an app. `/user/app/{id}/managers`
 - Assign a player as manager to an app. `/user/app/{id}/add-manager/{pid}`
 - Remove a manager (player) from an app. `/user/app/{id}/remove-manager/{pid}`
-- Add a group to an app. `/user/app/{id}/add-group/{gid}`
-- Remove a group from an app. `/user/app/{id}/remove-group/{gid}`
 - Add a role to the app. `/user/app/{id}/add-role/{name}`
 - Remove a role from an app. `/user/app/{id}/remove-role/{name}`
 
@@ -140,16 +139,15 @@ Group API
 
 Player API
 - List all players with the role app-manger. `/user/player/app-managers`
-- Show all characters from a player. `/user/player/{id}/characters`
+- Show player with characters. `/user/player/{id}/characters`
 
 ### app-manager
 
 Allows a player to change the secret of his apps.
 
 App API
-- Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.
-  `/user/app/{id}/change-secret`
-- Shows app information. `/user/app/{id}/show` (Managers can only see groups of their own apps.)
+- Shows app information. `/user/app/{id}/show`
+- Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards. `/user/app/{id}/change-secret`
 
 ### esi
 
@@ -177,7 +175,9 @@ Allows a player to view corporation member tracking data.
 Corporation API
 - Returns all corporations that have member tracking data. `/user/corporation/tracked-corporations`
 - Returns tracking data of corporation members. `/user/corporation/{id}/members`
-- Show all characters from a player. `/user/player/{id}/characters`
+
+Player API
+- Show player with characters. `/user/player/{id}/characters`
 
 ### app
 
@@ -192,20 +192,23 @@ Application API
 Allows an app to get groups from a player account.
 
 Application API
+- Return groups of the character's player account. `/app/v1/groups/{cid}`
 - Return groups of the character's player account. `/app/v2/groups/{cid}`
 - Return groups of multiple players, identified by one of their character IDs. `/app/v1/groups`
+- Return groups of the corporation. `/app/v1/corp-groups/{cid}`
 - Return groups of the corporation. `/app/v2/corp-groups/{cid}`
 - Return groups of multiple corporations. `/app/v1/corp-groups`
+- Return groups of the alliance. `/app/v1/alliance-groups/{aid}`
 - Return groups of the alliance. `/app/v2/alliance-groups/{aid}`
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
-- Returns groups from the character's account, if available, or the corporation and alliance. 
-  `/app/v1/groups-with-fallback`
+- Returns groups from the character's account, if available, or the corporation and alliance. `/app/v1/groups-with-fallback`
 
 ### app-chars
 
 Allows an app to get characters from a player account.
 
 Application API
+- Returns the main character of the player account to which the character ID belongs. `/app/v1/main/{cid}`
 - Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
 
@@ -221,8 +224,6 @@ Application API
 Allows an app to make an ESI request on behalf of a character from the database.
 
 Application API
-- Makes an ESI GET request on behalf on an EVE character and returns the result. `/app/v1/esi`
-- Makes an ESI POST request on behalf on an EVE character and returns the result. `/app/v1/esi`
-
-  This endpoint can also be used with OpenAPI clients generated for ESI, 
+- Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v1/esi`
+  This endpoint can also be used with OpenAPI clients generated for ESI,
   see [app-esi-examples.php](app-esi-examples.php) for more.
