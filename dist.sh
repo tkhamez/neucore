@@ -29,6 +29,7 @@ npm install
 cd ../..
 mkdir brvneucore
 cp -R build/backend brvneucore/backend
+rm -r brvneucore/backend/src/tests
 cp -R build/doc brvneucore/doc
 cp -R build/web brvneucore/web
 cp build/LICENSE brvneucore/LICENSE

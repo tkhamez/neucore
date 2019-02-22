@@ -83,7 +83,7 @@ Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths
 ### Local dev Requirements
 
 * PHP 7.1+ with Composer, see `backend/composer.json` for necessary extensions
-* Node.js 8 or 10 + npm (use npm 5.6.0 with node 8 if there are "write after end" errors)
+* Node.js 8 or 10, npm 6 (other versions may work, but are not tested)
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.

@@ -3,7 +3,7 @@
     "description": "For Heroku to recognizes a Node.js application.",
     "private": true,
     "engines": {
-        "node": "8.14.0",
+        "node": "8.14.1",
         "npm": "6.4.1"
     }
 }

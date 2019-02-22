@@ -20,7 +20,7 @@ env:
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
     #- CC_TEST_REPORTER_ID= travis-ci.org > repo > settings
   matrix:
-    - NODE_VERSION="8.14.0"
+    - NODE_VERSION="8.15.0"
     - NODE_VERSION="10.14.2"
 
 matrix:
@@ -31,11 +31,11 @@ matrix:
     - php: 7.1
       env: NODE_VERSION="10.14.2"
     - php: 7.2
-      env: NODE_VERSION="8.14.0"
+      env: NODE_VERSION="8.15.0"
     - php: 7.3
-      env: NODE_VERSION="8.14.0"
+      env: NODE_VERSION="8.15.0"
     - php: nightly
-      env: NODE_VERSION="8.14.0"
+      env: NODE_VERSION="8.15.0"
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'

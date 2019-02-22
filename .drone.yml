@@ -40,6 +40,7 @@ steps:
 - name: frontend-build
   image: node:10
   commands:
+  - node -v && npm -v
   - cd frontend
   - npm install
   - npm run build:prod
@@ -69,6 +70,7 @@ steps:
   - cd ..
   - mkdir -p dist/brvneucore
   - cp -R backend dist/brvneucore/backend
+  - rm -r dist/brvneucore/backend/src/tests
   - cp -R doc dist/brvneucore/doc
   - cp -R web dist/brvneucore/web
   - cp LICENSE dist/brvneucore/LICENSE
