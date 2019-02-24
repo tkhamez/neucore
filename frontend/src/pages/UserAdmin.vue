@@ -88,18 +88,13 @@
                     <span v-cloak v-if="playerEdit">
                         {{ playerEdit.name }}
                     </span>
-                    <span v-cloak v-if="playerEdit"
+                    <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
                           v-on:click="updateCharacters"
                           class="fas fa-sync update-char"
                           title="update characters"></span>
                 </h3>
 
                 <div v-cloak v-if="playerEdit" class="card-body">
-                    <h4>Account Status</h4>
-                    <p>
-                        {{ playerEdit.status }}
-                    </p>
-
                     <h4>Roles</h4>
                     <p>
                         See
@@ -129,6 +124,29 @@
                         {{ role }}
                     </div>
                     <div v-if="playerEdit.roles.length === 1">No roles.</div>
+
+                    <hr>
+
+                    <h4>Account Status</h4>
+                    <p class="text-warning">
+                        All groups will be removed from the player account when the status is changed!
+                    </p>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="userAdminSetStatus">status</label>
+                        </div>
+                        <select class="custom-select" id="userAdminSetStatus"
+                                v-model="playerEdit.status"
+                                v-on:change="setAccountStatus()">
+                            <option>default</option>
+                            <option>managed</option>
+                        </select>
+                    </div>
+                    <p class="text-muted small" v-if="playerEdit.status === 'managed'">
+                        Groups of this player can manually be changed on the
+                        <a :href="'#PlayerGroupAdmin/' + playerEdit.id">Player Group Admin</a>
+                        page.
+                    </p>
 
                     <hr>
 
@@ -318,13 +336,19 @@ module.exports = {
         }
     },
 
+    mounted: function() {
+        if (this.initialized) { // on page change
+            this.setPlayerId();
+        }
+    },
+
     watch: {
         initialized: function() { // on refresh
-            this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
+            this.setPlayerId();
         },
 
         route: function() {
-            this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
+            this.setPlayerId();
         },
 
         playerId: function() {
@@ -335,13 +359,17 @@ module.exports = {
 
         newRole: function() {
             if (this.playerEdit && this.newRole) {
-                this.addRole(this.playerEdit.id, this.newRole);
+                this.addRole(this.newRole);
                 this.newRole = '';
             }
         },
     },
 
     methods: {
+        setPlayerId: function() {
+            this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
+        },
+
         isCharacterOfPlayer: function(charId) {
             if (! this.playerEdit) {
                 return false;
@@ -443,29 +471,27 @@ module.exports = {
             });
         },
 
-        addRole: function(playerId, roleName) {
-            const vm = this;
-            vm.loading(true);
-            new this.swagger.PlayerApi().addRole(playerId, roleName, function(error) {
-                vm.loading(false);
-                if (error) {
-                    return;
-                }
-                vm.getPlayer();
-                if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange');
-                }
-            });
+        addRole: function(roleName) {
+            this.changePlayerAttribute('addRole', roleName);
         },
 
         removeRole: function(roleName) {
+            this.changePlayerAttribute('removeRole', roleName);
+        },
+
+        setAccountStatus: function() {
+            this.changePlayerAttribute('setStatus', this.playerEdit.status);
+        },
+
+        changePlayerAttribute: function(method, param) {
             if (! this.playerEdit) {
                 return;
             }
             const playerId = this.playerEdit.id;
+            const api = new this.swagger.PlayerApi();
             const vm = this;
             vm.loading(true);
-            new this.swagger.PlayerApi().removeRole(playerId, roleName, function(error) {
+            api[method].apply(api, [playerId, param, function(error) {
                 vm.loading(false);
                 if (error) {
                     return;
@@ -474,7 +500,7 @@ module.exports = {
                 if (playerId === vm.player.id) {
                     vm.$root.$emit('playerChange');
                 }
-            });
+            }]);
         },
 
         updateCharacters: function() {

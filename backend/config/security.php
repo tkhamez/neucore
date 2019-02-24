@@ -46,11 +46,11 @@ return [
     '/api/user/esi/request' => [Role::ESI],
 
     '/api/user/group/public'                => [Role::USER],
-    '/api/user/group/all'                   => [Role::APP_ADMIN, Role::GROUP_ADMIN],
+    '/api/user/group/all'                   => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_ADMIN],
     '/api/user/group/{id}/applicants'       => [Role::GROUP_MANAGER],
     '/api/user/group/{id}/remove-applicant' => [Role::GROUP_MANAGER],
-    '/api/user/group/{id}/add-member'       => [Role::GROUP_MANAGER],
-    '/api/user/group/{id}/remove-member'    => [Role::GROUP_MANAGER],
+    '/api/user/group/{id}/add-member'       => [Role::GROUP_MANAGER, Role::USER_ADMIN],
+    '/api/user/group/{id}/remove-member'    => [Role::GROUP_MANAGER, Role::USER_ADMIN],
     '/api/user/group/{id}/members'          => [Role::GROUP_MANAGER],
     '/api/user/group'                       => [Role::GROUP_ADMIN],
 

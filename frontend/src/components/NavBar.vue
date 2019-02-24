@@ -46,6 +46,9 @@
                         <a v-cloak v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
+                        <a v-cloak v-if="hasRole('user-admin')"
+                           class="dropdown-item" :class="{ active: page === 'PlayerGroupAdmin' }"
+                           href="#PlayerGroupAdmin">Player Groups</a>
                         <a v-cloak v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>

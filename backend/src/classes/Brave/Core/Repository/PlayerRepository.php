@@ -19,7 +19,7 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @return \Brave\Core\Entity\Player[]
      */
-    public function getAllWithoutCharacters()
+    public function findWithoutCharacters()
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -32,11 +32,26 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @return \Brave\Core\Entity\Player[]
      */
-    public function getAllWithCharacters()
+    public function findWithCharacters()
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
             ->andWhere('c.id IS NOT NULL')
+            ->orderBy('p.name')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return \Brave\Core\Entity\Player[]
+     */
+    public function findWithCharactersAndStatus(string $status)
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c')
+            ->andWhere('c.id IS NOT NULL')
+            ->andWhere('p.status = :status')
+            ->setParameter('status', $status)
             ->orderBy('p.name')
             ->getQuery()
             ->getResult();

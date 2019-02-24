@@ -40,7 +40,7 @@ Content page for group and app administration
             <p v-if="contentType === 'alliances' || contentType === 'corporations'">
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
             </p>
-            <p v-if="contentType === 'groups'">
+            <p v-if="type === 'App' && contentType === 'groups'">
                 Apps can only see the membership of players to groups that are listed here.
                 <button class="btn btn-outline-warning float-right" v-on:click="addAllGroupsToApp()">
                     Add all groups to app
@@ -54,7 +54,7 @@ Content page for group and app administration
 
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
-                    <label class="input-group-text" for="groupAppAdminSelect">
+                    <label class="input-group-text" for="groupAppPlayerAdminSelect">
                         <span v-if="contentType === 'managers'">Add manager</span>
                         <span v-if="contentType === 'alliances'">Add alliance</span>
                         <span v-if="contentType === 'corporations'">Add corporation</span>
@@ -62,7 +62,7 @@ Content page for group and app administration
                         <span v-if="contentType === 'roles'">Add role</span>
                     </label>
                 </div>
-                <select class="custom-select" v-model="newObject" id="groupAppAdminSelect">
+                <select class="custom-select" v-model="newObject" id="groupAppPlayerAdminSelect">
                     <option v-if="contentType === 'managers'" value="">Select player ...</option>
                     <option v-if="contentType === 'alliances'" value="">Select alliance ...</option>
                     <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>
@@ -134,7 +134,7 @@ Content page for group and app administration
                         </button>
                         <button v-if="contentType === 'groups' || contentType === 'roles'"
                                 class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveTypeToApp(
+                                v-on:click="addOrRemoveTypeToAppOrPlayer(
                                     row.id,
                                     contentType === 'groups' ? 'Group' : 'Role',
                                     'remove'
@@ -208,7 +208,7 @@ module.exports = {
             } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
                 this.addOrRemoveCorporationOrAllianceToGroup(this.newObject.id, 'add');
             } else if (this.contentType === 'groups' || this.contentType === 'roles') {
-                this.addOrRemoveTypeToApp(
+                this.addOrRemoveTypeToAppOrPlayer(
                     this.newObject.id,
                     this.contentType === 'groups' ? 'Group' : 'Role',
                     'add'
@@ -274,6 +274,8 @@ module.exports = {
                 api = new this.swagger.GroupApi();
             } else if (this.type === 'App') {
                 api = new this.swagger.AppApi();
+            } else if (this.type === 'Player') {
+                api = new this.swagger.PlayerApi();
             }
             if (this.contentType === 'managers') {
                 method = 'managers';
@@ -283,6 +285,8 @@ module.exports = {
                 method = 'alliances';
             } else if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
                 method = 'show';
+            } else if (this.contentType === 'groups') {
+                method = 'showById';
             } else if (this.contentType === 'groups') {
                 method = 'groups';
             }
@@ -307,6 +311,9 @@ module.exports = {
                         }
                     }
                     vm.tableContent = roles;
+                }  else if (vm.type === 'Player') {
+                    vm.tableContent = data.groups;
+                    vm.$emit('activePlayer', data); // pass data to parent
                 }  else {
                     if (vm.contentType === 'managers') {
                         for (const [idx, manager] of data.entries()) {
@@ -443,13 +450,26 @@ module.exports = {
             }]);
         },
 
-        addOrRemoveTypeToApp: function(id, type, action) {
+        addOrRemoveTypeToAppOrPlayer: function(id, type, action) {
             const vm = this;
-            const api = new this.swagger.AppApi();
-            const method = action + type; // add/remove + Group/Role
+            let api;
+            let method;
+            let param1;
+            let param2;
+            if (this.type === 'App') {
+                api = new this.swagger.AppApi();
+                method = action + type; // add/remove + Group/Role
+                param1 = this.typeId;
+                param2 = id;
+            } else if (this.type === 'Player') {
+                api = new this.swagger.GroupApi();
+                method = action + 'Member';
+                param1 = id;
+                param2 = this.typeId;
+            }
 
             vm.loading(true);
-            api[method].apply(api, [this.typeId, id, function(error) {
+            api[method].apply(api, [param1, param2, function(error) {
                 vm.loading(false);
                 if (error) { // 403 usually
                     return;

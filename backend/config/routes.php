@@ -117,6 +117,7 @@ return [
     '/api/user/player/{id}/show'                => ['GET',    PlayerController::class.'::showById'],
     '/api/user/player/{id}/characters'          => ['GET',    PlayerController::class.'::characters'],
     '/api/user/player/with-role/{name}'         => ['GET',    PlayerController::class.'::withRole'],
+    '/api/user/player/with-status/{name}'       => ['GET',    PlayerController::class.'::withStatus'],
 
     '/api/user/settings/system/list'                       => ['GET',  SettingsController::class.'::systemList'],
     '/api/user/settings/system/change/{name}'              => ['PUT',  SettingsController::class.'::systemChange'],
