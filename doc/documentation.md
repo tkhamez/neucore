@@ -57,6 +57,16 @@ A player can also manually delete a character if that is enabled in the system s
 
 All character removals are recorded and visible to the user admin.
 
+### Account status
+
+There a two account status: standard and managed.
+
+- The status can be changed at any time by a user admin.
+- If the status is changed, all groups are removed.
+- User admins can manually assign groups to "managed" accounts
+  (technically, they can use this API endpoint for all players).
+- ...
+
 ## Groups
 
 Visibility

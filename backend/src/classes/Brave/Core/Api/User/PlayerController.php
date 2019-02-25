@@ -49,7 +49,7 @@ class PlayerController extends BaseController
     ];
 
     private $availableStatus = [
-        Player::STATUS_DEFAULT,
+        Player::STATUS_STANDARD,
         Player::STATUS_MANAGED,
     ];
 
@@ -340,7 +340,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="The new status.",
      *         type="string",
-     *         enum={"default", "managed"}
+     *         enum={"standard", "managed"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -364,7 +364,7 @@ class PlayerController extends BaseController
         }
 
         $validStatus = [
-            Player::STATUS_DEFAULT,
+            Player::STATUS_STANDARD,
             Player::STATUS_MANAGED,
         ];
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
@@ -533,7 +533,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Status name.",
      *         type="string",
-     *         enum={"default", "managed"}
+     *         enum={"standard", "managed"}
      *     ),
      *     @SWG\Response(
      *         response="200",

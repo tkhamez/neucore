@@ -42,7 +42,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([
             'id' => null,
             'name' => 'test user',
-            'status' => Player::STATUS_DEFAULT,
+            'status' => Player::STATUS_STANDARD,
             'roles' => ['rName', 'role2'],
             'characters' => [[
                 'id' => 123,
@@ -103,7 +103,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
     public function testSetGetStatus()
     {
         $player = new Player();
-        $this->assertSame(Player::STATUS_DEFAULT, $player->getStatus());
+        $this->assertSame(Player::STATUS_STANDARD, $player->getStatus());
 
         $player->setStatus(Player::STATUS_MANAGED);
         $this->assertSame(Player::STATUS_MANAGED, $player->getStatus());

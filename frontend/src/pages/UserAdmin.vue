@@ -138,7 +138,7 @@
                         <select class="custom-select" id="userAdminSetStatus"
                                 v-model="playerEdit.status"
                                 v-on:change="setAccountStatus()">
-                            <option>default</option>
+                            <option>standard</option>
                             <option>managed</option>
                         </select>
                     </div>

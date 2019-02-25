@@ -35,7 +35,7 @@
                             <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }}</a>,
                             status: {{ playerData.status }}
                         </span>
-                        <span v-if="playerData.status === 'default'" class="text-warning">
+                        <span v-if="playerData.status === 'standard'" class="text-warning">
                             <br>
                             The status of this player is not "managed", manual changes can
                             be overwritten by the automatic group assignment.

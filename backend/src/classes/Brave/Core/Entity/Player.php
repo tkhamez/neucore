@@ -17,7 +17,7 @@ class Player implements \JsonSerializable
     /**
      * @var string
      */
-    const STATUS_DEFAULT = 'default';
+    const STATUS_STANDARD = 'standard';
 
     /**
      * @var string
@@ -57,12 +57,12 @@ class Player implements \JsonSerializable
      * Player account status.
      *
      * @SWG\Property(
-     *     enum={"default", "managed"})
+     *     enum={"standard", "managed"})
      * )
      * @Column(type="string", length=16)
      * @var string
      */
-    private $status = self::STATUS_DEFAULT;
+    private $status = self::STATUS_STANDARD;
 
     /**
      * Set to true when the "account deactivated" mail was sent.

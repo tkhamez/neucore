@@ -112,7 +112,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $char->getPlayer()->getId(),
             'name' => 'TUser',
-            'status' => Player::STATUS_DEFAULT,
+            'status' => Player::STATUS_STANDARD,
             'roles' => [Role::USER, Role::USER_ADMIN],
             'characters' => [
                 [
@@ -293,7 +293,7 @@ class PlayerControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/managed');
         $this->assertEquals(403, $response1->getStatusCode());
 
-        $this->loginUser(11); // not an user-admin
+        $this->loginUser(11); // not a user-admin
 
         $response2 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/managed');
         $this->assertEquals(403, $response2->getStatusCode());
@@ -320,12 +320,12 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(Player::STATUS_MANAGED, $player->getStatus());
         $this->assertSame(1, count($player->getGroups()));
 
-        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/default');
+        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/'.Player::STATUS_STANDARD);
 
         $this->assertEquals(204, $response1->getStatusCode());
         $this->em->clear();
         $player2 = $this->playerRepo->find($this->managerId);
-        $this->assertSame(Player::STATUS_DEFAULT, $player2->getStatus());
+        $this->assertSame(Player::STATUS_STANDARD, $player2->getStatus());
         $this->assertSame(0, count($player2->getGroups()));
     }
 
@@ -529,13 +529,13 @@ class PlayerControllerTest extends WebTestCase
 
     public function testWithStatus403()
     {
-        $response = $this->runApp('GET', '/api/user/player/with-status/default');
+        $response = $this->runApp('GET', '/api/user/player/with-status/'.Player::STATUS_STANDARD);
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
         $this->loginUser(11); // not user-admin
 
-        $response = $this->runApp('GET', '/api/user/player/with-status/default');
+        $response = $this->runApp('GET', '/api/user/player/with-status/'.Player::STATUS_STANDARD);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -708,7 +708,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $this->player->getId(),
             'name' => 'Admin',
-            'status' => Player::STATUS_DEFAULT,
+            'status' => Player::STATUS_STANDARD,
             'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             'characters' => [
                 [

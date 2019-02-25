@@ -27,7 +27,7 @@ final class Version20190220185537 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE players ADD status VARCHAR(16) NOT NULL');
-        $this->addSql('UPDATE players SET status = "' . Player::STATUS_DEFAULT . '"');
+        $this->addSql('UPDATE players SET status = "' . Player::STATUS_STANDARD . '"');
     }
 
     /**
