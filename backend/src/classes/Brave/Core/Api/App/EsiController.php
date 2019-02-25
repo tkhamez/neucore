@@ -71,7 +71,9 @@ class EsiController
      *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
-     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.",
+     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+               see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
@@ -156,7 +158,9 @@ class EsiController
      *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
-     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.",
+     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+               see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
      *     @SWG\Parameter(
