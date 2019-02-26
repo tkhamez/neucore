@@ -6,23 +6,30 @@
                 <h1>ESI</h1>
 
                 <div class="form-group">
-                    <label for="characterId">EVE Character ID</label>
-                    <input class="form-control" id="characterId" v-model="characterId">
-                    <small class="form-text text-muted">Must exist in the local database.</small>
+                    <label>EVE Character</label>
+                    <multiselect v-model="selectedCharacter" :options="charSearchResult"
+                                 label="name" track-by="id"
+                                 placeholder="Type to search"
+                                 :searchable="true"
+                                 :loading="charSearchIsLoading"
+                                 :internal-search="false"
+                                 :max-height="600"
+                                 :show-no-results="false"
+                                 @search-change="charSearch">
+                    </multiselect>
                 </div>
+
                 <div class="form-group">
-                    <label for="esiRoute">ESI route</label>
-                    <input class="form-control" id="esiRoute" v-model="esiRoute"
-                           placeholder="/characters/{character_id}/stats/">
+                    <label>ESI route</label>
+                    <small class="text-muted">
+                        see also <a href="https://esi.evetech.net/ui" target="_blank">https://esi.evetech.net/ui</a>,
+                        only GET request are implemented.
+                    </small>
+                    <multiselect v-model="selectedPath" :options="paths" :loading="false"
+                                 placeholder="Select route"></multiselect>
+                    <input class="form-control" v-model="esiRoute" placeholder="route">
                     <small class="form-text text-muted">
-                        See
-                        <a href="https://esi.evetech.net/ui" target="_blank">
-                            https://esi.evetech.net/ui
-                        </a>
-                        <br>
-                        Only GET request are implemented at the moment.
-                        <br>
-                        {character_id} is the only implemented placeholder so far.
+                        {character_id} is automatically replaced by the selected character ID.
                     </small>
                 </div>
                 <button type="submit" class="btn btn-primary" v-on:click="request()">Submit</button>
@@ -46,19 +53,54 @@ module.exports = {
 
     data: function() {
         return {
-            headers : '',
-            body : '',
-            characterId : '',
-            esiRoute : '',
+            headers: '',
+            body: '',
+            charSearchIsLoading: false,
+            charSearchResult: [],
+            selectedCharacter: '',
+            paths: [],
+            selectedPath: '',
+            esiRoute: '',
+        }
+    },
+
+    mounted: function() {
+        window.jQuery.get('/esi-paths-http-get.json').then((data) => {
+            this.paths = data;
+        });
+    },
+
+    watch: {
+        selectedPath: function() {
+            this.esiRoute = this.selectedPath;
         }
     },
 
     methods: {
+        charSearch (query) {
+            if (query.length < 3) {
+                return;
+            }
+            this.charSearchDelayed(this, query);
+        },
+
+        charSearchDelayed: _.debounce((vm, searchTerm) => {
+            vm.charSearchResult = [];
+            vm.charSearchIsLoading = true;
+            new vm.swagger.CharacterApi().findBy(searchTerm, function(error, data) {
+                vm.charSearchIsLoading = false;
+                if (error) {
+                    return;
+                }
+                vm.charSearchResult = data;
+            });
+        }, 250),
+
         request: function() {
             const vm = this;
             vm.loading(true);
             new this.swagger.ESIApi().request({
-                character: this.characterId,
+                character: this.selectedCharacter.id,
                 route: this.esiRoute
             }, function(error, data, response) {
                 vm.loading(false);
