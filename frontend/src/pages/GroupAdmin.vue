@@ -55,7 +55,10 @@
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
                     Groups
-                    <i class="far fa-plus-square add-group" v-on:click="showCreateGroupModal()"></i>
+                    <i class="far fa-plus-square add-group"
+                       @mouseover="mouseover"
+                       @mouseleave="mouseleave"
+                       v-on:click="showCreateGroupModal()"></i>
                 </h3>
                 <div class="list-group">
                     <span v-for="group in groups">
@@ -65,9 +68,13 @@
                             {{ group.name }}
                             <i v-cloak v-if="groupId === group.id"
                                 class="far fa-trash-alt mr-1 delete-group"
+                               @mouseover="mouseover"
+                               @mouseleave="mouseleave"
                                 v-on:click="showDeleteGroupModal(group)" title="delete"></i>
                             <i v-cloak v-if="groupId === group.id"
                                class="fas fa-pencil-alt mr-1 edit-group"
+                               @mouseover="mouseover"
+                               @mouseleave="mouseleave"
                                v-on:click="showEditGroupModal(group)" title="edit"></i>
                         </a>
                     </span>
@@ -87,6 +94,8 @@
                             :href="'#GroupAdmin/' + groupId + '/alliances'">
                         Alliances
                         <i class="far fa-plus-square add-alli-corp"
+                           @mouseover="mouseover"
+                           @mouseleave="mouseleave"
                             v-on:click="showAddAlliCorpModal('Alliance')"></i>
                     </a>
                 </li>
@@ -96,6 +105,8 @@
                             :href="'#GroupAdmin/' + groupId + '/corporations'">
                         Corporations
                         <i class="far fa-plus-square add-alli-corp"
+                           @mouseover="mouseover"
+                           @mouseleave="mouseleave"
                             v-on:click="showAddAlliCorpModal('Corporation')"></i>
                     </a>
                 </li>
@@ -159,6 +170,14 @@ module.exports = {
     },
 
     methods: {
+        mouseover (ele) {
+            window.jQuery(ele.target).addClass('text-warning');
+        },
+
+        mouseleave (ele) {
+            window.jQuery(ele.target).removeClass('text-warning');
+        },
+
         showCreateGroupModal: function() {
             this.$refs.editModals.showCreateModal();
         },
@@ -319,13 +338,5 @@ module.exports = {
         top: 1px;
         right: -15px;
         font-size: 1.1rem;
-    }
-
-    .add-group:hover,
-    .delete-group:hover,
-    .edit-group:hover,
-    .add-alli-corp:hover {
-        color: #F39C12;
-        border-color: #F39C12;
     }
 </style>

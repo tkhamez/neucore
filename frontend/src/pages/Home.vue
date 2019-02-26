@@ -342,7 +342,6 @@ module.exports = {
     }
 
     .groups-disabled {
-        color: red;
         text-decoration: line-through;
     }
 </style>

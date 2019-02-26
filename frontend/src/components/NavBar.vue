@@ -6,11 +6,11 @@
             Brave Collective
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarColor01" aria-controls="navbarColor01"
+                data-target="#navbar01" aria-controls="navbar01"
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="navbar-collapse collapse" id="navbarColor01" style="">
+        <div class="navbar-collapse collapse" id="navbar01" style="">
             <ul class="navbar-nav mr-auto">
                 <li v-cloak class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>

@@ -17,7 +17,10 @@
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
                     Apps
-                    <i class="far fa-plus-square add-app" v-on:click="showCreateAppModal()"></i>
+                    <i class="far fa-plus-square add-app"
+                       @mouseover="mouseover"
+                       @mouseleave="mouseleave"
+                       v-on:click="showCreateAppModal()"></i>
                 </h3>
                 <div class="list-group">
                     <span v-for="app in apps">
@@ -27,9 +30,13 @@
                             {{ app.name }}
                             <i v-cloak v-if="appId === app.id"
                                class="far fa-trash-alt mr-1 delete-app"
+                               @mouseover="mouseover"
+                               @mouseleave="mouseleave"
                                v-on:click="showDeleteAppModal(app)" title="delete"></i>
                             <i v-cloak v-if="appId === app.id"
                                class="fas fa-pencil-alt mr-1 rename-app"
+                               @mouseover="mouseover"
+                               @mouseleave="mouseleave"
                                v-on:click="showRenameAppModal(app)" title="rename"></i>
                         </a>
                     </span>
@@ -107,6 +114,14 @@ module.exports = {
     },
 
     methods: {
+        mouseover (ele) {
+            window.jQuery(ele.target).addClass('text-warning');
+        },
+
+        mouseleave (ele) {
+            window.jQuery(ele.target).removeClass('text-warning');
+        },
+
 
         showCreateAppModal: function() {
             this.$refs.editModals.showCreateModal();
@@ -171,12 +186,5 @@ module.exports = {
         float: right;
         padding: 4px 4px 5px 4px;
         border: 1px solid white;
-    }
-
-    .add-app:hover,
-    .delete-app:hover,
-    .rename-app:hover {
-        color: #F39C12;
-        border-color: #F39C12;
     }
 </style>
