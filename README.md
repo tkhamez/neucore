@@ -45,7 +45,7 @@ set the required environment variables accordingly.
 
 Make sure that the web server can write in `backend/var/logs` and `backend/var/cache`.
 
-Please note that both the web server and SSH user write the same files to `backend/var/cache`,
+Please note that both the web server and console user write the same files to `backend/var/cache`,
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
@@ -110,7 +110,7 @@ The values for the EVE application must be adjusted.
 
 - Create a new app
 - Add a compatible database, e. g. JawsDB Maria.
-- Add the necessary Config Vars (see `backend/.env.dist` file)
+- Add the necessary config vars (see `backend/.env.dist` file)
 - Add build packs in this order:
 
 ```
