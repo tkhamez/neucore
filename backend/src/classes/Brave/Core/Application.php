@@ -2,6 +2,7 @@
 
 namespace Brave\Core;
 
+use Brave\Core\Command\CheckTokens;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\SendAccountDisabledMail;
 use Brave\Core\Command\UpdateCharacters;
@@ -465,6 +466,10 @@ class Application
         $console->add(new UpdateCharacters(
             $this->container->get(RepositoryFactory::class),
             $this->container->get(EsiData::class),
+            $this->container->get(ObjectManager::class)
+        ));
+        $console->add(new CheckTokens(
+            $this->container->get(RepositoryFactory::class),
             $this->container->get(Account::class),
             $this->container->get(OAuthToken::class),
             $this->container->get(ObjectManager::class)

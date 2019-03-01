@@ -3,9 +3,7 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\Account;
 use Brave\Core\Service\EsiData;
-use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,16 +33,6 @@ class UpdateCharacters extends Command
     private $esiData;
 
     /**
-     * @var Account
-     */
-    private $charService;
-
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
-
-    /**
      * @var ObjectManager
      */
     private $objectManager;
@@ -62,8 +50,6 @@ class UpdateCharacters extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
-        Account $charService,
-        OAuthToken $tokenService,
         ObjectManager $objectManager
     ) {
         parent::__construct();
@@ -72,18 +58,13 @@ class UpdateCharacters extends Command
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
         $this->esiData = $esiData;
-        $this->charService = $charService;
-        $this->tokenService = $tokenService;
         $this->objectManager = $objectManager;
     }
 
     protected function configure()
     {
         $this->setName('update-chars')
-            ->setDescription(
-                'Updates all characters, corporations and alliances from ESI and checks refresh token. ' .
-                'If the character owner hash has changed, that character will be deleted.'
-            )
+            ->setDescription('Updates all characters, corporations and alliances from ESI.')
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update', 200);
     }
@@ -116,24 +97,9 @@ class UpdateCharacters extends Command
             // update name, corp and alliance from ESI
             $updatedChar = $this->esiData->fetchCharacter($charId);
             if ($updatedChar === null) {
-                $this->writeln('Character ' . $charId.': update failed');
-                continue;
-            }
-
-            // check token and character owner hash - this may delete the character!
-            $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
-            if ($result === Account::CHECK_TOKEN_NA) {
-                $this->writeln('Character ' . $charId.': update OK, token N/A');
-            } elseif ($result === Account::CHECK_TOKEN_OK) {
-                $this->writeln('Character ' . $charId.': update OK, token OK');
-            } elseif ($result === Account::CHECK_TOKEN_NOK) {
-                $this->writeln('Character ' . $charId.': update OK, token NOK');
-            } elseif ($result === Account::CHECK_CHAR_DELETED) {
-                $this->writeln('Character ' . $charId.': update OK, character deleted');
-            } elseif ($result === Account::CHECK_REQUEST_ERROR) {
-                $this->writeln('Character ' . $charId.': update OK, token failed');
+                $this->writeln('Character ' . $charId.': update NOK');
             } else {
-                $this->writeln('Character ' . $charId.': unknown result');
+                $this->writeln('Character ' . $charId.': update OK');
             }
 
             usleep($this->sleep * 1000);
@@ -154,7 +120,6 @@ class UpdateCharacters extends Command
             $updatedCorp = $this->esiData->fetchCorporation($corpId);
             if ($updatedCorp === null) {
                 $this->writeln('Corporation ' . $corpId.': update NOK');
-                continue;
             } else {
                 $this->writeln('Corporation ' . $corpId.': update OK');
             }
@@ -177,7 +142,6 @@ class UpdateCharacters extends Command
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
                 $this->writeln('Alliance ' . $alliId.': update NOK');
-                continue;
             } else {
                 $this->writeln('Alliance ' . $alliId.': update OK');
             }
