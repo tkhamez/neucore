@@ -97,6 +97,9 @@ module.exports = {
         }, 250),
 
         request: function() {
+            if (! this.selectedCharacter) {
+                return;
+            }
             const vm = this;
             vm.loading(true);
             new this.swagger.ESIApi().request({
