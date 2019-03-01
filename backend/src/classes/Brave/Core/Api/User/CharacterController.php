@@ -248,11 +248,11 @@ class CharacterController
         }
 
         if ($updatedChar !== null) {
-            return $this->res->withJson($updatedChar);
-        } else {
             // assign auto groups
             $groupAssign->assign($updatedChar->getPlayer()->getId());
 
+            return $this->res->withJson($updatedChar);
+        } else {
             return $this->res->withStatus(204);
         }
     }
