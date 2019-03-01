@@ -285,7 +285,6 @@ class Application
     private function getDependencies()
     {
         return [
-
             // Configuration class
             Config::class => function (ContainerInterface $c) {
                 return new Config($c->get('config'));
@@ -364,7 +363,7 @@ class Application
                 return new Client(['handler' => $stack]);
             },
 
-            // Extend Slim's error and php error handler.
+            // Extend Slim's error and php error handler to log all errors with monolog.
             'errorHandler' => function (Container $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
@@ -409,13 +408,17 @@ class Application
      */
     private function errorHandling(): void
     {
-        // logs errors that are not converted to exceptions by Slim
+        error_reporting(E_ALL);
+
+        // logs errors that are not handled by Slim
         ErrorHandler::register($this->container->get(LoggerInterface::class));
 
         // php settings
         ini_set('display_errors', '0');
         ini_set('log_errors', '0'); // all errors are logged with Monolog
-        error_reporting(E_ALL);
+
+        // log for exceptions caught in web/app.php and bin/console - path was already checked to be writable
+        ini_set('error_log', $this->container->get('config')['monolog']['path']);
     }
 
     private function registerRoutes(App $app): void

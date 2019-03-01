@@ -26,4 +26,9 @@ class Error extends \Slim\Handlers\Error
 
         return parent::__invoke($request, $response, $exception);
     }
+
+    protected function logError($message)
+    {
+        // don't log it twice
+    }
 }

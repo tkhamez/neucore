@@ -26,4 +26,9 @@ class PhpError extends \Slim\Handlers\PhpError
 
         return parent::__invoke($request, $response, $error);
     }
+
+    protected function logError($message)
+    {
+        // don't log it twice
+    }
 }
