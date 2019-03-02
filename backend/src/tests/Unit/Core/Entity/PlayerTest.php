@@ -190,6 +190,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $player3 = (new Player())->addCharacter($char1)->addCharacter($char3);
         $player4 = (new Player())->addCharacter($char1)->addCharacter($char4);
         $player5 = (new Player())->addCharacter($char5);
+        $player6 = (new Player())->addCharacter(new Character());
 
         $this->assertFalse($player1->hasCharacterWithInvalidTokenOlderThan(24));
         $this->assertFalse($player2->hasCharacterWithInvalidTokenOlderThan(24)); // false because time is NOW
@@ -203,6 +204,8 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($player5->hasCharacterWithInvalidTokenOlderThan(6)); // true because token is NULL
 
         $this->assertTrue($player2->hasCharacterWithInvalidTokenOlderThan(0)); // it's older or equal 0
+
+        $this->assertTrue($player6->hasCharacterWithInvalidTokenOlderThan(123)); // no token time set
     }
 
     public function testGetMain()
