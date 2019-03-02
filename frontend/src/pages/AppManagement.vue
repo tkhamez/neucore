@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4">
+            <div class="col-lg-4 sticky-column">
                 <div class="card border-secondary mb-3" >
                     <h3 class="card-header">Apps</h3>
                     <div v-cloak v-if="player" class="list-group">

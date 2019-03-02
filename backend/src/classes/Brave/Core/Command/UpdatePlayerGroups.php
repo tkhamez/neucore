@@ -5,8 +5,10 @@ namespace Brave\Core\Command;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdatePlayerGroups extends Command
@@ -27,6 +29,16 @@ class UpdatePlayerGroups extends Command
     private $objectManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var bool
+     */
+    private $log;
+
+    /**
      * @var OutputInterface
      */
     private $output;
@@ -34,23 +46,27 @@ class UpdatePlayerGroups extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         AutoGroupAssignment $autoGroup,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
+        LoggerInterface $logger
     ) {
         parent::__construct();
 
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
         $this->autoGroup = $autoGroup;
         $this->objectManager = $objectManager;
+        $this->logger = $logger;
     }
 
     protected function configure()
     {
         $this->setName('update-player-groups')
-            ->setDescription('Assigns groups to players based on corporation configuration.');
+            ->setDescription('Assigns groups to players based on corporation configuration.')
+            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->log = $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "update-player-groups"');
@@ -77,6 +93,10 @@ class UpdatePlayerGroups extends Command
 
     private function writeln($text)
     {
-        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        if ($this->log) {
+            $this->logger->info($text);
+        } else {
+            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        }
     }
 }

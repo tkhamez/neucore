@@ -9,12 +9,29 @@ body {
     margin-bottom: 60px; // same as footer height
 }
 
+/**
+ * for a sticky, scrollable left column
+ */
+.sticky-column {
+    @media (min-width: 992px) {
+        @supports (position: sticky) {
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 84px);
+            overflow-y: auto;
+        }
+    }
+}
+
 .footer {
     position: absolute;
     bottom: 0;
     width: 100%;
     height: 60px;
-    line-height: 60px; // vertically center the text
+    padding-top: 22px;
+}
+.footer .github {
+    float: right;
 }
 
 [v-cloak] {

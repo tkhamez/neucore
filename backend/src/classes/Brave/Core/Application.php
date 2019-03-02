@@ -8,16 +8,8 @@ use Brave\Core\Command\SendAccountDisabledMail;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdateMemberTracking;
 use Brave\Core\Command\UpdatePlayerGroups;
-use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
-use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\Account;
 use Brave\Core\Service\Config;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\EveMail;
-use Brave\Core\Service\MemberTracking;
-use Brave\Core\Service\OAuthToken;
-use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
@@ -458,39 +450,11 @@ class Application
      */
     private function addCommands(ConsoleApplication $console): void
     {
-        $console->add(new MakeAdmin(
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(ObjectManager::class)
-        ));
-
-        $console->add(new UpdateCharacters(
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(EsiData::class),
-            $this->container->get(ObjectManager::class)
-        ));
-        $console->add(new CheckTokens(
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(Account::class),
-            $this->container->get(OAuthToken::class),
-            $this->container->get(ObjectManager::class)
-        ));
-
-        $console->add(new UpdatePlayerGroups(
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(AutoGroupAssignment::class),
-            $this->container->get(ObjectManager::class)
-        ));
-
-        $console->add(new SendAccountDisabledMail(
-            $this->container->get(EveMail::class),
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(ObjectManager::class)
-        ));
-
-        $console->add(new UpdateMemberTracking(
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(MemberTracking::class),
-            $this->container->get(EsiData::class)
-        ));
+        $console->add($this->container->get(MakeAdmin::class));
+        $console->add($this->container->get(UpdateCharacters::class));
+        $console->add($this->container->get(CheckTokens::class));
+        $console->add($this->container->get(UpdatePlayerGroups::class));
+        $console->add($this->container->get(SendAccountDisabledMail::class));
+        $console->add($this->container->get(UpdateMemberTracking::class));
     }
 }

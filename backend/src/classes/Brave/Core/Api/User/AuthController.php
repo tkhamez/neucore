@@ -14,6 +14,14 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
+ * @SWG\SecurityScheme(
+ *     securityDefinition="Session",
+ *     type="apiKey",
+ *     name="Cookie",
+ *     in="header",
+ *     description="Example: BCSESS=123"
+ * )
+ *
  * @SWG\Tag(
  *     name="Auth",
  *     description="User authentication."

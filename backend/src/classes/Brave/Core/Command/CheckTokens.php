@@ -6,6 +6,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -34,9 +35,19 @@ class CheckTokens extends Command
     private $objectManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var int
      */
     private $sleep;
+
+    /**
+     * @var bool
+     */
+    private $log;
 
     /**
      * @var OutputInterface
@@ -47,7 +58,8 @@ class CheckTokens extends Command
         RepositoryFactory $repositoryFactory,
         Account $charService,
         OAuthToken $tokenService,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
+        LoggerInterface $logger
     ) {
         parent::__construct();
 
@@ -55,6 +67,7 @@ class CheckTokens extends Command
         $this->charService = $charService;
         $this->tokenService = $tokenService;
         $this->objectManager = $objectManager;
+        $this->logger = $logger;
     }
 
     protected function configure()
@@ -65,12 +78,14 @@ class CheckTokens extends Command
                 'If the character owner hash has changed or the character has been biomassed, it will be deleted.'
             )
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each check', 200);
+                'Time to sleep in milliseconds after each check', 200)
+            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = (int) $input->getOption('sleep');
+        $this->log = $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "check-tokens"');
@@ -119,6 +134,10 @@ class CheckTokens extends Command
 
     private function writeln($text)
     {
-        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        if ($this->log) {
+            $this->logger->info($text);
+        } else {
+            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        }
     }
 }

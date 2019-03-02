@@ -14,3 +14,5 @@ foreach ($def->paths as $path => $data) {
 }
 
 file_put_contents(__DIR__ . '/../../web/esi-paths-http-get.json', \json_encode($httpGet));
+
+echo "wrote web/esi-paths-http-get.json", PHP_EOL;

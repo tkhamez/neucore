@@ -51,8 +51,8 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-4">
-            <div class="card border-secondary mb-3" >
+        <div class="col-lg-4 sticky-column">
+            <div class="card border-secondary mb-3">
                 <h3 class="card-header">
                     Groups
                     <i class="far fa-plus-square add-group"
@@ -61,36 +61,35 @@
                        v-on:click="showCreateGroupModal()"></i>
                 </h3>
                 <div class="list-group">
-                    <span v-for="group in groups">
-                        <a class="list-group-item list-group-item-action"
-                            :class="{ active: groupId === group.id }"
-                            :href="'#GroupAdmin/' + group.id + '/' + contentType">
-                            {{ group.name }}
-                            <i v-cloak v-if="groupId === group.id"
-                                class="far fa-trash-alt mr-1 delete-group"
+                    <a v-for="group in groups" class="list-group-item list-group-item-action"
+                        :class="{ active: groupId === group.id }"
+                        :href="'#GroupAdmin/' + group.id + '/' + contentType"
+                    >
+                        {{ group.name }}
+                        <span class="group-actions" v-cloak v-if="groupId === group.id">
+                            <i class="far fa-trash-alt mr-1 delete-group"
                                @mouseover="mouseover"
                                @mouseleave="mouseleave"
-                                v-on:click="showDeleteGroupModal(group)" title="delete"></i>
-                            <i v-cloak v-if="groupId === group.id"
-                               class="fas fa-pencil-alt mr-1 edit-group"
+                               v-on:click="showDeleteGroupModal(group)" title="delete"></i>
+                            <i class="fas fa-pencil-alt mr-1 edit-group"
                                @mouseover="mouseover"
                                @mouseleave="mouseleave"
                                v-on:click="showEditGroupModal(group)" title="edit"></i>
-                        </a>
-                    </span>
+                        </span>
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-lg-8">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link active"
-                       :class="{ 'bg-primary': contentType === 'managers' }"
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'managers' }"
                        :href="'#GroupAdmin/' + groupId + '/managers'">Managers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active"
-                            :class="{ 'bg-primary': contentType === 'alliances' }"
+                    <a class="nav-link"
+                            :class="{ 'active': contentType === 'alliances' }"
                             :href="'#GroupAdmin/' + groupId + '/alliances'">
                         Alliances
                         <i class="far fa-plus-square add-alli-corp"
@@ -100,8 +99,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active"
-                            :class="{ 'bg-primary': contentType === 'corporations' }"
+                    <a class="nav-link"
+                            :class="{ 'active': contentType === 'corporations' }"
                             :href="'#GroupAdmin/' + groupId + '/corporations'">
                         Corporations
                         <i class="far fa-plus-square add-alli-corp"
@@ -265,6 +264,10 @@ module.exports = {
         }, 250),
 
         addAlliCorp: function() {
+            if (! this.searchSelected) {
+                return;
+            }
+
             const vm = this;
             let api;
             if (this.addType === 'Corporation') {
@@ -336,7 +339,11 @@ module.exports = {
     .add-alli-corp {
         position: relative;
         top: 1px;
-        right: -15px;
+        margin-left: 12px;
         font-size: 1.1rem;
+    }
+
+    .group-actions {
+        float: right;
     }
 </style>

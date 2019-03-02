@@ -5,6 +5,7 @@ namespace Brave\Core\Command;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EveMail;
 use Brave\Core\Service\ObjectManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,22 +29,37 @@ class SendAccountDisabledMail extends Command
     private $objectManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var int
      */
     private $sleep;
+
+    /**
+     * @var bool
+     */
+    private $log;
 
     /**
      * @var OutputInterface
      */
     private $output;
 
-    public function __construct(EveMail $eveMail, RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
-    {
+    public function __construct(
+        EveMail $eveMail,
+        RepositoryFactory $repositoryFactory,
+        ObjectManager $objectManager,
+        LoggerInterface $logger
+    ) {
         parent::__construct();
 
         $this->eveMail = $eveMail;
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
         $this->objectManager = $objectManager;
+        $this->logger = $logger;
     }
 
     protected function configure()
@@ -51,12 +67,14 @@ class SendAccountDisabledMail extends Command
         $this->setName('send-account-disabled-mail')
             ->setDescription('Sends "account disabled" EVE mail notification.')
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)', 20);
+                'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)', 20)
+            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = (int) $input->getOption('sleep');
+        $this->log = $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "send-account-disabled-mail"');
@@ -106,6 +124,10 @@ class SendAccountDisabledMail extends Command
 
     private function writeln($text)
     {
-        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        if ($this->log) {
+            $this->logger->info($text);
+        } else {
+            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        }
     }
 }

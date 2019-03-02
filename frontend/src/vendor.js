@@ -1,8 +1,5 @@
 
-// bootstrap with bootswatch
-import './vendor.scss';
-
-// bootstrap and required jquery + popper
+// bootstrap JS (css is included via theme* entry point) and required jquery + popper
 window.jQuery = require('jquery');
 window.popper = require('popper.js');
 require('bootstrap');

@@ -18,6 +18,7 @@ Preview https://brvneucore.herokuapp.com
 Objectives
 - Manage alliance specific groups for players.
 - Provide an API to query these groups.
+- Access to ESI data of all members.
 
 This project consists of two applications, the backend and the frontend.
 For more information, see the Readme for 
@@ -28,15 +29,15 @@ More documentation is available in the `doc` directory:
 
 ## Installation
 
-### EVE API setup
+### EVE API Setup
 
 - visit https://developers.eveonline.com/applications or https://developers.testeveonline.com
 - create a new application (eg: Brave Core DEV)
-- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the Core backend
+- Connection Type: "Authentication & API Access", add the required scopes. Scopes for the backend
   are configured with the environment variable BRAVECORE_EVE_SCOPES.
-- set the callback to https://localhost/login-callback (change domain/port as required)
+- set the callback to https://your.domain/login-callback
 
-### App setup
+### App Setup
 
 Clone the repository or download the distribution (the distribution does not require Composer, Node.js or Java).
 
@@ -48,6 +49,8 @@ Make sure that the web server can write in `backend/var/logs` and `backend/var/c
 Please note that both the web server and console user write the same files to `backend/var/cache`,
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
+
+If running in `prod` mode, the session cookie for the login is limited to HTTPS.
 
 ### Install/Update
 
@@ -66,21 +69,24 @@ vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 
 ##### Git
 
-If you have cloned the repository, you must install the dependencies and build the backend and frontend:
+If you have cloned the repository, you must install the dependencies and build the backend and frontend
+(see also "Local Development Requirements" below):
 
 `./install.sh` or
 
 `./install.sh prod`
 
-#### Cron jobs
+#### Cron Job
 
-Set up necessary cron jobs, e.g. 3 times daily with flock (adjust user and paths):
+Set up necessary cron jobs, e.g. 3 times daily, with flock (adjust user and paths):
 
 ```
 0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-jobs.lockfile backend/bin/run-jobs.sh
 ```
 
-### Local dev Requirements
+The output is logged to backend/var/logs.
+
+### Local Development Requirements
 
 * PHP 7.1+ with Composer, see `backend/composer.json` for necessary extensions
 * Node.js 8 or 10, npm 6 (other versions may work, but are not tested)

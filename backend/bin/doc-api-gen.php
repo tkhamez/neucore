@@ -37,6 +37,9 @@ foreach ($roles->getConstants() as $role) {
 
 file_put_contents(__DIR__ . '/../../doc/API.md', $result);
 
+echo "wrote doc/API.md", PHP_EOL;
+
+
 /**
  * @@see \Tkhamez\Slim\RoleAuth\SecureRouteMiddleware::__invoke()
  */

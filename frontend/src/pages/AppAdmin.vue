@@ -13,7 +13,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
                     Apps
@@ -46,18 +46,18 @@
         <div class="col-lg-8">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link active"
-                       :class="{ 'bg-primary': contentType === 'managers' }"
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'managers' }"
                        :href="'#AppAdmin/' + appId + '/managers'">Managers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active"
-                       :class="{ 'bg-primary': contentType === 'groups' }"
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'groups' }"
                        :href="'#AppAdmin/' + appId + '/groups'">Groups</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active"
-                       :class="{ 'bg-primary': contentType === 'roles' }"
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'roles' }"
                        :href="'#AppAdmin/' + appId + '/roles'">Roles</a>
                 </li>
             </ul>

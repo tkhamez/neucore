@@ -60,13 +60,25 @@
                     <a class="nav-link" href="#Esi">ESI</a>
                 </li>
             </ul>
-            <span v-cloak v-if="authChar" class="navbar-brand">
-                <img :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
-                    class="d-inline-block align-top mr-2" alt="Character Portrait">
-                {{ authChar.name }}
-            </span>
-            <a v-cloak v-if="authChar" href="#logout"
-                class="btn btn-outline-success">Sign Out</a>
+
+            <img v-cloak v-if="authChar"
+                 :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
+                 class="d-inline-block align-top mr-2"
+                 alt="Character Portrait">
+            <div v-cloak v-if="authChar" class="dropdown">
+                <button class="btn btn-primary dropdown-toggle mr-3" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false">
+                    {{ authChar.name }}
+                </button>
+                <div class="dropdown-menu scrollable-menu">
+                    <h6 class="dropdown-header">Themes</h6>
+                    <a v-for="theme in themes" class="dropdown-item" href="#"
+                       :class="{ 'active': selectedTheme === theme }"
+                       v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
+                </div>
+            </div>
+
+            <a v-cloak v-if="authChar" href="#logout" class="btn btn-outline-warning">Sign Out</a>
         </div>
     </nav>
 </template>
@@ -77,20 +89,63 @@ module.exports = {
         authChar: [null, Object],
         page: String,
     },
+
     data: function() {
         return {
             managePages: ['GroupManagement', 'AppManagement'],
             adminPages: ['UserAdmin', 'GroupAdmin', 'AppAdmin', 'SystemSettings'],
+            selectedTheme: 'Darkly',
+            themes: [
+                'Basic',
+                'Cerulean',
+                'Cosmo',
+                'Cyborg',
+                'Darkly',
+                'Flatly',
+                'Journal',
+                'Litera',
+                'Lumen',
+                'Lux',
+                'Materia',
+                'Minty',
+                'Pulse',
+                'Sandstone',
+                'Simplex',
+                //'Sketchy',
+                'Slate',
+                'Solar',
+                'Spacelab',
+                'Superhero',
+                'United',
+                'Yeti',
+            ]
+        }
+    },
+
+    methods: {
+        selectTheme: function(name) {
+            this.selectedTheme = name;
+            const $link = window.jQuery("head link[href*='dist/theme-']");
+            const oldHref = $link.attr('href');
+            const newHref = oldHref.replace(/^(.*theme-)[a-z]+(.*)$/, '$1' + this.selectedTheme.toLowerCase() + '$2');
+            $link.attr('href', newHref);
         }
     },
 }
 </script>
 
 <style scoped>
-    .dropdown:hover .dropdown-menu {
-        display: block;
+    @media (min-width: 768px) {
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
     }
     .dropdown-menu {
         margin: 0;
+    }
+    .scrollable-menu {
+        height: auto;
+        max-height: calc(100vh - 80px);
+        overflow-x: hidden;
     }
 </style>

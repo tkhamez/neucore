@@ -5,6 +5,7 @@ namespace Brave\Core\Command;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\MemberTracking;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,6 +29,16 @@ class UpdateMemberTracking extends Command
     private $esiData;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var bool
+     */
+    private $log;
+
+    /**
      * @var OutputInterface
      */
     private $output;
@@ -35,13 +46,15 @@ class UpdateMemberTracking extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         MemberTracking $memberTracking,
-        EsiData $esiData
+        EsiData $esiData,
+        LoggerInterface $logger
     ) {
         parent::__construct();
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
         $this->esiData = $esiData;
+        $this->logger = $logger;
     }
 
     protected function configure()
@@ -51,13 +64,15 @@ class UpdateMemberTracking extends Command
                 'Updates member tracking data from all available characters with director role from settings.'
             )
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each update', 200);
+                'Time to sleep in milliseconds after each update', 200)
+            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->output = $output;
         $sleep = (int) $input->getOption('sleep');
+        $this->log = $input->getOption('log');
+        $this->output = $output;
 
         $this->writeln('* Started "update-member-tracking"');
 
@@ -101,6 +116,10 @@ class UpdateMemberTracking extends Command
 
     private function writeln($text)
     {
-        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        if ($this->log) {
+            $this->logger->info($text);
+        } else {
+            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        }
     }
 }

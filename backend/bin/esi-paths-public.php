@@ -61,3 +61,5 @@ foreach ($def->paths as $path => $data) {
 
 $result = var_export($public, true);
 file_put_contents(__DIR__ . '/../config/esi-paths-public.php', "<?php\nreturn " . $result . ';');
+
+echo "wrote config/esi-paths-public.php", PHP_EOL;

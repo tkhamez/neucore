@@ -23,7 +23,7 @@ composer install --no-dev --optimize-autoloader --no-interaction
 composer compile:prod
 ```
 
-## Console commands
+## Console Commands
 
 The console application is available at
 
@@ -49,12 +49,6 @@ Run tests:
 vendor/bin/phpunit
 ```
 
-Or use composer, with or without coverage report:
-```
-composer test:cov
-composer test
-```
-
 ### Doctrine
 
 Generate constructor, getters and setters:
@@ -77,10 +71,12 @@ Apply migrations:
 vendor/bin/doctrine-migrations migrations:migrate
 ```
 
-### Swagger
+### OpenAPI
 
-Generate swagger.json:
+Generate OpenAPI interface files:
+
 ```
 vendor/bin/swagger --exclude bin,config,var,vendor --output ../web
+vendor/bin/swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/App --output ../web/frontend-api.json
 vendor/bin/swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json
 ```

@@ -5,6 +5,7 @@ namespace Brave\Core\Command;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -38,9 +39,19 @@ class UpdateCharacters extends Command
     private $objectManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var int
      */
     private $sleep;
+
+    /**
+     * @var bool
+     */
+    private $log;
 
     /**
      * @var OutputInterface
@@ -50,7 +61,8 @@ class UpdateCharacters extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
+        LoggerInterface $logger
     ) {
         parent::__construct();
 
@@ -59,6 +71,7 @@ class UpdateCharacters extends Command
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
         $this->esiData = $esiData;
         $this->objectManager = $objectManager;
+        $this->logger = $logger;
     }
 
     protected function configure()
@@ -66,12 +79,14 @@ class UpdateCharacters extends Command
         $this->setName('update-chars')
             ->setDescription('Updates all characters, corporations and alliances from ESI.')
             ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each update', 200);
+                'Time to sleep in milliseconds after each update', 200)
+            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = (int) $input->getOption('sleep');
+        $this->log = $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "update-chars"');
@@ -152,6 +167,10 @@ class UpdateCharacters extends Command
 
     private function writeln($text)
     {
-        $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        if ($this->log) {
+            $this->logger->info($text);
+        } else {
+            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
+        }
     }
 }

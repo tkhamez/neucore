@@ -9,7 +9,7 @@ use Slim\Http\Response;
  * @SWG\Swagger(
  *     schemes={"https", "http"},
  *     basePath="/api",
- *     produces="application/json",
+ *     produces={"application/json"},
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
  *       description="Client library of Brave Collective Core Services API",

@@ -2,8 +2,8 @@
 
 DIR=$(dirname "$(realpath "$0")")
 
-${DIR}/console update-chars
-${DIR}/console update-player-groups
-${DIR}/console check-tokens
-${DIR}/console update-member-tracking
-${DIR}/console send-account-disabled-mail
+${DIR}/console update-chars --log
+${DIR}/console update-player-groups --log
+${DIR}/console check-tokens --log
+${DIR}/console update-member-tracking --log
+${DIR}/console send-account-disabled-mail --log

@@ -54,6 +54,7 @@ class EsiControllerTest extends WebTestCase
             [
                 'X-Esi-Error-Limit-Remain' => [100],
                 'X-Esi-Error-Limit-Reset' => [60],
+                'Expires' => ['Sat, 02 Mar 2019 12:26:53 GMT'],
             ],
             '{"key": "value"}'
         ));
@@ -72,6 +73,7 @@ class EsiControllerTest extends WebTestCase
                 'X-Esi-Error-Limit-Reset' => '60',
                 'X-Pages' => null,
                 'warning' => null,
+                'Expires' => 'Sat, 02 Mar 2019 12:26:53 GMT',
             ],
             'body' => ['key' => 'value']
         ], $this->parseJsonBody($response));

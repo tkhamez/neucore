@@ -161,6 +161,7 @@ class EsiController
         }
 
         return [
+            'Expires' => $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : null,
             'X-Esi-Error-Limit-Remain' => $response->hasHeader('X-Esi-Error-Limit-Remain') ?
                 $response->getHeader('X-Esi-Error-Limit-Remain')[0] : null,
             'X-Esi-Error-Limit-Reset' => $response->hasHeader('X-Esi-Error-Limit-Reset') ?

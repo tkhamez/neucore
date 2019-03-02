@@ -11,8 +11,30 @@ module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
     return {
         entry: {
+            'theme-basic': './src/themes/basic.scss',
+            'theme-cerulean': './src/themes/cerulean.scss',
+            'theme-cosmo': './src/themes/cosmo.scss',
+            'theme-cyborg': './src/themes/cyborg.scss',
+            'theme-darkly': './src/themes/darkly.scss',
+            'theme-flatly': './src/themes/flatly.scss',
+            'theme-journal': './src/themes/journal.scss',
+            'theme-litera': './src/themes/litera.scss',
+            'theme-lumen': './src/themes/lumen.scss',
+            'theme-lux': './src/themes/lux.scss',
+            'theme-materia': './src/themes/materia.scss',
+            'theme-minty': './src/themes/minty.scss',
+            'theme-pulse': './src/themes/pulse.scss',
+            'theme-sandstone': './src/themes/sandstone.scss',
+            'theme-simplex': './src/themes/simplex.scss',
+            //'theme-sketchy': './src/themes/sketchy.scss', // build error
+            'theme-slate': './src/themes/slate.scss',
+            'theme-solar': './src/themes/solar.scss',
+            'theme-spacelab': './src/themes/spacelab.scss',
+            'theme-superhero': './src/themes/superhero.scss',
+            'theme-united': './src/themes/united.scss',
+            'theme-yeti': './src/themes/yeti.scss',
             'vendor': './src/vendor.js',
-            'app': './src/index.js'
+            'app': './src/index.js',
         },
         output: {
             path: path.resolve(__dirname, '../web/dist'),
@@ -22,7 +44,8 @@ module.exports = (env, argv) => {
             rules: [{
                 test: /\.(css|scss)$/,
                 use: [
-                    devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    //devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    MiniCssExtractPlugin.loader,
                     'css-loader',
                     'sass-loader'
                 ]
@@ -54,7 +77,31 @@ module.exports = (env, argv) => {
         plugins: [
             new HtmlWebpackPlugin({
                 template: 'src/index.html',
-                filename: '../index.html'
+                filename: '../index.html',
+                excludeChunks: [
+                    'theme-basic',
+                    'theme-cerulean',
+                    'theme-cosmo',
+                    'theme-cyborg',
+                    //'theme-darkly',
+                    'theme-flatly',
+                    'theme-journal',
+                    'theme-litera',
+                    'theme-lumen',
+                    'theme-lux',
+                    'theme-materia',
+                    'theme-minty',
+                    'theme-pulse',
+                    'theme-sandstone',
+                    'theme-simplex',
+                    'theme-sketchy',
+                    'theme-slate',
+                    'theme-solar',
+                    'theme-spacelab',
+                    'theme-superhero',
+                    'theme-united',
+                    'theme-yeti',
+                ],
             }),
             new CleanWebpackPlugin(['dist', 'fonts'], {
                 root: path.resolve(__dirname, '../web')
@@ -63,15 +110,13 @@ module.exports = (env, argv) => {
                 'process.env.NODE_ENV': JSON.stringify(devMode ? 'development' : 'production')
             }),
             new MiniCssExtractPlugin({
-                filename: "[name].[chunkhash].css",
-                //chunkFilename: "[name].[id].[chunkhash].css"
+                filename: devMode ? '[name].css' : '[name].[hash].css',
+                //chunkFilename: devMode ? '[id].css' : '[id].[chunkhash].css',
             }),
-            new VueLoaderPlugin()
+            new VueLoaderPlugin(),
         ],
         optimization: {
-            runtimeChunk: true,
-            //splitChunks: { chunks: 'all' }, // font-awesome does not work anymore with this options
-                                              // since I added vendor.scss
+            runtimeChunk: 'single',
             minimizer: [
                 new UglifyJsPlugin({
                     sourceMap: true

@@ -7,23 +7,24 @@
     </div>
 
     <div v-cloak v-if="player" class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
                     Characters
                 </h3>
                 <div class="card-body">
-                    <character-search :swagger="swagger" v-on:result="searchResult = $event"></character-search>
+                    <character-search :swagger="swagger" v-on:result="onSearchResult($event)"></character-search>
                     <span class="text-muted small">
                         Select a character to show it's player account.
                     </span>
                 </div>
                 <div class="list-group">
-                    <span v-for="char in searchResult"
-                        class="list-group-item list-group-item-action btn"
+                    <button v-for="char in searchResult"
+                        class="list-group-item list-group-item-action"
+                        :class="{ active: isCharacterOfPlayer(char.id) }"
                         v-on:click="findPlayer(char.id)">
                         {{ char.name }}
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -335,6 +336,17 @@ module.exports = {
     },
 
     methods: {
+        isCharacterOfPlayer: function(charId) {
+            if (! this.playerEdit) {
+                return false;
+            }
+            for (let char of this.playerEdit.characters) {
+                if (char.id === charId) {
+                    return true;
+                }
+            }
+            return false;
+        },
 
         findPlayer: function(characterId) {
             const vm = this;
@@ -348,10 +360,26 @@ module.exports = {
             });
         },
 
+        onSearchResult: function(result) {
+            this.searchResult = result;
+            if (result.length > 0) {
+                this.playersRole = [];
+                this.playersChars = [];
+                this.activeButton = '';
+            }
+        },
+
         getPlayerByRole: function(roleName) {
+            if (roleName === this.activeButton) {
+                this.activeButton = '';
+                this.playersRole = [];
+                return;
+            }
+
             const vm = this;
             vm.activeButton = roleName;
             vm.playersChars = [];
+            vm.searchResult = [];
             vm.loading(true);
             new this.swagger.PlayerApi().withRole(roleName, function(error, data) {
                 vm.loading(false);
@@ -363,9 +391,16 @@ module.exports = {
         },
 
         getPlayers: function(withOutChars) {
+            if (withOutChars === this.activeButton) {
+                this.activeButton = '';
+                this.playersChars = [];
+                return;
+            }
+
             const vm = this;
             vm.activeButton = withOutChars;
             vm.playersRole = [];
+            vm.searchResult = [];
             const api = new this.swagger.PlayerApi();
             vm.loading(true);
             api[withOutChars].apply(api, [function(error, data) {
