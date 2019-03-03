@@ -7,18 +7,17 @@ php:
   - nightly
 
 addons:
-  mariadb: '10.1'
+  mariadb: 10.1
   sonarcloud:
     organization: "tkhamez-github"
     token:
-      secure: "tsB4V6vv5hmA2LLt3pymHm8yWwfxAXujju8fXqYTGzC2n+8sKtCy+rMacsybdYJKL3ks+u5mwWW7mxuYWt5dcHMRu8ckgQhgH477XWCJgJzhvqAaxUh18z+OMKmSNN28aKb6J1Cq5MCxubxS1v498KR5wpXZj7QSFNPhH+jhAgH3fFN8Y9ED+wRUBBy+O1yUt0S1wQDfWmZ7MGruwu9mhqVnHCy7hWid6ojoWwyczwbJGHGb5bOqoitabaW8YLIFzmFQ5+Eu52h1WzC44JhYNYvLTyR5MKpGHQAow/MDTalyXWJihx8w0Oo1AGS3M9cTrUWyW82c6a3lEJaIqlCDZig/CjkXZPjJjF3vuSmiyz696nRceXwQKjTxDLdpgBKRdV6F9NnEMyBFdGVmA/RNNaEbi5vKYqWsh62MZzOa6wOSfSvrnLtGD4nYIwxauNugXzdgTGtaP6S48eKqiB4MXAwLIDIQmE4IFEWNEFCGD+Xw6rhtAnyK2iMDwgLPWvyQfTdCpikQ+oUvqAh1iGiDiJBMTOKFqIRt1jWLC7tHglWg5ts5l9zr+qX/R0jhSNfhvdfv8pdVXdJqPlAz+pZ1nQ8MWUrjdoGSPvCT+4cEnopdSdGjyUiJJdmbf5ZbN7DTVbov7jYitfW3DqLhr11ygI1jwdwz42EaT7/uWUAZBbU="
+      secure: "oHFdB27/6RBWXkhyh9Mzt3BRgRSIDnkijLzhOC5TPNpIeXTiqsS+Nw8wJPHSnTvxE0Ck2iBzdNDSqfHgmC6gbKb2XWp3z6qM6xTHPzuQEHqqoVTReIPyK2/6nHrHoYTMkzoQ3U2pGBF8xVvkRly34FR2HBLiYbgIcIYKW0095nWAvITUC/L9YD5pLeIuMsEKjY64417XIyrSWhBru2iqgJDmeluAOp4gb7uAzKbVob+aF9d/VH1+MYGmWhcsccgOWKDPCBLmYbkLs2SFUBObOdU3kjzGzVXc3/+/fC4IrvZxSG2mbHG+bJOjpK5kPh1GUu9DLD41IZDCTColjxI8Kt7OUPxT8yZ42hq0ZtzmWlM5HExEp7bp6dyG9ZC19BuGLxetmzB14d28XJylovt5N+BAzbQNJndWIXcDXPvTIfXGC7eYhOS0BxAJSuCsoxTQR8A22FcUUnA3M3parmzijltkYJPmCIAGp9Qjou5oOeeIqKMpMxcOwst/HrjYTpB74ADLSsbrKOo3ivBHddsXUKjLJby0fIf9j7CtebcgqwyFR2Gm/68amdaqmiiT1Z9/lvsl+bI3/bR+wyhoWioBoTusrUU0/kYjWK3FsL+om7axDzX2hk2WXMXN8l1pNQPha3EcyDX/gatQNilQZfPi4L5mVA+gCsviGALmHxRL/FQ="
 
 env:
   global:
     - BRAVECORE_APP_ENV=prod
     - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
-    #- CC_TEST_REPORTER_ID= travis-ci.org > repo > settings
   matrix:
     - NODE_VERSION="8.15.0"
     - NODE_VERSION="10.14.2"
@@ -45,21 +44,9 @@ install:
   - ./install.sh
   - cd backend && vendor/bin/doctrine orm:generate-proxies && cd ..
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > backend/cc-test-reporter
-  - chmod +x backend/cc-test-reporter
-  - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter before-build; fi
-
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
-  - if [ $(phpenv version-name) = "7.2" ]; then sonar-scanner; fi
-
-after_script:
-  - mkdir -p build/logs
-  - cp backend/var/logs/clover.xml build/logs/clover.xml
-  - if [ $(phpenv version-name) = "7.2" ]; then backend/cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT; fi
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover backend/var/logs/clover.xml
+  - if [ $(phpenv version-name) = "7.2" ] && [ $TRAVIS_REPO_SLUG = "tkhamez/brvneucore" ]; then sonar-scanner; fi
 
 before_deploy:
   - ./dist.sh $TRAVIS_TAG
@@ -67,7 +54,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: iBxrWwgMkSm07Pd3EAtnhhK6EyiKdvXKja415HysHTrQpNs0hvezUrOgTNP/u6L1q+TmW6EiuA7nVeh80c6PjSTEC6sK5ZsB+G7bT0auCHd3GDylc2QOcPfSRJTGhQSkMb3h7v1B/s3R2m8qModHOx9702vxaJoRHpP0Y5e6NqlnY9VH3OpI+O1345iqaIGPFk95/hrySeZaW6UIeHTG7K6WQn2vQuur9Bm04hpHYgEJp30gDnYHMQXkfF66Up7zA6vgpUprZLQU16IND29WEZojRXdlO1PX2VVxROudGbKYUVc+hrf2THw2BA2uFhQfRhix/2UkvxyCfgfOfMGyP63v8zY0ta19V9iW4BB/P7SxUFZn+VyJLlDPlyoOtcxkyE7FzmA0VxYnuzIy4zw1s5hWXYhH26AoiUlrB50mViPpNAD9vmTPCVHOKCVd+fO+NBntiiMSef/MO+8Ju4cEey5SbhCZKa49l0Q4aNZQy2M68RzLVPDAm/G4mhYc350X432Uy/mYiVxfAu18oEuCcUiXMjixdxuE5YdWBACVwazxZ1KD1r2Za2qOoDJ8JaETIEX3ks+Zq5G/AfsHAyHCc4gSA8cAtpPLUBkmxI7TBWLf9mCHW7RTrARzesiUGJl9WrxDVOgBUTUSDeVDWln2ye/XHUP7XTe+8egEq00gL2A=
+    secure: jqugUTZGE34rV35AD/a3M3QqYwv5P9msVDRPtnlG1EVrSM+GkpXJBSJykWVnurmtCaV+3DaPcmDkW/TSpHUukKyodMlddWMz1tC0a5rk8/i+AEWSdosOQ4OjH1q3tB8X7uUGtdIkLwcKtkUCxL13clcVgG+Y12uoov7B3vOKubfx3zuHytRXnumK0awp1iZhxXL7gwIiBDm8iem9vAt3Qn28MMXGayoQ2BJJlJga/r+OBaVhyDNIIFcl465Bk2H246dkd/z9QAH1YFvMJYTjkA4S+BT+HH5jPZVkWCM53UDRYlKGlCyNxkEEZhjSo96ffJzQsfidWqEzNDb/hRFB7Lez0YF27OnH32VPVv0Giy9TDJqfHkTcf7xJoWwO1Akdzeo5ogPLUIMdfiP+fkf2S5/hCecgJIHrvQ7j7YntDEmBWVb+tNxlV198pU80NfdURS9s9ALPDd1qLM6/TsIUHg7MeAVdEnKiF/QeeY0D9rLBaLoje2iP6LZrKqZL+FR/QiaecrYZ0TwrHSLAUc2rFyglW6/AgTUQyjT50Zuju9IytpPkfx+1bnPMNnDmKjISSrrCpw7DmLmnc2BoclQ9H1+vq3y0KnhYHYcdt12gk4Gq+4Bm9OMYvUWwEIQCGssifUzSKyD4nNgcWVCYF7OsfUlz9eLS/99LYKBeljwRK94=
   file_glob: true
   file: dist/*
   skip_cleanup: true

@@ -2,7 +2,6 @@
 /.vagrant
 /dist
 /vendor/
-/npm-debug.log*
 
 # IDEs
 /.settings

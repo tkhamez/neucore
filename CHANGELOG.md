@@ -3,14 +3,14 @@
 
 dd mm yyyy
 
-- Added application-api.json interface file that contains only the API for applications.
-- Added a script that creates a distribution.
 - Added ESI "proxy" endpoint for apps.
+- Added cache for ESI data.
 - Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
 - Added themes.
 - Implemented more fine grained permissions for apps (new roles app-groups and app-chars).
-- Added cache for ESI data
-- Other small improvements
+- Added a script that creates a distribution build.
+- Added application-api.json interface file that contains only the API for applications.
+- Other small improvements.
 
 ## 0.6.0
 
