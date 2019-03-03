@@ -6,9 +6,11 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\SystemVariable;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\ConsoleTestCase;
 use Tests\Helper;
+use Tests\Logger;
 
 class UpdateMemberTrackingTest extends ConsoleTestCase
 {
@@ -92,10 +94,11 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->em->persist($token);
         $this->em->flush();
 
-        $this->client->setResponse(new Response(204));
+        $this->client->setResponse(new Response(500));
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
-            ClientInterface::class => $this->client
+            ClientInterface::class => $this->client,
+            LoggerInterface::class => new Logger('test') // ignore the log entry
         ]);
 
         $actual = explode("\n", $output);

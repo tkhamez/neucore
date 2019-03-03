@@ -289,7 +289,7 @@ class EveMail
         try {
             $this->esiApiFactory
                 ->getMailApi($token)
-                ->postCharactersCharacterIdMail($senderId, $mail, $this->datasource);
+                ->postCharactersCharacterIdMail($senderId, $this->datasource, null, $mail);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]); // message includes the status code
             return $e->getMessage();

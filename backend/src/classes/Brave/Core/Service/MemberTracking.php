@@ -235,7 +235,7 @@ class MemberTracking
                 /** @noinspection PhpParamsInspection */
                 $names = $this->esiApiFactory
                     ->getUniverseApi()
-                    ->postUniverseNames(\json_encode($charIds), $this->datasource);
+                    ->postUniverseNames($charIds, $this->datasource);
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), ['exception' => $e]);
             }

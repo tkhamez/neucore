@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6809153406d95952dfd21cf9eb698dc7",
+    "content-hash": "759d74d6bdad5b5a1074e37a4cb05606",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -2888,16 +2888,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "1.0.1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "4bf841c7a2366e0100c58593643dc41f642de0da"
+                "reference": "3106236af5ffa5419ce79cdb0ed5d765bc078515"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/4bf841c7a2366e0100c58593643dc41f642de0da",
-                "reference": "4bf841c7a2366e0100c58593643dc41f642de0da",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/3106236af5ffa5419ce79cdb0ed5d765bc078515",
+                "reference": "3106236af5ffa5419ce79cdb0ed5d765bc078515",
                 "shasum": ""
             },
             "require": {
@@ -2905,10 +2905,10 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^6.2",
-                "php": ">=5.5"
+                "php": ">=5.6"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "~1.12",
+                "friendsofphp/php-cs-fixer": "~2.12",
                 "phpunit/phpunit": "^4.8",
                 "squizlabs/php_codesniffer": "~2.6"
             },
@@ -2924,19 +2924,21 @@
             ],
             "authors": [
                 {
-                    "name": "Swagger and contributors",
-                    "homepage": "https://github.com/swagger-api/swagger-codegen"
+                    "name": "OpenAPI-Generator contributors",
+                    "homepage": "https://openapi-generator.tech"
                 }
             ],
-            "description": "EVE Online API (ESI) Client Library for PHP",
-            "homepage": "http://swagger.io",
+            "description": "An OpenAPI Client Library for EVE Online (ESI)",
+            "homepage": "http://openapi-generator.tech",
             "keywords": [
                 "api",
+                "openapi-generator",
+                "openapitools",
                 "php",
-                "sdk",
-                "swagger"
+                "rest",
+                "sdk"
             ],
-            "time": "2019-01-27T11:23:58+00:00"
+            "time": "2019-03-03T16:18:06+00:00"
         },
         {
             "name": "zendframework/zend-code",
