@@ -22,14 +22,26 @@ steps:
 - name: backend-test-72
   image: php:7.2
   environment:
-    BRAVECORE_APP_ENV: dev
+    BRAVECORE_APP_ENV: prod
+    BRAVECORE_DATABASE_URL: mysql://root:@database/test
     BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
   commands:
   - pecl install xdebug
   - docker-php-ext-enable xdebug
   - docker-php-ext-install pdo_mysql
   - cd backend
+  - vendor/bin/doctrine orm:generate-proxies
   - vendor/bin/phpunit
+
+- name: backend-test-73
+  image: php:7.3
+  environment:
+    BRAVECORE_APP_ENV: dev
+    BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
+  commands:
+    - docker-php-ext-install pdo_mysql
+    - cd backend
+    - vendor/bin/phpunit
 
 - name: generate-api-client
   image: openjdk:11

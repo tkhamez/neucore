@@ -319,7 +319,7 @@ class Application
                     }
                 }
                 $formatter = new LineFormatter();
-                $formatter->allowInlineLineBreaks();
+                $formatter->includeStacktraces();
                 $handler = (new StreamHandler($conf['path'], $conf['level']))->setFormatter($formatter);
                 $logger = (new Logger($conf['name']))->pushHandler($handler);
                 return $logger;
@@ -386,6 +386,8 @@ class Application
         }
 
         ini_set('session.gc_maxlifetime', (string) $this->container->get('config')['session']['gc_maxlifetime']);
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '100');
 
         $pdo = $this->container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
