@@ -229,7 +229,7 @@ module.exports = {
             new this.swagger.GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error, data) {
                 vm.loading(false);
                 if (error) {
-                    message('Error saving visibility.', 'error');
+                    vm.message('Error saving visibility.', 'error');
                 } else {
                     vm.message('Visibility saved.', 'success');
                     vm.$emit('itemChange');

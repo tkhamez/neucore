@@ -395,7 +395,7 @@ class EsiController
             if (in_array($name, $headerWhiteList)) {
                 $response = $response->withHeader($name, $value);
             }
-        };
+        }
 
         return $response;
     }

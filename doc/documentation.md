@@ -57,6 +57,25 @@ A player can also manually delete a character if that is enabled in the system s
 
 All character removals are recorded and visible to the user admin.
 
+## Groups
+
+Visibility
+- public: everyone can see them
+- private: hidden from non-members
+- conditioned: only visible to non-members if they meet 
+  certain criteria - not implemented at the moment
+
+### Automatic Group Assignment
+
+Alliances and corporations can be assigned to groups. These groups are then managed automatically. 
+This means that every player who has a character in one of these alliances or corporations will 
+automatically become a member of these groups.
+
+Once a group has been removed from all alliances and corporations, it will no longer be managed 
+automatically. This also means that all players who are currently members of this group will 
+remain so. To correct this, this group can simply be deleted, or it must be assigned a manager 
+who can then manually remove all members.
+
 ### Group Deactivation
 
 If the ESI token of one or more characters on an account is invalid, the account is disabled. 
@@ -71,25 +90,6 @@ A mail notification can be sent for deactivated accounts. This mail will only be
 only if one of the characters in the account is a member of an alliance that was 
 previously configured. It will be sent to the main character, if any, or to any of the characters 
 that have an invalid token.
-
-## Groups
-
-Visibility
-- public: everyone can see them
-- private: hidden from non-members
-- conditioned: only visible to non-members if they meet 
-  certain criteria - not implemented at the moment
-
-## Automatic Group Assignment
-
-Alliances and corporations can be assigned to groups. These groups are then managed automatically. 
-This means that every player who has a character in one of these alliances or corporations will 
-automatically become a member of these groups.
-
-Once a group has been removed from all alliances and corporations, it will no longer be managed 
-automatically. This also means that all players who are currently members of this group will 
-remain so. To correct this, this group can simply be deleted, or it must be assigned a manager 
-who can then manually remove all members.
 
 ## Console Application
 

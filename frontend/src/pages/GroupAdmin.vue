@@ -216,7 +216,7 @@ module.exports = {
             this.searchAlliCorpDelayed(this, query);
         },
 
-        searchAlliCorpDelayed: _.debounce((vm, query) => {
+        searchAlliCorpDelayed: window._.debounce((vm, query) => {
             let category;
             if (vm.addType === 'Corporation') {
                 category = 'corporation';

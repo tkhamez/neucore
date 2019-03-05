@@ -173,7 +173,7 @@ module.exports = {
             }
         },
 
-        getMembersDelayed: _.debounce((vm) => {
+        getMembersDelayed: window._.debounce((vm) => {
             vm.getMembers();
         }, 250),
 

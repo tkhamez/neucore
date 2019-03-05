@@ -84,7 +84,7 @@ module.exports = {
             this.charSearchDelayed(this, query);
         },
 
-        charSearchDelayed: _.debounce((vm, searchTerm) => {
+        charSearchDelayed: window._.debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
             new vm.swagger.CharacterApi().findBy(searchTerm, function(error, data) {

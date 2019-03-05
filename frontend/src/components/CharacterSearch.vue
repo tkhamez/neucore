@@ -41,7 +41,7 @@ module.exports = {
             }
         },
 
-        doFindCharacter: _.debounce((vm) => {
+        doFindCharacter: window._.debounce((vm) => {
             vm.loading(true);
             new vm.swagger.CharacterApi().findBy(vm.searchTerm, function(error, data) {
                 vm.loading(false);

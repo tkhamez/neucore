@@ -338,7 +338,7 @@ module.exports = {
             });
         },
 
-        changeSettingDelayed: _.debounce((vm, name, value) => {
+        changeSettingDelayed: window._.debounce((vm, name, value) => {
             vm.changeSetting(name, value);
         }, 250),
 
