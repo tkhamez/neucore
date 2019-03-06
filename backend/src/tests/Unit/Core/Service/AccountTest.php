@@ -331,7 +331,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(10, $player->getRemovedCharacters()[0]->getCharacterId());
         $this->assertSame('char', $player->getRemovedCharacters()[0]->getCharacterName());
         $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
-        $this->assertLessThanOrEqual(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp());
+        $this->assertEquals(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertSame($player, $player->getRemovedCharacters()[0]->getNewPlayer());
         $this->assertSame('moved', $player->getRemovedCharacters()[0]->getAction());
 
@@ -364,7 +364,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('char', $removedChars[0]->getCharacterName());
         $this->assertSame($player->getId(), $removedChars[0]->getPlayer()->getId());
         $this->assertSame('player 1', $removedChars[0]->getPlayer()->getName());
-        $this->assertLessThanOrEqual(time(), $removedChars[0]->getRemovedDate()->getTimestamp());
+        $this->assertEquals(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
         $this->assertSame('deleted (manually)', $removedChars[0]->getAction());
     }

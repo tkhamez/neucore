@@ -179,8 +179,8 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
      */
     public function testHasCharacterWithInvalidTokenOlderThan()
     {
-        $char1 = (new Character())->setValidToken(true);
-        $char2 = (new Character())->setValidToken(false);
+        $char1 = (new Character())->setValidToken(true)->setValidTokenTime(new \DateTime('now -10 seconds'));
+        $char2 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now -10 seconds'));
         $char3 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now -36 hours'));
         $char4 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now +12 hours'));
         $char5 = (new Character())->setValidTokenTime(new \DateTime('now -36 hours')); // validToken is null
