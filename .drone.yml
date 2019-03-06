@@ -39,9 +39,9 @@ steps:
     BRAVECORE_APP_ENV: dev
     BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
   commands:
-    - docker-php-ext-install pdo_mysql
-    - cd backend
-    - vendor/bin/phpunit
+  - docker-php-ext-install pdo_mysql
+  - cd backend
+  - vendor/bin/phpunit
 
 - name: generate-api-client
   image: openjdk:11
@@ -68,6 +68,9 @@ steps:
       from_secret: sonar_token
   settings:
     sources: backend/src/classes,frontend/src
+  when:
+    branch:
+    - master
 
 - name: distribution
   image: composer:1.8
