@@ -467,6 +467,9 @@ module.exports = {
                 param1 = id;
                 param2 = this.typeId;
             }
+            if (! api || ! method) {
+                return;
+            }
 
             vm.loading(true);
             api[method].apply(api, [param1, param2, function(error) {
