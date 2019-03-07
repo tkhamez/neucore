@@ -122,7 +122,6 @@ module.exports = {
             window.jQuery(ele.target).removeClass('text-warning');
         },
 
-
         showCreateAppModal: function() {
             this.$refs.editModals.showCreateModal();
         },

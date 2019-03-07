@@ -123,9 +123,26 @@ module.exports = {
             this.app = null;
 
             const appId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (appId) {
+            if (appId && this.isManagerOf(appId)) {
                 this.getApp(appId);
             }
+        },
+
+        /**
+         * Check if player is manager of requested app.
+         * (app-admins may see other apps, but cannot change the secret)
+         *
+         * @param appId
+         * @returns {boolean}
+         */
+        isManagerOf(appId) {
+            let isManager = false;
+            for (let app of this.player.managerApps) {
+                if (app.id === appId) {
+                    isManager = true;
+                }
+            }
+            return isManager;
         },
 
         getApp: function(id) {

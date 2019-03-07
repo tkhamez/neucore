@@ -418,6 +418,7 @@ module.exports = {
             new this.swagger.PlayerApi().showById(this.playerId, function(error, data) {
                 vm.loading(false);
                 if (error) {
+                    vm.playerEdit = null;
                     return;
                 }
                 data.roles = vm.fixRoles(data.roles);
