@@ -298,6 +298,9 @@ module.exports = {
             api[method].apply(api, [this.typeId, function(error, data) {
                 vm.loading(false);
                 if (error) { // 403 usually
+                    if (vm.type === 'Player') {
+                        vm.$emit('activePlayer', null); // pass data to parent
+                    }
                     return;
                 }
                 if (vm.type === 'App' && vm.contentType === 'groups') {

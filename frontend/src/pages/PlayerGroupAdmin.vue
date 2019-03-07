@@ -3,7 +3,7 @@
 
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
-                <h1>Player Group Admin</h1>
+                <h1>Player Groups Admin</h1>
             </div>
         </div>
 
