@@ -119,7 +119,7 @@
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <button v-if="deactivated && char.validToken === null"
+                                <button v-if="char.validToken === null"
                                         disabled type="button" class="btn btn-warning btn-sm mt-1">
                                     No ESI token
                                 </button>
@@ -147,6 +147,7 @@
                 <div class="col-lg-4">
                     <div class="player-hdl">
                         <h2>Account</h2>
+                        <span v-if="player.status === 'managed'" class="text-muted">(manually managed)</span>
                         <span class="text-muted">Name: {{ player.name }}</span>
                     </div>
                     <div class="card border-secondary mb-3">

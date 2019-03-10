@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Core\Api\App;
 
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -119,6 +120,25 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response));
+    }
+
+    public function testGroupsV1200DeactivatedManaged()
+    {
+        $this->setUpDb(36);
+
+        // activate "deactivated accounts"
+        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
+        $setting->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/groups/780', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            ['id' => $this->group0Id, 'name' => 'g0', 'visibility' => Group::VISIBILITY_PRIVATE],
+        ], $this->parseJsonBody($response));
     }
 
     public function testGroupsBulkV1403()
@@ -548,11 +568,13 @@ class GroupControllerTest extends WebTestCase
         $char3->setValidToken(false)->setCorporation($corp);
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
-        try {
-            $char3->setValidTokenTime(new \DateTime("now -{$invalidHours} hours"));
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-        }
+        $char3->setValidTokenTime(date_create("now -{$invalidHours} hours"));
+
+        $char4 = $this->helper->addCharacterMain('C3', 780); // managed account
+        $char4->setValidToken(false)->setCorporation($corp);
+        $char4->getPlayer()->setStatus(Player::STATUS_MANAGED);
+        $char4->getPlayer()->addGroup($groups[0]);
+        $char4->setValidTokenTime(date_create("now -{$invalidHours} hours"));
 
         $this->helper->addCharacterMain('C4', 1010, [Role::USER]); // no groups
 

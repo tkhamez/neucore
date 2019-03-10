@@ -24,6 +24,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $group = (new Group())->setName('g');
         $p1 = (new Player())->setName('p1');
         $p2 = (new Player())->setName('p2')->addGroup($group);
+        $p3 = (new Player())->setName('p3')->setStatus(Player::STATUS_MANAGED);
         $corp = (new Corporation())->setId(1)->setName('corp')->setTicker('t')->addGroup($group);
         $char = (new Character())->setId(1)->setName('char')
             ->setCharacterOwnerHash('h')->setAccessToken('t')
@@ -32,6 +33,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $em->persist($group);
         $em->persist($p1);
         $em->persist($p2);
+        $em->persist($p3);
         $em->persist($corp);
         $em->persist($char);
         $em->flush();

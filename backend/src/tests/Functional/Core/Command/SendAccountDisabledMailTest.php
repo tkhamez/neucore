@@ -96,9 +96,11 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $p2 = (new Player())->setName('p2');
         $p3 = (new Player())->setName('p3');
         $p4 = (new Player())->setName('p4')->setDeactivationMailSent(true);
+        $p5 = (new Player())->setName('p5')->setStatus(Player::STATUS_MANAGED);
         $c2 = (new Character())->setId(20)->setName('c2')->setPlayer($p2); // not in correct alliance
         $c3 = (new Character())->setId(30)->setName('c3')->setPlayer($p3)->setCorporation($corp); // sends mail
         $c4 = (new Character())->setId(40)->setName('c4')->setPlayer($p4)->setCorporation($corp); // already sent
+        $c5 = (new Character())->setId(50)->setName('c5')->setPlayer($p5)->setCorporation($corp); // managed account
         $this->em->persist($deactivateAccounts);
         $this->em->persist($active);
         $this->em->persist($alliances);
@@ -111,9 +113,11 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $this->em->persist($p2);
         $this->em->persist($p3);
         $this->em->persist($p4);
+        $this->em->persist($p5);
         $this->em->persist($c2);
         $this->em->persist($c3);
         $this->em->persist($c4);
+        $this->em->persist($c5);
         $this->em->flush();
 
         $this->client->setResponse(new Response(200, [], 373515628));

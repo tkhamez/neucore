@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 
@@ -72,7 +73,7 @@ class AutoGroupAssignment
     }
 
     /**
-     * Add and remove groups from the player.
+     * Add and remove groups from the player unless the account status is "managed".
      *
      * The assignment is based on the group configuration of the
      * corporations and alliances.
@@ -90,7 +91,7 @@ class AutoGroupAssignment
     public function assign(int $playerId)
     {
         $player = $this->playerRepo->find($playerId);
-        if ($player === null) {
+        if ($player === null || $player->getStatus() === Player::STATUS_MANAGED) {
             return null;
         }
 

@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -45,6 +46,11 @@ class PlayerController extends BaseController
         Role::ESI,
         Role::SETTINGS,
         Role::TRACKING,
+    ];
+
+    private $availableStatus = [
+        Player::STATUS_STANDARD,
+        Player::STATUS_MANAGED,
     ];
 
     public function __construct(
@@ -314,6 +320,70 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @SWG\Put(
+     *     path="/user/player/{id}/set-status/{status}",
+     *     operationId="setStatus",
+     *     summary="Change the player's account status.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="status",
+     *         in="path",
+     *         required=true,
+     *         description="The new status.",
+     *         type="string",
+     *         enum={"standard", "managed"}
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Status changed."
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid player or status."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function setStatus(string $id, string $status): Response
+    {
+        $authPlayer = $this->userAuthService->getUser()->getPlayer();
+        if (! $authPlayer->hasRole(Role::USER_ADMIN)) {
+            return $this->response->withStatus(403);
+        }
+
+        $validStatus = [
+            Player::STATUS_STANDARD,
+            Player::STATUS_MANAGED,
+        ];
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+        if (! in_array($status, $validStatus) || ! $player) {
+            return $this->response->withStatus(400);
+        }
+
+        if ($status !== $player->getStatus()) {
+            // remove all groups and change status
+            foreach ($player->getGroups() as $group) {
+                $player->removeGroup($group);
+            }
+            $player->setStatus($status);
+        }
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
      * @SWG\Get(
      *     path="/user/player/with-characters",
      *     operationId="withCharacters",
@@ -334,7 +404,7 @@ class PlayerController extends BaseController
      */
     public function withCharacters(): Response
     {
-        return $this->playerList($this->repositoryFactory->getPlayerRepository()->getAllWithCharacters());
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithCharacters());
     }
 
     /**
@@ -358,7 +428,7 @@ class PlayerController extends BaseController
      */
     public function withoutCharacters(): Response
     {
-        return $this->playerList($this->repositoryFactory->getPlayerRepository()->getAllWithoutCharacters());
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithoutCharacters());
     }
 
     /**
@@ -382,9 +452,7 @@ class PlayerController extends BaseController
      */
     public function appManagers(): Response
     {
-        $ret = $this->getPlayerByRole(Role::APP_MANAGER);
-
-        return $this->response->withJson($ret);
+        return $this->getPlayerByRole(Role::APP_MANAGER);
     }
 
     /**
@@ -408,9 +476,7 @@ class PlayerController extends BaseController
      */
     public function groupManagers(): Response
     {
-        $ret = $this->getPlayerByRole(Role::GROUP_MANAGER);
-
-        return $this->response->withJson($ret);
+        return $this->getPlayerByRole(Role::GROUP_MANAGER);
     }
 
     /**
@@ -450,9 +516,47 @@ class PlayerController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        $players = $this->getPlayerByRole($name);
+        return $this->getPlayerByRole($name);
+    }
 
-        return $this->response->withJson($players);
+    /**
+     * @SWG\Get(
+     *     path="/user/player/with-status/{name}",
+     *     operationId="withStatus",
+     *     summary="Lists all players with characters who have a certain status.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Status name.",
+     *         type="string",
+     *         enum={"standard", "managed"}
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Invalid status name."
+     *     ),
+     * )
+     */
+    public function withStatus(string $name): Response
+    {
+        if (! in_array($name, $this->availableStatus)) {
+            return $this->response->withStatus(400);
+        }
+
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithCharactersAndStatus($name));
     }
 
     /**
@@ -714,24 +818,15 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    private function getPlayerByRole(string $roleName): array
+    private function getPlayerByRole(string $roleName): Response
     {
-        $ret = [];
-
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if ($role === null) {
             $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
-            return $ret;
+            return $this->response->withJson([]);
         }
 
-        foreach ($role->getPlayers() as $player) {
-            $ret[] = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
-        }
-
-        return $ret;
+        return $this->playerList($role->getPlayers());
     }
 
     private function addOrRemoveGroupToFrom(string $action, string $entity, string $groupId): Response

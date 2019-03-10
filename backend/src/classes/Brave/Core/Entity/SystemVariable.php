@@ -39,6 +39,13 @@ class SystemVariable implements \JsonSerializable
     /**
      * System settings variable, "0" or "1".
      *
+     * Activates the login URL for managed accounts.
+     */
+    const ALLOW_LOGIN_MANAGED = 'allow_login_managed';
+
+    /**
+     * System settings variable, "0" or "1".
+     *
      * 1: The API for application does not return groups for a player account
      *    if one or more of their characters has an invalid token.
      *
@@ -161,6 +168,7 @@ class SystemVariable implements \JsonSerializable
     {
         switch ($this->name) {
             case self::ALLOW_CHARACTER_DELETION:
+            case self::ALLOW_LOGIN_MANAGED:
             case self::GROUPS_REQUIRE_VALID_TOKEN:
             case self::SHOW_PREVIEW_BANNER:
             case self::MAIL_ACCOUNT_DISABLED_ACTIVE:

@@ -65,7 +65,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->setupDb();
-        $this->loginUser(6); # not an admin
+        $this->loginUser(6); # not a group-admin
 
         $response = $this->runApp('GET', '/api/user/group/all');
         $this->assertEquals(403, $response->getStatusCode());
@@ -85,6 +85,15 @@ class GroupControllerTest extends WebTestCase
             ],
             $this->parseJsonBody($response1)
         );
+    }
+
+    public function testAll200UserAdmin()
+    {
+        $this->setupDb();
+        $this->loginUser(9);
+
+        $response1 = $this->runApp('GET', '/api/user/group/all');
+        $this->assertEquals(200, $response1->getStatusCode());
     }
 
     public function testPublic403()
@@ -430,7 +439,7 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.($this->pid + 1));
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.($this->pid + 5));
         $response2 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/add-manager/'.$this->pid);
 
         $this->assertEquals(404, $response1->getStatusCode());
@@ -480,7 +489,7 @@ class GroupControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $response1 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-manager/'.$this->pid);
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.($this->pid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.($this->pid + 5));
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
     }
@@ -557,10 +566,10 @@ class GroupControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-applicant/'.$this->pid);
         $this->assertEquals(404, $response1->getStatusCode());
 
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.($this->pid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.($this->pid + 5));
         $this->assertEquals(404, $response2->getStatusCode());
 
-        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-applicant/'.($this->pid + 1));
+        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-applicant/'.($this->pid + 5));
         $this->assertEquals(404, $response3->getStatusCode());
     }
 
@@ -605,10 +614,10 @@ class GroupControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/add-member/'.$this->pid);
         $this->assertEquals(404, $response1->getStatusCode());
 
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.($this->pid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.($this->pid + 5));
         $this->assertEquals(404, $response2->getStatusCode());
 
-        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/add-member/'.($this->pid + 1));
+        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/add-member/'.($this->pid + 5));
         $this->assertEquals(404, $response3->getStatusCode());
     }
 
@@ -628,6 +637,15 @@ class GroupControllerTest extends WebTestCase
 
         $group = $this->gr->find($this->gid);
         $this->assertSame(2, count($group->getPlayers()));
+    }
+
+    public function testAddMember204AsAdmin()
+    {
+        $this->setupDb();
+        $this->loginUser(9); // user-admin
+
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/add-member/'.$this->pid);
+        $this->assertEquals(204, $response->getStatusCode());
     }
 
     public function testRemoveMember403()
@@ -650,10 +668,10 @@ class GroupControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-member/'.$this->pid);
         $this->assertEquals(404, $response1->getStatusCode());
 
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-member/'.($this->pid + 1));
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-member/'.($this->pid + 5));
         $this->assertEquals(404, $response2->getStatusCode());
 
-        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-member/'.($this->pid + 1));
+        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-member/'.($this->pid + 5));
         $this->assertEquals(404, $response3->getStatusCode());
     }
 
@@ -691,6 +709,15 @@ class GroupControllerTest extends WebTestCase
 
         $group = $this->gr->find($this->gid);
         $this->assertSame(0, count($group->getPlayers()));
+    }
+
+    public function testRemoveMember204AsAdmin()
+    {
+        $this->setupDb();
+        $this->loginUser(9); // user-admin
+
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-member/'.$this->pid);
+        $this->assertEquals(204, $response->getStatusCode());
     }
 
     public function testMembers403()
@@ -752,6 +779,8 @@ class GroupControllerTest extends WebTestCase
         $admin = $this->helper->addCharacterMain('Admin', 8,
             [Role::USER, Role::GROUP_MANAGER, Role::GROUP_ADMIN]);
         $this->pid = $admin->getPlayer()->getId();
+
+        $this->helper->addCharacterMain('UA', 9, [Role::USER_ADMIN]);
 
         $g[0]->addManager($admin->getPlayer());
         $user->getPlayer()->addApplication($g[0]);

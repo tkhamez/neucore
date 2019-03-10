@@ -386,7 +386,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($removedChars[0]->getPlayer());
     }
 
-    public function testGroupsDisabledValidToken()
+    public function testGroupsDeactivatedValidToken()
     {
         // activate "deactivated accounts"
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
@@ -400,7 +400,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
 
-    public function testGroupsDisabledInvalidToken()
+    public function testGroupsDeactivatedInvalidToken()
     {
         // activate "deactivated accounts"
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
@@ -414,10 +414,21 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($this->service->groupsDeactivated($player));
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testGroupsDisabledInvalidTokenWithDelay()
+    public function testGroupsDeactivatedInvalidTokenManaged()
+    {
+        // activate "deactivated accounts"
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->helper->getEm()->persist($setting);
+        $this->helper->getEm()->flush();
+
+        $player = (new Player())
+            ->setStatus(Player::STATUS_MANAGED)
+            ->addCharacter((new Character())->setValidToken(false));
+
+        $this->assertFalse($this->service->groupsDeactivated($player));
+    }
+
+    public function testGroupsDeactivatedInvalidTokenWithDelay()
     {
         // feature "deactivated accounts" is active, account has invalid token but only for a short time
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
@@ -427,16 +438,13 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->helper->getEm()->flush();
 
         $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
+            (new Character())->setValidToken(false)->setValidTokenTime(date_create("now -12 hours"))
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testGroupsDisabledInvalidTokenIgnoreDelay()
+    public function testGroupsDeactivatedInvalidTokenIgnoreDelay()
     {
         // feature "deactivated accounts" is active, account has invalid token but only for a short time
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
@@ -446,13 +454,13 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->helper->getEm()->flush();
 
         $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
+            (new Character())->setValidToken(false)->setValidTokenTime(date_create("now -12 hours"))
         );
 
         $this->assertTrue($this->service->groupsDeactivated($player, true));
     }
 
-    public function testGroupsDisabledInvalidTokenSettingNotActive()
+    public function testGroupsDeactivatedInvalidTokenSettingNotActive()
     {
         $player = (new Player())->addCharacter(
             (new Character())->setValidToken(false)

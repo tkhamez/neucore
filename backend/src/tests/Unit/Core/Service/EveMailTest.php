@@ -202,6 +202,21 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Player account not found.', $result);
     }
 
+    public function testAccountDeactivateMaySendManagedAccount()
+    {
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $player = (new Player())->setName('n')->setStatus(Player::STATUS_MANAGED);
+        $char = (new Character())->setName('n')->setId(100100)->setPlayer($player);
+        $this->em->persist($varAlli);
+        $this->em->persist($player);
+        $this->em->persist($char);
+        $this->em->flush();
+        $this->em->clear();
+
+        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $this->assertSame('Player account status is managed.', $result);
+    }
+
     public function testAccountDeactivateMaySendAllianceDoesNotMatch()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
@@ -236,10 +251,10 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('Mail already sent.', $result);
     }
 
-    public function testAccountDeactivateMaySendIgnoreAlreadySent()
+    public function testAccountDeactivateMaySendIgnoreAlreadySentAndAccountStatus()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
-        $player = (new Player())->setName('n')->setDeactivationMailSent(true);
+        $player = (new Player())->setName('n')->setDeactivationMailSent(true)->setStatus(Player::STATUS_MANAGED);
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);

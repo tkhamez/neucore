@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
@@ -115,10 +116,11 @@ class EveMail
 
     /**
      * @param int $characterId
-     * @param bool $ignoreAlreadySent If set to true, allow the mail even if it has already been sent.
+     * @param bool $ignoreAlreadySentAndStatus If set to true, allow the mail even if it has already been sent
+     *             or if the account status is managed.
      * @return string The reason why the mail may not be send or empty
      */
-    public function accountDeactivatedMaySend(int $characterId, bool $ignoreAlreadySent = false): string
+    public function accountDeactivatedMaySend(int $characterId, bool $ignoreAlreadySentAndStatus = false): string
     {
         $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
 
@@ -140,6 +142,10 @@ class EveMail
             return 'Player account not found.';
         }
 
+        if (! $ignoreAlreadySentAndStatus && $player->getStatus() === Player::STATUS_MANAGED) {
+            return 'Player account status is managed.';
+        }
+
         // check if player account has at least one character in one of the configured alliances
         $valid = false;
         foreach ($player->getCharacters() as $character) {
@@ -156,7 +162,7 @@ class EveMail
         }
 
         // check if mail was sent before
-        if (! $ignoreAlreadySent && $player->getDeactivationMailSent()) {
+        if (! $ignoreAlreadySentAndStatus && $player->getDeactivationMailSent()) {
             return 'Mail already sent.';
         }
 

@@ -23,7 +23,8 @@
                         >
                         <label class="custom-control-label" for="groups_require_valid_token">
                             Check this if the API for third-party applications should not return groups
-                            for a player account if one or more of its characters have an invalid token.
+                            for a player account if one or more of its characters have an invalid token
+                            (no token counts as invalid), "managed" accounts are excluded from this.
                         </label>
                     </div>
                     <label class="mt-2">
@@ -34,10 +35,21 @@
                     <hr>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"
+                               id="allow_login_managed" name="allow_login_managed"
+                               :checked="variables['allow_login_managed'] === '1'"
+                               @change="changeSetting('allow_login_managed', $event.target.checked ? '1' : '0')"
+                        >
+                        <label class="custom-control-label" for="allow_login_managed">
+                            <em>Allow "managed" Login:</em>
+                            Enables the login URL for managed accounts that do not require ESI scopes.
+                        </label>
+                    </div>
+                    <hr>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" value="1"
                                id="allow_character_deletion" name="allow_character_deletion"
                                :checked="variables['allow_character_deletion'] === '1'"
-                               @change="changeSetting('allow_character_deletion',
-                                                      $event.target.checked ? '1' : '0')"
+                               @change="changeSetting('allow_character_deletion', $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="allow_character_deletion">
                             <em>Delete characters:</em>
@@ -49,12 +61,11 @@
                         <input class="custom-control-input" type="checkbox" value="1"
                                id="show_preview_banner" name="show_preview_banner"
                                :checked="variables['show_preview_banner'] === '1'"
-                               @change="changeSetting('show_preview_banner',
-                                                      $event.target.checked ? '1' : '0')"
+                               @change="changeSetting('show_preview_banner', $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="show_preview_banner">
                             <em>Preview:</em>
-                            Check to shows the "preview" banner on the Home screen.
+                            Check to show the "preview" banner on the Home screen.
                         </label>
                     </div>
 
@@ -81,7 +92,7 @@
                     <h4 class="mt-4">"Account disabled" Notification</h4>
                     <p>
                         This EVE mail is sent when an account has been deactivated
-                        because one of its characters contains an invalid ESI token.
+                        because one of its characters contains an invalid or no ESI token.
                     </p>
 
                     <button class="btn btn-success btn-sm" v-on:click="sendMailAccountDisabledTestMail()">

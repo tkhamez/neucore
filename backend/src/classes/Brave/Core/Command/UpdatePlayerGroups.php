@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Command;
 
+use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
@@ -72,7 +73,7 @@ class UpdatePlayerGroups extends Command
         $this->writeln('* Started "update-player-groups"');
 
         $playerIds = [];
-        $players = $this->playerRepo->findBy([], ['lastUpdate' => 'ASC']);
+        $players = $this->playerRepo->findBy(['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC']);
         foreach ($players as $player) {
             $playerIds[] = $player->getId();
         }

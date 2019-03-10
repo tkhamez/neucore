@@ -49,6 +49,8 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
     private $playerId;
 
+    private $playerManagedId;
+
     private $group1Id;
 
     private $group2Id;
@@ -87,6 +89,14 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($player);
     }
 
+    public function testAssignManaged()
+    {
+        $this->setUpData();
+
+        $player = $this->aga->assign($this->playerManagedId);
+        $this->assertNull($player);
+    }
+
     public function testAssign()
     {
         $this->setUpData();
@@ -101,6 +111,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([$this->group4Id, $this->group5Id], $playerBefore->getGroupIds());
 
         $player = $this->aga->assign($this->playerId);
+
         $this->assertSame($this->playerId, $player->getId());
         $this->em->clear();
 
@@ -147,12 +158,14 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $corp3 = (new Corporation())->setId(3)->setName('c2')->setTicker('t3')->addGroup($group4);
         $player = (new Player())->setName('p')->addGroup($group4)->addGroup($group5)
             ->setLastUpdate(date_create('2018-04-28 17:56:54'));
+        $playerManaged = (new Player())->setName('pm')->setStatus(Player::STATUS_MANAGED);
         $char1 = (new Character())->setId(1)->setName('ch1')->setMain(true)->setPlayer($player)
             ->setCharacterOwnerHash('h1')->setAccessToken('t1')->setCorporation($corp1);
         $char2 = (new Character())->setId(2)->setName('ch2')->setMain(false)->setPlayer($player)
             ->setCharacterOwnerHash('h2')->setAccessToken('t2')->setCorporation($corp2);
         $char3 = (new Character())->setId(3)->setName('ch3')->setMain(false)->setPlayer($player)
             ->setCharacterOwnerHash('h2')->setAccessToken('t2');
+        $char4 = (new Character())->setId(4)->setName('ch4')->setPlayer($playerManaged)->setCorporation($corp2);
 
         $this->em->persist($group1);
         $this->em->persist($group2);
@@ -168,11 +181,14 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->em->persist($char1);
         $this->em->persist($char2);
         $this->em->persist($char3);
+        $this->em->persist($char4);
         $this->em->persist($player);
+        $this->em->persist($playerManaged);
         $this->em->flush();
         $this->em->clear();
 
         $this->playerId = $player->getId();
+        $this->playerManagedId = $playerManaged->getId();
         $this->group1Id = $group1->getId();
         $this->group2Id = $group2->getId();
         $this->group3Id = $group3->getId();

@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
@@ -60,7 +61,7 @@ class GroupController extends BaseController
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
-     *     description="Needs role: app-admin or group-admin",
+     *     description="Needs role: app-admin, group-admin or user-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -604,7 +605,7 @@ class GroupController extends BaseController
      *     path="/user/group/{id}/add-member/{pid}",
      *     operationId="addMember",
      *     summary="Adds a player to a group.",
-     *     description="Needs role: group-manager",
+     *     description="Needs role: group-manager or user-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -645,7 +646,7 @@ class GroupController extends BaseController
      *     path="/user/group/{id}/remove-member/{pid}",
      *     operationId="removeMember",
      *     summary="Remove player from a group.",
-     *     description="Needs role: group-manager",
+     *     description="Needs role: group-manager or user-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -772,13 +773,17 @@ class GroupController extends BaseController
         return $this->response->withJson($ret);
     }
 
-    private function addPlayerAs(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
-    {
+    private function addPlayerAs(
+        string $groupId,
+        string $playerId,
+        string $type,
+        bool $onlyIfManagerOrAdmin
+    ): Response {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManager && ! $this->checkManager($this->group)) {
+        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserAdmin()) {
             return $this->response->withStatus(403);
         }
 
@@ -791,13 +796,17 @@ class GroupController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    private function removePlayerFrom(string $groupId, string $playerId, string $type, bool $onlyIfManager): Response
-    {
+    private function removePlayerFrom(
+        string $groupId,
+        string $playerId,
+        string $type,
+        bool $onlyIfManagerOrAdmin
+    ): Response {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManager && ! $this->checkManager($this->group)) {
+        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserAdmin()) {
             return $this->response->withStatus(403);
         }
 
@@ -850,5 +859,10 @@ class GroupController extends BaseController
         }
 
         return false;
+    }
+
+    private function isUserAdmin(): bool
+    {
+        return $this->userAuth->getUser()->getPlayer()->hasRole(Role::USER_ADMIN);
     }
 }

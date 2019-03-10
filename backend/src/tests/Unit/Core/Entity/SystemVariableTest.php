@@ -39,6 +39,15 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('0', $var->setValue('')->getValue());
     }
 
+    public function testSetValueAllowLoginManaged()
+    {
+        $var = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
+        $this->assertSame('0', $var->setValue('0')->getValue());
+        $this->assertSame('1', $var->setValue('1')->getValue());
+        $this->assertSame('1', $var->setValue('some text')->getValue());
+        $this->assertSame('0', $var->setValue('')->getValue());
+    }
+
     public function testSetValueGroupsRequireValidToken()
     {
         $var = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);

@@ -42,6 +42,7 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([
             'id' => null,
             'name' => 'test user',
+            'status' => Player::STATUS_STANDARD,
             'roles' => ['rName', 'role2'],
             'characters' => [[
                 'id' => 123,
@@ -97,6 +98,15 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
 
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
+    public function testSetGetStatus()
+    {
+        $player = new Player();
+        $this->assertSame(Player::STATUS_STANDARD, $player->getStatus());
+
+        $player->setStatus(Player::STATUS_MANAGED);
+        $this->assertSame(Player::STATUS_MANAGED, $player->getStatus());
     }
 
     public function testAddGetRemoveRole()

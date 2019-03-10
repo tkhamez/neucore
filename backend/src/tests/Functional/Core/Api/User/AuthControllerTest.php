@@ -43,6 +43,34 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(12, strlen($sess->get('auth_state')));
     }
 
+    public function testLoginManagedForbidden()
+    {
+        $response = $this->runApp('GET', '/login-managed');
+
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testLoginManaged()
+    {
+        // activate login "managed"
+        $helper = new Helper();
+        $helper->emptyDb();
+        $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
+        $setting->setValue('1');
+        $helper->getEm()->persist($setting);
+        $helper->getEm()->flush();
+
+        $response = $this->runApp('GET', '/login-managed');
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
+
+        $sess = new SessionData();
+        $this->assertSame('/#login', $sess->get('auth_redirect'));
+        $this->assertSame(14, strlen($sess->get('auth_state')));
+        $this->assertStringStartsWith(AuthController::STATE_PREFIX_STATUS_MANAGED, $sess->get('auth_state'));
+    }
+
     public function testLoginAlt()
     {
         $response = $this->runApp('GET', '/login-alt');
