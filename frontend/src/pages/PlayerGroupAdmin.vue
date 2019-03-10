@@ -4,6 +4,7 @@
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Player Groups Admin</h1>
+                <p class="mb-0">Login URL: <a :href="loginUrlManaged">{{ loginUrlManaged }}</a></p>
             </div>
         </div>
 
@@ -72,6 +73,7 @@ module.exports = {
             players: [],
             playerId: null, // current player
             playerData: null, // current player
+            loginUrlManaged: null,
         }
     },
 
@@ -80,6 +82,13 @@ module.exports = {
             this.getPLayers();
             this.setPlayerId();
         }
+
+        // login URL for managed accounts
+        let port = '';
+        if (location.port !== "" && location.port !== 80 && location.port !== 443) {
+            port = ':' + location.port;
+        }
+        this.loginUrlManaged = location.protocol + "//" + location.hostname + port + "/login-managed"
     },
 
     watch: {

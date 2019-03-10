@@ -18,6 +18,7 @@ use Brave\Core\Api\User\SettingsController;
 return [
 
     '/login'          => ['GET',  AuthController::class.'::login'],
+    '/login-managed'  => ['GET',  AuthController::class.'::loginManaged'],
     '/login-alt'      => ['GET',  AuthController::class.'::loginAlt'],
     '/login-mail'     => ['GET',  AuthController::class.'::loginMail'],
     '/login-director' => ['GET',  AuthController::class.'::loginDirector'],

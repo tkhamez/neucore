@@ -119,7 +119,7 @@
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <button v-if="deactivated && char.validToken === null"
+                                <button v-if="char.validToken === null"
                                         disabled type="button" class="btn btn-warning btn-sm mt-1">
                                     No ESI token
                                 </button>

@@ -2,6 +2,8 @@
 
 namespace Brave\Core\Api\User;
 
+use Brave\Core\Entity\SystemVariable;
+use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Config;
 use Brave\Core\Entity\Role;
 use Brave\Core\Service\EveMail;
@@ -41,6 +43,13 @@ use Slim\Http\Response;
  */
 class AuthController
 {
+    /**
+     * A prefix for the OAuth state parameter that identifies a login of "managed" accounts.
+     *
+     * @var string
+     */
+    const STATE_PREFIX_STATUS_MANAGED = 's.';
+
     /**
      * A prefix for the OAuth state parameter that identifies an alt login.
      *
@@ -84,16 +93,23 @@ class AuthController
      */
     private $config;
 
+    /**
+     * @var RepositoryFactory
+     */
+    private $repositoryFactory;
+
     public function __construct(
         Response $response,
         SessionData $session,
         AuthenticationProvider $authProvider,
-        Config $config
+        Config $config,
+        RepositoryFactory $repositoryFactory
     ) {
         $this->response = $response;
         $this->session = $session;
         $this->authProvider = $authProvider;
         $this->config = $config;
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -102,6 +118,22 @@ class AuthController
     public function login(): Response
     {
         return $this->redirectToLoginUrl(Random::chars(12), '/#login');
+    }
+
+    /**
+     * Login for "managed" accounts, redirects to EVE SSO login.
+     */
+    public function loginManaged(): Response
+    {
+        // check "allow managed login" settings
+        $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+            ['name' => SystemVariable::ALLOW_LOGIN_MANAGED]
+        );
+        if (! $allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
+            return $this->response->withStatus(403);
+        }
+
+        return $this->redirectToLoginUrl(self::STATE_PREFIX_STATUS_MANAGED . Random::chars(12), '/#login');
     }
 
     /**
@@ -180,6 +212,7 @@ class AuthController
                 $errorMessage = 'Error adding character with director roles.';
                 $success = $memberTrackingService->verifyAndStoreDirector($eveAuth);
                 break;
+            case self::STATE_PREFIX_STATUS_MANAGED:
             default:
                 $success = $userAuth->authenticate($eveAuth);
                 $successMessage = 'Login successful.';
@@ -256,7 +289,9 @@ class AuthController
 
     private function getLoginScopes($state)
     {
-        if (substr($state, 0, 2) === self::STATE_PREFIX_MAIL) {
+        if (substr($state, 0, 2) === self::STATE_PREFIX_STATUS_MANAGED) {
+            return [];
+        } elseif (substr($state, 0, 2) === self::STATE_PREFIX_MAIL) {
             return ['esi-mail.send_mail.v1'];
         } elseif (substr($state, 0, 2) === self::STATE_PREFIX_DIRECTOR) {
             return [

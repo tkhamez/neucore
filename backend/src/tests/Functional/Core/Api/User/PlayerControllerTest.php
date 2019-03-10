@@ -889,7 +889,7 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(12);
 
         $this->player->setStatus(Player::STATUS_MANAGED);
-#
+
         // activate feature
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $this->h->getEm()->persist($setting);
