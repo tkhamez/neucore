@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Command;
 
+use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EveMail;
 use Brave\Core\Service\ObjectManager;
@@ -93,7 +94,7 @@ class SendAccountDisabledMail extends Command
         }
 
         $playerIds = [];
-        $players = $this->playerRepository->findBy([], ['lastUpdate' => 'ASC']);
+        $players = $this->playerRepository->findBy(['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC']);
         foreach ($players as $player) {
             $playerIds[] = $player->getId();
         }

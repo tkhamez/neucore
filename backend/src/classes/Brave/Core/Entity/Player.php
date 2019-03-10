@@ -15,11 +15,15 @@ namespace Brave\Core\Entity;
 class Player implements \JsonSerializable
 {
     /**
+     * Standard account.
+     *
      * @var string
      */
     const STATUS_STANDARD = 'standard';
 
     /**
+     * Manually managed account.
+     *
      * @var string
      */
     const STATUS_MANAGED = 'managed';

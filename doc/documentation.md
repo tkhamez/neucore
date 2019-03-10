@@ -65,6 +65,8 @@ There a two account status: standard and managed.
 - If the status is changed, all groups are removed.
 - User admins can manually assign groups to "managed" accounts
   (technically, they can use this API endpoint for all players).
+- Automatic group assignment is disabled for managed accounts.
+- Groups are never deactivated for managed accounts.
 - ...
 
 ## Groups
@@ -73,7 +75,7 @@ Visibility
 - public: everyone can see them
 - private: hidden from non-members
 - conditioned: only visible to non-members if they meet 
-  certain criteria - not implemented at the moment
+  certain criteria - not yet implemented
 
 ### Automatic Group Assignment
 

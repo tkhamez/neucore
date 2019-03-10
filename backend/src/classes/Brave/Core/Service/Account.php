@@ -257,6 +257,10 @@ class Account
      */
     public function groupsDeactivated(Player $player, bool $ignoreDelay = false): bool
     {
+        if ($player->getStatus() === Player::STATUS_MANAGED) {
+            return false;
+        }
+
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
         );

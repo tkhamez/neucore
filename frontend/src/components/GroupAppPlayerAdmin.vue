@@ -317,6 +317,9 @@ module.exports = {
                 }  else if (vm.type === 'Player') {
                     vm.tableContent = data.groups;
                     vm.$emit('activePlayer', data); // pass data to parent
+                    if (data.id === vm.player.id) {
+                        vm.$root.$emit('playerChange');
+                    }
                 }  else {
                     if (vm.contentType === 'managers') {
                         for (const [idx, manager] of data.entries()) {

@@ -883,6 +883,24 @@ class PlayerControllerTest extends WebTestCase
         $this->assertTrue($this->parseJsonBody($response));
     }
 
+    public function testGroupsDisabled200Managed()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $this->player->setStatus(Player::STATUS_MANAGED);
+#
+        // activate feature
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $response = $this->runApp('GET', '/api/user/player/groups-disabled');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertFalse($this->parseJsonBody($response));
+    }
+
     public function testGroupsDisabled200False()
     {
         $this->setupDb();
@@ -909,7 +927,6 @@ class PlayerControllerTest extends WebTestCase
 
         $response2 = $this->runApp('GET', '/api/user/player/1/groups-disabled');
         $this->assertEquals(403, $response2->getStatusCode());
-
     }
 
     public function testGroupsDisabledById404()
