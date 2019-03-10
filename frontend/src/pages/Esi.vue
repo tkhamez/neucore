@@ -29,7 +29,8 @@
                                  placeholder="Select route"></multiselect>
                     <input class="form-control" v-model="esiRoute" placeholder="route">
                     <small class="form-text text-muted">
-                        {character_id} is automatically replaced by the selected character ID.
+                        {character_id} is automatically replaced by the ID of the selected character,
+                        other placeholders must be replaced manually.
                     </small>
                 </div>
                 <button type="submit" class="btn btn-primary" v-on:click="request()">Submit</button>

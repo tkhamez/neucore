@@ -819,6 +819,47 @@ class PlayerControllerTest extends WebTestCase
         $this->assertFalse($this->parseJsonBody($response));
     }
 
+    public function testGroupsDisabledById403()
+    {
+        $response1 = $this->runApp('GET', '/api/user/player/1/groups-disabled');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(14); // no user-admin
+
+        $response2 = $this->runApp('GET', '/api/user/player/1/groups-disabled');
+        $this->assertEquals(403, $response2->getStatusCode());
+
+    }
+
+    public function testGroupsDisabledById404()
+    {
+        $this->setupDb();
+        $this->loginUser(12); // user-admin
+
+        $response = $this->runApp('GET', '/api/user/player/' . ($this->player3Id + 99) . '/groups-disabled');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGroupsDisabledById200()
+    {
+        $this->setupDb();
+        $this->loginUser(12); // user-admin
+
+        // activate feature
+        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $response1 = $this->runApp('GET', '/api/user/player/' . $this->player->getId() . '/groups-disabled');
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertTrue($this->parseJsonBody($response1));
+
+        $response2 = $this->runApp('GET', '/api/user/player/' . $this->player3Id . '/groups-disabled');
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertFalse($this->parseJsonBody($response2));
+    }
+
     private function setupDb()
     {
         $this->h->emptyDb();

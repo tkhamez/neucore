@@ -63,8 +63,6 @@ return [
     '/api/user/player/delete-character/{id}' => [Role::USER],
     '/api/user/player/app-managers'          => [Role::APP_ADMIN],
     '/api/user/player/group-managers'        => [Role::GROUP_ADMIN],
-    '/api/user/player/with-characters'       => [Role::USER_ADMIN],
-    '/api/user/player/without-characters'    => [Role::USER_ADMIN],
     '/api/user/player/{id}/characters'       => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::GROUP_MANAGER, Role::TRACKING],
     '/api/user/player'                       => [Role::USER_ADMIN],
 

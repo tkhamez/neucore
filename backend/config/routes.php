@@ -102,6 +102,7 @@ return [
     '/api/user/player/with-characters'          => ['GET',    PlayerController::class.'::withCharacters'],
     '/api/user/player/without-characters'       => ['GET',    PlayerController::class.'::withoutCharacters'],
     '/api/user/player/show'                     => ['GET',    PlayerController::class.'::show'],
+    '/api/user/player/{id}/groups-disabled'     => ['GET',    PlayerController::class.'::groupsDisabledById'],
     '/api/user/player/groups-disabled'          => ['GET',    PlayerController::class.'::groupsDisabled'],
     '/api/user/player/add-application/{gid}'    => ['PUT',    PlayerController::class.'::addApplication'],
     '/api/user/player/remove-application/{gid}' => ['PUT',    PlayerController::class.'::removeApplication'],

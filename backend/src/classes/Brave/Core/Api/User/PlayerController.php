@@ -116,6 +116,51 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @SWG\Get(
+     *     path="/user/player/{id}/groups-disabled",
+     *     operationId="groupsDisabledById",
+     *     summary="Check whether groups for this account are disabled or will be disabled soon.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the player.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="True if groups are disabled, otherwise false.",
+     *         @SWG\Schema(type="boolean")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Player not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupsDisabledById(string $id, Account $accountService): Response
+    {
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
+
+        if ($player === null) {
+            return $this->response->withStatus(404);
+        }
+
+        if ($accountService->groupsDeactivated($player, true)) { // true = ignore delay
+            return $this->response->withJson(true);
+        }
+
+        return $this->response->withJson(false);
+    }
+
+    /**
      * @SWG\Put(
      *     path="/user/player/add-application/{gid}",
      *     operationId="addApplication",

@@ -179,7 +179,7 @@
                         <tbody>
                             <tr v-for="group in playerEdit.groups">
                                 <td>{{ group.id }}</td>
-                                <td>{{ group.name }}</td>
+                                <td :class="{ 'groups-disabled': playerEditDeactivated }">{{ group.name }}</td>
                                 <td>{{ group.visibility }}</td>
                             </tr>
                         </tbody>
@@ -297,6 +297,7 @@ module.exports = {
             activeButton: '',
             playerId: null, // player ID from route
             playerEdit: null,// player being edited
+            playerEditDeactivated: false,
             availableRoles: [
                 'app-admin',
                 'app-manager',
@@ -414,8 +415,10 @@ module.exports = {
 
         getPlayer: function() {
             const vm = this;
+            const api = new this.swagger.PlayerApi();
+
             vm.loading(true);
-            new this.swagger.PlayerApi().showById(this.playerId, function(error, data) {
+            api.showById(this.playerId, function(error, data) {
                 vm.loading(false);
                 if (error) {
                     vm.playerEdit = null;
@@ -423,6 +426,15 @@ module.exports = {
                 }
                 data.roles = vm.fixRoles(data.roles);
                 vm.playerEdit = data;
+            });
+
+            vm.loading(true);
+            api.groupsDisabledById(this.playerId, function(error, data) {
+                vm.loading(false);
+                if (error) {
+                    return;
+                }
+                vm.playerEditDeactivated = data;
             });
         },
 
@@ -491,5 +503,8 @@ module.exports = {
     .update-char {
         float: right;
         cursor: pointer;
+    }
+    .groups-disabled {
+        text-decoration: line-through;
     }
 </style>
