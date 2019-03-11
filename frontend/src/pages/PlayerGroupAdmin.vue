@@ -1,6 +1,8 @@
 <template>
     <div class="container-fluid">
 
+        <characters :swagger="swagger" ref="charactersModal"></characters>
+
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Player Groups Admin</h1>
@@ -36,6 +38,9 @@
                             <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }}</a>,
                             status: {{ playerData.status }}
                         </span>
+                        <a class="badge badge-info ml-1" href="" v-on:click.prevent="showCharacters(playerData.id)">
+                            Show characters
+                        </a>
                         <span v-if="playerData.status === 'standard'" class="text-warning">
                             <br>
                             The status of this player is not "managed", manual changes can
@@ -43,6 +48,7 @@
                         </span>
                     </div>
                 </div>
+
                 <admin v-cloak v-if="playerId" ref="admin"
                        :player="player" :contentType="'groups'" :typeId="playerId"
                        :swagger="swagger" :type="'Player'"
@@ -54,11 +60,13 @@
 </template>
 
 <script>
-import Admin from '../components/GroupAppPlayerAdmin.vue';
+import Admin      from '../components/GroupAppPlayerAdmin.vue';
+import Characters from '../components/Characters.vue';
 
 module.exports = {
     components: {
         Admin,
+        Characters,
     },
 
     props: {
@@ -117,6 +125,10 @@ module.exports = {
 
         setPlayerId: function() {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
+        },
+
+        showCharacters: function(memberId) {
+            this.$refs.charactersModal.showCharacters(memberId);
         },
     },
 }

@@ -81,7 +81,7 @@
                 </div>
             </div>
 
-            <a v-cloak v-if="authChar" href="#logout" class="btn btn-outline-warning">Sign Out</a>
+            <a v-cloak v-if="authChar" href="#logout" class="btn btn-outline-danger">Sign Out</a>
         </div>
     </nav>
 </template>

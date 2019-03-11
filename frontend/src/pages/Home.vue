@@ -335,7 +335,7 @@ module.exports = {
         font-size: 3em;
         font-family: impact, sans-serif;
         letter-spacing: 30px;
-        color: #dd3333;
+        color: #9fcdff;
         text-shadow: 1px 1px black;
         padding-left: 30px;
         transform: rotate(10deg);

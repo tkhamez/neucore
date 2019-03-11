@@ -191,6 +191,10 @@
                     </table>
 
                     <h4>Group Membership</h4>
+                    <p v-if="playerEditDeactivated" class="small text-info">
+                        Groups for this account are disabled (or will be disabled soon)
+                        because one or more characters do not have a valid ESI token.
+                    </p>
                     <table class="table table-hover table-sm">
                         <thead class="thead-dark">
                             <tr>
