@@ -24,4 +24,4 @@ window.Vue.component('multiselect', Multiselect);
 // lodash
 window._ = require('lodash');
 
-import "babel-polyfill"; // for useBuiltIns: true
+import "babel-polyfill"; // for useBuiltIns

@@ -8,7 +8,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
-        "bravecollective/sso-basics": "^0.1.2",
+        "bravecollective/sso-basics": "^1.0.0",
         "doctrine/cache": "^1.8",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^2.0",

@@ -103,8 +103,10 @@ module.exports = (env, argv) => {
                     'theme-yeti',
                 ],
             }),
-            new CleanWebpackPlugin(['dist', 'fonts'], {
-                root: path.resolve(__dirname, '../web')
+            new CleanWebpackPlugin({
+                cleanOnceBeforeBuildPatterns: ['**/*', '../fonts/*'],
+                dangerouslyAllowCleanPatternsOutsideProject: true,
+                dry: false,
             }),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(devMode ? 'development' : 'production')
