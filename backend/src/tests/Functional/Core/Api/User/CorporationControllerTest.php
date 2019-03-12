@@ -456,11 +456,7 @@ class CorporationControllerTest extends WebTestCase
         $group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');
 
-        try {
-            $date = new \DateTime('now -10 days');
-        } catch (\Exception $e) {
-            $date = null;
-        }
+        $date = date_create('now -10 days');
         $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2)->setLogonDate($date);
 
         $corp1->addGroup($group1);

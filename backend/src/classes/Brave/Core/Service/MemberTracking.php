@@ -257,7 +257,7 @@ class MemberTracking
                 $corpMember->setId($id);
             }
             $corpMember->setCharacter($character);
-            $corpMember->setName(isset($charNames[$id]) ? $charNames[$id] : null);
+            $corpMember->setName($charNames[$id] ?? null);
             $corpMember->setLocationId((int) $data->getLocationId());
             $corpMember->setLogoffDate($data->getLogoffDate());
             $corpMember->setLogonDate($data->getLogonDate());

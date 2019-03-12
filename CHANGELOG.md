@@ -1,7 +1,7 @@
 
 ## 0.7.0
 
-dd mm yyyy
+13 Mar 2019
 
 - Added "managed" accounts (see documentation).
 - Added ESI "proxy" endpoint for apps.

@@ -52,9 +52,10 @@ If running in `prod` mode, the session cookie for the login is limited to HTTPS.
 If available, the app uses the APCu cache in production mode. This must be cleared during an update
 (depending on the configuration, restart the web server or php-fpm).
 
-##### Distribution
+##### Archive file
 
-If you are using the distribution, you only need to clear the cache apply the database migrations:
+If you downloaded the .tar.gz file, you only need to run the database migrations and, 
+depending on the update method, clear the cache:
 
 ```
 cd backend

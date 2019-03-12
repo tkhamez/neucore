@@ -6,4 +6,8 @@ use Brave\Core\Application;
 require_once __DIR__.'/../vendor/autoload.php';
 
 // Run the console application.
-(new Application())->getConsoleApp()->run();
+try {
+    (new Application())->getConsoleApp()->run();
+} catch (\Throwable $e) {
+    error_log((string) $e);
+}

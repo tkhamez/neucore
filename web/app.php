@@ -16,6 +16,6 @@ require __DIR__ . '/../backend/vendor/autoload.php';
 // Run the web application.
 try {
     (new Application())->getApp()->run();
-} catch (\Exception $e) {
+} catch (\Throwable $e) {
     error_log((string) $e);
 }

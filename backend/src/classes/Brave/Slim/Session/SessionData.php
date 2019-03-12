@@ -26,7 +26,7 @@ class SessionData
      */
     public function getAll()
     {
-        return isset($_SESSION) ? $_SESSION : null;
+        return $_SESSION ?? null;
     }
 
     /**
