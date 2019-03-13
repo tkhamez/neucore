@@ -106,7 +106,7 @@ steps:
       from_secret: GITEA_URL
     files:
     - dist/*.gz
-    - dist/*.txt
+    - dist/*.sha256
   when:
     event: tag
 
