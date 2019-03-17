@@ -1,4 +1,10 @@
 
+## next
+
+dd mmm yyyy
+
+- New: error limit for apps.
+
 ## 0.7.0
 
 13 Mar 2019
@@ -34,9 +40,13 @@
 
 New functions:
 
-- Group deactivation for accounts: If one or more characters in a player account have an invalid ESI token, the third-party application API will no longer return groups for that account. This must be enabled in system settings. There is also a configurable delay for it.
+- Group deactivation for accounts: If one or more characters in a player account have an invalid ESI token, 
+  the third-party application API will no longer return groups for that account. This must be enabled in 
+  system settings. There is also a configurable delay for it.
 - Optional EVE mail notification for disabled accounts.
-- Character deletion: If a character has been transferred to another EVE account, it will be deleted or, if detected during login, moved to a new player account. Biomassed characters (Doomheim) are now also deleted automatically.
+- Character deletion: If a character has been transferred to another EVE account, it will be deleted or, 
+  if detected during login, moved to a new player account. Biomassed characters (Doomheim) are now also 
+  deleted automatically.
 - Players can now also delete their characters manually, this must be enabled in the system settings.
 - System settings: Some things can now be configured or activated/deactivated, needs the new role "settings".
 

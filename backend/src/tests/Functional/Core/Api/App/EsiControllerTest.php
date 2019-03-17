@@ -7,6 +7,7 @@ use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Middleware\GuzzleEsiHeaders;
 use GuzzleHttp\ClientInterface;
+use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Logger;
 use Tests\WebTestCase;
@@ -24,10 +25,16 @@ class EsiControllerTest extends WebTestCase
      */
     private $repoFactory;
 
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     public function setUp()
     {
         $this->helper = new Helper();
         $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+        $this->logger = new Logger('test');
     }
 
     public function testEsiV1403()
@@ -109,11 +116,17 @@ class EsiControllerTest extends WebTestCase
             'GET',
             '/api/app/v1/esi',
             [],
-            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [LoggerInterface::class => $this->logger]
         );
 
         $this->assertSame(429, $response->getStatusCode());
         $this->assertSame('Maximum permissible ESI error limit reached.', $response->getReasonPhrase());
+        $this->assertSame(
+            'ApplicationController->esiV1(): application ' . $appId .
+                ' "A1" exceeded the maximum permissible ESI error limit',
+            $this->logger->getHandler()->getRecords()[0]['message']
+        );
     }
 
     public function testEsiV1429NotReached()

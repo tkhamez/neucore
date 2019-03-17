@@ -5,6 +5,7 @@ namespace Brave\Core\Api\App;
 use Brave\Core\Application;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
@@ -47,13 +48,19 @@ class EsiController
      */
     private $httpClient;
 
+    /**
+     * @var AppAuth
+     */
+    private $appAuth;
+
     public function __construct(
         Response $response,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
         OAuthToken $token,
         Config $config,
-        ClientInterface $httpClient
+        ClientInterface $httpClient,
+        AppAuth $appAuth
     ) {
         $this->response = $response;
         $this->repositoryFactory = $repositoryFactory;
@@ -61,6 +68,7 @@ class EsiController
         $this->token = $token;
         $this->config = $config;
         $this->httpClient = $httpClient;
+        $this->appAuth = $appAuth;
     }
 
     /**
@@ -258,6 +266,12 @@ class EsiController
     {
         // check error limit
         if ($this->errorLimitReached()) {
+            $app = $this->appAuth->getApp($request);
+            $this->log->error(
+                'ApplicationController->esiV1(): application ' .
+                ($app ? $app->getId() . ' "' . $app->getName() . '" ' : '') .
+                'exceeded the maximum permissible ESI error limit'
+            );
             return $this->response->withStatus(429, 'Maximum permissible ESI error limit reached.');
         }
 

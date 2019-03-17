@@ -337,7 +337,7 @@ class Application
                     foreach ($r->getHeaders() as $name => $val) {
                         $headers[$name] = $val[0];
                     }
-                    $c->get(LoggerInterface::class)->debug(print_r($headers, true));
+                    #$c->get(LoggerInterface::class)->debug(print_r($headers, true));
                     return $r;
                 };*/
 
