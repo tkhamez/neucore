@@ -3,6 +3,7 @@
 namespace Brave\Core\Api\App;
 
 use Brave\Core\Application;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\OAuthToken;
@@ -128,6 +129,11 @@ class EsiController
      *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
+     *         response="429",
+     *         description="Maximum permissible ESI error limit reached.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
      *         response="500",
      *         description="Internal server error",
      *         @SWG\Schema(type="string")
@@ -222,6 +228,11 @@ class EsiController
      *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
+     *         response="429",
+     *         description="Maximum permissible ESI error limit reached.",
+     *         @SWG\Schema(type="string")
+     *     ),
+     *     @SWG\Response(
      *         response="500",
      *         description="Internal server error",
      *         @SWG\Schema(type="string")
@@ -245,6 +256,11 @@ class EsiController
 
     private function esiRequest(Request $request, string $method, $path = null): ResponseInterface
     {
+        // check error limit
+        if ($this->errorLimitReached()) {
+            return $this->response->withStatus(429, 'Maximum permissible ESI error limit reached.');
+        }
+
         // get/validate input
 
         list($esiPath, $esiParams) = $this->getEsiPathAndQueryParams($request, $path);
@@ -285,6 +301,29 @@ class EsiController
         $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $method, $body);
 
         return $this->buildResponse($esiResponse);
+    }
+
+    private function errorLimitReached()
+    {
+        $var = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
+        if ($var === null) {
+            return false;
+        }
+
+        $values = \json_decode($var->getValue());
+        if (! $values instanceof \stdClass) {
+            return false;
+        }
+
+        if ($values->updated + $values->reset < time()) {
+            return false;
+        }
+
+        if ($values->remain <= 20) {
+            return true;
+        }
+
+        return false;
     }
 
     private function getEsiPathAndQueryParams(Request $request, $path): array
@@ -351,10 +390,10 @@ class EsiController
         try {
             $esiResponse = $this->httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
-            $this->log->error($re->getMessage(), ['exception' => $re]);
+            $this->log->error('ApplicationController->esiV1(): ' . $re->getMessage());
             $esiResponse = $re->getResponse(); // may still be null
         } catch (GuzzleException $ge) {
-            $this->log->error($ge->getMessage(), ['exception' => $ge]);
+            $this->log->error('ApplicationController->esiV1(): ' . $ge->getMessage());
             $esiResponse = new \GuzzleHttp\Psr7\Response(
                 500, // status
                 [], // header
@@ -373,8 +412,8 @@ class EsiController
             $body = null;
             try {
                 $body = $esiResponse->getBody()->getContents();
-            } catch (\RuntimeException $runtimeEx) {
-                $this->log->error('ApplicationController->esiV1(): ' . $runtimeEx->getMessage());
+            } catch (\RuntimeException $e) {
+                $this->log->error('ApplicationController->esiV1(): ' . $e->getMessage());
             }
             if ($body !== null) {
                 $this->response->write($body);

@@ -8,6 +8,7 @@ use Brave\Core\Command\SendAccountDisabledMail;
 use Brave\Core\Command\UpdateCharacters;
 use Brave\Core\Command\UpdateMemberTracking;
 use Brave\Core\Command\UpdatePlayerGroups;
+use Brave\Core\Middleware\GuzzleEsiHeaders;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\UserAuth;
@@ -15,7 +16,6 @@ use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
-use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -172,7 +172,7 @@ class Application
      *
      * @throws \Exception
      */
-    public function getContainer(): Container
+    public function getContainer(): ContainerInterface
     {
         $this->loadSettings();
         if ($this->container === null) {
@@ -319,7 +319,7 @@ class Application
                     }
                 }
                 $formatter = new LineFormatter();
-                $formatter->includeStacktraces();
+                $formatter->allowInlineLineBreaks();
                 $handler = (new StreamHandler($conf['path'], $conf['level']))->setFormatter($formatter);
                 $logger = (new Logger($conf['name']))->pushHandler($handler);
                 return $logger;
@@ -328,7 +328,9 @@ class Application
             // Guzzle
             ClientInterface::class => function (ContainerInterface $c) {
                 /*$debugFunc = function (\Psr\Http\Message\MessageInterface $r) use ($c) {
-                    if ($r instanceof \Psr\Http\Message\ResponseInterface) {
+                    if ($r instanceof \Psr\Http\Message\RequestInterface) {
+                        $c->get(LoggerInterface::class)->debug($r->getMethod() . ' ' . $r->getUri());
+                    } elseif ($r instanceof \Psr\Http\Message\ResponseInterface) {
                         $c->get(LoggerInterface::class)->debug('Status Code: ' . $r->getStatusCode());
                     }
                     $headers = [];
@@ -338,9 +340,12 @@ class Application
                     $c->get(LoggerInterface::class)->debug(print_r($headers, true));
                     return $r;
                 };*/
+
                 $stack = HandlerStack::create();
+
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
+
                 $stack->push(
                     new CacheMiddleware(
                         new PrivateCacheStrategy(
@@ -351,16 +356,23 @@ class Application
                     ),
                     'cache'
                 );
+
+                $stack->push(new GuzzleEsiHeaders( // each request needs a new object!
+                    $c->get(LoggerInterface::class),
+                    $c->get(EntityManagerInterface::class)
+                ));
+
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
+
                 return new Client(['handler' => $stack]);
             },
 
             // Extend Slim's error and php error handler to log all errors with monolog.
-            'errorHandler' => function (Container $c) {
+            'errorHandler' => function (ContainerInterface $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
-            'phpErrorHandler' => function (Container $c) {
+            'phpErrorHandler' => function (ContainerInterface $c) {
                 return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
         ];

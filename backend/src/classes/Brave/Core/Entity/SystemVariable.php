@@ -116,6 +116,13 @@ class SystemVariable implements \JsonSerializable
     const DIRECTOR_TOKEN = 'director_token_';
 
     /**
+     * Time, remain and reset from X-Esi-Error-Limit-* HTTP headers.
+     *
+     * Scope = backend
+     */
+    const ESI_ERROR_LIMIT = 'esi_error_limit';
+
+    /**
      * Variable name.
      *
      * @SWG\Property(maxLength=255)

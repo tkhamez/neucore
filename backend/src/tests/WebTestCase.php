@@ -61,7 +61,7 @@ class WebTestCase extends TestCase
 
         // change dependencies in container
         try {
-            $container = $app->getContainer();
+            $container = $app->getContainer(); /* @var $container \DI\Container */
         } catch (\Exception $e) {
             echo $e->getMessage();
             return null;

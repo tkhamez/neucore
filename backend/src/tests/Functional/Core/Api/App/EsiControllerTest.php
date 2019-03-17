@@ -3,9 +3,12 @@
 namespace Tests\Functional\Core\Api\App;
 
 use Brave\Core\Entity\Role;
+use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Middleware\GuzzleEsiHeaders;
 use GuzzleHttp\ClientInterface;
 use Tests\Client;
+use Tests\Logger;
 use Tests\WebTestCase;
 use Tests\Helper;
 
@@ -91,6 +94,70 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame('Public ESI routes are not allowed.', $response3->getReasonPhrase());
     }
 
+    public function testEsiV1429()
+    {
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        // add sys var
+        $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
+        $errVar->setValue(\json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86]));
+        $this->helper->getEm()->persist($errVar);
+        $this->helper->getEm()->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+        );
+
+        $this->assertSame(429, $response->getStatusCode());
+        $this->assertSame('Maximum permissible ESI error limit reached.', $response->getReasonPhrase());
+    }
+
+    public function testEsiV1429NotReached()
+    {
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        // add sys var
+        $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
+        $errVar->setValue(\json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86]));
+        $this->helper->getEm()->persist($errVar);
+        $this->helper->getEm()->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+        );
+
+        $this->assertNotSame(429, $response->getStatusCode());
+    }
+
+    public function testEsiV1429ReachedAndReset()
+    {
+        $this->helper->emptyDb();
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        // add sys var
+        $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
+        $errVar->setValue(\json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86]));
+        $this->helper->getEm()->persist($errVar);
+        $this->helper->getEm()->flush();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+        );
+
+        $this->assertNotSame(429, $response->getStatusCode());
+    }
+
     public function testEsiV1200()
     {
         $this->helper->emptyDb();
@@ -132,6 +199,41 @@ class EsiControllerTest extends WebTestCase
             'X-Pages' => ['3'],
             'warning' => ['199 - This route has an upgrade available'],
         ], $response->getHeaders());
+    }
+
+    public function testEsiV1200Middleware()
+    {
+        $this->helper->emptyDb();
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        // create client with middleware
+        $httpClient = new Client([new GuzzleEsiHeaders(new Logger('test'), $this->helper->getEm())]);
+
+        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
+            200,
+            ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
+        ));
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=123',
+            [],
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            [ClientInterface::class => $httpClient]
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([
+            'X-Esi-Error-Limit-Remain' => ['100'],
+            'X-Esi-Error-Limit-Reset' => ['60'],
+        ], $response->getHeaders());
+
+        $esiErrorVar = $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
+        $esiErrorValues = \json_decode($esiErrorVar->getValue());
+        $this->assertGreaterThanOrEqual(time(), $esiErrorValues->updated);
+        $this->assertSame(100, $esiErrorValues->remain);
+        $this->assertSame(60, $esiErrorValues->reset);
     }
 
     public function testEsiV1200PathAsParameter()
