@@ -13,7 +13,7 @@ use Slim\Http\Response;
  *     @SWG\Info(
  *       title="Brave Collective Core Services API",
  *       description="Client library of Brave Collective Core Services API",
- *       version="0.7.0"
+ *       version="0.7.1"
  *     )
  * )
  */
