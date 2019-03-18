@@ -357,10 +357,7 @@ class Application
                     'cache'
                 );
 
-                $stack->push(new GuzzleEsiHeaders( // each request needs a new object!
-                    $c->get(LoggerInterface::class),
-                    $c->get(EntityManagerInterface::class)
-                ));
+                $stack->push($c->get(GuzzleEsiHeaders::class));
 
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));

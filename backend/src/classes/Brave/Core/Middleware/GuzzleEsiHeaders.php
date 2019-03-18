@@ -20,8 +20,6 @@ class GuzzleEsiHeaders
      */
     private $em;
 
-    private $requestUri;
-
     public function __construct(LoggerInterface $logger, EntityManagerInterface $em)
     {
         $this->logger = $logger;
@@ -31,18 +29,18 @@ class GuzzleEsiHeaders
     public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, array $options) use ($handler) {
-            $this->requestUri = $request->getUri();
+            $requestUri = $request->getUri()->__toString();
 
             return $handler($request, $options)->then(
-                function (ResponseInterface $response) {
-                    $this->handleResponseHeaders($response);
+                function (ResponseInterface $response) use ($requestUri) {
+                    $this->handleResponseHeaders($requestUri, $response);
                     return $response;
                 }
             );
         };
     }
 
-    private function handleResponseHeaders(ResponseInterface $response)
+    private function handleResponseHeaders(string $requestUri, ResponseInterface $response)
     {
         /// update ESI error limit
         if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {
@@ -64,7 +62,7 @@ class GuzzleEsiHeaders
         if ($response->hasHeader('warning')) {
             $warning = $response->getHeader('warning')[0];
             if (strpos($warning, '299') !== false) { // i. e. "299 - This route is deprecated"
-                $this->logger->warning($this->requestUri . ': ' .$warning);
+                $this->logger->warning($requestUri . ': ' .$warning);
             }
         }
     }
