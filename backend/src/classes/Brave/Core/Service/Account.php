@@ -71,7 +71,7 @@ class Account
     public function createNewPlayerWithMain(int $characterId, string $characterName): Character
     {
         $player = new Player();
-        $player->setName($characterName);
+        $player->setName($characterName . '#0'); // name will be updated later
 
         $char = new Character();
         $char->setId($characterId);
@@ -91,7 +91,7 @@ class Account
     public function moveCharacterToNewAccount(Character $char): Character
     {
         $newPlayer = new Player();
-        $newPlayer->setName($char->getName());
+        $newPlayer->setName($char->getName() . '#0'); // name will be updated later
 
         $this->removeCharacterFromPlayer($char, $newPlayer);
 
@@ -114,29 +114,42 @@ class Account
      */
     public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
     {
+        $player = $char->getPlayer();
+        if (! $player) {
+            return false;
+        }
+
+        // could be a new player and/or character, so persist
+        $this->objectManager->persist($player);
+        $this->objectManager->persist($char);
+
+        // flush to get a player ID for new accounts
+        if ($player->getId() === null) {
+            $result = $this->objectManager->flush();
+            if (! $result) {
+                return false;
+            }
+        }
+
+        // update character
         $token = $eveAuth->getToken();
-
         $char->setName($eveAuth->getCharacterName());
-
         $char->setLastLogin(date_create());
-
-        if (! empty($eveAuth->getToken()->getRefreshToken())) {
+        if (! empty($token->getRefreshToken())) {
             $char->setValidToken(true);
         } else {
             $char->setValidToken(null);
         }
-
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
         $char->setScopes(implode(' ', $eveAuth->getScopes()));
-
         $char->setAccessToken($token->getToken());
         $char->setExpires($token->getExpires());
         $char->setRefreshToken($token->getRefreshToken());
 
-        if ($char->getPlayer()) { // should always be true
-            $this->objectManager->persist($char->getPlayer()); // could be a new player
+        // if the account has a main character update the player name
+        if ($player->getMain()) {
+            $player->setName($player->getMain()->getName() . '#' . $player->getId());
         }
-        $this->objectManager->persist($char); // could be a new character
 
         return $this->objectManager->flush();
     }

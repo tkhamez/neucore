@@ -77,7 +77,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($character->getMain());
         $this->assertSame(234, $character->getId());
         $this->assertSame('bcd', $character->getName());
-        $this->assertSame('bcd', $character->getPlayer()->getName());
+        $this->assertSame('bcd#0', $character->getPlayer()->getName());
         $this->assertSame([], $character->getPlayer()->getRoles());
     }
 
@@ -95,7 +95,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame($char, $character);
         $this->assertNotSame($player, $character->getPlayer());
-        $this->assertSame('char name', $character->getPlayer()->getName());
+        $this->assertSame('char name#0', $character->getPlayer()->getName());
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
         $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
@@ -106,14 +106,16 @@ class AccountTest extends \PHPUnit\Framework\TestCase
     public function testUpdateAndStoreCharacterWithPlayer()
     {
         $player = (new Player())->setName('name');
-        $char = (new Character())->setId(12)->setPlayer($player);
+        $char = (new Character())->setName('char name')->setId(12)->setMain(true);
+        $char->setPlayer($player);
+        $player->addCharacter($char);
 
         $expires = time() + (60 * 20);
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
             new EveAuthentication(
                 null,
-                'name',
+                'char name changed',
                 'character-owner-hash',
                 new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires]),
                 ['scope1', 'scope2']
@@ -125,9 +127,9 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $character = $this->charRepo->find(12);
 
-        $this->assertSame('name', $character->getName());
-        $this->assertFalse($character->getMain());
-        $this->assertSame('name', $character->getPlayer()->getName());
+        $this->assertSame('char name changed', $character->getName());
+        $this->assertTrue($character->getMain());
+        $this->assertSame('char name changed#' . $player->getId(), $player->getName());
 
         $this->assertSame('character-owner-hash', $character->getCharacterOwnerHash());
         $this->assertSame('a-t', $character->getAccessToken());
@@ -139,8 +141,8 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
     public function testUpdateAndStoreCharacterWithPlayerNoToken()
     {
-        $player = (new Player())->setName('name');
-        $char = (new Character())->setId(12)->setPlayer($player);
+        $player = (new Player())->setName('p-name');
+        $char = (new Character())->setName('c-name')->setId(12)->setPlayer($player);
 
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,

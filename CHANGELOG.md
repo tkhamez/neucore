@@ -5,6 +5,7 @@ dd mmm yyyy
 
 - New: error limit for apps.
 - Layout fixes.
+- Added player ID to account name.
 
 ## 0.7.0
 

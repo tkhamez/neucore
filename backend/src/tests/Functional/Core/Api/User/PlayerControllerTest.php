@@ -283,7 +283,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(13, $charsAfter[1]->getId());
         $this->assertFalse($charsAfter[0]->getMain());
         $this->assertTrue($charsAfter[1]->getMain());
-        $this->assertSame('Alt', $playerAfter->getName());
+        $this->assertSame('Alt#'.$this->player->getId(), $playerAfter->getName());
     }
 
     public function testSetStatus403()
