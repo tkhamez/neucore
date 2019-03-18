@@ -72,13 +72,15 @@ class GuzzleEsiHeadersTest extends \PHPUnit\Framework\TestCase
 
     private function getHandler($response)
     {
-        return function() use ($response) {
+        return function () use ($response) {
             return new class($response) {
                 private $response;
-                public function __construct($response) {
+                public function __construct($response)
+                {
                     $this->response = $response;
                 }
-                public function then(callable $onFulfilled) {
+                public function then(callable $onFulfilled)
+                {
                     $onFulfilled($this->response);
                 }
             };
