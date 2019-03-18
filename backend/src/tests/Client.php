@@ -48,15 +48,17 @@ class Client extends \GuzzleHttp\Client
         foreach ($this->middleware as $callable) {
             $promise = new class($response) {
                 private $response;
-                public function __construct($response) {
+                public function __construct($response)
+                {
                     $this->response = $response;
                 }
-                public function then(callable $onFulfilled) {
+                public function then(callable $onFulfilled)
+                {
                     $onFulfilled($this->response);
                 }
             };
 
-            $function = $callable(function() use ($promise) {
+            $function = $callable(function () use ($promise) {
                 return $promise;
             });
 
