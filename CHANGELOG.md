@@ -4,6 +4,7 @@
 dd mmm yyyy
 
 - New: error limit for apps.
+- Layout fixes.
 
 ## 0.7.0
 
