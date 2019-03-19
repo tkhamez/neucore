@@ -77,7 +77,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($character->getMain());
         $this->assertSame(234, $character->getId());
         $this->assertSame('bcd', $character->getName());
-        $this->assertSame('bcd#0', $character->getPlayer()->getName());
+        $this->assertSame('bcd', $character->getPlayer()->getName());
         $this->assertSame([], $character->getPlayer()->getRoles());
     }
 
@@ -95,7 +95,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame($char, $character);
         $this->assertNotSame($player, $character->getPlayer());
-        $this->assertSame('char name#0', $character->getPlayer()->getName());
+        $this->assertSame('char name', $character->getPlayer()->getName());
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
         $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
@@ -129,7 +129,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame('char name changed', $character->getName());
         $this->assertTrue($character->getMain());
-        $this->assertSame('char name changed#' . $player->getId(), $player->getName());
+        $this->assertSame('char name changed', $player->getName());
 
         $this->assertSame('character-owner-hash', $character->getCharacterOwnerHash());
         $this->assertSame('a-t', $character->getAccessToken());

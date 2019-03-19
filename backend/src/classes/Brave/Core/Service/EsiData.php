@@ -134,7 +134,12 @@ class EsiData
             $this->log->error($e->getMessage(), ['exception' => $e]);
             return null;
         }
+
+        // update char (and player) name
         $char->setName($eveChar->getName());
+        if ($char->getMain() && $char->getPlayer()) {
+            $char->getPlayer()->setName($char->getName());
+        }
 
         $char->setLastUpdate(date_create());
 

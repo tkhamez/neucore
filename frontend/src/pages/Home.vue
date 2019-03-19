@@ -147,7 +147,7 @@
                 <div class="col-lg-4">
                     <div class="player-hdl">
                         <h2>Account</h2>
-                        <span class="text-muted">{{ player.name }}</span>
+                        <span class="text-muted">{{ player.name }} #{{ player.id }}</span>
                         <span v-if="player.status === 'managed'" class="text-muted">(manually managed)</span>
                     </div>
                     <div class="card border-secondary mb-3">

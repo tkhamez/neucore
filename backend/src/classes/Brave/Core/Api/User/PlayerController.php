@@ -306,7 +306,7 @@ class PlayerController extends BaseController
             if ($char->getId() === (int) $cid) {
                 $char->setMain(true);
                 $main = $char;
-                $player->setName($main->getName() . '#' . $player->getId());
+                $player->setName($main->getName());
             } else {
                 $char->setMain(false);
             }

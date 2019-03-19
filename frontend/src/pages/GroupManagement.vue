@@ -44,7 +44,7 @@
                     </ul>
                     <div v-if="newMember">
                         <span class="text-muted">Player account:</span>
-                        [{{ newMember.id }}] {{ newMember.name }}
+                        {{ newMember.name }} #{{ newMember.id }}
                         <button class="btn btn-info btn-sm"
                                 v-on:click="showCharacters(newMember.id)">
                             Show characters

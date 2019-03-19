@@ -44,7 +44,7 @@
                      <a v-for="pr in playersRole" class="list-group-item list-group-item-action"
                         :class="{ active: playerEdit && playerEdit.id === pr.id }"
                         :href="'#UserAdmin/' + pr.id">
-                        {{ pr.name }}
+                        {{ pr.name }} #{{ pr.id }}
                     </a>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                        class="list-group-item list-group-item-action"
                        :class="{ active: playerEdit && playerEdit.id === emptyAcc.id }"
                        :href="'#UserAdmin/' + emptyAcc.id">
-                        {{ emptyAcc.name }}
+                        {{ emptyAcc.name }} #{{ emptyAcc.id }}
                     </a>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                 <h3 class="card-header">
                     Player Account:
                     <span v-cloak v-if="playerEdit">
-                        {{ playerEdit.name }}
+                        {{ playerEdit.name }} #{{ playerEdit.id }}
                     </span>
                     <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
                           v-on:click="updateCharacters"
@@ -288,7 +288,7 @@
                                 <td>
                                     <a v-if="removedCharacter.newPlayerId"
                                        :href="'#UserAdmin/' + removedCharacter.newPlayerId">
-                                        {{ removedCharacter.newPlayerName }}
+                                        {{ removedCharacter.newPlayerName }} #{{ removedCharacter.newPlayerId }}
                                     </a>
                                 </td>
                             </tr>

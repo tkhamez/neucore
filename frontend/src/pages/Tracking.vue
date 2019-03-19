@@ -50,7 +50,7 @@
                             <td>{{ member.name }}</td>
                             <td>
                                 <a href="#" v-if="member.player" v-on:click.prevent="showCharacters(member.player.id)">
-                                    {{ member.player.name }}
+                                    {{ member.player.name }} #{{ member.player.id }}
                                 </a>
                             </td>
                             <td>

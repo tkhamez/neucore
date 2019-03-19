@@ -71,7 +71,7 @@ class Account
     public function createNewPlayerWithMain(int $characterId, string $characterName): Character
     {
         $player = new Player();
-        $player->setName($characterName . '#0'); // name will be updated later
+        $player->setName($characterName);
 
         $char = new Character();
         $char->setId($characterId);
@@ -91,7 +91,7 @@ class Account
     public function moveCharacterToNewAccount(Character $char): Character
     {
         $newPlayer = new Player();
-        $newPlayer->setName($char->getName() . '#0'); // name will be updated later
+        $newPlayer->setName($char->getName());
 
         $this->removeCharacterFromPlayer($char, $newPlayer);
 
@@ -119,18 +119,6 @@ class Account
             return false;
         }
 
-        // could be a new player and/or character, so persist
-        $this->objectManager->persist($player);
-        $this->objectManager->persist($char);
-
-        // flush to get a player ID for new accounts
-        if ($player->getId() === null) {
-            $result = $this->objectManager->flush();
-            if (! $result) {
-                return false;
-            }
-        }
-
         // update character
         $token = $eveAuth->getToken();
         $char->setName($eveAuth->getCharacterName());
@@ -146,10 +134,14 @@ class Account
         $char->setExpires($token->getExpires());
         $char->setRefreshToken($token->getRefreshToken());
 
-        // if the account has a main character update the player name
-        if ($player->getMain()) {
-            $player->setName($player->getMain()->getName() . '#' . $player->getId());
+        // update account name
+        if ($char->getMain()) {
+            $player->setName($char->getName());
         }
+
+        // could be a new player and/or character, so persist
+        $this->objectManager->persist($player);
+        $this->objectManager->persist($char);
 
         return $this->objectManager->flush();
     }

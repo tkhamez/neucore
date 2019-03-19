@@ -174,6 +174,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
 
         $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertSame('char name', $char->getName());
+        $this->assertSame('char name', $char->getPlayer()->getName());
         $this->assertSame('corp name', $char->getCorporation()->getName());
         $this->assertSame('alli name', $char->getCorporation()->getAlliance()->getName());
     }

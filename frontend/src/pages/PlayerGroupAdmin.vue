@@ -22,7 +22,7 @@
                             <a class="list-group-item list-group-item-action"
                                :class="{ active: playerId === player.id }"
                                :href="'#PlayerGroupAdmin/' + player.id">
-                                {{ player.name }}
+                                {{ player.name }} #{{ player.id }}
                             </a>
                         </span>
                     </div>
@@ -35,7 +35,7 @@
                     </h3>
                     <div v-if="playerData" class="card-body">
                         <span class="text-muted">
-                            <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }}</a>,
+                            <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }} #{{ player.id }}</a>,
                             status: {{ playerData.status }}
                         </span>
                         <a class="badge badge-info ml-1" href="" v-on:click.prevent="showCharacters(playerData.id)">
