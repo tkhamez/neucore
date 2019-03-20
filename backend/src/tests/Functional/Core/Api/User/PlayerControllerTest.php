@@ -858,7 +858,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(13, $removedChar->getCharacterId());
         $this->assertSame($this->player->getId(), $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
-        $this->assertSame('deleted (manually)', $removedChar->getAction());
+        $this->assertSame('deleted (manually)', $removedChar->getReason());
     }
 
     public function testGroupsDisabled403()

@@ -205,7 +205,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($user->getId(), $removedChar->getcharacterId());
         $this->assertSame($player->getId(), $removedChar->getPlayer()->getId());
         $this->assertSame($newPlayer->getId(), $removedChar->getNewPlayer()->getId());
-        $this->assertSame('moved', $removedChar->getAction());
+        $this->assertSame('moved', $removedChar->getReason());
     }
 
     public function testAddAltNoRefreshToken()
@@ -266,7 +266,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
         $this->assertNotNull($oldPlayerId);
         $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
-        $this->assertSame('moved', $removedChar->getAction());
+        $this->assertSame('moved', $removedChar->getReason());
         $this->assertNotNull($newPlayerId);
     }
 

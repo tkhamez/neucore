@@ -5,7 +5,7 @@ namespace Brave\Core\Entity;
 /**
  * @SWG\Definition(
  *     definition="RemovedCharacter",
- *     required={"characterId", "characterName", "removedDate", "action"},
+ *     required={"characterId", "characterName", "removedDate", "reason"},
  *     @SWG\Property(property="newPlayerId", type="integer"),
  *     @SWG\Property(property="newPlayerName", type="string")
  * )
@@ -73,7 +73,7 @@ class RemovedCharacter implements \JsonSerializable
      * @Column(type="string", length=255)
      * @var string
      */
-    private $action;
+    private $reason;
 
     /**
      * Contains only information that is of interest for clients.
@@ -87,7 +87,7 @@ class RemovedCharacter implements \JsonSerializable
             'characterId' => $this->characterId,
             'characterName' => $this->characterName,
             'removedDate' => $this->removedDate ? $this->removedDate->format('Y-m-d\TH:i:s\Z') : null,
-            'action' => $this->action,
+            'reason' => $this->reason,
 
             // Cannot add Player object because the Swagger UI can't deal with recursive references.
             // (should be fixed in 3.0)
@@ -138,16 +138,16 @@ class RemovedCharacter implements \JsonSerializable
         return $this->removedDate;
     }
 
-    public function setAction(string $action): self
+    public function setReason(string $reason): self
     {
-        $this->action = $action;
+        $this->reason = $reason;
 
         return $this;
     }
 
-    public function getAction(): string
+    public function getReason(): string
     {
-        return (string) $this->action;
+        return (string) $this->reason;
     }
 
     public function setPlayer(Player $player = null): self

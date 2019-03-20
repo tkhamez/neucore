@@ -313,9 +313,9 @@ class Account
 
         if ($newPlayer) {
             $removedCharacter->setNewPlayer($newPlayer);
-            $removedCharacter->setAction('moved');
+            $removedCharacter->setReason('moved');
         } else {
-            $removedCharacter->setAction('deleted (' . $reason . ')');
+            $removedCharacter->setReason('deleted (' . $reason . ')');
         }
 
         $this->objectManager->persist($removedCharacter);

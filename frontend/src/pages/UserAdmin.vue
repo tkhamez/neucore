@@ -284,7 +284,7 @@
                                         {{ removedCharacter.removedDate.toUTCString() }}
                                     </span>
                                 </td>
-                                <td>{{ removedCharacter.action }}</td>
+                                <td>{{ removedCharacter.reason }}</td>
                                 <td>
                                     <a v-if="removedCharacter.newPlayerId"
                                        :href="'#UserAdmin/' + removedCharacter.newPlayerId">

@@ -16,14 +16,14 @@ class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
         $char->setCharacterId(123);
         $char->setCharacterName('test char');
         $char->setRemovedDate(new \DateTime('2018-04-26 18:59:35'));
-        $char->setAction('moved');
+        $char->setReason('moved');
         $char->setNewPlayer((new Player())->setName('New Player'));
 
         $this->assertSame([
             'characterId' => 123,
             'characterName' => 'test char',
             'removedDate' => '2018-04-26T18:59:35Z',
-            'action' => 'moved',
+            'reason' => 'moved',
             'newPlayerId' => null,
             'newPlayerName' => 'New Player',
         ], json_decode(json_encode($char), true));
@@ -68,9 +68,9 @@ class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
     public function testSetGetAction()
     {
         $rm = new RemovedCharacter();
-        $retVal = $rm->setAction('nam');
+        $retVal = $rm->setReason('nam');
         $this->assertSame($rm, $retVal);
-        $this->assertSame('nam', $rm->getAction());
+        $this->assertSame('nam', $rm->getReason());
     }
 
     /**

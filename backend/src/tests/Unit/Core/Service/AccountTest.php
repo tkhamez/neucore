@@ -99,7 +99,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
         $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
-        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getAction());
+        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getReason());
         $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
     }
 
@@ -183,7 +183,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
         $this->assertSame(31, $removedChar->getCharacterId());
-        $this->assertSame('deleted (biomassed)', $removedChar->getAction());
+        $this->assertSame('deleted (biomassed)', $removedChar->getReason());
     }
 
     public function testCheckCharacterNoToken()
@@ -312,7 +312,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
         $this->assertSame(31, $removedChar->getCharacterId());
-        $this->assertSame('deleted (EVE account changed)', $removedChar->getAction());
+        $this->assertSame('deleted (EVE account changed)', $removedChar->getReason());
     }
 
     public function testRemoveCharacterFromPlayer()
@@ -335,7 +335,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
         $this->assertEquals(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertSame($player, $player->getRemovedCharacters()[0]->getNewPlayer());
-        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getAction());
+        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getReason());
 
         // tests that the new object was persisted.
         $removedChars = $this->removedCharRepo->findBy([]);
@@ -368,7 +368,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('player 1', $removedChars[0]->getPlayer()->getName());
         $this->assertEquals(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
-        $this->assertSame('deleted (manually)', $removedChars[0]->getAction());
+        $this->assertSame('deleted (manually)', $removedChars[0]->getReason());
     }
 
     public function testDeleteCharacterWithoutPlayer()
