@@ -71,6 +71,11 @@ Apply migrations:
 vendor/bin/doctrine-migrations migrations:migrate
 ```
 
+Check reserved words
+```
+vendor/bin/doctrine dbal:reserved-words
+```
+
 ### OpenAPI
 
 Generate OpenAPI interface files:
