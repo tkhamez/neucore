@@ -51,7 +51,7 @@ class GuzzleEsiHeadersTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(100, $val->remain);
         $this->assertSame(60, $val->reset);
-        $this->assertGreaterThanOrEqual(time(), $val->updated);
+        $this->assertLessThanOrEqual(time(), $val->updated);
     }
 
     public function testInvokeDeprecated()
