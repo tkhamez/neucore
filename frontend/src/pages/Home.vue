@@ -331,13 +331,14 @@ module.exports = {
 
     #preview {
         position: absolute;
-        right: 20px;
-        font-size: 3em;
+        top: 30px;
+        right: 10px;
+        font-size: 2em;
         font-family: impact, sans-serif;
-        letter-spacing: 30px;
+        letter-spacing: 20px;
         color: #9fcdff;
         text-shadow: 1px 1px black;
-        padding-left: 30px;
+        padding-left: 20px;
         transform: rotate(10deg);
         background-color: rgba(200, 200, 200, .5);
     }
