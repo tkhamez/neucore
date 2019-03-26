@@ -1,32 +1,35 @@
-# Brave Collective Core Services
-
 [![Build Status](https://travis-ci.com/bravecollective/brvneucore.svg?branch=master)](https://travis-ci.com/bravecollective/brvneucore)
 [![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=alert_status)](https://sonarcloud.io/dashboard?id=brvneucore)
 
-Preview https://brvneucore.herokuapp.com
-([Swagger UI](https://brvneucore.herokuapp.com/api), 
-[OpenAPI for apps](https://brvneucore.herokuapp.com/application-api.json))
+# Brave Collective Core Services
+
+aka "neucore"
 
 ## Overview
 
-Objectives
+A player management system for [EVE Online](https://www.eveonline.com/).
+
+*Objectives*:
 - Manage alliance specific groups for players.
-- Provide an API to query these groups.
-- Access to ESI data of all members.
+- Access to [ESI](http://esi.evetech.net) data of all members.
+- Provide an API for third-party applications.
 
 This project consists of two applications, the backend and the frontend.
-For more information, see the Readme for 
-[**Frontend**](frontend/README.md) and [**Backend**](backend/README.md).
+For more information, see the [**Frontend**](frontend/README.md) and [**Backend**](backend/README.md) Readme.
 
-More documentation is available in the `doc` directory:
+More documentation is available in the `doc` directory: 
 [**Documentation**](doc/documentation.md), [**API**](doc/API.md).
+
+A preview/demo installation is available at https://brvneucore.herokuapp.com
+([Swagger UI](https://brvneucore.herokuapp.com/api),
+[OpenAPI for apps](https://brvneucore.herokuapp.com/application-api.json))
 
 ## Installation
 
 ### EVE API Setup
 
-- visit https://developers.eveonline.com/applications or https://developers.testeveonline.com
+- visit https://developers.eveonline.com or https://developers.testeveonline.com
 - create a new application (eg: Brave Core DEV)
 - Connection Type: "Authentication & API Access", add the required scopes. Scopes for the backend
   are configured with the environment variable BRAVECORE_EVE_SCOPES.

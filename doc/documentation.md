@@ -21,6 +21,9 @@ which also documents the API for third-party applications.
 
 ## Authentication of third-party Applications
 
+An application must first be created by an app administrator and assigned to an app manager, 
+who can then generate the app secret.
+
 Apps are authenticated using an HTTP authorization header.
 
 The authorization string is composed of the word Bearer followed by a base64-encoded
