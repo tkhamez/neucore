@@ -1,6 +1,7 @@
 {
     "name": "brvneucore",
     "private": true,
+    "license": "MIT",
     "bundledDependencies": [
         "brvneucore-js-client"
     ],

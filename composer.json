@@ -1,5 +1,7 @@
 {
     "name": "brv/neucore-heroku",
+    "type": "project",
+    "license": "MIT",
     "description": "For Heroku to setup the PHP environment and install the backend and frontend.",
     "require": {
         "php": "~7.1.3",

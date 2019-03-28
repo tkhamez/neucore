@@ -1,6 +1,7 @@
 {
     "name": "brvneucore-api",
     "private": true,
+    "license": "MIT",
     "dependencies": {
         "swagger-ui-dist": "^3.20.2"
     }
