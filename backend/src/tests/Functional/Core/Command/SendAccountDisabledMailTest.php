@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Tests\Client;
-use Tests\ConsoleTestCase;
+use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 
 class SendAccountDisabledMailTest extends ConsoleTestCase

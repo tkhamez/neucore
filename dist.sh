@@ -27,22 +27,22 @@ cd ../web
 npm install
 
 cd ../..
-mkdir brvneucore
-cp -R build/backend brvneucore/backend
-rm -r brvneucore/backend/src/tests
-cp -R build/doc brvneucore/doc
-cp -R build/web brvneucore/web
-cp build/LICENSE brvneucore/LICENSE
-cp build/CHANGELOG.md brvneucore/CHANGELOG.md
-cp build/README.md brvneucore/README.md
+mkdir neucore
+cp -R build/backend neucore/backend
+rm -r neucore/backend/src/tests
+cp -R build/doc neucore/doc
+cp -R build/web neucore/web
+cp build/LICENSE neucore/LICENSE
+cp build/CHANGELOG.md neucore/CHANGELOG.md
+cp build/README.md neucore/README.md
 
 if [[ "$1" ]]; then
     NAME=$1
 else
     NAME=$(git rev-parse --short HEAD)
 fi
-tar -czf brvneucore-${NAME}.tar.gz brvneucore
-sha256sum brvneucore-${NAME}.tar.gz > brvneucore-${NAME}.sha256
+tar -czf neucore-${NAME}.tar.gz neucore
+sha256sum neucore-${NAME}.tar.gz > neucore-${NAME}.sha256
 
 rm -Rf build
-rm -Rf brvneucore
+rm -Rf neucore

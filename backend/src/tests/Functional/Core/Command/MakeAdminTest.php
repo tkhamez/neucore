@@ -7,7 +7,7 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Tests\ConsoleTestCase;
+use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;

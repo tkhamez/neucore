@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Slim\Session;
+namespace Tests\Unit\Core\Slim\Session;
 
-use Brave\Slim\Session\NonBlockingSessionMiddleware;
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Slim\Session\NonBlockingSessionMiddleware;
+use Brave\Core\Slim\Session\SessionData;
 use Slim\Interfaces\RouteInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;

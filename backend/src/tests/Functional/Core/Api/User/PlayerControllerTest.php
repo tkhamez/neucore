@@ -14,7 +14,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;

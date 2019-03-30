@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Core;
+namespace Tests\Unit\Core\Service;
 
 use Brave\Core\Service\Config;
 

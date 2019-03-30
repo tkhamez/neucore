@@ -10,7 +10,7 @@ use Brave\Core\Service\EveMail;
 use Brave\Core\Service\MemberTracking;
 use Brave\Core\Service\Random;
 use Brave\Core\Service\UserAuth;
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Slim\Session\SessionData;
 use Brave\Sso\Basics\AuthenticationProvider;
 use Slim\Http\Request;
 use Slim\Http\Response;

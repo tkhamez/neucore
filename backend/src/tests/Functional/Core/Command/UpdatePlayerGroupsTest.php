@@ -6,7 +6,7 @@ use Brave\Core\Entity\Group;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
-use Tests\ConsoleTestCase;
+use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;

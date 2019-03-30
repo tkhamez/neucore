@@ -8,7 +8,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
-use Tests\ConsoleTestCase;
+use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
 

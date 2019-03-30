@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
-use Tests\ConsoleTestCase;
+use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\OAuthProvider;

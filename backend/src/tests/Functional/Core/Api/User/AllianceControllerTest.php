@@ -12,7 +12,7 @@ use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
 use Tests\WriteErrorListener;

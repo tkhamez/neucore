@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests;
+namespace Tests\Functional;
 
 use Brave\Core\Application;
 use PHPUnit\Framework\TestCase;

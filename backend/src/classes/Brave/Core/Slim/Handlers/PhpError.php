@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Slim\Handlers;
+namespace Brave\Core\Slim\Handlers;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Extends Slim's error handler to add a logger.
  */
-class Error extends \Slim\Handlers\Error
+class PhpError extends \Slim\Handlers\PhpError
 {
     protected $logger;
 
@@ -20,11 +20,11 @@ class Error extends \Slim\Handlers\Error
         parent::__construct($displayErrorDetails);
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Exception $exception)
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Throwable $error)
     {
-        $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
+        $this->logger->critical($error->getMessage(), ['exception' => $error]);
 
-        return parent::__invoke($request, $response, $exception);
+        return parent::__invoke($request, $response, $error);
     }
 
     protected function logError($message)

@@ -7,10 +7,10 @@ Vagrant.configure("2") do |config|
     end
 
     config.vm.box = "generic/ubuntu1804"
-    config.vm.hostname = "brvneucore"
+    config.vm.hostname = "neucore"
 
-    config.vm.synced_folder "./", "/var/www/brvneucore", type: "rsync", rsync__exclude: [
-        "backend/.env", "backend/vendor/", "frontend/node_modules/", "frontend/brvneucore-js-client/",
+    config.vm.synced_folder "./", "/var/www/neucore", type: "rsync", rsync__exclude: [
+        "backend/.env", "backend/vendor/", "frontend/node_modules/", "frontend/neucore-js-client/",
         ".settings/", ".buildpath", ".project", ".idea", ".jshintrc"]
 
     config.ssh.username = 'vagrant'
@@ -48,16 +48,16 @@ Vagrant.configure("2") do |config|
         apt-get install apache2 -y
         a2enmod rewrite proxy_fcgi setenvif
         a2enconf php7.2-fpm
-        cat > /etc/apache2/sites-available/010-brvneucore.conf <<EOL
+        cat > /etc/apache2/sites-available/010-neucore.conf <<EOL
 <VirtualHost *:80>
-    ServerName brvneucore
-    DocumentRoot /var/www/brvneucore/web
-    <Directory /var/www/brvneucore/web/>
+    ServerName neucore
+    DocumentRoot /var/www/neucore/web
+    <Directory /var/www/neucore/web/>
         AllowOverride All
     </Directory>
 </VirtualHost>
 EOL
-        a2ensite 010-brvneucore
+        a2ensite 010-neucore
         a2dissite 000-default.conf
 
         # also install php-pgsql, php-sqlite3
@@ -82,7 +82,7 @@ EOL
 
     # run app setup as an unprivileged user
     config.vm.provision "up", type: "shell", run: "always", privileged: false, inline: <<-SHELL
-        cd /var/www/brvneucore
+        cd /var/www/neucore
 
         chmod 0775 backend/var/logs
         chmod 0775 backend/var/cache
@@ -97,11 +97,9 @@ EOL
         echo " "
         echo "--------------------------------------------------------------------------------"
         echo "-- URLs (change IP as needed):                                                --"
-        echo "-- Brave Core http://192.168.121.111                                          --"
+        echo "-- Neucore http://192.168.121.111                                             --"
         echo "-- Adminer http://192.168.121.111/adminer/adminer/designs.php (core/brave)    --"
         echo "-- SSH user: vagrant/vagrant                                                  --"
-        echo "-- mount: sshfs vagrant@192.168.121.111:/ /mnt/brvneucore                     --"
-        echo "-- unmount: fusermount -u /mnt/brvneucore                                     --"
         echo "-- $ ifconfig eth0 | grep inet:                                               --"
         /sbin/ifconfig eth0 | grep "inet "
         echo "--------------------------------------------------------------------------------"

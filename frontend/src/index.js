@@ -179,7 +179,7 @@ const app = new window.Vue({
         player: null,
 
         /**
-         * brvneucore API client
+         * Neucore API client
          */
         swagger: null,
 
@@ -205,7 +205,7 @@ const app = new window.Vue({
 
     created: function() {
         // configure swagger client
-        this.swagger = window.brvneucoreJsClient;
+        this.swagger = window.neucoreJsClient;
         this.swagger.ApiClient.instance.basePath =
             window.location.protocol + "//" +
             window.location.hostname + ':' +

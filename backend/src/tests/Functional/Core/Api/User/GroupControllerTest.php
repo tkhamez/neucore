@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\WriteErrorListener;
 

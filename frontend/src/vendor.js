@@ -11,7 +11,7 @@ window.jQuery(function() {
 require('../node_modules/@fortawesome/fontawesome-free/css/all.css');
 
 // swagger client
-window.brvneucoreJsClient = require('brvneucore-js-client');
+window.neucoreJsClient = require('neucore-js-client');
 
 // Vue.js - runtime + compiler
 window.Vue = require('vue/dist/vue.min.js');

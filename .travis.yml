@@ -16,8 +16,8 @@ addons:
 env:
   global:
     - BRAVECORE_APP_ENV=prod
-    - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
-    - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/brvneucore
+    - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
+    - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
   matrix:
     - NODE_VERSION="8.15.0"
     - NODE_VERSION="10.14.2"
@@ -37,7 +37,7 @@ matrix:
       env: NODE_VERSION="8.15.0"
 
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS brvneucore;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS neucore;'
   - nvm install $NODE_VERSION
 
 install:
@@ -46,7 +46,7 @@ install:
 
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
-  - if [ $(phpenv version-name) = "7.2" ] && [ $TRAVIS_REPO_SLUG = "tkhamez/brvneucore" ]; then sonar-scanner; fi
+  - if [ $(phpenv version-name) = "7.2" ] && [ $TRAVIS_REPO_SLUG = "tkhamez/neucore" ]; then sonar-scanner; fi
 
 before_deploy:
   - ./dist.sh $TRAVIS_TAG
@@ -59,5 +59,5 @@ deploy:
   file: dist/*
   skip_cleanup: true
   on:
-    repo: tkhamez/brvneucore
+    repo: tkhamez/neucore
     tags: true

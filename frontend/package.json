@@ -1,15 +1,15 @@
 {
-    "name": "brvneucore",
+    "name": "tkhamez-neucore",
     "private": true,
     "license": "MIT",
     "bundledDependencies": [
-        "brvneucore-js-client"
+        "neucore-js-client"
     ],
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.8.1",
         "bootstrap": "^4.3.1",
         "bootswatch": "^4.3.1",
-        "brvneucore-js-client": "file:brvneucore-js-client",
+        "neucore-js-client": "file:neucore-js-client",
         "jquery": "^3.3.1",
         "lodash": "^4.17.11",
         "popper.js": "^1.14.7",

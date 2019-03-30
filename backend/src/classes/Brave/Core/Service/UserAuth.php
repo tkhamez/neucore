@@ -5,7 +5,7 @@ namespace Brave\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;

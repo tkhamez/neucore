@@ -30,7 +30,7 @@ A preview/demo installation is available at https://brvneucore.herokuapp.com
 ### EVE API Setup
 
 - visit https://developers.eveonline.com or https://developers.testeveonline.com
-- create a new application (eg: Brave Core DEV)
+- create a new application (eg: Neucore DEV)
 - Connection Type: "Authentication & API Access", add the required scopes. Scopes for the backend
   are configured with the environment variable BRAVECORE_EVE_SCOPES.
 - set the callback to https://your.domain/login-callback

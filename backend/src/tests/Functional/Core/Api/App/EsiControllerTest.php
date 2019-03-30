@@ -10,7 +10,7 @@ use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Logger;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
 class EsiControllerTest extends WebTestCase

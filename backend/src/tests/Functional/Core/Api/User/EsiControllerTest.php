@@ -4,7 +4,7 @@ namespace Tests\Functional\Core\Api\User;
 
 use Brave\Core\Entity\Role;
 use GuzzleHttp\ClientInterface;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
 

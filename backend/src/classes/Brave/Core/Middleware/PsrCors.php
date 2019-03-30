@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Middleware;
+namespace Brave\Core\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * Checks HTTP_ORIGIN request header and if it matches one of the allow
  * origins, adds Access-Control-Allow-* headers to the response.
  */
-class Cors
+class PsrCors
 {
     private $allowOrigin;
 

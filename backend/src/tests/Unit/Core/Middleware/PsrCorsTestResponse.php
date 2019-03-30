@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Middleware;
+namespace Tests\Unit\Core\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-class TestResponse implements ResponseInterface
+class PsrCorsTestResponse implements ResponseInterface
 {
     private $headers;
 
@@ -48,7 +48,7 @@ class TestResponse implements ResponseInterface
         $headers = $this->headers;
         $headers[$name][] = $value;
 
-        return new TestResponse($headers);
+        return new PsrCorsTestResponse($headers);
     }
 
     public function withBody(StreamInterface $body)

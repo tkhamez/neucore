@@ -1,5 +1,5 @@
 {
-    "name": "brv/neucore-examples",
+    "name": "neucore/examples",
     "type": "project",
     "require": {
         "tkhamez/swagger-eve-php": "^2.0",

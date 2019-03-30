@@ -31,7 +31,7 @@ string containing the app ID and secret separated by a colon (1:my awesome secre
 
 Example:
 ```
-curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://brave.core.tld/api/app/v1/show
+curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neucore.tld/api/app/v1/show
 ```
 
 ## Player Accounts

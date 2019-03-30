@@ -11,7 +11,7 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\OAuthProvider;
 use Tests\Client;

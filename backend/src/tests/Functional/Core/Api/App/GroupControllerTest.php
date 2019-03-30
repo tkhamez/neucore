@@ -7,7 +7,7 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Entity\Group;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Alliance;

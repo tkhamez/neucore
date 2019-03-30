@@ -1,7 +1,7 @@
 <!DOCTYPE xml>
 <phpunit bootstrap="src/tests/bootstrap.php">
     <testsuites>
-        <testsuite name="Brave Core">
+        <testsuite name="Neucore">
             <directory>src/tests</directory>
         </testsuite>
     </testsuites>

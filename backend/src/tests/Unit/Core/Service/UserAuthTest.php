@@ -8,7 +8,7 @@ use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Slim\Session;
+namespace Tests\Unit\Core\Slim\Session;
 
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Slim\Session\SessionData;
 use Tests\Helper;
 
 class SessionDataTest extends \PHPUnit\Framework\TestCase

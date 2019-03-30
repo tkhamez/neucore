@@ -6,7 +6,7 @@ use Brave\Core\Api\User\AuthController;
 use Brave\Core\Service\Config;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
-use Brave\Slim\Session\SessionData;
+use Brave\Core\Slim\Session\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -14,7 +14,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Helper;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\OAuthProvider;
 use Tests\Client;
 

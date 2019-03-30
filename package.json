@@ -1,5 +1,5 @@
 {
-    "name": "brvneucore-heroku",
+    "name": "tkhamez-neucore-heroku",
     "description": "For Heroku to recognizes a Node.js application.",
     "private": true,
     "license": "MIT",

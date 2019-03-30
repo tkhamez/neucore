@@ -83,17 +83,17 @@ steps:
   - composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
   - vendor/bin/doctrine orm:generate-proxies
   - cd ..
-  - mkdir -p dist/brvneucore
-  - cp -R backend dist/brvneucore/backend
-  - rm -r dist/brvneucore/backend/src/tests
-  - cp -R doc dist/brvneucore/doc
-  - cp -R web dist/brvneucore/web
-  - cp LICENSE dist/brvneucore/LICENSE
-  - cp CHANGELOG.md dist/brvneucore/CHANGELOG.md
-  - cp README.md dist/brvneucore/README.md
+  - mkdir -p dist/neucore
+  - cp -R backend dist/neucore/backend
+  - rm -r dist/neucore/backend/src/tests
+  - cp -R doc dist/neucore/doc
+  - cp -R web dist/neucore/web
+  - cp LICENSE dist/neucore/LICENSE
+  - cp CHANGELOG.md dist/neucore/CHANGELOG.md
+  - cp README.md dist/neucore/README.md
   - cd dist
-  - tar -czf brvneucore-${DRONE_TAG}.tar.gz brvneucore
-  - sha256sum brvneucore-${DRONE_TAG}.tar.gz > brvneucore-${DRONE_TAG}.sha256
+  - tar -czf neucore-${DRONE_TAG}.tar.gz neucore
+  - sha256sum neucore-${DRONE_TAG}.tar.gz > neucore-${DRONE_TAG}.sha256
   when:
     event: tag
 

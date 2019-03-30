@@ -58,14 +58,14 @@ module.exports = (env, argv) => {
                 }]
             }, {
                 // Swagger client AMD define fails, https://github.com/swagger-api/swagger-codegen/issues/3466
-                test: /brvneucore-js-client\/.*\.js$/,
+                test: /neucore-js-client\/.*\.js$/,
                 use: 'imports-loader?define=>false'
             }, {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             }, {
                 test: /\.js$/,
-                exclude: /(node_modules|brvneucore-js-client)/,
+                exclude: /(node_modules|neucore-js-client)/,
                 use: {
                     loader: 'babel-loader',
                     options: {

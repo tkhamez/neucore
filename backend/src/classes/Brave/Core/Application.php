@@ -12,10 +12,10 @@ use Brave\Core\Middleware\GuzzleEsiHeaders;
 use Brave\Core\Service\AppAuth;
 use Brave\Core\Service\Config;
 use Brave\Core\Service\UserAuth;
-use Brave\Middleware\Cors;
-use Brave\Slim\Handlers\Error;
-use Brave\Slim\Handlers\PhpError;
-use Brave\Slim\Session\NonBlockingSessionMiddleware;
+use Brave\Core\Middleware\PsrCors;
+use Brave\Core\Slim\Handlers\Error;
+use Brave\Core\Slim\Handlers\PhpError;
+use Brave\Core\Slim\Session\NonBlockingSessionMiddleware;
 use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
@@ -246,7 +246,7 @@ class Application
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
         ]));
 
-        $app->add(new Cors($this->container->get('config')['CORS']['allow_origin']));
+        $app->add(new PsrCors($this->container->get('config')['CORS']['allow_origin']));
     }
 
     /**

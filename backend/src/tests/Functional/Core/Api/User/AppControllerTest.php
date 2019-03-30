@@ -12,7 +12,7 @@ use Brave\Core\Entity\App;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;

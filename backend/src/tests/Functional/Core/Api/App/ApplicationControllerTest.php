@@ -5,7 +5,7 @@ namespace Tests\Functional\Core\Api\App;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Entity\Group;
-use Tests\WebTestCase;
+use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
 class ApplicationControllerTest extends WebTestCase

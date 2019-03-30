@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Slim\Session;
+namespace Brave\Core\Slim\Session;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

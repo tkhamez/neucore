@@ -10,11 +10,11 @@ include __DIR__ . '/vendor/autoload.php';
  *
  * 1. Compatible with generated OpenAPI clients from the ESI definition file (see example below),
  *    simply append the ESI path to the Core path and add the ESI query parameters:
- *    https://brave.core.tld/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=96061222
+ *    https://neucore.tld/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=96061222
  *
- * 2. Compatible with generated OpenAPI clients from the Brave Core interface definition file (see example below),
+ * 2. Compatible with generated OpenAPI clients from the Neucore interface definition file (see example below),
  *    the query parameter "esi-path-query" contains the url-encoded ESI path and query string:
- *    https://brave.core.tld/api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
+ *    https://neucore.tld/api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
  *
  * Both use the "datasource" parameter to tell Core from which character the ESI token should be used for the request.
  * (The ESI datasource (tranquility or singularity) is decided by the Core configuration.)
@@ -41,7 +41,7 @@ $coreCharId = '96061222'; // Character with token in Core
 // Please note that with this client it is not possible to use Core for public ESI endpoints,
 // as it does not set the authorization header in this case.
 
-// Change the host to the Brave Core domain including the API path and add the app token
+// Change the host to the Neucore domain including the API path and add the app token
 $configuration = new \Swagger\Client\Eve\Configuration();
 $configuration->setHost($coreHttpScheme .'://'. $coreDomain . '/api/app/v1/esi');
 $configuration->setAccessToken($coreAppToken);
@@ -62,10 +62,10 @@ echo PHP_EOL;
 
 
 //
-// Example 2: making a POST request using a generated OpenAPI client from the Brave Core API file
+// Example 2: making a POST request using a generated OpenAPI client from the Neucore API file
 //            (e. g. https://github.com/bravecollective/neucore-api)
 
-// Change the host to the Brave Core domain including the API path and add the app token
+// Change the host to the Neucore domain including the API path and add the app token
 $config = Brave\NeucoreApi\Configuration::getDefaultConfiguration();
 $config->setHost($coreHttpScheme .'://'. $coreDomain . '/api');
 $config->setApiKeyPrefix('Authorization', 'Bearer');

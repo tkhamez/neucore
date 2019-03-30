@@ -9,10 +9,10 @@ if [[ ! -f swagger-codegen-cli-${VERSION}.jar ]]; then
         -O swagger-codegen-cli-${VERSION}.jar
 fi
 
-rm -Rf brvneucore-js-client/*
+rm -Rf neucore-js-client/*
 
 java -jar swagger-codegen-cli-${VERSION}.jar generate \
-    -c brvneucore-js-client-config.json \
+    -c neucore-js-client-config.json \
     -i ../web/frontend-api.json \
     -l javascript \
-    -o brvneucore-js-client
+    -o neucore-js-client
