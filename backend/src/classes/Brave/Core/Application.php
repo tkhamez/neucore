@@ -16,8 +16,11 @@ use Brave\Middleware\Cors;
 use Brave\Slim\Handlers\Error;
 use Brave\Slim\Handlers\PhpError;
 use Brave\Slim\Session\NonBlockingSessionMiddleware;
+use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -84,7 +87,7 @@ class Application
     private $env;
 
     /**
-     * @var \DI\Container
+     * @var Container
      */
     private $container;
 
@@ -221,8 +224,9 @@ class Application
     }
 
     /**
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
+     * @param App $app
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     private function addMiddleware(App $app): void
     {
@@ -380,8 +384,8 @@ class Application
      *
      * (not for CLI)
      *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
+     * @throws DependencyException
+     * @throws NotFoundException
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
     private function sessionHandler(): void
@@ -407,8 +411,8 @@ class Application
     /**
      * Setup error handling.
      *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     private function errorHandling(): void
     {
@@ -456,8 +460,8 @@ class Application
     }
 
     /**
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     private function addCommands(ConsoleApplication $console): void
     {

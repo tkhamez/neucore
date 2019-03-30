@@ -3,6 +3,7 @@
 namespace Brave\Core\Api\App;
 
 use Brave\Core\Application;
+use Brave\Core\Entity\App;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AppAuth;
@@ -52,6 +53,11 @@ class EsiController
      * @var AppAuth
      */
     private $appAuth;
+
+    /**
+     * @var App|NULL
+     */
+    private $app;
 
     public function __construct(
         Response $response,
@@ -264,13 +270,13 @@ class EsiController
 
     private function esiRequest(Request $request, string $method, $path = null): ResponseInterface
     {
+        $this->app = $this->appAuth->getApp($request);
+
         // check error limit
         if ($this->errorLimitReached()) {
-            $app = $this->appAuth->getApp($request);
             $this->log->error(
-                'ApplicationController->esiV1(): application ' .
-                ($app ? $app->getId() . ' "' . $app->getName() . '" ' : '') .
-                'exceeded the maximum permissible ESI error limit'
+                'App\EsiController->esiV1(): ' . $this->appString().
+                ' exceeded the maximum permissible ESI error limit'
             );
             return $this->response->withStatus(429, 'Maximum permissible ESI error limit reached.');
         }
@@ -404,10 +410,10 @@ class EsiController
         try {
             $esiResponse = $this->httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
-            $this->log->error('ApplicationController->esiV1(): ' . $re->getMessage());
+            $this->log->error('App\EsiController->esiV1(): (' . $this->appString() . ') ' . $re->getMessage());
             $esiResponse = $re->getResponse(); // may still be null
         } catch (GuzzleException $ge) {
-            $this->log->error('ApplicationController->esiV1(): ' . $ge->getMessage());
+            $this->log->error('App\EsiController->esiV1(): (' . $this->appString() . ') ' . $ge->getMessage());
             $esiResponse = new \GuzzleHttp\Psr7\Response(
                 500, // status
                 [], // header
@@ -427,7 +433,7 @@ class EsiController
             try {
                 $body = $esiResponse->getBody()->getContents();
             } catch (\RuntimeException $e) {
-                $this->log->error('ApplicationController->esiV1(): ' . $e->getMessage());
+                $this->log->error('App\EsiController->esiV1(): (' . $this->appString() . ') ' . $e->getMessage());
             }
             if ($body !== null) {
                 $this->response->write($body);
@@ -451,5 +457,13 @@ class EsiController
         }
 
         return $response;
+    }
+
+    private function appString(): string
+    {
+        if ($this->app) {
+            return 'application ' . $this->app->getId() . ' "' . $this->app->getName() . '"';
+        }
+        return '';
     }
 }

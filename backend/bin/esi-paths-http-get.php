@@ -13,6 +13,6 @@ foreach ($def->paths as $path => $data) {
     $httpGet[] = '/latest' . $path;
 }
 
-file_put_contents(__DIR__ . '/../../web/esi-paths-http-get.json', \json_encode($httpGet, JSON_PRETTY_PRINT));
+file_put_contents(__DIR__ . '/../../web/esi-paths-http-get.json', json_encode($httpGet, JSON_PRETTY_PRINT));
 
 echo "wrote web/esi-paths-http-get.json", PHP_EOL;

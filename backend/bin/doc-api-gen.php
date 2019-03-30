@@ -41,7 +41,7 @@ echo "wrote doc/API.md", PHP_EOL;
 
 
 /**
- * @@see \Tkhamez\Slim\RoleAuth\SecureRouteMiddleware::__invoke()
+ * @see \Tkhamez\Slim\RoleAuth\SecureRouteMiddleware::__invoke()
  */
 function getRoutesForRole(string $role, array $routes, array $securityDef): array
 {
