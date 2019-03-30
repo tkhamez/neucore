@@ -139,7 +139,7 @@
                                 v-model="playerEdit.status"
                                 v-on:change="setAccountStatus()">
                             <option>standard</option>
-                            <option>managed</option>
+                            <option>manually managed</option>
                         </select>
                     </div>
                     <p class="text-muted small" v-if="playerEdit.status === 'managed'">
