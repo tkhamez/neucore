@@ -60,13 +60,12 @@ steps:
   - npm install
 
 - name: code-analysis
-  image: aosapps/drone-sonar-plugin
-  environment:
-    SONAR_HOST:
-      from_secret: sonar_host
-    SONAR_TOKEN:
-      from_secret: sonar_token
+  image: aosapps/drone-sonar-plugin:1.0
   settings:
+    sonar_host:
+      from_secret: sonar_host
+    sonar_token:
+      from_secret: sonar_token
     sources: backend/src/classes,frontend/src
   when:
     branch:
