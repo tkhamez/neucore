@@ -25,13 +25,15 @@ composer compile:prod
 
 ## Console Commands
 
-The console application is available at
+### Console application
+
+Run the console app to see all available commands:
 
 ```
 bin/console
 ```
 
-### Making yourself an admin
+#### Making yourself an admin
 
 Login with your EVE character to create an account. Then execute this command,
 replace the ID 1234 with your EVE character ID.
@@ -42,11 +44,37 @@ bin/console make-admin 1234
 
 This will add all available roles to your player account.
 
-### Unit Tests
+### Commands via Composer
 
-Run tests:
+Run unit tests, with or without coverage:
 ```
-vendor/bin/phpunit
+composer test:cov
+composer test
+```
+
+Execute database migrations:
+```
+composer migrate
+```
+
+Generate OpenAPI interface description files:
+```
+composer openapi
+```
+
+Clear cache:
+```
+composer cache:clear
+```
+
+Security check of packages from composer.lock:
+```
+composer security:check
+```
+
+Run the built-in web server:
+```
+composer run
 ```
 
 ### Doctrine
@@ -56,7 +84,7 @@ Generate constructor, getters and setters:
 vendor/bin/doctrine orm:generate-entities src/classes
 ```
 
-Validate the mapping files
+Validate the mapping files:
 ```
 vendor/bin/doctrine orm:validate-schema
 ```
@@ -66,22 +94,7 @@ Generate migration by comparing the current database to the mapping information:
 vendor/bin/doctrine-migrations migrations:diff
 ```
 
-Apply migrations:
-```
-vendor/bin/doctrine-migrations migrations:migrate
-```
-
-Check reserved words
+Check reserved words:
 ```
 vendor/bin/doctrine dbal:reserved-words
-```
-
-### OpenAPI
-
-Generate OpenAPI interface files:
-
-```
-vendor/bin/swagger --exclude bin,config,var,vendor --output ../web
-vendor/bin/swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/App --output ../web/frontend-api.json
-vendor/bin/swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json
 ```
