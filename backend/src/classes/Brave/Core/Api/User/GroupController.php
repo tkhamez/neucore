@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
@@ -35,12 +36,12 @@ class GroupController extends BaseController
     private $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
     /**
-     * @var \Brave\Core\Entity\Group
+     * @var Group
      */
     private $group;
 
     /**
-     * @var \Brave\Core\Entity\Player
+     * @var Player
      */
     private $player;
 
@@ -587,7 +588,7 @@ class GroupController extends BaseController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Player and/or group not found."
+     *         description="Player and/or application not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -753,7 +754,10 @@ class GroupController extends BaseController
         if ($type === 'managers') {
             $players = $this->group->getManagers();
         } elseif ($type === 'applicants') {
-            $players = $this->group->getApplicants();
+            $apps = $this->repositoryFactory->getGroupApplicationRepository()->findBy(['group' => $groupId]);
+            foreach ($apps as $groupApplication) {
+                $players[] = $groupApplication->getPlayer();
+            }
         } elseif ($type === 'members') {
             $players = $this->group->getPlayers();
         }
@@ -815,7 +819,11 @@ class GroupController extends BaseController
         } elseif ($type === 'members') {
             $this->player->removeGroup($this->group);
         } elseif ($type === 'applications') {
-            $this->player->removeApplication($this->group);
+            $apps = $this->repositoryFactory->getGroupApplicationRepository()
+                ->findBy(['player' => $playerId, 'group' => $groupId]);
+            foreach ($apps as $groupApplication) {
+                $this->objectManager->remove($groupApplication);
+            }
         }
 
         return $this->flushAndReturn(204);

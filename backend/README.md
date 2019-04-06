@@ -3,6 +3,17 @@
 The backend is based on the [Slim Framework](https://www.slimframework.com)
 with the [PHP-DI container](http://php-di.org/).
 
+## API
+
+### operationId
+
+The `operationId` must be a unique string among all operations described in the API.
+
+This must be followed for the `Brave\Core\Api\App` namespace.
+
+For the `Brave\Core\Api\User` namespace it works (for now), if the `operationId` is
+unique only within each tag.
+
 ## Style Guide
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)

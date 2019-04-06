@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 /**
  * Groups for third party apps.
  *
@@ -49,18 +52,18 @@ class Group implements \JsonSerializable
     private $visibility = self::VISIBILITY_PRIVATE;
 
     /**
-     * @ManyToMany(targetEntity="Player", mappedBy="applications")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
+     * @OrderBy({"created" = "DESC"})
+     * @var Collection
      */
-    private $applicants;
+    private $applications;
 
     /**
      * Group members.
      *
      * @ManyToMany(targetEntity="Player", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $players;
 
@@ -68,14 +71,14 @@ class Group implements \JsonSerializable
      * @ManyToMany(targetEntity="Player", inversedBy="managerGroups")
      * @JoinTable(name="group_manager")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $managers;
 
     /**
      * @ManyToMany(targetEntity="App", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $apps;
 
@@ -84,7 +87,7 @@ class Group implements \JsonSerializable
      *
      * @ManyToMany(targetEntity="Corporation", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $corporations;
 
@@ -93,7 +96,7 @@ class Group implements \JsonSerializable
      *
      * @ManyToMany(targetEntity="Alliance", mappedBy="groups")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $alliances;
 
@@ -117,12 +120,12 @@ class Group implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->applicants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->players = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->corporations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->alliances = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->applications = new ArrayCollection();
+        $this->players = new ArrayCollection();
+        $this->managers = new ArrayCollection();
+        $this->apps = new ArrayCollection();
+        $this->corporations = new ArrayCollection();
+        $this->alliances = new ArrayCollection();
     }
 
     /**
@@ -189,45 +192,45 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Add applicant.
+     * Add group application.
      *
-     * @param \Brave\Core\Entity\Player $applicant
+     * @param GroupApplication $application
      *
      * @return Group
      */
-    public function addApplicant(Player $applicant)
+    public function addApplication(GroupApplication $application)
     {
-        $this->applicants[] = $applicant;
+        $this->applications[] = $application;
 
         return $this;
     }
 
     /**
-     * Remove applicant.
+     * Remove group application.
      *
-     * @param \Brave\Core\Entity\Player $applicant
+     * @param GroupApplication $application
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApplicant(Player $applicant)
+    public function removeApplication(GroupApplication $application)
     {
-        return $this->applicants->removeElement($applicant);
+        return $this->applications->removeElement($application);
     }
 
     /**
-     * Get applicants.
+     * Get group applications.
      *
-     * @return Player[]
+     * @return GroupApplication[]
      */
-    public function getApplicants()
+    public function getApplication()
     {
-        return $this->applicants->toArray();
+        return $this->applications->toArray();
     }
 
     /**
      * Add player.
      *
-     * @param \Brave\Core\Entity\Player $player
+     * @param Player $player
      *
      * @return Group
      */
@@ -241,7 +244,7 @@ class Group implements \JsonSerializable
     /**
      * Remove player.
      *
-     * @param \Brave\Core\Entity\Player $player
+     * @param Player $player
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -263,7 +266,7 @@ class Group implements \JsonSerializable
     /**
      * Add manager.
      *
-     * @param \Brave\Core\Entity\Player $manager
+     * @param Player $manager
      *
      * @return Group
      */
@@ -277,7 +280,7 @@ class Group implements \JsonSerializable
     /**
      * Remove manager.
      *
-     * @param \Brave\Core\Entity\Player $manager
+     * @param Player $manager
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -299,7 +302,7 @@ class Group implements \JsonSerializable
     /**
      * Add app.
      *
-     * @param \Brave\Core\Entity\App $app
+     * @param App $app
      *
      * @return Group
      */
@@ -313,7 +316,7 @@ class Group implements \JsonSerializable
     /**
      * Remove app.
      *
-     * @param \Brave\Core\Entity\App $app
+     * @param App $app
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -335,7 +338,7 @@ class Group implements \JsonSerializable
     /**
      * Add corporation.
      *
-     * @param \Brave\Core\Entity\Corporation $corporation
+     * @param Corporation $corporation
      *
      * @return Group
      */
@@ -349,7 +352,7 @@ class Group implements \JsonSerializable
     /**
      * Remove corporation.
      *
-     * @param \Brave\Core\Entity\Corporation $corporation
+     * @param Corporation $corporation
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -371,7 +374,7 @@ class Group implements \JsonSerializable
     /**
      * Add alliance.
      *
-     * @param \Brave\Core\Entity\Alliance $alliance
+     * @param Alliance $alliance
      *
      * @return Group
      */
@@ -385,7 +388,7 @@ class Group implements \JsonSerializable
     /**
      * Remove alliance.
      *
-     * @param \Brave\Core\Entity\Alliance $alliance
+     * @param Alliance $alliance
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */

@@ -5,14 +5,17 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\GroupApplicationRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -27,7 +30,7 @@ class PlayerControllerTest extends WebTestCase
     private $h;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -40,7 +43,7 @@ class PlayerControllerTest extends WebTestCase
     private $emptyAccId;
 
     /**
-     * @var \Brave\Core\Entity\Player
+     * @var Player
      */
     private $player;
 
@@ -67,6 +70,11 @@ class PlayerControllerTest extends WebTestCase
     private $removedCharRepo;
 
     /**
+     * @var GroupApplicationRepository
+     */
+    private $groupAppRepo;
+
+    /**
      * @var Logger
      */
     private $log;
@@ -82,6 +90,7 @@ class PlayerControllerTest extends WebTestCase
         $this->playerRepo = $rf->getPlayerRepository();
         $this->charRepo = $rf->getCharacterRepository();
         $this->removedCharRepo = $rf->getRemovedCharacterRepository();
+        $this->groupAppRepo = $rf->getGroupApplicationRepository();
 
         $this->log = new Logger('test');
     }
@@ -128,7 +137,6 @@ class PlayerControllerTest extends WebTestCase
                     ]
                 ],
             ],
-            'applications' => [],
             'groups' => [
                 ['id' => $groups[1]->getId(), 'name' => 'another-group', 'visibility' => Group::VISIBILITY_PRIVATE],
                 ['id' => $groups[0]->getId(), 'name' => 'group1', 'visibility' => Group::VISIBILITY_PRIVATE]
@@ -167,8 +175,11 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();
-        $p = $this->playerRepo->find($this->player->getId());
-        $this->assertSame(1, count($p->getApplications()));
+        $groupApps = $this->groupAppRepo->findBy([]);
+        $this->assertSame(1, count($groupApps));
+        $this->assertSame($this->group->getId(), $groupApps[0]->getGroup()->getId());
+        $this->assertSame($this->player->getId(), $groupApps[0]->getPlayer()->getId());
+        $this->assertLessThanOrEqual(time(), $groupApps[0]->getCreated()->getTimestamp());
     }
 
     public function testRemoveApplication403()
@@ -191,15 +202,18 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $this->player->addApplication($this->group);
+        $ga = new GroupApplication();
+        $ga->setGroup($this->group);
+        $ga->setPlayer($this->player);
+        $this->em->persist($ga);
         $this->em->flush();
 
         $response = $this->runApp('PUT', '/api/user/player/remove-application/' . $this->group->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
-        $p = $this->playerRepo->find($this->player->getId());
-        $this->assertSame(0, count($p->getApplications()));
+        $groupApps = $this->groupAppRepo->findBy([]);
+        $this->assertSame(0, count($groupApps));
     }
 
     public function testLeaveGroup403()
@@ -647,7 +661,7 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(12);
 
         $em = $this->h->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $res = $this->runApp('PUT',
             '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN, null, null, [
@@ -732,7 +746,6 @@ class PlayerControllerTest extends WebTestCase
                     'corporation' => null
                 ],
             ],
-            'applications' => [],
             'groups' => [],
             'managerGroups' => [],
             'managerApps' => [],

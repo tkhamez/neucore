@@ -5,12 +5,15 @@ namespace Tests\Functional\Core\Api\User;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Role;
+use Brave\Core\Repository\GroupApplicationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Entity\Player;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
@@ -26,7 +29,7 @@ class GroupControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -39,6 +42,11 @@ class GroupControllerTest extends WebTestCase
      * @var PlayerRepository
      */
     private $pr;
+
+    /**
+     * @var GroupApplicationRepository
+     */
+    private $groupAppRepo;
 
     private $gid;
 
@@ -57,6 +65,7 @@ class GroupControllerTest extends WebTestCase
         $repositoryFactory = new RepositoryFactory($this->em);
         $this->gr = $repositoryFactory->getGroupRepository();
         $this->pr = $repositoryFactory->getPlayerRepository();
+        $this->groupAppRepo = $repositoryFactory->getGroupApplicationRepository();
     }
 
     public function testAll403()
@@ -578,8 +587,8 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $player = $this->pr->find($this->pid2);
-        $this->assertSame(1, count($player->getApplications()));
+        $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $this->assertSame(1, count($appsBefore));
 
         $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid); // not applied
         $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid2);
@@ -590,8 +599,8 @@ class GroupControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $player = $this->pr->find($this->pid2);
-        $this->assertSame(0, count($player->getApplications()));
+        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $this->assertSame(0, count($appsAfter));
     }
 
     public function testAddMember403()
@@ -681,7 +690,7 @@ class GroupControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
@@ -783,7 +792,10 @@ class GroupControllerTest extends WebTestCase
         $this->helper->addCharacterMain('UA', 9, [Role::USER_ADMIN]);
 
         $g[0]->addManager($admin->getPlayer());
-        $user->getPlayer()->addApplication($g[0]);
+
+        $groupApp = new GroupApplication();
+        $groupApp->setPlayer($user->getPlayer());
+        $groupApp->setGroup($g[0]);
 
         // corps and alliances
         $alli = (new Alliance())->setId(10)->setTicker('a1')->setName('alli 1');
@@ -792,6 +804,7 @@ class GroupControllerTest extends WebTestCase
         $corp->addGroup($g[0]);
         $this->em->persist($alli);
         $this->em->persist($corp);
+        $this->em->persist($groupApp);
 
         $this->em->flush();
     }

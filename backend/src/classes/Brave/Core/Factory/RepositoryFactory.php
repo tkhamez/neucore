@@ -8,6 +8,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
@@ -17,6 +18,7 @@ use Brave\Core\Repository\AppRepository;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\CorporationMemberRepository;
 use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\GroupApplicationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Repository\RemovedCharacterRepository;
@@ -63,6 +65,11 @@ class RepositoryFactory
     public function getGroupRepository(): GroupRepository
     {
         return $this->getInstance(GroupRepository::class, Group::class);
+    }
+
+    public function getGroupApplicationRepository(): GroupApplicationRepository
+    {
+        return $this->getInstance(GroupApplicationRepository::class, GroupApplication::class);
     }
 
     public function getPlayerRepository(): PlayerRepository

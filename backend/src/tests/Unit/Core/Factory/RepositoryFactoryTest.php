@@ -8,6 +8,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationMember;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
@@ -17,15 +18,17 @@ use Brave\Core\Repository\AppRepository;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Repository\CorporationMemberRepository;
 use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\GroupApplicationRepository;
 use Brave\Core\Repository\GroupRepository;
 use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Repository\SystemVariableRepository;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
-class RepositoryFactoryTest extends \PHPUnit\Framework\TestCase
+class RepositoryFactoryTest extends TestCase
 {
     /**
      * @var RepositoryFactory
@@ -78,6 +81,13 @@ class RepositoryFactoryTest extends \PHPUnit\Framework\TestCase
         $repo = $this->factory->getGroupRepository();
         $this->assertInstanceOf(GroupRepository::class, $repo);
         $this->assertSame(Group::class, $repo->getClassName());
+    }
+
+    public function testGetGroupApplicationRepository()
+    {
+        $repo = $this->factory->getGroupApplicationRepository();
+        $this->assertInstanceOf(GroupApplicationRepository::class, $repo);
+        $this->assertSame(GroupApplication::class, $repo->getClassName());
     }
 
     public function testGetPlayerRepository()

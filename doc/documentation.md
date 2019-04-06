@@ -126,6 +126,5 @@ The console application has commands to:
 - `apps` are 3rd party applications that have access to the "Application API". They can have several groups.
 - A player account can be member of several `groups`.
 - A player account can be manager of several groups and apps.
-- A player can apply to groups.
 - `corporations` and `alliances` can have several groups for automatic group assignments.
 - `roles` define what a player or app can do.

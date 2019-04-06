@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 /**
  *
  * @SWG\Definition(
@@ -85,7 +88,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
      * @ManyToMany(targetEntity="Role", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $roles;
 
@@ -93,20 +96,18 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Character"))
      * @OneToMany(targetEntity="Character", mappedBy="player")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $characters;
 
     /**
      * Group applications.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
-     * @ManyToMany(targetEntity="Group", inversedBy="applicants")
-     * @JoinTable(name="group_applicant")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @OneToMany(targetEntity="GroupApplication", mappedBy="player")
+     * @OrderBy({"created" = "DESC"})
+     * @var Collection
      */
-    private $applications;
+    private $groupApplications;
 
     /**
      * Group membership.
@@ -114,7 +115,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", inversedBy="players")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $groups;
 
@@ -124,7 +125,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", mappedBy="managers")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $managerGroups;
 
@@ -134,7 +135,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/App"))
      * @ManyToMany(targetEntity="App", mappedBy="managers")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $managerApps;
 
@@ -144,7 +145,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
      * @OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
      * @OrderBy({"removedDate" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $removedCharacters;
 
@@ -162,7 +163,6 @@ class Player implements \JsonSerializable
             'status' => $this->status,
             'roles' => $this->getRoles(),
             'characters' => $this->getCharacters(),
-            'applications' => $this->getApplications(),
             'groups' => $this->getGroups(),
             'managerGroups' => $this->getManagerGroups(),
             'managerApps' => $this->getManagerApps(),
@@ -175,13 +175,13 @@ class Player implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->characters = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->applications = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->managerGroups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->managerApps = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->removedCharacters = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->characters = new ArrayCollection();
+        $this->groupApplications = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->managerGroups = new ArrayCollection();
+        $this->managerApps = new ArrayCollection();
+        $this->removedCharacters = new ArrayCollection();
     }
 
     /**
@@ -276,7 +276,7 @@ class Player implements \JsonSerializable
     /**
      * Add role.
      *
-     * @param \Brave\Core\Entity\Role $role
+     * @param Role $role
      *
      * @return Player
      */
@@ -290,7 +290,7 @@ class Player implements \JsonSerializable
     /**
      * Remove role.
      *
-     * @param \Brave\Core\Entity\Role $role
+     * @param Role $role
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -336,7 +336,7 @@ class Player implements \JsonSerializable
     /**
      * Add character.
      *
-     * @param \Brave\Core\Entity\Character $character
+     * @param Character $character
      *
      * @return Player
      */
@@ -350,7 +350,7 @@ class Player implements \JsonSerializable
     /**
      * Remove character.
      *
-     * @param \Brave\Core\Entity\Character $character
+     * @param Character $character
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -411,45 +411,45 @@ class Player implements \JsonSerializable
     }
 
     /**
-     * Add application.
+     * Add group application.
      *
-     * @param \Brave\Core\Entity\Group $application
+     * @param GroupApplication $groupApplication
      *
      * @return Player
      */
-    public function addApplication(Group $application)
+    public function addGroupApplication(GroupApplication $groupApplication)
     {
-        $this->applications[] = $application;
+        $this->groupApplications[] = $groupApplication;
 
         return $this;
     }
 
     /**
-     * Remove application.
+     * Remove group application.
      *
-     * @param \Brave\Core\Entity\Group $application
+     * @param GroupApplication $groupApplication
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApplication(Group $application)
+    public function removeGroupApplication(GroupApplication $groupApplication)
     {
-        return $this->applications->removeElement($application);
+        return $this->groupApplications->removeElement($groupApplication);
     }
 
     /**
-     * Get applications.
+     * Get group applications.
      *
-     * @return Group[]
+     * @return GroupApplication[]
      */
-    public function getApplications()
+    public function getGroupApplications()
     {
-        return $this->applications->toArray();
+        return $this->groupApplications->toArray();
     }
 
     /**
      * Add group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return Player
      */
@@ -463,7 +463,7 @@ class Player implements \JsonSerializable
     /**
      * Remove group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -518,7 +518,7 @@ class Player implements \JsonSerializable
     /**
      * Add managerGroup.
      *
-     * @param \Brave\Core\Entity\Group $managerGroup
+     * @param Group $managerGroup
      *
      * @return Player
      */
@@ -532,7 +532,7 @@ class Player implements \JsonSerializable
     /**
      * Remove managerGroup.
      *
-     * @param \Brave\Core\Entity\Group $managerGroup
+     * @param Group $managerGroup
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -565,7 +565,7 @@ class Player implements \JsonSerializable
     /**
      * Add managerApp.
      *
-     * @param \Brave\Core\Entity\App $managerApp
+     * @param App $managerApp
      *
      * @return Player
      */
@@ -579,7 +579,7 @@ class Player implements \JsonSerializable
     /**
      * Remove managerApp.
      *
-     * @param \Brave\Core\Entity\App $managerApp
+     * @param App $managerApp
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */

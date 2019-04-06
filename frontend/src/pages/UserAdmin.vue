@@ -246,24 +246,6 @@
                         </tbody>
                     </table>
 
-                    <h4>Group Applications</h4>
-                    <table class="table table-hover table-sm">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Visibility</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="application in playerEdit.applications">
-                                <td>{{ application.id }}</td>
-                                <td>{{ application.name }}</td>
-                                <td>{{ application.visibility }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
                     <h4>Removed Characters</h4>
                     <table class="table table-hover table-sm">
                         <thead class="thead-dark">

@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
@@ -197,7 +198,35 @@ class PlayerController extends BaseController
      */
     public function addApplication(string $gid): Response
     {
-        return $this->addOrRemoveGroupToFrom('add', 'Application', $gid);
+        // players can only apply to public groups
+        $criteria = ['id' => (int) $gid, 'visibility' => Group::VISIBILITY_PUBLIC];
+        $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
+        if ($group === null) {
+            return $this->response->withStatus(404);
+        }
+
+        $player = $this->userAuthService->getUser()->getPlayer();
+
+        // find existing applications
+        $hasApplied = false;
+        $groupApps = $this->repositoryFactory->getGroupApplicationRepository()
+            ->findBy(['player' => $player->getId()]);
+        foreach ($groupApps as $application) {
+            if ($application->getGroup() && $application->getGroup()->getId() === $group->getId()) {
+                $hasApplied = true;
+                break;
+            }
+        }
+
+        if (! $hasApplied) {
+            $newApplication = new GroupApplication();
+            $newApplication->setPlayer($player);
+            $newApplication->setGroup($group);
+            $newApplication->setCreated(new \DateTime());
+            $this->objectManager->persist($newApplication);
+        }
+
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -221,7 +250,7 @@ class PlayerController extends BaseController
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Group not found."
+     *         description="Application not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -231,7 +260,20 @@ class PlayerController extends BaseController
      */
     public function removeApplication(string $gid): Response
     {
-        return $this->addOrRemoveGroupToFrom('remove', 'Application', $gid);
+        $player = $this->userAuthService->getUser()->getPlayer();
+
+        $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
+            ->findBy(['player' => $player->getId(), 'group' => (int) $gid]);
+
+        if (count($groupApplications) === 0) {
+            return $this->response->withStatus(404);
+        }
+
+        foreach ($groupApplications as $groupApplication) { // there should only be one
+            $this->objectManager->remove($groupApplication);
+        }
+
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -265,7 +307,15 @@ class PlayerController extends BaseController
      */
     public function leaveGroup(string $gid): Response
     {
-        return $this->addOrRemoveGroupToFrom('remove', 'Group', $gid);
+        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
+        if ($group === null) {
+            return $this->response->withStatus(404);
+        }
+
+        $player = $this->userAuthService->getUser()->getPlayer();
+        $player->removeGroup($group);
+
+        return $this->flushAndReturn(204);
     }
 
     /**
@@ -827,41 +877,6 @@ class PlayerController extends BaseController
         }
 
         return $this->playerList($role->getPlayers());
-    }
-
-    private function addOrRemoveGroupToFrom(string $action, string $entity, string $groupId): Response
-    {
-        if ($action === 'add' && $entity === 'Application') {
-            // players can only apply to public groups
-            $criteria = ['id' => (int) $groupId, 'visibility' => Group::VISIBILITY_PUBLIC];
-        } else {
-            $criteria = ['id' => (int) $groupId];
-        }
-        $group = $this->repositoryFactory->getGroupRepository()->findOneBy($criteria);
-        if ($group === null) {
-            return $this->response->withStatus(404);
-        }
-
-        $player = $this->userAuthService->getUser()->getPlayer();
-
-        if ($action === 'add' && $entity === 'Application') {
-            $hasApplied = false;
-            foreach ($player->getApplications() as $application) {
-                if ($group->getId() === $application->getId()) {
-                    $hasApplied = true;
-                    break;
-                }
-            }
-            if (! $hasApplied) {
-                $player->addApplication($group);
-            }
-        } elseif ($action === 'remove' && $entity === 'Application') {
-            $player->removeApplication($group);
-        } elseif ($action === 'remove' && $entity === 'Group') {
-            $player->removeGroup($group);
-        }
-
-        return $this->flushAndReturn(204);
     }
 
     /**

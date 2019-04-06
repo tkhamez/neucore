@@ -7,11 +7,13 @@ use Brave\Core\Entity\App;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
+use PHPUnit\Framework\TestCase;
 
-class PlayerTest extends \PHPUnit\Framework\TestCase
+class PlayerTest extends TestCase
 {
     public function testJsonSerialize()
     {
@@ -20,7 +22,6 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $g2 = (new Group())->setName('group2');
         $play = new Player();
         $play->setName('test user');
-        $play->addApplication($g1);
         $play->addGroup($g2);
         $play->addRole((new Role())->setName('rName'));
         $play->addRole((new Role())->setName('role2'));
@@ -62,9 +63,6 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
                 'validToken' => null,
                 'corporation' => null
             ]],
-            'applications' => [
-                ['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]
-            ],
             'groups' => [
                 ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
@@ -233,20 +231,20 @@ class PlayerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($char1, $player->getMain());
     }
 
-    public function testAddGetRemoveApplication()
+    public function testAddGetRemoveGroupApplication()
     {
         $play = new Player();
-        $a1 = new Group();
-        $a2 = new Group();
+        $a1 = new GroupApplication();
+        $a2 = new GroupApplication();
 
-        $this->assertSame([], $play->getApplications());
+        $this->assertSame([], $play->getGroupApplications());
 
-        $play->addApplication($a1);
-        $play->addApplication($a2);
-        $this->assertSame([$a1, $a2], $play->getApplications());
+        $play->addGroupApplication($a1);
+        $play->addGroupApplication($a2);
+        $this->assertSame([$a1, $a2], $play->getGroupApplications());
 
-        $play->removeApplication($a2);
-        $this->assertSame([$a1], $play->getApplications());
+        $play->removeGroupApplication($a2);
+        $this->assertSame([$a1], $play->getGroupApplications());
     }
 
     public function testAddGetRemoveGroup()

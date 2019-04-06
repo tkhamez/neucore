@@ -6,9 +6,11 @@ use Brave\Core\Entity\App;
 use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
+use PHPUnit\Framework\TestCase;
 
-class GroupTest extends \PHPUnit\Framework\TestCase
+class GroupTest extends TestCase
 {
     public function testJsonSerialize()
     {
@@ -53,17 +55,17 @@ class GroupTest extends \PHPUnit\Framework\TestCase
     public function testAddGetRemoveApplicant()
     {
         $group = new Group();
-        $a1 = new Player();
-        $a2 = new Player();
+        $a1 = new GroupApplication();
+        $a2 = new GroupApplication();
 
-        $this->assertSame([], $group->getApplicants());
+        $this->assertSame([], $group->getApplication());
 
-        $group->addApplicant($a1);
-        $group->addApplicant($a2);
-        $this->assertSame([$a1, $a2], $group->getApplicants());
+        $group->addApplication($a1);
+        $group->addApplication($a2);
+        $this->assertSame([$a1, $a2], $group->getApplication());
 
-        $group->removeApplicant($a2);
-        $this->assertSame([$a1], $group->getApplicants());
+        $group->removeApplication($a2);
+        $this->assertSame([$a1], $group->getApplication());
     }
 
     public function testAddGetRemovePlayer()
