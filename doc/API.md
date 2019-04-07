@@ -116,7 +116,7 @@ Character API
 - Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 
 Group API
-- List all applicants of a group. `/user/group/{id}/applicants`
+- List all applications of a group. `/user/group/{id}/applications`
 - Remove a player's request to join a group. `/user/group/{id}/remove-applicant/{pid}`
 - Adds a player to a group. `/user/group/{id}/add-member/{pid}`
 - Remove player from a group. `/user/group/{id}/remove-member/{pid}`

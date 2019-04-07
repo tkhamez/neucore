@@ -527,9 +527,9 @@ class GroupController extends BaseController
 
     /**
      * @SWG\Get(
-     *     path="/user/group/{id}/applicants",
-     *     operationId="applicants",
-     *     summary="List all applicants of a group.",
+     *     path="/user/group/{id}/applications",
+     *     operationId="applications",
+     *     summary="List all applications of a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
@@ -542,8 +542,8 @@ class GroupController extends BaseController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         description="List of group applications ordered by created date.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/GroupApplication"))
      *     ),
      *     @SWG\Response(
      *         response="404",
@@ -555,9 +555,19 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function applicants(string $id): Response
+    public function applications(string $id): Response
     {
-        return $this->getPlayersFromGroup($id, 'applicants', true);
+        if (! $this->findGroup($id)) {
+            return $this->response->withStatus(404);
+        }
+
+        if (! $this->checkManager($this->group)) {
+            return $this->response->withStatus(403);
+        }
+
+        $apps = $this->repositoryFactory->getGroupApplicationRepository()->findBy(['group' => $id]);
+
+        return $this->response->withJson($apps);
     }
 
     /**
@@ -753,11 +763,6 @@ class GroupController extends BaseController
         $players = [];
         if ($type === 'managers') {
             $players = $this->group->getManagers();
-        } elseif ($type === 'applicants') {
-            $apps = $this->repositoryFactory->getGroupApplicationRepository()->findBy(['group' => $groupId]);
-            foreach ($apps as $groupApplication) {
-                $players[] = $groupApplication->getPlayer();
-            }
         } elseif ($type === 'members') {
             $players = $this->group->getPlayers();
         }

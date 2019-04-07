@@ -94,7 +94,7 @@ return [
     '/api/user/group/{id}/alliances'               => ['GET',    GroupController::class.'::alliances'],
     '/api/user/group/{id}/add-manager/{pid}'       => ['PUT',    GroupController::class.'::addManager'],
     '/api/user/group/{id}/remove-manager/{pid}'    => ['PUT',    GroupController::class.'::removeManager'],
-    '/api/user/group/{id}/applicants'              => ['GET',    GroupController::class.'::applicants'],
+    '/api/user/group/{id}/applications'            => ['GET',    GroupController::class.'::applications'],
     '/api/user/group/{id}/remove-applicant/{pid}'  => ['PUT',    GroupController::class.'::removeApplicant'],
     '/api/user/group/{id}/add-member/{pid}'        => ['PUT',    GroupController::class.'::addMember'],
     '/api/user/group/{id}/remove-member/{pid}'     => ['PUT',    GroupController::class.'::removeMember'],

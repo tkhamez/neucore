@@ -56,6 +56,8 @@ class GroupControllerTest extends WebTestCase
 
     private $pid2;
 
+    private $groupAppID;
+
     public function setUp()
     {
         $_SESSION = null;
@@ -519,39 +521,42 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame([], $actual);
     }
 
-    public function testApplicants403()
+    public function testApplications403()
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('GET', '/api/user/group/'.$this->gid.'/applicants');
+        $response1 = $this->runApp('GET', '/api/user/group/'.$this->gid2.'/applications');
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(7); // not manager of that group
 
-        $response2 = $this->runApp('GET', '/api/user/group/'.$this->gid.'/applicants');
+        $response2 = $this->runApp('GET', '/api/user/group/'.$this->gid2.'/applications');
         $this->assertEquals(403, $response2->getStatusCode());
     }
 
-    public function testApplicants404()
+    public function testApplications404()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/group/'.($this->gid + 5).'/applicants');
+        $response = $this->runApp('GET', '/api/user/group/'.($this->gid2 + 5).'/applications');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testApplicants200()
+    public function testApplications200()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/applicants');
+        $response = $this->runApp('GET', '/api/user/group/'.$this->gid2.'/applications');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame(
-            [['id' => $this->pid2, 'name' => 'Group']],
-            $this->parseJsonBody($response)
+        $this->assertSame([[
+            'id' => $this->groupAppID,
+            'player' => ['id' => $this->pid2, 'name' => 'Group'],
+            'group' => ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC],
+            'created' => null,
+        ]], $this->parseJsonBody($response)
         );
     }
 
@@ -590,9 +595,9 @@ class GroupControllerTest extends WebTestCase
         $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2]);
         $this->assertSame(1, count($appsBefore));
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid); // not applied
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid2);
-        $response3 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid2);
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-applicant/'.$this->pid); // not applied
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-applicant/'.$this->pid2);
+        $response3 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-applicant/'.$this->pid2);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
         $this->assertEquals(204, $response3->getStatusCode());
@@ -792,10 +797,11 @@ class GroupControllerTest extends WebTestCase
         $this->helper->addCharacterMain('UA', 9, [Role::USER_ADMIN]);
 
         $g[0]->addManager($admin->getPlayer());
+        $g[1]->addManager($admin->getPlayer());
 
         $groupApp = new GroupApplication();
         $groupApp->setPlayer($user->getPlayer());
-        $groupApp->setGroup($g[0]);
+        $groupApp->setGroup($g[1]);
 
         // corps and alliances
         $alli = (new Alliance())->setId(10)->setTicker('a1')->setName('alli 1');
@@ -807,5 +813,7 @@ class GroupControllerTest extends WebTestCase
         $this->em->persist($groupApp);
 
         $this->em->flush();
+
+        $this->groupAppID = $groupApp->getId();
     }
 }
