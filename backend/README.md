@@ -14,6 +14,11 @@ This must be followed for the `Brave\Core\Api\App` namespace.
 For the `Brave\Core\Api\User` namespace it works (for now), if the `operationId` is
 unique only within each tag.
 
+### Documentation
+
+The file `doc/API.md` is automatically generated from the template file `doc/API.md.tpl`, 
+the route and security configuration and `web/swagger.json` with `backend/bin/doc-api-gen.php`.
+
 ## Style Guide
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)

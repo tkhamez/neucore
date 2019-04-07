@@ -216,6 +216,33 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(0, count($groupApps));
     }
 
+    public function testShowApplications403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/show-applications');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testShowApplications200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $ga = new GroupApplication();
+        $ga->setGroup($this->group);
+        $ga->setPlayer($this->player);
+        $this->em->persist($ga);
+        $this->em->flush();
+
+        $response = $this->runApp('GET', '/api/user/player/show-applications');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([[
+            'id' => $ga->getId(),
+            'player' => ['id' => $this->player->getId(), 'name' => 'Admin'],
+            'group' => ['id' => $this->group->getId(), 'name' => 'test-pub', 'visibility' => Group::VISIBILITY_PUBLIC],
+            'created' => null,
+        ]], $this->parseJsonBody($response));
+    }
+
     public function testLeaveGroup403()
     {
         $response = $this->runApp('PUT', '/api/user/player/leave-group/11');

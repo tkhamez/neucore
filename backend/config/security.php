@@ -54,7 +54,7 @@ return [
     '/api/user/group/{id}/members'          => [Role::GROUP_MANAGER],
     '/api/user/group'                       => [Role::GROUP_ADMIN],
 
-    '/api/user/player/show'                  => [Role::USER],
+    '/api/user/player/show'                  => [Role::USER], // includes /show-applications
     '/api/user/player/groups-disabled'       => [Role::USER],
     '/api/user/player/add-application'       => [Role::USER],
     '/api/user/player/remove-application'    => [Role::USER],

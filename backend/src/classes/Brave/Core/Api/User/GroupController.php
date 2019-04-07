@@ -764,10 +764,7 @@ class GroupController extends BaseController
 
         $ret = [];
         foreach ($players as $player) {
-            $result = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
+            $result = $player->jsonSerialize(true);
             if ($type === 'managers') {
                 $result['roles'] = $player->getRoles();
             }

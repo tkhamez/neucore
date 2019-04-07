@@ -107,6 +107,7 @@ return [
     '/api/user/player/groups-disabled'          => ['GET',    PlayerController::class.'::groupsDisabled'],
     '/api/user/player/add-application/{gid}'    => ['PUT',    PlayerController::class.'::addApplication'],
     '/api/user/player/remove-application/{gid}' => ['PUT',    PlayerController::class.'::removeApplication'],
+    '/api/user/player/show-applications'        => ['GET',    PlayerController::class.'::showApplications'],
     '/api/user/player/leave-group/{gid}'        => ['PUT',    PlayerController::class.'::leaveGroup'],
     '/api/user/player/set-main/{cid}'           => ['PUT',    PlayerController::class.'::setMain'],
     '/api/user/player/delete-character/{id}'    => ['DELETE', PlayerController::class.'::deleteCharacter'],

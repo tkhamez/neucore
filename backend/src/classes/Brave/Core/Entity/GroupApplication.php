@@ -55,7 +55,7 @@ class GroupApplication implements \JsonSerializable
     {
         return [
             'id' => $this->id,
-            'player' => $this->player,
+            'player' => $this->player->jsonSerialize(true),
             'group' => $this->group,
             'created' => $this->created ? $this->created->format('Y-m-d\TH:i:s\Z') : null,
         ];

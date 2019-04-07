@@ -18,16 +18,7 @@ class GroupApplicationTest extends TestCase
 
         $this->assertSame([
             'id' => null,
-            'player' => [
-                'id' => null,
-                'name' => 'p',
-                'status' => Player::STATUS_STANDARD,
-                'roles' => [],
-                'characters' => [],
-                'groups' => [],
-                'managerGroups' => [],
-                'managerApps' => [],
-            ],
+            'player' => ['id' => null, 'name' => 'p'],
             'group' => ['id' => null, 'name' => 'g', 'visibility' => Group::VISIBILITY_PRIVATE],
             'created' => '2019-04-06T16:09:24Z'
         ], json_decode(json_encode($groupApp), true));

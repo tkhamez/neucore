@@ -40,6 +40,7 @@ Player API
 - Check whether groups for this account are disabled or will be disabled soon. `/user/player/groups-disabled`
 - Submit a group application. `/user/player/add-application/{gid}`
 - Cancel a group application. `/user/player/remove-application/{gid}`
+- Show all group applications. `/user/player/show-applications`
 - Leave a group. `/user/player/leave-group/{gid}`
 - Change the main character from the player account. `/user/player/set-main/{cid}`
 - Delete a character. `/user/player/delete-character/{id}`

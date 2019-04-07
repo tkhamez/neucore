@@ -69,6 +69,8 @@ class PlayerTest extends TestCase
             'managerGroups' => [['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [],]],
         ], json_decode(json_encode($play), true));
+
+        $this->assertSame(['id' => null, 'name' => 'test user'], $play->jsonSerialize(true));
     }
 
     public function testGetId()

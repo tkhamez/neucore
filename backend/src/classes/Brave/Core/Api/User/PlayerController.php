@@ -277,6 +277,35 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @SWG\Get(
+     *     path="/user/player/show-applications",
+     *     operationId="showApplications",
+     *     summary="Show all group applications.",
+     *     description="Needs role: user",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The group applications.",
+     *         @SWG\Schema(ref="#/definitions/GroupApplication")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function showApplications(): Response
+    {
+        $player = $this->userAuthService->getUser()->getPlayer();
+
+        $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
+            ->findBy(['player' => $player->getId()]);
+
+        return $this->response->withJson($groupApplications);
+    }
+
+    /**
      * @SWG\Put(
      *     path="/user/player/leave-group/{gid}",
      *     operationId="leaveGroup",
@@ -887,10 +916,7 @@ class PlayerController extends BaseController
     {
         $ret = [];
         foreach ($players as $player) {
-            $ret[] = [
-                'id' => $player->getId(),
-                'name' => $player->getName()
-            ];
+            $ret[] = $player->jsonSerialize(true);
         }
 
         return $this->response->withJson($ret);

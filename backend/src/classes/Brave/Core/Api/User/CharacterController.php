@@ -168,10 +168,7 @@ class CharacterController
             return $this->res->withStatus(204);
         }
 
-        return $this->res->withJson([
-            'id' => $char->getPlayer()->getId(),
-            'name' => $char->getPlayer()->getName(),
-        ]);
+        return $this->res->withJson($char->getPlayer()->jsonSerialize(true));
     }
 
     /**

@@ -155,8 +155,15 @@ class Player implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize()
+    public function jsonSerialize(bool $minimum = false): array
     {
+        if ($minimum) {
+            return [
+                'id' => $this->id,
+                'name' => $this->name,
+            ];
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,

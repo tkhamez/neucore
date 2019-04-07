@@ -106,10 +106,8 @@ class CorporationMember implements \JsonSerializable
         if ($forUser) {
             $result = array_merge($result, [
                 'character' => $this->character ? $this->character->jsonSerialize(false) : null,
-                'player' => $this->character && $this->character->getPlayer() ? [
-                    'id' => $this->character->getPlayer()->getId(),
-                    'name' => $this->character->getPlayer()->getName(),
-                ] : null,
+                'player' => $this->character && $this->character->getPlayer() ?
+                    $this->character->getPlayer()->jsonSerialize(true) : null,
             ]);
         }
 
