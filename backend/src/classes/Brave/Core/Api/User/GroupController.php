@@ -4,6 +4,7 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
+use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
@@ -572,9 +573,9 @@ class GroupController extends BaseController
 
     /**
      * @SWG\Put(
-     *     path="/user/group/{id}/remove-applicant/{pid}",
-     *     operationId="removeApplicant",
-     *     summary="Remove a player's request to join a group.",
+     *     path="/user/group/accept-application/{id}",
+     *     operationId="acceptApplication",
+     *     summary="Accept a player's request to join a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
@@ -582,23 +583,16 @@ class GroupController extends BaseController
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID of the group.",
-     *         type="integer"
-     *     ),
-     *     @SWG\Parameter(
-     *         name="pid",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the player.",
+     *         description="ID of the application.",
      *         type="integer"
      *     ),
      *     @SWG\Response(
      *         response="204",
-     *         description="Application removed."
+     *         description="Application accepted."
      *     ),
      *     @SWG\Response(
      *         response="404",
-     *         description="Player and/or application not found."
+     *         description="Application not found."
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -606,9 +600,43 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeApplicant(string $id, string $pid): Response
+    public function acceptApplication(string $id): Response
     {
-        return $this->removePlayerFrom($id, $pid, 'applications', true);
+        return $this->handleApplication($id, 'accept');
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/group/deny-application/{id}",
+     *     operationId="denyApplication",
+     *     summary="Deny a player's request to join a group.",
+     *     description="Needs role: group-manager",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the application.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Application denied."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Application not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function denyApplication(string $id): Response
+    {
+        return $this->handleApplication($id, 'deny');
     }
 
     /**
@@ -826,6 +854,35 @@ class GroupController extends BaseController
             foreach ($apps as $groupApplication) {
                 $this->objectManager->remove($groupApplication);
             }
+        }
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @param string $id application ID
+     * @param string $action "accept" or "deny"
+     * @return Response
+     */
+    private function handleApplication(string $id, string $action): Response
+    {
+        $app = $this->repositoryFactory->getGroupApplicationRepository()->find($id);
+
+        if (! $app || ! $app->getGroup() || ! $app->getPlayer()) {
+            return $this->response->withStatus(404);
+        }
+
+        if (! $this->checkManager($app->getGroup())) {
+            return $this->response->withStatus(403);
+        }
+
+        if ($action === 'accept') {
+            $app->setStatus(GroupApplication::STATUS_ACCEPTED);
+            if (! $app->getPlayer()->hasGroup($app->getGroup()->getId())) {
+                $app->getPlayer()->addGroup($app->getGroup());
+            }
+        } elseif ($action === 'deny') {
+            $app->setStatus(GroupApplication::STATUS_DENIED);
         }
 
         return $this->flushAndReturn(204);

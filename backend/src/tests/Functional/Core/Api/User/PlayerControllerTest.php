@@ -239,6 +239,7 @@ class PlayerControllerTest extends WebTestCase
             'id' => $ga->getId(),
             'player' => ['id' => $this->player->getId(), 'name' => 'Admin'],
             'group' => ['id' => $this->group->getId(), 'name' => 'test-pub', 'visibility' => Group::VISIBILITY_PUBLIC],
+            'status' => GroupApplication::STATUS_PENDING,
             'created' => null,
         ]], $this->parseJsonBody($response));
     }

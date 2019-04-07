@@ -4,8 +4,7 @@
 dd mmm yyyy
 
 - New: error limit for apps.
-- BC break: the Group <-> Player relation for group applications is replaced by its own object
-  (this DELETES all existing group applications).
+- BC-Break: Group applications revised, all existing applications are deleted with the update.
 - Layout fixes.
 - Added player ID to account name everywhere.
 

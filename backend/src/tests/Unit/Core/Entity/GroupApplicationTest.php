@@ -20,6 +20,7 @@ class GroupApplicationTest extends TestCase
             'id' => null,
             'player' => ['id' => null, 'name' => 'p'],
             'group' => ['id' => null, 'name' => 'g', 'visibility' => Group::VISIBILITY_PRIVATE],
+            'status' => GroupApplication::STATUS_PENDING,
             'created' => '2019-04-06T16:09:24Z'
         ], json_decode(json_encode($groupApp), true));
     }
@@ -55,5 +56,16 @@ class GroupApplicationTest extends TestCase
 
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2019-04-06T16:09:25+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
+    public function testSetGetStatus()
+    {
+        $groupApp = new GroupApplication();
+
+        $groupApp->setStatus('invalid');
+        $this->assertSame($groupApp->getStatus(), GroupApplication::STATUS_PENDING);
+
+        $groupApp->setStatus(GroupApplication::STATUS_DENIED);
+        $this->assertSame($groupApp->getStatus(), GroupApplication::STATUS_DENIED);
     }
 }

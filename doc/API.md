@@ -117,7 +117,8 @@ Character API
 
 Group API
 - List all applications of a group. `/user/group/{id}/applications`
-- Remove a player's request to join a group. `/user/group/{id}/remove-applicant/{pid}`
+- Accept a player's request to join a group. `/user/group/accept-application/{id}`
+- Deny a player's request to join a group. `/user/group/deny-application/{id}`
 - Adds a player to a group. `/user/group/{id}/add-member/{pid}`
 - Remove player from a group. `/user/group/{id}/remove-member/{pid}`
 - List all members of a group. `/user/group/{id}/members`

@@ -555,57 +555,98 @@ class GroupControllerTest extends WebTestCase
             'id' => $this->groupAppID,
             'player' => ['id' => $this->pid2, 'name' => 'Group'],
             'group' => ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC],
+            'status' => GroupApplication::STATUS_PENDING,
             'created' => null,
         ]], $this->parseJsonBody($response)
         );
     }
 
-    public function testRemoveApplicant403()
+    public function testDenyApplication403()
     {
         $this->setupDb();
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid);
+        $response = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
         $this->assertEquals(403, $response->getStatusCode());
 
         $this->loginUser(7); // manager, but not of this group
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.$this->pid);
+        $response = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testRemoveApplicant404()
+    public function testDenyApplication404()
     {
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-applicant/'.$this->pid);
-        $this->assertEquals(404, $response1->getStatusCode());
-
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-applicant/'.($this->pid + 5));
-        $this->assertEquals(404, $response2->getStatusCode());
-
-        $response3 = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/remove-applicant/'.($this->pid + 5));
-        $this->assertEquals(404, $response3->getStatusCode());
+        $response = $this->runApp('PUT', '/api/user/group/deny-application/' . ($this->groupAppID + 5));
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testRemoveApplicant204()
+    public function testDenyApplication204()
     {
         $this->setupDb();
         $this->loginUser(8);
 
         $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2]);
         $this->assertSame(1, count($appsBefore));
+        $this->assertSame(GroupApplication::STATUS_PENDING, $appsBefore[0]->getStatus());
+        $this->assertFalse($this->pr->find($this->pid2)->hasGroup($this->gid2));
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-applicant/'.$this->pid); // not applied
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-applicant/'.$this->pid2);
-        $response3 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-applicant/'.$this->pid2);
+        $response1 = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
+        $response2 = $this->runApp('PUT', '/api/user/group/deny-application/'.$this->groupAppID);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
-        $this->assertEquals(204, $response3->getStatusCode());
 
         $this->em->clear();
 
         $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
-        $this->assertSame(0, count($appsAfter));
+        $this->assertSame(1, count($appsAfter));
+        $this->assertSame(GroupApplication::STATUS_DENIED, $appsAfter[0]->getStatus());
+        $this->assertFalse($this->pr->find($this->pid2)->hasGroup($this->gid2));
+    }
+
+    public function testAcceptApplication403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(7); // manager, but not of this group
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAcceptApplication404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('PUT', '/api/user/group/accept-application/' . ($this->groupAppID + 5));
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testAcceptApplication204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $this->assertSame(1, count($appsBefore));
+        $this->assertSame(GroupApplication::STATUS_PENDING, $appsBefore[0]->getStatus());
+        $this->assertFalse($this->pr->find($this->pid2)->hasGroup($this->gid2));
+
+        $response1 = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $response2 = $this->runApp('PUT', '/api/user/group/accept-application/'.$this->groupAppID);
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $this->assertSame(1, count($appsAfter));
+        $this->assertSame(GroupApplication::STATUS_ACCEPTED, $appsAfter[0]->getStatus());
+        $this->assertTrue($this->pr->find($this->pid2)->hasGroup($this->gid2));
     }
 
     public function testAddMember403()

@@ -5,7 +5,8 @@ namespace Brave\Core\Entity;
 /**
  * @SWG\Definition(
  *     definition="GroupApplication",
- *     required={"id", "player", "group", "created"}
+ *     required={"id", "player", "group", "created"},
+ *     description="The player property contains only id and name."
  * )
  *
  * @Entity
@@ -13,6 +14,21 @@ namespace Brave\Core\Entity;
  */
 class GroupApplication implements \JsonSerializable
 {
+    /**
+     * @var string
+     */
+    const STATUS_PENDING = 'pending';
+
+    /**
+     * @var string
+     */
+    const STATUS_ACCEPTED = 'accepted';
+
+    /**
+     * @var string
+     */
+    const STATUS_DENIED = 'denied';
+
     /**
      * @SWG\Property()
      * @Id
@@ -46,8 +62,17 @@ class GroupApplication implements \JsonSerializable
     private $created;
 
     /**
-     * Contains only information that is of interest for clients.
+     * Group application status.
      *
+     * @SWG\Property(
+     *     enum={"pending", "accepted", "denied"})
+     * )
+     * @Column(type="string", length=16)
+     * @var string
+     */
+    private $status = self::STATUS_PENDING;
+
+    /**
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
@@ -57,6 +82,7 @@ class GroupApplication implements \JsonSerializable
             'id' => $this->id,
             'player' => $this->player->jsonSerialize(true),
             'group' => $this->group,
+            'status' => $this->status,
             'created' => $this->created ? $this->created->format('Y-m-d\TH:i:s\Z') : null,
         ];
     }
@@ -141,5 +167,24 @@ class GroupApplication implements \JsonSerializable
     public function getGroup()
     {
         return $this->group;
+    }
+
+    /**
+     * Set status.
+     *
+     * Ignores any invalid value.
+     */
+    public function setStatus(string $status): self
+    {
+        if (in_array($status, [self::STATUS_PENDING, self::STATUS_ACCEPTED, self::STATUS_DENIED])) {
+            $this->status = $status;
+        }
+
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
     }
 }
