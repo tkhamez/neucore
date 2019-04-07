@@ -11,6 +11,7 @@
         "ext-pdo_mysql": "*",
         "bravecollective/sso-basics": "^1.0.0",
         "doctrine/cache": "^1.8",
+        "doctrine/data-fixtures": "^1.3",
         "doctrine/orm": "^2.6",
         "doctrine/migrations": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
@@ -48,16 +49,19 @@
     "scripts": {
         "compile": [
             "@cache:clear",
-            "@migrate",
+            "@db:migrate",
+            "@db:seed",
             "@openapi"
         ],
         "compile:prod": [
             "@cache:clear",
             "doctrine orm:generate-proxies",
-            "@migrate",
+            "@db:migrate",
+            "@db:seed",
             "@openapi"
         ],
-        "migrate": "doctrine-migrations migrations:migrate --no-interaction",
+        "db:migrate": "doctrine-migrations migrations:migrate --no-interaction",
+        "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
             "swagger --exclude bin,config,var,vendor --output ../web",
             "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/App --output ../web/frontend-api.json",

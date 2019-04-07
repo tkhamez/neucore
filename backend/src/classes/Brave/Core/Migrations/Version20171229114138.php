@@ -32,14 +32,6 @@ class Version20171229114138 extends AbstractMigration
         $this->addSql('ALTER TABLE apps_roles ADD CONSTRAINT FK_D118FC33D60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE users ADD character_id BIGINT NOT NULL, CHANGE name name VARCHAR(255) NOT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1483A5E91136BE75 ON users (character_id)');
-
-        $this->addSql('INSERT INTO roles (id, name) VALUES (1, "role.user")');
-        $this->addSql('INSERT INTO roles (id, name) VALUES (2, "role.app")');
-
-        $secret = password_hash("my awesome secret", PASSWORD_DEFAULT);
-        $this->addSql('INSERT INTO apps (id, secret, name) VALUES (1, :secret, "Example App")', array('secret' => $secret));
-
-        $this->addSql('INSERT INTO apps_roles (app_id, role_id) VALUES (1, 2)');
     }
 
     /**

@@ -10,7 +10,7 @@ class RoleTest extends \PHPUnit\Framework\TestCase
 {
     public function testJsonSerialize()
     {
-        $role = new Role();
+        $role = new Role(1);
         $role->setName('r.name');
 
         $this->assertSame('r.name', json_decode(json_encode($role), true));
@@ -18,19 +18,19 @@ class RoleTest extends \PHPUnit\Framework\TestCase
 
     public function testGetId()
     {
-        $this->assertNull((new Role)->getId());
+        $this->assertSame(1, (new Role(1))->getId());
     }
 
     public function testSetGetName()
     {
-        $role = new Role();
+        $role = new Role(1);
         $role->setName('nam');
         $this->assertSame('nam', $role->getName());
     }
 
     public function testAddGetRemoveCharacter()
     {
-        $role = new Role();
+        $role = new Role(1);
         $p1 = new Player();
         $p2 = new Player();
 
@@ -47,7 +47,7 @@ class RoleTest extends \PHPUnit\Framework\TestCase
 
     public function testAddGetRemoveApp()
     {
-        $role = new Role();
+        $role = new Role(1);
         $a1 = new App();
         $a2 = new App();
 

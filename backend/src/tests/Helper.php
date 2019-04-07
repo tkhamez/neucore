@@ -16,6 +16,7 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Slim\Session\SessionData;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
@@ -28,6 +29,8 @@ class Helper
      * @var EntityManagerInterface
      */
     private static $em;
+
+    private static $roleSequence = 0;
 
     private $entities = [
         GroupApplication::class,
@@ -83,6 +86,9 @@ class Helper
         return self::$em;
     }
 
+    /**
+     * @throws DBALException
+     */
     public function updateDbSchema(): void
     {
         $em = $this->getEm();
@@ -93,6 +99,7 @@ class Helper
         }
 
         $tool = new SchemaTool($em);
+        $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 0;');
         $tool->updateSchema($classes);
     }
 
@@ -110,7 +117,7 @@ class Helper
 
     /**
      * @param array $roles
-     * @return \Brave\Core\Entity\Role[]
+     * @return Role[]
      */
     public function addRoles(array $roles): array
     {
@@ -121,7 +128,8 @@ class Helper
         foreach ($roles as $roleName) {
             $role = $rr->findOneBy(['name' => $roleName]);
             if ($role === null) {
-                $role = new Role();
+                self::$roleSequence ++;
+                $role = new Role(self::$roleSequence);
                 $role->setName($roleName);
                 $em->persist($role);
             }
@@ -134,7 +142,7 @@ class Helper
 
     /**
      * @param array $groups
-     * @return \Brave\Core\Entity\Group[]
+     * @return Group[]
      */
     public function addGroups(array $groups): array
     {

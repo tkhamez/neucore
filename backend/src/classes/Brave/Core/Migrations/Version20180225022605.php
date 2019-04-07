@@ -39,9 +39,6 @@ class Version20180225022605 extends AbstractMigration
         $this->addSql('DROP TABLE users');
         $this->addSql('DROP TABLE users_groups');
         $this->addSql('DROP TABLE users_roles');
-
-        # originally added with Version20171229114138
-        $this->addSql('INSERT INTO app_role (app_id, role_id) VALUES (1, 2)');
     }
 
     /**

@@ -24,7 +24,7 @@ use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Repository\SystemVariableRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 
 class RepositoryFactory
 {
@@ -32,7 +32,7 @@ class RepositoryFactory
 
     private $instance = [];
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(ObjectManager $em)
     {
         $this->em = $em;
     }

@@ -45,8 +45,8 @@ class AppTest extends \PHPUnit\Framework\TestCase
     public function testAddGetRemoveRole()
     {
         $app = new App();
-        $r1 = new Role();
-        $r2 = new Role();
+        $r1 = new Role(1);
+        $r2 = new Role(2);
 
         $this->assertSame([], $app->getRoles());
 
@@ -61,8 +61,8 @@ class AppTest extends \PHPUnit\Framework\TestCase
     public function testGetRoleNames()
     {
         $app = new App();
-        $r1 = (new Role())->setName('n1');
-        $r2 = (new Role())->setName('n2');
+        $r1 = (new Role(1))->setName('n1');
+        $r2 = (new Role(2))->setName('n2');
         $app->addRole($r1)->addRole($r2);
 
         $this->assertSame(['n1', 'n2'], $app->getRoleNames());
@@ -71,7 +71,7 @@ class AppTest extends \PHPUnit\Framework\TestCase
     public function testHasRole()
     {
         $app = new App();
-        $role = new Role();
+        $role = new Role(1);
         $role->setName('role1');
         $app->addRole($role);
 

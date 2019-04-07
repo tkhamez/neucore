@@ -23,8 +23,8 @@ class PlayerTest extends TestCase
         $play = new Player();
         $play->setName('test user');
         $play->addGroup($g2);
-        $play->addRole((new Role())->setName('rName'));
-        $play->addRole((new Role())->setName('role2'));
+        $play->addRole((new Role(1))->setName('rName'));
+        $play->addRole((new Role(2))->setName('role2'));
         $c1 = new Character();
         $c2 = new Character();
         $c1->setId(123);
@@ -112,8 +112,8 @@ class PlayerTest extends TestCase
     public function testAddGetRemoveRole()
     {
         $player = new Player();
-        $r1 = new Role();
-        $r2 = new Role();
+        $r1 = new Role(1);
+        $r2 = new Role(2);
         $r1->setName('n1');
         $r2->setName('n2');
 
@@ -130,8 +130,8 @@ class PlayerTest extends TestCase
     public function testGetRoleNames()
     {
         $player = new Player();
-        $r1 = (new Role())->setName('n1');
-        $r2 = (new Role())->setName('n2');
+        $r1 = (new Role(1))->setName('n1');
+        $r2 = (new Role(2))->setName('n2');
         $player->addRole($r1)->addRole($r2);
 
         $this->assertSame(['n1', 'n2'], $player->getRoleNames());
@@ -140,7 +140,7 @@ class PlayerTest extends TestCase
     public function testHasRole()
     {
         $player = new Player();
-        $role = new Role();
+        $role = new Role(1);
         $role->setName('role1');
         $player->addRole($role);
 

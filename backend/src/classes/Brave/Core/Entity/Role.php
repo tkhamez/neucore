@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 /**
  * Roles are used to determined player permissions.
  *
@@ -124,7 +127,7 @@ class Role implements \JsonSerializable
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue
+     * @NONE
      * @var integer
      */
     private $id;
@@ -140,14 +143,14 @@ class Role implements \JsonSerializable
     /**
      * @ManyToMany(targetEntity="Player", mappedBy="roles")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $players;
 
     /**
      * @ManyToMany(targetEntity="App", mappedBy="roles")
      * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     private $apps;
 
@@ -165,10 +168,11 @@ class Role implements \JsonSerializable
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(int $id)
     {
-        $this->players = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->apps = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->id = $id;
+        $this->players = new ArrayCollection();
+        $this->apps = new ArrayCollection();
     }
 
     /**
@@ -208,7 +212,7 @@ class Role implements \JsonSerializable
     /**
      * Add player.
      *
-     * @param \Brave\Core\Entity\Player $player
+     * @param Player $player
      *
      * @return Role
      */
@@ -222,7 +226,7 @@ class Role implements \JsonSerializable
     /**
      * Remove player.
      *
-     * @param \Brave\Core\Entity\Player $player
+     * @param Player $player
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -244,7 +248,7 @@ class Role implements \JsonSerializable
     /**
      * Add app.
      *
-     * @param \Brave\Core\Entity\App $app
+     * @param App $app
      *
      * @return Role
      */
@@ -258,7 +262,7 @@ class Role implements \JsonSerializable
     /**
      * Remove app.
      *
-     * @param \Brave\Core\Entity\App $app
+     * @param App $app
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */

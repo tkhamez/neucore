@@ -70,7 +70,12 @@ composer test
 
 Execute database migrations:
 ```
-composer migrate
+composer db:migrate
+```
+
+Load data fixtures:
+```
+composer db:seed
 ```
 
 Generate OpenAPI interface description files:

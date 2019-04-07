@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Brave\Core\Migrations;
 
@@ -8,8 +10,13 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20181125112330 extends AbstractMigration
+final class Version20190407162052 extends AbstractMigration
 {
+    public function getDescription() : string
+    {
+        return '';
+    }
+
     /**
      * @throws \Exception
      */
@@ -18,7 +25,8 @@ final class Version20181125112330 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE characters ADD valid_token_time DATETIME DEFAULT NULL');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
+        $this->addSql('ALTER TABLE roles CHANGE id id INT(11) NOT NULL');
     }
 
     /**
@@ -29,6 +37,7 @@ final class Version20181125112330 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE characters DROP valid_token_time');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
+        $this->addSql('ALTER TABLE roles CHANGE id id INT(11) AUTO_INCREMENT NOT NULL');
     }
 }

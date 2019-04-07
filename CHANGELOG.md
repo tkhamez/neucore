@@ -5,6 +5,9 @@ dd mmm yyyy
 
 - New: error limit for apps.
 - BC-Break: Group applications revised, all existing applications are deleted with the update.
+- BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. 
+  If you update from a version lower than 0.7.0, you must manually add these new roles 
+  to your existing applications (if desired): app-groups, app-chars.
 - Layout fixes.
 - Added player ID to account name everywhere.
 

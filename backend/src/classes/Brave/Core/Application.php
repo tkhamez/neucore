@@ -3,6 +3,7 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\CheckTokens;
+use Brave\Core\Command\DoctrineFixturesLoad;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\SendAccountDisabledMail;
 use Brave\Core\Command\UpdateCharacters;
@@ -22,6 +23,7 @@ use DI\Definition\Source\SourceCache;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
@@ -297,6 +299,9 @@ class Application
                 );
                 return EntityManager::create($conf['connection'], $config);
             },
+            ObjectManager::class => function (ContainerInterface $c) {
+                return $c->get(EntityManagerInterface::class);
+            },
 
             // EVE OAuth
             GenericProvider::class => function (ContainerInterface $c) {
@@ -471,5 +476,6 @@ class Application
         $console->add($this->container->get(UpdatePlayerGroups::class));
         $console->add($this->container->get(SendAccountDisabledMail::class));
         $console->add($this->container->get(UpdateMemberTracking::class));
+        $console->add($this->container->get(DoctrineFixturesLoad::class));
     }
 }

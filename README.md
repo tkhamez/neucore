@@ -57,13 +57,14 @@ If available, the app uses the APCu cache in production mode. This must be clear
 
 ##### Archive file
 
-If you downloaded the .tar.gz file, you only need to run the database migrations and, 
+If you downloaded the .tar.gz file, you only need to run the database migrations and seeds and, 
 depending on the update method, clear the cache:
 
 ```
 cd backend
 rm -rf var/cache/{di,http,proxies}
 vendor/bin/doctrine-migrations migrations:migrate --no-interaction
+bin/console doctrine-fixtures-load
 ```
 
 ##### Git
