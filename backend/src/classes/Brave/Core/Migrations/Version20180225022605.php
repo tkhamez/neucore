@@ -29,12 +29,12 @@ class Version20180225022605 extends AbstractMigration
         $this->addSql('ALTER TABLE app_role ADD CONSTRAINT FK_5247AFCA7987212D FOREIGN KEY (app_id) REFERENCES apps (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE app_role ADD CONSTRAINT FK_5247AFCAD60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE app_group ADD CONSTRAINT FK_BB13C9087987212D FOREIGN KEY (app_id) REFERENCES apps (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE app_group ADD CONSTRAINT FK_BB13C908FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE app_group ADD CONSTRAINT FK_BB13C908FE54D947 FOREIGN KEY (group_id) REFERENCES `groups` (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE characters ADD CONSTRAINT FK_3A29410E99E6F5DF FOREIGN KEY (player_id) REFERENCES players (id)');
         $this->addSql('ALTER TABLE player_role ADD CONSTRAINT FK_F573DA5999E6F5DF FOREIGN KEY (player_id) REFERENCES players (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE player_role ADD CONSTRAINT FK_F573DA59D60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE player_group ADD CONSTRAINT FK_D2B23F8399E6F5DF FOREIGN KEY (player_id) REFERENCES players (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE player_group ADD CONSTRAINT FK_D2B23F83FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE player_group ADD CONSTRAINT FK_D2B23F83FE54D947 FOREIGN KEY (group_id) REFERENCES `groups` (id) ON DELETE CASCADE');
         $this->addSql('DROP TABLE apps_roles');
         $this->addSql('DROP TABLE users');
         $this->addSql('DROP TABLE users_groups');
@@ -62,7 +62,7 @@ class Version20180225022605 extends AbstractMigration
         $this->addSql('ALTER TABLE apps_roles ADD CONSTRAINT FK_D118FC337987212D FOREIGN KEY (app_id) REFERENCES apps (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE apps_roles ADD CONSTRAINT FK_D118FC33D60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE users_groups ADD CONSTRAINT FK_FF8AB7E0A76ED395 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE users_groups ADD CONSTRAINT FK_FF8AB7E0FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE users_groups ADD CONSTRAINT FK_FF8AB7E0FE54D947 FOREIGN KEY (group_id) REFERENCES `groups` (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE users_roles ADD CONSTRAINT FK_51498A8EA76ED395 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE users_roles ADD CONSTRAINT FK_51498A8ED60322AC FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE');
         $this->addSql('DROP TABLE app_role');

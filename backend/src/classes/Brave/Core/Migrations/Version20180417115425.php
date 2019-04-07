@@ -20,7 +20,7 @@ class Version20180417115425 extends AbstractMigration
 
         $this->addSql('CREATE TABLE group_applicant (player_id INT NOT NULL, group_id INT NOT NULL, INDEX IDX_A1E4CF899E6F5DF (player_id), INDEX IDX_A1E4CF8FE54D947 (group_id), PRIMARY KEY(player_id, group_id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE group_applicant ADD CONSTRAINT FK_A1E4CF899E6F5DF FOREIGN KEY (player_id) REFERENCES players (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE group_applicant ADD CONSTRAINT FK_A1E4CF8FE54D947 FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE group_applicant ADD CONSTRAINT FK_A1E4CF8FE54D947 FOREIGN KEY (group_id) REFERENCES `groups` (id) ON DELETE CASCADE');
     }
 
     /**

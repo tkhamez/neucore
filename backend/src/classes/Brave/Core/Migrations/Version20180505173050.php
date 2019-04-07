@@ -18,7 +18,7 @@ class Version20180505173050 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE groups ADD visibility VARCHAR(16) NOT NULL DEFAULT "private", DROP public');
+        $this->addSql('ALTER TABLE `groups` ADD visibility VARCHAR(16) NOT NULL DEFAULT "private", DROP public');
     }
 
     /**
@@ -29,6 +29,6 @@ class Version20180505173050 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE groups ADD public TINYINT(1) NOT NULL, DROP visibility');
+        $this->addSql('ALTER TABLE `groups` ADD public TINYINT(1) NOT NULL, DROP visibility');
     }
 }
