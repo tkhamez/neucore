@@ -82,7 +82,12 @@ window.onload = function() {
     plugins: [
       SwaggerUIBundle.plugins.DownloadUrl
     ],
-  })
+  });
+
+  ui.getConfigs().requestInterceptor = function(e) {
+    e.url = e.url.replace(/\/\/localhost\//i, '//' + location.hostname + ':' + location.port + '/');
+    return e;
+  };
 
   window.ui = ui
 }

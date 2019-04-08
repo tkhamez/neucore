@@ -8,6 +8,7 @@ use Slim\Http\Response;
 /**
  * @SWG\Swagger(
  *     schemes={"https", "http"},
+ *     host="localhost",
  *     basePath="/api",
  *     produces={"application/json"},
  *     @SWG\Info(
