@@ -4,20 +4,21 @@
 
 * EVE SSO login with configurable permission scopes
 * Player accounts with alts
-* CLI commands for data updates from ESI
 * Role based permission system
 * Creation of groups and apps
 * Group and app manager for member management
 * Automatic group assignment for players based on corporations and alliances from all of their characters
-* An API for applications to query group membership of characters and other data
-* Optional account deactivation with mail notification when ESI tokens are invalid
+* Optional automatic account deactivation with mail notification when ESI tokens are invalid
+* Manually managed accounts that do not require any ESI scopes.
 * Corporation member tracking
+* CLI commands for data updates from ESI
+* An API for applications to query group membership of characters and other data
 * ESI request for authorized scopes for any character 
   (via frontend and for apps, see [Examples](app-esi-examples.php))
 
-Most functions are available in the frontend. Users can use the 
-Swagger UI for the missing functions at `https://[domain]/api.html`,
-which also documents the API for third-party applications.
+All API functions are documented with OpenAPI and can be found at `https://[domain]/api.html`.
+
+The frontend is almost complete, only functions related to group applications are missing.
 
 ## Authentication of third-party Applications
 
