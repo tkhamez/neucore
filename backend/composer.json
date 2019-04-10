@@ -41,7 +41,8 @@
         "psr-4": {
         	"": "src/classes/",
         	"Tests\\": "src/tests/"
-    	}
+    	},
+        "files": ["config/version.php"]
     },
     "repositories": [
         { "type": "git", "url": "https://github.com/bravecollective/sso-basics.git" }

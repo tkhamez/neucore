@@ -14,7 +14,7 @@ use Slim\Http\Response;
  *     @SWG\Info(
  *       title="Neucore API",
  *       description="Client library of Neucore API",
- *       version="0.7.1"
+ *       version=BRAVE_CORE_VERSION
  *     )
  * )
  */

@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Brave\Core\Application;
+use GuzzleHttp\Client;
 use Monolog\Logger;
 
 return [
@@ -45,7 +46,9 @@ return [
             'callback_url' => getenv('BRAVECORE_EVE_CALLBACK_URL'),
             'scopes'       => getenv('BRAVECORE_EVE_SCOPES'),
             'datasource'   => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility',
-            'esi_host'     => 'https://esi.evetech.net'
+            'esi_host'     => 'https://esi.evetech.net',
+            'sso_domain_tq'   => 'login.eveonline.com',
+            'sso_domain_sisi' => 'sisilogin.testeveonline.com',
         ],
 
         'session' => [
@@ -55,7 +58,9 @@ return [
         'guzzle' => [
             'cache' => [
                 'dir' => Application::ROOT_DIR . '/var/cache/http'
-            ]
+            ],
+            'user_agent' => 'Neucore/' . BRAVE_CORE_VERSION . ' (https://github.com/tkhamez/neucore) ' .
+                            'GuzzleHttp/' . Client::VERSION,
         ],
 
         'di' => [

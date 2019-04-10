@@ -305,16 +305,17 @@ class Application
 
             // EVE OAuth
             GenericProvider::class => function (ContainerInterface $c) {
-                $domain = $c->get('config')['eve']['datasource'] === 'singularity' ?
-                    'sisilogin.testeveonline.com' :
-                    'login.eveonline.com';
+                $conf = $c->get('config')['eve'];
+                $domain = $conf['datasource'] === 'singularity' ? $conf['sso_domain_sisi'] : $conf['sso_domain_tq'];
                 return new GenericProvider([
-                    'clientId'                => $c->get('config')['eve']['client_id'],
-                    'clientSecret'            => $c->get('config')['eve']['secret_key'],
-                    'redirectUri'             => $c->get('config')['eve']['callback_url'],
+                    'clientId'                => $conf['client_id'],
+                    'clientSecret'            => $conf['secret_key'],
+                    'redirectUri'             => $conf['callback_url'],
                     'urlAuthorize'            => 'https://' . $domain . '/oauth/authorize',
                     'urlAccessToken'          => 'https://' . $domain . '/oauth/token',
                     'urlResourceOwnerDetails' => 'https://' . $domain . '/oauth/verify',
+                ], [
+                    'httpClient' => $c->get(ClientInterface::class)
                 ]);
             },
 
@@ -371,7 +372,12 @@ class Application
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
-                return new Client(['handler' => $stack]);
+                return new Client([
+                    'handler' => $stack,
+                    'headers' => [
+                        'User-Agent' => $c->get('config')['guzzle']['user_agent'],
+                    ],
+                ]);
             },
 
             // Extend Slim's error and php error handler to log all errors with monolog.
