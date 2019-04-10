@@ -38,9 +38,6 @@ $coreCharId = '96061222'; // Character with token in Core
 //            (e. g. https://packagist.org/packages/tkhamez/swagger-eve-php)
 //
 
-// Please note that with this client it is not possible to use Core for public ESI endpoints,
-// as it does not set the authorization header in this case.
-
 // Change the host to the Neucore domain including the API path and add the app token
 $configuration = new \Swagger\Client\Eve\Configuration();
 $configuration->setHost($coreHttpScheme .'://'. $coreDomain . '/api/app/v1/esi');
@@ -107,18 +104,11 @@ echo PHP_EOL;
 // Example using Eseye
 //
 
-// Extend the Eseye class to be able overwrite the host and add the Core API path
-class EseyeClient extends \Seat\Eseye\Eseye
-{
-    public function setHost($scheme, $host)
-    {
-        $this->esi = ['scheme' => $scheme, 'host' => $host];
-    }
-}
-
 // Set the EVE character ID as the datasource
 $configuration = \Seat\Eseye\Configuration::getInstance();
 $configuration->datasource = $coreCharId;
+$configuration->esi_scheme = $coreHttpScheme; // available since version 1.1.7
+$configuration->esi_host = $coreDomain . '/api/app/v1/esi';
 
 // Create an authorization object with the Core app token that does not expire
 $authentication = new \Seat\Eseye\Containers\EsiAuthentication([
@@ -130,8 +120,7 @@ $authentication = new \Seat\Eseye\Containers\EsiAuthentication([
     ],
 ]);
 
-$esi = new EseyeClient($authentication);
-$esi->setHost($coreHttpScheme, $coreDomain . '/api/app/v1/esi');
+$esi = new \Seat\Eseye\Eseye($authentication);
 try {
     $result = $esi->setQueryString([
         'page' => 1,

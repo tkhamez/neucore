@@ -183,6 +183,7 @@ class EsiController
                see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
+     *     consumes={"text/plain"},
      *     @SWG\Parameter(
      *         name="esi-path-query",
      *         in="query",
