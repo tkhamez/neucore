@@ -5,5 +5,13 @@ return [
         'monolog' => [
             'path' => 'php://stderr',
         ],
+        'guzzle' => [
+            'cache' => [
+                'dir' => '/tmp/http'
+            ],
+        ],
+        'di' => [
+            'cache_dir' => '/tmp/di'
+        ]
     ],
 ];
