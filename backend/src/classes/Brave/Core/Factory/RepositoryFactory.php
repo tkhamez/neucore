@@ -28,77 +28,88 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class RepositoryFactory
 {
-    private $em;
+    private static $instance;
 
-    private $instance = [];
+    private $objectManager;
 
-    public function __construct(ObjectManager $em)
+    private $factories = [];
+
+    public static function getInstance(ObjectManager $objectManager): self
     {
-        $this->em = $em;
+        if (self::$instance === null) {
+            new self($objectManager);
+        }
+        return self::$instance;
+    }
+
+    public function __construct(ObjectManager $objectManager)
+    {
+        self::$instance = $this;
+        $this->objectManager = $objectManager;
     }
 
     public function getAllianceRepository(): AllianceRepository
     {
-        return $this->getInstance(AllianceRepository::class, Alliance::class);
+        return $this->getRepository(AllianceRepository::class, Alliance::class);
     }
 
     public function getAppRepository(): AppRepository
     {
-        return $this->getInstance(AppRepository::class, App::class);
+        return $this->getRepository(AppRepository::class, App::class);
     }
 
     public function getCharacterRepository(): CharacterRepository
     {
-        return $this->getInstance(CharacterRepository::class, Character::class);
+        return $this->getRepository(CharacterRepository::class, Character::class);
     }
 
     public function getCorporationRepository(): CorporationRepository
     {
-        return $this->getInstance(CorporationRepository::class, Corporation::class);
+        return $this->getRepository(CorporationRepository::class, Corporation::class);
     }
 
     public function getCorporationMemberRepository(): CorporationMemberRepository
     {
-        return $this->getInstance(CorporationMemberRepository::class, CorporationMember::class);
+        return $this->getRepository(CorporationMemberRepository::class, CorporationMember::class);
     }
 
     public function getGroupRepository(): GroupRepository
     {
-        return $this->getInstance(GroupRepository::class, Group::class);
+        return $this->getRepository(GroupRepository::class, Group::class);
     }
 
     public function getGroupApplicationRepository(): GroupApplicationRepository
     {
-        return $this->getInstance(GroupApplicationRepository::class, GroupApplication::class);
+        return $this->getRepository(GroupApplicationRepository::class, GroupApplication::class);
     }
 
     public function getPlayerRepository(): PlayerRepository
     {
-        return $this->getInstance(PlayerRepository::class, Player::class);
+        return $this->getRepository(PlayerRepository::class, Player::class);
     }
 
     public function getRoleRepository(): RoleRepository
     {
-        return $this->getInstance(RoleRepository::class, Role::class);
+        return $this->getRepository(RoleRepository::class, Role::class);
     }
 
     public function getSystemVariableRepository(): SystemVariableRepository
     {
-        return $this->getInstance(SystemVariableRepository::class, SystemVariable::class);
+        return $this->getRepository(SystemVariableRepository::class, SystemVariable::class);
     }
 
     public function getRemovedCharacterRepository(): RemovedCharacterRepository
     {
-        return $this->getInstance(RemovedCharacterRepository::class, RemovedCharacter::class);
+        return $this->getRepository(RemovedCharacterRepository::class, RemovedCharacter::class);
     }
 
-    private function getInstance(string $repositoryClass, string $entityClass)
+    private function getRepository(string $repositoryClass, string $entityClass)
     {
-        if (! isset($this->instance[$repositoryClass])) {
-            $metadata = $this->em->getClassMetadata($entityClass);
-            $repository = new $repositoryClass($this->em, $metadata);
-            $this->instance[$repositoryClass] = $repository;
+        if (! isset($this->factories[$repositoryClass])) {
+            $metadata = $this->objectManager->getClassMetadata($entityClass);
+            $repository = new $repositoryClass($this->objectManager, $metadata);
+            $this->factories[$repositoryClass] = $repository;
         }
-        return $this->instance[$repositoryClass];
+        return $this->factories[$repositoryClass];
     }
 }

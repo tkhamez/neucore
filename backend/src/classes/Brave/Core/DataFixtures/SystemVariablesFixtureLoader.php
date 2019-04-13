@@ -11,12 +11,13 @@ class SystemVariablesFixtureLoader implements FixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $repository = (new RepositoryFactory($manager))->getSystemVariableRepository();
+        $repository = RepositoryFactory::getInstance($manager)->getSystemVariableRepository();
 
         $vars = [
             SystemVariable::ACCOUNT_DEACTIVATION_DELAY      => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::ALLOW_CHARACTER_DELETION        => ['0', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::ALLOW_LOGIN_MANAGED             => ['0', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::ESI_ERROR_LIMIT                 => ['',  SystemVariable::SCOPE_BACKEND],
             SystemVariable::GROUPS_REQUIRE_VALID_TOKEN      => ['0', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE    => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES => ['',  SystemVariable::SCOPE_SETTINGS],

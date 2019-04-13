@@ -7,6 +7,7 @@ use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Middleware\GuzzleEsiHeaders;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Logger;
@@ -178,7 +179,7 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
-        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
+        $httpClient->setResponse(new Response(
             200,
             [
                 'Content-Type' => ['application/json; charset=UTF-8'],
@@ -217,13 +218,17 @@ class EsiControllerTest extends WebTestCase
     public function testEsiV1200Middleware()
     {
         $this->helper->emptyDb();
+        $var = (new SystemVariable(SystemVariable::ESI_ERROR_LIMIT))->setScope(SystemVariable::SCOPE_BACKEND);
+        $this->helper->getEm()->persist($var);
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         // create client with middleware
-        $httpClient = new Client([new GuzzleEsiHeaders(new Logger('test'), $this->helper->getEm())]);
+        $httpClient = new Client([
+            new GuzzleEsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getEm())
+        ]);
 
-        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
+        $httpClient->setResponse(new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
         ));
@@ -256,7 +261,7 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
-        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(200, [], '{"key": "value"}'));
+        $httpClient->setResponse(new Response(200, [], '{"key": "value"}'));
 
         $response = $this->runApp(
             'GET',
@@ -289,7 +294,7 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         $httpClient = new Client();
-        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
+        $httpClient->setResponse(new Response(
             200,
             [],
             '[{ "item_id": 12345,"name": "Awesome Name" }]'

@@ -5,13 +5,20 @@ namespace Tests\Unit\Core\Middleware;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Middleware\GuzzleEsiHeaders;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 
-class GuzzleEsiHeadersTest extends \PHPUnit\Framework\TestCase
+class GuzzleEsiHeadersTest extends TestCase
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
     /**
      * @var RepositoryFactory
      */
@@ -29,15 +36,21 @@ class GuzzleEsiHeadersTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $em = (new Helper())->getEm();
+        $helper = new Helper();
+        $helper->emptyDb();
+        $this->em = $helper->getEm();
 
-        $this->repositoryFactory = new RepositoryFactory($em);
+        $this->repositoryFactory = new RepositoryFactory($this->em);
         $this->logger = new Logger('test');
-        $this->obj = new GuzzleEsiHeaders($this->logger, $em);
+        $this->obj = new GuzzleEsiHeaders($this->logger, $this->repositoryFactory, $this->em);
     }
 
     public function testInvokeErrorLimit()
     {
+        $var = (new SystemVariable(SystemVariable::ESI_ERROR_LIMIT))->setScope(SystemVariable::SCOPE_BACKEND);
+        $this->em->persist($var);
+        $this->em->flush();
+
         $response = new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]

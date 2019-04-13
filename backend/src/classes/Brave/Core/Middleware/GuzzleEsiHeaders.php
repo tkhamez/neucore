@@ -3,6 +3,7 @@
 namespace Brave\Core\Middleware;
 
 use Brave\Core\Entity\SystemVariable;
+use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,13 +17,22 @@ class GuzzleEsiHeaders
     private $logger;
 
     /**
+     * @var
+     */
+    private $systemVariableRepository;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
 
-    public function __construct(LoggerInterface $logger, EntityManagerInterface $em)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        RepositoryFactory $repositoryFactory,
+        EntityManagerInterface $em
+    ) {
         $this->logger = $logger;
+        $this->systemVariableRepository = $repositoryFactory->getSystemVariableRepository();
         $this->em = $em;
     }
 
@@ -47,14 +57,13 @@ class GuzzleEsiHeaders
             $remain = (int) $response->getHeader('X-Esi-Error-Limit-Remain')[0];
             $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
 
-            $entity = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-            $entity->setScope(SystemVariable::SCOPE_BACKEND);
+            $entity = $this->systemVariableRepository->find(SystemVariable::ESI_ERROR_LIMIT);
             $entity->setValue(\json_encode([
                 'updated' => time(),
                 'remain' => $remain,
                 'reset' => $reset,
             ]));
-            $this->em->merge($entity);
+            $this->em->persist($entity);
             $this->em->flush();
         }
 

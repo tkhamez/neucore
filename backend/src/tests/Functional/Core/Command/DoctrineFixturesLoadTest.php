@@ -41,10 +41,10 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $vars = $repoFactory->getSystemVariableRepository()->findBy([], ['name' => 'asc']);
 
         $this->assertSame(14, count($roles)); // 14 from seed
-        $this->assertSame(12, count($vars)); // 11 from seed + 1 from setup
+        $this->assertSame(13, count($vars)); // 12 from seed + 1 from setup
 
         // check that value was not changed
-        $this->assertSame(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, $vars[4]->getName());
-        $this->assertSame('1', $vars[4]->getValue());
+        $this->assertSame(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, $vars[5]->getName());
+        $this->assertSame('1', $vars[5]->getValue());
     }
 }

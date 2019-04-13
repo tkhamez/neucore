@@ -11,7 +11,7 @@ class RoleFixtureLoader implements FixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $roleRepository = (new RepositoryFactory($manager))->getRoleRepository();
+        $roleRepository = RepositoryFactory::getInstance($manager)->getRoleRepository();
 
         $roles = [
             1 => Role::USER,
