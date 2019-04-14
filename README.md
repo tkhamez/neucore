@@ -36,7 +36,8 @@ A preview/demo installation is available at https://brvneucore.herokuapp.com
 
 ### App Setup
 
-Clone the repository or download the distribution (the distribution does not require Composer, Node.js or Java).
+Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the distribution 
+(the distribution does not require Composer, Node.js or Java).
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
