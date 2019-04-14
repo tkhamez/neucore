@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/bravecollective/brvneucore.svg?branch=master)](https://travis-ci.com/bravecollective/brvneucore)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=alert_status)](https://sonarcloud.io/dashboard?id=brvneucore)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
 
 # Brave Collective Core Services
 
