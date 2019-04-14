@@ -37,7 +37,7 @@ class RepositoryFactory
     public static function getInstance(ObjectManager $objectManager): self
     {
         if (self::$instance === null) {
-            new self($objectManager);
+            self::$instance = new self($objectManager);
         }
         return self::$instance;
     }
