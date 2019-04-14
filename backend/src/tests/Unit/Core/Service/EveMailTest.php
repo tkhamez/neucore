@@ -425,8 +425,10 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
 
         $this->client->setResponse(
             // for getAccessToken() (refresh)
-            new Response(200, [], '{
-                "access_token": "new-token",
+            new Response(
+                200,
+                [],
+                '{"access_token": "new-token",
                 "refresh_token": "",
                 "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
             ),

@@ -7,7 +7,7 @@ with the [PHP-DI container](http://php-di.org/).
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
 
-You can check and fix the code by executing the following:
+You can check and partially fix the code by executing the following:
 ```
 composer style:check
 composer style:fix

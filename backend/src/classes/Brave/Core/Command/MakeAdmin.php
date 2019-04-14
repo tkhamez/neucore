@@ -41,7 +41,8 @@ class MakeAdmin extends Command
         $this->setName('make-admin')
             ->setDescription(
                 'Adds all available roles to the player account to which '.
-                'the character with the ID from the argument belongs.')
+                'the character with the ID from the argument belongs.'
+            )
             ->addArgument('id', InputArgument::REQUIRED, 'Character ID.');
     }
 

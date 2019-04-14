@@ -35,11 +35,12 @@ class CorporationMemberTest extends \PHPUnit\Framework\TestCase
         $member->setLogonDate(new \DateTime('2018-12-25 19:14:58'));
         $member->setShipTypeId(345);
         $member->setStartDate(new \DateTime('2018-12-25 19:14:58'));
-        $member->setCharacter((new Character())
-            ->setId(123)
-            ->setName('test char')
-            ->setPlayer((new Player())->setName('ply')
-        ));
+        $member->setCharacter(
+            (new Character())
+                ->setId(123)
+                ->setName('test char')
+                ->setPlayer((new Player())->setName('ply'))
+        );
 
         $this->assertSame([
             'id' => 123,

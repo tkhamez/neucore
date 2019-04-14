@@ -78,8 +78,13 @@ class UpdateCharacters extends Command
     {
         $this->setName('update-chars')
             ->setDescription('Updates all characters, corporations and alliances from ESI.')
-            ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each update', 200)
+            ->addOption(
+                'sleep',
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Time to sleep in milliseconds after each update',
+                200
+            )
             ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 

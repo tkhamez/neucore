@@ -77,8 +77,13 @@ class CheckTokens extends Command
                 'Checks refresh token. ' .
                 'If the character owner hash has changed or the character has been biomassed, it will be deleted.'
             )
-            ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each check', 200)
+            ->addOption(
+                'sleep',
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Time to sleep in milliseconds after each check',
+                200
+            )
             ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 

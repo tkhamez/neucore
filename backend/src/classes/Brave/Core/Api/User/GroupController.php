@@ -104,7 +104,9 @@ class GroupController extends BaseController
     public function public(): Response
     {
         return $this->response->withJson($this->repositoryFactory->getGroupRepository()->findBy(
-            ['visibility' => Group::VISIBILITY_PUBLIC], ['name' => 'ASC']));
+            ['visibility' => Group::VISIBILITY_PUBLIC],
+            ['name' => 'ASC']
+        ));
     }
 
     /**

@@ -106,7 +106,11 @@ class PlayerControllerTest extends WebTestCase
         $this->h->emptyDb();
         $groups = $this->h->addGroups(['group1', 'another-group']);
         $char = $this->h->addCharacterMain(
-            'TUser', 123456, [Role::USER, Role::USER_ADMIN], ['group1', 'another-group']);
+            'TUser',
+            123456,
+            [Role::USER, Role::USER_ADMIN],
+            ['group1', 'another-group']
+        );
         $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
         $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
         $char->setCorporation($corp);
@@ -691,11 +695,16 @@ class PlayerControllerTest extends WebTestCase
         $em = $this->h->getEm(true);
         $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
-        $res = $this->runApp('PUT',
-            '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN, null, null, [
-            EntityManagerInterface::class => $em,
-            LoggerInterface::class => $this->log
-        ]);
+        $res = $this->runApp(
+            'PUT',
+            '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN,
+            null,
+            null,
+            [
+                EntityManagerInterface::class => $em,
+                LoggerInterface::class => $this->log
+            ]
+        );
         $this->assertEquals(500, $res->getStatusCode());
     }
 
@@ -1030,8 +1039,11 @@ class PlayerControllerTest extends WebTestCase
         $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
         $corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
 
-        $char = $this->h->addCharacterMain('Admin', 12,
-            [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]);
+        $char = $this->h->addCharacterMain(
+            'Admin',
+            12,
+            [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]
+        );
         $char->setValidToken(false);
         $char->setCorporation($corp);
         $this->player = $char->getPlayer();

@@ -140,8 +140,10 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
      */
     public function testRefreshAccessTokenNewToken()
     {
-        $this->client->setResponse(new Response(200, [], '{
-            "access_token": "new-token",
+        $this->client->setResponse(new Response(
+            200,
+            [],
+            '{"access_token": "new-token",
             "refresh_token": "",
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));
@@ -203,8 +205,10 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->em->persist($char);
         $this->em->flush();
 
-        $this->client->setResponse(new Response(200, [], '{
-            "access_token": "new-token",
+        $this->client->setResponse(new Response(
+            200,
+            [],
+            '{"access_token": "new-token",
             "refresh_token": "",
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));
@@ -231,8 +235,10 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $c->setAccessToken('old-token');
         $c->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
 
-        $this->client->setResponse(new Response(200, [], '{
-            "access_token": "new-token",
+        $this->client->setResponse(new Response(
+            200,
+            [],
+            '{"access_token": "new-token",
             "refresh_token": "",
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));

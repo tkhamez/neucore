@@ -60,7 +60,8 @@ class AllianceController extends BaseController
     public function all(): Response
     {
         return $this->response->withJson(
-            $this->repositoryFactory->getAllianceRepository()->findBy([], ['name' => 'ASC']));
+            $this->repositoryFactory->getAllianceRepository()->findBy([], ['name' => 'ASC'])
+        );
     }
 
     /**

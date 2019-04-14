@@ -155,7 +155,8 @@ class CharControllerTest extends WebTestCase
         $body2 = $this->parseJsonBody($response2);
 
         $this->assertSame($body1, $body2);
-        $this->assertSame([[
+        $this->assertSame(
+            [[
                 'id' => 123,
                 'name' => 'C1',
                 'main' => true,

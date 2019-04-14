@@ -63,8 +63,13 @@ class UpdateMemberTracking extends Command
             ->setDescription(
                 'Updates member tracking data from all available characters with director role from settings.'
             )
-            ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each update', 200)
+            ->addOption(
+                'sleep',
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Time to sleep in milliseconds after each update',
+                200
+            )
             ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 

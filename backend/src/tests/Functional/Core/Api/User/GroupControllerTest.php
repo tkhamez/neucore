@@ -390,11 +390,11 @@ class GroupControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/corporations');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame([
-            ['id' => 200, 'name' => 'corp 2', 'ticker' => 'c2', 'alliance' => [
+        $this->assertSame(
+            [['id' => 200, 'name' => 'corp 2', 'ticker' => 'c2', 'alliance' => [
                 'id' => 10, 'name' => 'alli 1', 'ticker' => 'a1'
-            ]],
-            ], $this->parseJsonBody($response)
+            ]]],
+            $this->parseJsonBody($response)
         );
     }
 
@@ -427,9 +427,9 @@ class GroupControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/alliances');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame([
-            ['id' => 10, 'name' => 'alli 1', 'ticker' => 'a1'],
-            ], $this->parseJsonBody($response)
+        $this->assertSame(
+            [['id' => 10, 'name' => 'alli 1', 'ticker' => 'a1']],
+            $this->parseJsonBody($response)
         );
     }
 
@@ -551,13 +551,15 @@ class GroupControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/group/'.$this->gid2.'/applications');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame([[
-            'id' => $this->groupAppID,
-            'player' => ['id' => $this->pid2, 'name' => 'Group'],
-            'group' => ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC],
-            'status' => GroupApplication::STATUS_PENDING,
-            'created' => null,
-        ]], $this->parseJsonBody($response)
+        $this->assertSame(
+            [[
+                'id' => $this->groupAppID,
+                'player' => ['id' => $this->pid2, 'name' => 'Group'],
+                'group' => ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC],
+                'status' => GroupApplication::STATUS_PENDING,
+                'created' => null,
+            ]],
+            $this->parseJsonBody($response)
         );
     }
 
@@ -831,8 +833,11 @@ class GroupControllerTest extends WebTestCase
         $user = $this->helper->addCharacterMain('Group', 7, [Role::USER, Role::GROUP_MANAGER], ['group-one']);
         $this->pid2 = $user->getPlayer()->getId();
 
-        $admin = $this->helper->addCharacterMain('Admin', 8,
-            [Role::USER, Role::GROUP_MANAGER, Role::GROUP_ADMIN]);
+        $admin = $this->helper->addCharacterMain(
+            'Admin',
+            8,
+            [Role::USER, Role::GROUP_MANAGER, Role::GROUP_ADMIN]
+        );
         $this->pid = $admin->getPlayer()->getId();
 
         $this->helper->addCharacterMain('UA', 9, [Role::USER_ADMIN]);

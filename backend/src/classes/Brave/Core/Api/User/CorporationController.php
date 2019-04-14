@@ -72,7 +72,8 @@ class CorporationController extends BaseController
     public function all(): Response
     {
         return $this->response->withJson(
-            $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC']));
+            $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC'])
+        );
     }
 
     /**

@@ -145,12 +145,17 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthProvider($this->client),
-            LoggerInterface::class => $log,
-            Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
-        ]);
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [
+                GenericProvider::class => new OAuthProvider($this->client),
+                LoggerInterface::class => $log,
+                Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
+            ]
+        );
         $this->assertSame(302, $response->getStatusCode());
 
         // fails because Role "user" is missing in database
@@ -180,11 +185,16 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthProvider($this->client),
-            Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
-        ]);
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [
+                GenericProvider::class => new OAuthProvider($this->client),
+                Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
+            ]
+        );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(['success' => true, 'message' => 'Login successful.'], $_SESSION['auth_result']);
@@ -210,12 +220,17 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state,
-            null, null, [
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [
                 GenericProvider::class => new OAuthProvider($this->client),
                 LoggerInterface::class => $log,
                 Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
-            ]);
+            ]
+        );
         $this->assertSame(302, $response->getStatusCode());
 
         // fails because Role "user" is missing in database
@@ -247,11 +262,16 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state,
-            null, null, [
-            GenericProvider::class => new OAuthProvider($this->client),
-            Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
-        ]);
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [
+                GenericProvider::class => new OAuthProvider($this->client),
+                Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
+            ]
+        );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
@@ -287,10 +307,13 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state,
-            null, null, [
-                GenericProvider::class => new OAuthProvider($this->client),
-            ]);
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [GenericProvider::class => new OAuthProvider($this->client)]
+        );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(
@@ -326,10 +349,13 @@ class AuthControllerTest extends WebTestCase
             }') // for getResourceOwner()
         );
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state,
-            null, null, [
-                GenericProvider::class => new OAuthProvider($this->client),
-            ]);
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [GenericProvider::class => new OAuthProvider($this->client)]
+        );
         $this->assertSame(302, $response->getStatusCode());
 
         $this->assertSame(

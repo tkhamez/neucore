@@ -67,8 +67,13 @@ class SendAccountDisabledMail extends Command
     {
         $this->setName('send-account-disabled-mail')
             ->setDescription('Sends "account disabled" EVE mail notification.')
-            ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL,
-                'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)', 20)
+            ->addOption(
+                'sleep',
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
+                20
+            )
             ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
     }
 
