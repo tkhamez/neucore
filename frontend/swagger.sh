@@ -2,17 +2,18 @@
 
 # generate the Swagger client
 
-VERSION=2.4.0
+VERSION=3.3.4
+FILENAME=openapi-generator-cli-${VERSION}.jar
 
-if [[ ! -f swagger-codegen-cli-${VERSION}.jar ]]; then
-    wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/${VERSION}/swagger-codegen-cli-${VERSION}.jar \
-        -O swagger-codegen-cli-${VERSION}.jar
+if [[ ! -f ${FILENAME} ]]; then
+    wget http://central.maven.org/maven2/org/openapitools/openapi-generator-cli/${VERSION}/${FILENAME} \
+        -O ${FILENAME}
 fi
 
 rm -Rf neucore-js-client/*
 
-java -jar swagger-codegen-cli-${VERSION}.jar generate \
+java -jar ${FILENAME} generate \
     -c neucore-js-client-config.json \
     -i ../web/frontend-api.json \
-    -l javascript \
+    -g javascript \
     -o neucore-js-client
