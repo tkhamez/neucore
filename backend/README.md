@@ -3,6 +3,16 @@
 The backend is based on the [Slim Framework](https://www.slimframework.com)
 with the [PHP-DI container](http://php-di.org/).
 
+## Style Guide
+
+[PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
+
+You can check and fix the code by executing the following:
+```
+composer style:check
+composer style:fix
+```
+
 ## API
 
 ### operationId
@@ -18,10 +28,6 @@ unique only within each tag.
 
 The file `doc/API.md` is automatically generated from the template file `doc/API.md.tpl`, 
 the route and security configuration and `web/swagger.json` with `backend/bin/doc-api-gen.php`.
-
-## Style Guide
-
-[PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
 
 ## Install
 

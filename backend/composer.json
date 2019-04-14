@@ -29,6 +29,7 @@
         "zircote/swagger-php": "^2.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
         "phpunit/phpunit": "^7.3",
         "sensiolabs/security-checker": "^5.0"
     },
@@ -72,6 +73,8 @@
         "test": "phpunit",
         "test:cov": "phpunit --coverage-html var/phpunit",
         "security:check": "vendor/bin/security-checker security:check",
+        "style:check": "php-cs-fixer fix src --dry-run --diff --diff-format udiff",
+        "style:fix": "php-cs-fixer fix src",
         "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"
     },
     "config": {

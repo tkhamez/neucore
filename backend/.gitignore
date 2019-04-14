@@ -1,4 +1,5 @@
 /.env
+/.php_cs.cache
 /var/cache/*
 !/var/cache/.gitkeep
 /var/logs/*

@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.com/bravecollective/brvneucore.svg?branch=master)](https://travis-ci.com/bravecollective/brvneucore)
-[![StyleCI](https://styleci.io/repos/115431007/shield?branch=master)](https://styleci.io/repos/115431007)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=alert_status)](https://sonarcloud.io/dashboard?id=brvneucore)
 
 # Brave Collective Core Services
