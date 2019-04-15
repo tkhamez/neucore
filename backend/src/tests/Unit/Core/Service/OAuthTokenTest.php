@@ -7,19 +7,27 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\OAuthProvider;
 use Tests\Client;
 use Tests\WriteErrorListener;
 
-class OAuthTokenTest extends \PHPUnit\Framework\TestCase
+class OAuthTokenTest extends TestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -45,11 +53,11 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addRoles([Role::USER]);
+        $this->helper = new Helper();
+        $this->helper->emptyDb();
+        $this->helper->addRoles([Role::USER]);
 
-        $this->em = $h->getEm();
+        $this->em = $this->helper->getEm();
 
         $this->log = new Logger('Test');
 
@@ -59,8 +67,8 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $this->es = new OAuthToken($oauth, new ObjectManager($this->em, $this->log), $this->log);
 
         // a second OAuthToken instance with another entity manager that throws an exception on flush.
-        $em = $h->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em = $this->helper->getEm(true);
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
         $this->esError = new OAuthToken($oauth, new ObjectManager($em, $this->log), $this->log);
     }
 
@@ -182,8 +190,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $char->setCharacterOwnerHash('coh');
         $char->setAccessToken('old-token');
         $char->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
-        $this->em->persist($char);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         // response for refreshAccessToken()
         $this->client->setResponse(new Response(400, [], '{"error": "invalid_token"}'));
@@ -202,8 +209,7 @@ class OAuthTokenTest extends \PHPUnit\Framework\TestCase
         $char->setCharacterOwnerHash('coh');
         $char->setAccessToken('old-token');
         $char->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
-        $this->em->persist($char);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $this->client->setResponse(new Response(
             200,

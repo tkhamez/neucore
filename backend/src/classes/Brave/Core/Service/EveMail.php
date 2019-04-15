@@ -138,9 +138,6 @@ class EveMail
             return 'Character not found.';
         }
         $player = $char->getPlayer();
-        if ($player === null) {
-            return 'Player account not found.';
-        }
 
         if (! $ignoreAlreadySentAndStatus && $player->getStatus() === Player::STATUS_MANAGED) {
             return 'Player account status is managed.';

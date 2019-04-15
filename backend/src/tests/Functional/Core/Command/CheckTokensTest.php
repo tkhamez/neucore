@@ -6,6 +6,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -19,7 +20,12 @@ use Tests\OAuthProvider;
 class CheckTokensTest extends ConsoleTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -35,9 +41,9 @@ class CheckTokensTest extends ConsoleTestCase
 
     public function setUp()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $this->em = $h->getEm();
+        $this->helper = new Helper();
+        $this->helper->emptyDb();
+        $this->em = $this->helper->getEm();
 
         $this->log = new Logger('Test');
         $this->client = new Client();
@@ -47,8 +53,8 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(1)->setName('c1')
             ->setCharacterOwnerHash('coh1')->setAccessToken('at1');
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
+
         $this->client->setResponse(new Response(200, [], '{"name": "char1"}')); // getCharactersCharacterId
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
@@ -97,8 +103,7 @@ class CheckTokensTest extends ConsoleTestCase
     public function testExecuteErrorUpdateToken()
     {
         $c = (new Character())->setId(3)->setName('char1')->setAccessToken('at3')->setRefreshToken('at3');
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(
             new Response(400) // for getResourceOwner()
@@ -122,8 +127,7 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1')
             ->setAccessToken('at3')->setRefreshToken('at3')->setExpires(time() - 1000);
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(
             new Response(400, [], '{"error": "invalid_token"}') // for getAccessToken()
@@ -184,8 +188,7 @@ class CheckTokensTest extends ConsoleTestCase
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
             ->setExpires(time() - 60*60);
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": "tok4"}'), // for getAccessToken()
@@ -219,8 +222,7 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false);
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(
             // Token has no expire time, so no call to GenericProvider->getAccessToken()

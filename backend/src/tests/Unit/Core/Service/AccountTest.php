@@ -189,8 +189,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
     public function testCheckCharacterNoToken()
     {
         $char = (new Character())->setId(100)->setName('name')->setValidToken(false);
-        $this->helper->getEm()->persist($char);
-        $this->helper->getEm()->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_NA, $result);
@@ -200,14 +199,12 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
     public function testCheckCharacterInvalidToken()
     {
-        $em = $this->helper->getEm();
         $char = (new Character())
             ->setId(31)->setName('n31')
             ->setValidToken(false) // it's also the default
             ->setCharacterOwnerHash('hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires(time() - 1000);
-        $em->persist($char);
-        $em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $this->client->setResponse(
             // for refreshAccessToken()
@@ -228,15 +225,13 @@ class AccountTest extends \PHPUnit\Framework\TestCase
             new Response(500)
         );
 
-        $em = $this->helper->getEm();
         $expires = time() - 1000;
         $char = (new Character())
             ->setId(31)->setName('n31')
             ->setValidToken(false) // it's also the default
             ->setCharacterOwnerHash('hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-        $em->persist($char);
-        $em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_REQUEST_ERROR, $result);
@@ -256,20 +251,18 @@ class AccountTest extends \PHPUnit\Framework\TestCase
             }')
         );
 
-        $em = $this->helper->getEm();
         $expires = time() - 1000;
         $char = (new Character())
             ->setId(31)->setName('n31')
             ->setValidToken(false) // it's also the default
             ->setCharacterOwnerHash('hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-        $em->persist($char);
-        $em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_OK, $result);
 
-        $em->clear();
+        $this->helper->getEm()->clear();
         $character = $this->charRepo->find(31);
         $this->assertTrue($character->getValidToken());
         $this->assertSame('at', $character->getAccessToken()); // not updated
@@ -369,23 +362,6 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
         $this->assertSame('deleted (manually)', $removedChars[0]->getReason());
-    }
-
-    public function testDeleteCharacterWithoutPlayer()
-    {
-        $char = (new Character())->setId(10)->setName('char');
-        $this->helper->getEm()->persist($char);
-        $this->helper->getEm()->flush();
-
-        $this->service->deleteCharacter($char, 'manually');
-        $this->helper->getEm()->flush();
-
-        $chars = $this->charRepo->findBy([]);
-        $this->assertSame(0, count($chars));
-        $removedChars = $this->removedCharRepo->findBy([]);
-        $this->assertSame(1, count($removedChars));
-        $this->assertSame(10, $removedChars[0]->getCharacterId());
-        $this->assertNull($removedChars[0]->getPlayer());
     }
 
     public function testGroupsDeactivatedValidToken()

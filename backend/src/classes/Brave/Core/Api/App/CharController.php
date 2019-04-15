@@ -62,7 +62,7 @@ class CharController
     public function mainV1(string $cid): Response
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
-        if ($char === null || $char->getPlayer() === null) {
+        if ($char === null) {
             return $this->response->withStatus(404);
         }
 
@@ -153,7 +153,7 @@ class CharController
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
 
-        if ($char === null || $char->getPlayer() === null) {
+        if ($char === null) {
             return $this->response->withStatus(404, 'Character not found.');
         }
 

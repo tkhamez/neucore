@@ -341,8 +341,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $player = $this->userAuthService->getUser()->getPlayer();
-        $player->removeGroup($group);
+        $this->userAuthService->getUser()->getPlayer()->removeGroup($group);
 
         return $this->flushAndReturn(204);
     }

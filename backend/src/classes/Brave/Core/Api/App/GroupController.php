@@ -557,7 +557,7 @@ class GroupController
     private function getGroupsForPlayer(int $characterId, array $appGroups)
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($char === null || $char->getPlayer() === null) {
+        if ($char === null) {
             return null;
         }
 

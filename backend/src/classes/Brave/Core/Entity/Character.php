@@ -116,6 +116,7 @@ class Character implements \JsonSerializable
 
     /**
      * @ManyToOne(targetEntity="Player", inversedBy="characters")
+     * @JoinColumn(nullable=false)
      * @var Player
      */
     private $player;
@@ -434,11 +435,11 @@ class Character implements \JsonSerializable
     /**
      * Set player.
      *
-     * @param \Brave\Core\Entity\Player|null $player
+     * @param Player $player
      *
      * @return Character
      */
-    public function setPlayer(Player $player = null)
+    public function setPlayer(Player $player)
     {
         $this->player = $player;
 
@@ -448,9 +449,9 @@ class Character implements \JsonSerializable
     /**
      * Get player.
      *
-     * A character should always belong to a player at the moment.
+     * A character always belongs to a player.
      *
-     * @return \Brave\Core\Entity\Player|null
+     * @return Player
      */
     public function getPlayer()
     {
@@ -460,7 +461,7 @@ class Character implements \JsonSerializable
     /**
      * Set corporation.
      *
-     * @param \Brave\Core\Entity\Corporation|null $corporation
+     * @param Corporation|null $corporation
      *
      * @return Character
      */
@@ -474,7 +475,7 @@ class Character implements \JsonSerializable
     /**
      * Get corporation.
      *
-     * @return \Brave\Core\Entity\Corporation|null
+     * @return Corporation|null
      */
     public function getCorporation()
     {
@@ -484,7 +485,7 @@ class Character implements \JsonSerializable
     /**
      * Set corporationMember.
      *
-     * @param \Brave\Core\Entity\CorporationMember|null $corporationMember
+     * @param CorporationMember|null $corporationMember
      *
      * @return Character
      */
@@ -498,7 +499,7 @@ class Character implements \JsonSerializable
     /**
      * Get corporationMember.
      *
-     * @return \Brave\Core\Entity\CorporationMember|null
+     * @return CorporationMember|null
      */
     public function getCorporationMember()
     {

@@ -6,6 +6,7 @@ use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
@@ -15,7 +16,7 @@ use Tests\WriteErrorListener;
 class MakeAdminTest extends ConsoleTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private static $em;
 
@@ -40,8 +41,7 @@ class MakeAdminTest extends ConsoleTestCase
         self::$em = $h->getEm();
 
         $char = (new Character())->setId(666)->setName('Orphan');
-        self::$em->persist($char);
-        self::$em->flush();
+        $h->addNewPlayerToCharacterAndFlush($char);
     }
 
     public function testExecute()
@@ -74,17 +74,10 @@ class MakeAdminTest extends ConsoleTestCase
         $this->assertSame('Character with ID "5678" not found'."\n", $output);
     }
 
-    public function testExecuteCharWithoutPlayer()
-    {
-        $output = $this->runConsoleApp('make-admin', ['id' => 666]);
-
-        $this->assertSame('Player not found for character.'."\n", $output);
-    }
-
     public function testExecuteException()
     {
         $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
 

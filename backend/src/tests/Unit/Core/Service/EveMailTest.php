@@ -18,11 +18,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
 use Tests\OAuthProvider;
 
-class EveMailTest extends \PHPUnit\Framework\TestCase
+class EveMailTest extends TestCase
 {
     /**
      * @var EveMail
@@ -187,19 +188,6 @@ class EveMailTest extends \PHPUnit\Framework\TestCase
 
         $result = $this->eveMail->accountDeactivatedMaySend(100100);
         $this->assertSame('Character not found.', $result);
-    }
-
-    public function testAccountDeactivateMaySendPlayerNotFound()
-    {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
-        $char = (new Character())->setName('n')->setId(100100);
-        $this->em->persist($varAlli);
-        $this->em->persist($char);
-        $this->em->flush();
-        $this->em->clear();
-
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
-        $this->assertSame('Player account not found.', $result);
     }
 
     public function testAccountDeactivateMaySendManagedAccount()

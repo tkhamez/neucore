@@ -57,10 +57,6 @@ class MakeAdmin extends Command
         }
 
         $player = $char->getPlayer();
-        if ($player === null) {
-            $output->writeln('Player not found for character.');
-            return;
-        }
 
         $newRoles = [
             Role::APP_ADMIN,

@@ -137,7 +137,7 @@ class EsiData
 
         // update char (and player) name
         $char->setName($eveChar->getName());
-        if ($char->getMain() && $char->getPlayer()) {
+        if ($char->getMain()) {
             $char->getPlayer()->setName($char->getName());
         }
 

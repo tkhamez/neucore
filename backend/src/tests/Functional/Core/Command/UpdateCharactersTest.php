@@ -4,6 +4,7 @@ namespace Tests\Functional\Core\Command;
 
 use Brave\Core\Entity\Character;
 use Brave\Core\Factory\RepositoryFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;
@@ -17,7 +18,12 @@ use Tests\OAuthProvider;
 class UpdateCharactersTest extends ConsoleTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -33,9 +39,9 @@ class UpdateCharactersTest extends ConsoleTestCase
 
     public function setUp()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $this->em = $h->getEm();
+        $this->helper = new Helper();
+        $this->helper->emptyDb();
+        $this->em = $this->helper->getEm();
 
         $this->log = new Logger('Test');
         $this->client = new Client();
@@ -44,8 +50,7 @@ class UpdateCharactersTest extends ConsoleTestCase
     public function testExecuteErrorUpdateChar()
     {
         $c = (new Character())->setId(1)->setName('c1');
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
         $this->client->setResponse(new Response(500));
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
@@ -64,8 +69,7 @@ class UpdateCharactersTest extends ConsoleTestCase
     public function testExecuteUpdateCharInvalidCorp()
     {
         $c = (new Character())->setId(1)->setName('c1');
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
         $this->client->setResponse(new Response(200, [], '{"name": "char1"}')); // getCharactersCharacterId
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
@@ -85,8 +89,7 @@ class UpdateCharactersTest extends ConsoleTestCase
     public function testExecuteWithAlliance()
     {
         $c = (new Character())->setId(3)->setName('char1');
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(
             new Response(200, [], '{
@@ -118,7 +121,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertStringEndsWith('* Finished "update-chars"', $actual[4]);
         $this->assertStringEndsWith('', $actual[5]);
 
-        # read result
+        // read result
         $this->em->clear();
 
         $repositoryFactory = new RepositoryFactory($this->em);

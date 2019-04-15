@@ -20,11 +20,9 @@ class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
         $char2 = (new Character())->setId(20)->setName('char one');
         $char3 = (new Character())->setId(30)->setName('three');
 
-        $em->persist($char1);
-        $em->persist($char2);
-        $em->persist($char3);
-
-        $em->flush();
+        $h->addNewPlayerToCharacterAndFlush($char1);
+        $h->addNewPlayerToCharacterAndFlush($char2);
+        $h->addNewPlayerToCharacterAndFlush($char3);
 
         // test
 

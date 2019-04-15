@@ -67,7 +67,7 @@ class UserAuth implements RoleProviderInterface
         $this->getUser();
 
         $roles = [];
-        if ($this->user !== null && $this->user->getPlayer() !== null) {
+        if ($this->user !== null) {
             foreach ($this->user->getPlayer()->getRoles() as $role) {
                 $roles[] = $role->getName();
             }
@@ -144,7 +144,7 @@ class UserAuth implements RoleProviderInterface
         $this->getUser();
 
         // check if logged in
-        if ($this->user === null || $this->user->getPlayer() === null) {
+        if ($this->user === null) {
             return false;
         }
 
@@ -156,9 +156,9 @@ class UserAuth implements RoleProviderInterface
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($alt !== null) {
             $oldPlayer = $alt->getPlayer();
-            if ($oldPlayer && $oldPlayer->getId() !== $player->getId()) {
+            if ($oldPlayer->getId() !== $player->getId()) {
                 $this->characterService->removeCharacterFromPlayer($alt, $player);
-                $alt->setPlayer(null); // the current player will be added below
+                // the current player will be added below to $alt
             }
         } else {
             $alt = new Character();

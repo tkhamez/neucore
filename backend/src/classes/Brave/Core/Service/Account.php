@@ -114,11 +114,6 @@ class Account
      */
     public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
     {
-        $player = $char->getPlayer();
-        if (! $player) {
-            return false;
-        }
-
         // update character
         $token = $eveAuth->getToken();
         $char->setName($eveAuth->getCharacterName());
@@ -136,11 +131,11 @@ class Account
 
         // update account name
         if ($char->getMain()) {
-            $player->setName($char->getName());
+            $char->getPlayer()->setName($char->getName());
         }
 
         // could be a new player and/or character, so persist
-        $this->objectManager->persist($player);
+        $this->objectManager->persist($char->getPlayer());
         $this->objectManager->persist($char);
 
         return $this->objectManager->flush();
@@ -234,9 +229,7 @@ class Account
     {
         $this->createRemovedCharacter($character, $newPlayer);
 
-        if ($character->getPlayer()) {
-            $character->getPlayer()->removeCharacter($character);
-        }
+        $character->getPlayer()->removeCharacter($character);
     }
 
     /**
@@ -302,10 +295,8 @@ class Account
         $removedCharacter = new RemovedCharacter();
 
         $player = $character->getPlayer();
-        if ($player) { // should always be true at the moment
-            $removedCharacter->setPlayer($player);
-            $player->addRemovedCharacter($removedCharacter);
-        }
+        $removedCharacter->setPlayer($player);
+        $player->addRemovedCharacter($removedCharacter);
 
         $removedCharacter->setCharacterId($character->getId());
         $removedCharacter->setCharacterName($character->getName());

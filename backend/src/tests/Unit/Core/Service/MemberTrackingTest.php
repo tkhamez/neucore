@@ -14,23 +14,31 @@ use Brave\Core\Service\MemberTracking;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\OAuthProvider;
 
-class MemberTrackingTest extends \PHPUnit\Framework\TestCase
+class MemberTrackingTest extends TestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var Logger|\Psr\Log\LoggerInterface
+     * @var Logger|LoggerInterface
      */
     private $logger;
 
@@ -51,9 +59,9 @@ class MemberTrackingTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $helper = new Helper();
-        $helper->emptyDb();
-        $this->em = $helper->getEm();
+        $this->helper = new Helper();
+        $this->helper->emptyDb();
+        $this->em = $this->helper->getEm();
         $this->logger = new Logger('test');
         $this->client = new Client();
         $objectManager = new ObjectManager($this->em, $this->logger);
@@ -260,8 +268,8 @@ class MemberTrackingTest extends \PHPUnit\Framework\TestCase
         $char = (new Character())->setId(100)->setName('char 1');
         $member = (new CorporationMember())->setId(100)->setName('char 1')->setCharacter($char);
         $this->em->persist($corp);
-        $this->em->persist($char);
         $this->em->persist($member);
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
         $this->em->flush();
         $data = [
             new GetCorporationsCorporationIdMembertracking200Ok([

@@ -215,6 +215,15 @@ class Helper
         return $alt;
     }
 
+    public function addNewPlayerToCharacterAndFlush(Character $character)
+    {
+        $player = (new Player())->setName('Player');
+        $character->setPlayer($player);
+        $this->getEm()->persist($player);
+        $this->getEm()->persist($character);
+        $this->getEm()->flush();
+    }
+
     public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_DEFAULT): App
     {
         $hash = $hashAlgorithm === 'md5' ?
