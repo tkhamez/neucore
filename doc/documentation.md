@@ -107,6 +107,11 @@ only if one of the characters in the account is a member of an alliance that was
 previously configured. It will be sent to the main character, if any, or to any of the characters 
 that have an invalid token.
 
+### Required Groups
+
+Other groups can be added to a group as a prerequisite. This means that players must be members of one 
+of these other groups, otherwise they will automatically be removed from the group.
+
 ## Console Application
 
 The console application has commands to:

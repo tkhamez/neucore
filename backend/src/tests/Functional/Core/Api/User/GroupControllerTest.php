@@ -52,6 +52,8 @@ class GroupControllerTest extends WebTestCase
 
     private $gid2;
 
+    private $gidReq;
+
     private $pid;
 
     private $pid2;
@@ -92,7 +94,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(
             [
                 ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE],
-                ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC]
+                ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC],
+                ['id' => $this->gidReq, 'name' => 'required-group', 'visibility' => Group::VISIBILITY_PRIVATE],
             ],
             $this->parseJsonBody($response1)
         );
@@ -422,6 +425,86 @@ class GroupControllerTest extends WebTestCase
             [['id' => 10, 'name' => 'alli 1', 'ticker' => 'a1']],
             $this->parseJsonBody($response)
         );
+    }
+
+    public function testAddRequiredGroup403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-required/' . $this->gid2);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(6); // not a group admin
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-required/' . $this->gid2);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testAddRequiredGroup404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . ($this->gid + 9) . '/add-required/' . $this->gid2);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-required/' . ($this->gid2 + 9));
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testAddRequiredGroup204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-required/' . $this->gid2);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-required/' . $this->gid2);
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $group = $this->gr->find($this->gid);
+        $actual = $group->getRequiredGroups();
+        $this->assertSame(2, count($actual));
+        $this->assertSame($this->gid2, $actual[0]->getId());
+        $this->assertSame($this->gidReq, $actual[1]->getId());
+    }
+
+    public function testRemoveRequiredGroup403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . $this->gidReq);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(6); // not a group admin
+
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . $this->gidReq);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testRemoveRequiredGroup404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . ($this->gid + 9) . '/remove-required/' . $this->gidReq);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . ($this->gidReq + 9));
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testRemoveRequiredGroup204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . $this->gidReq);
+        $this->assertEquals(204, $response1->getStatusCode());
+
+        $this->em->clear();
+
+        $group = $this->gr->find($this->gid);
+        $this->assertSame(0, count($group->getRequiredGroups()));
     }
 
     public function testAddManager403()
@@ -813,9 +896,11 @@ class GroupControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $g = $this->helper->addGroups(['group-one', 'group-public']);
+        $g = $this->helper->addGroups(['group-one', 'group-public', 'required-group']);
         $this->gid = $g[0]->getId();
         $this->gid2 = $g[1]->getId();
+        $this->gidReq = $g[2]->getId();
+        $g[0]->addRequiredGroup($g[2]);
         $g[1]->setVisibility(Group::VISIBILITY_PUBLIC);
 
         $this->helper->addCharacterMain('User', 6, [Role::USER]);
@@ -839,6 +924,7 @@ class GroupControllerTest extends WebTestCase
         $groupApp = new GroupApplication();
         $groupApp->setPlayer($user->getPlayer());
         $groupApp->setGroup($g[1]);
+        $this->em->persist($groupApp);
 
         // corps and alliances
         $alli = (new Alliance())->setId(10)->setTicker('a1')->setName('alli 1');
@@ -847,7 +933,6 @@ class GroupControllerTest extends WebTestCase
         $corp->addGroup($g[0]);
         $this->em->persist($alli);
         $this->em->persist($corp);
-        $this->em->persist($groupApp);
 
         $this->em->flush();
 
