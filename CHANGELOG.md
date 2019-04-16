@@ -3,10 +3,12 @@
 
 dd mmm yyyy
 
+- BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. If you update 
+  from a version lower than 0.7.0, you must manually add these new roles  to your existing applications 
+  (if desired): app-groups, app-chars.
+- BC-Break: "Player Groups Admin" is now called "Player Group Management" and requires the new role `user-manager`
+  (instead of `user-admin`).
 - BC-Break: Group applications revised, all existing applications are deleted with the update.
-- BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. 
-  If you update from a version lower than 0.7.0, you must manually add these new roles 
-  to your existing applications (if desired): app-groups, app-chars.
 - New: error limit for applications.
 - Layout fixes.
 - Added player ID to account name everywhere.

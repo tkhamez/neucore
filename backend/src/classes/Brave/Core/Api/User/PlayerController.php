@@ -47,6 +47,7 @@ class PlayerController extends BaseController
         Role::ESI,
         Role::SETTINGS,
         Role::TRACKING,
+        Role::USER_MANAGER,
     ];
 
     private $availableStatus = [
@@ -571,7 +572,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Role name.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi", "settings", "tracking"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager", "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="200",
@@ -658,7 +659,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi", "settings", "tracking"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager", "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -711,7 +712,7 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "esi", "settings", "tracking"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager", "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -908,7 +909,7 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @param \Brave\Core\Entity\Player[] $players
+     * @param Player[] $players
      * @return Response
      */
     private function playerList(array $players): Response

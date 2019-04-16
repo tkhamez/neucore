@@ -28,6 +28,7 @@ class RoleFixtureLoader implements FixtureInterface
             12 => Role::APP_ESI,
             13 => Role::APP_GROUPS,
             14 => Role::APP_CHARS,
+            15 => Role::USER_MANAGER,
         ];
 
         foreach ($roles as $id => $name) {

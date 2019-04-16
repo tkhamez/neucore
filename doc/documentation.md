@@ -71,7 +71,7 @@ There a two account status: standard and managed.
   (technically, they can use this API endpoint for all players).
 - Automatic group assignment is disabled for managed accounts.
 - Groups are never deactivated for managed accounts.
-- There is a separate login URL for managed accounts that do not require ESI scopes (must be allowed in the settings).
+- There is a separate login URL for managed accounts that does not require ESI scopes (must be allowed in the settings).
 
 ## Groups
 

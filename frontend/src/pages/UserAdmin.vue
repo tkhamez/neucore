@@ -144,7 +144,7 @@
                     </div>
                     <p class="text-muted small" v-if="playerEdit.status === 'managed'">
                         Groups of this player can manually be changed on the
-                        <a :href="'#PlayerGroupAdmin/' + playerEdit.id">Player Groups Admin</a>
+                        <a :href="'#PlayerGroupManagement/' + playerEdit.id">Player Groups Admin</a>
                         page.
                     </p>
 
@@ -313,6 +313,7 @@ module.exports = {
                 'group-admin',
                 'group-manager',
                 'user-admin',
+                'user-manager',
                 'esi',
                 'settings',
                 'tracking',

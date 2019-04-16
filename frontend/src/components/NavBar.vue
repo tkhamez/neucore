@@ -15,7 +15,7 @@
                 <li v-cloak class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
-                <li v-cloak v-if="hasAnyRole(['group-manager', 'app-manager'])"
+                <li v-cloak v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"
                     class="nav-item dropdown" :class="{ active: managePages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -28,6 +28,9 @@
                         <a v-cloak v-if="hasRole('app-manager')"
                            class="dropdown-item" :class="{ active: page === 'AppManagement' }"
                            href="#AppManagement">Apps</a>
+                        <a v-cloak v-if="hasRole('user-manager')"
+                           class="dropdown-item" :class="{ active: page === 'PlayerGroupManagement' }"
+                           href="#PlayerGroupManagement">Player Groups</a>
                     </div>
                 </li>
                 <li v-cloak v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'settings'])"
@@ -46,9 +49,6 @@
                         <a v-cloak v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
-                        <a v-cloak v-if="hasRole('user-admin')"
-                           class="dropdown-item" :class="{ active: page === 'PlayerGroupAdmin' }"
-                           href="#PlayerGroupAdmin">Player Groups</a>
                         <a v-cloak v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
@@ -95,7 +95,7 @@ module.exports = {
 
     data: function() {
         return {
-            managePages: ['GroupManagement', 'AppManagement'],
+            managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: ['UserAdmin', 'GroupAdmin', 'AppAdmin', 'SystemSettings'],
             selectedTheme: 'Darkly',
             themes: [

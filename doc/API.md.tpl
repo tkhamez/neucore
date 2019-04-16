@@ -28,6 +28,12 @@ Allows a player to add and remove roles from players.
 
 {user-admin}
 
+### user-manager
+
+Allows a player to add and remove groups from players with "managed" status.
+
+{user-manager}
+
 ### group-admin
 
 Allows a player to create groups and add and remove managers or corporation and alliances.

@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\Collection;
  * @SWG\Definition(
  *     definition="Role",
  *     type="string",
- *     enum={"app-admin", "app-manager", "group-admin", "group-manager", "user", "user-admin", "esi", "settings", "tracking"})
+ *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager", "app-admin", "app-manager", "group-admin", "group-manager", "esi", "settings", "tracking"})
  * )
  *
  * @Entity
@@ -74,6 +74,13 @@ class Role implements \JsonSerializable
      * @var string
      */
     const USER_ADMIN = 'user-admin';
+
+    /**
+     * Allows a player to add and remove groups from players with "managed" status.
+     *
+     * @var string
+     */
+    const USER_MANAGER = 'user-manager';
 
     /**
      * Allows a player to create apps and add and remove managers and roles.

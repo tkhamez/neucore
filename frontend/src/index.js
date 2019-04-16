@@ -9,7 +9,7 @@ import AppManagement    from './pages/AppManagement.vue';
 import GroupAdmin       from './pages/GroupAdmin.vue';
 import AppAdmin         from './pages/AppAdmin.vue';
 import UserAdmin        from './pages/UserAdmin.vue';
-import PlayerGroupAdmin from './pages/PlayerGroupAdmin.vue';
+import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
 import Esi              from './pages/Esi.vue';
 import SystemSettings   from './pages/SystemSettings.vue';
 import Tracking         from './pages/Tracking.vue';
@@ -134,7 +134,7 @@ const app = new window.Vue({
         GroupAdmin,
         AppAdmin,
         UserAdmin,
-        PlayerGroupAdmin,
+        PlayerGroupManagement,
         Esi,
         SystemSettings,
         Tracking,
@@ -157,7 +157,7 @@ const app = new window.Vue({
             'GroupAdmin',
             'AppAdmin',
             'UserAdmin',
-            'PlayerGroupAdmin',
+            'PlayerGroupManagement',
             'Esi',
             'SystemSettings',
             'Tracking',

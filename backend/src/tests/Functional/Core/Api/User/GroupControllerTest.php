@@ -98,15 +98,6 @@ class GroupControllerTest extends WebTestCase
         );
     }
 
-    public function testAll200UserAdmin()
-    {
-        $this->setupDb();
-        $this->loginUser(9);
-
-        $response1 = $this->runApp('GET', '/api/user/group/all');
-        $this->assertEquals(200, $response1->getStatusCode());
-    }
-
     public function testPublic403()
     {
         $response = $this->runApp('GET', '/api/user/group/public');
@@ -699,7 +690,7 @@ class GroupControllerTest extends WebTestCase
     public function testAddMember204AsAdmin()
     {
         $this->setupDb();
-        $this->loginUser(9); // user-admin
+        $this->loginUser(9); // user-manager
 
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/add-member/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());
@@ -771,7 +762,7 @@ class GroupControllerTest extends WebTestCase
     public function testRemoveMember204AsAdmin()
     {
         $this->setupDb();
-        $this->loginUser(9); // user-admin
+        $this->loginUser(9); // user-manager
 
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-member/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());
@@ -840,7 +831,7 @@ class GroupControllerTest extends WebTestCase
         );
         $this->pid = $admin->getPlayer()->getId();
 
-        $this->helper->addCharacterMain('UA', 9, [Role::USER_ADMIN]);
+        $this->helper->addCharacterMain('UA', 9, [Role::USER_MANAGER]);
 
         $g[0]->addManager($admin->getPlayer());
         $g[1]->addManager($admin->getPlayer());

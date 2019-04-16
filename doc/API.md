@@ -57,11 +57,6 @@ Character API
 - Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 - Update a character with data from ESI. `/user/character/{id}/update`
 
-Group API
-- List all groups. `/user/group/all`
-- Adds a player to a group. `/user/group/{id}/add-member/{pid}`
-- Remove player from a group. `/user/group/{id}/remove-member/{pid}`
-
 Player API
 - List all players with characters. `/user/player/with-characters`
 - List all players without characters. `/user/player/without-characters`
@@ -72,6 +67,15 @@ Player API
 - Show all data from a player. `/user/player/{id}/show`
 - List all players with a role. `/user/player/with-role/{name}`
 - Lists all players with characters who have a certain status. `/user/player/with-status/{name}`
+
+### user-manager
+
+Allows a player to add and remove groups from players with "managed" status.
+
+Group API
+- List all groups. `/user/group/all`
+- Adds a player to a group. `/user/group/{id}/add-member/{pid}`
+- Remove player from a group. `/user/group/{id}/remove-member/{pid}`
 
 ### group-admin
 

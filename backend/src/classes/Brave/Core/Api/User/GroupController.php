@@ -63,7 +63,7 @@ class GroupController extends BaseController
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
-     *     description="Needs role: app-admin, group-admin or user-admin",
+     *     description="Needs role: app-admin, group-admin or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Response(
@@ -646,7 +646,7 @@ class GroupController extends BaseController
      *     path="/user/group/{id}/add-member/{pid}",
      *     operationId="addMember",
      *     summary="Adds a player to a group.",
-     *     description="Needs role: group-manager or user-admin",
+     *     description="Needs role: group-manager or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -687,7 +687,7 @@ class GroupController extends BaseController
      *     path="/user/group/{id}/remove-member/{pid}",
      *     operationId="removeMember",
      *     summary="Remove player from a group.",
-     *     description="Needs role: group-manager or user-admin",
+     *     description="Needs role: group-manager or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -819,7 +819,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserAdmin()) {
+        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
             return $this->response->withStatus(403);
         }
 
@@ -842,7 +842,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserAdmin()) {
+        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
             return $this->response->withStatus(403);
         }
 
@@ -930,8 +930,8 @@ class GroupController extends BaseController
         return false;
     }
 
-    private function isUserAdmin(): bool
+    private function isUserManager(): bool
     {
-        return $this->userAuth->getUser()->getPlayer()->hasRole(Role::USER_ADMIN);
+        return $this->userAuth->getUser()->getPlayer()->hasRole(Role::USER_MANAGER);
     }
 }

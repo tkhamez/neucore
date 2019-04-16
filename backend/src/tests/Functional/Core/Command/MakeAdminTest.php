@@ -35,6 +35,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::ESI,
             Role::SETTINGS,
             Role::TRACKING,
+            Role::USER_MANAGER,
         ]);
         $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN]);
 
@@ -61,6 +62,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::TRACKING,
             Role::USER,
             Role::USER_ADMIN,
+            Role::USER_MANAGER,
         ];
         $actual = (new RepositoryFactory(self::$em))
             ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();

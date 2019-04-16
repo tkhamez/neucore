@@ -67,6 +67,7 @@ class MakeAdmin extends Command
             Role::ESI,
             Role::SETTINGS,
             Role::TRACKING,
+            Role::USER_MANAGER,
         ];
         foreach ($this->roleRepo->findBy(['name' => $newRoles]) as $newRole) {
             if (! $player->hasRole($newRole->getName())) {

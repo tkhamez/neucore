@@ -1,24 +1,21 @@
 [![Build Status](https://travis-ci.com/bravecollective/brvneucore.svg?branch=master)](https://travis-ci.com/bravecollective/brvneucore)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
 
-# Brave Collective Core Services
-
-aka "neucore"
-
-## Overview
+# Neucore
 
 A player management system for [EVE Online](https://www.eveonline.com/).
 
-*Objectives*:
-- Manage alliance specific groups for players.
-- Access to [ESI](http://esi.evetech.net) data of all members.
-- Provide an API for third-party applications.
+## Overview
 
-This project consists of two applications, the backend and the frontend.
-For more information, see the [**Frontend**](frontend/README.md) and [**Backend**](backend/README.md) Readme.
+Objectives
+- Management of groups for players.
+- An API for third-party applications to read these groups.
+- Access to the [ESI](http://esi.evetech.net) data of all members.
 
-More documentation is available in the `doc` directory: 
-[**Documentation**](doc/documentation.md), [**API**](doc/API.md).
+Documentation is available in the `doc` directory: [**Documentation**](doc/documentation.md), [**API**](doc/API.md).
+
+This project consists of two applications, the backend and the frontend. For more information, 
+see the [**Frontend**](frontend/README.md) and [**Backend**](backend/README.md) Readme.
 
 A preview/demo installation is available at https://brvneucore.herokuapp.com
 ([Swagger UI](https://brvneucore.herokuapp.com/api),
@@ -96,7 +93,7 @@ The output is logged to backend/var/logs.
     * A sample Apache configuration in included in the [Vagrantfile](Vagrantfile) file and there 
       is a [.htaccess](web/.htaccess) file in the web directory.
     * A sample Nginx configuration can be found in the doc directory [nginx.conf](doc/nginx.conf)
-* Java (only for swagger-codegen)
+* Java (only for openapi-generator)
 
 ### Using Vagrant
 
