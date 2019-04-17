@@ -603,7 +603,7 @@ class PlayerController extends BaseController
      *     path="/user/player/with-status/{name}",
      *     operationId="withStatus",
      *     summary="Lists all players with characters who have a certain status.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-admin, user-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -747,7 +747,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/show",
      *     operationId="showById",
      *     summary="Show all data from a player.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-admin, user-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -791,7 +791,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
-     *     description="Needs role: app-admin, group-admin, group-manager, tracking",
+     *     description="Needs role: app-admin, group-admin, user-manager, group-manager, tracking",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(

@@ -77,6 +77,11 @@ Group API
 - Adds a player to a group. `/user/group/{id}/add-member/{pid}`
 - Remove player from a group. `/user/group/{id}/remove-member/{pid}`
 
+Player API
+- Show all data from a player. `/user/player/{id}/show`
+- Show player with characters. `/user/player/{id}/characters`
+- Lists all players with characters who have a certain status. `/user/player/with-status/{name}`
+
 ### group-admin
 
 Allows a player to create groups and add and remove managers or corporation and alliances.

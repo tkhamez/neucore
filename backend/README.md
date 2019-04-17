@@ -27,7 +27,10 @@ unique only within each tag.
 ### Documentation
 
 The file `doc/API.md` is automatically generated from the template file `doc/API.md.tpl`, 
-the route and security configuration and `web/swagger.json` with `backend/bin/doc-api-gen.php`.
+the route and security configuration and `web/swagger.json` with:
+```
+backend/bin/doc-api-gen.php
+```
 
 ## Install
 
