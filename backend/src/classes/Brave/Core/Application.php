@@ -386,10 +386,10 @@ class Application
             },
 
             // Replace Slim's error handler
-            '_errorHandler' => function (ContainerInterface $c) {
+            'errorHandler' => function (ContainerInterface $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
-            '_phpErrorHandler' => function (ContainerInterface $c) {
+            'phpErrorHandler' => function (ContainerInterface $c) {
                 return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
         ];
