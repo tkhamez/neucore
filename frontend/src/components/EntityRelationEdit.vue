@@ -1,6 +1,7 @@
 <!--
-Content page for group and app administration
+Select and table to add and remove objects from other objects.
 -->
+
 <template>
     <div class="card border-secondary mb-3">
 
@@ -54,7 +55,7 @@ Content page for group and app administration
 
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
-                    <label class="input-group-text" for="groupAppPlayerAdminSelect">
+                    <label class="input-group-text" for="entityRelationEditSelect">
                         <span v-if="contentType === 'managers'">Add manager</span>
                         <span v-if="contentType === 'alliances'">Add alliance</span>
                         <span v-if="contentType === 'corporations'">Add corporation</span>
@@ -62,7 +63,7 @@ Content page for group and app administration
                         <span v-if="contentType === 'roles'">Add role</span>
                     </label>
                 </div>
-                <select class="custom-select" v-model="newObject" id="groupAppPlayerAdminSelect">
+                <select class="custom-select" v-model="newObject" id="entityRelationEditSelect">
                     <option v-if="contentType === 'managers'" value="">Select player ...</option>
                     <option v-if="contentType === 'alliances'" value="">Select alliance ...</option>
                     <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>

@@ -122,7 +122,7 @@
 
 <script>
 import Edit  from '../components/GroupAppEdit.vue';
-import Admin from '../components/GroupAppPlayerAdmin.vue';
+import Admin from '../components/EntityRelationEdit.vue';
 
 module.exports = {
     components: {

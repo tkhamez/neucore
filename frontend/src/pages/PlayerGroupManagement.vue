@@ -68,7 +68,7 @@
 </template>
 
 <script>
-    import Admin      from '../components/GroupAppPlayerAdmin.vue';
+    import Admin      from '../components/EntityRelationEdit.vue';
     import Characters from '../components/Characters.vue';
 
     module.exports = {

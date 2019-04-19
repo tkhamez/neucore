@@ -1,6 +1,7 @@
 <!--
-Modals to create, delete and edit groups and apps
+Modal windows to create, delete and edit groups and apps
 -->
+
 <template>
     <div>
         <div v-cloak class="modal" id="createModal">
@@ -14,8 +15,8 @@ Modals to create, delete and edit groups and apps
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>{{ type }} name</label>
-                            <input class="form-control" v-model="newName" type="text" title="">
+                            <label for="groupAppEditCreateName">{{ type }} name</label>
+                            <input class="form-control" v-model="newName" type="text" id="groupAppEditCreateName">
                             <small v-if="type === 'Group'" class="form-text text-muted">
                                 {{ groupNameHelp }}
                             </small>
@@ -61,8 +62,8 @@ Modals to create, delete and edit groups and apps
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>{{ type }} name</label>
-                            <input v-model="item.name" class="form-control" type="text" title="">
+                            <label for="groupAppEditEditName">{{ type }} name</label>
+                            <input v-model="item.name" class="form-control" type="text" id="groupAppEditEditName">
                             <small v-if="type === 'Group'" class="form-text text-muted">
                                 {{ groupNameHelp }}
                             </small>
@@ -76,8 +77,8 @@ Modals to create, delete and edit groups and apps
                         <hr>
 
                         <div v-cloak v-if="type === 'Group'" class="form-group">
-                            <label>Group visibility</label>
-                            <select class="custom-select" title=""
+                            <label for="groupAppEditVisibility">Group visibility</label>
+                            <select class="custom-select" id="groupAppEditVisibility"
                                     v-model="groupVisibility" v-on:change="setVisibility()">
                                 <option value="private">private</option>
                                 <option value="public">public</option>
@@ -182,7 +183,7 @@ module.exports = {
             }
 
             vm.loading(true);
-            api['callDelete'].apply(api, [this.item.id, function(error, data, response) {
+            api['callDelete'].apply(api, [this.item.id, function(error) {
                 vm.loading(false);
                 if (error) {
                     vm.message('Error deleting ' + vm.type, 'error');
@@ -224,9 +225,8 @@ module.exports = {
 
         setVisibility: function() {
             const vm = this;
-
             vm.loading(true);
-            new this.swagger.GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error, data) {
+            new this.swagger.GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
                 vm.loading(false);
                 if (error) {
                     vm.message('Error saving visibility.', 'error');

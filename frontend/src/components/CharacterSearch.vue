@@ -1,10 +1,13 @@
+<!--
+Input element to search for characters
+ -->
 
 <template>
 <div class="input-group input-group-sm mb-1">
     <div class="input-group-prepend">
-        <span class="input-group-text">Search Character</span>
+        <label class="input-group-text" for="characterSearchInput">Search Character</label>
     </div>
-    <input type="text" class="form-control"
+    <input type="text" class="form-control" id="characterSearchInput"
        placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
         v-model="searchTerm" v-on:click="findCharacter">
     <div class="input-group-append">

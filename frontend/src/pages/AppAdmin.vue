@@ -1,10 +1,10 @@
 <template>
 <div class="container-fluid">
 
-    <edit :swagger="swagger" :type="'App'" ref="editModals"
+    <edit-modal :swagger="swagger" :type="'App'" ref="editModal"
         v-on:created="appCreated($event)"
         v-on:deleted="appDeleted()"
-        v-on:itemChange="appChanged()"></edit>
+        v-on:itemChange="appChanged()"></edit-modal>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -73,7 +73,7 @@
 
 <script>
 import Edit  from '../components/GroupAppEdit.vue';
-import Admin from '../components/GroupAppPlayerAdmin.vue';
+import Admin from '../components/EntityRelationEdit.vue';
 
 module.exports = {
     components: {
@@ -123,7 +123,7 @@ module.exports = {
         },
 
         showCreateAppModal: function() {
-            this.$refs.editModals.showCreateModal();
+            this.$refs.editModal.showCreateModal();
         },
 
         appCreated: function(newAppId) {
@@ -132,7 +132,7 @@ module.exports = {
         },
 
         showDeleteAppModal: function(app) {
-            this.$refs.editModals.showDeleteModal(app);
+            this.$refs.editModal.showDeleteModal(app);
         },
 
         appDeleted: function() {
@@ -144,11 +144,11 @@ module.exports = {
         },
 
         showRenameAppModal: function(app) {
-            this.$refs.editModals.showEditModal(app);
+            this.$refs.editModal.showEditModal(app);
         },
 
         appChanged: function() {
-            this.$refs.editModals.hideEditModal();
+            this.$refs.editModal.hideEditModal();
             this.getApps();
         },
 

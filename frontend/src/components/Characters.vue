@@ -72,7 +72,7 @@ module.exports = {
 
     methods: {
         showCharacters: function(playerId) {
-            var vm = this;
+            const vm = this;
             vm.loading(true);
             new this.swagger.PlayerApi().characters(playerId, function(error, data) {
                 vm.loading(false);

@@ -20,14 +20,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label>ESI route</label>
+                    <label for="esiRoute">ESI route</label>
                     <small class="text-muted">
                         see also <a href="https://esi.evetech.net/ui" target="_blank">https://esi.evetech.net/ui</a>,
                         only GET request are implemented.
                     </small>
                     <multiselect v-model="selectedPath" :options="paths" :loading="false"
                                  placeholder="Select route"></multiselect>
-                    <input class="form-control" v-model="esiRoute" placeholder="route">
+                    <input class="form-control" v-model="esiRoute" placeholder="route" id="esiRoute">
                     <small class="form-text text-muted">
                         {character_id} is automatically replaced by the ID of the selected character,
                         other placeholders must be replaced manually.
