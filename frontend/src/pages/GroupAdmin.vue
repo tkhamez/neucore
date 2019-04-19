@@ -109,6 +109,11 @@
                             v-on:click="showAddAlliCorpModal('Corporation')"></i>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'groups' }"
+                       :href="'#GroupAdmin/' + groupId + '/groups'">Groups</a>
+                </li>
             </ul>
 
             <admin v-cloak v-if="groupId" ref="admin"

@@ -30,8 +30,17 @@
                 <h3 class="card-header">
                     Members
                 </h3>
-
                 <div v-cloak v-if="groupId" class="card-body">
+                    <p class="small">
+                        Groups that are a prerequisite for being a member of this group:
+                        <span v-for="requiredGroup in requiredGroups" class="text-info">
+                            {{requiredGroup.name}},
+                        </span>
+                        <span v-if="requiredGroups.length === 0">none</span>
+                        <br>
+                        Any member who is not also a member of at least one of these groups will
+                        automatically be removed from this group.
+                    </p>
 
                     <character-search :swagger="swagger" v-on:result="searchResult = $event"></character-search>
 
@@ -108,28 +117,27 @@ module.exports = {
     data: function() {
         return {
             groupId: null,
-            groupName: null,
             groupMembers: [],
             searchResult: [],
             newMember: null,
+            requiredGroups: [],
         }
     },
 
     watch: {
         player: function() {
             this.getMembers();
+            this.getRequiredGroups();
         },
 
         route: function() {
             this.getMembers();
+            this.getRequiredGroups();
         }
     },
 
     methods: {
         getMembers: function() {
-            if (! this.player) {
-                return;
-            }
             const vm = this;
 
             // reset variables
@@ -143,14 +151,6 @@ module.exports = {
                 return;
             }
 
-            // set group name variable
-            vm.groupName = null;
-            for (let group of this.player.managerGroups) {
-                if (group.id === this.groupId) {
-                    vm.groupName = group.name;
-                }
-            }
-
             // get members
             vm.loading(true);
             new this.swagger.GroupApi().members(this.groupId, function(error, data) {
@@ -159,6 +159,19 @@ module.exports = {
                     return;
                 }
                 vm.groupMembers = data;
+            });
+        },
+
+        getRequiredGroups: function() {
+            const vm = this;
+            vm.requiredGroups = [];
+            vm.loading(true);
+            new this.swagger.GroupApi().requiredGroups(this.groupId, function(error, data) {
+                vm.loading(false);
+                if (error) {
+                    return;
+                }
+                vm.requiredGroups = data;
             });
         },
 

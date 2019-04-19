@@ -92,6 +92,7 @@ return [
     '/api/user/group/{id}/managers'                  => ['GET',    GroupController::class.'::managers'],
     '/api/user/group/{id}/corporations'              => ['GET',    GroupController::class.'::corporations'],
     '/api/user/group/{id}/alliances'                 => ['GET',    GroupController::class.'::alliances'],
+    '/api/user/group/{id}/required-groups'           => ['GET',    GroupController::class.'::requiredGroups'],
     '/api/user/group/{id}/add-required/{groupId}'    => ['PUT',    GroupController::class.'::addRequiredGroup'],
     '/api/user/group/{id}/remove-required/{groupId}' => ['PUT',    GroupController::class.'::removeRequiredGroup'],
     '/api/user/group/{id}/add-manager/{pid}'         => ['PUT',    GroupController::class.'::addManager'],

@@ -102,7 +102,6 @@ class Group implements \JsonSerializable
      * A player must be a member of one of these groups in order to be a member of this group
      * (API: not included by default).
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", inversedBy="requiredBy")
      * @JoinTable(name="group_required_groups")
      * @OrderBy({"name" = "ASC"})
@@ -114,7 +113,6 @@ class Group implements \JsonSerializable
      * Groups for which this group is required.
      * (API: not included by default).
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
      * @ManyToMany(targetEntity="Group", mappedBy="requiredGroups")
      * @OrderBy({"name" = "ASC"})
      * @var Collection
@@ -129,17 +127,11 @@ class Group implements \JsonSerializable
      */
     public function jsonSerialize($includeRequiredGroups = false)
     {
-        $group = [
+        return [
             'id' => $this->id,
             'name' => $this->name,
             'visibility' => $this->visibility
         ];
-        if ($includeRequiredGroups) {
-            $group['requiredGroups'] = $this->getRequiredGroups();
-            $group['requiredBy'] = $this->getRequiredBy();
-        }
-
-        return $group;
     }
 
     /**

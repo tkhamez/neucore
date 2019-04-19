@@ -443,6 +443,46 @@ class GroupController extends BaseController
     }
 
     /**
+     * @SWG\Get(
+     *     path="/user/group/{id}/required-groups",
+     *     operationId="requiredGroups",
+     *     summary="List all required groups of a group.",
+     *     description="Needs role: group-admin, group-manager",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups ordered by name.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function requiredGroups(string $id): Response
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+        if (! $group) {
+            return $this->response->withStatus(404, 'Group not found.');
+        }
+
+        return $this->response->withJson($group->getRequiredGroups());
+    }
+
+    /**
      * @SWG\Put(
      *     path="/user/group/{id}/add-required/{groupId}",
      *     operationId="addRequiredGroup",
@@ -458,7 +498,7 @@ class GroupController extends BaseController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="required-id",
+     *         name="groupId",
      *         in="path",
      *         required=true,
      *         description="ID of the group to add.",
@@ -517,7 +557,7 @@ class GroupController extends BaseController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="required-id",
+     *         name="groupId",
      *         in="path",
      *         required=true,
      *         description="ID of the group to remove.",

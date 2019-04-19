@@ -35,6 +35,9 @@ Select and table to add and remove objects from other objects.
             <p v-if="type === 'Group' && contentType === 'managers'">
                 Managers can add and remove players to a group.
             </p>
+            <p v-if="type === 'Group' && contentType === 'groups'">
+                Add groups that are a prerequisite for being a member of this group.
+            </p>
             <p v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.
             </p>
@@ -106,7 +109,9 @@ Select and table to add and remove objects from other objects.
                     <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
                     <td>{{ row.name }}</td>
                     <td v-if="contentType === 'managers'">
-                        {{ hasRequiredRole(row) }}
+                        <span :class="{ 'text-danger': hasRequiredRole(row) === 'no' }">
+                            {{ hasRequiredRole(row) }}
+                        </span>
                     </td>
                     <td v-if="contentType === 'managers'">
                         <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
@@ -138,7 +143,7 @@ Select and table to add and remove objects from other objects.
                         </button>
                         <button v-if="contentType === 'groups' || contentType === 'roles'"
                                 class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveTypeToAppOrPlayer(
+                                v-on:click="addOrRemoveGroupOrRoleToAppPlayerOrGroup(
                                     row.id,
                                     contentType === 'groups' ? 'Group' : 'Role',
                                     'remove'
@@ -212,7 +217,7 @@ module.exports = {
             } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
                 this.addOrRemoveCorporationOrAllianceToGroup(this.newObject.id, 'add');
             } else if (this.contentType === 'groups' || this.contentType === 'roles') {
-                this.addOrRemoveTypeToAppOrPlayer(
+                this.addOrRemoveGroupOrRoleToAppPlayerOrGroup(
                     this.newObject.id,
                     this.contentType === 'groups' ? 'Group' : 'Role',
                     'add'
@@ -289,10 +294,10 @@ module.exports = {
                 method = 'alliances';
             } else if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
                 method = 'show';
-            } else if (this.contentType === 'groups') {
+            } else if ((this.type === 'App' || this.type === 'Player') && this.contentType === 'groups') {
                 method = 'showById';
-            } else if (this.contentType === 'groups') {
-                method = 'groups';
+            } else if (this.type === 'Group' && this.contentType === 'groups') {
+                method = 'requiredGroups';
             }
             if (! api || ! method) {
                 return;
@@ -417,17 +422,12 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
-            api[method].apply(api, [this.typeId, playerId, function(error) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
+            this.callApi(api, method, this.typeId, playerId, function() {
                 if (playerId === vm.player.id) {
                     vm.$root.$emit('playerChange');
                 }
                 vm.getTableContent();
-            }]);
+            });
         },
 
         addOrRemoveCorporationOrAllianceToGroup: function(id, action) {
@@ -449,18 +449,13 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
-            api[method].apply(api, [id, this.typeId, function(error) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
+            this.callApi(api, method, id, this.typeId, function() {
                 vm.getTableContent();
                 vm.getWithGroups();
-            }]);
+            });
         },
 
-        addOrRemoveTypeToAppOrPlayer: function(id, type, action) {
+        addOrRemoveGroupOrRoleToAppPlayerOrGroup: function(id, type, action) {
             const vm = this;
             let api;
             let method;
@@ -476,19 +471,19 @@ module.exports = {
                 method = action + 'Member';
                 param1 = id;
                 param2 = this.typeId;
+            } else if (this.type === 'Group') {
+                api = new this.swagger.GroupApi();
+                method = action + 'RequiredGroup';
+                param1 = this.typeId;
+                param2 = id;
             }
             if (! api || ! method) {
                 return;
             }
 
-            vm.loading(true);
-            api[method].apply(api, [param1, param2, function(error) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    return;
-                }
+            this.callApi(api, method, param1, param2, function() {
                 vm.getTableContent();
-            }]);
+            });
         },
 
         addAllGroupsToApp: function() {
@@ -501,17 +496,9 @@ module.exports = {
             const numGroups = vm.selectContent.length;
             let numAdded = 0;
 
+            const api = new vm.swagger.AppApi();
             for (let group of vm.selectContent) {
-                add(group);
-            }
-
-            function add(group) {
-                vm.loading(true);
-                new vm.swagger.AppApi().addGroup(vm.typeId, group.id, function(error) {
-                    vm.loading(false);
-                    if (error) { // 403 usually
-                        return;
-                    }
+                this.callApi(api, 'addGroup', vm.typeId, group.id, function() {
                     done();
                 });
             }
@@ -522,6 +509,18 @@ module.exports = {
                     vm.getTableContent();
                 }
             }
+        },
+
+        callApi: function(api, method, param1, param2, callback) {
+            const vm = this;
+            vm.loading(true);
+            api[method].apply(api, [param1, param2, function(error) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                callback();
+            }]);
         },
     },
 }

@@ -16,31 +16,10 @@ class GroupTest extends TestCase
     {
         $group = new Group();
         $group->setName('g.name');
-        $required1 = (new Group())->setName('reg1');
-        $required2 = (new Group())->setName('reg2');
-        $group->addRequiredGroup($required1);
-        $group->addRequiredBy($required2);
-        $required1->addRequiredGroup($required2);
-        $required2->addRequiredBy($required1);
 
         $this->assertSame(
             ['id' => null, 'name' => 'g.name', 'visibility' => Group::VISIBILITY_PRIVATE],
             json_decode(json_encode($group), true)
-        );
-
-        $this->assertSame(
-            [
-                'id' => null,
-                'name' => 'g.name',
-                'visibility' => Group::VISIBILITY_PRIVATE,
-                'requiredGroups' => [
-                    ['id' => null, 'name' => 'reg1', 'visibility' => Group::VISIBILITY_PRIVATE]
-                ],
-                'requiredBy' => [
-                    ['id' => null, 'name' => 'reg2', 'visibility' => Group::VISIBILITY_PRIVATE]
-                ],
-            ],
-            json_decode(json_encode($group->jsonSerialize(true)), true)
         );
     }
 

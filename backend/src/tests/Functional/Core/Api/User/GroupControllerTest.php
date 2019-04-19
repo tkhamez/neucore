@@ -427,6 +427,41 @@ class GroupControllerTest extends WebTestCase
         );
     }
 
+    public function testRequiredGroup403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/group/' . $this->gid . '/required-groups');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(6); // not a group admin or manager
+        $response2 = $this->runApp('GET', '/api/user/group/' . $this->gid . '/required-groups');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testRequiredGroup404()
+    {
+        $this->setupDb();
+
+        $this->loginUser(8);
+        $response = $this->runApp('GET', '/api/user/group/' . ($this->gid + 9) . '/required-groups');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testRequiredGroup200()
+    {
+        $this->setupDb();
+
+        $this->loginUser(8);
+        $response = $this->runApp('GET', '/api/user/group/' . $this->gid . '/required-groups');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $this->gidReq, 'name' => 'required-group', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            $this->parseJsonBody($response)
+        );
+    }
+
     public function testAddRequiredGroup403()
     {
         $this->setupDb();

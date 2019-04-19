@@ -109,6 +109,7 @@ Group API
 - List all managers of a group. `/user/group/{id}/managers`
 - List all corporations of a group. `/user/group/{id}/corporations`
 - List all alliances of a group. `/user/group/{id}/alliances`
+- List all required groups of a group. `/user/group/{id}/required-groups`
 - Add required group to a group. `/user/group/{id}/add-required/{groupId}`
 - Remove required group from a group. `/user/group/{id}/remove-required/{groupId}`
 - Assign a player as manager to a group. `/user/group/{id}/add-manager/{pid}`
@@ -127,6 +128,7 @@ Character API
 - Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 
 Group API
+- List all required groups of a group. `/user/group/{id}/required-groups`
 - List all applications of a group. `/user/group/{id}/applications`
 - Accept a player's request to join a group. `/user/group/accept-application/{id}`
 - Deny a player's request to join a group. `/user/group/deny-application/{id}`
