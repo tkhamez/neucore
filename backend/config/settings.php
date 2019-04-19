@@ -2,7 +2,6 @@
 
 use Brave\Core\Application;
 use GuzzleHttp\Client;
-use Monolog\Logger;
 
 return [
 
@@ -18,9 +17,7 @@ return [
     'config' => [
 
         'monolog' => [
-            'name' => 'app',
             'path' => Application::ROOT_DIR . '/var/logs/app-'.date('o\wW').'.log', // weekly logs
-            'level' => Logger::DEBUG,
         ],
 
         'doctrine' => [
@@ -37,7 +34,7 @@ return [
         ],
 
         'CORS' => [
-            'allow_origin' => [] // e. g. https://frontend.domain.tld
+            'allow_origin' => getenv('BRAVECORE_ALLOW_ORIGIN'),
         ],
 
         'eve' => [
@@ -49,10 +46,6 @@ return [
             'esi_host'     => 'https://esi.evetech.net',
             'sso_domain_tq'   => 'login.eveonline.com',
             'sso_domain_sisi' => 'sisilogin.testeveonline.com',
-        ],
-
-        'session' => [
-            'gc_maxlifetime' => 1440 // 24 minutes
         ],
 
         'guzzle' => [

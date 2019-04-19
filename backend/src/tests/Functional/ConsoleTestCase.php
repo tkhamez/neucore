@@ -16,18 +16,8 @@ class ConsoleTestCase extends TestCase
         $app = new Application();
         $app->loadSettings(true);
 
-        // change dependencies in container
         try {
-            $container = $app->getContainer(); /* @var $container \DI\Container */
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-        foreach ($mocks as $class => $obj) {
-            $container->set($class, $obj);
-        }
-
-        try {
-            $console = $app->getConsoleApp();
+            $console = $app->getConsoleApp($mocks);
         } catch (\Exception $e) {
             return $e->getMessage();
         }

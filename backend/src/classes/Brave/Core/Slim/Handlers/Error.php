@@ -2,8 +2,6 @@
 
 namespace Brave\Core\Slim\Handlers;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,15 +18,11 @@ class Error extends \Slim\Handlers\Error
         parent::__construct($displayErrorDetails);
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, \Exception $exception)
+    /**
+     * @param \Exception $exception
+     */
+    protected function writeToErrorLog($exception)
     {
         $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
-
-        return parent::__invoke($request, $response, $exception);
-    }
-
-    protected function logError($message)
-    {
-        // don't log it twice
     }
 }

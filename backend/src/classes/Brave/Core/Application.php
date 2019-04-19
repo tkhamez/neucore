@@ -173,28 +173,16 @@ class Application
     }
 
     /**
-     * Returns DI container, builds it if needed.
-     *
-     * @throws \Exception
-     */
-    public function getContainer(): ContainerInterface
-    {
-        $this->loadSettings();
-        if ($this->container === null) {
-            $this->buildContainer();
-        }
-
-        return $this->container;
-    }
-
-    /**
      * Creates the Slim app
      *
+     * @param array $mocks Replaces dependencies in the DI container
      * @throws \Exception
+     * @return App
      */
-    public function getApp(): App
+    public function getApp(array $mocks = []): App
     {
-        $this->getContainer();
+        $this->loadSettings();
+        $this->buildContainer($mocks);
         $this->errorHandling();
         $this->sessionHandler();
 
@@ -209,13 +197,16 @@ class Application
     /**
      * Creates the Symfony console app.
      *
+     * @param array $mocks Replaces dependencies in the DI container
      * @throws \Exception
+     * @return ConsoleApplication
      */
-    public function getConsoleApp(): ConsoleApplication
+    public function getConsoleApp(array $mocks = []): ConsoleApplication
     {
         set_time_limit(0);
 
-        $this->getContainer();
+        $this->loadSettings();
+        $this->buildContainer($mocks, false);
         $this->errorHandling();
 
         $console = new ConsoleApplication();
@@ -248,19 +239,22 @@ class Application
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
         ]));
 
-        $app->add(new PsrCors($this->container->get('config')['CORS']['allow_origin']));
+        if ($this->container->get('config')['CORS']['allow_origin']) { // not false or empty string
+            $app->add(new PsrCors(explode(',', $this->container->get('config')['CORS']['allow_origin'])));
+        }
     }
 
     /**
+     * Builds the DI container.
+     *
      * @throws \ReflectionException
      * @throws \Exception
      */
-    private function buildContainer(): void
+    private function buildContainer(array $mocks = [], $addSlimConfig = true): void
     {
-        // include config.php from php-di/slim-bridge
-        $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
-        /** @noinspection PhpIncludeInspection */
-        $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
+        if ($this->container !== null) {
+            return;
+        }
 
         $containerBuilder = new ContainerBuilder();
 
@@ -271,11 +265,23 @@ class Application
             }
         }
 
-        $containerBuilder->addDefinitions($bridgeConfig);
+        if ($addSlimConfig) {
+            // include config.php from php-di/slim-bridge
+            $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
+            /** @noinspection PhpIncludeInspection */
+            $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
+
+            $containerBuilder->addDefinitions($bridgeConfig);
+        }
+
         $containerBuilder->addDefinitions($this->settings);
         $containerBuilder->addDefinitions($this->getDependencies());
 
         $this->container = $containerBuilder->build();
+
+        foreach ($mocks as $class => $value) {
+            $this->container->set($class, $value);
+        }
     }
 
     /**
@@ -321,18 +327,17 @@ class Application
 
             // Monolog
             LoggerInterface::class => function (ContainerInterface $c) {
-                $conf = $c->get('config')['monolog'];
-                if (strpos($conf['path'], 'php://') === false) {
-                    $dir = realpath(dirname($conf['path']));
+                $path = $c->get('config')['monolog']['path'];
+                if (strpos($path, 'php://') === false) {
+                    $dir = realpath(dirname($path));
                     if (! is_writable($dir)) {
                         throw new \Exception('The log directory ' . $dir . ' must be writable by the web server.');
                     }
                 }
                 $formatter = new LineFormatter();
                 $formatter->allowInlineLineBreaks();
-                $handler = (new StreamHandler($conf['path'], $conf['level']))->setFormatter($formatter);
-                $logger = (new Logger($conf['name']))->pushHandler($handler);
-                return $logger;
+                $handler = (new StreamHandler($path, Logger::DEBUG))->setFormatter($formatter);
+                return (new Logger('app'))->pushHandler($handler);
             },
 
             // Guzzle
@@ -380,11 +385,11 @@ class Application
                 ]);
             },
 
-            // Extend Slim's error and php error handler to log all errors with monolog.
-            'errorHandler' => function (ContainerInterface $c) {
+            // Replace Slim's error handler
+            '_errorHandler' => function (ContainerInterface $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
-            'phpErrorHandler' => function (ContainerInterface $c) {
+            '_phpErrorHandler' => function (ContainerInterface $c) {
                 return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },
         ];
@@ -409,7 +414,7 @@ class Application
             return;
         }
 
-        ini_set('session.gc_maxlifetime', (string) $this->container->get('config')['session']['gc_maxlifetime']);
+        ini_set('session.gc_maxlifetime', '1440'); // 24 minutes
         ini_set('session.gc_probability', '1');
         ini_set('session.gc_divisor', '100');
 

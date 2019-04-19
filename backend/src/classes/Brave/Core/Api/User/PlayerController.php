@@ -223,7 +223,7 @@ class PlayerController extends BaseController
             $newApplication = new GroupApplication();
             $newApplication->setPlayer($player);
             $newApplication->setGroup($group);
-            $newApplication->setCreated(new \DateTime());
+            $newApplication->setCreated(date_create());
             $this->objectManager->persist($newApplication);
         }
 

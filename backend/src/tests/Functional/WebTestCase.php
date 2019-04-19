@@ -55,24 +55,13 @@ class WebTestCase extends TestCase
         // Set up a response object
         $response = new Response();
 
-        // create app with test settings and without middleware
+        // create app with test settings
         $app = new Application();
         $app->loadSettings(true);
 
-        // change dependencies in container
-        try {
-            $container = $app->getContainer(); /* @var $container \DI\Container */
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-            return null;
-        }
-        foreach ($mocks as $class => $obj) {
-            $container->set($class, $obj);
-        }
-
         // Process the application
         try {
-            $response = $app->getApp()->process($request, $response);
+            $response = $app->getApp($mocks)->process($request, $response);
         } catch (\Throwable $e) {
             echo $e->getMessage();
             return null;

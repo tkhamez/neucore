@@ -12,7 +12,7 @@ use Slim\Interfaces\RouteInterface;
  * This starts the session, reads the session data and immediately closes the session again.
  *
  * After this middleware was executed, the class SessionData can be used to access
- * the session data (any object of that class, even if it was created before this).
+ * the session data (any object of that class, even if it was created before the session was started).
  *
  * Can optionally be writable (blocking) for certain routes, so session will not be closed for these.
  * Can optionally be restricted to certain routes, so session will not be started for any other route.
