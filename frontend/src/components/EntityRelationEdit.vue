@@ -91,7 +91,7 @@ Select and table to add and remove objects from other objects.
         <table v-cloak v-if="typeId" class="table table-striped table-hover mb-0">
             <thead>
                 <tr>
-                    <th v-if="contentType === 'managers'">Player ID</th>
+                    <th v-if="contentType === 'managers' || contentType === 'groups'">ID</th>
                     <th v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
                     <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
                     <th>Name</th>
@@ -104,7 +104,7 @@ Select and table to add and remove objects from other objects.
             </thead>
             <tbody>
                 <tr v-for="row in tableContent">
-                    <td v-if="contentType === 'managers'">{{ row.id }}</td>
+                    <td v-if="contentType === 'managers' || contentType === 'groups'">{{ row.id }}</td>
                     <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.id }}</td>
                     <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
                     <td>{{ row.name }}</td>
