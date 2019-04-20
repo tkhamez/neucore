@@ -14,6 +14,14 @@ namespace Brave\Core\Entity;
  */
 class RemovedCharacter implements \JsonSerializable
 {
+    const REASON_MOVED = 'moved';
+
+    const REASON_DELETED_MANUALLY = 'deleted (manually)';
+
+    const REASON_DELETED_BIOMASSED = 'deleted (biomassed)';
+
+    const REASON_DELETED_ACCOUNT_CHANGED = 'deleted (EVE account changed)';
+
     /**
      * @Id
      * @Column(type="integer")
@@ -84,13 +92,12 @@ class RemovedCharacter implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'characterId' => $this->characterId,
+            'characterId' => $this->getCharacterId(),
             'characterName' => $this->characterName,
             'removedDate' => $this->removedDate ? $this->removedDate->format('Y-m-d\TH:i:s\Z') : null,
             'reason' => $this->reason,
 
-            // Cannot add Player object because the Swagger UI can't deal with recursive references.
-            // (should be fixed in 3.0)
+            // The JS client has problems if the newPLayer (type Player) property is added here
             'newPlayerId' => $this->newPlayer ? $this->newPlayer->getId() : null,
             'newPlayerName' => $this->newPlayer ? $this->newPlayer->getName() : null,
         ];

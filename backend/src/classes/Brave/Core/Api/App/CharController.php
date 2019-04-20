@@ -152,13 +152,57 @@ class CharController
     public function charactersV1(string $characterId): Response
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
-
         if ($char === null) {
             return $this->response->withStatus(404, 'Character not found.');
         }
 
         $result = [];
         foreach ($char->getPlayer()->getCharacters() as $character) {
+            $result[] = $character;
+        }
+
+        return $this->response->withJson($result);
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/app/v1/removed-characters/{characterId}",
+     *     operationId="removedCharactersV1",
+     *     summary="Return all characters that were removed from the player account to which the character ID belongs.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="All removed characters from the player account.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character (or player) not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function removedCharactersV1(string $characterId): Response
+    {
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
+        if ($char === null) {
+            return $this->response->withStatus(404, 'Character not found.');
+        }
+
+        $result = [];
+        foreach ($char->getPlayer()->getRemovedCharacters() as $character) {
             $result[] = $character;
         }
 

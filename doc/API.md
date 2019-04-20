@@ -9,10 +9,12 @@ There is also an interface file available that contains only the API for applica
 
 ## Roles Overview
 
-### anonymous
+### User API
 
-This role is added automatically to every unauthenticated client, it
-cannot be added to player accounts.
+#### anonymous
+
+This role is added automatically to every unauthenticated client (for `/api/user` endpoints, not apps),
+it cannot be added to player accounts.
 
 Auth API
 - Result of last SSO attempt. `/user/auth/result`
@@ -20,7 +22,7 @@ Auth API
 Settings API
 - List all settings. `/user/settings/system/list`
 
-### user
+#### user
 
 This role is added to all player accounts.
 
@@ -48,7 +50,7 @@ Player API
 Settings API
 - List all settings. `/user/settings/system/list`
 
-### user-admin
+#### user-admin
 
 Allows a player to add and remove roles from players.
 
@@ -68,7 +70,7 @@ Player API
 - List all players with a role. `/user/player/with-role/{name}`
 - Lists all players with characters who have a certain status. `/user/player/with-status/{name}`
 
-### user-manager
+#### user-manager
 
 Allows a player to add and remove groups from players with "managed" status.
 
@@ -82,7 +84,7 @@ Player API
 - Show player with characters. `/user/player/{id}/characters`
 - Lists all players with characters who have a certain status. `/user/player/with-status/{name}`
 
-### group-admin
+#### group-admin
 
 Allows a player to create groups and add and remove managers or corporation and alliances.
 
@@ -119,7 +121,7 @@ Player API
 - List all players with the role group-manger. `/user/player/group-managers`
 - Show player with characters. `/user/player/{id}/characters`
 
-### group-manager
+#### group-manager
 
 Allows a player to add and remove members to his groups.
 
@@ -139,7 +141,7 @@ Group API
 Player API
 - Show player with characters. `/user/player/{id}/characters`
 
-### app-admin
+#### app-admin
 
 Allows a player to create apps and add and remove managers and roles.
 
@@ -164,7 +166,7 @@ Player API
 - List all players with the role app-manger. `/user/player/app-managers`
 - Show player with characters. `/user/player/{id}/characters`
 
-### app-manager
+#### app-manager
 
 Allows a player to change the secret of his apps.
 
@@ -172,14 +174,14 @@ App API
 - Shows app information. `/user/app/{id}/show`
 - Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards. `/user/app/{id}/change-secret`
 
-### esi
+#### esi
 
 Allows a player to make an ESI request on behalf of a character from the database.
 
 ESI API
 - ESI request. `/user/esi/request`
 
-### settings
+#### settings
 
 Allows a player to change the system settings.
 
@@ -191,7 +193,7 @@ Settings API
 - Sends a 'Account disabled' test mail to the logged-in character. `/user/settings/system/send-account-disabled-mail`
 - Validates ESI token from a director and updates name and corporation. `/user/settings/system/validate-director/{name}`
 
-### tracking
+#### tracking
 
 Allows a player to view corporation member tracking data.
 
@@ -202,7 +204,9 @@ Corporation API
 Player API
 - Show player with characters. `/user/player/{id}/characters`
 
-### app
+### Application API
+
+#### app
 
 This role is added to all authenticated apps automatically. It
 cannot be added to player accounts.
@@ -210,7 +214,7 @@ cannot be added to player accounts.
 Application API
 - Show app information. `/app/v1/show`
 
-### app-groups
+#### app-groups
 
 Allows an app to get groups from a player account.
 
@@ -226,7 +230,7 @@ Application API
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
 - Returns groups from the character's account, if available, or the corporation and alliance. `/app/v1/groups-with-fallback`
 
-### app-chars
+#### app-chars
 
 Allows an app to get characters from a player account.
 
@@ -234,15 +238,16 @@ Application API
 - Returns the main character of the player account to which the character ID belongs. `/app/v1/main/{cid}`
 - Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
+- Return all characters that were removed from the player account to which the character ID belongs. `/app/v1/removed-characters/{characterId}`
 
-### app-tracking
+#### app-tracking
 
 Allows an app to get corporation member tracking data.
 
 Application API
 - Return corporation member tracking data. `/app/v1/corporation/{id}/member-tracking`
 
-### app-esi
+#### app-esi
 
 Allows an app to make an ESI request on behalf of a character from the database.
 

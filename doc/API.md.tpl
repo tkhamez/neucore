@@ -9,99 +9,103 @@ There is also an interface file available that contains only the API for applica
 
 ## Roles Overview
 
-### anonymous
+### User API
 
-This role is added automatically to every unauthenticated client, it
-cannot be added to player accounts.
+#### anonymous
+
+This role is added automatically to every unauthenticated client (for `/api/user` endpoints, not apps),
+it cannot be added to player accounts.
 
 {anonymous}
 
-### user
+#### user
 
 This role is added to all player accounts.
 
 {user}
 
-### user-admin
+#### user-admin
 
 Allows a player to add and remove roles from players.
 
 {user-admin}
 
-### user-manager
+#### user-manager
 
 Allows a player to add and remove groups from players with "managed" status.
 
 {user-manager}
 
-### group-admin
+#### group-admin
 
 Allows a player to create groups and add and remove managers or corporation and alliances.
 
 {group-admin}
 
-### group-manager
+#### group-manager
 
 Allows a player to add and remove members to his groups.
 
 {group-manager}
 
-### app-admin
+#### app-admin
 
 Allows a player to create apps and add and remove managers and roles.
 
 {app-admin}
 
-### app-manager
+#### app-manager
 
 Allows a player to change the secret of his apps.
 
 {app-manager}
 
-### esi
+#### esi
 
 Allows a player to make an ESI request on behalf of a character from the database.
 
 {esi}
 
-### settings
+#### settings
 
 Allows a player to change the system settings.
 
 {settings}
 
-### tracking
+#### tracking
 
 Allows a player to view corporation member tracking data.
 
 {tracking}
 
-### app
+### Application API
+
+#### app
 
 This role is added to all authenticated apps automatically. It
 cannot be added to player accounts.
 
 {app}
 
-### app-groups
+#### app-groups
 
 Allows an app to get groups from a player account.
 
 {app-groups}
 
-### app-chars
+#### app-chars
 
 Allows an app to get characters from a player account.
 
 {app-chars}
 
-### app-tracking
+#### app-tracking
 
 Allows an app to get corporation member tracking data.
 
 {app-tracking}
 
-### app-esi
+#### app-esi
 
 Allows an app to make an ESI request on behalf of a character from the database.
 

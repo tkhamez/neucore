@@ -6,6 +6,7 @@ use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
@@ -892,7 +893,7 @@ class PlayerController extends BaseController
         }
 
         // delete char
-        $characterService->deleteCharacter($char, 'manually');
+        $characterService->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY);
 
         return $this->flushAndReturn(204);
     }

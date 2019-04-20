@@ -163,7 +163,7 @@ class Account
     {
         // check if character is in Doomheim (biomassed)
         if ($char->getCorporation() && $char->getCorporation()->getId() === 1000001) {
-            $this->deleteCharacter($char, 'biomassed');
+            $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BIOMASSED);
             $this->objectManager->flush();
             return self::CHECK_CHAR_DELETED;
         }
@@ -202,7 +202,7 @@ class Account
         $data = $resourceOwner->toArray();
         if (isset($data['CharacterOwnerHash'])) {
             if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
-                $this->deleteCharacter($char, 'EVE account changed');
+                $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_ACCOUNT_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;
                 $char = null;
             }
@@ -304,9 +304,9 @@ class Account
 
         if ($newPlayer) {
             $removedCharacter->setNewPlayer($newPlayer);
-            $removedCharacter->setReason('moved');
+            $removedCharacter->setReason(RemovedCharacter::REASON_MOVED);
         } else {
-            $removedCharacter->setReason('deleted (' . $reason . ')');
+            $removedCharacter->setReason($reason);
         }
 
         $this->objectManager->persist($removedCharacter);

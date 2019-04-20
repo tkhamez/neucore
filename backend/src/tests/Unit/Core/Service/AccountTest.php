@@ -5,6 +5,7 @@ namespace Tests\Unit\Core\Service;
 use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\CorporationMember;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Entity\Player;
@@ -346,7 +347,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->helper->getEm()->persist($member);
         $this->helper->getEm()->flush();
 
-        $this->service->deleteCharacter($char, 'manually');
+        $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY);
         $this->helper->getEm()->flush();
 
         $this->assertSame(0, count($player->getCharacters()));
@@ -361,7 +362,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('player 1', $removedChars[0]->getPlayer()->getName());
         $this->assertEquals(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
-        $this->assertSame('deleted (manually)', $removedChars[0]->getReason());
+        $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChars[0]->getReason());
     }
 
     public function testGroupsDeactivatedValidToken()

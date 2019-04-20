@@ -2,6 +2,9 @@
 
 namespace Tests\Functional\Core\Api\App;
 
+use Brave\Core\Entity\Character;
+use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Tests\Functional\WebTestCase;
@@ -172,6 +175,70 @@ class CharControllerTest extends WebTestCase
                 'corporation' => null
             ]],
             $body1
+        );
+    }
+
+    public function testRemovedCharactersV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/removed-characters/123');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setUpDb();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRemovedCharactersV1404()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Character not found.', $response->getReasonPhrase());
+    }
+
+    public function testRemovedCharactersV1200()
+    {
+        $this->setUpDb();
+        $player1 = $this->helper->addCharacterMain('p1', 123, [Role::USER])->getPlayer();
+        $player2 = (new Player())->setName('p2');
+        $removedChar1 = (new RemovedCharacter())->setCharacterId(100)->setCharacterName('c1')
+            ->setRemovedDate(date_create('2019-04-20 20:41:46'))
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
+        $removedChar2 = (new RemovedCharacter())->setCharacterId(101)->setCharacterName('c2')
+            ->setRemovedDate(date_create('2019-04-20 20:41:47'))
+            ->setReason(RemovedCharacter::REASON_MOVED)->setNewPlayer($player2);
+        $removedChar1->setPlayer($player1);
+        $removedChar2->setPlayer($player1);
+        $this->helper->getEm()->persist($player2);
+        $this->helper->getEm()->persist($removedChar1);
+        $this->helper->getEm()->persist($removedChar2);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [[
+                'characterId' => 100,
+                'characterName' => 'c1',
+                'removedDate' => '2019-04-20T20:41:46Z',
+                'reason' => RemovedCharacter::REASON_DELETED_MANUALLY,
+                'newPlayerId' => null,
+                'newPlayerName' => null
+            ],[
+                'characterId' => 101,
+                'characterName' => 'c2',
+                'removedDate' => '2019-04-20T20:41:47Z',
+                'reason' => RemovedCharacter::REASON_MOVED,
+                'newPlayerId' => $player2->getId(),
+                'newPlayerName' => 'p2'
+            ]],
+            $this->parseJsonBody($response)
         );
     }
 
