@@ -80,9 +80,10 @@ class UpdatePlayerGroups extends Command
         $this->objectManager->clear(); // detaches all objects from Doctrine
 
         foreach ($playerIds as $playerId) {
-            $player = $this->autoGroup->assign($playerId);
+            $success1 = $this->autoGroup->assign($playerId);
+            $success2 = $this->autoGroup->checkRequiredGroups($playerId);
             $this->objectManager->clear();
-            if ($player === null) {
+            if (! $success1 || ! $success2) {
                 $this->writeln('Error updating ' . $playerId);
             } else {
                 $this->writeln('Account ' . $playerId . ' groups updated');

@@ -247,6 +247,7 @@ class CharacterController
         if ($updatedChar !== null) {
             // assign auto groups
             $groupAssign->assign($updatedChar->getPlayer()->getId());
+            $groupAssign->checkRequiredGroups($updatedChar->getPlayer()->getId());
 
             return $this->res->withJson($updatedChar);
         } else {
