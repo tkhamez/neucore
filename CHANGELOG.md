@@ -9,6 +9,7 @@ dd mmm yyyy
 - BC-Break: "Player Groups Admin" is now called "Player Group Management" and requires the new role `user-manager`
   (instead of `user-admin`).
 - BC-Break: Group applications revised, all existing applications are deleted with the update.
+- BC-Break: The console command `make-admin` needs now the player ID instead of the EVE character ID.
 - New: error limit for applications.
 - Layout fixes.
 - Added player ID to account name everywhere.

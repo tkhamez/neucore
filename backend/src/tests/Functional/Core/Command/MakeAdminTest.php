@@ -20,6 +20,8 @@ class MakeAdminTest extends ConsoleTestCase
      */
     private static $em;
 
+    private static $playerId;
+
     public static function setUpBeforeClass()
     {
         $h = new Helper();
@@ -27,27 +29,24 @@ class MakeAdminTest extends ConsoleTestCase
 
         $h->addRoles([
             Role::APP,
+            Role::USER_ADMIN,
+            Role::USER_MANAGER,
             Role::APP_ADMIN,
             Role::APP_MANAGER,
             Role::GROUP_ADMIN,
             Role::GROUP_MANAGER,
-            Role::USER_ADMIN,
             Role::ESI,
             Role::SETTINGS,
             Role::TRACKING,
-            Role::USER_MANAGER,
         ]);
-        $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN]);
+        self::$playerId = $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN])->getPlayer()->getId();
 
         self::$em = $h->getEm();
-
-        $char = (new Character())->setId(666)->setName('Orphan');
-        $h->addNewPlayerToCharacterAndFlush($char);
     }
 
     public function testExecute()
     {
-        $output = $this->runConsoleApp('make-admin', ['id' => 1234]);
+        $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId]);
         self::$em->clear();
 
         $this->assertSame('Added all applicable roles to the player account "Admin"'."\n", $output);
@@ -71,9 +70,9 @@ class MakeAdminTest extends ConsoleTestCase
 
     public function testExecuteNotFound()
     {
-        $output = $this->runConsoleApp('make-admin', ['id' => 5678]);
+        $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId + 9]);
 
-        $this->assertSame('Character with ID "5678" not found'."\n", $output);
+        $this->assertSame('Player with ID "' . (self::$playerId + 9) . '" not found'."\n", $output);
     }
 
     public function testExecuteException()
@@ -83,7 +82,7 @@ class MakeAdminTest extends ConsoleTestCase
 
         $log = new Logger('Test');
 
-        $output = $this->runConsoleApp('make-admin', ['id' => 1234], [
+        $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId], [
             EntityManagerInterface::class => $em,
             LoggerInterface::class => $log
         ]);

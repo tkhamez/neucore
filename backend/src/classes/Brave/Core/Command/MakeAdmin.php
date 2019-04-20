@@ -4,6 +4,8 @@ namespace Brave\Core\Command;
 
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\PlayerRepository;
+use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,14 +15,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeAdmin extends Command
 {
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var PlayerRepository
      */
-    private $charRepo;
+    private $playerRepository;
 
     /**
-     * @var \Brave\Core\Repository\RoleRepository
+     * @var RoleRepository
      */
-    private $roleRepo;
+    private $roleRepository;
 
     /**
      * @var ObjectManager
@@ -31,8 +33,8 @@ class MakeAdmin extends Command
     {
         parent::__construct();
 
-        $this->charRepo = $repositoryFactory->getCharacterRepository();
-        $this->roleRepo = $repositoryFactory->getRoleRepository();
+        $this->playerRepository = $repositoryFactory->getPlayerRepository();
+        $this->roleRepository = $repositoryFactory->getRoleRepository();
         $this->objectManager = $objectManager;
     }
 
@@ -43,33 +45,31 @@ class MakeAdmin extends Command
                 'Adds all available roles to the player account to which '.
                 'the character with the ID from the argument belongs.'
             )
-            ->addArgument('id', InputArgument::REQUIRED, 'Character ID.');
+            ->addArgument('id', InputArgument::REQUIRED, 'Player ID.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $charId = (int) $input->getArgument('id');
+        $playerId = (int) $input->getArgument('id');
 
-        $char = $this->charRepo->find($charId);
-        if ($char === null) {
-            $output->writeln('Character with ID "' . $charId .'" not found');
+        $player = $this->playerRepository->find($playerId);
+        if ($player === null) {
+            $output->writeln('Player with ID "' . $playerId .'" not found');
             return;
         }
 
-        $player = $char->getPlayer();
-
         $newRoles = [
+            Role::USER_ADMIN,
+            Role::USER_MANAGER,
             Role::APP_ADMIN,
             Role::APP_MANAGER,
             Role::GROUP_ADMIN,
             Role::GROUP_MANAGER,
-            Role::USER_ADMIN,
             Role::ESI,
             Role::SETTINGS,
             Role::TRACKING,
-            Role::USER_MANAGER,
         ];
-        foreach ($this->roleRepo->findBy(['name' => $newRoles]) as $newRole) {
+        foreach ($this->roleRepository->findBy(['name' => $newRoles]) as $newRole) {
             if (! $player->hasRole($newRole->getName())) {
                 $player->addRole($newRole);
             }
