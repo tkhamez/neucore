@@ -1,8 +1,11 @@
 
-## next
+## 0.8.0
 
 dd mmm yyyy
 
+- New: Membership in one group can now be made dependent on another group membership, see doc "Required Groups".
+- New: error limit for applications.
+- New: `removed-characters` endpoint for app.
 - BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. If you update 
   from a version lower than 0.7.0, you must manually add these new roles  to your existing applications 
   (if desired): app-groups, app-chars.
@@ -10,7 +13,6 @@ dd mmm yyyy
   (instead of `user-admin`).
 - BC-Break: Group applications revised, all existing applications are deleted with the update.
 - BC-Break: The console command `make-admin` needs now the player ID instead of the EVE character ID.
-- New: error limit for applications.
 - Layout fixes.
 - Added player ID to account name everywhere.
 

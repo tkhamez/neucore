@@ -1,3 +1,3 @@
 <?php
 
-define('BRAVE_CORE_VERSION', '0.7.1');
+define('BRAVE_CORE_VERSION', '0.8.0');
