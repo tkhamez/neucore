@@ -6,8 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
- * Groups for third party apps.
- *
  * @SWG\Definition(
  *     definition="Group",
  *     required={"id", "name"}
@@ -101,12 +99,33 @@ class Group implements \JsonSerializable
     private $alliances;
 
     /**
+     * A player must be a member of one of these groups in order to be a member of this group
+     * (API: not included by default).
+     *
+     * @ManyToMany(targetEntity="Group", inversedBy="requiredBy")
+     * @JoinTable(name="group_required_groups")
+     * @OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $requiredGroups;
+
+    /**
+     * Groups for which this group is required.
+     * (API: not included by default).
+     *
+     * @ManyToMany(targetEntity="Group", mappedBy="requiredGroups")
+     * @OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $requiredBy;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize()
+    public function jsonSerialize($includeRequiredGroups = false)
     {
         return [
             'id' => $this->id,
@@ -126,6 +145,8 @@ class Group implements \JsonSerializable
         $this->apps = new ArrayCollection();
         $this->corporations = new ArrayCollection();
         $this->alliances = new ArrayCollection();
+        $this->requiredGroups = new ArrayCollection();
+        $this->requiredBy = new ArrayCollection();
     }
 
     /**
@@ -405,5 +426,87 @@ class Group implements \JsonSerializable
     public function getAlliances()
     {
         return $this->alliances->toArray();
+    }
+
+    /**
+     * Get applications.
+     *
+     * @return Collection
+     */
+    public function getApplications()
+    {
+        return $this->applications;
+    }
+
+    /**
+     * Add requiredGroup.
+     *
+     * @param Group $requiredGroup
+     *
+     * @return Group
+     */
+    public function addRequiredGroup(Group $requiredGroup)
+    {
+        $this->requiredGroups[] = $requiredGroup;
+
+        return $this;
+    }
+
+    /**
+     * Remove requiredGroup.
+     *
+     * @param Group $requiredGroup
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeRequiredGroup(Group $requiredGroup)
+    {
+        return $this->requiredGroups->removeElement($requiredGroup);
+    }
+
+    /**
+     * Get requiredGroups, ordered by name asc.
+     *
+     * @return Group[]
+     */
+    public function getRequiredGroups(): array
+    {
+        return $this->requiredGroups->toArray();
+    }
+
+    /**
+     * Add requiredBy.
+     *
+     * @param Group $requiredBy
+     *
+     * @return Group
+     */
+    public function addRequiredBy(Group $requiredBy)
+    {
+        $this->requiredBy[] = $requiredBy;
+
+        return $this;
+    }
+
+    /**
+     * Remove requiredBy.
+     *
+     * @param Group $requiredBy
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeRequiredBy(Group $requiredBy)
+    {
+        return $this->requiredBy->removeElement($requiredBy);
+    }
+
+    /**
+     * Get requiredBy.
+     *
+     * @return Group[]
+     */
+    public function getRequiredBy(): array
+    {
+        return $this->requiredBy->toArray();
     }
 }

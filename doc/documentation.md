@@ -69,7 +69,7 @@ There a two account status: standard and managed.
 - If the status is changed, all groups are removed.
 - User admins can manually assign groups to "managed" accounts
   (technically, they can use this API endpoint for all players).
-- Automatic group assignment is disabled for managed accounts.
+- Automatic group assignment is disabled for managed accounts (but "Required Groups" are still checked, see below).
 - Groups are never deactivated for managed accounts.
 - There is a separate login URL for managed accounts that does not require ESI scopes (must be allowed in the settings).
 
@@ -106,6 +106,13 @@ A mail notification can be sent for deactivated accounts. This mail will only be
 only if one of the characters in the account is a member of an alliance that was 
 previously configured. It will be sent to the main character, if any, or to any of the characters 
 that have an invalid token.
+
+### Required Groups
+
+Other groups can be added to a group as a prerequisite. This means that players must be members of one 
+of these other groups, otherwise they will automatically be removed from the group.
+
+This check is also done for "managed" Player accounts (see "Account status" above).
 
 ## Console Application
 

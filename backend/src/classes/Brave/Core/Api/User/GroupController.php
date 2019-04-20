@@ -400,9 +400,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $corps = $this->group->getCorporations();
-
-        return $this->response->withJson($corps);
+        return $this->response->withJson($this->group->getCorporations());
     }
 
     /**
@@ -441,9 +439,166 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $allis = $this->group->getAlliances();
+        return $this->response->withJson($this->group->getAlliances());
+    }
 
-        return $this->response->withJson($allis);
+    /**
+     * @SWG\Get(
+     *     path="/user/group/{id}/required-groups",
+     *     operationId="requiredGroups",
+     *     summary="List all required groups of a group.",
+     *     description="Needs role: group-admin, group-manager",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of groups ordered by name.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function requiredGroups(string $id): Response
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+        if (! $group) {
+            return $this->response->withStatus(404, 'Group not found.');
+        }
+
+        return $this->response->withJson($group->getRequiredGroups());
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/group/{id}/add-required/{groupId}",
+     *     operationId="addRequiredGroup",
+     *     summary="Add required group to a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group to add.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Group added."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group(s) not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function addRequiredGroup(string $id, string $groupId): Response
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+
+        if (! $group || ! $requiredGroup) {
+            return $this->response->withStatus(404, 'Group(s) not found.');
+        }
+
+        $hasGroup = false;
+        foreach ($group->getRequiredGroups() as $existingGroup) {
+            if ($existingGroup->getId() === (int) $groupId) {
+                $hasGroup = true;
+                break;
+            }
+        }
+        if (! $hasGroup) {
+            $group->addRequiredGroup($requiredGroup);
+        }
+
+        return $this->flushAndReturn(204, $group);
+    }
+
+    /**
+     * @SWG\Put(
+     *     path="/user/group/{id}/remove-required/{groupId}",
+     *     operationId="removeRequiredGroup",
+     *     summary="Remove required group from a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @SWG\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group to remove.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Group removed."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Group(s) not found."
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function removeRequiredGroup(string $id, string $groupId): Response
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+
+        if (! $group) {
+            return $this->response->withStatus(404, 'Group not found.');
+        }
+
+        $removed = false;
+        foreach ($group->getRequiredGroups() as $requiredGroup) {
+            if ($requiredGroup->getId() === (int) $groupId) {
+                $group->removeRequiredGroup($requiredGroup);
+                $removed = true;
+                break;
+            }
+        }
+
+        if (! $removed) {
+            return $this->response->withStatus(404, 'Group not found.');
+        }
+
+        return $this->flushAndReturn(204, $group);
     }
 
     /**

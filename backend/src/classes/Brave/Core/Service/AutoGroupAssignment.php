@@ -2,6 +2,8 @@
 
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
@@ -84,15 +86,15 @@ class AutoGroupAssignment
      * Only groups belonging to a company or alliance will be removed
      * from a player when he no longer is a member of that corporation
      * or alliance.
-     *
-     * @param int $playerId
-     * @return \Brave\Core\Entity\Player|null
      */
-    public function assign(int $playerId)
+    public function assign(int $playerId): bool
     {
         $player = $this->playerRepo->find($playerId);
-        if ($player === null || $player->getStatus() === Player::STATUS_MANAGED) {
-            return null;
+        if ($player === null) {
+            return false;
+        }
+        if ($player->getStatus() === Player::STATUS_MANAGED) {
+            return true;
         }
 
         $this->loadMapping();
@@ -150,10 +152,37 @@ class AutoGroupAssignment
         $player->setLastUpdate(date_create());
 
         if (! $this->objectManager->flush()) {
-            return null;
+            return false;
         }
 
-        return $player;
+        return true;
+    }
+
+    public function checkRequiredGroups(int $playerId): bool
+    {
+        $player = $this->playerRepo->find($playerId);
+        if ($player === null) {
+            return false;
+        }
+
+        $lastGroupCount = 0;
+        while ($lastGroupCount !== count($player->getGroups())) {
+            $groups = $player->getGroups();
+            foreach ($groups as $group) {
+                foreach ($group->getRequiredGroups() as $requiredGroup) {
+                    if (! $player->hasGroup($requiredGroup->getId())) {
+                        $player->removeGroup($group);
+                        break;
+                    }
+                }
+            }
+            $lastGroupCount = count($player->getGroups());
+        }
+
+        if (! $this->objectManager->flush()) {
+            return false;
+        }
+        return true;
     }
 
     private function loadMapping()
@@ -169,7 +198,7 @@ class AutoGroupAssignment
 
     /**
      *
-     * @param \Brave\Core\Entity\Corporation[]|\Brave\Core\Entity\Alliance[] $entities
+     * @param Corporation[]|Alliance[] $entities
      * @return array
      */
     private function fillMaps(array $entities): array

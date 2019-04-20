@@ -10,12 +10,15 @@ use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\AutoGroupAssignment;
 use Brave\Core\Service\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;
 use Brave\Core\Entity\Alliance;
 
-class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
+class AutoGroupAssignmentTest extends TestCase
 {
     /**
      * @var Helper
@@ -23,7 +26,7 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
     private $th;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -51,13 +54,25 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
     private $playerManagedId;
 
-    private $group1Id;
+    /**
+     * @var Group
+     */
+    private $group1;
 
-    private $group2Id;
+    /**
+     * @var Group
+     */
+    private $group2;
 
-    private $group3Id;
+    /**
+     * @var Group
+     */
+    private $group3;
 
-    private $group4Id;
+    /**
+     * @var Group
+     */
+    private $group4;
 
     private $group5Id;
 
@@ -79,27 +94,28 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
 
         // a second AutoGroupAssignment instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
         $this->agaError = new AutoGroupAssignment(new ObjectManager($em, $this->log), $repositoryFactory, $this->log);
     }
 
     public function testAssignNotFound()
     {
-        $player = $this->aga->assign(123);
-        $this->assertNull($player);
+        $success = $this->aga->assign(123);
+        $this->assertFalse($success);
     }
 
     public function testAssignManaged()
     {
         $this->setUpData();
 
-        $player = $this->aga->assign($this->playerManagedId);
-        $this->assertNull($player);
+        $success = $this->aga->assign($this->playerManagedId);
+        $this->assertTrue($success);
     }
 
     public function testAssign()
     {
         $this->setUpData();
+        $this->em->clear();
 
         // Player belongs to corps 1 and 2 with groups 1, 2, 3 and 7
         // Group 4 belongs to another corp
@@ -108,27 +124,34 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         // Group 7 belongs to the player's alliance and corp 2
 
         $playerBefore = $this->playerRepo->find($this->playerId);
-        $this->assertSame([$this->group4Id, $this->group5Id], $playerBefore->getGroupIds());
+        $this->assertSame([$this->group4->getId(), $this->group5Id], $playerBefore->getGroupIds());
 
-        $player = $this->aga->assign($this->playerId);
+        $success = $this->aga->assign($this->playerId);
 
-        $this->assertSame($this->playerId, $player->getId());
+        $this->assertTrue($success);
         $this->em->clear();
 
         $playerDb = $this->playerRepo->find($this->playerId);
         $groupIds = $playerDb->getGroupIds();
         $this->assertSame(
-            [$this->group1Id, $this->group2Id, $this->group3Id, $this->group5Id, $this->group6Id, $this->group7Id],
+            [
+                $this->group1->getId(),
+                $this->group2->getId(),
+                $this->group3->getId(),
+                $this->group5Id,
+                $this->group6Id,
+                $this->group7Id
+            ],
             $groupIds
         );
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $logs = $this->log->getHandler()->getRecords();
         $this->assertSame(6, count($logs));
-        $this->assertContains('removed group g4 ['.$this->group4Id.']', $logs[0]['message']);
-        $this->assertContains('added group g1 ['.$this->group1Id.']', $logs[1]['message']);
-        $this->assertContains('added group g2 ['.$this->group2Id.']', $logs[2]['message']);
-        $this->assertContains('added group g3 ['.$this->group3Id.']', $logs[3]['message']);
+        $this->assertContains('removed group g4 ['.$this->group4->getId().']', $logs[0]['message']);
+        $this->assertContains('added group g1 ['.$this->group1->getId().']', $logs[1]['message']);
+        $this->assertContains('added group g2 ['.$this->group2->getId().']', $logs[2]['message']);
+        $this->assertContains('added group g3 ['.$this->group3->getId().']', $logs[3]['message']);
         $this->assertContains('added group g7 ['.$this->group7Id.']', $logs[4]['message']);
         $this->assertContains('added group g6 ['.$this->group6Id.']', $logs[5]['message']);
     }
@@ -136,8 +159,47 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
     public function testAssignFlushError()
     {
         $this->setUpData();
-        $player = $this->agaError->assign($this->playerId);
-        $this->assertNull($player);
+        $success = $this->agaError->assign($this->playerId);
+        $this->assertFalse($success);
+    }
+
+    public function testCheckRequiredGroups()
+    {
+        $this->setUpData();
+        $playerBefore = $this->playerRepo->find($this->playerId);
+        $playerBefore->addGroup($this->group1);
+        $playerBefore->addGroup($this->group2);
+        $playerBefore->addGroup($this->group3);
+        $this->em->flush();
+        $this->assertSame(
+            [
+                $this->group4->getId(),
+                $this->group5Id,
+                $this->group1->getId(),
+                $this->group2->getId(),
+                $this->group3->getId(),
+            ],
+            $playerBefore->getGroupIds()
+        );
+
+        // group1 depends on group5 -> player has g5
+        // group5 depends on group6 -> player has not g6
+        // group2 depends on group3 -> player has g3
+        // group4 has no required groups
+
+        $success = $this->aga->checkRequiredGroups($this->playerId);
+        $this->assertTrue($success);
+
+        $this->em->clear();
+        $playerAfter = $this->playerRepo->find($this->playerId);
+        $this->assertSame(
+            [
+                $this->group2->getId(),
+                $this->group3->getId(),
+                $this->group4->getId(),
+            ],
+            $playerAfter->getGroupIds()
+        );
     }
 
     private function setUpData()
@@ -167,6 +229,10 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
             ->setCharacterOwnerHash('h2')->setAccessToken('t2');
         $char4 = (new Character())->setId(4)->setName('ch4')->setPlayer($playerManaged)->setCorporation($corp2);
 
+        $group1->addRequiredGroup($group5);
+        $group5->addRequiredGroup($group6);
+        $group2->addRequiredGroup($group3);
+
         $this->em->persist($group1);
         $this->em->persist($group2);
         $this->em->persist($group3);
@@ -185,14 +251,13 @@ class AutoGroupAssignmentTest extends \PHPUnit\Framework\TestCase
         $this->em->persist($player);
         $this->em->persist($playerManaged);
         $this->em->flush();
-        $this->em->clear();
 
         $this->playerId = $player->getId();
         $this->playerManagedId = $playerManaged->getId();
-        $this->group1Id = $group1->getId();
-        $this->group2Id = $group2->getId();
-        $this->group3Id = $group3->getId();
-        $this->group4Id = $group4->getId();
+        $this->group1 = $group1;
+        $this->group2 = $group2;
+        $this->group3 = $group3;
+        $this->group4 = $group4;
         $this->group5Id = $group5->getId();
         $this->group6Id = $group6->getId();
         $this->group7Id = $group7->getId();
