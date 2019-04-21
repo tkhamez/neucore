@@ -202,7 +202,7 @@ class Account
         $data = $resourceOwner->toArray();
         if (isset($data['CharacterOwnerHash'])) {
             if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
-                $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_ACCOUNT_CHANGED);
+                $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;
                 $char = null;
             }

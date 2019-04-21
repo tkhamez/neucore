@@ -7,6 +7,7 @@ use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Repository\CharacterRepository;
@@ -908,7 +909,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(13, $removedChar->getCharacterId());
         $this->assertSame($this->player->getId(), $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
-        $this->assertSame('deleted (manually)', $removedChar->getReason());
+        $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChar->getReason());
     }
 
     public function testGroupsDisabled403()

@@ -19,11 +19,12 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\OAuthProvider;
 use Tests\Client;
 
-class AccountTest extends \PHPUnit\Framework\TestCase
+class AccountTest extends TestCase
 {
     /**
      * @var Helper
@@ -100,7 +101,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
         $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
-        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getReason());
+        $this->assertSame(RemovedCharacter::REASON_MOVED, $player->getRemovedCharacters()[0]->getReason());
         $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
     }
 
@@ -184,7 +185,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
         $this->assertSame(31, $removedChar->getCharacterId());
-        $this->assertSame('deleted (biomassed)', $removedChar->getReason());
+        $this->assertSame(RemovedCharacter::REASON_DELETED_BIOMASSED, $removedChar->getReason());
     }
 
     public function testCheckCharacterNoToken()
@@ -306,7 +307,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 31]);
         $this->assertSame(31, $removedChar->getCharacterId());
-        $this->assertSame('deleted (EVE account changed)', $removedChar->getReason());
+        $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
     }
 
     public function testRemoveCharacterFromPlayer()
@@ -329,7 +330,7 @@ class AccountTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
         $this->assertEquals(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertSame($player, $player->getRemovedCharacters()[0]->getNewPlayer());
-        $this->assertSame('moved', $player->getRemovedCharacters()[0]->getReason());
+        $this->assertSame(RemovedCharacter::REASON_MOVED, $player->getRemovedCharacters()[0]->getReason());
 
         // tests that the new object was persisted.
         $removedChars = $this->removedCharRepo->findBy([]);

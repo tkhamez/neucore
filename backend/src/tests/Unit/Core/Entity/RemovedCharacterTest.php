@@ -4,8 +4,9 @@ namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
+use PHPUnit\Framework\TestCase;
 
-class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
+class RemovedCharacterTest extends TestCase
 {
     /**
      * @throws \Exception
@@ -16,14 +17,14 @@ class RemovedCharacterTest extends \PHPUnit\Framework\TestCase
         $char->setCharacterId(123);
         $char->setCharacterName('test char');
         $char->setRemovedDate(new \DateTime('2018-04-26 18:59:35'));
-        $char->setReason('moved');
+        $char->setReason(RemovedCharacter::REASON_MOVED);
         $char->setNewPlayer((new Player())->setName('New Player'));
 
         $this->assertSame([
             'characterId' => 123,
             'characterName' => 'test char',
             'removedDate' => '2018-04-26T18:59:35Z',
-            'reason' => 'moved',
+            'reason' => RemovedCharacter::REASON_MOVED,
             'newPlayerId' => null,
             'newPlayerName' => 'New Player',
         ], json_decode(json_encode($char), true));

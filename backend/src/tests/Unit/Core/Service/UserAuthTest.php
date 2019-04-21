@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Core\Service;
 
+use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
@@ -12,10 +13,11 @@ use Brave\Core\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 
-class UserAuthTest extends \PHPUnit\Framework\TestCase
+class UserAuthTest extends TestCase
 {
     /**
      * @var Helper
@@ -205,7 +207,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($user->getId(), $removedChar->getcharacterId());
         $this->assertSame($player->getId(), $removedChar->getPlayer()->getId());
         $this->assertSame($newPlayer->getId(), $removedChar->getNewPlayer()->getId());
-        $this->assertSame('moved', $removedChar->getReason());
+        $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar->getReason());
     }
 
     public function testAddAltNoRefreshToken()
@@ -266,7 +268,7 @@ class UserAuthTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($oldPlayerId, $removedChar->getPlayer()->getId());
         $this->assertNotNull($oldPlayerId);
         $this->assertSame($newPlayerId, $removedChar->getNewPlayer()->getId());
-        $this->assertSame('moved', $removedChar->getReason());
+        $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar->getReason());
         $this->assertNotNull($newPlayerId);
     }
 

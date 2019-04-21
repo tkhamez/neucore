@@ -14,13 +14,25 @@ namespace Brave\Core\Entity;
  */
 class RemovedCharacter implements \JsonSerializable
 {
+    /**
+     * Character was moved to another player account.
+     */
     const REASON_MOVED = 'moved';
 
-    const REASON_DELETED_MANUALLY = 'deleted (manually)';
+    /**
+     * User has deleted the character from their player account..
+     */
+    const REASON_DELETED_MANUALLY = 'deleted-manually';
 
-    const REASON_DELETED_BIOMASSED = 'deleted (biomassed)';
+    /**
+     * EVE character was deleted/biomassed.
+     */
+    const REASON_DELETED_BIOMASSED = 'deleted-biomassed';
 
-    const REASON_DELETED_ACCOUNT_CHANGED = 'deleted (EVE account changed)';
+    /**
+     * Character was moved to another EVE account (owner hash changed).
+     */
+    const REASON_DELETED_OWNER_CHANGED = 'deleted-owner-changed';
 
     /**
      * @Id
@@ -77,8 +89,8 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * How it was removed (deleted or moved to another account).
      *
-     * @SWG\Property()
-     * @Column(type="string", length=255)
+     * @SWG\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
+     * @Column(type="string", length=32)
      * @var string
      */
     private $reason;
