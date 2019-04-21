@@ -253,7 +253,7 @@
                                 <th>Character ID</th>
                                 <th>Character Name</th>
                                 <th>Date Removed</th>
-                                <th>Action</th>
+                                <th>Reason</th>
                                 <th>New Player</th>
                             </tr>
                         </thead>
