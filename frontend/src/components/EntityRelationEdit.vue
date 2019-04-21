@@ -317,7 +317,7 @@ module.exports = {
                 } else if (vm.type === 'App' && vm.contentType === 'roles') {
                     // transform string to object and remove "app" role
                     const roles = [];
-                    for (let role of vm.fixRoles(data.roles)) {
+                    for (let role of data.roles) {
                         if (role !== 'app') {
                             roles.push({ id: role, name: role });
                         }
@@ -330,11 +330,6 @@ module.exports = {
                         vm.$root.$emit('playerChange');
                     }
                 }  else {
-                    if (vm.contentType === 'managers') {
-                        for (const [idx, manager] of data.entries()) {
-                            data[idx].roles = vm.fixRoles(manager.roles);
-                        }
-                    }
                     vm.tableContent = data;
                 }
             }]);

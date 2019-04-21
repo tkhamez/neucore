@@ -60,25 +60,6 @@ window.Vue.mixin({
         },
 
         /**
-         * Workaround for Swagger Codegen bug
-         * https://github.com/swagger-api/swagger-codegen/issues/4819
-         *
-         * roles is: [{0: "a", 1: "b"}, {}] instead of ["ab", ""]
-         */
-        fixRoles: function(roles) {
-            const fixed = [];
-            for (let i = 0; i < roles.length; i++) {
-                fixed[i] = '';
-                for (let property in roles[i]) {
-                    if (roles[i].hasOwnProperty(property)) {
-                        fixed[i] += roles[i][property];
-                    }
-                }
-            }
-            return fixed;
-        },
-
-        /**
          * @param {Date} date
          * @returns {string}
          */
@@ -335,7 +316,6 @@ const app = new window.Vue({
                     app.player = null;
                     return;
                 }
-                data.roles = app.fixRoles(data.roles);
                 app.player = data;
             });
         },

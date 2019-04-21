@@ -154,7 +154,6 @@ module.exports = {
                 if (error) { // 403 usually
                     return;
                 }
-                data.roles = vm.fixRoles(data.roles);
                 vm.app = data;
             });
         },

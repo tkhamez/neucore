@@ -444,7 +444,6 @@ module.exports = {
                     vm.playerEdit = null;
                     return;
                 }
-                data.roles = vm.fixRoles(data.roles);
                 vm.playerEdit = data;
             });
 
