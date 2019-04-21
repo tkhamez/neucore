@@ -22,6 +22,7 @@ use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
 use DI\DependencyException;
 use DI\NotFoundException;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
@@ -301,8 +302,11 @@ class Application
                 $config = Setup::createAnnotationMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
-                    $conf['meta']['proxy_dir']
+                    $conf['meta']['proxy_dir'],
+                    null,
+                    false
                 );
+                AnnotationRegistry::registerLoader('class_exists');
                 return EntityManager::create($conf['connection'], $config);
             },
             ObjectManager::class => function (ContainerInterface $c) {

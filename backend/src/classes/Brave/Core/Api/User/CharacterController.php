@@ -10,6 +10,7 @@ use Brave\Core\Service\EsiData;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

@@ -4,6 +4,7 @@ namespace Brave\Core\Api;
 
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Swagger(

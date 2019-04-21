@@ -3,12 +3,15 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
+use Brave\Core\Entity\Corporation;
+use Brave\Core\Entity\Group;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(
@@ -29,12 +32,12 @@ class CorporationController extends BaseController
     private $log;
 
     /**
-     * @var \Brave\Core\Entity\Corporation
+     * @var Corporation
      */
     private $corp;
 
     /**
-     * @var \Brave\Core\Entity\Group
+     * @var Group
      */
     private $group;
 

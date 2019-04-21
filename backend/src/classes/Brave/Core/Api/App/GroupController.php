@@ -2,12 +2,14 @@
 
 namespace Brave\Core\Api\App;
 
+use Brave\Core\Entity\Group;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Definition(
@@ -551,7 +553,7 @@ class GroupController
 
     /**
      * @param int $characterId
-     * @param \Brave\Core\Entity\Group[] $appGroups
+     * @param Group[] $appGroups
      * @return null|array Returns NULL if character was not found.
      */
     private function getGroupsForPlayer(int $characterId, array $appGroups)
@@ -593,7 +595,7 @@ class GroupController
      *
      * @param string $entityName "Corporation" or "Alliance"
      * @param int $entityId
-     * @param \Brave\Core\Entity\Group[] $appGroups
+     * @param Group[] $appGroups
      * @return null|array Returns NULL if corporation was not found.
      * @see \Brave\Core\Entity\Corporation::jsonSerialize()
      * @see \Brave\Core\Entity\Alliance::jsonSerialize()

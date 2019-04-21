@@ -2,13 +2,18 @@
 
 namespace Brave\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @SWG\Definition(
  *     definition="App",
  *     required={"id", "name"}
  * )
- * @Entity
- * @Table(name="apps")
+ * @ORM\Entity
+ * @ORM\Table(name="apps")
  */
 class App implements \JsonSerializable
 {
@@ -16,9 +21,9 @@ class App implements \JsonSerializable
      * App ID
      *
      * @SWG\Property()
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      * @var int
      */
     private $id;
@@ -27,13 +32,13 @@ class App implements \JsonSerializable
      * App name
      *
      * @SWG\Property(maxLength=255)
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $name;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $secret;
@@ -42,9 +47,9 @@ class App implements \JsonSerializable
      * Roles for authorization.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
-     * @ManyToMany(targetEntity="Role", inversedBy="apps")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\ManyToMany(targetEntity="Role", inversedBy="apps")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $roles;
 
@@ -52,17 +57,17 @@ class App implements \JsonSerializable
      * Groups the app can see.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
-     * @ManyToMany(targetEntity="Group", inversedBy="apps")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="apps")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $groups;
 
     /**
-     * @ManyToMany(targetEntity="Player", inversedBy="managerApps")
-     * @JoinTable(name="app_manager")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\ManyToMany(targetEntity="Player", inversedBy="managerApps")
+     * @ORM\JoinTable(name="app_manager")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $managers;
 
@@ -87,9 +92,9 @@ class App implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->managers = new ArrayCollection();
     }
 
     /**
@@ -153,7 +158,7 @@ class App implements \JsonSerializable
     /**
      * Add role.
      *
-     * @param \Brave\Core\Entity\Role $role
+     * @param Role $role
      *
      * @return App
      */
@@ -167,7 +172,7 @@ class App implements \JsonSerializable
     /**
      * Remove role.
      *
-     * @param \Brave\Core\Entity\Role $role
+     * @param Role $role
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -211,7 +216,7 @@ class App implements \JsonSerializable
     /**
      * Add group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return App
      */
@@ -225,7 +230,7 @@ class App implements \JsonSerializable
     /**
      * Remove group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -247,7 +252,7 @@ class App implements \JsonSerializable
     /**
      * Add manager.
      *
-     * @param \Brave\Core\Entity\Player $manager
+     * @param Player $manager
      *
      * @return App
      */
@@ -261,7 +266,7 @@ class App implements \JsonSerializable
     /**
      * Remove manager.
      *
-     * @param \Brave\Core\Entity\Player $manager
+     * @param Player $manager
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */

@@ -65,9 +65,9 @@
         "db:migrate": "doctrine-migrations migrations:migrate --no-interaction",
         "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
-            "swagger --exclude bin,config,var,vendor --output ../web",
-            "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/App --output ../web/frontend-api.json",
-            "swagger --exclude bin,config,var,vendor,src/classes/Brave/Core/Api/User --output ../web/application-api.json"
+            "swagger src --output ../web",
+            "swagger src --output ../web/frontend-api.json --exclude src/classes/Brave/Core/Api/App",
+            "swagger src --output ../web/application-api.json --exclude src/classes/Brave/Core/Api/User"
         ],
         "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",
         "test": "phpunit",

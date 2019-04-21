@@ -4,6 +4,8 @@ namespace Brave\Core\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Roles are used to determined player permissions.
@@ -11,11 +13,12 @@ use Doctrine\Common\Collections\Collection;
  * @SWG\Definition(
  *     definition="Role",
  *     type="string",
- *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager", "app-admin", "app-manager", "group-admin", "group-manager", "esi", "settings", "tracking"})
+ *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager",
+ *           "app-admin", "app-manager", "group-admin", "group-manager", "esi", "settings", "tracking"})
  * )
  *
- * @Entity
- * @Table(name="roles")
+ * @ORM\Entity
+ * @ORM\Table(name="roles")
  */
 class Role implements \JsonSerializable
 {
@@ -132,9 +135,9 @@ class Role implements \JsonSerializable
     const TRACKING = 'tracking';
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @NONE
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      * @var integer
      */
     private $id;
@@ -142,21 +145,21 @@ class Role implements \JsonSerializable
     /**
      * Role name.
      *
-     * @Column(type="string", unique=true, length=64)
+     * @ORM\Column(type="string", unique=true, length=64)
      * @var string
      */
     private $name;
 
     /**
-     * @ManyToMany(targetEntity="Player", mappedBy="roles")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Player", mappedBy="roles")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $players;
 
     /**
-     * @ManyToMany(targetEntity="App", mappedBy="roles")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="App", mappedBy="roles")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $apps;

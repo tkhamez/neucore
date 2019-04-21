@@ -2,6 +2,11 @@
 
 namespace Brave\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * EVE Alliance.
  *
@@ -9,19 +14,18 @@ namespace Brave\Core\Entity;
  *     definition="Alliance",
  *     required={"id", "name", "ticker"}
  * )
- * @Entity
- * @Table(name="alliances")
+ * @ORM\Entity
+ * @ORM\Table(name="alliances")
  */
 class Alliance implements \JsonSerializable
 {
-
     /**
      * EVE alliance ID.
      *
      * @SWG\Property(format="int64")
-     * @Id
-     * @Column(type="bigint")
-     * @NONE
+     * @ORM\ID
+     * @ORM\Column(type="bigint")
+     * @ORM\GeneratedValue(strategy="NONE")
      * @var integer
      */
     private $id;
@@ -30,7 +34,7 @@ class Alliance implements \JsonSerializable
      * EVE alliance name.
      *
      * @SWG\Property()
-     * @Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $name;
@@ -39,7 +43,7 @@ class Alliance implements \JsonSerializable
      * Alliance ticker.
      *
      * @SWG\Property()
-     * @Column(type="string", length=16, nullable=true)
+     * @ORM\Column(type="string", length=16, nullable=true)
      * @var string
      */
     private $ticker;
@@ -47,16 +51,16 @@ class Alliance implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @Column(type="datetime", name="last_update", nullable=true)
+     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
     private $lastUpdate;
 
     /**
      *
-     * @OneToMany(targetEntity="Corporation", mappedBy="alliance")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\OneToMany(targetEntity="Corporation", mappedBy="alliance")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $corporations;
 
@@ -64,10 +68,10 @@ class Alliance implements \JsonSerializable
      * Groups for automatic assignment (API: not included by default).
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
-     * @ManyToMany(targetEntity="Group", inversedBy="alliances")
-     * @JoinTable(name="alliance_group")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="alliances")
+     * @ORM\JoinTable(name="alliance_group")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $groups;
 
@@ -91,8 +95,8 @@ class Alliance implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->corporations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->corporations = new ArrayCollection();
     }
 
     /**
@@ -195,7 +199,7 @@ class Alliance implements \JsonSerializable
     /**
      * Add corporation.
      *
-     * @param \Brave\Core\Entity\Corporation $corporation
+     * @param Corporation $corporation
      *
      * @return Alliance
      */
@@ -209,7 +213,7 @@ class Alliance implements \JsonSerializable
     /**
      * Remove corporation.
      *
-     * @param \Brave\Core\Entity\Corporation $corporation
+     * @param Corporation $corporation
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -231,7 +235,7 @@ class Alliance implements \JsonSerializable
     /**
      * Add group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return Alliance
      */
@@ -245,7 +249,7 @@ class Alliance implements \JsonSerializable
     /**
      * Remove group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */

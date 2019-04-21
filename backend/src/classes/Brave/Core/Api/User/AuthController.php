@@ -14,6 +14,7 @@ use Brave\Core\Slim\Session\SessionData;
 use Brave\Sso\Basics\AuthenticationProvider;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\SecurityScheme(

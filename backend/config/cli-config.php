@@ -5,6 +5,7 @@
  */
 
 use Brave\Core\Application;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -20,8 +21,11 @@ $conf = $settings['config']['doctrine'];
 $config = Setup::createAnnotationMetadataConfiguration(
     $conf['meta']['entity_paths'],
     $conf['meta']['dev_mode'],
-    $conf['meta']['proxy_dir']
+    $conf['meta']['proxy_dir'],
+    null,
+    false
 );
+AnnotationRegistry::registerLoader('class_exists');
 
 $em = EntityManager::create($conf['connection'], $config);
 

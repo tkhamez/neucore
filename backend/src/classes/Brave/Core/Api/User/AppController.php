@@ -4,6 +4,8 @@ namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
 use Brave\Core\Entity\App;
+use Brave\Core\Entity\Group;
+use Brave\Core\Entity\Player;
 use Brave\Core\Entity\Role;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\ObjectManager;
@@ -12,6 +14,7 @@ use Brave\Core\Service\UserAuth;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(
@@ -32,22 +35,22 @@ class AppController extends BaseController
     private $repositoryFactory;
 
     /**
-     * @var \Brave\Core\Entity\App
+     * @var App
      */
     private $app;
 
     /**
-     * @var \Brave\Core\Entity\Player
+     * @var Player
      */
     private $player;
 
     /**
-     * @var \Brave\Core\Entity\Group
+     * @var Group
      */
     private $group;
 
     /**
-     * @var \Brave\Core\Entity\Role
+     * @var Role
      */
     private $role;
 

@@ -12,6 +12,7 @@ use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

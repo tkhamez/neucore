@@ -6,6 +6,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 class CorporationController
 {

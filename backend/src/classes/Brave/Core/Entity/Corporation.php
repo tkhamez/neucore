@@ -2,6 +2,11 @@
 
 namespace Brave\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * EVE corporation.
  *
@@ -9,8 +14,8 @@ namespace Brave\Core\Entity;
  *     definition="Corporation",
  *     required={"id", "name", "ticker"}
  * )
- * @Entity
- * @Table(name="corporations")
+ * @ORM\Entity
+ * @ORM\Table(name="corporations")
  */
 class Corporation implements \JsonSerializable
 {
@@ -19,9 +24,9 @@ class Corporation implements \JsonSerializable
      * EVE corporation ID.
      *
      * @SWG\Property(format="int64")
-     * @Id
-     * @Column(type="bigint")
-     * @NONE
+     * @ORM\Id
+     * @ORM\Column(type="bigint")
+     * @ORM\GeneratedValue(strategy="NONE")
      * @var integer
      */
     private $id;
@@ -30,7 +35,7 @@ class Corporation implements \JsonSerializable
      * EVE corporation name.
      *
      * @SWG\Property()
-     * @Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $name;
@@ -39,7 +44,7 @@ class Corporation implements \JsonSerializable
      * Corporation ticker.
      *
      * @SWG\Property()
-     * @Column(type="string", length=16, nullable=true)
+     * @ORM\Column(type="string", length=16, nullable=true)
      * @var string
      */
     private $ticker;
@@ -47,7 +52,7 @@ class Corporation implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @Column(type="datetime", name="last_update", nullable=true)
+     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
     private $lastUpdate;
@@ -55,7 +60,7 @@ class Corporation implements \JsonSerializable
     /**
      *
      * @SWG\Property(ref="#/definitions/Alliance")
-     * @ManyToOne(targetEntity="Alliance", inversedBy="corporations")
+     * @ORM\ManyToOne(targetEntity="Alliance", inversedBy="corporations")
      * @var Alliance
      */
     private $alliance;
@@ -64,25 +69,25 @@ class Corporation implements \JsonSerializable
      * Groups for automatic assignment (API: not included by default).
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
-     * @ManyToMany(targetEntity="Group", inversedBy="corporations")
-     * @JoinTable(name="corporation_group")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="corporations")
+     * @ORM\JoinTable(name="corporation_group")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $groups;
 
     /**
      *
-     * @OneToMany(targetEntity="Character", mappedBy="corporation")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\OneToMany(targetEntity="Character", mappedBy="corporation")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $characters;
 
     /**
-     * @OneToMany(targetEntity="CorporationMember", mappedBy="corporation")
-     * @OrderBy({"name" = "ASC"})
-     * @var \Doctrine\Common\Collections\Collection
+     * @ORM\OneToMany(targetEntity="CorporationMember", mappedBy="corporation")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
      */
     private $members;
 
@@ -108,9 +113,9 @@ class Corporation implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->characters = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->members = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->characters = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     /**
@@ -213,7 +218,7 @@ class Corporation implements \JsonSerializable
     /**
      * Set alliance.
      *
-     * @param \Brave\Core\Entity\Alliance|null $alliance
+     * @param Alliance|null $alliance
      *
      * @return Corporation
      */
@@ -227,7 +232,7 @@ class Corporation implements \JsonSerializable
     /**
      * Get alliance.
      *
-     * @return \Brave\Core\Entity\Alliance|null
+     * @return Alliance|null
      */
     public function getAlliance()
     {
@@ -237,7 +242,7 @@ class Corporation implements \JsonSerializable
     /**
      * Add group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return Corporation
      */
@@ -251,7 +256,7 @@ class Corporation implements \JsonSerializable
     /**
      * Remove group.
      *
-     * @param \Brave\Core\Entity\Group $group
+     * @param Group $group
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -283,7 +288,7 @@ class Corporation implements \JsonSerializable
     /**
      * Add character.
      *
-     * @param \Brave\Core\Entity\Character $character
+     * @param Character $character
      *
      * @return Corporation
      */
@@ -297,7 +302,7 @@ class Corporation implements \JsonSerializable
     /**
      * Remove character.
      *
-     * @param \Brave\Core\Entity\Character $character
+     * @param Character $character
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -319,7 +324,7 @@ class Corporation implements \JsonSerializable
     /**
      * Add member.
      *
-     * @param \Brave\Core\Entity\CorporationMember $member
+     * @param CorporationMember $member
      *
      * @return Corporation
      */
@@ -333,7 +338,7 @@ class Corporation implements \JsonSerializable
     /**
      * Remove member.
      *
-     * @param \Brave\Core\Entity\CorporationMember $member
+     * @param CorporationMember $member
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */

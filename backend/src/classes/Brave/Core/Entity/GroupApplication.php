@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @SWG\Definition(
  *     definition="GroupApplication",
@@ -9,8 +12,8 @@ namespace Brave\Core\Entity;
  *     description="The player property contains only id and name."
  * )
  *
- * @Entity
- * @Table(name="group_applications")
+ * @ORM\Entity
+ * @ORM\Table(name="group_applications")
  */
 class GroupApplication implements \JsonSerializable
 {
@@ -31,32 +34,32 @@ class GroupApplication implements \JsonSerializable
 
     /**
      * @SWG\Property()
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      * @var integer
      */
     private $id;
 
     /**
      * @SWG\Property(ref="#/definitions/Player")
-     * @ManyToOne(targetEntity="Player", inversedBy="groupApplications")
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="Player", inversedBy="groupApplications")
+     * @ORM\JoinColumn(nullable=false)
      * @var Player
      */
     private $player;
 
     /**
      * @SWG\Property(ref="#/definitions/Group")
-     * @ManyToOne(targetEntity="Group", inversedBy="applications")
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="Group", inversedBy="applications")
+     * @ORM\JoinColumn(nullable=false)
      * @var Group
      */
     private $group;
 
     /**
      * @SWG\Property()
-     * @Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      * @var \DateTime
      */
     private $created;
@@ -67,7 +70,7 @@ class GroupApplication implements \JsonSerializable
      * @SWG\Property(
      *     enum={"pending", "accepted", "denied"})
      * )
-     * @Column(type="string", length=16)
+     * @ORM\Column(type="string", length=16)
      * @var string
      */
     private $status = self::STATUS_PENDING;

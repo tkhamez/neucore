@@ -15,6 +15,7 @@ use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

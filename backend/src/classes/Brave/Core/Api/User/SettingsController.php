@@ -12,6 +12,7 @@ use Brave\Core\Service\ObjectManager;
 use Brave\Core\Service\UserAuth;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * Controller for system settings (and maybe user settings later).

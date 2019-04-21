@@ -5,6 +5,9 @@ namespace Brave\Core\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  *
  * @SWG\Definition(
@@ -12,8 +15,8 @@ use Doctrine\Common\Collections\Collection;
  *     required={"id", "name"}
  * )
  *
- * @Entity
- * @Table(name="players")
+ * @ORM\Entity
+ * @ORM\Table(name="players")
  */
 class Player implements \JsonSerializable
 {
@@ -33,9 +36,9 @@ class Player implements \JsonSerializable
 
     /**
      * @SWG\Property()
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      * @var integer
      */
     private $id;
@@ -47,7 +50,7 @@ class Player implements \JsonSerializable
      * the last main character if there is currently none.
      *
      * @SWG\Property()
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $name;
@@ -55,7 +58,7 @@ class Player implements \JsonSerializable
     /**
      * Last automatic group assignment.
      *
-     * @Column(type="datetime", name="last_update", nullable=true)
+     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
     private $lastUpdate;
@@ -66,7 +69,7 @@ class Player implements \JsonSerializable
      * @SWG\Property(
      *     enum={"standard", "managed"})
      * )
-     * @Column(type="string", length=16)
+     * @ORM\Column(type="string", length=16)
      * @var string
      */
     private $status = self::STATUS_STANDARD;
@@ -77,7 +80,7 @@ class Player implements \JsonSerializable
      * Reset to false when all characters on the account
      * have valid tokens.
      *
-     * @Column(type="boolean", name="deactivation_mail_sent")
+     * @ORM\Column(type="boolean", name="deactivation_mail_sent")
      * @var bool
      */
     private $deactivationMailSent = false;
@@ -86,16 +89,16 @@ class Player implements \JsonSerializable
      * Roles for authorization.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
-     * @ManyToMany(targetEntity="Role", inversedBy="players")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Role", inversedBy="players")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $roles;
 
     /**
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Character"))
-     * @OneToMany(targetEntity="Character", mappedBy="player")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\OneToMany(targetEntity="Character", mappedBy="player")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $characters;
@@ -103,8 +106,8 @@ class Player implements \JsonSerializable
     /**
      * Group applications.
      *
-     * @OneToMany(targetEntity="GroupApplication", mappedBy="player")
-     * @OrderBy({"created" = "DESC"})
+     * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="player")
+     * @ORM\OrderBy({"created" = "DESC"})
      * @var Collection
      */
     private $groupApplications;
@@ -113,8 +116,8 @@ class Player implements \JsonSerializable
      * Group membership.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
-     * @ManyToMany(targetEntity="Group", inversedBy="players")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="players")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $groups;
@@ -123,8 +126,8 @@ class Player implements \JsonSerializable
      * Manager of groups.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
-     * @ManyToMany(targetEntity="Group", mappedBy="managers")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Group", mappedBy="managers")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $managerGroups;
@@ -133,8 +136,8 @@ class Player implements \JsonSerializable
      * Manager of apps.
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/App"))
-     * @ManyToMany(targetEntity="App", mappedBy="managers")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="App", mappedBy="managers")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $managerApps;
@@ -143,8 +146,8 @@ class Player implements \JsonSerializable
      * Characters that were removed from a player (API: not included by default).
      *
      * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
-     * @OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
-     * @OrderBy({"removedDate" = "ASC"})
+     * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
+     * @ORM\OrderBy({"removedDate" = "ASC"})
      * @var Collection
      */
     private $removedCharacters;

@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * A system settings variable.
  *
@@ -9,8 +12,8 @@ namespace Brave\Core\Entity;
  *     definition="SystemVariable",
  *     required={"name", "value"}
  * )
- * @Entity
- * @Table(name="system_variables")
+ * @ORM\Entity
+ * @ORM\Table(name="system_variables")
  */
 class SystemVariable implements \JsonSerializable
 {
@@ -126,9 +129,9 @@ class SystemVariable implements \JsonSerializable
      * Variable name.
      *
      * @SWG\Property(maxLength=255)
-     * @Column(type="string", length=255)
-     * @Id
-     * @NONE
+     * @ORM\Column(type="string", length=255)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
      * @var string
      */
     private $name;
@@ -137,13 +140,13 @@ class SystemVariable implements \JsonSerializable
      * Variable value.
      *
      * @SWG\Property
-     * @Column(type="text", length=65535, nullable=true)
+     * @ORM\Column(type="text", length=65535, nullable=true)
      * @var string
      */
     private $value;
 
     /**
-     * @Column(type="string", length=16, options={"default" : "public"})
+     * @ORM\Column(type="string", length=16, options={"default" : "public"})
      * @var string
      */
     private $scope = self::SCOPE_PUBLIC;

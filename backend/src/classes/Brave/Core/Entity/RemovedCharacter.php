@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @SWG\Definition(
  *     definition="RemovedCharacter",
@@ -9,8 +12,8 @@ namespace Brave\Core\Entity;
  *     @SWG\Property(property="newPlayerId", type="integer"),
  *     @SWG\Property(property="newPlayerName", type="string")
  * )
- * @Entity
- * @Table(name="removed_characters")
+ * @ORM\Entity
+ * @ORM\Table(name="removed_characters")
  */
 class RemovedCharacter implements \JsonSerializable
 {
@@ -35,9 +38,9 @@ class RemovedCharacter implements \JsonSerializable
     const REASON_DELETED_OWNER_CHANGED = 'deleted-owner-changed';
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      * @var integer
      */
     private $id;
@@ -45,7 +48,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * The old player account.
      *
-     * @ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
+     * @ORM\ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
      * @var Player
      */
     private $player;
@@ -53,8 +56,8 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * The new player account.
      *
-     * @ManyToOne(targetEntity="Player")
-     * @JoinColumn(name="new_player_id")
+     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\JoinColumn(name="new_player_id")
      * @var Player
      */
     private $newPlayer;
@@ -63,7 +66,7 @@ class RemovedCharacter implements \JsonSerializable
      * EVE character ID.
      *
      * @SWG\Property(format="int64")
-     * @Column(type="bigint", name="character_id")
+     * @ORM\Column(type="bigint", name="character_id")
      * @var integer
      */
     private $characterId;
@@ -72,7 +75,7 @@ class RemovedCharacter implements \JsonSerializable
      * EVE character name.
      *
      * @SWG\Property()
-     * @Column(type="string", name="character_name", length=255)
+     * @ORM\Column(type="string", name="character_name", length=255)
      * @var string
      */
     private $characterName;
@@ -81,7 +84,7 @@ class RemovedCharacter implements \JsonSerializable
      * Date of removal.
      *
      * @SWG\Property()
-     * @Column(type="datetime", name="removed_date")
+     * @ORM\Column(type="datetime", name="removed_date")
      * @var \DateTime
      */
     private $removedDate;
@@ -90,7 +93,7 @@ class RemovedCharacter implements \JsonSerializable
      * How it was removed (deleted or moved to another account).
      *
      * @SWG\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
-     * @Column(type="string", length=32)
+     * @ORM\Column(type="string", length=32)
      * @var string
      */
     private $reason;

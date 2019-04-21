@@ -5,6 +5,7 @@ namespace Brave\Core\Api\App;
 use Brave\Core\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(

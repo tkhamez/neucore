@@ -4,6 +4,7 @@ namespace Brave\Core\Api\App;
 
 use Brave\Core\Factory\RepositoryFactory;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 class CharController
 {

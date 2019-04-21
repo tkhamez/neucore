@@ -4,14 +4,16 @@ namespace Brave\Core\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @SWG\Definition(
  *     definition="Group",
  *     required={"id", "name"}
  * )
- * @Entity
- * @Table(name="groups_tbl")
+ * @ORM\Entity
+ * @ORM\Table(name="groups_tbl")
  */
 class Group implements \JsonSerializable
 {
@@ -25,9 +27,9 @@ class Group implements \JsonSerializable
      * Group ID.
      *
      * @SWG\Property()
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      * @var integer
      */
     private $id;
@@ -36,7 +38,7 @@ class Group implements \JsonSerializable
      * A unique group name (can be changed).
      *
      * @SWG\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
-     * @Column(type="string", unique=true, length=64)
+     * @ORM\Column(type="string", unique=true, length=64)
      * @var string
      */
     private $name;
@@ -44,14 +46,14 @@ class Group implements \JsonSerializable
     /**
      *
      * @SWG\Property(enum={"private", "public", "conditioned"})
-     * @Column(type="string", length=16, options={"default" : "private"})
+     * @ORM\Column(type="string", length=16, options={"default" : "private"})
      * @var string
      */
     private $visibility = self::VISIBILITY_PRIVATE;
 
     /**
-     * @OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
-     * @OrderBy({"created" = "DESC"})
+     * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
+     * @ORM\OrderBy({"created" = "DESC"})
      * @var Collection
      */
     private $applications;
@@ -59,23 +61,23 @@ class Group implements \JsonSerializable
     /**
      * Group members.
      *
-     * @ManyToMany(targetEntity="Player", mappedBy="groups")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Player", mappedBy="groups")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $players;
 
     /**
-     * @ManyToMany(targetEntity="Player", inversedBy="managerGroups")
-     * @JoinTable(name="group_manager")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Player", inversedBy="managerGroups")
+     * @ORM\JoinTable(name="group_manager")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $managers;
 
     /**
-     * @ManyToMany(targetEntity="App", mappedBy="groups")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="App", mappedBy="groups")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $apps;
@@ -83,8 +85,8 @@ class Group implements \JsonSerializable
     /**
      * Corporations for automatic assignment.
      *
-     * @ManyToMany(targetEntity="Corporation", mappedBy="groups")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Corporation", mappedBy="groups")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $corporations;
@@ -92,8 +94,8 @@ class Group implements \JsonSerializable
     /**
      * Alliances for automatic assignment.
      *
-     * @ManyToMany(targetEntity="Alliance", mappedBy="groups")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Alliance", mappedBy="groups")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $alliances;
@@ -102,9 +104,9 @@ class Group implements \JsonSerializable
      * A player must be a member of one of these groups in order to be a member of this group
      * (API: not included by default).
      *
-     * @ManyToMany(targetEntity="Group", inversedBy="requiredBy")
-     * @JoinTable(name="group_required_groups")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="requiredBy")
+     * @ORM\JoinTable(name="group_required_groups")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $requiredGroups;
@@ -113,8 +115,8 @@ class Group implements \JsonSerializable
      * Groups for which this group is required.
      * (API: not included by default).
      *
-     * @ManyToMany(targetEntity="Group", mappedBy="requiredGroups")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="Group", mappedBy="requiredGroups")
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
     private $requiredBy;

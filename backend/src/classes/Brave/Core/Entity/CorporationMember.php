@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @SWG\Definition(
  *     definition="CorporationMember",
@@ -12,8 +15,8 @@ namespace Brave\Core\Entity;
  *         ref="#/definitions/Player"
  *     )
  * )
- * @Entity
- * @Table(name="corporation_members")
+ * @ORM\Entity
+ * @ORM\Table(name="corporation_members")
  */
 class CorporationMember implements \JsonSerializable
 {
@@ -21,9 +24,9 @@ class CorporationMember implements \JsonSerializable
      * EVE Character ID.
      *
      * @SWG\Property(format="int64")
-     * @Id
-     * @Column(type="bigint")
-     * @NONE
+     * @ORM\Id
+     * @ORM\Column(type="bigint")
+     * @ORM\GeneratedValue(strategy="NONE")
      * @var integer
      */
     private $id;
@@ -32,7 +35,7 @@ class CorporationMember implements \JsonSerializable
      * EVE Character name.
      *
      * @SWG\Property()
-     * @Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
     private $name;
@@ -41,48 +44,48 @@ class CorporationMember implements \JsonSerializable
      * Corporation ticker.
      *
      * @SWG\Property()
-     * @Column(type="bigint", name="location_id", nullable=true)
+     * @ORM\Column(type="bigint", name="location_id", nullable=true)
      * @var integer
      */
     private $locationId;
 
     /**
      * @SWG\Property()
-     * @Column(type="datetime", name="logoff_date", nullable=true)
+     * @ORM\Column(type="datetime", name="logoff_date", nullable=true)
      * @var \DateTime
      */
     private $logoffDate;
 
     /**
      * @SWG\Property()
-     * @Column(type="datetime", name="logon_date", nullable=true)
+     * @ORM\Column(type="datetime", name="logon_date", nullable=true)
      * @var \DateTime
      */
     private $logonDate;
 
     /**
      * @SWG\Property()
-     * @Column(type="bigint", name="ship_type_id", nullable=true)
+     * @ORM\Column(type="bigint", name="ship_type_id", nullable=true)
      * @var integer
      */
     private $shipTypeId;
 
     /**
      * @SWG\Property()
-     * @Column(type="datetime", name="start_date", nullable=true)
+     * @ORM\Column(type="datetime", name="start_date", nullable=true)
      * @var \DateTime
      */
     private $startDate;
 
     /**
-     * @ManyToOne(targetEntity="Corporation", inversedBy="members")
+     * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="members")
      * @var Corporation
      */
     private $corporation;
 
     /**
      * @SWG\Property()
-     * @OneToOne(targetEntity="Character", inversedBy="corporationMember")
+     * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
      * @var Character
      */
     private $character;
@@ -286,7 +289,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * Set corporation.
      *
-     * @param \Brave\Core\Entity\Corporation|null $corporation
+     * @param Corporation|null $corporation
      *
      * @return CorporationMember
      */
@@ -300,7 +303,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * Get corporation.
      *
-     * @return \Brave\Core\Entity\Corporation|null
+     * @return Corporation|null
      */
     public function getCorporation()
     {
@@ -310,7 +313,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * Set character.
      *
-     * @param \Brave\Core\Entity\Character|null $character
+     * @param Character|null $character
      *
      * @return CorporationMember
      */
@@ -324,7 +327,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * Get character.
      *
-     * @return \Brave\Core\Entity\Character|null
+     * @return Character|null
      */
     public function getCharacter()
     {

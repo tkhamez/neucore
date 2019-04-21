@@ -2,6 +2,9 @@
 
 namespace Brave\Core\Entity;
 
+use Swagger\Annotations as SWG;
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * EVE character.
  *
@@ -11,8 +14,8 @@ namespace Brave\Core\Entity;
  *     definition="Character",
  *     required={"id", "name"}
  * )
- * @Entity
- * @Table(name="characters")
+ * @ORM\Entity
+ * @ORM\Table(name="characters")
  */
 class Character implements \JsonSerializable
 {
@@ -21,9 +24,9 @@ class Character implements \JsonSerializable
      * EVE character ID.
      *
      * @SWG\Property(format="int64")
-     * @Id
-     * @Column(type="bigint")
-     * @NONE
+     * @ORM\Id
+     * @ORM\Column(type="bigint")
+     * @ORM\GeneratedValue(strategy="NONE")
      * @var integer
      */
     private $id;
@@ -32,7 +35,7 @@ class Character implements \JsonSerializable
      * EVE character name.
      *
      * @SWG\Property()
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $name;
@@ -40,20 +43,20 @@ class Character implements \JsonSerializable
     /**
      *
      * @SWG\Property()
-     * @Column(type="boolean")
+     * @ORM\Column(type="boolean")
      * @var bool
      */
     private $main = false;
 
     /**
      *
-     * @Column(type="text", length=65535, name="character_owner_hash", nullable=true)
+     * @ORM\Column(type="text", length=65535, name="character_owner_hash", nullable=true)
      * @var string
      */
     private $characterOwnerHash;
 
     /**
-     * @Column(type="text", length=65535, name="access_token", nullable=true)
+     * @ORM\Column(type="text", length=65535, name="access_token", nullable=true)
      * @var string
      */
     private $accessToken;
@@ -61,13 +64,13 @@ class Character implements \JsonSerializable
     /**
      * Unix timestamp when access token expires.
      *
-     * @Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      * @var int
      */
     private $expires;
 
     /**
-     * @Column(type="text", length=65535, name="refresh_token", nullable=true)
+     * @ORM\Column(type="text", length=65535, name="refresh_token", nullable=true)
      * @var string
      */
     private $refreshToken;
@@ -78,7 +81,7 @@ class Character implements \JsonSerializable
      * If there is no refresh token this is null.
      *
      * @SWG\Property()
-     * @Column(type="boolean", name="valid_token", nullable=true)
+     * @ORM\Column(type="boolean", name="valid_token", nullable=true)
      * @var bool
      */
     private $validToken;
@@ -86,7 +89,7 @@ class Character implements \JsonSerializable
     /**
      * Date and time when that valid token property was changed.
      *
-     * @Column(type="datetime", name="valid_token_time", nullable=true)
+     * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
      * @var \DateTime
      */
     private $validTokenTime;
@@ -94,13 +97,13 @@ class Character implements \JsonSerializable
     /**
      * OAuth scopes.
      *
-     * @Column(type="text", length=65535, nullable=true)
+     * @ORM\Column(type="text", length=65535, nullable=true)
      * @var string
      */
     private $scopes;
 
     /**
-     * @Column(type="datetime", name="last_login", nullable=true)
+     * @ORM\Column(type="datetime", name="last_login", nullable=true)
      * @var \DateTime
      */
     private $lastLogin;
@@ -109,14 +112,14 @@ class Character implements \JsonSerializable
      * Last ESI update.
      *
      * @SWG\Property()
-     * @Column(type="datetime", name="last_update", nullable=true)
+     * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
     private $lastUpdate;
 
     /**
-     * @ManyToOne(targetEntity="Player", inversedBy="characters")
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="Player", inversedBy="characters")
+     * @ORM\JoinColumn(nullable=false)
      * @var Player
      */
     private $player;
@@ -124,13 +127,13 @@ class Character implements \JsonSerializable
     /**
      *
      * @SWG\Property(ref="#/definitions/Corporation")
-     * @ManyToOne(targetEntity="Corporation", inversedBy="characters")
+     * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
      * @var Corporation
      */
     private $corporation;
 
     /**
-     * @OneToOne(targetEntity="CorporationMember", mappedBy="character")
+     * @ORM\OneToOne(targetEntity="CorporationMember", mappedBy="character")
      * @var CorporationMember
      */
     private $corporationMember;

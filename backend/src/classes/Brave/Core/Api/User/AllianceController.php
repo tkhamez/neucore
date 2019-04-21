@@ -3,10 +3,13 @@
 namespace Brave\Core\Api\User;
 
 use Brave\Core\Api\BaseController;
+use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Group;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * @SWG\Tag(
@@ -22,12 +25,12 @@ class AllianceController extends BaseController
     private $repositoryFactory;
 
     /**
-     * @var \Brave\Core\Entity\Alliance
+     * @var Alliance
      */
     private $alliance;
 
     /**
-     * @var \Brave\Core\Entity\Group
+     * @var Group
      */
     private $group;
 

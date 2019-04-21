@@ -16,6 +16,7 @@ use Brave\Core\Entity\Role;
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Slim\Session\SessionData;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,8 +68,11 @@ class Helper
             $config = Setup::createAnnotationMetadataConfiguration(
                 $settings['config']['doctrine']['meta']['entity_paths'],
                 $settings['config']['doctrine']['meta']['dev_mode'],
-                $settings['config']['doctrine']['meta']['proxy_dir']
+                $settings['config']['doctrine']['meta']['proxy_dir'],
+                null,
+                false
             );
+            AnnotationRegistry::registerLoader('class_exists');
 
             $em = null;
             try {
