@@ -2,7 +2,6 @@
 
 namespace Tests\Functional\Core\Api\App;
 
-use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Player;
 use Brave\Core\Entity\RemovedCharacter;
 use Brave\Core\Entity\Role;
@@ -116,6 +115,44 @@ class CharControllerTest extends WebTestCase
                 'corporation' => null
             ],
             $body1
+        );
+    }
+
+    public function testPlayerV1403()
+    {
+        $this->setUpDb();
+
+        $response1 = $this->runApp('GET', '/api/app/v1/player/123');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s1')]; // does not have role app-chars
+        $response2 = $this->runApp('GET', '/api/app/v1/player/123', null, $headers);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testPlayerV1404()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player/123', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Character not found.', $response->getReasonPhrase());
+    }
+
+    public function testPlayerV1200()
+    {
+        $this->setUpDb();
+        $playerId = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer()->getId();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player/123', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            ['id' => $playerId,'name' => 'C1'],
+            $this->parseJsonBody($response)
         );
     }
 

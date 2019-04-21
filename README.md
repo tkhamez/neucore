@@ -10,7 +10,8 @@ A player management system for [EVE Online](https://www.eveonline.com/).
 Objectives
 - Management of groups for players.
 - An API for third-party applications to read these groups.
-- Access to the [ESI](http://esi.evetech.net) data of all members.
+- EVE SSO login.
+- Access to [ESI](http://esi.evetech.net) data of all members.
 
 Documentation is available in the `doc` directory: [**Documentation**](doc/documentation.md), [**API**](doc/API.md).
 

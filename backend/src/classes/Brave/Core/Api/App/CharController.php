@@ -121,6 +121,46 @@ class CharController
 
     /**
      * @SWG\Get(
+     *     path="/app/v1/player/{characterId}",
+     *     operationId="playerV1",
+     *     summary="Return the player account to which the character ID belongs.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application"},
+     *     security={{"Bearer"={}}},
+     *     @SWG\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         type="integer"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="The player, only id and name properties are returned.",
+     *         @SWG\Schema(ref="#/definitions/Player")
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     )
+     * )
+     */
+    public function playerV1(string $characterId): Response
+    {
+        $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
+        if ($character === null) {
+            return $this->response->withStatus(404, 'Character not found.');
+        }
+
+        return $this->response->withJson($character->getPlayer()->jsonSerialize(true));
+    }
+
+    /**
+     * @SWG\Get(
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",
      *     summary="Return all characters of the player account to which the character ID belongs.",

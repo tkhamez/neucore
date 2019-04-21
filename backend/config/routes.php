@@ -37,6 +37,7 @@ return [
     '/api/app/v1/groups-with-fallback'               => ['GET',  AppGroupController::class.'::groupsWithFallbackV1'],
     '/api/app/v1/main/{cid}'                         => ['GET',  CharController::class.'::mainV1'],
     '/api/app/v2/main/{cid}'                         => ['GET',  CharController::class.'::mainV2'],
+    '/api/app/v1/player/{characterId}'               => ['GET',  CharController::class.'::playerV1'],
     '/api/app/v1/characters/{characterId}'           => ['GET',  CharController::class.'::charactersV1'],
     '/api/app/v1/removed-characters/{characterId}'   => ['GET',  CharController::class.'::removedCharactersV1'],
     '/api/app/v1/corporation/{id}/member-tracking'   => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
