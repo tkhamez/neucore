@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const Fiber = require('fibers');
 
 module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
@@ -47,7 +48,13 @@ module.exports = (env, argv) => {
                     //devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
                     MiniCssExtractPlugin.loader,
                     'css-loader',
-                    'sass-loader'
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            implementation: require("sass"),
+                            fiber: Fiber,
+                        }
+                    }
                 ]
             }, {
                 // for font awesome fonts
