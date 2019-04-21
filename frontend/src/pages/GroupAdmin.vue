@@ -1,7 +1,7 @@
 <template>
 <div class="container-fluid">
 
-    <edit :swagger="swagger" :type="'Group'" ref="editModals"
+    <edit :swagger="swagger" :type="'Group'" ref="editModal"
           v-on:created="groupCreated($event)"
           v-on:deleted="groupDeleted()"
           v-on:itemChange="groupChanged()"></edit>
@@ -183,7 +183,7 @@ module.exports = {
         },
 
         showCreateGroupModal: function() {
-            this.$refs.editModals.showCreateModal();
+            this.$refs.editModal.showCreateModal();
         },
 
         groupCreated: function(newGroupId) {
@@ -192,7 +192,7 @@ module.exports = {
         },
 
         showDeleteGroupModal: function(group) {
-            this.$refs.editModals.showDeleteModal(group);
+            this.$refs.editModal.showDeleteModal(group);
         },
 
         groupDeleted: function() {
@@ -204,7 +204,7 @@ module.exports = {
         },
 
         showEditGroupModal: function(group) {
-            this.$refs.editModals.showEditModal(group);
+            this.$refs.editModal.showEditModal(group);
         },
 
         showAddAlliCorpModal: function(addType) {

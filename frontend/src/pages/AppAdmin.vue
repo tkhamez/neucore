@@ -1,10 +1,10 @@
 <template>
 <div class="container-fluid">
 
-    <edit-modal :swagger="swagger" :type="'App'" ref="editModal"
+    <edit :swagger="swagger" :type="'App'" ref="editModal"
         v-on:created="appCreated($event)"
         v-on:deleted="appDeleted()"
-        v-on:itemChange="appChanged()"></edit-modal>
+        v-on:itemChange="appChanged()"></edit>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
