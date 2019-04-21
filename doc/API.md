@@ -237,6 +237,7 @@ Allows an app to get characters from a player account.
 Application API
 - Returns the main character of the player account to which the character ID belongs. `/app/v1/main/{cid}`
 - Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
+- Return the player account to which the character ID belongs. `/app/v1/player/{characterId}`
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
 - Return all characters that were removed from the player account to which the character ID belongs. `/app/v1/removed-characters/{characterId}`
 
