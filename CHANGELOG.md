@@ -15,6 +15,7 @@ dd mmm yyyy
 - BC-Break: The console command `make-admin` needs now the player ID instead of the EVE character ID.
 - Layout fixes.
 - Added player ID to account name everywhere.
+- Added support for encrypted MySQL connection
 
 ## 0.7.0
 

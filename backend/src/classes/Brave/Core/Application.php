@@ -3,6 +3,7 @@
 namespace Brave\Core;
 
 use Brave\Core\Command\CheckTokens;
+use Brave\Core\Command\DBVerifySSL;
 use Brave\Core\Command\DoctrineFixturesLoad;
 use Brave\Core\Command\MakeAdmin;
 use Brave\Core\Command\SendAccountDisabledMail;
@@ -307,6 +308,13 @@ class Application
                     false
                 );
                 AnnotationRegistry::registerLoader('class_exists');
+                if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '') {
+                    $conf['connection']['driverOptions'] = [
+                        \PDO::MYSQL_ATTR_SSL_CA => $conf['driver_options']['mysql_ssl_ca'],
+                        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT =>
+                            (bool) $conf['driver_options']['mysql_verify_server_cert'],
+                    ];
+                }
                 return EntityManager::create($conf['connection'], $config);
             },
             ObjectManager::class => function (ContainerInterface $c) {
@@ -492,5 +500,6 @@ class Application
         $console->add($this->container->get(SendAccountDisabledMail::class));
         $console->add($this->container->get(UpdateMemberTracking::class));
         $console->add($this->container->get(DoctrineFixturesLoad::class));
+        $console->add($this->container->get(DBVerifySSL::class));
     }
 }

@@ -9,6 +9,7 @@
         "ext-dom": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-zend-opcache": "*",
         "ext-apcu": "*"

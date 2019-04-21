@@ -8,6 +8,7 @@
         "ext-dom": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "bravecollective/sso-basics": "^1.0.0",
         "doctrine/cache": "^1.8",

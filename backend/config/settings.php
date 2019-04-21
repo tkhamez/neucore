@@ -30,7 +30,11 @@ return [
             ],
             'connection' => [
                 'url' => getenv('BRAVECORE_DATABASE_URL')
-            ]
+            ],
+            'driver_options' => [
+                'mysql_ssl_ca'             => getenv('BRAVECORE_MYSQL_SSL_CA'),
+                'mysql_verify_server_cert' => getenv('BRAVECORE_MYSQL_VERIFY_SERVER_CERT'),
+            ],
         ],
 
         'CORS' => [

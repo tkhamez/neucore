@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "605ff9aaee842bedb8bb210eafdb6c4c",
+    "content-hash": "f20c1a2a7738739960b5a4b5ce964017",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -5225,6 +5225,7 @@
         "ext-dom": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-pdo": "*",
         "ext-pdo_mysql": "*"
     },
     "platform-dev": [],
