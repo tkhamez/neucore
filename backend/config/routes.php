@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Api\App\ApplicationController;
-use Brave\Core\Api\App\CharController;
-use Brave\Core\Api\App\CorporationController as AppCorporationController;
-use Brave\Core\Api\App\EsiController as AppEsiController;
-use Brave\Core\Api\App\GroupController as AppGroupController;
-use Brave\Core\Api\User\AllianceController;
-use Brave\Core\Api\User\AppController;
-use Brave\Core\Api\User\AuthController;
-use Brave\Core\Api\User\CharacterController;
-use Brave\Core\Api\User\CorporationController;
-use Brave\Core\Api\User\EsiController;
-use Brave\Core\Api\User\GroupController;
-use Brave\Core\Api\User\PlayerController;
-use Brave\Core\Api\User\SettingsController;
+use Brave\Core\Controller\App\ApplicationController;
+use Brave\Core\Controller\App\CharController;
+use Brave\Core\Controller\App\CorporationController as AppCorporationController;
+use Brave\Core\Controller\App\EsiController as AppEsiController;
+use Brave\Core\Controller\App\GroupController as AppGroupController;
+use Brave\Core\Controller\User\AllianceController;
+use Brave\Core\Controller\User\AppController;
+use Brave\Core\Controller\User\AuthController;
+use Brave\Core\Controller\User\CharacterController;
+use Brave\Core\Controller\User\CorporationController;
+use Brave\Core\Controller\User\EsiController;
+use Brave\Core\Controller\User\GroupController;
+use Brave\Core\Controller\User\PlayerController;
+use Brave\Core\Controller\User\SettingsController;
 
 return [
 
