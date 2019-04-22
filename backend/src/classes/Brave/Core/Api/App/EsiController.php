@@ -20,6 +20,8 @@ use Swagger\Annotations as SWG;
 
 class EsiController
 {
+    const ERROR_MESSAGE_PREFIX = 'App\EsiController->esiV1()';
+
     /**
      * @var Response
      */
@@ -38,7 +40,7 @@ class EsiController
     /**
      * @var OAuthToken
      */
-    private $token;
+    private $tokenService;
 
     /**
      * @var Config
@@ -64,7 +66,7 @@ class EsiController
         Response $response,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
-        OAuthToken $token,
+        OAuthToken $tokenService,
         Config $config,
         ClientInterface $httpClient,
         AppAuth $appAuth
@@ -72,7 +74,7 @@ class EsiController
         $this->response = $response;
         $this->repositoryFactory = $repositoryFactory;
         $this->log = $log;
-        $this->token = $token;
+        $this->tokenService = $tokenService;
         $this->config = $config;
         $this->httpClient = $httpClient;
         $this->appAuth = $appAuth;
@@ -277,7 +279,7 @@ class EsiController
         // check error limit
         if ($this->errorLimitReached()) {
             $this->log->error(
-                'App\EsiController->esiV1(): ' . $this->appString().
+                self::ERROR_MESSAGE_PREFIX . ': ' . $this->appString().
                 ' exceeded the maximum permissible ESI error limit'
             );
             return $this->response->withStatus(429, 'Maximum permissible ESI error limit reached.');
@@ -315,7 +317,7 @@ class EsiController
         }
 
         // get the token
-        $token = $this->token->getToken($character);
+        $token = $this->tokenService->getToken($character);
         if ($token === '') {
             return $this->response->withStatus(400, 'Character has no token.');
         }
@@ -377,7 +379,6 @@ class EsiController
 
         foreach ($publicPaths as $pattern) {
             if (preg_match("@^$pattern$@", $path) === 1) {
-                #$this->log->debug(print_r([$pattern, $path], true));
                 return true;
             }
         }
@@ -412,10 +413,10 @@ class EsiController
         try {
             $esiResponse = $this->httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
-            $this->log->error('App\EsiController->esiV1(): (' . $this->appString() . ') ' . $re->getMessage());
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $re->getMessage());
             $esiResponse = $re->getResponse(); // may still be null
         } catch (GuzzleException $ge) {
-            $this->log->error('App\EsiController->esiV1(): (' . $this->appString() . ') ' . $ge->getMessage());
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $ge->getMessage());
             $esiResponse = new \GuzzleHttp\Psr7\Response(
                 500, // status
                 [], // header
@@ -435,7 +436,7 @@ class EsiController
             try {
                 $body = $esiResponse->getBody()->getContents();
             } catch (\RuntimeException $e) {
-                $this->log->error('App\EsiController->esiV1(): (' . $this->appString() . ') ' . $e->getMessage());
+                $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $e->getMessage());
             }
             if ($body !== null) {
                 $this->response->write($body);

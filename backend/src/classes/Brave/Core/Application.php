@@ -51,7 +51,6 @@ use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
 
 /**
  * App bootstrapping
- *
  */
 class Application
 {
@@ -114,8 +113,7 @@ class Application
      * the environment variable BRAVECORE_APP_ENV.
      *
      * Loads environment variables from a .env file if the environment variable
-     * BRAVECORE_APP_ENV does not exist and the composer package symfony/dotenv is available.
-     * Both should only be true for the development environment.
+     * BRAVECORE_APP_ENV does not exist.
      *
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
      * @throws \RuntimeException
@@ -128,11 +126,11 @@ class Application
         }
 
         // Load environment variables from file if BRAVECORE_APP_ENV env var is missing
-        if (! isset($_SERVER['BRAVECORE_APP_ENV'])) {
+        if (getenv('BRAVECORE_APP_ENV') == false) {
             (new Dotenv())->load(Application::ROOT_DIR . '/.env');
         }
 
-        if (! isset($_SERVER['BRAVECORE_APP_ENV'])) {
+        if (getenv('BRAVECORE_APP_ENV') == false) {
             throw new \RuntimeException(
                 'BRAVECORE_APP_ENV environment variable is not defined. '.
                 'You need to define environment variables for configuration '.
@@ -140,7 +138,7 @@ class Application
             );
         }
 
-        if ($_SERVER['BRAVECORE_APP_ENV'] === self::ENV_PROD) {
+        if (getenv('BRAVECORE_APP_ENV') === self::ENV_PROD) {
             $this->env = self::ENV_PROD;
         } else {
             $this->env = self::ENV_DEV;
@@ -369,10 +367,7 @@ class Application
                 };*/
 
                 $stack = HandlerStack::create();
-
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
-                #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
-
                 $stack->push(
                     new CacheMiddleware(
                         new PrivateCacheStrategy(
@@ -383,10 +378,7 @@ class Application
                     ),
                     'cache'
                 );
-
                 $stack->push($c->get(GuzzleEsiHeaders::class));
-
-                #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
                 return new Client([
@@ -418,11 +410,7 @@ class Application
      */
     private function sessionHandler(): void
     {
-        if (PHP_SAPI === 'cli') {
-            // PHP 7.2 for unit tests:
-            // "ini_set(): Headers already sent. You cannot change the session module's ini settings at this time"
-            // session_set_save_handler(): Cannot change save handler when headers already sent
-
+        if (headers_sent()) { // should only be true for integration tests
             return;
         }
 
@@ -463,11 +451,6 @@ class Application
         $routes = include self::ROOT_DIR . '/config/routes.php';
 
         foreach ($routes as $pattern => $conf) {
-            #if (is_array($conf[0])) {
-            #    $app->map($conf[0], $pattern, $conf[1]);
-            #    continue;
-            #}
-
             if (isset($conf[0])) { // e. g. ['GET', 'method']
                 $config = [$conf[0] => $conf[1]];
             } else { // e. g. ['GET' => 'method', 'POST' => 'method']

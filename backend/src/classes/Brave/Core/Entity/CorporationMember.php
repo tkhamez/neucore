@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Entity;
 
+use Brave\Core\Api;
 use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -100,10 +101,10 @@ class CorporationMember implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'locationId' => $this->locationId,
-            'logoffDate' => $this->logoffDate ? $this->logoffDate->format('Y-m-d\TH:i:s\Z') : null,
-            'logonDate' => $this->logonDate ? $this->logonDate->format('Y-m-d\TH:i:s\Z') : null,
+            'logoffDate' => $this->logoffDate ? $this->logoffDate->format(Api::DATE_FORMAT) : null,
+            'logonDate' => $this->logonDate ? $this->logonDate->format(Api::DATE_FORMAT) : null,
             'shipTypeId' => $this->shipTypeId,
-            'startDate' => $this->startDate ? $this->startDate->format('Y-m-d\TH:i:s\Z') : null,
+            'startDate' => $this->startDate ? $this->startDate->format(Api::DATE_FORMAT) : null,
         ];
 
         if ($forUser) {

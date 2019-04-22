@@ -34,7 +34,7 @@ class EsiController
     /**
      * @var OAuthToken
      */
-    private $token;
+    private $tokenService;
 
     /**
      * @var ClientInterface
@@ -49,13 +49,13 @@ class EsiController
     public function __construct(
         Response $response,
         RepositoryFactory $repositoryFactory,
-        OAuthToken $token,
+        OAuthToken $tokenService,
         ClientInterface $httpClient,
         Config $config
     ) {
         $this->response = $response;
         $this->repositoryFactory = $repositoryFactory;
-        $this->token = $token;
+        $this->tokenService = $tokenService;
         $this->httpClient = $httpClient;
         $this->config = $config;
     }
@@ -113,7 +113,7 @@ class EsiController
             return $this->response->withJson('Character not found.', 400);
         }
 
-        $token = $this->token->getToken($character);
+        $token = $this->tokenService->getToken($character);
 
         $baseUri = $this->config->get('eve', 'esi_host');
         $path = str_replace('{character_id}', $character->getId(), $route);
@@ -161,12 +161,13 @@ class EsiController
             return null;
         }
 
+        $remain = 'X-Esi-Error-Limit-Remain';
+        $reset = 'X-Esi-Error-Limit-Reset';
+
         return [
             'Expires' => $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : null,
-            'X-Esi-Error-Limit-Remain' => $response->hasHeader('X-Esi-Error-Limit-Remain') ?
-                $response->getHeader('X-Esi-Error-Limit-Remain')[0] : null,
-            'X-Esi-Error-Limit-Reset' => $response->hasHeader('X-Esi-Error-Limit-Reset') ?
-                $response->getHeader('X-Esi-Error-Limit-Reset')[0] : null,
+            $remain => $response->hasHeader($remain) ? $response->getHeader($remain)[0] : null,
+            $reset => $response->hasHeader($reset) ? $response->getHeader($reset)[0] : null,
             'X-Pages' => $response->hasHeader('X-Pages') ? $response->getHeader('X-Pages')[0] : null,
             'warning' => $response->hasHeader('warning') ? $response->getHeader('warning')[0] : null,
         ];

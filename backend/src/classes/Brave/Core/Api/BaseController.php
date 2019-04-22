@@ -4,21 +4,7 @@ namespace Brave\Core\Api;
 
 use Brave\Core\Service\ObjectManager;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
-/**
- * @SWG\Swagger(
- *     schemes={"https", "http"},
- *     host="localhost",
- *     basePath="/api",
- *     produces={"application/json"},
- *     @SWG\Info(
- *       title="Neucore API",
- *       description="Client library of Neucore API",
- *       version=BRAVE_CORE_VERSION
- *     )
- * )
- */
 abstract class BaseController
 {
     /**

@@ -3,6 +3,7 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\CharacterRepository;
 use Brave\Core\Service\Account;
 use Brave\Core\Service\OAuthToken;
 use Brave\Core\Service\ObjectManager;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CheckTokens extends Command
 {
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var CharacterRepository
      */
     private $charRepo;
 
@@ -94,13 +95,11 @@ class CheckTokens extends Command
         $this->output = $output;
 
         $this->writeln('* Started "check-tokens"');
-
-        $this->checkTokens();
-
+        $this->check();
         $this->writeln('* Finished "check-tokens"');
     }
 
-    private function checkTokens()
+    private function check()
     {
         $charIds = [];
         $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);

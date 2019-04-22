@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Entity;
 
+use Brave\Core\Api;
 use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -86,7 +87,7 @@ class GroupApplication implements \JsonSerializable
             'player' => $this->player->jsonSerialize(true),
             'group' => $this->group,
             'status' => $this->status,
-            'created' => $this->created ? $this->created->format('Y-m-d\TH:i:s\Z') : null,
+            'created' => $this->created ? $this->created->format(Api::DATE_FORMAT) : null,
         ];
     }
 

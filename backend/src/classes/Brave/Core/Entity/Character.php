@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Entity;
 
+use Brave\Core\Api;
 use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -150,7 +151,7 @@ class Character implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
-            'lastUpdate' => $this->lastUpdate ? $this->lastUpdate->format('Y-m-d\TH:i:s\Z') : null,
+            'lastUpdate' => $this->lastUpdate ? $this->lastUpdate->format(Api::DATE_FORMAT) : null,
             'validToken' => $this->validToken,
         ];
         if ($withRelations) {

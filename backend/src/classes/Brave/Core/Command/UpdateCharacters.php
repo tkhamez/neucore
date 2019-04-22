@@ -3,6 +3,9 @@
 namespace Brave\Core\Command;
 
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CharacterRepository;
+use Brave\Core\Repository\CorporationRepository;
 use Brave\Core\Service\EsiData;
 use Brave\Core\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
@@ -13,18 +16,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCharacters extends Command
 {
+    const UPDATE_OK = 'update OK';
+
+    const UPDATE_NOK = 'update NOK';
+
     /**
-     * @var \Brave\Core\Repository\CharacterRepository
+     * @var CharacterRepository
      */
     private $charRepo;
 
     /**
-     * @var \Brave\Core\Repository\CorporationRepository
+     * @var CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var \Brave\Core\Repository\AllianceRepository
+     * @var AllianceRepository
      */
     private $alliRepo;
 
@@ -117,9 +124,9 @@ class UpdateCharacters extends Command
             // update name, corp and alliance from ESI
             $updatedChar = $this->esiData->fetchCharacter($charId);
             if ($updatedChar === null) {
-                $this->writeln('Character ' . $charId.': update NOK');
+                $this->writeln('Character ' . $charId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('Character ' . $charId.': update OK');
+                $this->writeln('Character ' . $charId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);
@@ -139,9 +146,9 @@ class UpdateCharacters extends Command
 
             $updatedCorp = $this->esiData->fetchCorporation($corpId);
             if ($updatedCorp === null) {
-                $this->writeln('Corporation ' . $corpId.': update NOK');
+                $this->writeln('Corporation ' . $corpId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('Corporation ' . $corpId.': update OK');
+                $this->writeln('Corporation ' . $corpId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);
@@ -161,9 +168,9 @@ class UpdateCharacters extends Command
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
-                $this->writeln('Alliance ' . $alliId.': update NOK');
+                $this->writeln('Alliance ' . $alliId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('Alliance ' . $alliId.': update OK');
+                $this->writeln('Alliance ' . $alliId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);

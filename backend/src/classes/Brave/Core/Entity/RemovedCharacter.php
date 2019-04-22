@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Entity;
 
+use Brave\Core\Api;
 use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -109,7 +110,7 @@ class RemovedCharacter implements \JsonSerializable
         return [
             'characterId' => $this->getCharacterId(),
             'characterName' => $this->characterName,
-            'removedDate' => $this->removedDate ? $this->removedDate->format('Y-m-d\TH:i:s\Z') : null,
+            'removedDate' => $this->removedDate ? $this->removedDate->format(Api::DATE_FORMAT) : null,
             'reason' => $this->reason,
 
             // The JS client has problems if the newPLayer (type Player) property is added here

@@ -546,9 +546,8 @@ class GroupController
         }
 
         $ids = array_map('intVal', $ids);
-        $ids = array_unique($ids);
 
-        return $ids;
+        return array_unique($ids);
     }
 
     /**

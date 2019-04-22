@@ -37,7 +37,7 @@ class AppController extends BaseController
     /**
      * @var App
      */
-    private $app;
+    private $application;
 
     /**
      * @var Player
@@ -353,11 +353,11 @@ class AppController extends BaseController
         }
 
         $isManager = [];
-        foreach ($this->app->getManagers() as $mg) {
+        foreach ($this->application->getManagers() as $mg) {
             $isManager[] = $mg->getId();
         }
         if (! in_array($this->player->getId(), $isManager)) {
-            $this->app->addManager($this->player);
+            $this->application->addManager($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -405,7 +405,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $this->app->removeManager($this->player);
+        $this->application->removeManager($this->player);
 
         return $this->flushAndReturn(204);
     }
@@ -500,11 +500,11 @@ class AppController extends BaseController
         }
 
         $hasGroups = [];
-        foreach ($this->app->getGroups() as $gp) {
+        foreach ($this->application->getGroups() as $gp) {
             $hasGroups[] = $gp->getId();
         }
         if (! in_array($this->group->getId(), $hasGroups)) {
-            $this->app->addGroup($this->group);
+            $this->application->addGroup($this->group);
         }
 
         return $this->flushAndReturn(204);
@@ -552,7 +552,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $this->app->removeGroup($this->group);
+        $this->application->removeGroup($this->group);
 
         return $this->flushAndReturn(204);
     }
@@ -600,8 +600,8 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if (! $this->app->hasRole($this->role->getName())) {
-            $this->app->addRole($this->role);
+        if (! $this->application->hasRole($this->role->getName())) {
+            $this->application->addRole($this->role);
         }
 
         return $this->flushAndReturn(204);
@@ -650,7 +650,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $this->app->removeRole($this->role);
+        $this->application->removeRole($this->role);
 
         return $this->flushAndReturn(204);
     }
@@ -706,10 +706,10 @@ class AppController extends BaseController
 
     private function findAppAndPlayer(string $id, string $player): bool
     {
-        $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $this->application = $this->repositoryFactory->getAppRepository()->find((int) $id);
         $this->player = $this->repositoryFactory->getPlayerRepository()->find((int) $player);
 
-        if ($this->app === null || $this->player === null) {
+        if ($this->application === null || $this->player === null) {
             return false;
         }
 
@@ -718,10 +718,10 @@ class AppController extends BaseController
 
     private function findAppAndGroup(string $id, string $gid): bool
     {
-        $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $this->application = $this->repositoryFactory->getAppRepository()->find((int) $id);
         $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $gid);
 
-        if ($this->app === null || $this->group === null) {
+        if ($this->application === null || $this->group === null) {
             return false;
         }
 
@@ -730,10 +730,10 @@ class AppController extends BaseController
 
     private function findAppAndRole(string $id, string $name): bool
     {
-        $this->app = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        $this->application = $this->repositoryFactory->getAppRepository()->find((int) $id);
         $this->role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
-        if (! $this->app || ! $this->role || ! in_array($this->role->getName(), $this->availableRoles)) {
+        if (! $this->application || ! $this->role || ! in_array($this->role->getName(), $this->availableRoles)) {
             return false;
         }
 
