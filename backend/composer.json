@@ -67,8 +67,8 @@
         "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
             "swagger src --output ../web",
-            "swagger src --output ../web/frontend-api.json --exclude src/classes/Brave/Core/Api/App",
-            "swagger src --output ../web/application-api.json --exclude src/classes/Brave/Core/Api/User"
+            "swagger src --output ../web/frontend-api.json --exclude src/classes/Brave/Core/Controller/App",
+            "swagger src --output ../web/application-api.json --exclude src/classes/Brave/Core/Controller/User"
         ],
         "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",
         "test": "phpunit",
