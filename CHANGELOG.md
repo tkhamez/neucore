@@ -1,27 +1,28 @@
 
 ## 0.8.0
 
-dd mmm yyyy
+22 Apr 2019
 
-- New: Membership in one group can now be made dependent on another group membership, see doc "Required Groups".
-- New: error limit for applications.
-- New: `removed-characters` endpoint for app.
+- New: Membership in one group can now be made dependent on another group membership 
+  (see documentation [Required Groups](doc/documentation.md#required-groups).
+- New: error limit for applications (only for esi endpoints).
+- New: `removed-characters` endpoint for apps.
 - BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. If you update 
   from a version lower than 0.7.0, you must manually add these new roles  to your existing applications 
-  (if desired): app-groups, app-chars.
+  (if desired): `app-groups`, `app-chars`.
 - BC-Break: "Player Groups Admin" is now called "Player Group Management" and requires the new role `user-manager`
   (instead of `user-admin`).
-- BC-Break: Group applications revised, all existing applications are deleted with the update.
-- BC-Break: The console command `make-admin` needs now the player ID instead of the EVE character ID.
-- Layout fixes.
+- BC-Break: Group applications revised, all existing applications are *deleted* with the update.
+- BC-Break: The console command `make-admin` accepts now the Neucore player ID instead of the EVE character ID.
 - Added player ID to account name everywhere.
-- Added support for encrypted MySQL connection
+- Added support for encrypted MySQL connection.
+- Layout fixes.
 
 ## 0.7.0
 
 13 Mar 2019
 
-- Added "managed" accounts (see documentation).
+- Added "managed" accounts (see documentation [Account status](doc/documentation.md#account-status)).
 - Added ESI "proxy" endpoint for apps.
 - Added cache for ESI data.
 - Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
