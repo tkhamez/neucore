@@ -15,9 +15,9 @@ class DBVerifySSL extends Command
      */
     private $objectManager;
 
-    public function __construct(ObjectManager $objectManager) {
+    public function __construct(ObjectManager $objectManager)
+    {
         parent::__construct();
-
         $this->objectManager = $objectManager;
     }
 
