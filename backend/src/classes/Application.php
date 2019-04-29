@@ -126,11 +126,11 @@ class Application
         }
 
         // Load environment variables from file if BRAVECORE_APP_ENV env var is missing
-        if (getenv('BRAVECORE_APP_ENV') == false) {
+        if (getenv('BRAVECORE_APP_ENV') === false) {
             (new Dotenv())->load(Application::ROOT_DIR . '/.env');
         }
 
-        if (getenv('BRAVECORE_APP_ENV') == false) {
+        if (getenv('BRAVECORE_APP_ENV') === false) {
             throw new \RuntimeException(
                 'BRAVECORE_APP_ENV environment variable is not defined. '.
                 'You need to define environment variables for configuration '.
