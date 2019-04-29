@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Factory;
+namespace Neucore\Factory;
 
-use Brave\Core\Service\Config;
+use Neucore\Service\Config;
 use GuzzleHttp\ClientInterface;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
@@ -35,7 +35,7 @@ class EsiApiFactory
 
     /**
      * @see \League\OAuth2\Client\Token\AccessToken::getToken()
-     * @see \Brave\Core\Service\OAuthToken::refreshAccessToken()
+     * @see \Neucore\Service\OAuthToken::refreshAccessToken()
      */
     public function getCorporationApi(string $accessToken = ''): CorporationApi
     {
@@ -44,7 +44,7 @@ class EsiApiFactory
 
     /**
      * @see \League\OAuth2\Client\Token\AccessToken::getToken()
-     * @see \Brave\Core\Service\OAuthToken::refreshAccessToken()
+     * @see \Neucore\Service\OAuthToken::refreshAccessToken()
      */
     public function getCharacterApi(string $accessToken = ''): CharacterApi
     {
@@ -53,7 +53,7 @@ class EsiApiFactory
 
     /**
      * @see \League\OAuth2\Client\Token\AccessToken::getToken()
-     * @see \Brave\Core\Service\OAuthToken::refreshAccessToken()
+     * @see \Neucore\Service\OAuthToken::refreshAccessToken()
      */
     public function getMailApi(string $accessToken): MailApi
     {

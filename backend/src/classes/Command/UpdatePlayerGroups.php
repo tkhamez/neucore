@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Command;
+namespace Neucore\Command;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AutoGroupAssignment;
+use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdatePlayerGroups extends Command
 {
     /**
-     * @var \Brave\Core\Repository\PlayerRepository
+     * @var \Neucore\Repository\PlayerRepository
      */
     private $playerRepo;
 

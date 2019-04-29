@@ -2,17 +2,17 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\EsiApiFactory;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\Config;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\MemberTracking;
-use Brave\Core\Service\OAuthToken;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Config;
+use Neucore\Service\EsiData;
+use Neucore\Service\MemberTracking;
+use Neucore\Service\OAuthToken;
+use Neucore\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;

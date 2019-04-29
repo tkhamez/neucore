@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\User;
+namespace Neucore\Controller\User;
 
-use Brave\Core\Controller\BaseController;
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Group;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Controller\BaseController;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Group;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\EsiData;
+use Neucore\Service\ObjectManager;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;
 

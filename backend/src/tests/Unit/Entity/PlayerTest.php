@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\App;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupApplication;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\RemovedCharacter;
-use Brave\Core\Entity\Role;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\App;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
+use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\Role;
 use PHPUnit\Framework\TestCase;
 
 class PlayerTest extends TestCase

@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\User;
+namespace Neucore\Controller\User;
 
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\Account;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\OAuthToken;
-use Brave\Core\Service\UserAuth;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AutoGroupAssignment;
+use Neucore\Service\Account;
+use Neucore\Service\EsiData;
+use Neucore\Service\OAuthToken;
+use Neucore\Service\UserAuth;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;
 

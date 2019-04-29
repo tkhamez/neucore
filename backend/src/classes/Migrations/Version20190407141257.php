@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Brave\Core\Migrations;
+namespace Neucore\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;

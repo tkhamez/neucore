@@ -2,18 +2,18 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\RemovedCharacter;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Entity\Player;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\RemovedCharacterRepository;
-use Brave\Core\Service\Account;
-use Brave\Core\Service\OAuthToken;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\SystemVariable;
+use Neucore\Repository\CharacterRepository;
+use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\RemovedCharacterRepository;
+use Neucore\Service\Account;
+use Neucore\Service\OAuthToken;
+use Neucore\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;

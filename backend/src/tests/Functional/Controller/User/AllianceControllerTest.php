@@ -2,10 +2,10 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Group;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -38,7 +38,7 @@ class AllianceControllerTest extends WebTestCase
     private $groupId2;
 
     /**
-     * @var \Brave\Core\Repository\AllianceRepository
+     * @var \Neucore\Repository\AllianceRepository
      */
     private $alliRepo;
 

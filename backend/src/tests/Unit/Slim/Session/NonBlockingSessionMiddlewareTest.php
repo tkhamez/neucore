@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Slim\Session;
 
-use Brave\Core\Slim\Session\NonBlockingSessionMiddleware;
-use Brave\Core\Slim\Session\SessionData;
+use Neucore\Slim\Session\NonBlockingSessionMiddleware;
+use Neucore\Slim\Session\SessionData;
 use Slim\Interfaces\RouteInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;

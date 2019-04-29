@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Service\ObjectManager;
+use Neucore\Service\ObjectManager;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;

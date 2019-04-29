@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\SystemVariable;
+use Neucore\Entity\SystemVariable;
 use PHPUnit\Framework\TestCase;
 
 class SystemVariableTest extends TestCase

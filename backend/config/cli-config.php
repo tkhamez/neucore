@@ -4,7 +4,7 @@
  * Required configuration for vendor/bin/doctrine
  */
 
-use Brave\Core\Application;
+use Neucore\Application;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\EntityManager;

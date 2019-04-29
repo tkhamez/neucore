@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\RemovedCharacter;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Character;
+use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Log\LoggerInterface;

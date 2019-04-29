@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\Player;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Player;
 
 class CorporationMemberTest extends \PHPUnit\Framework\TestCase
 {

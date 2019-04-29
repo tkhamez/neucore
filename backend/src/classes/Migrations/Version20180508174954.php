@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Migrations;
+namespace Neucore\Migrations;
 
 use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;

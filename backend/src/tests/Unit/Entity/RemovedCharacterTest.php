@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\RemovedCharacter;
+use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
 use PHPUnit\Framework\TestCase;
 
 class RemovedCharacterTest extends TestCase

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\App;
+namespace Neucore\Controller\App;
 
-use Brave\Core\Entity\Group;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\Account;
-use Brave\Core\Service\AppAuth;
+use Neucore\Entity\Group;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Account;
+use Neucore\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -596,9 +596,9 @@ class GroupController
      * @param int $entityId
      * @param Group[] $appGroups
      * @return null|array Returns NULL if corporation was not found.
-     * @see \Brave\Core\Entity\Corporation::jsonSerialize()
-     * @see \Brave\Core\Entity\Alliance::jsonSerialize()
-     * @see \Brave\Core\Entity\Group::jsonSerialize()
+     * @see \Neucore\Entity\Corporation::jsonSerialize()
+     * @see \Neucore\Entity\Alliance::jsonSerialize()
+     * @see \Neucore\Entity\Group::jsonSerialize()
      */
     private function getGroupsFor(string $entityName, int $entityId, array $appGroups)
     {

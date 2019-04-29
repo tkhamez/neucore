@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Corporation;
+use Neucore\Entity\Character;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Player;
+use Neucore\Entity\Corporation;
 
 class CharacterTest extends \PHPUnit\Framework\TestCase
 {

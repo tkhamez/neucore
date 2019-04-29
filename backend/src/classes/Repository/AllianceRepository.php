@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\Alliance;
+use Neucore\Entity\Alliance;
 
 /**
  * AllianceRepository
@@ -17,7 +17,7 @@ use Brave\Core\Entity\Alliance;
 class AllianceRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @return \Brave\Core\Entity\Alliance[]
+     * @return \Neucore\Entity\Alliance[]
      */
     public function getAllWithGroups()
     {

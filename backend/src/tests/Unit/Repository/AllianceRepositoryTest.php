@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Repository;
 
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Factory\RepositoryFactory;
 use Tests\Helper;
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Group;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Group;
 
 class AllianceRepositoryTest extends \PHPUnit\Framework\TestCase
 {

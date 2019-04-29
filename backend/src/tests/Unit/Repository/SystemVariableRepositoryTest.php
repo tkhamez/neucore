@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Repository;
 
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\SystemVariableRepository;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\SystemVariableRepository;
 use Tests\Helper;
 
 class SystemVariableRepositoryTest extends \PHPUnit\Framework\TestCase

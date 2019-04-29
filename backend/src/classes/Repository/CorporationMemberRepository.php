@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
 use Doctrine\Common\Collections\Criteria;
 
 /**

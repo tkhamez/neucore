@@ -19,9 +19,9 @@ composer style:fix
 
 The `operationId` must be a unique string among all operations described in the API.
 
-This must be followed for the `Brave\Core\Api\App` namespace.
+This must be followed for the `Neucore\Api\App` namespace.
 
-For the `Brave\Core\Api\User` namespace it works (for now), if the `operationId` is
+For the `Neucore\Api\User` namespace it works (for now), if the `operationId` is
 unique only within each tag.
 
 ### Documentation

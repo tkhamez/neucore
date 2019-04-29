@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\App;
+namespace Neucore\Controller\App;
 
-use Brave\Core\Service\AppAuth;
+use Neucore\Service\AppAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;

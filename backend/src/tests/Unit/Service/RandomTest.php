@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Service\Random;
+use Neucore\Service\Random;
 
 class RandomTest extends \PHPUnit\Framework\TestCase
 {

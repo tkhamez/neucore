@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\User;
+namespace Neucore\Controller\User;
 
-use Brave\Core\Service\Config;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\OAuthToken;
+use Neucore\Service\Config;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;

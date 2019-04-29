@@ -2,10 +2,10 @@
 
 namespace Tests\Functional\Controller\App;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\RemovedCharacter;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 

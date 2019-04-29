@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\Character;
+use Neucore\Entity\Character;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;

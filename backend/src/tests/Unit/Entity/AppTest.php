@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\App;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Role;
+use Neucore\Entity\App;
+use Neucore\Entity\Group;
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
 
 class AppTest extends \PHPUnit\Framework\TestCase
 {

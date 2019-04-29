@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;

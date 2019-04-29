@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Command;
+namespace Neucore\Command;
 
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Repository\RoleRepository;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\PlayerRepository;
+use Neucore\Repository\RoleRepository;
+use Neucore\Service\ObjectManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

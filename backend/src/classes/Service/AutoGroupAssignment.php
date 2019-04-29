@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Player;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Repository\GroupRepository;
-use Brave\Core\Repository\PlayerRepository;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\AllianceRepository;
+use Neucore\Repository\CorporationRepository;
+use Neucore\Repository\GroupRepository;
+use Neucore\Repository\PlayerRepository;
 use Psr\Log\LoggerInterface;
 
 class AutoGroupAssignment

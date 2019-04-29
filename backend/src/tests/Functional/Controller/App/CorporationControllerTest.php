@@ -2,12 +2,12 @@
 
 namespace Tests\Functional\Controller\App;
 
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Brave\Core\Entity\Corporation;
+use Neucore\Entity\Corporation;
 
 class CorporationControllerTest extends WebTestCase
 {

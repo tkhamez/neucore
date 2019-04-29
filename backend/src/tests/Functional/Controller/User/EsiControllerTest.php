@@ -2,7 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Entity\Role;
+use Neucore\Entity\Role;
 use GuzzleHttp\ClientInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;

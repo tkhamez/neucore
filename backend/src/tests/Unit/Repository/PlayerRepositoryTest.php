@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Repository;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\PlayerRepository;
+use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\PlayerRepository;
 use Tests\Helper;
 
 class PlayerRepositoryTest extends \PHPUnit\Framework\TestCase

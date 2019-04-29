@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Brave\Core\Migrations;
+namespace Neucore\Migrations;
 
-use Brave\Core\Entity\Player;
+use Neucore\Entity\Player;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 

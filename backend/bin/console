@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-use Brave\Core\Application;
+use Neucore\Application;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
 // Run the console application.
 try {
     (new Application())->getConsoleApp()->run();
-} catch (\Throwable $e) {
+} catch (Throwable $e) {
     error_log((string) $e);
 }

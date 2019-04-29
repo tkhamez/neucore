@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Slim\Handlers;
 
-use Brave\Core\Slim\Handlers\Error;
+use Neucore\Slim\Handlers\Error;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Slim\Http\Environment;

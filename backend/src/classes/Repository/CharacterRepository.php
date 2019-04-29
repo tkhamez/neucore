@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\Character;
+use Neucore\Entity\Character;
 
 /**
  * CharacterRepository
@@ -18,7 +18,7 @@ class CharacterRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * @param string $name
-     * @return \Brave\Core\Entity\Character[]
+     * @return \Neucore\Entity\Character[]
      */
     public function findByNamePartialMatch($name)
     {

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Slim\Handlers;
 
-use Brave\Core\Slim\Handlers\PhpError;
+use Neucore\Slim\Handlers\PhpError;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Slim\Http\Environment;

@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\OAuthToken;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Character;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\OAuthToken;
+use Neucore\Service\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use GuzzleHttp\Psr7\Response;

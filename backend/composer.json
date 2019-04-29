@@ -42,7 +42,7 @@
     },
     "autoload": {
         "psr-4": {
-        	"Brave\\Core\\": "src/classes/",
+        	"Neucore\\": "src/classes/",
         	"Tests\\": "src/tests/"
     	},
         "files": ["config/version.php"]

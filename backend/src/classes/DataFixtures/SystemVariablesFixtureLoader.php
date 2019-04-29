@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\DataFixtures;
+namespace Neucore\DataFixtures;
 
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 

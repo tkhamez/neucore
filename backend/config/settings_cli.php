@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Application;
+use Neucore\Application;
 
 return [
     'config' => [

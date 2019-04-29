@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Factory;
 
-use Brave\Core\Factory\EsiApiFactory;
-use Brave\Core\Service\Config;
+use Neucore\Factory\EsiApiFactory;
+use Neucore\Service\Config;
 use GuzzleHttp\Client;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;

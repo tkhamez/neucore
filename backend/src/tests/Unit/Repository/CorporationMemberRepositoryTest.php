@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Repository;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Factory\RepositoryFactory;
 use Tests\Helper;
 
 class CorporationMemberRepositoryTest extends \PHPUnit\Framework\TestCase

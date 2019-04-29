@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Command;
 
-use Brave\Core\Command\UpdateCharacters;
-use Brave\Core\Entity\Character;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Command\UpdateCharacters;
+use Neucore\Entity\Character;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Middleware;
+namespace Neucore\Middleware;
 
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\SystemVariableRepository;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

@@ -17,13 +17,13 @@ parameters:
 			message: '#AbstractProvider::getResourceOwner\(\) expects(.*)AccessToken(.*)AccessTokenInterface given#'
 			path: %currentWorkingDirectory%/src/classes/Service/OAuthToken.php
 		-
-			message: '#Cannot call method getPlayer() on Brave\Core\Entity\Character|null.#'
+			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/AppController.php
 		-
-			message: '#Cannot call method getPlayer() on Brave\Core\Entity\Character|null.#'
+			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/CharacterController.php
 		-
-			message: '#Cannot call method getPlayer() on Brave\Core\Entity\Character|null.#'
+			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/GroupController.php
 		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'

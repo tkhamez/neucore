@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Entity\Role;
+use Neucore\Entity\Role;
 
 /**
  * Required roles for routes.

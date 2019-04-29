@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\User;
+namespace Neucore\Controller\User;
 
-use Brave\Core\Controller\BaseController;
-use Brave\Core\Entity\App;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\ObjectManager;
-use Brave\Core\Service\Random;
-use Brave\Core\Service\UserAuth;
+use Neucore\Controller\BaseController;
+use Neucore\Entity\App;
+use Neucore\Entity\Group;
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\ObjectManager;
+use Neucore\Service\Random;
+use Neucore\Service\UserAuth;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;

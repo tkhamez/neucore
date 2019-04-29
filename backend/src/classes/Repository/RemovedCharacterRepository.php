@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\RemovedCharacter;
+use Neucore\Entity\RemovedCharacter;
 
 /**
  * @method RemovedCharacter|null findOneBy(array $criteria, array $orderBy = null)

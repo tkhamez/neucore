@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\App;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Role;
+use Neucore\Entity\App;
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
 
 class RoleTest extends \PHPUnit\Framework\TestCase
 {

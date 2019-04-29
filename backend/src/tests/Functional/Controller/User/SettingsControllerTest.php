@@ -2,12 +2,12 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\SystemVariableRepository;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;

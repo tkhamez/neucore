@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller;
+namespace Neucore\Controller;
 
-use Brave\Core\Service\ObjectManager;
+use Neucore\Service\ObjectManager;
 use Slim\Http\Response;
 
 abstract class BaseController

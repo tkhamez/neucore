@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Application;
+use Neucore\Application;
 
 // For the built-in PHP dev server, check for requests to be served as static files
 if (PHP_SAPI == 'cli-server') {

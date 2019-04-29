@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Repository;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\Group;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\CorporationRepository;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Group;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CorporationRepository;
 use Tests\Helper;
 
 class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase

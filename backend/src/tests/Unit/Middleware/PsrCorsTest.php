@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Middleware;
 
-use Brave\Core\Middleware\PsrCors;
+use Neucore\Middleware\PsrCors;
 use PHPUnit\Framework\TestCase;
 
 class PsrCorsTest extends TestCase

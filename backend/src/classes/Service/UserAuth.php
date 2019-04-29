@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Slim\Session\SessionData;
+use Neucore\Entity\Character;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;

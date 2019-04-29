@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\Group;
+use Neucore\Entity\Group;
 
 /**
  * GroupRepository

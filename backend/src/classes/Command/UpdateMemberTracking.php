@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Command;
+namespace Neucore\Command;
 
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\MemberTracking;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\EsiData;
+use Neucore\Service\MemberTracking;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Repository;
 
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Factory\RepositoryFactory;
 use Tests\Helper;
-use Brave\Core\Entity\Character;
+use Neucore\Entity\Character;
 
 class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
 {

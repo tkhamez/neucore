@@ -2,20 +2,20 @@
 
 namespace Tests;
 
-use Brave\Core\Application;
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\App;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupApplication;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\RemovedCharacter;
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Slim\Session\SessionData;
+use Neucore\Application;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\App;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
+use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Slim\Session\SessionData;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Brave\Core\Migrations;
+namespace Neucore\Migrations;
 
-use Brave\Core\Entity\RemovedCharacter;
+use Neucore\Entity\RemovedCharacter;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;

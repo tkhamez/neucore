@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Group;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 
 class AllianceTest extends \PHPUnit\Framework\TestCase
 {

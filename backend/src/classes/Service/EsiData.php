@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Factory\EsiApiFactory;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 
 /**

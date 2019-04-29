@@ -2,8 +2,8 @@
 
 namespace Tests\Functional\Command;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\SystemVariable;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\SystemVariable;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;

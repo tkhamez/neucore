@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\Corporation;
+use Neucore\Entity\Corporation;
 
 /**
  * CorporationRepository
@@ -17,7 +17,7 @@ use Brave\Core\Entity\Corporation;
 class CorporationRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @return \Brave\Core\Entity\Corporation[]
+     * @return \Neucore\Entity\Corporation[]
      */
     public function getAllWithGroups()
     {
@@ -30,7 +30,7 @@ class CorporationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @return \Brave\Core\Entity\Corporation[]
+     * @return \Neucore\Entity\Corporation[]
      */
     public function getAllWithMemberTrackingData()
     {

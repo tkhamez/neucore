@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\App;
+namespace Neucore\Controller\App;
 
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;

@@ -2,16 +2,16 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Factory\EsiApiFactory;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\Config;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Alliance;
+use Neucore\Factory\EsiApiFactory;
+use Neucore\Repository\AllianceRepository;
+use Neucore\Repository\CharacterRepository;
+use Neucore\Entity\Corporation;
+use Neucore\Repository\CorporationRepository;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Config;
+use Neucore\Service\EsiData;
+use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use Tests\Helper;

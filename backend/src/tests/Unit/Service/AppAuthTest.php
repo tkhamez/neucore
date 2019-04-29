@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Repository\AppRepository;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\AppAuth;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Repository\AppRepository;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AppAuth;
+use Neucore\Service\ObjectManager;
 use Monolog\Logger;
 use Slim\Http\Cookies;
 use Slim\Http\Environment;

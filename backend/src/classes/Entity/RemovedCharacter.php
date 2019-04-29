@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Entity;
+namespace Neucore\Entity;
 
-use Brave\Core\Api;
+use Neucore\Api;
 use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
 

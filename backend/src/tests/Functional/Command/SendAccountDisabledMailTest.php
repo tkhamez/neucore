@@ -2,12 +2,12 @@
 
 namespace Tests\Functional\Command;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Player;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;

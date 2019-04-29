@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\EsiApiFactory;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Player;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\EsiApiFactory;
+use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Command;
+namespace Neucore\Command;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Service\EveMail;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\PlayerRepository;
+use Neucore\Service\EveMail;
+use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

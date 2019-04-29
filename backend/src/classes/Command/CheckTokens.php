@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Command;
+namespace Neucore\Command;
 
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Service\Account;
-use Brave\Core\Service\OAuthToken;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CharacterRepository;
+use Neucore\Service\Account;
+use Neucore\Service\OAuthToken;
+use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

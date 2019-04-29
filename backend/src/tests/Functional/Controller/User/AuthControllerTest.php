@@ -2,11 +2,11 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Controller\User\AuthController;
-use Brave\Core\Service\Config;
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Slim\Session\SessionData;
+use Neucore\Controller\User\AuthController;
+use Neucore\Service\Config;
+use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
+use Neucore\Slim\Session\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;

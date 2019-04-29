@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Repository;
+namespace Neucore\Repository;
 
-use Brave\Core\Entity\Player;
+use Neucore\Entity\Player;
 
 /**
  * PlayerRepository
@@ -17,7 +17,7 @@ use Brave\Core\Entity\Player;
 class PlayerRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @return \Brave\Core\Entity\Player[]
+     * @return \Neucore\Entity\Player[]
      */
     public function findWithoutCharacters()
     {
@@ -30,7 +30,7 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @return \Brave\Core\Entity\Player[]
+     * @return \Neucore\Entity\Player[]
      */
     public function findWithCharacters()
     {
@@ -43,7 +43,7 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @return \Brave\Core\Entity\Player[]
+     * @return \Neucore\Entity\Player[]
      */
     public function findWithCharactersAndStatus(string $status)
     {

@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-use Brave\Core\Controller\App\ApplicationController;
-use Brave\Core\Controller\App\CharController;
-use Brave\Core\Controller\App\CorporationController as AppCorporationController;
-use Brave\Core\Controller\App\EsiController as AppEsiController;
-use Brave\Core\Controller\App\GroupController as AppGroupController;
-use Brave\Core\Controller\User\AllianceController;
-use Brave\Core\Controller\User\AppController;
-use Brave\Core\Controller\User\AuthController;
-use Brave\Core\Controller\User\CharacterController;
-use Brave\Core\Controller\User\CorporationController;
-use Brave\Core\Controller\User\EsiController;
-use Brave\Core\Controller\User\GroupController;
-use Brave\Core\Controller\User\PlayerController;
-use Brave\Core\Controller\User\SettingsController;
+use Neucore\Controller\App\ApplicationController;
+use Neucore\Controller\App\CharController;
+use Neucore\Controller\App\CorporationController as AppCorporationController;
+use Neucore\Controller\App\EsiController as AppEsiController;
+use Neucore\Controller\App\GroupController as AppGroupController;
+use Neucore\Controller\User\AllianceController;
+use Neucore\Controller\User\AppController;
+use Neucore\Controller\User\AuthController;
+use Neucore\Controller\User\CharacterController;
+use Neucore\Controller\User\CorporationController;
+use Neucore\Controller\User\EsiController;
+use Neucore\Controller\User\GroupController;
+use Neucore\Controller\User\PlayerController;
+use Neucore\Controller\User\SettingsController;
 
 return [
 

@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Controller\App;
 
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Entity\Group;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Entity\Group;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 

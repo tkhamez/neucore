@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Command;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Character;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;

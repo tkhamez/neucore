@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Provider\GenericProvider;

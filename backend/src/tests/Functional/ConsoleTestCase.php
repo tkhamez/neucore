@@ -2,7 +2,7 @@
 
 namespace Tests\Functional;
 
-use Brave\Core\Application;
+use Neucore\Application;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 

@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\User;
+namespace Neucore\Controller\User;
 
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\Config;
-use Brave\Core\Service\EveMail;
-use Brave\Core\Service\MemberTracking;
-use Brave\Core\Service\ObjectManager;
-use Brave\Core\Service\UserAuth;
+use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Config;
+use Neucore\Service\EveMail;
+use Neucore\Service\MemberTracking;
+use Neucore\Service\ObjectManager;
+use Neucore\Service\UserAuth;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;

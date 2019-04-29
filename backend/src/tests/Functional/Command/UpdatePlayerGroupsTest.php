@@ -2,14 +2,14 @@
 
 namespace Tests\Functional\Command;
 
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\Player;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Group;
+use Neucore\Entity\Player;
+use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
 use Tests\Logger;
 
 class UpdatePlayerGroupsTest extends ConsoleTestCase

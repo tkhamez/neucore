@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Slim\Session;
 
-use Brave\Core\Slim\Session\SessionData;
+use Neucore\Slim\Session\SessionData;
 use Tests\Helper;
 
 class SessionDataTest extends \PHPUnit\Framework\TestCase

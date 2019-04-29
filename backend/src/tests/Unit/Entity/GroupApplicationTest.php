@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Entity;
 
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupApplication;
-use Brave\Core\Entity\Player;
+use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
+use Neucore\Entity\Player;
 use PHPUnit\Framework\TestCase;
 
 class GroupApplicationTest extends TestCase

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Command;
+namespace Neucore\Command;
 
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Repository\CharacterRepository;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Service\EsiData;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\AllianceRepository;
+use Neucore\Repository\CharacterRepository;
+use Neucore\Repository\CorporationRepository;
+use Neucore\Service\EsiData;
+use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

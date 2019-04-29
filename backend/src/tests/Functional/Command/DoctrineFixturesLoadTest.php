@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Command;
 
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 
@@ -32,8 +32,8 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $output = explode("\n", $this->runConsoleApp('doctrine-fixtures-load'));
 
         $this->assertSame(3, count($output));
-        $this->assertSame('loading Brave\Core\DataFixtures\RoleFixtureLoader', $output[0]);
-        $this->assertSame('loading Brave\Core\DataFixtures\SystemVariablesFixtureLoader', $output[1]);
+        $this->assertSame('loading Neucore\DataFixtures\RoleFixtureLoader', $output[0]);
+        $this->assertSame('loading Neucore\DataFixtures\SystemVariablesFixtureLoader', $output[1]);
         $this->assertSame('', $output[2]);
 
         $repoFactory = new RepositoryFactory($em);

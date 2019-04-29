@@ -1,4 +1,4 @@
 name: Doctrim Migrations
-migrations_namespace: Brave\Core\Migrations
+migrations_namespace: Neucore\Migrations
 table_name: doctrine_migration_versions
 migrations_directory: src/classes/Migrations/

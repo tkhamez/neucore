@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Service;
+namespace Neucore\Service;
 
-use Brave\Core\Entity\App;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\App;
+use Neucore\Factory\RepositoryFactory;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

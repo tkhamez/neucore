@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Controller\User;
+namespace Neucore\Controller\User;
 
-use Brave\Core\Controller\BaseController;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupApplication;
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\ObjectManager;
-use Brave\Core\Service\UserAuth;
+use Neucore\Controller\BaseController;
+use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\ObjectManager;
+use Neucore\Service\UserAuth;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;

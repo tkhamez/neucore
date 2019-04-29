@@ -2,21 +2,21 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Entity\Character;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\Player;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Service\AutoGroupAssignment;
-use Brave\Core\Service\ObjectManager;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
+use Neucore\Entity\Player;
+use Neucore\Repository\PlayerRepository;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\AutoGroupAssignment;
+use Neucore\Service\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;
-use Brave\Core\Entity\Alliance;
+use Neucore\Entity\Alliance;
 
 class AutoGroupAssignmentTest extends TestCase
 {

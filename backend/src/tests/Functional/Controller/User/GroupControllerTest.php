@@ -2,16 +2,16 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Entity\Alliance;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Group;
-use Brave\Core\Entity\GroupApplication;
-use Brave\Core\Entity\Role;
-use Brave\Core\Repository\GroupApplicationRepository;
-use Brave\Core\Repository\GroupRepository;
-use Brave\Core\Entity\Player;
-use Brave\Core\Repository\PlayerRepository;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
+use Neucore\Entity\GroupApplication;
+use Neucore\Entity\Role;
+use Neucore\Repository\GroupApplicationRepository;
+use Neucore\Repository\GroupRepository;
+use Neucore\Entity\Player;
+use Neucore\Repository\PlayerRepository;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Monolog\Logger;

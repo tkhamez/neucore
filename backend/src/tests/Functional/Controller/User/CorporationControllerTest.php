@@ -2,13 +2,13 @@
 
 namespace Tests\Functional\Controller\User;
 
-use Brave\Core\Entity\CorporationMember;
-use Brave\Core\Entity\Role;
-use Brave\Core\Repository\AllianceRepository;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Repository\CorporationRepository;
-use Brave\Core\Entity\Group;
-use Brave\Core\Factory\RepositoryFactory;
+use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Role;
+use Neucore\Repository\AllianceRepository;
+use Neucore\Entity\Corporation;
+use Neucore\Repository\CorporationRepository;
+use Neucore\Entity\Group;
+use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;

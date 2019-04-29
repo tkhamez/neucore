@@ -2,14 +2,14 @@
 
 namespace Tests\Unit\Service;
 
-use Brave\Core\Entity\RemovedCharacter;
-use Brave\Core\Entity\Role;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Repository\RemovedCharacterRepository;
-use Brave\Core\Service\Account;
-use Brave\Core\Service\ObjectManager;
-use Brave\Core\Service\UserAuth;
-use Brave\Core\Slim\Session\SessionData;
+use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\RemovedCharacterRepository;
+use Neucore\Service\Account;
+use Neucore\Service\ObjectManager;
+use Neucore\Service\UserAuth;
+use Neucore\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;

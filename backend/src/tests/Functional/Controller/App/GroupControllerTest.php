@@ -2,15 +2,15 @@
 
 namespace Tests\Functional\Controller\App;
 
-use Brave\Core\Entity\Player;
-use Brave\Core\Entity\Role;
-use Brave\Core\Entity\SystemVariable;
-use Brave\Core\Factory\RepositoryFactory;
-use Brave\Core\Entity\Group;
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
+use Neucore\Entity\Group;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Brave\Core\Entity\Corporation;
-use Brave\Core\Entity\Alliance;
+use Neucore\Entity\Corporation;
+use Neucore\Entity\Alliance;
 
 class GroupControllerTest extends WebTestCase
 {

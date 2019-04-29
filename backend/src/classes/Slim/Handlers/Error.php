@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Brave\Core\Slim\Handlers;
+namespace Neucore\Slim\Handlers;
 
 use Psr\Log\LoggerInterface;
 
