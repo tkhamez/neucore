@@ -120,6 +120,7 @@ class Account
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception $e) {
+            // ignore
         }
         if (! empty($token->getRefreshToken())) {
             $char->setValidToken(true);
@@ -311,6 +312,7 @@ class Account
         try {
             $removedCharacter->setRemovedDate(new \DateTime());
         } catch (\Exception $e) {
+            // ignore
         }
 
         if ($newPlayer) {

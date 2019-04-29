@@ -340,6 +340,7 @@ class Character implements \JsonSerializable
             try {
                 $this->validTokenTime = new \DateTime();
             } catch (\Exception $e) {
+                // ignore
             }
         }
 

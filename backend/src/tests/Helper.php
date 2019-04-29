@@ -71,6 +71,7 @@ class Helper
             try {
                 $em = EntityManager::create($settings['config']['doctrine']['connection'], $config);
             } catch (ORMException $e) {
+                // ignore
             }
 
             if ($discrete) {

@@ -145,6 +145,7 @@ class EsiData
         try {
             $char->setLastUpdate(new \DateTime());
         } catch (\Exception $e) {
+            // ignore
         }
 
         // update char with corp entity - does not fetch data from ESI
@@ -201,6 +202,7 @@ class EsiData
         try {
             $corp->setLastUpdate(new \DateTime());
         } catch (\Exception $e) {
+            // ignore
         }
 
         // update corporation with alliance entity - does not fetch data from ESI
@@ -259,6 +261,7 @@ class EsiData
         try {
             $alliance->setLastUpdate(new \DateTime());
         } catch (\Exception $e) {
+            // ignore
         }
 
         // flush

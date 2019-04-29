@@ -156,6 +156,7 @@ class AutoGroupAssignment
         try {
             $player->setLastUpdate(new \DateTime());
         } catch (\Exception $e) {
+            // ignore
         }
 
         if (! $this->objectManager->flush()) {
