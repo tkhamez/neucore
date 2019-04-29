@@ -301,7 +301,7 @@ class AuthController
             ];
         }
 
-        $scopes = $this->config->get('eve', 'scopes');
+        $scopes = (string) $this->config->get('eve', 'scopes'); // will be false if env var is missing
         if (trim($scopes) !== '') {
             $scopes = explode(' ', $scopes);
         } else {
