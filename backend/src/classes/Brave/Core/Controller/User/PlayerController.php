@@ -3,6 +3,7 @@
 namespace Brave\Core\Controller\User;
 
 use Brave\Core\Controller\BaseController;
+use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Group;
 use Brave\Core\Entity\GroupApplication;
 use Brave\Core\Entity\Player;
@@ -92,7 +93,7 @@ class PlayerController extends BaseController
      */
     public function show(): Response
     {
-        return $this->response->withJson($this->userAuthService->getUser()->getPlayer());
+        return $this->response->withJson($this->getUser()->getPlayer());
     }
 
     /**
@@ -116,9 +117,7 @@ class PlayerController extends BaseController
      */
     public function groupsDisabled(Account $accountService): Response
     {
-        $player = $this->userAuthService->getUser()->getPlayer();
-
-        if ($accountService->groupsDeactivated($player, true)) { // true = ignore delay
+        if ($accountService->groupsDeactivated($this->getUser()->getPlayer(), true)) { // true = ignore delay
             return $this->response->withJson(true);
         }
 
@@ -198,6 +197,10 @@ class PlayerController extends BaseController
      *         description="Not authorized."
      *     )
      * )
+     *
+     * @param string $gid
+     * @return Response
+     * @throws \Exception
      */
     public function addApplication(string $gid): Response
     {
@@ -208,14 +211,14 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $player = $this->userAuthService->getUser()->getPlayer();
+        $player = $this->getUser()->getPlayer();
 
         // find existing applications
         $hasApplied = false;
         $groupApps = $this->repositoryFactory->getGroupApplicationRepository()
             ->findBy(['player' => $player->getId()]);
         foreach ($groupApps as $application) {
-            if ($application->getGroup() && $application->getGroup()->getId() === $group->getId()) {
+            if ($application->getGroup()->getId() === $group->getId()) {
                 $hasApplied = true;
                 break;
             }
@@ -225,7 +228,7 @@ class PlayerController extends BaseController
             $newApplication = new GroupApplication();
             $newApplication->setPlayer($player);
             $newApplication->setGroup($group);
-            $newApplication->setCreated(date_create());
+            $newApplication->setCreated(new \DateTime());
             $this->objectManager->persist($newApplication);
         }
 
@@ -263,10 +266,8 @@ class PlayerController extends BaseController
      */
     public function removeApplication(string $gid): Response
     {
-        $player = $this->userAuthService->getUser()->getPlayer();
-
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $player->getId(), 'group' => (int) $gid]);
+            ->findBy(['player' => $this->getUser()->getPlayer()->getId(), 'group' => (int) $gid]);
 
         if (count($groupApplications) === 0) {
             return $this->response->withStatus(404);
@@ -300,10 +301,8 @@ class PlayerController extends BaseController
      */
     public function showApplications(): Response
     {
-        $player = $this->userAuthService->getUser()->getPlayer();
-
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $player->getId()]);
+            ->findBy(['player' => $this->getUser()->getPlayer()->getId()]);
 
         return $this->response->withJson($groupApplications);
     }
@@ -344,7 +343,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $this->userAuthService->getUser()->getPlayer()->removeGroup($group);
+        $this->getUser()->getPlayer()->removeGroup($group);
 
         return $this->flushAndReturn(204);
     }
@@ -382,7 +381,7 @@ class PlayerController extends BaseController
     public function setMain(string $cid): Response
     {
         $main = null;
-        $player = $this->userAuthService->getUser()->getPlayer();
+        $player = $this->getUser()->getPlayer();
         foreach ($player->getCharacters() as $char) {
             if ($char->getId() === (int) $cid) {
                 $char->setMain(true);
@@ -439,11 +438,6 @@ class PlayerController extends BaseController
      */
     public function setStatus(string $id, string $status): Response
     {
-        $authPlayer = $this->userAuthService->getUser()->getPlayer();
-        if (! $authPlayer->hasRole(Role::USER_ADMIN)) {
-            return $this->response->withStatus(403);
-        }
-
         $validStatus = [
             Player::STATUS_STANDARD,
             Player::STATUS_MANAGED,
@@ -574,7 +568,8 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Role name.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager", "esi", "settings", "tracking"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
+     *               "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="200",
@@ -661,7 +656,8 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager", "esi", "settings", "tracking"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
+     *               "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -714,7 +710,8 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="Name of the role.",
      *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager", "esi", "settings", "tracking"}
+     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
+     *               "esi", "settings", "tracking"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -877,8 +874,7 @@ class PlayerController extends BaseController
         }
 
         // check if character to delete is logged in
-        $user = $this->userAuthService->getUser();
-        if ((int) $id === $user->getId()) {
+        if ((int) $id === $this->getUser()->getId()) {
             return $this->response->withStatus(409);
         }
 
@@ -889,7 +885,7 @@ class PlayerController extends BaseController
         }
 
         // check if character belongs to the logged in player account
-        if (! $user->getPlayer()->hasCharacter($char->getId())) {
+        if (! $this->getUser()->getPlayer()->hasCharacter((int) $char->getId())) {
             return $this->response->withStatus(403);
         }
 
@@ -922,5 +918,10 @@ class PlayerController extends BaseController
         }
 
         return $this->response->withJson($ret);
+    }
+
+    private function getUser(): Character
+    {
+        return $this->userAuthService->getUser();
     }
 }

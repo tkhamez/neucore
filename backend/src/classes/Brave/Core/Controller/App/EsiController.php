@@ -372,7 +372,7 @@ class EsiController
 
     private function isPublicPath($esiPath): bool
     {
-        $path = substr($esiPath, strpos($esiPath, '/', 1));
+        $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
 
         /** @noinspection PhpIncludeInspection */
         $publicPaths = include Application::ROOT_DIR . '/config/esi-paths-public.php';
@@ -386,21 +386,13 @@ class EsiController
         return false;
     }
 
-    /**
-     * @param string $esiPath
-     * @param array $esiParams
-     * @param string $token
-     * @param string $method GET or POST
-     * @param string|null $body
-     * @return ResponseInterface|null
-     */
     private function sendRequest(
         string $esiPath,
         array $esiParams,
         string $token,
         string $method,
         string $body = null
-    ): ?ResponseInterface {
+    ): ResponseInterface {
         $url = $this->config->get('eve', 'esi_host') . $esiPath.
             (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource') .
             (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
@@ -420,27 +412,23 @@ class EsiController
             $esiResponse = new \GuzzleHttp\Psr7\Response(
                 500, // status
                 [], // header
-                $ge->getMessage(), // body
-                '1.1', // version
-                null // reason
+                $ge->getMessage() // body
             );
         }
 
-        return $esiResponse;
+        return $esiResponse ?: $this->response->withStatus(500, 'Unknown error.');
     }
 
-    private function buildResponse(ResponseInterface $esiResponse = null): ResponseInterface
+    private function buildResponse(ResponseInterface $esiResponse): ResponseInterface
     {
-        if ($esiResponse !== null) {
-            $body = null;
-            try {
-                $body = $esiResponse->getBody()->getContents();
-            } catch (\RuntimeException $e) {
-                $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $e->getMessage());
-            }
-            if ($body !== null) {
-                $this->response->write($body);
-            }
+        $body = null;
+        try {
+            $body = $esiResponse->getBody()->getContents();
+        } catch (\RuntimeException $e) {
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $e->getMessage());
+        }
+        if ($body !== null) {
+            $this->response->write($body);
         }
 
         $response = $this->response->withStatus($esiResponse->getStatusCode());

@@ -116,7 +116,7 @@ class EsiController
         $token = $this->tokenService->getToken($character);
 
         $baseUri = $this->config->get('eve', 'esi_host');
-        $path = str_replace('{character_id}', $character->getId(), $route);
+        $path = str_replace('{character_id}', (string) $character->getId(), $route);
         $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource');
 
         $response = null;
@@ -155,7 +155,7 @@ class EsiController
         ], $code);
     }
 
-    private function extractHeaders(MessageInterface $response = null)
+    private function extractHeaders(MessageInterface $response = null): ?array
     {
         if ($response === null) {
             return null;

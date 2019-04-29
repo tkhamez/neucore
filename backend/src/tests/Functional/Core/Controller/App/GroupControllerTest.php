@@ -32,6 +32,8 @@ class GroupControllerTest extends WebTestCase
 
     private $group4Id;
 
+    private $group5Id;
+
     public function setUp()
     {
         $this->helper = new Helper();
@@ -390,7 +392,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE]
+            ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ['id' => $this->group5Id, 'name' => 'g5', 'visibility' => Group::VISIBILITY_PRIVATE],
         ], $this->parseJsonBody($response));
     }
 
@@ -430,6 +433,7 @@ class GroupControllerTest extends WebTestCase
         $expected = [[
             'id' => 100, 'name' => 'one', 'ticker' => '-1-', 'groups' => [
                 ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
+                ['id' => $this->group5Id, 'name' => 'g5', 'visibility' => Group::VISIBILITY_PRIVATE],
             ]
         ], [
             'id' => 101, 'name' => 'o1', 'ticker' => '-11-', 'groups' => [
@@ -487,9 +491,9 @@ class GroupControllerTest extends WebTestCase
             $headers
         );
 
-        # app: g0, g1, g4
+        # app: g0, g1, g4, g5
         # corp 500: g1, g2, g4
-        # alli 100: g2, g4
+        # alli 100: g2, g4, g5
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -497,6 +501,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE],
             ['id' => $this->group4Id, 'name' => 'g4', 'visibility' => Group::VISIBILITY_PRIVATE],
+            ['id' => $this->group5Id, 'name' => 'g5', 'visibility' => Group::VISIBILITY_PRIVATE],
         ], $body);
     }
 
@@ -522,15 +527,17 @@ class GroupControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $groups = $this->helper->addGroups(['g0', 'g1', 'g2', 'g3', 'g4']);
+        $groups = $this->helper->addGroups(['g0', 'g1', 'g2', 'g3', 'g4', 'g5']);
         $this->group0Id = $groups[0]->getId();
         $this->group1Id = $groups[1]->getId();
         $this->group4Id = $groups[4]->getId();
+        $this->group5Id = $groups[5]->getId();
 
         $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_GROUPS]);
         $app->addGroup($groups[0]);
         $app->addGroup($groups[1]);
         $app->addGroup($groups[4]);
+        $app->addGroup($groups[5]);
         $this->appId = $app->getId();
 
         $char1 = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
@@ -544,6 +551,7 @@ class GroupControllerTest extends WebTestCase
         $alli = (new Alliance())->setId(100)->setName('one')->setTicker('-1-');
         $alli->addGroup($groups[2]);
         $alli->addGroup($groups[4]);
+        $alli->addGroup($groups[5]);
 
         $alli2 = (new Alliance())->setId(101)->setName('o1')->setTicker('-11-');
         $alli2->addGroup($groups[0]);
@@ -568,13 +576,13 @@ class GroupControllerTest extends WebTestCase
         $char3->setValidToken(false)->setCorporation($corp);
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
-        $char3->setValidTokenTime(date_create("now -{$invalidHours} hours"));
+        $char3->setValidTokenTime(new \DateTime("now -{$invalidHours} hours"));
 
         $char4 = $this->helper->addCharacterMain('C3', 780); // managed account
         $char4->setValidToken(false)->setCorporation($corp);
         $char4->getPlayer()->setStatus(Player::STATUS_MANAGED);
         $char4->getPlayer()->addGroup($groups[0]);
-        $char4->setValidTokenTime(date_create("now -{$invalidHours} hours"));
+        $char4->setValidTokenTime(new \DateTime("now -{$invalidHours} hours"));
 
         $this->helper->addCharacterMain('C4', 1010, [Role::USER]); // no groups
 

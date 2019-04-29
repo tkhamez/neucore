@@ -17,6 +17,7 @@ use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
@@ -221,7 +222,7 @@ class MemberTrackingTest extends TestCase
         $this->em->flush();
 
         $result = $this->memberTracking->refreshDirectorToken(SystemVariable::DIRECTOR_CHAR . 1);
-        $this->assertInstanceOf(AccessToken::class, $result);
+        $this->assertInstanceOf(AccessTokenInterface::class, $result);
     }
 
     public function testVerifyDirectorRoleCharacterNotFound()
@@ -266,11 +267,10 @@ class MemberTrackingTest extends TestCase
     {
         $corp = (new Corporation())->setId(10)->setName('corp')->setTicker('C');
         $char = (new Character())->setId(100)->setName('char 1');
-        $member = (new CorporationMember())->setId(100)->setName('char 1')->setCharacter($char);
+        $member = (new CorporationMember())->setId(100)->setName('char 1')->setCharacter($char)->setCorporation($corp);
         $this->em->persist($corp);
         $this->em->persist($member);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
-        $this->em->flush();
         $data = [
             new GetCorporationsCorporationIdMembertracking200Ok([
                 'character_id' => 100,
@@ -289,16 +289,16 @@ class MemberTrackingTest extends TestCase
 
         $this->assertTrue($this->memberTracking->processData($corp, $data));
 
-        $data = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
-        $this->assertSame(2, count($data));
-        $this->assertSame(100, $data[0]->getId());
-        $this->assertSame(100, $data[0]->getCharacter()->getId());
-        $this->assertSame(200, $data[0]->getLocationId());
-        $this->assertSame('2018-12-25T19:45:10+00:00', $data[0]->getLogoffDate()->format(\DATE_ATOM));
-        $this->assertSame('2018-12-25T19:45:11+00:00', $data[0]->getLogonDate()->format(\DATE_ATOM));
-        $this->assertSame(300, $data[0]->getShipTypeId());
-        $this->assertSame('2018-12-25T19:45:12+00:00', $data[0]->getStartDate()->format(\DATE_ATOM));
-        $this->assertSame(101, $data[1]->getId());
-        $this->assertNull($data[1]->getCharacter());
+        $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
+        $this->assertSame(2, count($result));
+        $this->assertSame(100, $result[0]->getId());
+        $this->assertSame(100, $result[0]->getCharacter()->getId());
+        $this->assertSame(200, $result[0]->getLocationId());
+        $this->assertSame('2018-12-25T19:45:10+00:00', $result[0]->getLogoffDate()->format(\DATE_ATOM));
+        $this->assertSame('2018-12-25T19:45:11+00:00', $result[0]->getLogonDate()->format(\DATE_ATOM));
+        $this->assertSame(300, $result[0]->getShipTypeId());
+        $this->assertSame('2018-12-25T19:45:12+00:00', $result[0]->getStartDate()->format(\DATE_ATOM));
+        $this->assertSame(101, $result[1]->getId());
+        $this->assertNull($result[1]->getCharacter());
     }
 }

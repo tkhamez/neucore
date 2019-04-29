@@ -13,7 +13,7 @@ class RoleTest extends \PHPUnit\Framework\TestCase
         $role = new Role(1);
         $role->setName('r.name');
 
-        $this->assertSame('r.name', json_decode(json_encode($role), true));
+        $this->assertSame('r.name', json_decode((string) json_encode($role), true));
     }
 
     public function testGetId()

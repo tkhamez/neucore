@@ -50,14 +50,7 @@ class Helper
     public function resetSessionData(): void
     {
         unset($_SESSION);
-
-        try {
-            $rp = new \ReflectionProperty(SessionData::class, 'readOnly');
-        } catch (\ReflectionException $e) {
-            return;
-        }
-        $rp->setAccessible(true);
-        $rp->setValue(null, true);
+        (new SessionData())->setReadOnly(true);
     }
 
     public function getEm(bool $discrete = false): ?EntityManagerInterface
@@ -238,7 +231,7 @@ class Helper
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret($hash);
+        $app->setSecret((string) $hash);
         $em->persist($app);
 
         foreach ($this->addRoles($roles) as $role) {

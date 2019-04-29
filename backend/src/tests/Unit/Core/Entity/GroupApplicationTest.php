@@ -22,7 +22,7 @@ class GroupApplicationTest extends TestCase
             'group' => ['id' => null, 'name' => 'g', 'visibility' => Group::VISIBILITY_PRIVATE],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => '2019-04-06T16:09:24Z'
-        ], json_decode(json_encode($groupApp), true));
+        ], json_decode((string) json_encode($groupApp), true));
     }
 
     public function testGetId()
@@ -48,7 +48,7 @@ class GroupApplicationTest extends TestCase
 
     public function testSetGetCreated()
     {
-        $dt1 = date_create('2019-04-06 16:09:25');
+        $dt1 = new \DateTime('2019-04-06 16:09:25');
 
         $groupApp = new GroupApplication();
         $groupApp->setCreated($dt1);

@@ -57,7 +57,7 @@ class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase
         $corp1 = (new Corporation())->setId(10)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(11)->setTicker('t2')->setName('corp 2');
         $member1 = (new CorporationMember())->setId(100)->setName('member 1')->setCorporation($corp1);
-        $member2 = (new CorporationMember())->setId(101)->setName('member 2');
+        $member2 = (new CorporationMember())->setId(101)->setName('member 2')->setCorporation($corp1);
         $this->em->persist($corp1);
         $this->em->persist($corp2);
         $this->em->persist($member1);

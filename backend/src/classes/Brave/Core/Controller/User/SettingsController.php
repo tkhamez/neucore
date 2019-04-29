@@ -159,7 +159,9 @@ class SettingsController
             // if the mail character has been removed, delete the corresponding token as well
             $variable->setValue(''); // only removal is allowed here
             $var2 = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::MAIL_TOKEN);
-            $var2->setValue('');
+            if ($var2) {
+                $var2->setValue('');
+            }
         } elseif (strpos($variable->getName(), SystemVariable::DIRECTOR_CHAR) !== false) {
             if ($memberTracking->removeDirector($variable)) {
                 $variable = null;
@@ -200,14 +202,14 @@ class SettingsController
      */
     public function sendAccountDisabledMail(EveMail $eveMail): Response
     {
-        $charId = $this->userAuth->getUser()->getId();
+        $charId = $this->userAuth->getUser() !== null ? $this->userAuth->getUser()->getId() : null;
 
         $result = $eveMail->accountDeactivatedIsActive();
         if ($result === '') {
             $result = $eveMail->accountDeactivatedMaySend($charId, true);
         }
         if ($result === '') {
-            $result = $eveMail->accountDeactivatedSend($charId);
+            $result = $eveMail->accountDeactivatedSend((int) $charId);
         }
 
         return $this->response->withJson($result);

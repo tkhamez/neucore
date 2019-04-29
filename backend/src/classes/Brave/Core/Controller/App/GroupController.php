@@ -92,7 +92,7 @@ class GroupController
      */
     public function groupsV1(string $cid, ServerRequestInterface $request): Response
     {
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+        $appGroups = $this->getAppGroups($request);
         $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
 
         if ($result === null) {
@@ -453,7 +453,7 @@ class GroupController
         $corporationId = (int) $request->getParam('corporation');
         $allianceId = (int) $request->getParam('alliance');
 
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+        $appGroups = $this->getAppGroups($request);
 
         $characterResult = $this->getGroupsForPlayer($characterId, $appGroups);
         if ($characterResult !== null) {
@@ -489,7 +489,7 @@ class GroupController
 
     private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request)
     {
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+        $appGroups = $this->getAppGroups($request);
         $result = $this->getGroupsFor($type, (int) $id, $appGroups);
 
         if ($result === null) {
@@ -514,7 +514,7 @@ class GroupController
             return $this->response->withJson([]);
         }
 
-        $appGroups = $this->appAuthService->getApp($request)->getGroups();
+        $appGroups = $this->getAppGroups($request);
 
         $result = [];
         foreach ($ids as $id) {
@@ -626,5 +626,16 @@ class GroupController
         }
 
         return $result;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return Group[]
+     */
+    private function getAppGroups(ServerRequestInterface $request): array
+    {
+        $app = $this->appAuthService->getApp($request);
+
+        return $app ? $app->getGroups() : [];
     }
 }

@@ -6,6 +6,10 @@ use Brave\Core\Entity\Alliance;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\AllianceRepository;
+use Brave\Core\Repository\CorporationRepository;
+use Brave\Core\Repository\GroupRepository;
+use Brave\Core\Repository\PlayerRepository;
 use Psr\Log\LoggerInterface;
 
 class AutoGroupAssignment
@@ -16,22 +20,22 @@ class AutoGroupAssignment
     private $objectManager;
 
     /**
-     * @var \Brave\Core\Repository\AllianceRepository
+     * @var AllianceRepository
      */
     private $allianceRepo;
 
     /**
-     * @var \Brave\Core\Repository\CorporationRepository
+     * @var CorporationRepository
      */
     private $corpRepo;
 
     /**
-     * @var \Brave\Core\Repository\GroupRepository
+     * @var GroupRepository
      */
     private $groupRepo;
 
     /**
-     * @var \Brave\Core\Repository\PlayerRepository
+     * @var PlayerRepository
      */
     private $playerRepo;
 
@@ -111,7 +115,7 @@ class AutoGroupAssignment
                 $groupIds = array_merge($groupIds, $this->corpMapping[$corpId]);
             }
 
-            if ($char->getCorporation()->getAlliance()) {
+            if ($char->getCorporation()->getAlliance() !== null) {
                 $allianceId = $char->getCorporation()->getAlliance()->getId();
                 if (isset($this->allianceMapping[$allianceId])) {
                     $groupIds = array_merge($groupIds, $this->allianceMapping[$allianceId]);
@@ -149,7 +153,10 @@ class AutoGroupAssignment
             }
         }
 
-        $player->setLastUpdate(date_create());
+        try {
+            $player->setLastUpdate(new \DateTime());
+        } catch (\Exception $e) {
+        }
 
         if (! $this->objectManager->flush()) {
             return false;

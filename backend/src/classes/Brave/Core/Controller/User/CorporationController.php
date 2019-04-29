@@ -356,12 +356,15 @@ class CorporationController extends BaseController
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool
     {
-        $this->corp = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
-        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $corp = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
-        if ($this->corp === null || $this->group === null) {
+        if ($corp === null || $group === null) {
             return false;
         }
+
+        $this->corp = $corp;
+        $this->group = $group;
 
         return true;
     }

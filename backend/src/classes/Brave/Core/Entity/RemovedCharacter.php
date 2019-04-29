@@ -50,6 +50,7 @@ class RemovedCharacter implements \JsonSerializable
      * The old player account.
      *
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
+     * @ORM\JoinColumn(nullable=false)
      * @var Player
      */
     private $player;
@@ -59,7 +60,7 @@ class RemovedCharacter implements \JsonSerializable
      *
      * @ORM\ManyToOne(targetEntity="Player")
      * @ORM\JoinColumn(name="new_player_id")
-     * @var Player
+     * @var Player|null
      */
     private $newPlayer;
 
@@ -95,7 +96,7 @@ class RemovedCharacter implements \JsonSerializable
      *
      * @SWG\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
      * @ORM\Column(type="string", length=32)
-     * @var string
+     * @var string|null
      */
     private $reason;
 
@@ -110,7 +111,8 @@ class RemovedCharacter implements \JsonSerializable
         return [
             'characterId' => $this->getCharacterId(),
             'characterName' => $this->characterName,
-            'removedDate' => $this->removedDate ? $this->removedDate->format(Api::DATE_FORMAT) : null,
+            'removedDate' => $this->getRemovedDate() !== null ?
+                $this->getRemovedDate()->format(Api::DATE_FORMAT) : null,
             'reason' => $this->reason,
 
             // The JS client has problems if the newPLayer (type Player) property is added here
@@ -161,7 +163,7 @@ class RemovedCharacter implements \JsonSerializable
         return $this->removedDate;
     }
 
-    public function setReason(string $reason): self
+    public function setReason(?string $reason): self
     {
         $this->reason = $reason;
 
@@ -173,7 +175,7 @@ class RemovedCharacter implements \JsonSerializable
         return (string) $this->reason;
     }
 
-    public function setPlayer(Player $player = null): self
+    public function setPlayer(Player $player): self
     {
         $this->player = $player;
 

@@ -115,10 +115,8 @@ class Alliance implements \JsonSerializable
 
     /**
      * Get id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
         return $this->id !== null ? (int) $this->id : null;

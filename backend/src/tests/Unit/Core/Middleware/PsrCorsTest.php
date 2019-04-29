@@ -3,15 +3,14 @@
 namespace Tests\Unit\Core\Middleware;
 
 use Brave\Core\Middleware\PsrCors;
-use Psr\Http\Message\ServerRequestInterface;
+use PHPUnit\Framework\TestCase;
 
-class PsrCorsTest extends \PHPUnit\Framework\TestCase
+class PsrCorsTest extends TestCase
 {
     public function testAddsHeader()
     {
-        /* @var $req \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface */
-        $req = $this->createMock(ServerRequestInterface::class);
-        $req->method('getHeader')->willReturn(['https://domain.tld']);
+        $req = new PsrCorsTestRequest();
+        $req = $req->withHeader('HTTP_ORIGIN', 'https://domain.tld');
 
         $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
             return $res;
@@ -29,9 +28,8 @@ class PsrCorsTest extends \PHPUnit\Framework\TestCase
 
     public function testDoesNotAddHeader()
     {
-        /* @var $req \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface */
-        $req = $this->createMock(ServerRequestInterface::class);
-        $req->method('getHeader')->willReturn(['http://domain.tld']);
+        $req = new PsrCorsTestRequest();
+        $req = $req->withHeader('HTTP_ORIGIN', 'http://domain.tld');
 
         $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
             return $res;

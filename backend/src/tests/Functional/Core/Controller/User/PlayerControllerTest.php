@@ -337,12 +337,12 @@ class PlayerControllerTest extends WebTestCase
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/managed');
+        $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/'.Player::STATUS_MANAGED);
         $this->assertEquals(403, $response1->getStatusCode());
 
         $this->loginUser(11); // not a user-admin
 
-        $response2 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/managed');
+        $response2 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/'.Player::STATUS_MANAGED);
         $this->assertEquals(403, $response2->getStatusCode());
     }
 

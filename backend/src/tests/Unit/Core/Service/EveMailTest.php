@@ -369,7 +369,7 @@ class EveMailTest extends TestCase
         $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
         $varBody = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY))->setValue('b');
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $varToken->setValue(\json_encode([
+        $varToken->setValue((string) \json_encode([
             'id' => 123,
             'access' => 'access-token',
             'refresh' => 'refresh-token',
@@ -396,7 +396,7 @@ class EveMailTest extends TestCase
     public function testAccountDeactivatedSend()
     {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $varToken->setValue(\json_encode([
+        $varToken->setValue((string) \json_encode([
             'id' => 123,
             'access' => 'access-token',
             'refresh' => 'refresh-token',
@@ -422,7 +422,7 @@ class EveMailTest extends TestCase
             ),
 
             // for postCharactersCharacterIdMail()
-            new Response(200, [], 373515628)
+            new Response(200, [], '373515628')
         );
 
         $result = $this->eveMail->accountDeactivatedSend(456);
@@ -452,7 +452,7 @@ class EveMailTest extends TestCase
 
     public function testSendMail()
     {
-        $this->client->setResponse(new Response(200, [], 373515628));
+        $this->client->setResponse(new Response(200, [], '373515628'));
 
         $result = $this->eveMail->sendMail(123, 'access-token', 'subject', 'body', [456]);
 

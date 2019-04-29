@@ -262,12 +262,15 @@ class AllianceController extends BaseController
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool
     {
-        $this->alliance = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
-        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $alliance = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
-        if ($this->alliance === null || $this->group === null) {
+        if ($alliance === null || $group === null) {
             return false;
         }
+
+        $this->alliance = $alliance;
+        $this->group = $group;
 
         return true;
     }

@@ -67,7 +67,7 @@ class UpdatePlayerGroups extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->log = $input->getOption('log');
+        $this->log = (bool) $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "update-player-groups"');

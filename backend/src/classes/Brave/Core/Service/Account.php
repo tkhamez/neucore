@@ -117,7 +117,10 @@ class Account
         // update character
         $token = $eveAuth->getToken();
         $char->setName($eveAuth->getCharacterName());
-        $char->setLastLogin(date_create());
+        try {
+            $char->setLastLogin(new \DateTime());
+        } catch (\Exception $e) {
+        }
         if (! empty($token->getRefreshToken())) {
             $char->setValidToken(true);
         } else {
@@ -162,7 +165,7 @@ class Account
     public function checkCharacter(Character $char, OAuthToken $tokenService): int
     {
         // check if character is in Doomheim (biomassed)
-        if ($char->getCorporation() && $char->getCorporation()->getId() === 1000001) {
+        if ($char->getCorporation() !== null && $char->getCorporation()->getId() === 1000001) {
             $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BIOMASSED);
             $this->objectManager->flush();
             return self::CHECK_CHAR_DELETED;
@@ -292,6 +295,11 @@ class Account
         Player $newPlayer = null,
         string $reason = null
     ): void {
+        if ($character->getId() === null) { // should never be true, but that's not obvious here
+            $this->log->error('Account::createRemovedCharacter(): Missing character ID.');
+            return;
+        }
+
         $removedCharacter = new RemovedCharacter();
 
         $player = $character->getPlayer();
@@ -300,7 +308,10 @@ class Account
 
         $removedCharacter->setCharacterId($character->getId());
         $removedCharacter->setCharacterName($character->getName());
-        $removedCharacter->setRemovedDate(date_create());
+        try {
+            $removedCharacter->setRemovedDate(new \DateTime());
+        } catch (\Exception $e) {
+        }
 
         if ($newPlayer) {
             $removedCharacter->setNewPlayer($newPlayer);

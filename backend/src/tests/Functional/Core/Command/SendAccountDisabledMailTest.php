@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\Functional\Core\Command;
 
@@ -120,7 +120,7 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $this->em->persist($c5);
         $this->em->flush();
 
-        $this->client->setResponse(new Response(200, [], 373515628));
+        $this->client->setResponse(new Response(200, [], '373515628'));
 
         $output = $this->runConsoleApp('send-account-disabled-mail', ['--sleep' => 0], [
             ClientInterface::class => $this->client

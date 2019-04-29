@@ -125,7 +125,7 @@ class AppAuthTest extends \PHPUnit\Framework\TestCase
         $method = $environment['REQUEST_METHOD'];
         $uri = Uri::createFromEnvironment($environment);
         $headers = Headers::createFromEnvironment($environment);
-        $cookies = Cookies::parseHeader($headers->get('Cookie', ''));
+        $cookies = Cookies::parseHeader($headers->get('Cookie', [''])[0]);
         $serverParams = $environment->all();
         $body = new RequestBody();
 

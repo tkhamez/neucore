@@ -4,6 +4,7 @@ namespace Brave\Core\Command;
 
 use Brave\Core\Entity\Player;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\PlayerRepository;
 use Brave\Core\Service\EveMail;
 use Brave\Core\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
@@ -20,7 +21,7 @@ class SendAccountDisabledMail extends Command
     private $eveMail;
 
     /**
-     * @var \Brave\Core\Repository\PlayerRepository
+     * @var PlayerRepository
      */
     private $playerRepository;
 
@@ -79,8 +80,8 @@ class SendAccountDisabledMail extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->sleep = (int) $input->getOption('sleep');
-        $this->log = $input->getOption('log');
+        $this->sleep = intval($input->getOption('sleep'));
+        $this->log = (bool) $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "send-account-disabled-mail"');

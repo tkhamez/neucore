@@ -52,13 +52,13 @@ class Character implements \JsonSerializable
     /**
      *
      * @ORM\Column(type="text", length=65535, name="character_owner_hash", nullable=true)
-     * @var string
+     * @var string|null
      */
     private $characterOwnerHash;
 
     /**
      * @ORM\Column(type="text", length=65535, name="access_token", nullable=true)
-     * @var string
+     * @var string|null
      */
     private $accessToken;
 
@@ -66,13 +66,13 @@ class Character implements \JsonSerializable
      * Unix timestamp when access token expires.
      *
      * @ORM\Column(type="integer", nullable=true)
-     * @var int
+     * @var int|null
      */
     private $expires;
 
     /**
      * @ORM\Column(type="text", length=65535, name="refresh_token", nullable=true)
-     * @var string
+     * @var string|null
      */
     private $refreshToken;
 
@@ -83,7 +83,7 @@ class Character implements \JsonSerializable
      *
      * @SWG\Property()
      * @ORM\Column(type="boolean", name="valid_token", nullable=true)
-     * @var bool
+     * @var bool|null
      */
     private $validToken;
 
@@ -91,7 +91,7 @@ class Character implements \JsonSerializable
      * Date and time when that valid token property was changed.
      *
      * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $validTokenTime;
 
@@ -99,13 +99,13 @@ class Character implements \JsonSerializable
      * OAuth scopes.
      *
      * @ORM\Column(type="text", length=65535, nullable=true)
-     * @var string
+     * @var string|null
      */
     private $scopes;
 
     /**
      * @ORM\Column(type="datetime", name="last_login", nullable=true)
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $lastLogin;
 
@@ -129,13 +129,13 @@ class Character implements \JsonSerializable
      *
      * @SWG\Property(ref="#/definitions/Corporation")
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
-     * @var Corporation
+     * @var Corporation|null
      */
     private $corporation;
 
     /**
      * @ORM\OneToOne(targetEntity="CorporationMember", mappedBy="character")
-     * @var CorporationMember
+     * @var CorporationMember|null
      */
     private $corporationMember;
 
@@ -151,7 +151,7 @@ class Character implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
-            'lastUpdate' => $this->lastUpdate ? $this->lastUpdate->format(Api::DATE_FORMAT) : null,
+            'lastUpdate' => $this->getLastUpdate() !== null ? $this->getLastUpdate()->format(Api::DATE_FORMAT) : null,
             'validToken' => $this->validToken,
         ];
         if ($withRelations) {
@@ -177,10 +177,8 @@ class Character implements \JsonSerializable
 
     /**
      * Get id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
         return $this->id !== null ? (int) $this->id : null;
@@ -339,7 +337,10 @@ class Character implements \JsonSerializable
     public function setValidToken(bool $validToken = null): self
     {
         if ($this->validToken !== $validToken) {
-            $this->validTokenTime = date_create();
+            try {
+                $this->validTokenTime = new \DateTime();
+            } catch (\Exception $e) {
+            }
         }
 
         $this->validToken = $validToken;

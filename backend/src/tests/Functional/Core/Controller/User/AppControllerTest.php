@@ -10,6 +10,7 @@ use Brave\Core\Entity\Player;
 use Brave\Core\Repository\AppRepository;
 use Brave\Core\Entity\App;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Monolog\Handler\TestHandler;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
@@ -25,7 +26,7 @@ class AppControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -499,7 +500,7 @@ class AppControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
@@ -678,7 +679,7 @@ class AppControllerTest extends WebTestCase
 
         $a = new App();
         $a->setName('app one');
-        $a->setSecret(password_hash('abc123', PASSWORD_DEFAULT));
+        $a->setSecret((string) password_hash('abc123', PASSWORD_DEFAULT));
         if (in_array('app', $addRoles)) {
             $a->addRole($roles[0]); // Role::APP
         }

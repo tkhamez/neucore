@@ -3,6 +3,7 @@
 namespace Brave\Core\Service;
 
 use Brave\Core\Entity\Alliance;
+use Brave\Core\Entity\Character;
 use Brave\Core\Entity\Corporation;
 use Brave\Core\Factory\EsiApiFactory;
 use Brave\Core\Factory\RepositoryFactory;
@@ -34,7 +35,7 @@ class EsiData
     private $repositoryFactory;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $lastErrorCode;
 
@@ -70,12 +71,12 @@ class EsiData
      * Returns null if any of the ESI requests fails.
      *
      * @param int $id EVE character ID
-     * @return NULL|\Brave\Core\Entity\Character
+     * @return NULL|Character
      */
-    public function fetchCharacterWithCorporationAndAlliance(int $id)
+    public function fetchCharacterWithCorporationAndAlliance(?int $id)
     {
         $char = $this->fetchCharacter($id, false);
-        if ($char === null) {
+        if ($char === null || $char->getCorporation() === null) { // corp is never null here, but that's not obvious
             return null;
         }
 
@@ -111,11 +112,11 @@ class EsiData
      *
      * @param int $id
      * @param bool $flush Optional write data to database, defaults to true
-     * @return null|\Brave\Core\Entity\Character An instance that is attached to the Doctrine entity manager.
+     * @return null|Character An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchCharacter(int $id, bool $flush = true)
+    public function fetchCharacter(?int $id, bool $flush = true)
     {
-        if ($id <= 0) {
+        if ($id === null || $id <= 0) {
             return null;
         }
 
@@ -141,7 +142,10 @@ class EsiData
             $char->getPlayer()->setName($char->getName());
         }
 
-        $char->setLastUpdate(date_create());
+        try {
+            $char->setLastUpdate(new \DateTime());
+        } catch (\Exception $e) {
+        }
 
         // update char with corp entity - does not fetch data from ESI
         $corpId = (int) $eveChar->getCorporationId();
@@ -169,11 +173,11 @@ class EsiData
      *
      * @param int $id EVE corporation ID
      * @param bool $flush Optional write data to database, defaults to true
-     * @return null|\Brave\Core\Entity\Corporation An instance that is attached to the Doctrine entity manager.
+     * @return null|Corporation An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchCorporation(int $id, bool $flush = true)
+    public function fetchCorporation(?int $id, bool $flush = true)
     {
-        if ($id <= 0) {
+        if ($id === null || $id <= 0) {
             return null;
         }
 
@@ -194,7 +198,10 @@ class EsiData
         $corp->setName($eveCorp->getName());
         $corp->setTicker($eveCorp->getTicker());
 
-        $corp->setLastUpdate(date_create());
+        try {
+            $corp->setLastUpdate(new \DateTime());
+        } catch (\Exception $e) {
+        }
 
         // update corporation with alliance entity - does not fetch data from ESI
         $alliId = (int) $eveCorp->getAllianceId();
@@ -224,11 +231,11 @@ class EsiData
      *
      * @param int $id EVE alliance ID
      * @param bool $flush Optional write data to database, defaults to true
-     * @return null|\Brave\Core\Entity\Alliance An instance that is attached to the Doctrine entity manager.
+     * @return null|Alliance An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchAlliance(int $id, bool $flush = true)
+    public function fetchAlliance(?int $id, bool $flush = true)
     {
-        if ($id <= 0) {
+        if ($id === null || $id <= 0) {
             return null;
         }
 
@@ -249,7 +256,10 @@ class EsiData
         $alliance->setName($eveAlli->getName());
         $alliance->setTicker($eveAlli->getTicker());
 
-        $alliance->setLastUpdate(date_create());
+        try {
+            $alliance->setLastUpdate(new \DateTime());
+        } catch (\Exception $e) {
+        }
 
         // flush
         if ($flush && ! $this->objectManager->flush()) {

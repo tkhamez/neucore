@@ -116,7 +116,7 @@ class AccountTest extends TestCase
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
             new EveAuthentication(
-                null,
+                100,
                 'char name changed',
                 'character-owner-hash',
                 new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires]),
@@ -149,7 +149,7 @@ class AccountTest extends TestCase
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
             new EveAuthentication(
-                null,
+                100,
                 'name',
                 'character-owner-hash',
                 new AccessToken(['access_token' => 'a-t']),
@@ -341,10 +341,12 @@ class AccountTest extends TestCase
     {
         $player = (new Player())->setName('player 1');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
-        $member = (new CorporationMember())->setId(10)->setCharacter($char);
+        $corp = (new Corporation())->setId(1)->setName('c');
+        $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
         $player->addCharacter($char);
         $this->helper->getEm()->persist($player);
         $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->persist($corp);
         $this->helper->getEm()->persist($member);
         $this->helper->getEm()->flush();
 
@@ -418,7 +420,7 @@ class AccountTest extends TestCase
         $this->helper->getEm()->flush();
 
         $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)->setValidTokenTime(date_create("now -12 hours"))
+            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -434,7 +436,7 @@ class AccountTest extends TestCase
         $this->helper->getEm()->flush();
 
         $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)->setValidTokenTime(date_create("now -12 hours"))
+            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
         );
 
         $this->assertTrue($this->service->groupsDeactivated($player, true));

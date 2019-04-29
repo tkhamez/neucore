@@ -17,7 +17,7 @@ class Config
     }
 
     /**
-     * @return string|array|null
+     * @return mixed
      */
     public function get(string $key, string $key2 = null)
     {

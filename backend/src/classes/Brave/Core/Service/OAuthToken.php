@@ -7,6 +7,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -39,17 +40,16 @@ class OAuthToken
     /**
      * Refreshes the access token if necessary.
      *
-     * @param AccessToken $existingToken
-     * @return \League\OAuth2\Client\Token\AccessToken A new object if the token was refreshed
+     * @param AccessTokenInterface $existingToken
+     * @return AccessTokenInterface A new object if the token was refreshed
      * @throws IdentityProviderException For "invalid_token" error (refresh token is expired),
      *         other exceptions are caught.
      */
-    public function refreshAccessToken(AccessToken $existingToken): ?AccessToken
+    public function refreshAccessToken(AccessTokenInterface $existingToken): AccessTokenInterface
     {
-        $token = $existingToken;
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {
             try {
-                $token = $this->oauth->getAccessToken('refresh_token', [
+                $newToken = $this->oauth->getAccessToken('refresh_token', [
                     'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
@@ -65,7 +65,7 @@ class OAuthToken
             }
         }
 
-        return $token;
+        return $newToken ?? $existingToken;
     }
 
     /**
@@ -104,10 +104,12 @@ class OAuthToken
     /**
      * Returns resource owner.
      */
-    public function getResourceOwner(AccessToken $token): ?ResourceOwnerInterface
+    public function getResourceOwner(AccessTokenInterface $token): ?ResourceOwnerInterface
     {
         $owner = null;
         try {
+            /** @noinspection PhpParamsInspection */
+            // see also https://github.com/thephpleague/oauth2-client/issues/752
             $owner = $this->oauth->getResourceOwner($token);
         } catch (\Exception $e) {
             if (! $e instanceof IdentityProviderException || $e->getMessage() !== 'invalid_token') {
@@ -119,10 +121,7 @@ class OAuthToken
         return $owner;
     }
 
-    /**
-     * @return AccessToken|null
-     */
-    public function createAccessTokenFromCharacter(Character $character)
+    public function createAccessTokenFromCharacter(Character $character): ?AccessTokenInterface
     {
         $token = null;
         try {

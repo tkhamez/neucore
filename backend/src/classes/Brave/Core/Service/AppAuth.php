@@ -2,6 +2,7 @@
 
 namespace Brave\Core\Service;
 
+use Brave\Core\Entity\App;
 use Brave\Core\Factory\RepositoryFactory;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,7 +26,7 @@ class AppAuth implements RoleProviderInterface
     private $objectManager;
 
     /**
-     * @var \Brave\Core\Entity\App
+     * @var App
      */
     private $app;
 
@@ -57,7 +58,7 @@ class AppAuth implements RoleProviderInterface
     /**
      *
      * @param ServerRequestInterface $request
-     * @return NULL|\Brave\Core\Entity\App
+     * @return NULL|App
      */
     public function getApp(ServerRequestInterface $request)
     {
@@ -125,7 +126,7 @@ class AppAuth implements RoleProviderInterface
     private function upgradeHash(string $secret)
     {
         if (password_needs_rehash($this->app->getSecret(), PASSWORD_DEFAULT)) {
-            $this->app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+            $this->app->setSecret((string) password_hash($secret, PASSWORD_DEFAULT));
             $this->objectManager->flush();
         }
     }

@@ -10,6 +10,7 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 
@@ -77,7 +78,7 @@ class MemberTracking
         // get corporation ID from character
         try {
             $char = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId($eveAuth->getCharacterId(), $this->datasource);
+                ->getCharactersCharacterId((int) $eveAuth->getCharacterId(), $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), ['exception' => $e]);
             return false;
@@ -118,7 +119,10 @@ class MemberTracking
     public function updateDirector(string $variableName): bool
     {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($variableName);
-        $data = \json_decode($variable ? $variable->getValue() : '', true);
+        if (! $variable) {
+            return false;
+        }
+        $data = \json_decode($variable->getValue(), true);
         if (! isset($data['character_id'])) {
             return false;
         }
@@ -141,16 +145,16 @@ class MemberTracking
         $data['corporation_name'] = $corporation->getName();
         $data['corporation_ticker'] = $corporation->getTicker();
 
-        $variable->setValue(\json_encode($data));
+        $variable->setValue((string) \json_encode($data));
 
         return $this->objectManager->flush();
     }
 
     /**
      * @param string $name
-     * @return AccessToken|null Token including the resource_owner_id property.
+     * @return ResourceOwnerAccessTokenInterface|null Token including the resource_owner_id property.
      */
-    public function refreshDirectorToken(string $name): ?AccessToken
+    public function refreshDirectorToken(string $name): ?ResourceOwnerAccessTokenInterface
     {
         $number = (int) explode('_', $name)[2];
 
@@ -200,7 +204,6 @@ class MemberTracking
     }
 
     /**
-     * @param int $corporationId
      * @return GetCorporationsCorporationIdMembertracking200Ok[]|null Null if ESI request failed
      */
     public function fetchData(string $accessToken, int $corporationId): ?array
@@ -232,7 +235,6 @@ class MemberTracking
         if (count($charIds) > 0) {
             try {
                 // it's possible that postUniverseNames() returns null
-                /** @noinspection PhpParamsInspection */
                 $names = $this->esiApiFactory
                     ->getUniverseApi()
                     ->postUniverseNames($charIds, $this->datasource);
@@ -259,10 +261,16 @@ class MemberTracking
             $corpMember->setCharacter($character);
             $corpMember->setName($charNames[$id] ?? null);
             $corpMember->setLocationId((int) $data->getLocationId());
-            $corpMember->setLogoffDate($data->getLogoffDate());
-            $corpMember->setLogonDate($data->getLogonDate());
+            if ($data->getLogoffDate() instanceof \DateTime) {
+                $corpMember->setLogoffDate($data->getLogoffDate());
+            }
+            if ($data->getLogonDate() instanceof \DateTime) {
+                $corpMember->setLogonDate($data->getLogonDate());
+            }
             $corpMember->setShipTypeId((int) $data->getShipTypeId());
-            $corpMember->setStartDate($data->getStartDate());
+            if ($data->getStartDate() instanceof \DateTime) {
+                $corpMember->setStartDate($data->getStartDate());
+            }
             $corpMember->setCorporation($corporation);
 
             $this->objectManager->persist($corpMember);
@@ -285,7 +293,7 @@ class MemberTracking
         // store new director
         $newDirectorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $nextNumber);
         $newDirectorChar->setScope(SystemVariable::SCOPE_SETTINGS);
-        $newDirectorChar->setValue(json_encode([
+        $newDirectorChar->setValue((string) json_encode([
             'character_id' => (int) $eveAuth->getCharacterId(),
             'character_name' => $eveAuth->getCharacterName(),
             'corporation_id' => $corporation->getId(),
@@ -294,7 +302,7 @@ class MemberTracking
         ]));
         $newDirectorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $nextNumber);
         $newDirectorToken->setScope(SystemVariable::SCOPE_BACKEND);
-        $newDirectorToken->setValue(json_encode([
+        $newDirectorToken->setValue((string) json_encode([
             'access' => $eveAuth->getToken()->getToken(),
             'refresh' => $eveAuth->getToken()->getRefreshToken(),
             'expires' => $eveAuth->getToken()->getExpires(),

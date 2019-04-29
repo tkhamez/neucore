@@ -13,8 +13,9 @@ class Logger extends \Monolog\Logger
         $this->pushHandler(new TestHandler());
     }
 
-    public function getHandler(): TestHandler
+    public function getHandler(): ?TestHandler
     {
-        return parent::getHandlers()[0];
+        $handler = parent::getHandlers()[0];
+        return $handler instanceof TestHandler ? $handler : null;
     }
 }

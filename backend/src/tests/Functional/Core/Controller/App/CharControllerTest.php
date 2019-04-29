@@ -243,10 +243,10 @@ class CharControllerTest extends WebTestCase
         $player1 = $this->helper->addCharacterMain('p1', 123, [Role::USER])->getPlayer();
         $player2 = (new Player())->setName('p2');
         $removedChar1 = (new RemovedCharacter())->setCharacterId(100)->setCharacterName('c1')
-            ->setRemovedDate(date_create('2019-04-20 20:41:46'))
+            ->setRemovedDate(new \DateTime('2019-04-20 20:41:46'))
             ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
         $removedChar2 = (new RemovedCharacter())->setCharacterId(101)->setCharacterName('c2')
-            ->setRemovedDate(date_create('2019-04-20 20:41:47'))
+            ->setRemovedDate(new \DateTime('2019-04-20 20:41:47'))
             ->setReason(RemovedCharacter::REASON_MOVED)->setNewPlayer($player2);
         $removedChar1->setPlayer($player1);
         $removedChar2->setPlayer($player1);

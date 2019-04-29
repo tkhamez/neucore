@@ -90,8 +90,8 @@ class CheckTokens extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->sleep = (int) $input->getOption('sleep');
-        $this->log = $input->getOption('log');
+        $this->sleep = intval($input->getOption('sleep'));
+        $this->log = (bool) $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "check-tokens"');

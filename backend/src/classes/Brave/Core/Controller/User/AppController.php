@@ -151,7 +151,7 @@ class AppController extends BaseController
 
         $app = new App();
         $app->setName($name);
-        $app->setSecret(password_hash(Random::hex(64), PASSWORD_DEFAULT));
+        $app->setSecret((string) password_hash(Random::hex(64), PASSWORD_DEFAULT));
         $app->addRole($appRole);
 
         $this->objectManager->persist($app);
@@ -449,7 +449,7 @@ class AppController extends BaseController
         }
 
         // check if logged in user is manager of this app or has the role app-admin
-        $player = $uas->getUser()->getPlayer();
+        $player = $this->getPlayer($uas);
         if (! $player->hasRole(Role::APP_ADMIN) && ! $app->isManager($player)) {
             return $this->response->withStatus(403);
         }
@@ -693,49 +693,56 @@ class AppController extends BaseController
         }
 
         // check if logged in user is manager
-        $player = $uas->getUser()->getPlayer();
-        if (! $app->isManager($player)) {
+        if (! $app->isManager($this->getPlayer($uas))) {
             return $this->response->withStatus(403);
         }
 
         $secret = Random::hex(64);
-        $app->setSecret(password_hash($secret, PASSWORD_DEFAULT));
+        $app->setSecret((string) password_hash($secret, PASSWORD_DEFAULT));
 
         return $this->flushAndReturn(200, $secret);
     }
 
     private function findAppAndPlayer(string $id, string $player): bool
     {
-        $this->application = $this->repositoryFactory->getAppRepository()->find((int) $id);
-        $this->player = $this->repositoryFactory->getPlayerRepository()->find((int) $player);
-
-        if ($this->application === null || $this->player === null) {
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $player);
+        if (! $this->findApp($id) || $player === null) {
             return false;
         }
+        $this->player = $player;
 
         return true;
     }
 
     private function findAppAndGroup(string $id, string $gid): bool
     {
-        $this->application = $this->repositoryFactory->getAppRepository()->find((int) $id);
-        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $gid);
-
-        if ($this->application === null || $this->group === null) {
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $gid);
+        if (! $this->findApp($id) || $group === null) {
             return false;
         }
+        $this->group = $group;
 
         return true;
     }
 
     private function findAppAndRole(string $id, string $name): bool
     {
-        $this->application = $this->repositoryFactory->getAppRepository()->find((int) $id);
-        $this->role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
-
-        if (! $this->application || ! $this->role || ! in_array($this->role->getName(), $this->availableRoles)) {
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
+        if (! $this->findApp($id) || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
             return false;
         }
+        $this->role = $role;
+
+        return true;
+    }
+
+    private function findApp($id)
+    {
+        $application = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        if (! $application) {
+            return false;
+        }
+        $this->application = $application;
 
         return true;
     }
@@ -743,5 +750,10 @@ class AppController extends BaseController
     private function sanitize($name): string
     {
         return str_replace(["\r", "\n"], ' ', trim($name));
+    }
+
+    private function getPlayer(UserAuth $userAuthService): Player
+    {
+        return $userAuthService->getUser()->getPlayer();
     }
 }

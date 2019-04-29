@@ -19,7 +19,7 @@ class GroupTest extends TestCase
 
         $this->assertSame(
             ['id' => null, 'name' => 'g.name', 'visibility' => Group::VISIBILITY_PRIVATE],
-            json_decode(json_encode($group), true)
+            json_decode((string) json_encode($group), true)
         );
     }
 
@@ -52,20 +52,20 @@ class GroupTest extends TestCase
         $this->assertsame(Group::VISIBILITY_PUBLIC, $group->getVisibility());
     }
 
-    public function testAddGetRemoveApplicant()
+    public function testAddGetRemoveApplication()
     {
         $group = new Group();
         $a1 = new GroupApplication();
         $a2 = new GroupApplication();
 
-        $this->assertSame([], $group->getApplication());
+        $this->assertSame([], $group->getApplications());
 
         $group->addApplication($a1);
         $group->addApplication($a2);
-        $this->assertSame([$a1, $a2], $group->getApplication());
+        $this->assertSame([$a1, $a2], $group->getApplications());
 
         $group->removeApplication($a2);
-        $this->assertSame([$a1], $group->getApplication());
+        $this->assertSame([$a1], $group->getApplications());
     }
 
     public function testAddGetRemovePlayer()

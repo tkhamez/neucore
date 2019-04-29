@@ -27,7 +27,7 @@ class RemovedCharacterTest extends TestCase
             'reason' => RemovedCharacter::REASON_MOVED,
             'newPlayerId' => null,
             'newPlayerName' => 'New Player',
-        ], json_decode(json_encode($char), true));
+        ], json_decode((string) json_encode($char), true));
     }
 
     public function testGetId()

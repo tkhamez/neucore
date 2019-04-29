@@ -22,7 +22,7 @@ class CorporationTest extends \PHPUnit\Framework\TestCase
             'name' => 'test corp',
             'ticker' => 'ABC',
             'alliance' => null
-        ], json_decode(json_encode($corp), true));
+        ], json_decode((string) json_encode($corp), true));
     }
 
     public function testSetGetId()

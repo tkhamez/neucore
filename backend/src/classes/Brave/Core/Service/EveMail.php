@@ -73,7 +73,7 @@ class EveMail
 
         $char->setValue($eveAuth->getCharacterName());
 
-        $token->setValue(json_encode([
+        $token->setValue((string) json_encode([
             'id' => (int) $eveAuth->getCharacterId(),
             'access' => $eveAuth->getToken()->getToken(),
             'refresh' => $eveAuth->getToken()->getRefreshToken(),
@@ -120,7 +120,7 @@ class EveMail
      *             or if the account status is managed.
      * @return string The reason why the mail may not be send or empty
      */
-    public function accountDeactivatedMaySend(int $characterId, bool $ignoreAlreadySentAndStatus = false): string
+    public function accountDeactivatedMaySend(?int $characterId, bool $ignoreAlreadySentAndStatus = false): string
     {
         $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
 

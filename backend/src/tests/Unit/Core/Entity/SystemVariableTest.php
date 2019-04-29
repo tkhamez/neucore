@@ -3,8 +3,9 @@
 namespace Tests\Unit\Core\Entity;
 
 use Brave\Core\Entity\SystemVariable;
+use PHPUnit\Framework\TestCase;
 
-class SystemVariableTest extends \PHPUnit\Framework\TestCase
+class SystemVariableTest extends TestCase
 {
     public function testJsonSerialize()
     {
@@ -13,7 +14,7 @@ class SystemVariableTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(
             ['name' => 'nam', 'value' => 'val'],
-            json_decode(json_encode($var), true)
+            json_decode((string) json_encode($var), true)
         );
     }
 

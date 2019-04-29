@@ -50,12 +50,12 @@ class MakeAdmin extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $playerId = (int) $input->getArgument('id');
+        $playerId = intval($input->getArgument('id'));
 
         $player = $this->playerRepository->find($playerId);
         if ($player === null) {
             $output->writeln('Player with ID "' . $playerId .'" not found');
-            return;
+            return null;
         }
 
         $newRoles = [
@@ -76,7 +76,7 @@ class MakeAdmin extends Command
         }
 
         if (! $this->objectManager->flush()) {
-            return;
+            return null;
         }
 
         $output->writeln('Added all applicable roles to the player account "' .$player->getName() . '"');

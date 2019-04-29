@@ -252,10 +252,6 @@ class Application
      */
     private function buildContainer(array $mocks = [], $addSlimConfig = true): void
     {
-        if ($this->container !== null) {
-            return;
-        }
-
         $containerBuilder = new ContainerBuilder();
 
         if ($this->env === self::ENV_PROD) {
@@ -269,7 +265,7 @@ class Application
             // include config.php from php-di/slim-bridge
             $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
             /** @noinspection PhpIncludeInspection */
-            $bridgeConfig = include dirname($reflector->getFileName()) . '/config.php';
+            $bridgeConfig = include dirname((string) $reflector->getFileName()) . '/config.php';
 
             $containerBuilder->addDefinitions($bridgeConfig);
         }
@@ -339,7 +335,7 @@ class Application
             LoggerInterface::class => function (ContainerInterface $c) {
                 $path = $c->get('config')['monolog']['path'];
                 if (strpos($path, 'php://') === false) {
-                    $dir = realpath(dirname($path));
+                    $dir = (string) realpath(dirname($path));
                     if (! is_writable($dir)) {
                         throw new \Exception('The log directory ' . $dir . ' must be writable by the web server.');
                     }

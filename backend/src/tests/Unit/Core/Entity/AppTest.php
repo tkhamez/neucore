@@ -19,7 +19,7 @@ class AppTest extends \PHPUnit\Framework\TestCase
             'name' => 'test app',
             'groups' => [],
             'roles' => [],
-        ], json_decode(json_encode($app), true));
+        ], json_decode((string) json_encode($app), true));
     }
 
     public function testGetId()
@@ -37,7 +37,7 @@ class AppTest extends \PHPUnit\Framework\TestCase
     public function testSetGetSecret()
     {
         $app = new App();
-        $pw = password_hash('00h', PASSWORD_DEFAULT);
+        $pw = (string) password_hash('00h', PASSWORD_DEFAULT);
         $app->setSecret($pw);
         $this->assertSame($pw, $app->getSecret());
     }

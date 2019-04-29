@@ -42,7 +42,7 @@ class UserAuth implements RoleProviderInterface
     private $log;
 
     /**
-     * @var Character
+     * @var Character|null
      */
     private $user;
 
@@ -82,7 +82,7 @@ class UserAuth implements RoleProviderInterface
     /**
      * Loads and returns current logged in user from the database.
      *
-     * @return NULL|\Brave\Core\Entity\Character
+     * @return NULL|Character
      */
     public function getUser()
     {

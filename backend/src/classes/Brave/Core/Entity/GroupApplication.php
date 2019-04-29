@@ -87,7 +87,7 @@ class GroupApplication implements \JsonSerializable
             'player' => $this->player->jsonSerialize(true),
             'group' => $this->group,
             'status' => $this->status,
-            'created' => $this->created ? $this->created->format(Api::DATE_FORMAT) : null,
+            'created' => $this->getCreated() !== null ? $this->getCreated()->format(Api::DATE_FORMAT) : null,
         ];
     }
 
@@ -104,11 +104,11 @@ class GroupApplication implements \JsonSerializable
     /**
      * Set created.
      *
-     * @param \DateTime|null $created
+     * @param \DateTime $created
      *
      * @return GroupApplication
      */
-    public function setCreated($created = null)
+    public function setCreated($created)
     {
         $this->created = clone $created;
 
@@ -128,11 +128,11 @@ class GroupApplication implements \JsonSerializable
     /**
      * Set player.
      *
-     * @param Player|null $player
+     * @param Player $player
      *
      * @return GroupApplication
      */
-    public function setPlayer(Player $player = null)
+    public function setPlayer(Player $player)
     {
         $this->player = $player;
 
@@ -142,7 +142,7 @@ class GroupApplication implements \JsonSerializable
     /**
      * Get player.
      *
-     * @return Player|null
+     * @return Player
      */
     public function getPlayer()
     {
@@ -152,11 +152,11 @@ class GroupApplication implements \JsonSerializable
     /**
      * Set group.
      *
-     * @param Group|null $group
+     * @param Group $group
      *
      * @return GroupApplication
      */
-    public function setGroup(Group $group = null)
+    public function setGroup(Group $group)
     {
         $this->group = $group;
 
@@ -166,7 +166,7 @@ class GroupApplication implements \JsonSerializable
     /**
      * Get group.
      *
-     * @return Group|null
+     * @return Group
      */
     public function getGroup()
     {

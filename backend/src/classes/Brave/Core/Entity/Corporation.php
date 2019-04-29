@@ -61,7 +61,7 @@ class Corporation implements \JsonSerializable
      *
      * @SWG\Property(ref="#/definitions/Alliance")
      * @ORM\ManyToOne(targetEntity="Alliance", inversedBy="corporations")
-     * @var Alliance
+     * @var Alliance|null
      */
     private $alliance;
 
@@ -134,10 +134,8 @@ class Corporation implements \JsonSerializable
 
     /**
      * Get id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
         return $this->id !== null ? (int) $this->id : null;

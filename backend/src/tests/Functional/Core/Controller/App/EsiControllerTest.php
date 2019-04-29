@@ -109,7 +109,7 @@ class EsiControllerTest extends WebTestCase
 
         // add sys var
         $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-        $errVar->setValue(\json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86]));
+        $errVar->setValue((string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86]));
         $this->helper->getEm()->persist($errVar);
         $this->helper->getEm()->flush();
 
@@ -137,7 +137,7 @@ class EsiControllerTest extends WebTestCase
 
         // add sys var
         $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-        $errVar->setValue(\json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86]));
+        $errVar->setValue((string) \json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86]));
         $this->helper->getEm()->persist($errVar);
         $this->helper->getEm()->flush();
 
@@ -158,7 +158,7 @@ class EsiControllerTest extends WebTestCase
 
         // add sys var
         $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-        $errVar->setValue(\json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86]));
+        $errVar->setValue((string) \json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86]));
         $this->helper->getEm()->persist($errVar);
         $this->helper->getEm()->flush();
 

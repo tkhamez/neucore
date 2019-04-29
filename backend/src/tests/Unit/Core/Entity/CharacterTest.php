@@ -23,7 +23,7 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'corporation' => null
-        ], json_decode(json_encode($char), true));
+        ], json_decode((string) json_encode($char), true));
 
         $this->assertSame([
             'id' => 123,

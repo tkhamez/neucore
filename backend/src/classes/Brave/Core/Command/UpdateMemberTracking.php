@@ -75,8 +75,8 @@ class UpdateMemberTracking extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $sleep = (int) $input->getOption('sleep');
-        $this->log = $input->getOption('log');
+        $sleep = intval($input->getOption('sleep'));
+        $this->log = (bool) $input->getOption('log');
         $this->output = $output;
 
         $this->writeln('* Started "update-member-tracking"');
@@ -101,7 +101,7 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            $trackingData = $this->memberTracking->fetchData($token->getToken(), $corporation->getId());
+            $trackingData = $this->memberTracking->fetchData($token->getToken(), (int) $corporation->getId());
             if (! is_array($trackingData)) {
                 $this->writeln('Error getting member tracking data from ESI for ' . $characterVariable->getName());
                 continue;

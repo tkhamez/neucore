@@ -25,11 +25,17 @@ use Brave\Core\Factory\RepositoryFactory;
 use Brave\Core\Repository\RemovedCharacterRepository;
 use Brave\Core\Repository\RoleRepository;
 use Brave\Core\Repository\SystemVariableRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
 class RepositoryFactoryTest extends TestCase
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
     /**
      * @var RepositoryFactory
      */
@@ -37,8 +43,13 @@ class RepositoryFactoryTest extends TestCase
 
     public function setUp()
     {
-        $em = (new Helper())->getEm();
-        $this->factory = new RepositoryFactory($em);
+        $this->em = (new Helper())->getEm();
+        $this->factory = new RepositoryFactory($this->em);
+    }
+
+    public function testGetInstance()
+    {
+        $this->assertInstanceOf(RepositoryFactory::class, RepositoryFactory::getInstance($this->em));
     }
 
     public function testGetAllianceRepository()

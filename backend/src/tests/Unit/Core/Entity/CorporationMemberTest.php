@@ -28,7 +28,7 @@ class CorporationMemberTest extends \PHPUnit\Framework\TestCase
             'startDate' => null,
             'character' => null,
             'player' => null,
-        ], json_decode(json_encode($member), true));
+        ], json_decode((string) json_encode($member), true));
 
         $member->setLocationId(234);
         $member->setLogoffDate(new \DateTime('2018-12-25 19:14:57'));
@@ -61,7 +61,7 @@ class CorporationMemberTest extends \PHPUnit\Framework\TestCase
                 'id' => null,
                 'name' => 'ply',
             ],
-        ], json_decode(json_encode($member), true));
+        ], json_decode((string) json_encode($member), true));
     }
 
     public function testSetGetId()

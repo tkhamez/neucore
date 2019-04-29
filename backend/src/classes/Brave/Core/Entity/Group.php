@@ -245,7 +245,7 @@ class Group implements \JsonSerializable
      *
      * @return GroupApplication[]
      */
-    public function getApplication()
+    public function getApplications()
     {
         return $this->applications->toArray();
     }
@@ -428,16 +428,6 @@ class Group implements \JsonSerializable
     public function getAlliances()
     {
         return $this->alliances->toArray();
-    }
-
-    /**
-     * Get applications.
-     *
-     * @return Collection
-     */
-    public function getApplications()
-    {
-        return $this->applications;
     }
 
     /**

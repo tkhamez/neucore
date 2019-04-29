@@ -1006,12 +1006,6 @@ class GroupController extends BaseController
             $this->group->removeManager($this->player);
         } elseif ($type === 'members') {
             $this->player->removeGroup($this->group);
-        } elseif ($type === 'applications') {
-            $apps = $this->repositoryFactory->getGroupApplicationRepository()
-                ->findBy(['player' => $playerId, 'group' => $groupId]);
-            foreach ($apps as $groupApplication) {
-                $this->objectManager->remove($groupApplication);
-            }
         }
 
         return $this->flushAndReturn(204);
@@ -1026,7 +1020,7 @@ class GroupController extends BaseController
     {
         $app = $this->repositoryFactory->getGroupApplicationRepository()->find($id);
 
-        if (! $app || ! $app->getGroup() || ! $app->getPlayer()) {
+        if (! $app) {
             return $this->response->withStatus(404);
         }
 
@@ -1048,22 +1042,22 @@ class GroupController extends BaseController
 
     private function findGroup(string $id): bool
     {
-        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
-        if ($this->group === null) {
+        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+        if ($group === null) {
             return false;
         }
+        $this->group = $group;
 
         return true;
     }
 
     private function findGroupAndPlayer(string $groupId, string $playerId): bool
     {
-        $this->group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
-        $this->player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
-
-        if ($this->group === null || $this->player === null) {
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        if (! $this->findGroup($groupId) || $player === null) {
             return false;
         }
+        $this->player = $player;
 
         return true;
     }
@@ -1076,7 +1070,7 @@ class GroupController extends BaseController
      */
     private function checkManager(Group $group): bool
     {
-        $currentPlayer = $this->userAuth->getUser()->getPlayer();
+        $currentPlayer = $this->getPlayer();
         foreach ($currentPlayer->getManagerGroups() as $mg) {
             if ($mg->getId() === $group->getId()) {
                 return true;
@@ -1088,6 +1082,11 @@ class GroupController extends BaseController
 
     private function isUserManager(): bool
     {
-        return $this->userAuth->getUser()->getPlayer()->hasRole(Role::USER_MANAGER);
+        return $this->getPlayer()->hasRole(Role::USER_MANAGER);
+    }
+
+    private function getPlayer(): Player
+    {
+        return $this->userAuth->getUser()->getPlayer();
     }
 }

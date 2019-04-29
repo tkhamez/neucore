@@ -19,7 +19,7 @@ class AllianceTest extends \PHPUnit\Framework\TestCase
             'id' => 123,
             'name' => 'test alli',
             'ticker' => 'ABC'
-        ], json_decode(json_encode($alli), true));
+        ], json_decode((string) json_encode($alli), true));
     }
 
     public function testSetGetId()

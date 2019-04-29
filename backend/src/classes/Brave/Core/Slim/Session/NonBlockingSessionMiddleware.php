@@ -95,9 +95,6 @@ class NonBlockingSessionMiddleware
     private function start()
     {
         if (PHP_SAPI !== 'cli') {
-
-            // since PHP 7.2 this emits warnings during unit tests, so no unit tests for this.
-
             if (isset($this->options['name'])) {
                 session_name($this->options['name']);
             }

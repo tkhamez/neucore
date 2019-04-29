@@ -37,7 +37,7 @@ class CorporationMember implements \JsonSerializable
      *
      * @SWG\Property()
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
+     * @var string|null
      */
     private $name;
 
@@ -46,7 +46,7 @@ class CorporationMember implements \JsonSerializable
      *
      * @SWG\Property()
      * @ORM\Column(type="bigint", name="location_id", nullable=true)
-     * @var integer
+     * @var integer|null
      */
     private $locationId;
 
@@ -67,7 +67,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * @SWG\Property()
      * @ORM\Column(type="bigint", name="ship_type_id", nullable=true)
-     * @var integer
+     * @var integer|null
      */
     private $shipTypeId;
 
@@ -80,6 +80,7 @@ class CorporationMember implements \JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="members")
+     * @ORM\JoinColumn(nullable=false)
      * @var Corporation
      */
     private $corporation;
@@ -87,7 +88,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * @SWG\Property()
      * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
-     * @var Character
+     * @var Character|null
      */
     private $character;
 
@@ -101,17 +102,17 @@ class CorporationMember implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'locationId' => $this->locationId,
-            'logoffDate' => $this->logoffDate ? $this->logoffDate->format(Api::DATE_FORMAT) : null,
-            'logonDate' => $this->logonDate ? $this->logonDate->format(Api::DATE_FORMAT) : null,
+            'logoffDate' => $this->getLogoffDate() !== null ? $this->getLogoffDate()->format(Api::DATE_FORMAT) : null,
+            'logonDate' => $this->getLogonDate() !== null ? $this->getLogonDate()->format(Api::DATE_FORMAT) : null,
             'shipTypeId' => $this->shipTypeId,
-            'startDate' => $this->startDate ? $this->startDate->format(Api::DATE_FORMAT) : null,
+            'startDate' => $this->getStartDate() !== null ? $this->getStartDate()->format(Api::DATE_FORMAT) : null,
         ];
 
         if ($forUser) {
             $result = array_merge($result, [
-                'character' => $this->character ? $this->character->jsonSerialize(false) : null,
-                'player' => $this->character && $this->character->getPlayer() ?
-                    $this->character->getPlayer()->jsonSerialize(true) : null,
+                'character' => $this->getCharacter() !== null ? $this->getCharacter()->jsonSerialize(false) : null,
+                'player' => $this->getCharacter() !== null ?
+                    $this->getCharacter()->getPlayer()->jsonSerialize(true) : null,
             ]);
         }
 
@@ -134,10 +135,8 @@ class CorporationMember implements \JsonSerializable
 
     /**
      * Get id.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
         return $this->id !== null ? (int) $this->id : null;
@@ -194,13 +193,13 @@ class CorporationMember implements \JsonSerializable
     /**
      * Set logoffDate.
      *
-     * @param \DateTime|null $logoffDate
+     * @param \DateTime $logoffDate
      *
      * @return CorporationMember
      */
-    public function setLogoffDate($logoffDate = null)
+    public function setLogoffDate($logoffDate)
     {
-        $this->logoffDate = $logoffDate ? clone $logoffDate : null;
+        $this->logoffDate = clone $logoffDate;
 
         return $this;
     }
@@ -218,13 +217,13 @@ class CorporationMember implements \JsonSerializable
     /**
      * Set logonDate.
      *
-     * @param \DateTime|null $logonDate
+     * @param \DateTime $logonDate
      *
      * @return CorporationMember
      */
-    public function setLogonDate($logonDate = null)
+    public function setLogonDate($logonDate)
     {
-        $this->logonDate = $logonDate ? clone $logonDate : null;
+        $this->logonDate = clone $logonDate;
 
         return $this;
     }
@@ -266,13 +265,13 @@ class CorporationMember implements \JsonSerializable
     /**
      * Set startDate.
      *
-     * @param \DateTime|null $startDate
+     * @param \DateTime $startDate
      *
      * @return CorporationMember
      */
-    public function setStartDate($startDate = null)
+    public function setStartDate($startDate)
     {
-        $this->startDate = $startDate ? clone $startDate : null;
+        $this->startDate = clone $startDate;
 
         return $this;
     }
@@ -290,11 +289,11 @@ class CorporationMember implements \JsonSerializable
     /**
      * Set corporation.
      *
-     * @param Corporation|null $corporation
+     * @param Corporation $corporation
      *
      * @return CorporationMember
      */
-    public function setCorporation(Corporation $corporation = null)
+    public function setCorporation(Corporation $corporation)
     {
         $this->corporation = $corporation;
 
@@ -304,7 +303,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * Get corporation.
      *
-     * @return Corporation|null
+     * @return Corporation
      */
     public function getCorporation()
     {

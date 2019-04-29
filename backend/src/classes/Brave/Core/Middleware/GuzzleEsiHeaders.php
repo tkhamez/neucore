@@ -4,6 +4,7 @@ namespace Brave\Core\Middleware;
 
 use Brave\Core\Entity\SystemVariable;
 use Brave\Core\Factory\RepositoryFactory;
+use Brave\Core\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +18,7 @@ class GuzzleEsiHeaders
     private $logger;
 
     /**
-     * @var
+     * @var SystemVariableRepository
      */
     private $systemVariableRepository;
 
@@ -58,7 +59,14 @@ class GuzzleEsiHeaders
             $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
 
             $entity = $this->systemVariableRepository->find(SystemVariable::ESI_ERROR_LIMIT);
-            $entity->setValue(\json_encode([
+            if (! $entity) {
+                $this->logger->error(
+                    'GuzzleEsiHeaders::handleResponseHeaders: system variable' .
+                    SystemVariable::ESI_ERROR_LIMIT . ' not found.'
+                );
+                return;
+            }
+            $entity->setValue((string) \json_encode([
                 'updated' => time(),
                 'remain' => $remain,
                 'reset' => $reset,
