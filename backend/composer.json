@@ -42,7 +42,7 @@
     },
     "autoload": {
         "psr-4": {
-        	"Brave\\Core\\": "src/classes/Brave/Core/",
+        	"Brave\\Core\\": "src/classes/",
         	"Tests\\": "src/tests/"
     	},
         "files": ["config/version.php"]
@@ -68,8 +68,8 @@
         "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
             "swagger src --output ../web",
-            "swagger src --output ../web/frontend-api.json --exclude src/classes/Brave/Core/Controller/App",
-            "swagger src --output ../web/application-api.json --exclude src/classes/Brave/Core/Controller/User"
+            "swagger src --output ../web/frontend-api.json --exclude src/classes/Controller/App",
+            "swagger src --output ../web/application-api.json --exclude src/classes/Controller/User"
         ],
         "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",
         "analyse:src": "phpstan analyse src/classes --level 7",

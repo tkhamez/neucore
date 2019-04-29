@@ -23,7 +23,7 @@ return [
         'doctrine' => [
             'meta' => [
                 'entity_paths' => [
-                    Application::ROOT_DIR . '/src/classes/Brave/Core/Entity'
+                    Application::ROOT_DIR . '/src/classes/Entity'
                 ],
                 'dev_mode' => false,
                 'proxy_dir' =>  Application::ROOT_DIR . '/var/cache/proxies'
@@ -35,6 +35,7 @@ return [
                 'mysql_ssl_ca'             => getenv('BRAVECORE_MYSQL_SSL_CA'),
                 'mysql_verify_server_cert' => getenv('BRAVECORE_MYSQL_VERIFY_SERVER_CERT'),
             ],
+            'data_fixtures' => Application::ROOT_DIR . '/src/classes/DataFixtures'
         ],
 
         'CORS' => [

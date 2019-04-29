@@ -3,34 +3,34 @@ parameters:
 	ignoreErrors:
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Slim/Session/SessionData.php
+			path: %currentWorkingDirectory%/src/classes/Slim/Session/SessionData.php
 		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Service/EsiData.php
+			path: %currentWorkingDirectory%/src/classes/Service/EsiData.php
 		-
 			message: '#Call to an undefined method Swagger(.*)::(getName)?(getCorporationId)?\(\)#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Service/MemberTracking.php
+			path: %currentWorkingDirectory%/src/classes/Service/MemberTracking.php
 		-
 			message: '#MemberTracking::fetchData() should return array<(.*)GetCorporationsCorporationIdMembertracking200Ok>|null but returns(.*)GetCorporationsCorporationIdMembertracking200Ok#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Service/MemberTracking.php
+			path: %currentWorkingDirectory%/src/classes/Service/MemberTracking.php
 		-
 			message: '#AbstractProvider::getResourceOwner\(\) expects(.*)AccessToken(.*)AccessTokenInterface given#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Service/OAuthToken.php
+			path: %currentWorkingDirectory%/src/classes/Service/OAuthToken.php
 		-
 			message: '#Cannot call method getPlayer() on Brave\Core\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Controller/User/AppController.php
+			path: %currentWorkingDirectory%/src/classes/Controller/User/AppController.php
 		-
 			message: '#Cannot call method getPlayer() on Brave\Core\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Controller/User/CharacterController.php
+			path: %currentWorkingDirectory%/src/classes/Controller/User/CharacterController.php
 		-
 			message: '#Cannot call method getPlayer() on Brave\Core\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Controller/User/GroupController.php
+			path: %currentWorkingDirectory%/src/classes/Controller/User/GroupController.php
 		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'
-			path: %currentWorkingDirectory%/src/classes/Brave/Core/Controller/User/PlayerController.php
+			path: %currentWorkingDirectory%/src/classes/Controller/User/PlayerController.php
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Core/Slim/Session/NonBlockingSessionMiddlewareTest.php
+			path: %currentWorkingDirectory%/src/tests/Unit/Slim/Session/NonBlockingSessionMiddlewareTest.php
 		-
 			message: '#Brave\\Sso\\Basics\\EveAuthentication constructor expects string, int given.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Core/Service/*
+			path: %currentWorkingDirectory%/src/tests/Unit/Service/*
