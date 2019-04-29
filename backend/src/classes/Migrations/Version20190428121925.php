@@ -25,6 +25,7 @@ final class Version20190428121925 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
         $this->addSql('ALTER TABLE corporation_members CHANGE corporation_id corporation_id BIGINT NOT NULL');
         $this->addSql('ALTER TABLE removed_characters CHANGE player_id player_id INT NOT NULL');
     }
@@ -37,6 +38,7 @@ final class Version20190428121925 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
         $this->addSql('ALTER TABLE corporation_members CHANGE corporation_id corporation_id BIGINT DEFAULT NULL');
         $this->addSql('ALTER TABLE removed_characters CHANGE player_id player_id INT DEFAULT NULL');
     }
