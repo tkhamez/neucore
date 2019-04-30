@@ -29,7 +29,22 @@ unique only within each tag.
 The file `doc/API.md` is automatically generated from the template file `doc/API.md.tpl`, 
 the route and security configuration and `web/swagger.json` with:
 ```
-backend/bin/doc-api-gen.php
+bin/doc-api-gen.php
+```
+
+### ESI routes
+
+The `/api/app/v1/esi` endpoint uses a blacklist to block requests to publicly accessible ESI routes. 
+This list can be regenerated with:
+
+```
+bin/esi-paths-public.php
+```
+
+The UI for ESI requests requires a list of all ESI HTTP GET routes. This list can be regenerated with:
+
+```
+bin/esi-paths-http-get.js
 ```
 
 ## Install
