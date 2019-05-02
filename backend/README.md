@@ -76,10 +76,10 @@ bin/console
 #### Making yourself an admin
 
 Login with your EVE character to create an account. Then execute this command,
-replace the ID 1234 with your EVE character ID.
+replace the ID 1 with your Neucore player ID.
 
 ```
-bin/console make-admin 1234
+bin/console make-admin 1
 ```
 
 This will add all available roles to your player account.
