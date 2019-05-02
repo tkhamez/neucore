@@ -58,7 +58,7 @@
                 </div>
 
                 <admin v-cloak v-if="playerId" ref="admin"
-                       :player="player" :contentType="'groups'" :typeId="playerId"
+                       :player="player" :contentType="'groups'" :typeId="playerId" :settings="settings"
                        :swagger="swagger" :type="'Player'"
                        v-on:activePlayer="playerData = $event"></admin>
 
@@ -82,6 +82,7 @@
             swagger: Object,
             initialized: Boolean,
             player: [null, Object],
+            settings: Object,
         },
 
         data: function() {

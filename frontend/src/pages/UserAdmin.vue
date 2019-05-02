@@ -96,10 +96,11 @@
 
                 <div v-cloak v-if="playerEdit" class="card-body">
                     <h4>Roles</h4>
-                    <p>
+                    <p v-cloak>
                         See
-                        <a href="https://github.com/bravecollective/brvneucore/blob/master/doc/API.md" target="_blank">
-                            doc/API.md</a> for permissions for each role.
+                        <a :href="settings.customization_github + '/blob/master/doc/API.md'"
+                           target="_blank">doc/API.md</a>
+                        for permissions for each role.
                     </p>
                     <div class="input-group mb-1">
                         <div class="input-group-prepend">
@@ -297,6 +298,7 @@ module.exports = {
         swagger: Object,
         initialized: Boolean,
         player: [null, Object], // logged in player
+        settings: Object,
     },
 
     data: function() {

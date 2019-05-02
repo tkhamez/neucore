@@ -48,7 +48,7 @@ so make sure they can override each other's files, e. g. by putting them into ea
 
 If running in `prod` mode, the session cookie for the login is limited to HTTPS.
 
-### Install/Update
+#### Install/Update
 
 If available, the app uses the APCu cache in production mode. This must be cleared during an update
 (depending on the configuration, restart the web server or php-fpm).
@@ -83,6 +83,12 @@ Set up necessary cron jobs, e. g. 3 times daily (adjust user and paths):
 ```
 
 The output is logged to backend/var/logs.
+
+#### First login and Customization
+
+Read the backend documentation on how to [make yourself an admin](backend/README.md#making-yourself-an-admin),
+then you can navigate to "Admin" -> "Settings" and change texts, links and images that are specific to your 
+installation.
 
 ### Local Development Requirements
 

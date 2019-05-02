@@ -1,9 +1,9 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary sticky-top">
-        <a class="navbar-brand" href="https://www.bravecollective.com/"
-            title="Brave Collective: What's your fun per hour?">
-            <img src="images/brave_32.png" class="align-top mr-2" alt="Brave logo">
-            Brave Collective
+        <a v-cloak class="navbar-brand" :href="settings.customization_website">
+            <img v-if="settings.customization_nav_logo" class="align-top mr-2" alt="Logo"
+                 :src="settings.customization_nav_logo">
+            {{ settings.customization_nav_title }}
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse"
                 data-target="#navbar01" aria-controls="navbar01"
@@ -91,6 +91,7 @@ module.exports = {
     props: {
         authChar: [null, Object],
         page: String,
+        settings: Object,
     },
 
     data: function() {

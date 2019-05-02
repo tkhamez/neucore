@@ -38,42 +38,9 @@ class SystemVariableTest extends TestCase
         $this->assertSame('1', $var->setValue('1')->getValue());
         $this->assertSame('1', $var->setValue('some text')->getValue());
         $this->assertSame('0', $var->setValue('')->getValue());
-    }
 
-    public function testSetValueAllowLoginManaged()
-    {
-        $var = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
-        $this->assertSame('0', $var->setValue('0')->getValue());
-        $this->assertSame('1', $var->setValue('1')->getValue());
-        $this->assertSame('1', $var->setValue('some text')->getValue());
-        $this->assertSame('0', $var->setValue('')->getValue());
-    }
-
-    public function testSetValueGroupsRequireValidToken()
-    {
-        $var = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $this->assertSame('0', $var->setValue('0')->getValue());
-        $this->assertSame('1', $var->setValue('1')->getValue());
-        $this->assertSame('1', $var->setValue('some text')->getValue());
-        $this->assertSame('0', $var->setValue('')->getValue());
-    }
-
-    public function testSetValueShowPreviewBanner()
-    {
-        $var = new SystemVariable(SystemVariable::SHOW_PREVIEW_BANNER);
-        $this->assertSame('0', $var->setValue('0')->getValue());
-        $this->assertSame('1', $var->setValue('1')->getValue());
-        $this->assertSame('1', $var->setValue('some text')->getValue());
-        $this->assertSame('0', $var->setValue('')->getValue());
-    }
-
-    public function testSetValueMailAccountDisabledActive()
-    {
-        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE);
-        $this->assertSame('0', $var->setValue('0')->getValue());
-        $this->assertSame('1', $var->setValue('1')->getValue());
-        $this->assertSame('1', $var->setValue('some text')->getValue());
-        $this->assertSame('0', $var->setValue('')->getValue());
+        // ALLOW_LOGIN_MANAGED, GROUPS_REQUIRE_VALID_TOKEN and MAIL_ACCOUNT_DISABLED_ACTIVE
+        // have the same validation, so no extra tests for those.
     }
 
     public function testSetValueAccountDeactivationDelay()
@@ -89,6 +56,20 @@ class SystemVariableTest extends TestCase
     {
         $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES);
         $this->assertSame('123,456', $var->setValue(' 123 , 456 , abc, ')->getValue());
+    }
+
+    public function testSetValueMailAccountDisabledBody()
+    {
+        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY);
+        $this->assertSame(" Multiline \ntext. ", $var->setValue(" Multiline \ntext. ")->getValue());
+    }
+
+    public function testSetValueMailAccountDisabledSubject()
+    {
+        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT);
+        $this->assertSame('Test this line', $var->setValue(" Test\nthis\r\nline ")->getValue());
+
+        // this is the default validation, single line text.
     }
 
     public function testSetGetScope()

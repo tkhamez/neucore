@@ -63,7 +63,7 @@
             </ul>
 
             <admin v-cloak v-if="appId" ref="admin"
-                 :player="player" :contentType="contentType" :typeId="appId"
+                 :player="player" :contentType="contentType" :typeId="appId" :settings="settings"
                 :swagger="swagger" :type="'App'"></admin>
 
         </div>
@@ -86,6 +86,7 @@ module.exports = {
         swagger: Object,
         initialized: Boolean,
         player: [null, Object],
+        settings: Object,
     },
 
     data: function() {

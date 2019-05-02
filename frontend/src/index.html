@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="/favicon.ico">
-    <title>Brave Collective Core Services</title>
+    <title></title>
 </head>
 <body>
     <!--[if lt IE 11]>
@@ -25,7 +25,7 @@
             </button>
         </div>
 
-        <nav-bar :auth-char="authChar" :page="page"></nav-bar>
+        <nav-bar :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
 
         <component v-bind:is="page"
             :route="route"
@@ -38,10 +38,9 @@
 
         <footer class="footer bg-light text-dark text-muted small">
             <div class="container-fluid">
-                Brave Collective Services. For support write to support@bravecollective.freshdesk.com
-                or ask in the ingame channel "Brave IT".
-                <a href="https://github.com/bravecollective/brvneucore"
-                   class="github text-dark text-muted" target="_blank">github</a>
+                <span v-cloak>{{ settings.customization_footer_text }}</span>
+                <a v-cloak :href="settings.customization_github" class="github text-dark text-muted"
+                   target="_blank">github</a>
             </div>
         </footer>
     </div>

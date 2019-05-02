@@ -117,7 +117,7 @@
             </ul>
 
             <admin v-cloak v-if="groupId" ref="admin"
-                :player="player" :contentType="contentType" :typeId="groupId"
+                :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
                 :swagger="swagger" :type="'Group'"></admin>
 
         </div>
@@ -136,7 +136,7 @@ module.exports = {
     },
 
     props: {
-        settings: Array,
+        settings: Object,
         route: Array,
         swagger: Object,
         initialized: Boolean,
@@ -231,18 +231,8 @@ module.exports = {
                 return;
             }
 
-            let host, dataSource;
-            for (let variable of vm.settings) {
-                if (variable.name === 'esiHost') {
-                    host = variable.value;
-                }
-                if (variable.name === 'esiDataSource') {
-                    dataSource = variable.value;
-                }
-            }
-
-            const url = host + '/latest/search/?categories=' + category +
-                '&datasource=' + dataSource +
+            const url =  vm.settings.esiHost + '/latest/search/?categories=' + category +
+                '&datasource=' + vm.settings.esiDataSource +
                 '&search=' + encodeURIComponent(query) + '&strict=' + vm.searchStrict;
 
             vm.searchIsLoading = true;
@@ -253,7 +243,7 @@ module.exports = {
                     return;
                 }
                 window.jQuery.post(
-                    host + '/latest/universe/names/?datasource=' + dataSource,
+                    vm.settings.esiHost + '/latest/universe/names/?datasource=' + vm.settings.esiDataSource,
                     JSON.stringify(response1[category])
                 ).always(response2 => {
                     vm.searchIsLoading = false;

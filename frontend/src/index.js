@@ -167,7 +167,7 @@ const app = new window.Vue({
         /**
          * System settings from backend
          */
-        settings: [],
+        settings: {},
 
         /**
          * True after first Ajax request finished.
@@ -220,6 +220,10 @@ const app = new window.Vue({
         initialized: function() {
             this.getSettings();
             this.getPlayer();
+        },
+
+        settings: function() {
+            window.document.title = this.settings.customization_document_title;
         }
     },
 
@@ -278,14 +282,17 @@ const app = new window.Vue({
         },
 
         getSettings: function() {
-            this.settings = [];
             this.loading(true);
             new this.swagger.SettingsApi().systemList(function(error, data) {
                 app.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
-                app.settings = data;
+                const settings = {};
+                for (let variable of data) {
+                    settings[variable.name] = variable.value;
+                }
+                app.settings = settings; // watch() will work this way
             });
         },
 

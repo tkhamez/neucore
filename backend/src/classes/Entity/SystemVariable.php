@@ -62,13 +62,6 @@ class SystemVariable implements \JsonSerializable
     const ACCOUNT_DEACTIVATION_DELAY = 'account_deactivation_delay';
 
     /**
-     * System settings variable, "0" or "1"
-     *
-     * Shows or hides the "preview" banner on the Home screen.
-     */
-    const SHOW_PREVIEW_BANNER = 'show_preview_banner';
-
-    /**
      * EVE character name for the character that can be used to send mails.
      */
     const MAIL_CHARACTER = 'mail_character';
@@ -126,6 +119,69 @@ class SystemVariable implements \JsonSerializable
     const ESI_ERROR_LIMIT = 'esi_error_limit';
 
     /**
+     * Value for HTML head title tag.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_DOCUMENT_TITLE = 'customization_document_title';
+
+    /**
+     * URL for the links of the logos in the navigation bar and on the home page.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_WEBSITE = 'customization_website';
+
+    /**
+     * URL of GitHub repository for various links to the documentation.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_GITHUB = 'customization_github';
+
+    /**
+     * Organization name used in navigation bar.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_NAV_TITLE = 'customization_nav_title';
+
+    /**
+     * Organization logo used in navigation bar (Base64 encoded).
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_NAV_LOGO = 'customization_nav_logo';
+
+    /**
+     * Headline on the home page.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_HOME_HEADLINE = 'customization_home_headline';
+
+    /**
+     * Text below the headline on the homepage.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_HOME_DESCRIPTION = 'customization_home_description';
+
+    /**
+     * Organization logo used on the home page (Base64 encoded).
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_HOME_LOGO = 'customization_home_logo';
+
+    /**
+     * Text for the footer.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_FOOTER_TEXT = 'customization_footer_text';
+
+    /**
      * Variable name.
      *
      * @SWG\Property(maxLength=255)
@@ -140,7 +196,7 @@ class SystemVariable implements \JsonSerializable
      * Variable value.
      *
      * @SWG\Property
-     * @ORM\Column(type="text", length=65535, nullable=true)
+     * @ORM\Column(type="text", length=16777215, nullable=true)
      * @var string
      */
     private $value;
@@ -180,7 +236,6 @@ class SystemVariable implements \JsonSerializable
             case self::ALLOW_CHARACTER_DELETION:
             case self::ALLOW_LOGIN_MANAGED:
             case self::GROUPS_REQUIRE_VALID_TOKEN:
-            case self::SHOW_PREVIEW_BANNER:
             case self::MAIL_ACCOUNT_DISABLED_ACTIVE:
                 $this->value = ((bool) $value) ? '1' : '0';
                 break;
@@ -196,8 +251,11 @@ class SystemVariable implements \JsonSerializable
                 }
                 $this->value = implode(',', $allianceIds);
                 break;
-            default:
+            case self::MAIL_ACCOUNT_DISABLED_BODY:
                 $this->value = $value;
+                break;
+            default:
+                $this->value = trim(str_replace(["\r\n", "\n"], ' ', $value));
         }
 
         return $this;

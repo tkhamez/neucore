@@ -48,6 +48,8 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('Forbidden', $response->getReasonPhrase());
+        $this->assertSame('Forbidden', $response->getBody()->__toString());
     }
 
     public function testLoginManaged()

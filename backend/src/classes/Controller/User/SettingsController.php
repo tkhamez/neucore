@@ -2,6 +2,7 @@
 
 namespace Neucore\Controller\User;
 
+use Neucore\Application;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -93,14 +94,15 @@ class SettingsController
         }
 
         $result = $repository->findBy(['scope' => $scopes], ['name' => 'ASC']);
-        $result[] = [
-            'name' => 'esiDataSource',
-            'value' => $this->config->get('eve', 'datasource')
-        ];
-        $result[] = [
-            'name' => 'esiHost',
-            'value' => $this->config->get('eve', 'esi_host')
-        ];
+        $result = array_merge($result, [
+            [
+                'name' => 'esiDataSource',
+                'value' => $this->config->get('eve', 'datasource')
+            ], [
+                'name' => 'esiHost',
+                'value' => $this->config->get('eve', 'esi_host')
+            ]
+        ]);
 
         return $this->response->withJson($result);
     }

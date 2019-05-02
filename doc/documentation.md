@@ -7,6 +7,7 @@
 * Role based permission system
 * Creation of groups and apps
 * Group and app manager for member management
+* Customization of texts, links and images specific to your organization.
 * Automatic group assignment for players based on corporations and alliances from all of their characters
 * Optional automatic account deactivation with mail notification when ESI tokens are invalid
 * Manually managed accounts that do not require any ESI scopes.

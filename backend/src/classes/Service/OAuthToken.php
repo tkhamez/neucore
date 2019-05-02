@@ -81,20 +81,20 @@ class OAuthToken
     {
         $existingToken = $this->createAccessTokenFromCharacter($character);
         if ($existingToken === null) {
-            return "";
+            return '';
         }
 
         try {
             $token = $this->refreshAccessToken($existingToken);
         } catch (IdentityProviderException $e) {
-            return "";
+            return '';
         }
 
         if ($token->getToken() !== $existingToken->getToken()) {
             $character->setAccessToken($token->getToken());
             $character->setExpires($token->getExpires());
             if (! $this->objectManager->flush()) {
-                return ""; // old token is invalid, new token could not be saved
+                return ''; // old token is invalid, new token could not be saved
             }
         }
 
@@ -131,7 +131,7 @@ class OAuthToken
                 'expires' => $character->getExpires()
             ]);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            // don't log this, characters without an "access_token" are okay.
         }
 
         return $token;

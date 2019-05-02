@@ -11,15 +11,107 @@
         <div class="col-lg-12">
             <div class="card border-secondary mb-3">
 
-                <div class="card-header">General</div>
+                <div class="card-header">Customization</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationDocumentTitle">Document Title</label>
+                        <input id="customizationDocumentTitle" type="text" class="form-control"
+                               v-model="settings.customization_document_title"
+                               @keyup="changeSettingDelayed('customization_document_title')">
+                        <small class="form-text text-muted">
+                            Value for HTML head title tag, i. e. name of the browser tab or bookmark.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationHomepage">Website</label>
+                        <input id="customizationHomepage" type="text" class="form-control"
+                               v-model="settings.customization_website"
+                               @keyup="changeSettingDelayed('customization_website')">
+                        <small class="form-text text-muted">
+                            URL for the links of the logos in the navigation bar and on the home page.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationNavTitle">Navigation Title</label>
+                        <input id="customizationNavTitle" type="text" class="form-control"
+                               v-model="settings.customization_nav_title"
+                               @keyup="changeSettingDelayed('customization_nav_title')">
+                        <small class="form-text text-muted">
+                            Organization name used in navigation bar.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="customizationNavLogo" class="col-form-label">Navigation Logo</label><br>
+                        <img :src="settings.customization_nav_logo" alt="logo">
+                        <input type="file" class="mt-1" ref="customization_nav_logo"
+                               id="customizationNavLogo" v-on:change="handleFileUpload('customization_nav_logo')">
+                        <small class="form-text text-muted">
+                            Organization logo used in navigation bar.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationHomeHeadline">Home Page Headline</label>
+                        <input id="customizationHomeHeadline" type="text" class="form-control"
+                               v-model="settings.customization_home_headline"
+                               @keyup="changeSettingDelayed('customization_home_headline')">
+                        <small class="form-text text-muted">
+                            Headline on the home page.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationHomeDescription">Home Page Description</label>
+                        <input id="customizationHomeDescription" type="text" class="form-control"
+                               v-model="settings.customization_home_description"
+                               @keyup="changeSettingDelayed('customization_home_description')">
+                        <small class="form-text text-muted">
+                            Text below the headline on the home page.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="customizationHomeLogo" class="col-form-label">Home Page Logo</label><br>
+                        <img :src="settings.customization_home_logo" alt="logo">
+                        <input type="file" class="mt-1" ref="customization_home_logo"
+                               id="customizationHomeLogo" v-on:change="handleFileUpload('customization_home_logo')">
+                        <small class="form-text text-muted">
+                            Organization logo used on the home page.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationFooterText">Footer Text</label>
+                        <input id="customizationFooterText" type="text" class="form-control"
+                               v-model="settings.customization_footer_text"
+                               @keyup="changeSettingDelayed('customization_footer_text')">
+                        <small class="form-text text-muted">
+                            Text for the footer.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="col-form-label" for="customizationGithub">GitHub</label>
+                        <input id="customizationGithub" type="text" class="form-control"
+                               v-model="settings.customization_github"
+                               @keyup="changeSettingDelayed('customization_github')">
+                        <small class="form-text text-muted">
+                            URL of GitHub repository for various links to the documentation.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card-header">Features</div>
                 <div class="card-body">
                     <em>Deactivate Accounts:</em>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"
                                id="groups_require_valid_token" name="groups_require_valid_token"
-                               :checked="variables['groups_require_valid_token'] === '1'"
-                               @change="changeSetting('groups_require_valid_token',
-                                                      $event.target.checked ? '1' : '0')"
+                               :checked="settings.groups_require_valid_token === '1'"
+                               @change="changeSetting('groups_require_valid_token', $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="groups_require_valid_token">
                             Check this if the API for third-party applications should not return groups
@@ -29,14 +121,15 @@
                     </div>
                     <label class="mt-2">
                         <input type="text" pattern="[0-9]*" class="form-control input-delay"
-                           v-model="accountDeactivationDelay">
+                               v-model="settings.account_deactivation_delay"
+                               @keyup="changeSettingDelayed('account_deactivation_delay')">
                         Delay the deactivation after a token became invalid (hours).
                     </label>
                     <hr>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"
                                id="allow_login_managed" name="allow_login_managed"
-                               :checked="variables['allow_login_managed'] === '1'"
+                               :checked="settings.allow_login_managed === '1'"
                                @change="changeSetting('allow_login_managed', $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="allow_login_managed">
@@ -48,7 +141,7 @@
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"
                                id="allow_character_deletion" name="allow_character_deletion"
-                               :checked="variables['allow_character_deletion'] === '1'"
+                               :checked="settings.allow_character_deletion === '1'"
                                @change="changeSetting('allow_character_deletion', $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="allow_character_deletion">
@@ -56,30 +149,17 @@
                             Check to allow users to delete their characters.
                         </label>
                     </div>
-                    <hr>
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" value="1"
-                               id="show_preview_banner" name="show_preview_banner"
-                               :checked="variables['show_preview_banner'] === '1'"
-                               @change="changeSetting('show_preview_banner', $event.target.checked ? '1' : '0')"
-                        >
-                        <label class="custom-control-label" for="show_preview_banner">
-                            <em>Preview:</em>
-                            Check to show the "preview" banner on the Home screen.
-                        </label>
-                    </div>
-
                 </div>
 
                 <div class="card-header">EVE Mails</div>
                 <div class="card-body">
                     <h4>Sender</h4>
                     <p>
-                        <span v-if="variables['mail_character'] === ''">
-                            <a href="/login-mail"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                        <span v-if="settings.mail_character === ''">
+                            <a href="/login-mail"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
                         </span>
                         <span v-else>
-                            <span class="text-info">{{ variables['mail_character'] }}</span>
+                            <span class="text-info">{{ settings.mail_character }}</span>
                             <button type="button" class="btn btn-danger btn-sm ml-1"
                                     v-on:click="removeMailChar()">
                                 remove
@@ -103,16 +183,16 @@
                     <div class="custom-control custom-checkbox mb-2 mt-3">
                         <input class="custom-control-input" type="checkbox" value="1"
                                id="mail_account_disabled_active" name="mail_account_disabled_active"
-                               v-model="mailAccountDisabledActive"
+                               :checked="settings.mail_account_disabled_active === '1'"
                                @change="changeSetting('mail_account_disabled_active',
-                                                      mailAccountDisabledActive ? '1' : '0')"
+                                                      $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="mail_account_disabled_active">Activate mail</label>
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Alliances</label>
-                        <multiselect v-model="mailAccountDisabledAlliances" :options="alliances" :loading="false"
-                                     label="name" track-by="id" :multiple="true"
+                        <multiselect v-if="alliances" v-model="mailAccountDisabledAlliances" :options="alliances"
+                                     :loading="false" label="name" track-by="id" :multiple="true"
                                      placeholder="Select alliances"></multiselect>
                         <small class="form-text text-muted">
                             The mail is only sent if at least one character in a player account
@@ -122,13 +202,15 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="mailAccountDisabledSubject">Subject</label>
-                        <input v-model="mailAccountDisabledSubject" type="text" class="form-control"
-                               id="mailAccountDisabledSubject">
+                        <input id="mailAccountDisabledSubject" type="text" class="form-control"
+                               v-model="settings.mail_account_disabled_subject"
+                               @keyup="changeSettingDelayed('mail_account_disabled_subject')">
                     </div>
                     <div class="form-group">
                         <label for="mailAccountDisabledBody">Message</label>
-                        <textarea v-model="mailAccountDisabledBody" class="form-control"
-                                  id="mailAccountDisabledBody" rows="6"></textarea>
+                        <textarea v-model="settings.mail_account_disabled_body" class="form-control"
+                                  id="mailAccountDisabledBody" rows="6"
+                                  @keyup="changeSettingDelayed('mail_account_disabled_body')"></textarea>
                     </div>
                 </div>
 
@@ -187,21 +269,15 @@ module.exports = {
         swagger: Object,
         initialized: Boolean,
         player: [null, Object],
-        settings: Array,
+        settings: Object,
     },
 
     data: function() {
         return {
-            settingsLoaded: false,
-            variables: {},
             api: null,
-            alliances: [],
+            alliances: null,
             loginUrlDirector: null,
-            accountDeactivationDelay: null,
-            mailAccountDisabledActive: false,
             mailAccountDisabledAlliances: null,
-            mailAccountDisabledSubject: null,
-            mailAccountDisabledBody: null,
             directors: [],
         }
     },
@@ -229,36 +305,22 @@ module.exports = {
             this.readSettings();
         },
 
-        accountDeactivationDelay: function(newValue, oldValue) {
-            if (oldValue === null) {
+        mailAccountDisabledAlliances: function(newValues, oldValues) {
+            if (oldValues === null) {
                 return;
             }
-            this.changeSettingDelayed(this, 'account_deactivation_delay', this.accountDeactivationDelay);
-        },
-
-        mailAccountDisabledAlliances: function(newValue, oldValue) {
-            const allianceIds = [];
+            const oldAllianceIds = [];
+            for (let oldValue of oldValues) {
+                oldAllianceIds.push(oldValue.id);
+            }
+            const newAllianceIds = [];
             for (let alliance of this.mailAccountDisabledAlliances) {
-                allianceIds.push(alliance.id);
+                newAllianceIds.push(alliance.id);
             }
-            if (oldValue === null) {
+            if (newAllianceIds.join(',') === oldAllianceIds.join(',')) {
                 return;
             }
-            this.changeSetting('mail_account_disabled_alliances', allianceIds.join(','));
-        },
-
-        mailAccountDisabledSubject: function(newValue, oldValue) {
-            if (oldValue === null) {
-                return;
-            }
-            this.changeSettingDelayed(this, 'mail_account_disabled_subject', this.mailAccountDisabledSubject);
-        },
-
-        mailAccountDisabledBody: function(newValue, oldValue) {
-            if (oldValue === null) {
-                return;
-            }
-            this.changeSettingDelayed(this, 'mail_account_disabled_body', this.mailAccountDisabledBody);
+            this.changeSetting('mail_account_disabled_alliances', newAllianceIds.join(','));
         },
     },
 
@@ -280,23 +342,16 @@ module.exports = {
         },
 
         readSettings: function() {
-            if (this.settings.length === 0) {
-                this.settingsLoaded = false; // reset state after "settingsChange" event
-            }
-            if (this.alliances.length === 0 || this.settings.length === 0 || this.settingsLoaded) {
+            if (this.alliances === null || ! this.settings.hasOwnProperty('account_deactivation_delay')) {
                 return; // wait for alliance list and settings
             }
 
             this.directors = [];
             this.mailAccountDisabledAlliances = [];
 
-            for (let variable of this.settings) {
-                if (variable.name === 'account_deactivation_delay') {
-                    this.accountDeactivationDelay = variable.value.toString();
-                } else if (variable.name === 'mail_account_disabled_active') {
-                    this.mailAccountDisabledActive = variable.value === '1';
-                } else if (variable.name === 'mail_account_disabled_alliances') {
-                    for (let allianceId of variable.value.split(',')) {
+            for (const [name, value] of Object.entries(this.settings)) {
+                if (name === 'mail_account_disabled_alliances') {
+                    for (let allianceId of value.split(',')) {
                         allianceId = parseInt(allianceId);
                         for (let alliance of this.alliances) {
                             if (alliance.id === allianceId) {
@@ -305,27 +360,19 @@ module.exports = {
                             }
                         }
                     }
-                } else if (variable.name === 'mail_account_disabled_subject') {
-                    this.mailAccountDisabledSubject = variable.value;
-                } else if (variable.name === 'mail_account_disabled_body') {
-                    this.mailAccountDisabledBody = variable.value;
-                } else if (variable.name.indexOf('director_char_') !== -1) {
+                } else if (name.indexOf('director_char_') !== -1) {
                     try {
                         this.directors.push({
-                            'name': variable.name,
-                            'value': JSON.parse(variable.value)
+                            'name': name,
+                            'value': JSON.parse(value)
                         });
                     } catch(err) {}
-                } else {
-                    this.variables[variable.name] = variable.value;
                 }
             }
-
-            this.settingsLoaded = true;
         },
 
         removeMailChar: function() {
-            this.variables['mail_character'] = '';
+            this.settings.mail_character = '';
             this.changeSetting('mail_character', '');
         },
 
@@ -349,7 +396,26 @@ module.exports = {
             });
         },
 
-        changeSettingDelayed: window._.debounce((vm, name, value) => {
+        handleFileUpload: function(name) {
+            const vm = this;
+            const file = this.$refs[name].files[0];
+            const reader  = new FileReader();
+
+            reader.addEventListener('load', function() {
+                const image = reader.result;
+                vm.changeSetting(name, image);
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file)
+            }
+        },
+
+        changeSettingDelayed: function(name) {
+            this.changeSettingDebounced(this, name, this.settings[name]);
+        },
+
+        changeSettingDebounced: window._.debounce((vm, name, value) => {
             vm.changeSetting(name, value);
         }, 250),
 
@@ -362,12 +428,11 @@ module.exports = {
                     return;
                 }
 
-                // propagate only the change of variables that are used elsewhere or were deleted
+                // only propagate the change of variables that needs it
                 if ([
-                        'groups_require_valid_token',
                         'allow_character_deletion',
-                        'show_preview_banner',
-                        'mail_character',
+                        'customization_home_logo',
+                        'customization_nav_logo',
                     ].indexOf(name) !== -1 ||
                     name.indexOf('director_char_') !== -1
                 ) {

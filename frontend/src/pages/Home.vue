@@ -51,23 +51,18 @@
         </div>
 
         <div class="jumbotron mt-3">
-            <span v-cloak id="preview" v-if="preview">PREVIEW</span>
-            <a href="https://www.bravecollective.com/">
-                <img src="/images/brave_300.png" class="float-right" alt="Brave logo"
-                    title="Brave Collective: What's your fun per hour?">
+            <a v-cloak :href="settings.customization_website">
+                <img v-if="settings.customization_home_logo" class="float-right" alt="Logo"
+                    :src="settings.customization_home_logo">
             </a>
-            <h1 class="display-3">BRAVE Core</h1>
-            <p class="lead">
-                This site provides access to alliance services such as Mumble, Wiki and Forum.
-            </p>
+            <h1 v-cloak class="display-3">{{ settings.customization_home_headline }}</h1>
+            <p v-cloak class="lead">{{ settings.customization_home_description }}</p>
             <hr class="my-4">
 
             <div v-cloak v-if="! authChar">
-                <p class="lead">
-                    Click the button below to login through <i>EVE Online SSO</i>.
-                </p>
+                <p>Click the button below to login through <i>EVE Online SSO</i>.</p>
                 <a href="/login">
-                    <img src="/images/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
+                    <img src="/static/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
                 </a>
                 <p class="small">
                     <br>
@@ -78,8 +73,8 @@
             </div>
 
             <div v-cloak v-if="authChar">
-                <p>Please add all your characters by logging in with EVE SSO.</p>
-                <p><a href="/login-alt"><img src="/images/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
+                <p>Add your other characters by logging in with EVE SSO.</p>
+                <p><a href="/login-alt"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
             </div>
         </div>
 
@@ -134,8 +129,8 @@
                                     <i class="fas fa-sync small"></i>
                                     Update
                                 </button>
-                                <button v-if="authChar.id !== char.id && deleteButton"
-                                        type="button" class="btn btn-danger btn-sm mt-1"
+                                <button v-cloak type="button" class="btn btn-danger btn-sm mt-1"
+                                        v-if="authChar.id !== char.id && settings.allow_character_deletion === '1'"
                                         v-on:click="askDeleteChar(char.id, char.name)">
                                     <i class="far fa-trash-alt small"></i>
                                     Delete
@@ -198,20 +193,17 @@ module.exports = {
         initialized: Boolean,
         authChar: [null, Object],
         player: [null, Object],
-        settings: Array,
+        settings: Object,
     },
 
     data: function() {
         return {
-            preview: false,
-            deleteButton: false,
             deactivated: false,
             charToDelete: null,
         }
     },
 
     mounted: function() { // after "redirect" from another page
-        this.adjustSettings();
         this.checkDeactivated();
     },
 
@@ -234,26 +226,12 @@ module.exports = {
         },
 
         settings: function() {
-            this.adjustSettings();
             this.checkDeactivated();
         }
     },
 
     methods: {
-        adjustSettings: function() {
-            for (let variable of this.settings) {
-                if (variable.name === 'show_preview_banner') {
-                    this.preview = variable.value === '1';
-                }
-                if (variable.name === 'allow_character_deletion') {
-                    this.deleteButton = variable.value === '1';
-                }
-            }
-        },
-
         checkDeactivated: function() {
-            this.deactivated = false;
-
             if (! this.player) {
                 return;
             }
@@ -327,20 +305,6 @@ module.exports = {
     .player-hdl h2 {
         display: inline-block;
         margin-right: 10px;
-    }
-
-    #preview {
-        position: absolute;
-        top: 30px;
-        right: 10px;
-        font-size: 2em;
-        font-family: impact, sans-serif;
-        letter-spacing: 20px;
-        color: #9fcdff;
-        text-shadow: 1px 1px black;
-        padding-left: 20px;
-        transform: rotate(10deg);
-        background-color: rgba(200, 200, 200, .5);
     }
 
     .groups-disabled {

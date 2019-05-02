@@ -131,7 +131,7 @@ class AuthController
             ['name' => SystemVariable::ALLOW_LOGIN_MANAGED]
         );
         if (! $allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
-            return $this->response->withStatus(403);
+            return $this->response->withStatus(403, 'Forbidden')->write('Forbidden');
         }
 
         return $this->redirectToLoginUrl(self::STATE_PREFIX_STATUS_MANAGED . Random::chars(12), '/#login');

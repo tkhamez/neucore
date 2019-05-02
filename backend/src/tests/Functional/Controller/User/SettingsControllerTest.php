@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Role;
@@ -27,7 +28,7 @@ class SettingsControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -56,7 +57,6 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
-            ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
@@ -72,7 +72,6 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
-            ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
@@ -91,7 +90,6 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": "10", "corporation_id": "101"}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
-            ['name' => SystemVariable::SHOW_PREVIEW_BANNER, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
@@ -149,7 +147,7 @@ class SettingsControllerTest extends WebTestCase
         $this->loginUser(6); // role: SETTINGS
 
         $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
@@ -314,7 +312,6 @@ class SettingsControllerTest extends WebTestCase
 
         $var1 = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $var2 = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $var3 = new SystemVariable(SystemVariable::SHOW_PREVIEW_BANNER);
         $var4 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var5 = new SystemVariable(SystemVariable::MAIL_TOKEN);
         $var6 = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
@@ -323,7 +320,6 @@ class SettingsControllerTest extends WebTestCase
 
         $var1->setValue("0");
         $var2->setValue("1");
-        $var3->setValue("0");
         $var4->setValue("The char");
         $var5->setValue('{"ID": "123", "TOKEN": "abc"}');
         $var6->setValue('{"character_id": "10", "corporation_id": "101"}');
@@ -338,7 +334,6 @@ class SettingsControllerTest extends WebTestCase
 
         $this->em->persist($var1);
         $this->em->persist($var2);
-        $this->em->persist($var3);
         $this->em->persist($var4);
         $this->em->persist($var5);
         $this->em->persist($var6);

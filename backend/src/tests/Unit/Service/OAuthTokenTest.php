@@ -171,14 +171,7 @@ class OAuthTokenTest extends TestCase
     public function testGetTokenNoExistingTokenException()
     {
         $token = $this->es->getToken(new Character());
-
         $this->assertSame('', $token);
-
-        // from Exception in createAccessTokenFromCharacter()
-        $this->assertSame(
-            'Required option not passed: "access_token"',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
     }
 
     public function testGetTokenInvalidToken()

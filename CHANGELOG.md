@@ -1,4 +1,10 @@
 
+## Next
+
+dd mmm yyyy
+
+- Customization for some texts, links and images.
+
 ## 0.8.0
 
 22 Apr 2019

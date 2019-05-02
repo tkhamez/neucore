@@ -18,14 +18,11 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $helper->emptyDb();
         $em = $helper->getEm();
 
-        $em->persist((new Role(1))->setName(Role::USER));
-        $em->persist((new Role(2))->setName(Role::APP));
         $em->persist((new Role(8))->setName(Role::ESI));
-        $em->persist((new SystemVariable(SystemVariable::SHOW_PREVIEW_BANNER)));
-        $em->persist((new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1'));
-        $em->persist((new SystemVariable(SystemVariable::DIRECTOR_CHAR))->setScope(SystemVariable::SCOPE_SETTINGS));
+        $em->persist((new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION))->setValue('1'));
+        $em->persist((new SystemVariable(SystemVariable::DIRECTOR_CHAR . '1'))
+            ->setScope(SystemVariable::SCOPE_SETTINGS));
         $em->flush();
-
 
         // run
 
@@ -40,11 +37,11 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $roles = $repoFactory->getRoleRepository()->findBy([]);
         $vars = $repoFactory->getSystemVariableRepository()->findBy([], ['name' => 'asc']);
 
-        $this->assertSame(15, count($roles)); // 15 from seed
-        $this->assertSame(13, count($vars)); // 12 from seed + 1 from setup
+        $this->assertSame(15, count($roles)); // 14 from seed + 1 from setup
+        $this->assertSame(21, count($vars)); // 20 from seed + 1 from setup
 
         // check that value was not changed
-        $this->assertSame(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, $vars[5]->getName());
-        $this->assertSame('1', $vars[5]->getValue());
+        $this->assertSame(SystemVariable::ALLOW_CHARACTER_DELETION, $vars[1]->getName());
+        $this->assertSame('1', $vars[1]->getValue());
     }
 }

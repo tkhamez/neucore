@@ -50,10 +50,10 @@ Select and table to add and remove objects from other objects.
                     Add all groups to app
                 </button>
             </p>
-            <p v-if="contentType === 'roles'">
+            <p v-cloak v-if="contentType === 'roles'">
                 See
-                <a href="https://github.com/bravecollective/brvneucore/blob/master/doc/API.md" target="_blank">
-                    doc/API.md</a> for permissions for each role.
+                <a :href="settings.customization_github + '/blob/master/doc/API.md'" target="_blank">doc/API.md</a>
+                for permissions for each role.
             </p>
 
             <div class="input-group mb-1">
@@ -171,6 +171,7 @@ module.exports = {
         type: '',
         typeId: null,
         player: [null, Object],
+        settings: Object,
     },
 
     data: function() {

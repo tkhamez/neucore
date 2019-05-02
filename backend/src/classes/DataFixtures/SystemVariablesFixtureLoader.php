@@ -2,6 +2,7 @@
 
 namespace Neucore\DataFixtures;
 
+use Neucore\Application;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -25,9 +26,27 @@ class SystemVariablesFixtureLoader implements FixtureInterface
             SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT   => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_CHARACTER                  => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_TOKEN                      => ['',  SystemVariable::SCOPE_BACKEND],
-            SystemVariable::SHOW_PREVIEW_BANNER             => ['0', SystemVariable::SCOPE_PUBLIC],
-        ];
 
+            SystemVariable::CUSTOMIZATION_DOCUMENT_TITLE    => ['Alliance Core Services', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_WEBSITE          => ['https://github.com/tkhamez/neucore',
+                                                                SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_NAV_TITLE         => ['Neucore', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_NAV_LOGO          => ['data:image/png;base64,' . base64_encode(
+                                                                    file_get_contents(
+                                                                        Application::ROOT_DIR . '/var/logo_29.png')),
+                                                                SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_HOME_HEADLINE        => ['Core Services', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION  => ['A player management system for EVE Online.',
+                                                                SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_HOME_LOGO         => ['data:image/png;base64,' . base64_encode(
+                                                                    file_get_contents(
+                                                                        Application::ROOT_DIR . '/var/logo_300.png')),
+                                                                SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_FOOTER_TEXT       => ['Documentation is available on GitHub.',
+                                                                SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_GITHUB            => ['https://github.com/tkhamez/neucore',
+                                                                SystemVariable::SCOPE_PUBLIC],
+        ];
         foreach ($vars as $name => $data) {
             $var = $repository->find($name);
             if ($var === null) {
@@ -36,6 +55,14 @@ class SystemVariablesFixtureLoader implements FixtureInterface
                 $manager->persist($var);
             }
             $var->setScope($data[1]);
+        }
+
+        $varsRemove = ['show_preview_banner']; // removed in version > 0.8.0
+        foreach ($varsRemove as $nameRemove) {
+            $varRemove = $repository->find($nameRemove);
+            if ($varRemove !== null) {
+                $manager->remove($varRemove);
+            }
         }
 
         $manager->flush();
