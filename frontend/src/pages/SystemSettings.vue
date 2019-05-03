@@ -433,6 +433,7 @@ module.exports = {
                         'allow_character_deletion',
                         'customization_home_logo',
                         'customization_nav_logo',
+                        'customization_document_title',
                     ].indexOf(name) !== -1 ||
                     name.indexOf('director_char_') !== -1
                 ) {

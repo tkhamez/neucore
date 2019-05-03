@@ -18,9 +18,9 @@ Documentation is available in the `doc` directory: [**Documentation**](doc/docum
 This project consists of two applications, the backend and the frontend. For more information, 
 see the [**Frontend**](frontend/README.md) and [**Backend**](backend/README.md) Readme.
 
-A preview/demo installation is available at https://brvneucore.herokuapp.com
-([Swagger UI](https://brvneucore.herokuapp.com/api),
-[OpenAPI for apps](https://brvneucore.herokuapp.com/application-api.json))
+A preview/demo installation is available at https://neucore.herokuapp.com
+([Swagger UI](https://neucore.herokuapp.com/api),
+[OpenAPI for apps](https://neucore.herokuapp.com/application-api.json))
 
 ## Installation
 
@@ -97,7 +97,7 @@ installation.
 * MariaDB or MySQL Server
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
-    * A sample Apache configuration in included in the [Vagrantfile](Vagrantfile) file and there 
+    * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 
       is a [.htaccess](web/.htaccess) file in the web directory.
     * A sample Nginx configuration can be found in the doc directory [nginx.conf](doc/nginx.conf)
 * Java (only for openapi-generator)

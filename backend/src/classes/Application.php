@@ -2,6 +2,7 @@
 
 namespace Neucore;
 
+use function GuzzleHttp\Promise\is_fulfilled;
 use Neucore\Command\CheckTokens;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
@@ -302,7 +303,12 @@ class Application
                     false
                 );
                 AnnotationRegistry::registerLoader('class_exists');
-                if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '') {
+                if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '' &&
+                    (
+                        is_file($conf['driver_options']['mysql_ssl_ca']) ||
+                        ! $conf['driver_options']['mysql_verify_server_cert']
+                    )
+                ) {
                     $conf['connection']['driverOptions'] = [
                         \PDO::MYSQL_ATTR_SSL_CA => $conf['driver_options']['mysql_ssl_ca'],
                         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT =>

@@ -133,6 +133,10 @@ class AppController extends BaseController
      *     @SWG\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="500",
+     *         description="If creation of app failed."
      *     )
      * )
      */
@@ -149,9 +153,14 @@ class AppController extends BaseController
             return $this->response->withStatus(500);
         }
 
+        $hash = password_hash(Random::hex(64), PASSWORD_DEFAULT);
+        if ($hash === false) {
+            return $this->response->withStatus(500);
+        }
+
         $app = new App();
         $app->setName($name);
-        $app->setSecret((string) password_hash(Random::hex(64), PASSWORD_DEFAULT));
+        $app->setSecret($hash);
         $app->addRole($appRole);
 
         $this->objectManager->persist($app);
@@ -682,6 +691,10 @@ class AppController extends BaseController
      *     @SWG\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @SWG\Response(
+     *         response="500",
+     *         description="Failed to created new secret."
      *     )
      * )
      */
@@ -698,7 +711,12 @@ class AppController extends BaseController
         }
 
         $secret = Random::hex(64);
-        $app->setSecret((string) password_hash($secret, PASSWORD_DEFAULT));
+        $hash = password_hash($secret, PASSWORD_DEFAULT);
+        if ($hash === false) {
+            return $this->response->withStatus(500);
+        }
+
+        $app->setSecret($hash);
 
         return $this->flushAndReturn(200, $secret);
     }
