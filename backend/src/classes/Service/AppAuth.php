@@ -125,8 +125,8 @@ class AppAuth implements RoleProviderInterface
      */
     private function upgradeHash(string $secret)
     {
-        if (password_needs_rehash($this->app->getSecret(), PASSWORD_DEFAULT)) {
-            $hash = password_hash($secret, PASSWORD_DEFAULT);
+        if (password_needs_rehash($this->app->getSecret(), PASSWORD_BCRYPT)) {
+            $hash = password_hash($secret, PASSWORD_BCRYPT);
             if ($hash === false) {
                 return;
             }

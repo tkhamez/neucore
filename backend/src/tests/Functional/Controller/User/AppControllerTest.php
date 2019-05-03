@@ -679,7 +679,7 @@ class AppControllerTest extends WebTestCase
 
         $a = new App();
         $a->setName('app one');
-        $a->setSecret((string) password_hash('abc123', PASSWORD_DEFAULT));
+        $a->setSecret((string) password_hash('abc123', PASSWORD_BCRYPT));
         if (in_array('app', $addRoles)) {
             $a->addRole($roles[0]); // Role::APP
         }

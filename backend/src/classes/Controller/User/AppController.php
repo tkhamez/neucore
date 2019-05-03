@@ -153,7 +153,7 @@ class AppController extends BaseController
             return $this->response->withStatus(500);
         }
 
-        $hash = password_hash(Random::hex(64), PASSWORD_DEFAULT);
+        $hash = password_hash(Random::hex(64), PASSWORD_BCRYPT);
         if ($hash === false) {
             return $this->response->withStatus(500);
         }
@@ -711,7 +711,7 @@ class AppController extends BaseController
         }
 
         $secret = Random::hex(64);
-        $hash = password_hash($secret, PASSWORD_DEFAULT);
+        $hash = password_hash($secret, PASSWORD_BCRYPT);
         if ($hash === false) {
             return $this->response->withStatus(500);
         }

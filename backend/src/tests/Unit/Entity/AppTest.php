@@ -37,7 +37,7 @@ class AppTest extends \PHPUnit\Framework\TestCase
     public function testSetGetSecret()
     {
         $app = new App();
-        $pw = (string) password_hash('00h', PASSWORD_DEFAULT);
+        $pw = (string) password_hash('00h', PASSWORD_BCRYPT);
         $app->setSecret($pw);
         $this->assertSame($pw, $app->getSecret());
     }

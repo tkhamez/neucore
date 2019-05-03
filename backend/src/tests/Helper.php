@@ -222,24 +222,20 @@ class Helper
         $this->getEm()->flush();
     }
 
-    public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_DEFAULT): App
+    public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_BCRYPT): App
     {
-        $hash = $hashAlgorithm === 'md5' ?
-            crypt($secret, '$1$12345678$') :
-            password_hash($secret, PASSWORD_DEFAULT);
-
-        $em = $this->getEm();
+        $hash = $hashAlgorithm === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, $hashAlgorithm);
 
         $app = new App();
         $app->setName($name);
         $app->setSecret((string) $hash);
-        $em->persist($app);
+        $this->getEm()->persist($app);
 
         foreach ($this->addRoles($roles) as $role) {
             $app->addRole($role);
         }
 
-        $em->flush();
+        $this->getEm()->flush();
 
         return $app;
     }
