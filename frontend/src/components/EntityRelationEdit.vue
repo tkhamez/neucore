@@ -88,7 +88,7 @@ Select and table to add and remove objects from other objects.
             </div>
         </div>
 
-        <table v-cloak v-if="typeId" class="table table-striped table-hover mb-0">
+        <table v-cloak v-if="typeId" class="table table-hover mb-0">
             <thead>
                 <tr>
                     <th v-if="contentType === 'managers' || contentType === 'groups'">ID</th>

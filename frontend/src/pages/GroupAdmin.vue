@@ -66,6 +66,7 @@
                         :href="'#GroupAdmin/' + group.id + '/' + contentType"
                     >
                         {{ group.name }}
+                        <span class="text-muted small">{{ group.visibility }}</span>
                         <span class="group-actions" v-cloak v-if="groupId === group.id">
                             <i class="far fa-trash-alt mr-1 delete-group"
                                @mouseover="mouseover"
@@ -81,7 +82,7 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'managers' }"

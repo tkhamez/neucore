@@ -174,9 +174,14 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
+        // creates application
         $response1 = $this->runApp('PUT', '/api/user/player/add-application/'. $this->group->getId());
-        $response2 = $this->runApp('PUT', '/api/user/player/add-application/'. $this->group->getId());
         $this->assertEquals(204, $response1->getStatusCode());
+
+        $this->em->clear();
+
+        // updates application
+        $response2 = $this->runApp('PUT', '/api/user/player/add-application/'. $this->group->getId());
         $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();

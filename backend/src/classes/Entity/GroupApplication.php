@@ -14,7 +14,10 @@ use Doctrine\ORM\Mapping as ORM;
  * )
  *
  * @ORM\Entity
- * @ORM\Table(name="group_applications")
+ * @ORM\Table(
+ *     name="group_applications",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="player_group_idx", columns={"player_id", "group_id"})}
+ * )
  */
 class GroupApplication implements \JsonSerializable
 {

@@ -15,6 +15,9 @@
                 <li v-cloak class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
+                <li v-cloak class="nav-item" :class="{ active: page === 'Groups' }">
+                    <a class="nav-link" href="#Groups">Groups</a>
+                </li>
                 <li v-cloak v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"
                     class="nav-item dropdown" :class="{ active: managePages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
@@ -54,13 +57,20 @@
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-cloak v-if="hasRole('tracking')"
-                    class="nav-item" :class="{ active: page === 'Tracking' }">
-                    <a class="nav-link" href="#Tracking">Member Tracking</a>
-                </li>
-                <li v-cloak v-if="hasRole('esi')"
-                    class="nav-item" :class="{ active: page === 'Esi' }">
-                    <a class="nav-link" href="#Esi">ESI</a>
+                <li v-cloak v-if="hasAnyRole(['tracking', 'esi'])"
+                    class="nav-item dropdown" :class="{ active: otherPages.indexOf(page) !== -1 }">
+                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Other
+                    </a>
+                    <div class="dropdown-menu">
+                        <a v-cloak v-if="hasRole('tracking')"
+                           class="dropdown-item" :class="{ active: page === 'Tracking' }"
+                           href="#Tracking">Tracking</a>
+                        <a v-cloak v-if="hasRole('esi')"
+                           class="dropdown-item" :class="{ active: page === 'Esi' }"
+                           href="#Esi">Esi</a>
+                    </div>
                 </li>
             </ul>
 
@@ -81,7 +91,9 @@
                 </div>
             </div>
 
-            <a v-cloak v-if="authChar" href="#logout" class="btn btn-outline-danger">Sign Out</a>
+            <a v-cloak v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign Out">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </nav>
 </template>
@@ -98,6 +110,7 @@ module.exports = {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: ['UserAdmin', 'GroupAdmin', 'AppAdmin', 'SystemSettings'],
+            otherPages: ['Tracking', 'Esi'],
             selectedTheme: 'Darkly',
             themes: [
                 'Basic',

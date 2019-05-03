@@ -18,7 +18,7 @@
                         v-for="group in player.managerGroups"
                         class="list-group-item list-group-item-action"
                         :class="{ active: groupId === group.id }"
-                        :href="'#GroupManagement/' + group.id">
+                        :href="'#GroupManagement/' + group.id + '/' + contentType">
                         {{ group.name }}
                     </a>
                 </div>
@@ -26,10 +26,19 @@
         </div>
 
         <div class="col-lg-8">
-            <div class="card border-secondary mb-3">
-                <h3 class="card-header">
-                    Members
-                </h3>
+
+            <ul class="nav nav-pills nav-fill">
+                <li class="nav-item">
+                    <a class="nav-link" :class="{ 'active': contentType === 'members' }"
+                       :href="'#GroupManagement/' + groupId + '/members'">Members</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" :class="{ 'active': contentType === 'applications' }"
+                       :href="'#GroupManagement/' + groupId + '/applications'">Applications</a>
+                </li>
+            </ul>
+
+            <div v-if="contentType === 'members'" class="card border-secondary mb-3">
                 <div v-cloak v-if="groupId" class="card-body">
                     <p class="small">
                         Groups that are a prerequisite for being a member of this group:
@@ -65,7 +74,7 @@
                     </div>
                 </div>
 
-                <table v-cloak v-if="groupId" class="table table-striped table-hover mb-0">
+                <table v-cloak v-if="groupId" class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>Player ID</th>
@@ -79,8 +88,7 @@
                             <td>{{ member.id }}</td>
                             <td>{{ member.name }}</td>
                             <td>
-                                <button class="btn btn-info btn-sm"
-                                    v-on:click="showCharacters(member.id)">
+                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
                                     Show characters
                                 </button>
                             </td>
@@ -92,7 +100,54 @@
                         </tr>
                     </tbody>
                 </table>
-            </div> <!-- card -->
+            </div> <!-- card members -->
+
+            <div v-if="contentType === 'applications'" class="card border-secondary mb-3"
+                 v-for="status in ['pending', 'denied', 'accepted']">
+                <div class="card-body">
+                    <h5>{{ status }}</h5>
+                    <span v-if="status === 'accepted'" class="small">
+                        The player no longer has to be a member of the group.
+                    </span>
+                </div>
+                <table v-cloak v-if="groupId" class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Created</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="application in groupApplications" v-if=" application.status === status">
+                            <td>{{ application.player.name + ' #' + application.player.id }}</td>
+                            <td>{{ formatDate(application.created) }}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(application.player.id)">
+                                    Show characters
+                                </button>
+                            </td>
+                            <td>
+                                <button v-if="application.status === 'pending' || application.status === 'denied'"
+                                        class="btn btn-success btn-sm"
+                                        v-on:click="accept(application.id, application.player.id)">
+                                    Accept
+                                </button>
+                            </td>
+                            <td>
+                                <button v-if="application.status === 'pending'"
+                                        class="btn btn-warning btn-sm"
+                                        v-on:click="deny(application.id)">
+                                    Deny
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> <!-- card applications -->
+
         </div> <!-- col  -->
     </div> <!-- row -->
 </div>
@@ -118,25 +173,39 @@ module.exports = {
         return {
             groupId: null,
             groupMembers: [],
+            groupApplications: [],
             searchResult: [],
             newMember: null,
             requiredGroups: [],
+            contentType: ''
         }
     },
 
     watch: {
         player: function() {
-            this.getMembers();
-            this.getRequiredGroups();
+            this.getData();
         },
 
         route: function() {
-            this.getMembers();
-            this.getRequiredGroups();
+            this.getData();
         }
     },
 
     methods: {
+        getData: function() {
+            this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
+            if (this.groupId === null) {
+                return;
+            }
+            this.contentType = this.route[2] ? this.route[2] : 'members';
+            if (this.contentType === 'members') {
+                this.getMembers();
+                this.getRequiredGroups();
+            } else if (this.contentType === 'applications') {
+                this.getApplications();
+            }
+        },
+
         getMembers: function() {
             const vm = this;
 
@@ -144,12 +213,6 @@ module.exports = {
             vm.groupMembers = [];
             vm.searchResult = [];
             this.newMember = null;
-
-            // group id
-            this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (this.groupId === null) {
-                return;
-            }
 
             // get members
             vm.loading(true);
@@ -159,6 +222,19 @@ module.exports = {
                     return;
                 }
                 vm.groupMembers = data;
+            });
+        },
+
+        getApplications: function() {
+            const vm = this;
+            vm.groupMembers = [];
+            vm.loading(true);
+            new this.swagger.GroupApi().applications(this.groupId, function(error, data) {
+                vm.loading(false);
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.groupApplications = data;
             });
         },
 
@@ -227,6 +303,27 @@ module.exports = {
                 } else {
                     vm.getMembers();
                 }
+            });
+        },
+
+        accept: function(applicationId, playerId) {
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.GroupApi().acceptApplication(applicationId, function() {
+                vm.loading(false);
+                vm.getApplications();
+                if (playerId === vm.player.id) {
+                    vm.$root.$emit('playerChange');
+                }
+            });
+        },
+
+        deny: function(applicationId) {
+            const vm = this;
+            vm.loading(true);
+            new this.swagger.GroupApi().denyApplication(applicationId, function() {
+                vm.loading(false);
+                vm.getApplications()
             });
         },
     },

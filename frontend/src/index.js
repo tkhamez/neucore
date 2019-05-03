@@ -4,6 +4,7 @@ require("./index.scss");
 
 import NavBar from './components/NavBar.vue';
 import Home             from './pages/Home.vue';
+import Groups           from './pages/Groups.vue';
 import GroupManagement  from './pages/GroupManagement.vue';
 import AppManagement    from './pages/AppManagement.vue';
 import GroupAdmin       from './pages/GroupAdmin.vue';
@@ -130,6 +131,7 @@ const app = new window.Vue({
     components: {
         NavBar,
         Home,
+        Groups,
         GroupManagement,
         AppManagement,
         GroupAdmin,
@@ -153,6 +155,7 @@ const app = new window.Vue({
          */
         pages: [
             'Home',
+            'Groups',
             'GroupManagement',
             'AppManagement',
             'GroupAdmin',

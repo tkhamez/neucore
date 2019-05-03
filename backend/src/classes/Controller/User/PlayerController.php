@@ -214,24 +214,19 @@ class PlayerController extends BaseController
 
         $player = $this->getUser()->getPlayer();
 
-        // find existing applications
-        $hasApplied = false;
-        $groupApps = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $player->getId()]);
-        foreach ($groupApps as $application) {
-            if ($application->getGroup()->getId() === $group->getId()) {
-                $hasApplied = true;
-                break;
-            }
+        // update existing or create new application
+        $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
+            'player' => $player->getId(),
+            'group' => $group->getId()
+        ]);
+        if (! $groupApplication) {
+            $groupApplication = new GroupApplication();
+            $groupApplication->setPlayer($player);
+            $groupApplication->setGroup($group);
+            $this->objectManager->persist($groupApplication);
         }
-
-        if (! $hasApplied) {
-            $newApplication = new GroupApplication();
-            $newApplication->setPlayer($player);
-            $newApplication->setGroup($group);
-            $newApplication->setCreated(new \DateTime());
-            $this->objectManager->persist($newApplication);
-        }
+        $groupApplication->setStatus(GroupApplication::STATUS_PENDING);
+        $groupApplication->setCreated(new \DateTime());
 
         return $this->flushAndReturn(204);
     }
@@ -292,7 +287,7 @@ class PlayerController extends BaseController
      *     @SWG\Response(
      *         response="200",
      *         description="The group applications.",
-     *         @SWG\Schema(ref="#/definitions/GroupApplication")
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/GroupApplication"))
      *     ),
      *     @SWG\Response(
      *         response="403",

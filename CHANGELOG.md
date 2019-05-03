@@ -5,6 +5,7 @@ dd mmm yyyy
 
 - New: Customization for some texts, links and images.
 - New: user admins can delete any character without creating a "removed character" database entry.
+- New: UI for requestable groups.
 
 ## 0.8.0
 
