@@ -9,12 +9,12 @@
         "@fortawesome/fontawesome-free": "^5.8.1",
         "bootstrap": "^4.3.1",
         "bootswatch": "^4.3.1",
-        "jquery": "^3.4.0",
+        "jquery": "^3.4.1",
         "lodash": "^4.17.11",
         "neucore-js-client": "file:neucore-js-client",
         "popper.js": "^1.15.0",
         "vue": "^2.6.10",
-        "vue-multiselect": "^2.1.4"
+        "vue-multiselect": "^2.1.6"
     },
     "devDependencies": {
         "babel-core": "^6.26.3",
@@ -35,7 +35,7 @@
         "vue-loader": "^15.7.0",
         "vue-template-compiler": "^2.6.10",
         "webpack": "^4.30.0",
-        "webpack-cli": "^3.3.0"
+        "webpack-cli": "^3.3.1"
     },
     "scripts": {
         "build": "webpack --mode development",
