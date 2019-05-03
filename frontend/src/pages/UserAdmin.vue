@@ -1,5 +1,34 @@
 <template>
 <div class="container-fluid">
+
+    <div v-cloak class="modal fade" id="deleteCharModal">
+        <div class="modal-dialog">
+            <div v-cloak v-if="charToDelete" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Character</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Are you sure you want to delete this character?<br>
+                        This will not create an "Removed Characters".
+                    </p>
+                    <p class="text-warning">{{ charToDelete.name }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
+                        DELETE character
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
             <h1>User Administration</h1>
@@ -162,6 +191,7 @@
                                 <th>Main</th>
                                 <th>Valid Token</th>
                                 <th>Last Update</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -186,6 +216,13 @@
                                     <span v-if="character.lastUpdate">
                                         {{ character.lastUpdate.toUTCString() }}
                                     </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm mt-1"
+                                            :disabled="authChar.id === character.id"
+                                            v-on:click="askDeleteChar(character.id, character.name)">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -298,6 +335,7 @@ module.exports = {
         swagger: Object,
         initialized: Boolean,
         player: [null, Object], // logged in player
+        authChar: [null, Object], // logged in character
         settings: Object,
     },
 
@@ -322,6 +360,7 @@ module.exports = {
             ],
             newRole: '',
             searchResult: [],
+            charToDelete: null,
         }
     },
 
@@ -505,11 +544,33 @@ module.exports = {
                         return;
                     }
                     vm.getPlayer();
-                    if (vm.playerEdit.id === vm.playerId) {
+                    if (vm.playerEdit.id === vm.player.id) {
                         vm.$root.$emit('playerChange');
                     }
                 });
             });
+        },
+
+        askDeleteChar(characterId, characterName) {
+            this.charToDelete = {
+                id: characterId,
+                name: characterName,
+            };
+            window.jQuery('#deleteCharModal').modal('show');
+        },
+
+        deleteChar() {
+            const vm = this;
+            this.deleteCharacter(this.charToDelete.id, 1, function() {
+                vm.getPlayer();
+                if (vm.playerEdit.id === vm.player.id) {
+                    vm.updateCharacter(vm.authChar.id, function() {
+                        vm.$root.$emit('playerChange');
+                    });
+                }
+            });
+            window.jQuery('#deleteCharModal').modal('hide');
+            this.charToDelete = null;
         },
     },
 }

@@ -857,7 +857,7 @@ class PlayerControllerTest extends WebTestCase
     public function testDeleteCharacter403()
     {
         $this->setupDb();
-        $this->loginUser(12);
+        $this->loginUser(11); // not a user-admin
 
         // char 10 is on a different player account
 
@@ -897,7 +897,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13?admin=0');
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
@@ -910,6 +910,54 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame($this->player->getId(), $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChar->getReason());
+    }
+
+    public function testDeleteCharacter204Admin()
+    {
+        $this->setupDb();
+        $this->loginUser(12); // a user-admin
+
+        // deactivate deletion feature
+        $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
+        $setting->setValue('0');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        // char 10 is on a different player account
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/10?admin=1', null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $this->assertNull($this->charRepo->find(10));
+        $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 10]));
+        $this->assertSame(
+            'An admin deleted character "User" [10]',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testDeleteCharacter204AdminOwnCharacter()
+    {
+        $this->setupDb();
+        $this->loginUser(12); // a user-admin
+
+        // char 10 is on a different player account
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13?admin=1', null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $this->assertNull($this->charRepo->find(13));
+        $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 13]));
+        $this->assertSame(
+            'An admin deleted character "Alt" [13]',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
     }
 
     public function testGroupsDisabled403()

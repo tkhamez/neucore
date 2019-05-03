@@ -39,6 +39,11 @@ class RemovedCharacter implements \JsonSerializable
     const REASON_DELETED_OWNER_CHANGED = 'deleted-owner-changed';
 
     /**
+     * Character was deleted by an admin, this does not create a RemovedCharacter database entry.
+     */
+    const REASON_DELETED_BY_ADMIN = 'deleted-by-admin';
+
+    /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue

@@ -3,7 +3,8 @@
 
 dd mmm yyyy
 
-- Customization for some texts, links and images.
+- New: Customization for some texts, links and images.
+- New: user admins can delete any character without creating a "removed character" database entry.
 
 ## 0.8.0
 

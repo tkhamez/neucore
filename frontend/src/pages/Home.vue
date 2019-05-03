@@ -276,14 +276,7 @@ module.exports = {
 
         deleteChar() {
             const vm = this;
-            vm.loading(true);
-            new this.swagger.PlayerApi().deleteCharacter(this.charToDelete.id, function(error) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    vm.message('Deletion denied.', 'error');
-                    return;
-                }
-                vm.message('Deleted character.', 'success');
+            this.deleteCharacter(this.charToDelete.id, null, function() {
                 vm.update(vm.authChar.id);
             });
             window.jQuery('#deleteCharModal').modal('hide');

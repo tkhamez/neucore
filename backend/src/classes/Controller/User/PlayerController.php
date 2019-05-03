@@ -15,6 +15,7 @@ use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use Psr\Log\LoggerInterface;
+use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;
 
@@ -835,7 +836,7 @@ class PlayerController extends BaseController
      *     path="/user/player/delete-character/{id}",
      *     operationId="deleteCharacter",
      *     summary="Delete a character.",
-     *     description="Needs role: user",
+     *     description="Needs role: user, user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @SWG\Parameter(
@@ -844,6 +845,13 @@ class PlayerController extends BaseController
      *         required=true,
      *         description="ID of the character.",
      *         type="integer"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="admin",
+     *         in="query",
+     *         description="Indicates that the deletion was triggered from the admin interface.",
+     *         type="integer",
+     *         enum={0, 1}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -863,14 +871,19 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function deleteCharacter(string $id, Account $characterService): Response
+    public function deleteCharacter(string $id, Request $request, Account $characterService): Response
     {
+        $admin = $this->getUser()->getPlayer()->hasRole(Role::USER_ADMIN) &&
+            (int) $request->getParam('admin', 0) === 1;
+
         // check "allow deletion" settings
-        $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => SystemVariable::ALLOW_CHARACTER_DELETION]
-        );
-        if ($allowDeletion && $allowDeletion->getValue() === '0') {
-            return $this->response->withStatus(403);
+        if (! $admin) {
+            $allowDeletion = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
+                ['name' => SystemVariable::ALLOW_CHARACTER_DELETION]
+            );
+            if ($allowDeletion && $allowDeletion->getValue() === '0') {
+                return $this->response->withStatus(403);
+            }
         }
 
         // check if character to delete is logged in
@@ -884,13 +897,17 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // check if character belongs to the logged in player account
-        if (! $this->getUser()->getPlayer()->hasCharacter((int) $char->getId())) {
+        // Check if character belongs to the logged in player account or if an admin deletes it.
+        if ($admin) {
+            $reason = RemovedCharacter::REASON_DELETED_BY_ADMIN;
+        } elseif ($this->getUser()->getPlayer()->hasCharacter((int) $char->getId())) {
+            $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
+        } else {
             return $this->response->withStatus(403);
         }
 
         // delete char
-        $characterService->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY);
+        $characterService->deleteCharacter($char, $reason);
 
         return $this->flushAndReturn(204);
     }

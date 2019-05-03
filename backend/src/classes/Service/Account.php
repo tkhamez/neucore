@@ -243,7 +243,13 @@ class Account
      */
     public function deleteCharacter(Character $character, string $reason): void
     {
-        $this->createRemovedCharacter($character, null, $reason);
+        if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
+            $this->log->info(
+                'An admin deleted character "' . $character->getName() . '" [' . $character->getId() . ']'
+            );
+        } else {
+            $this->createRemovedCharacter($character, null, $reason);
+        }
 
         // remove corporation member reference
         $corporationMember = $this->repositoryFactory->getCorporationMemberRepository()->find($character->getId());

@@ -64,7 +64,7 @@ return [
     '/api/user/player/remove-application'    => [Role::USER],
     '/api/user/player/leave-group'           => [Role::USER],
     '/api/user/player/set-main'              => [Role::USER],
-    '/api/user/player/delete-character/{id}' => [Role::USER],
+    '/api/user/player/delete-character/{id}' => [Role::USER, Role::USER_ADMIN],
     '/api/user/player/app-managers'          => [Role::APP_ADMIN],
     '/api/user/player/group-managers'        => [Role::GROUP_ADMIN],
     '/api/user/player/{id}/characters'       => [Role::APP_ADMIN, Role::USER_MANAGER, Role::GROUP_ADMIN, Role::GROUP_MANAGER, Role::TRACKING],

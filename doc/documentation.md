@@ -58,9 +58,8 @@ yet been added to the main account.
 If an EVE character is deleted or transferred to another EVE account, 
 it will also be removed from its current player account.
 
-A player can also manually delete a character if that is enabled in the system setting.
-
-All character removals are recorded and visible to the user admin.
+A player can also manually delete a character if that is enabled in the system setting. All character removals 
+are recorded and are visible to user admins unless they have been deleted by an admin.
 
 ### Account status
 

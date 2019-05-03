@@ -63,6 +63,7 @@ Player API
 - List all players with characters. `/user/player/with-characters`
 - List all players without characters. `/user/player/without-characters`
 - Check whether groups for this account are disabled or will be disabled soon. `/user/player/{id}/groups-disabled`
+- Delete a character. `/user/player/delete-character/{id}`
 - Change the player's account status. `/user/player/{id}/set-status/{status}`
 - Add a role to the player. `/user/player/{id}/add-role/{name}`
 - Remove a role from a player. `/user/player/{id}/remove-role/{name}`

@@ -10,6 +10,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
 use Neucore\Service\OAuthToken;
@@ -18,9 +19,9 @@ use Brave\Sso\Basics\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
+use Tests\Logger;
 use Tests\OAuthProvider;
 use Tests\Client;
 
@@ -30,6 +31,11 @@ class AccountTest extends TestCase
      * @var Helper
      */
     private $helper;
+
+    /**
+     * @var Logger
+     */
+    private $log;
 
     /**
      * @var Client
@@ -56,20 +62,26 @@ class AccountTest extends TestCase
      */
     private $removedCharRepo;
 
+    /**
+     * @var CorporationMemberRepository
+     */
+    private $corpMemberRepo;
+
     public function setUp()
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
         $em = $this->helper->getEm();
 
-        $log = new Logger('Test');
-        $log->pushHandler(new TestHandler());
+        $this->log = new Logger('Test');
+        $this->log->pushHandler(new TestHandler());
 
         $this->client = new Client();
-        $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $log), $log);
-        $this->service = new Account($log, new ObjectManager($em, $log), new RepositoryFactory($em));
+        $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $this->log), $this->log);
+        $this->service = new Account($this->log, new ObjectManager($em, $this->log), new RepositoryFactory($em));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
         $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
+        $this->corpMemberRepo = (new RepositoryFactory($em))->getCorporationMemberRepository();
     }
 
     public function testCreateNewPlayerWithMain()
@@ -354,9 +366,12 @@ class AccountTest extends TestCase
         $this->helper->getEm()->flush();
 
         $this->assertSame(0, count($player->getCharacters()));
+        $this->assertSame(0, count($this->charRepo->findAll()));
 
-        $chars = $this->charRepo->findBy([]);
-        $this->assertSame(0, count($chars));
+        $corpMember = $this->corpMemberRepo->findBy([]);
+        $this->assertSame(1, count($corpMember));
+        $this->assertNull($corpMember[0]->getCharacter());
+
         $removedChars = $this->removedCharRepo->findBy([]);
         $this->assertSame(1, count($removedChars));
         $this->assertSame(10, $removedChars[0]->getCharacterId());
@@ -366,6 +381,36 @@ class AccountTest extends TestCase
         $this->assertEquals(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChars[0]->getReason());
+    }
+
+    public function testDeleteCharacterByAdmin()
+    {
+        $player = (new Player())->setName('player 1');
+        $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
+        $corp = (new Corporation())->setId(1)->setName('c');
+        $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
+        $player->addCharacter($char);
+        $this->helper->getEm()->persist($player);
+        $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->persist($corp);
+        $this->helper->getEm()->persist($member);
+        $this->helper->getEm()->flush();
+
+        $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BY_ADMIN);
+        $this->helper->getEm()->flush();
+
+        $corpMember = $this->corpMemberRepo->findBy([]);
+        $this->assertSame(1, count($corpMember));
+        $this->assertNull($corpMember[0]->getCharacter());
+
+        $this->assertSame(0, count($player->getCharacters()));
+        $this->assertSame(0, count($this->charRepo->findAll()));
+        $this->assertSame(0, count($this->removedCharRepo->findAll()));
+
+        $this->assertSame(
+            'An admin deleted character "char" [10]',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
     }
 
     public function testGroupsDeactivatedValidToken()
