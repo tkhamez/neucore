@@ -17,7 +17,7 @@
                         <label class="col-form-label" for="customizationDocumentTitle">Document Title</label>
                         <input id="customizationDocumentTitle" type="text" class="form-control"
                                v-model="settings.customization_document_title"
-                               @keyup="changeSettingDelayed('customization_document_title')">
+                               v-on:input="changeSettingDelayed('customization_document_title', $event.target.value)">
                         <small class="form-text text-muted">
                             Value for HTML head title tag, i. e. name of the browser tab or bookmark.
                         </small>
@@ -41,7 +41,7 @@
                         <label class="col-form-label" for="customizationHomepage">Website</label>
                         <input id="customizationHomepage" type="text" class="form-control"
                                v-model="settings.customization_website"
-                               @keyup="changeSettingDelayed('customization_website')">
+                               v-on:input="changeSettingDelayed('customization_website', $event.target.value)">
                         <small class="form-text text-muted">
                             URL for the links of the logos in the navigation bar and on the home page.
                         </small>
@@ -51,7 +51,7 @@
                         <label class="col-form-label" for="customizationNavTitle">Navigation Title</label>
                         <input id="customizationNavTitle" type="text" class="form-control"
                                v-model="settings.customization_nav_title"
-                               @keyup="changeSettingDelayed('customization_nav_title')">
+                               v-on:input="changeSettingDelayed('customization_nav_title', $event.target.value)">
                         <small class="form-text text-muted">
                             Organization name used in navigation bar.
                         </small>
@@ -71,7 +71,7 @@
                         <label class="col-form-label" for="customizationHomeHeadline">Home Page Headline</label>
                         <input id="customizationHomeHeadline" type="text" class="form-control"
                                v-model="settings.customization_home_headline"
-                               @keyup="changeSettingDelayed('customization_home_headline')">
+                               v-on:input="changeSettingDelayed('customization_home_headline', $event.target.value)">
                         <small class="form-text text-muted">
                             Headline on the home page.
                         </small>
@@ -81,7 +81,7 @@
                         <label class="col-form-label" for="customizationHomeDescription">Home Page Description</label>
                         <input id="customizationHomeDescription" type="text" class="form-control"
                                v-model="settings.customization_home_description"
-                               @keyup="changeSettingDelayed('customization_home_description')">
+                               v-on:input="changeSettingDelayed('customization_home_description', $event.target.value)">
                         <small class="form-text text-muted">
                             Text below the headline on the home page.
                         </small>
@@ -101,7 +101,7 @@
                         <label class="col-form-label" for="customizationFooterText">Footer Text</label>
                         <input id="customizationFooterText" type="text" class="form-control"
                                v-model="settings.customization_footer_text"
-                               @keyup="changeSettingDelayed('customization_footer_text')">
+                               v-on:input="changeSettingDelayed('customization_footer_text', $event.target.value)">
                         <small class="form-text text-muted">
                             Text for the footer.
                         </small>
@@ -111,7 +111,7 @@
                         <label class="col-form-label" for="customizationGithub">GitHub</label>
                         <input id="customizationGithub" type="text" class="form-control"
                                v-model="settings.customization_github"
-                               @keyup="changeSettingDelayed('customization_github')">
+                               v-on:input="changeSettingDelayed('customization_github', $event.target.value)">
                         <small class="form-text text-muted">
                             URL of GitHub repository for various links to the documentation.
                         </small>
@@ -128,7 +128,7 @@
                                @change="changeSetting('groups_require_valid_token', $event.target.checked ? '1' : '0')"
                         >
                         <label class="custom-control-label" for="groups_require_valid_token">
-                            Check this if the API for third-party applications should not return groups
+                            Check this if the API for applications should not return groups
                             for a player account if one or more of its characters have an invalid token
                             (no token counts as invalid), "managed" accounts are excluded from this.
                         </label>
@@ -136,7 +136,7 @@
                     <label class="mt-2">
                         <input type="text" pattern="[0-9]*" class="form-control input-delay"
                                v-model="settings.account_deactivation_delay"
-                               @keyup="changeSettingDelayed('account_deactivation_delay')">
+                               v-on:input="changeSettingDelayed('account_deactivation_delay', $event.target.value)">
                         Delay the deactivation after a token became invalid (hours).
                     </label>
                     <hr>
@@ -205,8 +205,9 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Alliances</label>
-                        <multiselect v-if="alliances" v-model="mailAccountDisabledAlliances" :options="alliances"
-                                     :loading="false" label="name" track-by="id" :multiple="true"
+                        <multiselect v-model="mailAccountDisabledAlliances" :options="alliances"
+                                     label="name" track-by="id" :multiple="true"
+                                     :loading="false" :searchable="true"
                                      placeholder="Select alliances"></multiselect>
                         <small class="form-text text-muted">
                             The mail is only sent if at least one character in a player account
@@ -218,13 +219,13 @@
                         <label class="col-form-label" for="mailAccountDisabledSubject">Subject</label>
                         <input id="mailAccountDisabledSubject" type="text" class="form-control"
                                v-model="settings.mail_account_disabled_subject"
-                               @keyup="changeSettingDelayed('mail_account_disabled_subject')">
+                               v-on:input="changeSettingDelayed('mail_account_disabled_subject', $event.target.value)">
                     </div>
                     <div class="form-group">
                         <label for="mailAccountDisabledBody">Message</label>
                         <textarea v-model="settings.mail_account_disabled_body" class="form-control"
-                                  id="mailAccountDisabledBody" rows="6"
-                                  @keyup="changeSettingDelayed('mail_account_disabled_body')"></textarea>
+                                  v-on:input="changeSettingDelayed('mail_account_disabled_body', $event.target.value)"
+                                  id="mailAccountDisabledBody" rows="6"></textarea>
                     </div>
                 </div>
 
@@ -289,7 +290,8 @@ module.exports = {
     data: function() {
         return {
             api: null,
-            alliances: null,
+            alliances: [],
+            alliancesLoaded: false,
             loginUrlDirector: null,
             mailAccountDisabledAlliances: null,
             directors: [],
@@ -351,12 +353,13 @@ module.exports = {
                     return;
                 }
                 vm.alliances = data;
+                vm.alliancesLoaded = true;
                 vm.readSettings();
             });
         },
 
         readSettings: function() {
-            if (this.alliances === null || ! this.settings.hasOwnProperty('account_deactivation_delay')) {
+            if (! this.alliancesLoaded || ! this.settings.hasOwnProperty('account_deactivation_delay')) {
                 return; // wait for alliance list and settings
             }
 
@@ -425,8 +428,10 @@ module.exports = {
             }
         },
 
-        changeSettingDelayed: function(name) {
-            this.changeSettingDebounced(this, name, this.settings[name]);
+        changeSettingDelayed: function(name, value) {
+            // use value from parameter (input event) instead of value from this.settings
+            // because the model is not updated on touch devices during IME composition
+            this.changeSettingDebounced(this, name, value);
         },
 
         changeSettingDebounced: window._.debounce((vm, name, value) => {

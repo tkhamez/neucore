@@ -19,7 +19,7 @@ include __DIR__ . '/vendor/autoload.php';
  * Both use the "datasource" parameter to tell Core from which character the ESI token should be used for the request.
  * (The ESI datasource (tranquility or singularity) is decided by the Core configuration.)
  *
- * See doc/documentation.md -> "Authentication of third-party applications" for details about the token.
+ * See doc/documentation.md -> "Authentication of applications" for details about the token.
  */
 
 

@@ -22,8 +22,8 @@ env:
     - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
   matrix:
-    - NODE_VERSION="8.15.0"
-    - NODE_VERSION="10.14.2"
+    - NODE_VERSION="8.16.0"
+    - NODE_VERSION="10.15.3"
 
 matrix:
   fast_finish: true
@@ -31,13 +31,13 @@ matrix:
     - php: nightly
   exclude:
     - php: "7.1"
-      env: NODE_VERSION="10.14.2"
+      env: NODE_VERSION="10.15.3"
     - php: "7.2"
-      env: NODE_VERSION="8.15.0"
+      env: NODE_VERSION="8.16.0"
     - php: "7.3"
-      env: NODE_VERSION="8.15.0"
+      env: NODE_VERSION="8.16.0"
     - php: nightly
-      env: NODE_VERSION="8.15.0"
+      env: NODE_VERSION="8.16.0"
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS neucore;'

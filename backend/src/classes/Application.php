@@ -2,7 +2,6 @@
 
 namespace Neucore;
 
-use function GuzzleHttp\Promise\is_fulfilled;
 use Neucore\Command\CheckTokens;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
@@ -234,8 +233,8 @@ class Application
         $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
         $app->add(new NonBlockingSessionMiddleware([
-            'name' => 'BCSESS',
-            'secure' => $this->env === self::ENV_PROD,
+            'name' => 'NCSESS',
+            'secure' => false, // prod servers should not allow unencrypted connections - maybe move it to config?
             'route_include_pattern' => ['/api/user', '/login'],
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
         ]));
@@ -305,8 +304,8 @@ class Application
                 AnnotationRegistry::registerLoader('class_exists');
                 if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '' &&
                     (
-                        is_file($conf['driver_options']['mysql_ssl_ca']) ||
-                        ! $conf['driver_options']['mysql_verify_server_cert']
+                        ! $conf['driver_options']['mysql_verify_server_cert'] ||
+                        is_file($conf['driver_options']['mysql_ssl_ca'])
                     )
                 ) {
                     $conf['connection']['driverOptions'] = [

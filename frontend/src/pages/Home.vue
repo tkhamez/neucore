@@ -108,7 +108,9 @@
                                 </p>
                             </div>
                             <div class="card-footer">
-                                <span v-if="char.main" class="fas fa-star text-warning mr-2" title="Main"></span>
+                                <span v-if="char.main" class="text-warning align-middle">
+                                    <i class="fas fa-star"></i> Main
+                                </span>
                                 <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
@@ -126,13 +128,13 @@
                                 </button>
                                 <button type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="update(char.id)">
-                                    <i class="fas fa-sync small"></i>
+                                    <i class="fas fa-sync"></i>
                                     Update
                                 </button>
                                 <button v-cloak type="button" class="btn btn-danger btn-sm mt-1"
                                         v-if="authChar.id !== char.id && settings.allow_character_deletion === '1'"
                                         v-on:click="askDeleteChar(char.id, char.name)">
-                                    <i class="far fa-trash-alt small"></i>
+                                    <i class="far fa-trash-alt"></i>
                                     Delete
                                 </button>
                             </div>
@@ -150,24 +152,6 @@
                         <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated }">
                             <li v-for="group in player.groups" class="list-group-item">
                                 {{ group.name }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div v-cloak v-if="player.managerGroups && player.managerGroups.length > 0"
-                            class="card border-secondary mb-3" >
-                        <h3 class="card-header">Group Manager</h3>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="group in player.managerGroups" class="list-group-item">
-                                {{ group.name }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div v-cloak v-if="player.managerApps && player.managerApps.length > 0"
-                            class="card border-secondary mb-3" >
-                        <h3 class="card-header">App Manager</h3>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="app in player.managerApps" class="list-group-item">
-                                {{ app.name }}
                             </li>
                         </ul>
                     </div>

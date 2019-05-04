@@ -37,8 +37,8 @@
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
                             <a v-cloak target="_blank" :href="settings.customization_github +
-                                    '/blob/master/doc/documentation.md#authentication-of-third-party-applications'">
-                                Authentication of third-party applications</a>.
+                                    '/blob/master/doc/documentation.md#authentication-of-applications'">
+                                Authentication of applications</a>.
                         </p>
                         <p>
                             <button type="button" class="btn btn-warning" v-on:click="generateSecret()">

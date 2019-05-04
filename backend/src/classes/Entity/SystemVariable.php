@@ -259,6 +259,12 @@ class SystemVariable implements \JsonSerializable
             case self::MAIL_ACCOUNT_DISABLED_BODY:
                 $this->value = $value;
                 break;
+            case self::CUSTOMIZATION_HOME_LOGO:
+            case self::CUSTOMIZATION_NAV_LOGO:
+                if (preg_match('#^data:image/[a-z]+;base64,[a-zA-Z0-9+/]+={0,2}$#', $value)) {
+                    $this->value = $value;
+                }
+                break;
             default:
                 $this->value = trim(str_replace(["\r\n", "\n"], ' ', $value));
         }

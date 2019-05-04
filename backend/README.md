@@ -44,12 +44,12 @@ bin/esi-paths-public.php
 The UI for ESI requests requires a list of all ESI HTTP GET routes. This list can be regenerated with:
 
 ```
-bin/esi-paths-http-get.js
+bin/esi-paths-http-get.php
 ```
 
 ## Install
 
-See also main [**README**](../README.md) for prerequisites.
+See also main [**README**](../README.md#server-requirements) for prerequisites.
 
 dev:
 ```
@@ -134,7 +134,7 @@ Validate the mapping files:
 vendor/bin/doctrine orm:validate-schema
 ```
 
-Generate migration by comparing the current database to the mapping information:
+Generate a migration by comparing the current database to the mapping information:
 ```
 vendor/bin/doctrine-migrations migrations:diff
 ```

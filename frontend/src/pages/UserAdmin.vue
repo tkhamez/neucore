@@ -13,7 +13,7 @@
                 <div class="modal-body">
                     <p>
                         Are you sure you want to delete this character?<br>
-                        This will not create an "Removed Characters".
+                        This will not create a "Removed Character" entry in the database.
                     </p>
                     <p class="text-warning">{{ charToDelete.name }}</p>
                 </div>

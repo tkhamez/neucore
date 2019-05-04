@@ -245,7 +245,8 @@ class Account
     {
         if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
             $this->log->info(
-                'An admin deleted character "' . $character->getName() . '" [' . $character->getId() . ']'
+                'An admin deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
+                'from player "' . $character->getPlayer()->getName() . '" [' . $character->getPlayer()->getId() . ']'
             );
         } else {
             $this->createRemovedCharacter($character, null, $reason);

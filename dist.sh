@@ -19,7 +19,7 @@ vendor/bin/doctrine orm:generate-proxies
 composer openapi
 
 cd ../frontend
-./swagger.sh
+./openapi.sh
 npm install
 npm run build:prod
 

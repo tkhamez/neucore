@@ -10,7 +10,7 @@ use Swagger\Annotations as SWG;
 /**
  * @SWG\Tag(
  *     name="Application",
- *     description="API for 3rd party apps.",
+ *     description="API for applications.",
  * )
  *
  * @SWG\SecurityScheme(

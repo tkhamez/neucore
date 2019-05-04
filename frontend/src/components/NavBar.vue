@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary sticky-top">
         <a v-cloak class="navbar-brand" :href="settings.customization_website">
-            <img v-if="settings.customization_nav_logo" class="align-top mr-2" alt="Logo"
+            <img v-if="settings.customization_nav_logo" class="align-top mr-2 align-middle" alt="Logo"
                  :src="settings.customization_nav_logo">
             {{ settings.customization_nav_title }}
         </a>
@@ -85,7 +85,7 @@
                 </div>
             </div>
 
-            <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign Out">
+            <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign out">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
@@ -109,9 +109,6 @@ module.exports = {
         }
     },
 
-    mounted: function() {
-    },
-
     watch: {
         settings: function () {
             if (this.selectedTheme === '') {
@@ -127,12 +124,10 @@ module.exports = {
             }
             this.selectedTheme = name;
             const $link = window.jQuery("head link[href*='dist/theme-']");
-            if ($link.length === 0) {
-                // first load
+            if ($link.length === 0) { // first load
                 const $appCss = window.jQuery("head link[href*='dist/app.']");
                 let hash = '';
-                if ($appCss.attr('href') !== 'dist/app.css') {
-                    // find hash in prod mode
+                if ($appCss.attr('href') !== 'dist/app.css') { // find hash in prod mode
                     hash = $appCss.attr('href').replace(/^dist\/app(\.[a-zAZ0-9]+)\.css$/, '$1');
                 }
                 window.jQuery('head').append(
@@ -161,5 +156,8 @@ module.exports = {
         height: auto;
         max-height: calc(100vh - 80px);
         overflow-x: hidden;
+    }
+    .navbar-brand img {
+        max-height: 100px;
     }
 </style>

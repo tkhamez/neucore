@@ -35,7 +35,7 @@ class PlayerControllerTest extends WebTestCase
      */
     private $em;
 
-    private $userId;
+    private $playerId;
 
     private $player3Id;
 
@@ -404,7 +404,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([
             ['id' => $this->player->getId(), 'name' => 'Admin'],
             ['id' => $this->managerId, 'name' => 'Manager'],
-            ['id' => $this->userId, 'name' => 'User'],
+            ['id' => $this->playerId, 'name' => 'User'],
             ['id' => $this->player3Id, 'name' => 'User3'],
         ], $this->parseJsonBody($response));
     }
@@ -939,7 +939,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($this->charRepo->find(10));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 10]));
         $this->assertSame(
-            'An admin deleted character "User" [10]',
+            'An admin deleted character "User" [10] from player "User" [' . $this->playerId . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -960,7 +960,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($this->charRepo->find(13));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 13]));
         $this->assertSame(
-            'An admin deleted character "Alt" [13]',
+            'An admin deleted character "Alt" [13] from player "Admin" [' . $this->player->getId() . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -1079,7 +1079,7 @@ class PlayerControllerTest extends WebTestCase
         $this->group = $gs[0];
         $this->gPrivateId = $gs[1]->getId();
 
-        $this->userId = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer()->getId();
+        $this->playerId = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer()->getId();
 
         $player = $this->managerId = $this->h->addCharacterMain(
             'Manager',

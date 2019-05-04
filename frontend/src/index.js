@@ -260,17 +260,18 @@ const app = new window.Vue({
             this.getSettings();
         });
 
-        this.getAuthenticatedCharacter();
-
         // refresh session every 5 minutes
         window.setInterval(function() {
             app.getAuthenticatedCharacter(true);
         }, 1000*60*5);
+
+        // get settings
+        this.getSettings();
     },
 
     watch: {
         initialized: function() {
-            this.getSettings();
+            this.getAuthenticatedCharacter();
             this.getPlayer();
         },
 
@@ -337,7 +338,7 @@ const app = new window.Vue({
             this.loading(true);
             new this.swagger.SettingsApi().systemList(function(error, data) {
                 app.loading(false);
-                if (error) { // 403 usually
+                if (error) {
                     return;
                 }
                 const settings = {};
@@ -345,6 +346,7 @@ const app = new window.Vue({
                     settings[variable.name] = variable.value;
                 }
                 app.settings = settings; // watch() will work this way
+                app.initialized = true;
             });
         },
 
@@ -359,15 +361,10 @@ const app = new window.Vue({
                 } else if (! ping) { // don't update because it triggers watch events
                     app.authChar = data;
                 }
-                app.initialized = true;
             });
         },
 
         getPlayer: function() {
-            if (! this.authChar) {
-                return;
-            }
-
             this.loading(true);
             new this.swagger.PlayerApi().show(function(error, data) {
                 app.loading(false);

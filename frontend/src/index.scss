@@ -6,14 +6,14 @@ html {
     min-height: 100%;
 }
 
-body.nuecore {
+body.neucore {
     margin-bottom: 90px; // ~ max footer height
 }
 
 /**
  * for a sticky, scrollable left column
  */
-.sticky-column {
+.row > .sticky-column {
     @media (min-width: 992px) {
         @supports (position: sticky) {
             position: sticky;

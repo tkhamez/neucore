@@ -8,10 +8,10 @@ Input element to search for characters
         <label class="input-group-text" for="characterSearchInput">Search Character</label>
     </div>
     <input type="text" class="form-control" id="characterSearchInput"
-       placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
-        v-model="searchTerm" v-on:click="findCharacter">
+           placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
+           v-model="searchTerm" v-on:click="findCharacter" v-on:input="findCharacter($event.target.value)">
     <div class="input-group-append">
-        <button class="btn" type="button" v-on:click="searchTerm = ''">&times;</button>
+        <button class="btn" type="button" v-on:click="findCharacter('')">&times;</button>
     </div>
 </div>
 </template>
@@ -28,15 +28,12 @@ module.exports = {
         }
     },
 
-    watch: {
-        searchTerm: function() {
-            this.findCharacter();
-        }
-    },
-
     methods: {
+        findCharacter(value) {
+            if (typeof value === typeof '') {
+                this.searchTerm = value;
+            }
 
-        findCharacter() {
             if (this.searchTerm === '') {
                 this.$emit('result', []);
             } else if (this.searchTerm.length >= 3) {
@@ -57,7 +54,6 @@ module.exports = {
         }, 250),
 
     },
-
 }
 </script>
 

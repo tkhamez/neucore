@@ -11,7 +11,10 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to leave this group?</p>
+                        <p>
+                            Are you sure you want to leave this group?
+                            You may lose access to some external services.
+                        </p>
                         <p class="text-warning">{{ groupToLeave.name }}</p>
                     </div>
                     <div class="modal-footer">

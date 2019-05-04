@@ -12,7 +12,7 @@ fi
 
 # generate Swagger JS client
 cd ../frontend
-./swagger.sh
+./openapi.sh
 
 # build frontend
 npm install

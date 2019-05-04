@@ -2,26 +2,25 @@
 
 ## Features
 
-* EVE SSO login with configurable permission scopes
-* Player accounts with alts
-* Role based permission system
-* Creation of groups and apps
-* Group and app manager for member management
-* Customization of texts, links and images specific to your organization.
-* Automatic group assignment for players based on corporations and alliances from all of their characters
-* Optional automatic account deactivation with mail notification when ESI tokens are invalid
+* EVE SSO login with configurable permission scopes.
+* Player accounts with alts.
+* Role based permission system.
+* Creation of groups and apps.
+* Group and app manager.
+* Customization of texts, links and images specific to your organization, including themes.
+* Automatic group assignment for players based on corporations and alliances from all of their characters.
+* Optional automatic account deactivation with mail notification when ESI tokens are invalid.
 * Manually managed accounts that do not require any ESI scopes.
-* Corporation member tracking
-* CLI commands for data updates from ESI
-* An API for applications to query group membership of characters and other data
+* Corporation member tracking.
+* CLI commands for data updates from ESI.
+* An API for applications to query group membership of characters and other data.
 * ESI request for authorized scopes for any character 
-  (via frontend and for apps, see [Examples](app-esi-examples.php))
+  (via frontend and for apps, see [Examples](app-esi-examples.php)).
+* Mobile-friendly.
 
 All API functions are documented with OpenAPI and can be found at `https://[domain]/api.html`.
 
-The frontend is almost complete, only functions related to group applications are missing.
-
-## Authentication of third-party Applications
+## Authentication of applications
 
 An application must first be created by an app administrator and assigned to an app manager, 
 who can then generate the app secret.
@@ -55,11 +54,12 @@ yet been added to the main account.
 
 ### Removing Characters
 
-If an EVE character is deleted or transferred to another EVE account, 
-it will also be removed from its current player account.
+If an EVE character is deleted or transferred to another EVE account, it will be removed from its current 
+player account.
 
-A player can also manually delete a character if that is enabled in the system setting. All character removals 
-are recorded and are visible to user admins unless they have been deleted by an admin.
+A player can also manually delete a character if that is enabled in the system setting.
+
+All character removals are recorded and are visible to user admins (unless they have been deleted by an admin).
 
 ### Account status
 
@@ -76,10 +76,9 @@ There a two account status: standard and managed.
 ## Groups
 
 Visibility
-- public: everyone can see them
+- public: everyone can see them and apply to them.
 - private: hidden from non-members
-- conditioned: only visible to non-members if they meet 
-  certain criteria - not yet implemented
+- conditioned: only visible to non-members if they meet certain criteria - not yet implemented
 
 ### Automatic Group Assignment
 
@@ -131,7 +130,7 @@ The console application has commands to:
 
 - `players` identifies EVE players. Each player account can have one or more `characters`. One
   character is marked as the "Main" character, the rest are "Alts".
-- `apps` are 3rd party applications that have access to the "Application API". They can have several groups.
+- `apps` are applications that have access to the "Application API". They can have several groups.
 - A player account can be member of several `groups`.
 - A player account can be manager of several groups and apps.
 - `corporations` and `alliances` can have several groups for automatic group assignments.

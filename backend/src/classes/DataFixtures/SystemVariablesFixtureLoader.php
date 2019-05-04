@@ -41,7 +41,7 @@ class SystemVariablesFixtureLoader implements FixtureInterface
             ],
             SystemVariable::CUSTOMIZATION_HOME_HEADLINE     => ['Core Services', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION  => [
-                'A player management system for EVE Online.',
+                'An application to manage access for EVE Online players to external services.',
                 SystemVariable::SCOPE_PUBLIC
             ],
             SystemVariable::CUSTOMIZATION_HOME_LOGO         => [

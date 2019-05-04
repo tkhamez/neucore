@@ -3,7 +3,7 @@
 
 dd mmm yyyy
 
-- New: Customization for some texts, links and images.
+- New: Customization for some texts, links and images and a default theme.
 - New: user admins can delete any character without creating a "removed character" database entry.
 - New: UI for requestable groups.
 

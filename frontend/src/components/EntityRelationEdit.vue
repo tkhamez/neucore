@@ -45,8 +45,8 @@ Select and table to add and remove objects from other objects.
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
             </p>
             <p v-if="type === 'App' && contentType === 'groups'">
-                Apps can only see the membership of players to groups that are listed here.
-                <button class="btn btn-outline-warning float-right" v-on:click="addAllGroupsToApp()">
+                The application can only see the membership of players to groups that are listed here.
+                <button class="btn btn-outline-warning float-right mb-1" v-on:click="addAllGroupsToApp()">
                     Add all groups to app
                 </button>
             </p>
