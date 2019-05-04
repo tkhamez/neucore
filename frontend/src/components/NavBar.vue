@@ -10,77 +10,71 @@
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="navbar-collapse collapse" id="navbar01" style="">
+        <div v-cloak class="navbar-collapse collapse" id="navbar01" style="">
             <ul class="navbar-nav mr-auto">
-                <li v-cloak class="nav-item" :class="{ active: page === 'Home' }">
+                <li class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
-                <li v-cloak class="nav-item" :class="{ active: page === 'Groups' }">
+                <li v-if="hasRole('user')" class="nav-item" :class="{ active: page === 'Groups' }">
                     <a class="nav-link" href="#Groups">Groups</a>
                 </li>
-                <li v-cloak v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"
+                <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"
                     class="nav-item dropdown" :class="{ active: managePages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Management
                     </a>
                     <div class="dropdown-menu">
-                        <a v-cloak v-if="hasRole('group-manager')"
+                        <a v-if="hasRole('group-manager')"
                            class="dropdown-item" :class="{ active: page === 'GroupManagement' }"
                            href="#GroupManagement">Groups</a>
-                        <a v-cloak v-if="hasRole('app-manager')"
+                        <a v-if="hasRole('app-manager')"
                            class="dropdown-item" :class="{ active: page === 'AppManagement' }"
                            href="#AppManagement">Apps</a>
-                        <a v-cloak v-if="hasRole('user-manager')"
+                        <a v-if="hasRole('user-manager')"
                            class="dropdown-item" :class="{ active: page === 'PlayerGroupManagement' }"
                            href="#PlayerGroupManagement">Player Groups</a>
                     </div>
                 </li>
-                <li v-cloak v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'settings'])"
+                <li v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'settings'])"
                     class="nav-item dropdown" :class="{ active: adminPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Admin
-                    </a>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
                     <div class="dropdown-menu">
-                        <a v-cloak v-if="hasRole('group-admin')"
+                        <a v-if="hasRole('group-admin')"
                             class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
                             href="#GroupAdmin">Groups</a>
-                        <a v-cloak v-if="hasRole('app-admin')"
+                        <a v-if="hasRole('app-admin')"
                             class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
-                        <a v-cloak v-if="hasRole('user-admin')"
+                        <a v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
-                        <a v-cloak v-if="hasRole('settings')"
+                        <a v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-cloak v-if="hasAnyRole(['tracking', 'esi'])"
+                <li v-if="hasAnyRole(['tracking', 'esi'])"
                     class="nav-item dropdown" :class="{ active: otherPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Other
-                    </a>
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Other</a>
                     <div class="dropdown-menu">
-                        <a v-cloak v-if="hasRole('tracking')"
+                        <a v-if="hasRole('tracking')"
                            class="dropdown-item" :class="{ active: page === 'Tracking' }"
                            href="#Tracking">Tracking</a>
-                        <a v-cloak v-if="hasRole('esi')"
+                        <a v-if="hasRole('esi')"
                            class="dropdown-item" :class="{ active: page === 'Esi' }"
                            href="#Esi">Esi</a>
                     </div>
                 </li>
             </ul>
 
-            <img v-cloak v-if="authChar"
-                 :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
-                 class="d-inline-block align-top mr-2"
-                 alt="Character Portrait">
-            <div v-cloak v-if="authChar" class="dropdown">
+            <img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
+                 class="d-inline-block align-top mr-2" alt="Character Portrait">
+            <div v-if="authChar" class="dropdown">
                 <button class="btn btn-primary dropdown-toggle mr-3" data-toggle="dropdown"
-                      aria-haspopup="true" aria-expanded="false">
+                        aria-haspopup="true" aria-expanded="false">
                     {{ authChar.name }}
                 </button>
                 <div class="dropdown-menu scrollable-menu">
@@ -91,7 +85,7 @@
                 </div>
             </div>
 
-            <a v-cloak v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign Out">
+            <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign Out">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
@@ -111,41 +105,44 @@ module.exports = {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: ['UserAdmin', 'GroupAdmin', 'AppAdmin', 'SystemSettings'],
             otherPages: ['Tracking', 'Esi'],
-            selectedTheme: 'Darkly',
-            themes: [
-                'Basic',
-                'Cerulean',
-                'Cosmo',
-                'Cyborg',
-                'Darkly',
-                'Flatly',
-                'Journal',
-                'Litera',
-                'Lumen',
-                'Lux',
-                'Materia',
-                'Minty',
-                'Pulse',
-                'Sandstone',
-                'Simplex',
-                //'Sketchy',
-                'Slate',
-                'Solar',
-                'Spacelab',
-                'Superhero',
-                'United',
-                'Yeti',
-            ]
+            selectedTheme: '',
         }
+    },
+
+    mounted: function() {
+    },
+
+    watch: {
+        settings: function () {
+            if (this.selectedTheme === '') {
+                this.selectTheme(this.settings.customization_default_theme);
+            }
+        },
     },
 
     methods: {
         selectTheme: function(name) {
+            if (this.themes.indexOf(name) === -1) {
+                return;
+            }
             this.selectedTheme = name;
             const $link = window.jQuery("head link[href*='dist/theme-']");
-            const oldHref = $link.attr('href');
-            const newHref = oldHref.replace(/^(.*theme-)[a-z]+(.*)$/, '$1' + this.selectedTheme.toLowerCase() + '$2');
-            $link.attr('href', newHref);
+            if ($link.length === 0) {
+                // first load
+                const $appCss = window.jQuery("head link[href*='dist/app.']");
+                let hash = '';
+                if ($appCss.attr('href') !== 'dist/app.css') {
+                    // find hash in prod mode
+                    hash = $appCss.attr('href').replace(/^dist\/app(\.[a-zAZ0-9]+)\.css$/, '$1');
+                }
+                window.jQuery('head').append(
+                    '<link href="dist/theme-' + this.selectedTheme.toLowerCase() + hash + '.css" rel="stylesheet">'
+                );
+            } else {
+                const oldHref = $link.attr('href');
+                const newHref = oldHref.replace(/^(.*theme-)[a-z]+(.*)$/, '$1' + this.selectedTheme.toLowerCase() + '$2');
+                $link.attr('href', newHref);
+            }
         }
     },
 }

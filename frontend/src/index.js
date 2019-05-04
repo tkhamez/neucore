@@ -16,6 +16,35 @@ import SystemSettings   from './pages/SystemSettings.vue';
 import Tracking         from './pages/Tracking.vue';
 
 window.Vue.mixin({
+    data: function () {
+        return {
+            themes: [
+                'Basic',
+                'Cerulean',
+                'Cosmo',
+                'Cyborg',
+                'Darkly',
+                'Flatly',
+                'Journal',
+                'Litera',
+                'Lumen',
+                'Lux',
+                'Materia',
+                'Minty',
+                'Pulse',
+                'Sandstone',
+                'Simplex',
+                //'Sketchy',
+                'Slate',
+                'Solar',
+                'Spacelab',
+                'Superhero',
+                'United',
+                'Yeti',
+            ],
+        }
+    },
+
     methods: {
         loading: function(status) {
             if (status) {

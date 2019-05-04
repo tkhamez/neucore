@@ -119,6 +119,11 @@ class SystemVariable implements \JsonSerializable
     const ESI_ERROR_LIMIT = 'esi_error_limit';
 
     /**
+     * The default theme.
+     */
+    const CUSTOMIZATION_DEFAULT_THEME = 'customization_default_theme';
+
+    /**
      * Value for HTML head title tag.
      *
      * Scope = public

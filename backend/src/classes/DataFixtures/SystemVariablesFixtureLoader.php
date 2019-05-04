@@ -29,6 +29,7 @@ class SystemVariablesFixtureLoader implements FixtureInterface
             SystemVariable::MAIL_CHARACTER                  => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_TOKEN                      => ['',  SystemVariable::SCOPE_BACKEND],
             SystemVariable::CUSTOMIZATION_DOCUMENT_TITLE    => ['Alliance Core Services', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_DEFAULT_THEME     => ['Darkly', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_WEBSITE           => [
                 'https://github.com/tkhamez/neucore',
                 SystemVariable::SCOPE_PUBLIC

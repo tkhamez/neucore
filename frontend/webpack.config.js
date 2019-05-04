@@ -90,7 +90,7 @@ module.exports = (env, argv) => {
                     'theme-cerulean',
                     'theme-cosmo',
                     'theme-cyborg',
-                    //'theme-darkly',
+                    'theme-darkly',
                     'theme-flatly',
                     'theme-journal',
                     'theme-litera',
