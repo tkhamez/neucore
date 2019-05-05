@@ -114,7 +114,7 @@
                     <thead>
                         <tr>
                             <th>Player</th>
-                            <th>Created</th>
+                            <th>Created (GMT)</th>
                             <th></th>
                             <th></th>
                             <th></th>

@@ -190,7 +190,7 @@
                                 <th>Alliance</th>
                                 <th>Main</th>
                                 <th>Valid Token</th>
-                                <th>Last Update</th>
+                                <th>Last Update (GMT)</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -214,7 +214,7 @@
                                 <td>{{ character.validToken }}</td>
                                 <td>
                                     <span v-if="character.lastUpdate">
-                                        {{ character.lastUpdate.toUTCString() }}
+                                        {{ formatDate(character.lastUpdate) }}
                                     </span>
                                 </td>
                                 <td>
@@ -290,7 +290,7 @@
                             <tr>
                                 <th>Character ID</th>
                                 <th>Character Name</th>
-                                <th>Date Removed</th>
+                                <th>Date Removed (GMT)</th>
                                 <th>Reason</th>
                                 <th>New Player</th>
                             </tr>
@@ -301,7 +301,7 @@
                                 <td>{{ removedCharacter.characterName }}</td>
                                 <td>
                                     <span v-if="removedCharacter.removedDate">
-                                        {{ removedCharacter.removedDate.toUTCString() }}
+                                        {{ formatDate(removedCharacter.removedDate) }}
                                     </span>
                                 </td>
                                 <td>{{ removedCharacter.reason }}</td>

@@ -37,11 +37,11 @@
                             <th>Character Name</th>
                             <th>Player Account</th>
                             <th>ESI Token</th>
-                            <th>Logon Date (UTC)</th>
-                            <th>Logoff Date (UTC)</th>
+                            <th>Logon Date (GMT)</th>
+                            <th>Logoff Date (GMT)</th>
                             <th>Location ID</th>
                             <th>Ship Type ID</th>
-                            <th>Start Date (UTC)</th>
+                            <th>Start Date (GMT)</th>
                         </tr>
                     </thead>
                     <tbody>
