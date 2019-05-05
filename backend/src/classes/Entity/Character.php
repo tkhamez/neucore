@@ -81,7 +81,7 @@ class Character implements \JsonSerializable
      *
      * If there is no refresh token this is null.
      *
-     * @SWG\Property()
+     * @SWG\Property(type="boolean")
      * @ORM\Column(type="boolean", name="valid_token", nullable=true)
      * @var bool|null
      */

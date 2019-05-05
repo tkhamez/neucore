@@ -35,7 +35,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * EVE Character name.
      *
-     * @SWG\Property()
+     * @SWG\Property(type="string")
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string|null
      */
@@ -44,7 +44,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * Corporation ticker.
      *
-     * @SWG\Property()
+     * @SWG\Property(type="integer")
      * @ORM\Column(type="bigint", name="location_id", nullable=true)
      * @var integer|null
      */
@@ -65,7 +65,7 @@ class CorporationMember implements \JsonSerializable
     private $logonDate;
 
     /**
-     * @SWG\Property()
+     * @SWG\Property(type="integer")
      * @ORM\Column(type="bigint", name="ship_type_id", nullable=true)
      * @var integer|null
      */
@@ -86,7 +86,7 @@ class CorporationMember implements \JsonSerializable
     private $corporation;
 
     /**
-     * @SWG\Property()
+     * @SWG\Property(ref="#/definitions/Character")
      * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
      * @var Character|null
      */
