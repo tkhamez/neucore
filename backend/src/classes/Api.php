@@ -13,7 +13,7 @@ use Swagger\Annotations as SWG;
  *     @SWG\Info(
  *       title="Neucore API",
  *       description="Client library of Neucore API",
- *       version=BRAVE_CORE_VERSION
+ *       version=NEUCORE_VERSION
  *     )
  * )
  */

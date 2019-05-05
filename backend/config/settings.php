@@ -57,7 +57,7 @@ return [
             'cache' => [
                 'dir' => Application::ROOT_DIR . '/var/cache/http'
             ],
-            'user_agent' => 'Neucore/' . BRAVE_CORE_VERSION . ' (https://github.com/tkhamez/neucore) ' .
+            'user_agent' => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore) ' .
                             'GuzzleHttp/' . Client::VERSION,
         ],
 
