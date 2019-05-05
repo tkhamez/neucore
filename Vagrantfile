@@ -60,11 +60,6 @@ EOL
         a2ensite 010-neucore
         a2dissite 000-default.conf
 
-        # also install php-pgsql, php-sqlite3
-        apt-get install -y adminer
-        echo "Alias /adminer /usr/share/adminer/" > /etc/apache2/sites-available/020-adminer.conf
-        a2ensite 020-adminer
-
         # put cli and web user into each other's group for write permissions
         usermod -a -G www-data vagrant
         usermod -a -G vagrant www-data
@@ -96,11 +91,9 @@ EOL
 
         echo " "
         echo "--------------------------------------------------------------------------------"
-        echo "-- URLs (change IP as needed):                                                --"
-        echo "-- Neucore http://192.168.121.111                                             --"
-        echo "-- Adminer http://192.168.121.111/adminer/adminer/designs.php (core/brave)    --"
+        echo "-- Neucore http://192.168.121.111 (change IP as needed)                       --"
         echo "-- SSH user: vagrant/vagrant                                                  --"
-        echo "-- $ ifconfig eth0 | grep inet:                                               --"
+        echo "-- IP of vm:                                                                  --"
         /sbin/ifconfig eth0 | grep "inet "
         echo "--------------------------------------------------------------------------------"
     SHELL
