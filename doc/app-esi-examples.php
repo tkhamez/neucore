@@ -9,15 +9,15 @@ include __DIR__ . '/vendor/autoload.php';
  * /v3/characters/96061222/assets/?page=1
  *
  * 1. Compatible with generated OpenAPI clients from the ESI definition file (see example below),
- *    simply append the ESI path to the Core path and add the ESI query parameters:
+ *    simply append the ESI path to the Neucore path and add the ESI query parameters:
  *    https://neucore.tld/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=96061222
  *
  * 2. Compatible with generated OpenAPI clients from the Neucore interface definition file (see example below),
  *    the query parameter "esi-path-query" contains the url-encoded ESI path and query string:
  *    https://neucore.tld/api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
  *
- * Both use the "datasource" parameter to tell Core from which character the ESI token should be used for the request.
- * (The ESI datasource (tranquility or singularity) is decided by the Core configuration.)
+ * Both use the "datasource" parameter to tell Neucore from which character the ESI token should be used for the
+ *  request. (The ESI datasource (tranquility or singularity) is decided by the Neucore configuration.)
  *
  * See doc/documentation.md -> "Authentication of applications" for details about the token.
  */
@@ -30,7 +30,7 @@ include __DIR__ . '/vendor/autoload.php';
 $coreHttpScheme = 'http';
 $coreDomain = 'core.localhost';
 $coreAppToken = base64_encode('1:secret');
-$coreCharId = '96061222'; // Character with token in Core
+$coreCharId = '96061222'; // Character with token in Neucore
 
 
 //
@@ -47,7 +47,7 @@ $apiInstance = new Swagger\Client\Eve\Api\AssetsApi(null, $configuration);
 $itemId = 0; // used in example 2
 try {
     // The first parameter (character_id) is the EVE character ID for ESI,
-    // the second (datasource) the EVE character ID for Core for the ESI token.
+    // the second (datasource) the EVE character ID for Neucore for the ESI token.
     $result = $apiInstance->getCharactersCharacterIdAssets($coreCharId, $coreCharId);
 
     $itemId = $result[0]->getItemId();
