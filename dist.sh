@@ -28,13 +28,14 @@ npm install
 
 cd ../..
 mkdir neucore
-cp -R build/backend neucore/backend
+mv build/backend neucore/backend
 rm -r neucore/backend/src/tests
-cp -R build/doc neucore/doc
-cp -R build/web neucore/web
-cp build/LICENSE neucore/LICENSE
-cp build/CHANGELOG.md neucore/CHANGELOG.md
-cp build/README.md neucore/README.md
+mv build/doc neucore/doc
+rm -r neucore/doc/screenshots
+mv build/web neucore/web
+mv build/LICENSE neucore/LICENSE
+mv build/CHANGELOG.md neucore/CHANGELOG.md
+mv build/README.md neucore/README.md
 
 if [[ "$1" ]]; then
     NAME=$1

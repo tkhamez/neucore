@@ -18,7 +18,8 @@
   (via frontend and for apps, see [Examples](app-esi-examples.php)).
 * Mobile-friendly.
 
-All API functions are documented with OpenAPI and can be found at `https://[domain]/api.html`.
+All API functions are documented with OpenAPI and can be found at 
+[https://[domain]/api.html](https://neucore.herokuapp.com/api).
 
 ## Authentication of applications
 
