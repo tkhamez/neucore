@@ -1,4 +1,12 @@
 
+## next
+
+dd mm yyyy
+
+- Configurable location and rotation of log files. [#12][i12]
+
+[i12]: https://github.com/tkhamez/neucore/issues/12
+
 ## 1.0.0
 
 5 May 2019

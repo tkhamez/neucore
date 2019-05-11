@@ -17,7 +17,12 @@ return [
     'config' => [
 
         'monolog' => [
-            'path' => Application::ROOT_DIR . '/var/logs/app-'.date('o\wW').'.log', // weekly logs
+            'path' => (getenv('BRAVECORE_LOG_PATH') ?: Application::ROOT_DIR . '/var/logs') .
+                '/app-' . (
+                    getenv('BRAVECORE_LOG_ROTATION') === 'd' ? date('Ymd') : (
+                        getenv('BRAVECORE_LOG_ROTATION') === 'm' ? date('Ym') : date('o\wW')
+                    )
+                ) . '.log',
         ],
 
         'doctrine' => [
