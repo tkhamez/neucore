@@ -99,6 +99,7 @@ class Helper
         $tool = new SchemaTool($em);
         $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 0;');
         $tool->updateSchema($classes);
+        $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
     public function emptyDb(): void

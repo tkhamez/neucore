@@ -32,6 +32,7 @@ final class Version20190502125338 extends AbstractMigration
         $this->addSql('ALTER TABLE removed_characters DROP INDEX idx_2987d70c99e6f5df');
         $this->addSql('CREATE INDEX IDX_129104F799E6F5DF ON removed_characters (player_id)');
         $this->addSql('ALTER TABLE removed_characters ADD CONSTRAINT FK_129104F799E6F5DF FOREIGN KEY (player_id) REFERENCES players (id)');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
     /**
@@ -50,5 +51,6 @@ final class Version20190502125338 extends AbstractMigration
         $this->addSql('ALTER TABLE removed_characters DROP INDEX IDX_129104F799E6F5DF');
         $this->addSql('CREATE INDEX idx_2987d70c99e6f5df ON removed_characters (player_id)');
         $this->addSql('ALTER TABLE removed_characters ADD CONSTRAINT FK_2987D70C99E6F5DF FOREIGN KEY (player_id) REFERENCES players (id)');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 1;');
     }
 }

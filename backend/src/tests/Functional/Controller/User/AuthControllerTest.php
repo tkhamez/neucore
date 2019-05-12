@@ -43,6 +43,8 @@ class AuthControllerTest extends WebTestCase
 
     public function testLoginManagedForbidden()
     {
+        (new Helper())->emptyDb();
+
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(403, $response->getStatusCode());

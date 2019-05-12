@@ -27,6 +27,7 @@ final class Version20190407162052 extends AbstractMigration
 
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
         $this->addSql('ALTER TABLE roles CHANGE id id INT(11) NOT NULL');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
     /**
@@ -39,5 +40,6 @@ final class Version20190407162052 extends AbstractMigration
 
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
         $this->addSql('ALTER TABLE roles CHANGE id id INT(11) AUTO_INCREMENT NOT NULL');
+        $this->addSql('SET FOREIGN_KEY_CHECKS = 1;');
     }
 }

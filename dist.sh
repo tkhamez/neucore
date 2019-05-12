@@ -10,6 +10,7 @@ rm -Rf dist/*
 
 git checkout-index -a -f --prefix=./dist/build/
 if [[ -f backend/.env ]]; then
+    # database connection parameters are required to generate the doctrine proxy classes
     cp backend/.env dist/build/backend/.env
 fi
 
@@ -29,6 +30,7 @@ npm install
 cd ../..
 mkdir neucore
 mv build/backend neucore/backend
+rm neucore/backend/.env
 rm -r neucore/backend/src/tests
 mv build/doc neucore/doc
 rm -r neucore/doc/screenshots

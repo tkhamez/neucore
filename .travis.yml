@@ -18,7 +18,7 @@ addons:
 
 env:
   global:
-    - BRAVECORE_APP_ENV=prod
+    - BRAVECORE_APP_ENV=dev
     - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
   matrix:
@@ -45,7 +45,6 @@ before_install:
 
 install:
   - ./install.sh
-  - cd backend && vendor/bin/doctrine orm:generate-proxies && cd ..
 
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
