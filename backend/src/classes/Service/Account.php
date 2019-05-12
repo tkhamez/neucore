@@ -2,6 +2,8 @@
 
 namespace Neucore\Service;
 
+use Jose\Component\Signature\Serializer\CompactSerializer;
+use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
@@ -29,9 +31,9 @@ class Account
     const CHECK_CHAR_DELETED = 3;
 
     /**
-     * Result for checkCharacter() if a request failed.
+     * Result for checkCharacter() if token could not be parsed.
      */
-    const CHECK_REQUEST_ERROR = 4;
+    const CHECK_TOKEN_PARSE_ERROR = 4;
 
     /**
      * Result for checkCharacter() if there is no refresh token.
@@ -195,12 +197,17 @@ class Account
         }
 
         // get owner
-        $resourceOwner = $tokenService->getResourceOwner($token);
-        if ($resourceOwner === null) {
-            // could be an invalid token because refreshAccessToken() request failed
-            // or getResourceOwner request failed
-            // don't change the valid flag in this case.
-            return self::CHECK_REQUEST_ERROR;
+        $serializerManager = JWSSerializerManager::create([new CompactSerializer()]);
+        try {
+            $jws = $serializerManager->unserialize($token->getToken());
+        } catch (\Exception $e) {
+            // should not happen, don't change the valid flag in this case.
+            return self::CHECK_TOKEN_PARSE_ERROR;
+        }
+        $data = json_decode($jws->getPayload());
+        if ($data === null) {
+            // should not happen, don't change the valid flag in this case.
+            return self::CHECK_TOKEN_PARSE_ERROR;
         }
 
         // token is valid here
@@ -208,18 +215,17 @@ class Account
         $result = self::CHECK_TOKEN_OK;
 
         // Check owner change
-        $data = $resourceOwner->toArray();
-        if (isset($data['CharacterOwnerHash'])) {
+        if (isset($data->owner)) {
             // This check should never be true because the token is already invalid
             // after a character transfer - I hope ...
-            if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
+            if ($char->getCharacterOwnerHash() !== $data->owner) {
                 $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;
                 $char = null;
             }
         } else {
-            // that's an error, CCP changed resource owner data
-            $this->log->error('Unexpected result from OAuth verify.', ['data' => $data]);
+            // that's an error, CCP changed the JWT data
+            $this->log->error('Unexpected JWT data.', ['data' => (array) $data]);
         }
 
         $this->objectManager->flush();

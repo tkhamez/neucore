@@ -2,10 +2,11 @@
 
 namespace Neucore\Service;
 
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Neucore\Entity\Character;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Psr\Log\LoggerInterface;
@@ -30,11 +31,28 @@ class OAuthToken
      */
     private $log;
 
-    public function __construct(GenericProvider $oauth, ObjectManager $objectManager, LoggerInterface $log)
-    {
+    /**
+     * @var ClientInterface
+     */
+    private $client;
+
+    /**
+     * @var Config
+     */
+    private $config;
+
+    public function __construct(
+        GenericProvider $oauth,
+        ObjectManager $objectManager,
+        LoggerInterface $log,
+        ClientInterface $client,
+        Config $config
+    ) {
         $this->oauth = $oauth;
         $this->objectManager = $objectManager;
         $this->log = $log;
+        $this->client = $client;
+        $this->config = $config;
     }
 
     /**
@@ -42,8 +60,7 @@ class OAuthToken
      *
      * @param AccessTokenInterface $existingToken
      * @return AccessTokenInterface A new object if the token was refreshed
-     * @throws IdentityProviderException For "invalid_token" error (refresh token is expired),
-     *         other exceptions are caught.
+     * @throws IdentityProviderException For "invalid_grant" error, other exceptions are caught.
      */
     public function refreshAccessToken(AccessTokenInterface $existingToken): AccessTokenInterface
     {
@@ -54,11 +71,8 @@ class OAuthToken
                     'refresh_token' => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
-                if ($e instanceof IdentityProviderException &&
-                    in_array($e->getMessage(), ['invalid_token', 'invalid_request'])
-                ) {
-                    // invalid_token = e. g. revoked refresh token
-                    // invalid_request = e. g. no refresh token
+                if ($e instanceof IdentityProviderException && $e->getMessage() === 'invalid_grant') {
+                    // invalid_grant = e. g. invalid or revoked refresh token
                     throw $e;
                 } else {
                     $this->log->error($e->getMessage(), ['exception' => $e]);
@@ -67,6 +81,37 @@ class OAuthToken
         }
 
         return $newToken ?? $existingToken;
+    }
+
+    /**
+     * @param AccessTokenInterface $existingToken
+     * @return bool
+     * @see https://github.com/esi/esi-docs/blob/master/docs/sso/revoking_refresh_tokens.md
+     */
+    public function revokeRefreshToken(AccessTokenInterface $existingToken)
+    {
+        $conf = $this->config['eve'];
+        $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
+
+        try {
+            $response = $this->client->request('POST', $urls['revoke'], [
+                'auth' => [$conf['client_id'], $conf['secret_key'], 'basic'],
+                'json' => [
+                    'token'           => $existingToken->getRefreshToken(),
+                    'token_type_hint' => 'refresh_token'
+                ],
+            ]);
+        } catch (GuzzleException $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+            return false;
+        }
+
+        if ($response->getStatusCode() === 200) {
+            return true;
+        }
+
+        $this->log->error('Error revoking token: ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
+        return false;
     }
 
     /**
@@ -100,26 +145,6 @@ class OAuthToken
         }
 
         return $token->getToken();
-    }
-
-    /**
-     * Returns resource owner.
-     */
-    public function getResourceOwner(AccessTokenInterface $token): ?ResourceOwnerInterface
-    {
-        $owner = null;
-        try {
-            if ($token instanceof AccessToken) {
-                $owner = $this->oauth->getResourceOwner($token);
-            }
-        } catch (\Exception $e) {
-            if (! $e instanceof IdentityProviderException || $e->getMessage() !== 'invalid_token') {
-                // don't log "invalid_token" error as this is expected if the token was revoked
-                $this->log->error($e->getMessage(), ['exception' => $e]);
-            }
-        }
-
-        return $owner;
     }
 
     public function createAccessTokenFromCharacter(Character $character): ?AccessTokenInterface

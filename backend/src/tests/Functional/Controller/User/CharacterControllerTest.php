@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
+use League\OAuth2\Client\Provider\GenericProvider;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -13,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
+use Tests\OAuthProvider;
 
 class CharacterControllerTest extends WebTestCase
 {
@@ -167,9 +169,13 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(503, $response->getStatusCode());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testUpdate204()
     {
-        $this->setupDb();
+        list($token, $keySet) = Helper::generateToken();
+        $this->setupDb($token);
         $this->loginUser(96061222);
 
         $this->client->setResponse(
@@ -183,7 +189,7 @@ class CharacterControllerTest extends WebTestCase
                 "alliance_id": null
             }'),
             // getAccessToken() not called because token is not expired
-            new Response(200, [], '{"CharacterOwnerHash": "coh2"}') // for getResourceOwner()
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
@@ -282,12 +288,15 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    private function setupDb()
+    private function setupDb($token = null)
     {
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER]);
         $char->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'))
             ->setCharacterOwnerHash('coh1');
+        if ($token) {
+            $char->setAccessToken($token);
+        }
         $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();
         $this->helper->addCharacterMain('Admin', 9, [Role::USER, Role::USER_ADMIN]);

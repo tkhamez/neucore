@@ -75,7 +75,9 @@ class MemberTrackingTest extends TestCase
             $this->repositoryFactory,
             $objectManager,
             new EsiData($this->logger, $esiApiFactory, $objectManager, $this->repositoryFactory, $config),
-            new OAuthToken(new OAuthProvider($this->client), $objectManager, $this->logger),
+            new OAuthToken(
+                new OAuthProvider($this->client), $objectManager, $this->logger, $this->client, new Config([])
+            ),
             $config
         );
     }
@@ -204,10 +206,7 @@ class MemberTrackingTest extends TestCase
         $this->em->persist($token);
         $this->em->flush();
 
-        $this->client->setResponse(new Response(400, [], '{
-            "error": "invalid_token",
-            "error_description": "The refresh token is expired."
-        }'));
+        $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
 
         $this->assertNull($this->memberTracking->refreshDirectorToken(SystemVariable::DIRECTOR_CHAR . 1));
     }

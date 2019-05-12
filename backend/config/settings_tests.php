@@ -18,12 +18,5 @@ return [
                 'mysql_verify_server_cert' => '${BRAVECORE_TEST_MYSQL_VERIFY_SERVER_CERT}',
             ],
         ],
-        'eve' => [
-            'oauth_urls_tq' => [
-                'authorize' => 'https://localhost/oauth/authorize',
-                'token'     => 'https://localhost/oauth/token',
-                'verify'    => 'https://localhost/oauth/verify',
-            ],
-        ],
     ],
 ];

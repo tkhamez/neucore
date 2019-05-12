@@ -9,6 +9,7 @@
         "ext-dom": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "ext-gmp": "*",
         "ext-mbstring": "*",
         "ext-phar": "*",
         "ext-pdo": "*",

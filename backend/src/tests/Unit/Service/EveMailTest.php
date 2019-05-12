@@ -65,7 +65,7 @@ class EveMailTest extends TestCase
         $esiFactory = new EsiApiFactory($this->client, new Config([]));
 
         $oauth = new OAuthProvider($this->client);
-        $oauthToken = new OAuthToken($oauth, $objManager, $this->logger);
+        $oauthToken = new OAuthToken($oauth, $objManager, $this->logger, $this->client, new Config([]));
 
         $this->eveMail = new EveMail(
             $this->repoFactory,
@@ -383,10 +383,7 @@ class EveMailTest extends TestCase
 
         $this->client->setResponse(
             // for getAccessToken() (refresh)
-            new Response(400, [], '{
-                "error": "invalid_token",
-                "error_description": "The refresh token is expired."
-            }')
+            new Response(400, [], '{ "error": "invalid_grant" }')
         );
 
         $result = $this->eveMail->accountDeactivatedSend(123);

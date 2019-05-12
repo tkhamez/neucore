@@ -65,14 +65,18 @@ return [
             'datasource'      => '${BRAVECORE_EVE_DATASOURCE}',
             'esi_host'        => 'https://esi.evetech.net',
             'oauth_urls_tq'   => [
-                'authorize' => 'https://login.eveonline.com/oauth/authorize',
-                'token'     => 'https://login.eveonline.com/oauth/token',
-                'verify'    => 'https://login.eveonline.com/oauth/verify',
+                'authorize' => 'https://login.eveonline.com/v2/oauth/authorize',
+                'token'     => 'https://login.eveonline.com/v2/oauth/token',
+                'verify'    => '', // only needed for SSO v1, but required by class
+                'jwks'      => 'https://login.eveonline.com/oauth/jwks',
+                'revoke'    => 'https://login.eveonline.com/v2/oauth/revoke',
             ],
             'oauth_urls_sisi' => [
-                'authorize' => 'https://sisilogin.testeveonline.com/oauth/authorize',
-                'token'     => 'https://sisilogin.testeveonline.com/oauth/token',
-                'verify'    => 'https://sisilogin.testeveonline.com/oauth/verify',
+                'authorize' => 'https://sisilogin.testeveonline.com/v2/oauth/authorize',
+                'token'     => 'https://sisilogin.testeveonline.com/v2/oauth/token',
+                'verify'    => '',
+                'jwks'      => 'https://sisilogin.testeveonline.com/oauth/jwks',
+                'revoke'    => 'https://sisilogin.testeveonline.com/v2/oauth/revoke',
             ],
         ],
 

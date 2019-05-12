@@ -2,6 +2,12 @@
 
 namespace Tests;
 
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\Serializer\CompactSerializer;
+use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Neucore\Application;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
@@ -45,6 +51,52 @@ class Helper
         Alliance::class,
         SystemVariable::class,
     ];
+
+    /**
+     * @throws \Exception
+     */
+    public static function generateToken(
+        array $scopes = ['scope1', 'scope2'],
+        string $charName = 'Name',
+        string $ownerHash = 'hash',
+        string $ownerHashKey = 'owner'
+    ): array {
+        // create key
+        $jwk = JWKFactory::createRSAKey(2048, ['alg' => 'RS256', 'use' => 'sig']);
+
+        // create token
+        $algorithmManager = AlgorithmManager::create([new RS256()]);
+        $jwsBuilder = new JWSBuilder(null, $algorithmManager);
+        $payload = json_encode([
+            'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
+            'sub' => 'CHARACTER:EVE:123',
+            'name' => $charName,
+            $ownerHashKey => $ownerHash,
+            'exp' => time() + 3600,
+            'iss' => 'login.eveonline.com',
+        ]);
+        $jws = $jwsBuilder
+            ->create()
+            ->withPayload($payload)
+            ->addSignature($jwk, ['alg' => $jwk->get('alg')])
+            ->build();
+        $token = (new CompactSerializer())->serialize($jws);
+
+        // create key set
+        $keySet = [$jwk->toPublic()->jsonSerialize()];
+
+        return [$token, $keySet];
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public static function parseToken(string $token)
+    {
+        $serializerManager = JWSSerializerManager::create([new CompactSerializer()]);
+        $jws = $serializerManager->unserialize($token);
+        return json_decode($jws->getPayload(), true);
+    }
 
     public function resetSessionData(): void
     {

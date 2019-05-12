@@ -118,8 +118,8 @@ class CheckTokens extends Command
                     $this->writeln('  Character ' . $charId.': token NOK');
                 } elseif ($result === Account::CHECK_CHAR_DELETED) {
                     $this->writeln('  Character ' . $charId.': character deleted');
-                } elseif ($result === Account::CHECK_REQUEST_ERROR) {
-                    $this->writeln('  Character ' . $charId.': token request failed');
+                } elseif ($result === Account::CHECK_TOKEN_PARSE_ERROR) {
+                    $this->writeln('  Character ' . $charId.': token parse error');
                 } else {
                     $this->writeln('  Character ' . $charId.': unknown result');
                 }

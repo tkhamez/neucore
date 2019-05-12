@@ -179,7 +179,7 @@ class AuthController
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
         try {
-            $eveAuth = $this->authProvider->validateAuthentication(
+            $eveAuth = $this->authProvider->validateAuthenticationV2(
                 $request->getQueryParam('state'),
                 $state,
                 $request->getQueryParam('code', '')

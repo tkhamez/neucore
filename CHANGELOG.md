@@ -1,3 +1,6 @@
+## sso v2
+
+- Breaking: requires gmp PHP extension
 # next
 
 dd mmm yyyy

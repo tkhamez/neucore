@@ -13,6 +13,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
+use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
@@ -76,9 +77,11 @@ class AccountTest extends TestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
+        $om = new ObjectManager($em, $this->log);
+
         $this->client = new Client();
-        $this->token = new OAuthToken(new OAuthProvider($this->client), new ObjectManager($em, $this->log), $this->log);
-        $this->service = new Account($this->log, new ObjectManager($em, $this->log), new RepositoryFactory($em));
+        $this->token = new OAuthToken(new OAuthProvider($this->client), $om, $this->log, $this->client, new Config([]));
+        $this->service = new Account($this->log, $om, new RepositoryFactory($em));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
         $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
         $this->corpMemberRepo = (new RepositoryFactory($em))->getCorporationMemberRepository();
@@ -223,7 +226,7 @@ class AccountTest extends TestCase
 
         $this->client->setResponse(
             // for refreshAccessToken()
-            new Response(400, [], '{"error": "invalid_token"}')
+            new Response(400, [], '{"error": "invalid_grant"}')
         );
 
         $result = $this->service->checkCharacter($char, $this->token);
@@ -249,21 +252,18 @@ class AccountTest extends TestCase
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);
-        $this->assertSame(Account::CHECK_REQUEST_ERROR, $result);
+        $this->assertSame(Account::CHECK_TOKEN_PARSE_ERROR, $result);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCheckCharacterValid()
     {
+        list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
-            // for refreshAccessToken()
-            new Response(200, [], '{
-                "access_token": "new-at"
-            }'),
-
-            // for getResourceOwner()
-            new Response(200, [], '{
-                "CharacterOwnerHash": "hash"
-            }')
+            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
         $expires = time() - 1000;
@@ -285,18 +285,15 @@ class AccountTest extends TestCase
         $this->assertSame($expires, $character->getExpires()); // not updated
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCheckCharacterDeletesMovedChar()
     {
+        list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
-        // for refreshAccessToken()
-            new Response(200, [], '{
-                "access_token": "new-at"
-            }'),
-
-            // for getResourceOwner()
-            new Response(200, [], '{
-                "CharacterOwnerHash": "new-hash"
-            }')
+            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
         $em = $this->helper->getEm();
