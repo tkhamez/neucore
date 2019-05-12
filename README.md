@@ -38,8 +38,8 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 #### Server Requirements
 
 * PHP 7.1+ with Composer, see `backend/composer.json` for necessary extensions
-* Node.js 8 or 10, npm 6 (other versions may work, but are not tested)
-* MariaDB or MySQL Server
+* Node.js with npm (tested with node 8.16, 10.15 and npm 6.4.1)
+* MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.3)
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 

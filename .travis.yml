@@ -1,3 +1,5 @@
+dist: xenial
+
 language: php
 
 git:
@@ -10,7 +12,6 @@ php:
   - nightly
 
 addons:
-  mariadb: "10.3"
   sonarcloud:
     organization: "tkhamez-github"
     token:
@@ -19,11 +20,12 @@ addons:
 env:
   global:
     - BRAVECORE_APP_ENV=dev
-    - BRAVECORE_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
-    - BRAVECORE_TEST_DATABASE_URL=mysql://travis:@127.0.0.1/neucore
+    - BRAVECORE_DATABASE_URL=mysql://neu:core@localhost/neucore
+    - BRAVECORE_TEST_DATABASE_URL=mysql://neu:core@localhost/neucore
   matrix:
-    - NODE_VERSION="8.16.0"
-    - NODE_VERSION="10.15.3"
+    - NODE_VERSION="8.16.0" DB=mysql:5.7
+    - NODE_VERSION="10.15.3" DB=mysql:8.0
+    - NODE_VERSION="10.15.3" DB=mariadb:10.3
 
 matrix:
   fast_finish: true
@@ -31,16 +33,37 @@ matrix:
     - php: nightly
   exclude:
     - php: "7.1"
-      env: NODE_VERSION="10.15.3"
     - php: "7.2"
-      env: NODE_VERSION="8.16.0"
     - php: "7.3"
-      env: NODE_VERSION="8.16.0"
     - php: nightly
-      env: NODE_VERSION="8.16.0"
+  include:
+    - php: "7.1"
+      env: NODE_VERSION="8.16.0" DB=mysql:5.7
+      services:
+        - mysql
+    - php: "7.2"
+      env: NODE_VERSION="10.15.3" DB=mysql:8.0
+    - php: "7.3"
+      env: NODE_VERSION="10.15.3" DB=mariadb:10.3
+      addons:
+        mariadb: "10.3"
+    - php: nightly
+      env: NODE_VERSION="10.15.3" DB=mariadb:10.3
+      addons:
+        mariadb: "10.3"
 
 before_install:
+  - if [[ "$DB" == "mysql:8.0" ]]; then wget https://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb; fi
+  - if [[ "$DB" == "mysql:8.0" ]]; then sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb; fi
+  - if [[ "$DB" == "mysql:8.0" ]]; then sudo apt-get update -q; fi
+  - if [[ "$DB" == "mysql:8.0" ]]; then sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server; fi
+  - if [[ "$DB" == "mysql:8.0" ]]; then sudo systemctl restart mysql; fi
+  - if [[ "$DB" == "mysql:8.0" ]]; then sudo mysql_upgrade; fi
+  - mysql --version
   - mysql -e 'CREATE DATABASE IF NOT EXISTS neucore;'
+  - if [[ "$DB" == "mysql:8.0" ]]; then mysql -e "CREATE USER 'neu'@'localhost' IDENTIFIED WITH mysql_native_password BY 'core';"; fi
+  - if [[ "$DB" != "mysql:8.0" ]]; then mysql -e "CREATE USER 'neu'@'localhost' IDENTIFIED BY 'core';"; fi
+  - mysql -e "GRANT ALL PRIVILEGES ON neucore.* TO 'neu'@'localhost'"
   - nvm install $NODE_VERSION
 
 install:
