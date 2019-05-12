@@ -9,13 +9,11 @@ use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
-use Tests\OAuthProvider;
 
 class CheckTokensTest extends ConsoleTestCase
 {
@@ -80,9 +78,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->em->persist($char);
         $this->em->flush();
 
-        $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
-            GenericProvider::class => new OAuthProvider($this->client),
-        ]);
+        $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0]);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
@@ -111,7 +107,6 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $this->log
         ]);
 
@@ -135,7 +130,6 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $this->log
         ]);
 
@@ -164,7 +158,6 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
         $actual = explode("\n", $output);
@@ -197,7 +190,6 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
         $actual = explode("\n", $output);
@@ -231,7 +223,6 @@ class CheckTokensTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => $this->log,
         ]);
 

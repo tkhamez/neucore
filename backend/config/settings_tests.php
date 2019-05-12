@@ -18,5 +18,8 @@ return [
                 'mysql_verify_server_cert' => getenv('BRAVECORE_TEST_MYSQL_VERIFY_SERVER_CERT'),
             ],
         ],
+        'eve' => [
+            'sso_domain_tq'   => 'localhost',
+        ],
     ],
 ];

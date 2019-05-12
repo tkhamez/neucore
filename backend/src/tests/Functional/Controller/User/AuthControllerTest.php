@@ -9,13 +9,11 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Slim\Session\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
-use Tests\OAuthProvider;
 use Tests\Client;
 
 class AuthControllerTest extends WebTestCase
@@ -36,7 +34,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -65,7 +63,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -78,7 +76,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-alt');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
@@ -91,7 +89,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-mail');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
@@ -104,7 +102,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-director');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('localhost/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-director', $sess->get('auth_redirect'));
@@ -153,7 +151,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [
-                GenericProvider::class => new OAuthProvider($this->client),
+                ClientInterface::class => $this->client,
                 LoggerInterface::class => $log,
                 Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
             ]
@@ -193,7 +191,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [
-                GenericProvider::class => new OAuthProvider($this->client),
+                ClientInterface::class => $this->client,
                 Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
             ]
         );
@@ -228,7 +226,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [
-                GenericProvider::class => new OAuthProvider($this->client),
+                ClientInterface::class => $this->client,
                 LoggerInterface::class => $log,
                 Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
             ]
@@ -270,7 +268,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [
-                GenericProvider::class => new OAuthProvider($this->client),
+                ClientInterface::class => $this->client,
                 Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
             ]
         );
@@ -314,7 +312,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [GenericProvider::class => new OAuthProvider($this->client)]
+            [ClientInterface::class => $this->client]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -356,7 +354,7 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [GenericProvider::class => new OAuthProvider($this->client)]
+            [ClientInterface::class => $this->client]
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -383,7 +381,7 @@ class AuthControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
-            GenericProvider::class => new OAuthProvider($this->client)
+            ClientInterface::class => $this->client
         ]);
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
@@ -421,7 +419,6 @@ class AuthControllerTest extends WebTestCase
         );
 
         $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
-            GenericProvider::class => new OAuthProvider($this->client),
             ClientInterface::class => $this->client
         ]);
         $this->assertSame(302, $response->getStatusCode());

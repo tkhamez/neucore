@@ -7,13 +7,11 @@ use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
-use Tests\OAuthProvider;
 use Tests\Client;
 
 class CharacterControllerTest extends WebTestCase
@@ -186,7 +184,6 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -219,7 +216,6 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 
@@ -275,7 +271,6 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
             LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
         ]);
 

@@ -8,13 +8,11 @@ use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 use Tests\Logger;
-use Tests\OAuthProvider;
 
 class UpdateCharactersTest extends ConsoleTestCase
 {
@@ -110,7 +108,6 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
-            GenericProvider::class => new OAuthProvider($this->client),
         ]);
 
         $actual = explode("\n", $output);
