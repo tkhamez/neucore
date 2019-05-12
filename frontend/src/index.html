@@ -27,7 +27,7 @@
 
         <nav-bar :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
 
-        <component v-bind:is="page"
+        <component v-if="settings.customization_default_theme" v-bind:is="page"
             :route="route"
             :initialized="initialized"
             :swagger="swagger"
