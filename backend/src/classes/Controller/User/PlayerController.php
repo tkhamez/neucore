@@ -14,13 +14,13 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Player",
  *     description="Player management."
  * )
@@ -74,19 +74,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/show",
      *     operationId="show",
      *     summary="Return the logged in player with all properties.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The player information.",
-     *         @SWG\Schema(ref="#/definitions/Player")
+     *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -98,19 +98,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/groups-disabled",
      *     operationId="groupsDisabled",
      *     summary="Check whether groups for this account are disabled or will be disabled soon.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="True if groups are disabled, otherwise false.",
-     *         @SWG\Schema(type="boolean")
+     *         @OA\JsonContent(type="boolean")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -126,32 +126,32 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/{id}/groups-disabled",
      *     operationId="groupsDisabledById",
      *     summary="Check whether groups for this account are disabled or will be disabled soon.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="True if groups are disabled, otherwise false.",
-     *         @SWG\Schema(type="boolean")
+     *         @OA\JsonContent(type="boolean")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player not found."
      *     )
      * )
      */
@@ -171,31 +171,31 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/add-application/{gid}",
      *     operationId="addApplication",
      *     summary="Submit a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Application submitted."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      *
@@ -232,31 +232,31 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/remove-application/{gid}",
      *     operationId="removeApplication",
      *     summary="Cancel a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Application canceled."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Application not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Application not found."
      *     )
      * )
      */
@@ -277,19 +277,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/show-applications",
      *     operationId="showApplications",
      *     summary="Show all group applications.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The group applications.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/GroupApplication"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/GroupApplication"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -304,31 +304,31 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/leave-group/{gid}",
      *     operationId="leaveGroup",
      *     summary="Leave a group.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group left."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -345,32 +345,32 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/set-main/{cid}",
      *     operationId="setMain",
      *     summary="Change the main character from the player account.",
      *     description="Needs role: user",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="Character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The main character.",
-     *         @SWG\Schema(ref="#/definitions/Character")
+     *         @OA\JsonContent(ref="#/components/schemas/Character")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character not found on this account."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character not found on this account."
      *     )
      * )
      */
@@ -396,37 +396,36 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/{id}/set-status/{status}",
      *     operationId="setStatus",
      *     summary="Change the player's account status.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="status",
      *         in="path",
      *         required=true,
      *         description="The new status.",
-     *         type="string",
-     *         enum={"standard", "managed"}
+     *         @OA\Schema(type="string", enum={"standard", "managed"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Status changed."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid player or status."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -455,19 +454,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/with-characters",
      *     operationId="withCharacters",
      *     summary="List all players with characters.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -479,19 +478,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/invalid-token",
      *     operationId="invalidToken",
      *     summary="List all players with a character with an invalid token.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -503,19 +502,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/no-token",
      *     operationId="noToken",
      *     summary="List all players with a character with no token.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -527,19 +526,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/without-characters",
      *     operationId="withoutCharacters",
      *     summary="List all players without characters.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -551,19 +550,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/app-managers",
      *     operationId="appManagers",
      *     summary="List all players with the role app-manger.",
      *     description="Needs role: app-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -575,19 +574,19 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/group-managers",
      *     operationId="groupManagers",
      *     summary="List all players with the role group-manger.",
      *     description="Needs role: group-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -599,35 +598,37 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/with-role/{name}",
      *     operationId="withRole",
      *     summary="List all players with a role.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Role name.",
-     *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
-     *               "esi", "settings", "tracking"}
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
+     *                 "esi", "settings", "tracking"}
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid role name."
      *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
      * )
      */
     public function withRole(string $name): Response
@@ -640,34 +641,33 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/with-status/{name}",
      *     operationId="withStatus",
      *     summary="Lists all players with characters who have a certain status.",
      *     description="Needs role: user-admin, user-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Status name.",
-     *         type="string",
-     *         enum={"standard", "managed"}
+     *         @OA\Schema(type="string", enum={"standard", "managed"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid status name."
      *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
      * )
      */
     public function withStatus(string $name): Response
@@ -680,40 +680,42 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/{id}/add-role/{name}",
      *     operationId="addRole",
      *     summary="Add a role to the player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
-     *               "esi", "settings", "tracking"}
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
+     *                 "esi", "settings", "tracking"}
+     *         )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Role added."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or role not found or invalid."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or role not found or invalid."
      *     )
      * )
      */
@@ -734,40 +736,42 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/player/{id}/remove-role/{name}",
      *     operationId="removeRole",
      *     summary="Remove a role from a player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         type="string",
-     *         enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
-     *               "esi", "settings", "tracking"}
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
+     *                 "esi", "settings", "tracking"}
+     *         )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Role removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or role not found or invalid."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or role not found or invalid."
      *     )
      * )
      */
@@ -786,32 +790,32 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/{id}/show",
      *     operationId="showById",
      *     summary="Show all data from a player.",
      *     description="Needs role: user-admin, user-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The player information (this one includes the removedCharacters property).",
-     *         @SWG\Schema(ref="#/definitions/Player")
+     *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player not found."
      *     )
      * )
      */
@@ -830,32 +834,32 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
      *     description="Needs role: app-admin, group-admin, user-manager, group-manager, tracking",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The player with id, name and characters properties only.",
-     *         @SWG\Schema(ref="#/definitions/Player")
+     *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player not found."
      *     )
      * )
      */
@@ -875,41 +879,40 @@ class PlayerController extends BaseController
     }
 
     /**
-     * @SWG\Delete(
+     * @OA\Delete(
      *     path="/user/player/delete-character/{id}",
      *     operationId="deleteCharacter",
      *     summary="Delete a character.",
      *     description="Needs role: user, user-admin",
      *     tags={"Player"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the character.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="admin-reason",
      *         in="query",
      *         description="Specifies a reason if a user admin triggered the deletion.
                             ('deleted-by-admin' will not create a 'Removed Character' entry.)",
-     *         type="string",
-     *         enum={"deleted-owner-changed", "deleted-by-admin", "deleted-manually"}
+     *         @OA\Schema(type="string", enum={"deleted-owner-changed", "deleted-by-admin", "deleted-manually"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Character was deleted."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized or feature disabled."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     ),
+     *     @OA\Response(
      *         response="409",
      *         description="Trying to delete logged in character."
      *     )

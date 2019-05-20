@@ -4,14 +4,13 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
  * Roles are used to determined player permissions.
  *
- * @SWG\Definition(
- *     definition="Role",
+ * @OA\Schema(
  *     type="string",
  *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager",
  *           "app-admin", "app-manager", "group-admin", "group-manager", "esi", "settings", "tracking"})

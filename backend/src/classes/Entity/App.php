@@ -4,12 +4,11 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
- * @SWG\Definition(
- *     definition="App",
+ * @OA\Schema(
  *     required={"id", "name"}
  * )
  * @ORM\Entity
@@ -20,7 +19,7 @@ class App implements \JsonSerializable
     /**
      * App ID
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -31,7 +30,7 @@ class App implements \JsonSerializable
     /**
      * App name
      *
-     * @SWG\Property(maxLength=255)
+     * @OA\Property(maxLength=255)
      * @ORM\Column(type="string", length=255)
      * @var string
      */
@@ -46,7 +45,7 @@ class App implements \JsonSerializable
     /**
      * Roles for authorization.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="apps")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -56,7 +55,7 @@ class App implements \JsonSerializable
     /**
      * Groups the app can see.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="apps")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection

@@ -3,9 +3,9 @@
 namespace Neucore\Controller\App;
 
 use Neucore\Factory\RepositoryFactory;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 class CorporationController
 {
@@ -28,45 +28,44 @@ class CorporationController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/corporation/{id}/member-tracking",
      *     operationId="memberTrackingV1",
      *     summary="Return corporation member tracking data.",
      *     description="Needs role: app-tracking",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="inactive",
      *         in="query",
      *         description="Limit to members who have been inactive for x days or longer.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="active",
      *         in="query",
      *         description="Limit to members who were active in the last x days.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="account",
      *         in="query",
      *         description="Limit to members with (true) or without (false) an account.",
-     *         type="string",
-     *         enum={"true", "false"}
+     *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="Members ordered by logonDate descending (character and player properties excluded).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CorporationMember"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CorporationMember"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

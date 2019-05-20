@@ -3,18 +3,14 @@
 namespace Neucore\Entity;
 
 use Neucore\Api;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
- * @SWG\Definition(
- *     definition="CorporationMember",
+ * @OA\Schema(
  *     required={"id", "name"},
  *     description="The player property contains only id and name, character does not contain corporation.",
- *     @SWG\Property(
- *         property="player",
- *         ref="#/definitions/Player"
- *     )
+ *     @OA\Property(property="player", ref="#/components/schemas/Player")
  * )
  * @ORM\Entity
  * @ORM\Table(name="corporation_members")
@@ -24,7 +20,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * EVE Character ID.
      *
-     * @SWG\Property(format="int64")
+     * @OA\Property(format="int64")
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
@@ -35,7 +31,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * EVE Character name.
      *
-     * @SWG\Property(type="string")
+     * @OA\Property(type="string")
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string|null
      */
@@ -44,35 +40,35 @@ class CorporationMember implements \JsonSerializable
     /**
      * Corporation ticker.
      *
-     * @SWG\Property(type="integer")
+     * @OA\Property(type="integer")
      * @ORM\Column(type="bigint", name="location_id", nullable=true)
      * @var integer|null
      */
     private $locationId;
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="datetime", name="logoff_date", nullable=true)
      * @var \DateTime
      */
     private $logoffDate;
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="datetime", name="logon_date", nullable=true)
      * @var \DateTime
      */
     private $logonDate;
 
     /**
-     * @SWG\Property(type="integer")
+     * @OA\Property(type="integer")
      * @ORM\Column(type="bigint", name="ship_type_id", nullable=true)
      * @var integer|null
      */
     private $shipTypeId;
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="datetime", name="start_date", nullable=true)
      * @var \DateTime
      */
@@ -86,7 +82,7 @@ class CorporationMember implements \JsonSerializable
     private $corporation;
 
     /**
-     * @SWG\Property(ref="#/definitions/Character")
+     * @OA\Property(ref="#/components/schemas/Character")
      * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
      * @var Character|null
      */

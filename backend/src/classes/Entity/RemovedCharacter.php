@@ -3,15 +3,14 @@
 namespace Neucore\Entity;
 
 use Neucore\Api;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
- * @SWG\Definition(
- *     definition="RemovedCharacter",
+ * @OA\Schema(
  *     required={"characterId", "characterName", "removedDate", "reason"},
- *     @SWG\Property(property="newPlayerId", type="integer"),
- *     @SWG\Property(property="newPlayerName", type="string")
+ *     @OA\Property(property="newPlayerId", type="integer"),
+ *     @OA\Property(property="newPlayerName", type="string")
  * )
  * @ORM\Entity
  * @ORM\Table(name="removed_characters")
@@ -72,7 +71,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * EVE character ID.
      *
-     * @SWG\Property(format="int64")
+     * @OA\Property(format="int64")
      * @ORM\Column(type="bigint", name="character_id")
      * @var integer
      */
@@ -81,7 +80,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * EVE character name.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", name="character_name", length=255)
      * @var string
      */
@@ -90,7 +89,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * Date of removal.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="datetime", name="removed_date")
      * @var \DateTime
      */
@@ -99,7 +98,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * How it was removed (deleted or moved to another account).
      *
-     * @SWG\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
+     * @OA\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
      * @ORM\Column(type="string", length=32)
      * @var string
      */

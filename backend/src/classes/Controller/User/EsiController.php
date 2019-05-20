@@ -8,13 +8,13 @@ use Neucore\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\MessageInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="ESI",
  *     description="ESI requests"
  * )
@@ -61,7 +61,7 @@ class EsiController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/esi/request",
      *     operationId="request",
      *     summary="ESI request.",
@@ -71,29 +71,29 @@ class EsiController
      *                  Only the {character_id} placeholder is implemented.",
      *     tags={"ESI"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="character",
      *         in="query",
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="route",
      *         in="query",
      *         description="The ESI route.",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The result from ESI or an error message.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Error.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

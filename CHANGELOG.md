@@ -1,10 +1,13 @@
-
 # next
 
 dd mmm yyyy
 
-- Fix: Frontend: Filter for member tracking by token status change date does not work [#25][i25]
+- OpenAPI 3: There is a new OpenAPI interface description file at `/application-api-3.yml` for the App API in 
+  OpenAPI version 3 format. The file `/application-api.json` in OpenAPI version 2 format is still available,
+  but will not be updated anymore.  [#9][i9]
+- Fix: Frontend: Filter for member tracking by token status change date does not work. [#25][i25]
 
+[i9]: https://github.com/tkhamez/neucore/issues/9
 [i25]: https://github.com/tkhamez/neucore/issues/25
 
 # 1.3.0

@@ -6,23 +6,23 @@ use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\AppAuth;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Definition(
- *     definition="CharacterGroups",
+ * @OA\Schema(
+ *     schema="CharacterGroups",
  *     required={"character", "groups"},
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="character",
- *         ref="#/definitions/Character"
+ *         ref="#/components/schemas/Character"
  *     ),
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="groups",
  *         type="array",
- *         @SWG\Items(ref="#/definitions/Group")
+ *         @OA\Items(ref="#/components/schemas/Group")
  *     )
  * )
  */
@@ -61,32 +61,32 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/groups/{cid}",
      *     operationId="groupsV1",
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character not found. (default reason phrase)"
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character not found. (default reason phrase)"
      *     )
      * )
      */
@@ -103,32 +103,32 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v2/groups/{cid}",
      *     operationId="groupsV2",
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Reason phrase: Character not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Reason phrase: Character not found."
      *     )
      * )
      */
@@ -144,7 +144,7 @@ class GroupController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/app/v1/groups",
      *     operationId="groupsBulkV1",
      *     summary="Return groups of multiple players, identified by one of their character IDs.",
@@ -152,24 +152,25 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.
      *                  Skips characters that are not found in the local database.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
-     *         name="ids",
-     *         in="body",
+     *     security={{"BearerAuth"={}}},
+     *     @OA\RequestBody(
      *         required=true,
      *         description="EVE character IDs array.",
-     *         @SWG\Schema(type="array", @SWG\Items(type="integer"))
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of characters (id, name and corporation properties only) with groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CharacterGroups"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CharacterGroups"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid body."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -181,32 +182,32 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/corp-groups/{cid}",
      *     operationId="corpGroupsV1",
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Corporation not found. (default reason phrase)"
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation not found. (default reason phrase)"
      *     )
      * )
      */
@@ -216,32 +217,32 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v2/corp-groups/{cid}",
      *     operationId="corpGroupsV2",
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Reason phrase: Corporation not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Reason phrase: Corporation not found."
      *     )
      * )
      */
@@ -257,7 +258,7 @@ class GroupController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/app/v1/corp-groups",
      *     operationId="corpGroupsBulkV1",
      *     summary="Return groups of multiple corporations.",
@@ -265,24 +266,25 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.
      *                  Skips corporations that are not found in the local database.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
-     *         name="ids",
-     *         in="body",
+     *     security={{"BearerAuth"={}}},
+     *     @OA\RequestBody(
      *         required=true,
      *         description="EVE corporation IDs array.",
-     *         @SWG\Schema(type="array", @SWG\Items(type="integer"))
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of corporations with groups but without alliance.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid body."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -294,32 +296,32 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/alliance-groups/{aid}",
      *     operationId="allianceGroupsV1",
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="aid",
      *         in="path",
      *         required=true,
      *         description="EVE alliance ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Alliance not found. (default reason phrase)"
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Alliance not found. (default reason phrase)"
      *     )
      * )
      */
@@ -329,32 +331,32 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v2/alliance-groups/{aid}",
      *     operationId="allianceGroupsV2",
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="aid",
      *         in="path",
      *         required=true,
      *         description="EVE alliance ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Reason phrase: Alliance not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Reason phrase: Alliance not found."
      *     )
      * )
      */
@@ -370,7 +372,7 @@ class GroupController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/app/v1/alliance-groups",
      *     operationId="allianceGroupsBulkV1",
      *     summary="Return groups of multiple alliances.",
@@ -378,24 +380,25 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.
      *                  Skips alliances that are not found in the local database.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
-     *         name="ids",
-     *         in="body",
+     *     security={{"BearerAuth"={}}},
+     *     @OA\RequestBody(
      *         required=true,
      *         description="EVE alliance IDs array.",
-     *         @SWG\Schema(type="array", @SWG\Items(type="integer"))
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of alliances with groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid body."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -407,7 +410,7 @@ class GroupController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/groups-with-fallback",
      *     operationId="groupsWithFallbackV1",
      *     summary="Returns groups from the character's account, if available, or the corporation and alliance.",
@@ -415,33 +418,33 @@ class GroupController
      *                  Returns only groups that have been added to the app as well.<br>
      *                  It is not checked if character, corporation and alliance match.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="character",
      *         in="query",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="corporation",
      *         in="query",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="alliance",
      *         in="query",
      *         description="EVE alliance ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

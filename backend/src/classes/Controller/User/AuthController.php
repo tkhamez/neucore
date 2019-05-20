@@ -2,6 +2,7 @@
 
 namespace Neucore\Controller\User;
 
+use Brave\Sso\Basics\AuthenticationProvider;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
@@ -11,32 +12,30 @@ use Neucore\Service\MemberTracking;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
 use Neucore\Slim\Session\SessionData;
-use Brave\Sso\Basics\AuthenticationProvider;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\SecurityScheme(
- *     securityDefinition="Session",
+ * @OA\SecurityScheme(
+ *     securityScheme="Session",
  *     type="apiKey",
- *     name="Cookie",
- *     in="header",
- *     description="Example: BCSESS=123"
+ *     name="BCSESS",
+ *     in="cookie"
  * )
  *
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Auth",
  *     description="User authentication."
  * )
- * @SWG\Definition(
- *     definition="LoginResult",
+ * @OA\Schema(
+ *     schema="LoginResult",
  *     required={"success", "message"},
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="success",
  *         type="boolean"
  *     ),
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="message",
  *         type="string"
  *     )
@@ -229,15 +228,15 @@ class AuthController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/auth/result",
      *     operationId="result",
      *     summary="Result of last SSO attempt.",
      *     tags={"Auth"},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The result.",
-     *         @SWG\Schema(ref="#/definitions/LoginResult")
+     *         @OA\JsonContent(ref="#/components/schemas/LoginResult")
      *     )
      * )
      */
@@ -254,18 +253,18 @@ class AuthController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/user/auth/logout",
      *     operationId="logout",
      *     summary="User logout.",
      *     description="Needs role: user",
      *     tags={"Auth"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="User was logged out."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

@@ -28,10 +28,10 @@
         "symfony/console": "^4.0",
         "symfony/dotenv": "^4.0",
         "symfony/http-foundation": "^4.0",
-        "symfony/yaml": "^4.0",
+        "symfony/yaml": "^4.3",
         "tkhamez/slim-role-auth": "^1.0",
         "tkhamez/swagger-eve-php": "^3.0",
-        "zircote/swagger-php": "^2.0"
+        "zircote/swagger-php": "^3.0"
     },
     "require-dev": {
         "drenso/phan-extensions": "^2.5",
@@ -74,9 +74,9 @@
         "db:migrate": "doctrine-migrations migrations:migrate --no-interaction",
         "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
-            "swagger src --output ../web",
-            "swagger src --output ../web/frontend-api.json --exclude src/classes/Controller/App",
-            "swagger src --output ../web/application-api.json --exclude src/classes/Controller/User"
+            "openapi src/classes --output ../web/openapi-3.yaml",
+            "openapi src/classes --output ../web/frontend-api-3.yml --exclude src/classes/Controller/App",
+            "openapi src/classes --output ../web/application-api-3.yml --exclude src/classes/Controller/User"
         ],
         "phan": "phan --color",
         "phpstan:src": "phpstan analyse src/classes --level 7 --ansi",

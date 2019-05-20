@@ -10,12 +10,12 @@ use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Group",
  *     description="Group management."
  * )
@@ -60,19 +60,19 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/all",
      *     operationId="all",
      *     summary="List all groups.",
      *     description="Needs role: app-admin, group-admin or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -84,19 +84,19 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/public",
      *     operationId="public",
      *     summary="List all public groups.",
      *     description="Needs role: user",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -111,39 +111,45 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/user/group/create",
      *     operationId="create",
      *     summary="Create a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     consumes={"application/x-www-form-urlencoded"},
-     *     @SWG\Parameter(
-     *         name="name",
-     *         in="formData",
-     *         required=true,
-     *         description="Name of the group.",
-     *         type="string",
-     *         maxLength=64,
-     *         pattern="^[-._a-zA-Z0-9]+$"
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="name",
+     *                     description="Name of the group.",
+     *                     type="string",
+     *                     maxLength=64,
+     *                     pattern="^[-._a-zA-Z0-9]+$"
+     *                 )
+     *             ),
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="201",
      *         description="The new group.",
-     *         @SWG\Schema(ref="#/definitions/Group")
+     *         @OA\JsonContent(ref="#/components/schemas/Group")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Group name is invalid."
      *     ),
-     *     @SWG\Response(
-     *         response="409",
-     *         description="A group with this name already exists."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="409",
+     *         description="A group with this name already exists."
      *     )
      * )
      */
@@ -167,50 +173,56 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/rename",
      *     operationId="rename",
      *     summary="Rename a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     consumes={"application/x-www-form-urlencoded"},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
-     *         name="name",
-     *         in="formData",
-     *         required=true,
-     *         description="New name for the group.",
-     *         type="string",
-     *         maxLength=64,
-     *         pattern="^[-._a-zA-Z0-9]+$"
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="name",
+     *                     description="New name for the group.",
+     *                     type="string",
+     *                     maxLength=64,
+     *                     pattern="^[-._a-zA-Z0-9]+$"
+     *                 )
+     *             ),
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="Group was renamed.",
-     *         @SWG\Schema(ref="#/definitions/Group")
+     *         @OA\JsonContent(ref="#/components/schemas/Group")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Group name is invalid."
      *     ),
-     *     @SWG\Response(
-     *         response="409",
-     *         description="A group with this name already exists."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     ),
+     *     @OA\Response(
+     *         response="409",
+     *         description="A group with this name already exists."
      *     )
      * )
      */
@@ -235,43 +247,42 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/set-visibility/{choice}",
      *     operationId="setVisibility",
      *     summary="Change visibility of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="choice",
      *         in="path",
      *         required=true,
-     *         type="string",
-     *         enum={"private", "public", "conditioned"}
+     *         @OA\Schema(type="string", enum={"private", "public", "conditioned"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="Visibility changed.",
-     *         @SWG\Schema(ref="#/definitions/Group")
+     *         @OA\JsonContent(ref="#/components/schemas/Group")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid 'choice' parameter."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -291,31 +302,31 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Delete(
+     * @OA\Delete(
      *     path="/user/group/{id}/delete",
      *     operationId="delete",
      *     summary="Delete a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group was deleted."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -331,32 +342,32 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/{id}/managers",
      *     operationId="managers",
      *     summary="List all managers of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id, name and roles properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -366,32 +377,32 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/{id}/corporations",
      *     operationId="corporations",
      *     summary="List all corporations of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of corporations ordered by name.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -405,32 +416,32 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/{id}/alliances",
      *     operationId="alliances",
      *     summary="List all alliances of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of alliances ordered by name.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -444,32 +455,32 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/{id}/required-groups",
      *     operationId="requiredGroups",
      *     summary="List all required groups of a group.",
      *     description="Needs role: group-admin, group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of groups ordered by name.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Group"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -484,38 +495,38 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/add-required/{groupId}",
      *     operationId="addRequiredGroup",
      *     summary="Add required group to a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="groupId",
      *         in="path",
      *         required=true,
      *         description="ID of the group to add.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group added."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group(s) not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group(s) not found."
      *     )
      * )
      */
@@ -543,38 +554,38 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/remove-required/{groupId}",
      *     operationId="removeRequiredGroup",
      *     summary="Remove required group from a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="groupId",
      *         in="path",
      *         required=true,
      *         description="ID of the group to remove.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group(s) not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group(s) not found."
      *     )
      * )
      */
@@ -603,38 +614,38 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/add-manager/{pid}",
      *     operationId="addManager",
      *     summary="Assign a player as manager to a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Player added as manager."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or group not found."
      *     )
      * )
      */
@@ -644,38 +655,38 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/remove-manager/{pid}",
      *     operationId="removeManager",
      *     summary="Remove a manager (player) from a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Player removed from managers."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or group not found."
      *     )
      * )
      */
@@ -685,32 +696,32 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/{id}/applications",
      *     operationId="applications",
      *     summary="List all applications of a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of group applications ordered by created date.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/GroupApplication"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/GroupApplication"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */
@@ -730,31 +741,31 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/accept-application/{id}",
      *     operationId="acceptApplication",
      *     summary="Accept a player's request to join a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the application.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Application accepted."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Application not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Application not found."
      *     )
      * )
      */
@@ -764,31 +775,31 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/deny-application/{id}",
      *     operationId="denyApplication",
      *     summary="Deny a player's request to join a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the application.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Application denied."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Application not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Application not found."
      *     )
      * )
      */
@@ -798,38 +809,38 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/add-member/{pid}",
      *     operationId="addMember",
      *     summary="Adds a player to a group.",
      *     description="Needs role: group-manager or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Player added."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or group not found."
      *     )
      * )
      */
@@ -839,38 +850,38 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/group/{id}/remove-member/{pid}",
      *     operationId="removeMember",
      *     summary="Remove player from a group.",
      *     description="Needs role: group-manager or user-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Player removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or group not found."
      *     )
      * )
      */
@@ -880,32 +891,32 @@ class GroupController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/group/{id}/members",
      *     operationId="members",
      *     summary="List all members of a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
      *     )
      * )
      */

@@ -1,0 +1,1440 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Neucore API",
+        "description": "Client library of Neucore API",
+        "version": "1.3.0"
+    },
+    "host": "localhost",
+    "basePath": "/api",
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/app/v1/show": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Show app information.",
+                "description": "Needs role: app",
+                "operationId": "showV1",
+                "responses": {
+                    "200": {
+                        "description": "The app information",
+                        "schema": {
+                            "$ref": "#/definitions/App"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/main/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return the main character of the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.<br>It is possible that an account has no main character.",
+                "operationId": "mainV1",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The main character",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "204": {
+                        "description": "No main character found."
+                    },
+                    "404": {
+                        "description": "Character (or player) not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/main/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return the main character of the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.<br>It is possible that an account has no main character.",
+                "operationId": "mainV2",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The main character",
+                        "schema": {
+                            "$ref": "#/definitions/Character"
+                        }
+                    },
+                    "204": {
+                        "description": "No main character found."
+                    },
+                    "404": {
+                        "description": "Reason phrase: Character not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/player/{characterId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.",
+                "operationId": "playerV1",
+                "parameters": [
+                    {
+                        "name": "characterId",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The player, only id and name properties are returned.",
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    },
+                    "404": {
+                        "description": "Character not found."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/characters/{characterId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return all characters of the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.",
+                "operationId": "charactersV1",
+                "parameters": [
+                    {
+                        "name": "characterId",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All characters from the player account.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Character"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Character (or player) not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/player-chars/{playerId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return all characters from the player account.",
+                "description": "Needs role: app-chars.",
+                "operationId": "playerCharactersV1",
+                "parameters": [
+                    {
+                        "name": "playerId",
+                        "in": "path",
+                        "description": "Player ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All characters from the player account.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Character"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Player not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/removed-characters/{characterId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return all characters that were removed from the player account to which the character ID belongs.",
+                "description": "Needs role: app-chars.",
+                "operationId": "removedCharactersV1",
+                "parameters": [
+                    {
+                        "name": "characterId",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All removed characters from the player account.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/RemovedCharacter"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Character (or player) not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corp-players/{corporationId}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return a list of all players that have a character in the corporation.",
+                "description": "Needs role: app-chars.",
+                "operationId": "corporationPlayersV1",
+                "parameters": [
+                    {
+                        "name": "corporationId",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of players, only id and name properties are returned.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corporation/{id}/member-tracking": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return corporation member tracking data.",
+                "description": "Needs role: app-tracking",
+                "operationId": "memberTrackingV1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "inactive",
+                        "in": "query",
+                        "description": "Limit to members who have been inactive for x days or longer.",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Limit to members who were active in the last x days.",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "account",
+                        "in": "query",
+                        "description": "Limit to members with (true) or without (false) an account.",
+                        "type": "string",
+                        "enum": [
+                            "true",
+                            "false"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Members ordered by logonDate descending (character and player properties excluded).",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CorporationMember"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/esi": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Makes an ESI GET request on behalf on an EVE character and returns the result.",
+                "description": "Needs role: app-esi<br>\n     *         Public ESI routes are not allowed.<br>\n     *         The following headers from ESI are passed through to the response:\n               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>\n     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>\n     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,\n               see doc/app-esi-examples.php for more.",
+                "operationId": "esiV1",
+                "parameters": [
+                    {
+                        "name": "esi-path-query",
+                        "in": "query",
+                        "description": "The ESI path and query string (without the datasource parameter).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "datasource",
+                        "in": "query",
+                        "description": "The EVE character ID those token should be used to make the ESI request",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The data from ESI.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "304": {
+                        "description": "Not modified",
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, see reason phrase and/or body for more.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "420": {
+                        "description": "Error limited",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "429": {
+                        "description": "Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway timeout",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Makes an ESI POST request on behalf on an EVE character and returns the result.",
+                "description": "Needs role: app-esi<br>\n     *         Public ESI routes are not allowed.<br>\n     *         The following headers from ESI are passed through to the response:\n               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>\n     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>\n     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,\n               see doc/app-esi-examples.php for more.",
+                "operationId": "esiPostV1",
+                "consumes": [
+                    "text/plain"
+                ],
+                "parameters": [
+                    {
+                        "name": "esi-path-query",
+                        "in": "query",
+                        "description": "The ESI path and query string (without the datasource parameter).",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "datasource",
+                        "in": "query",
+                        "description": "The EVE character ID those token should be used to make the ESI request",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "JSON encoded data.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The data from ESI.",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "304": {
+                        "description": "Not modified",
+                        "headers": {
+                            "Expires": {
+                                "description": "RFC7231 formatted datetime string",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, see reason phrase and/or body for more.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "420": {
+                        "description": "Error limited",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "429": {
+                        "description": "Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "503": {
+                        "description": "Service unavailable",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway timeout",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the character's player account.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "groupsV1",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Character not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the character's player account.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "groupsV2",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reason phrase: Character not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/groups": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of multiple players, identified by one of their character IDs.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.\n     *                  Skips characters that are not found in the local database.",
+                "operationId": "groupsBulkV1",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "body",
+                        "description": "EVE character IDs array.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of characters (id, name and corporation properties only) with groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/CharacterGroups"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid body."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corp-groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the corporation.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "corpGroupsV1",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Corporation not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/corp-groups/{cid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the corporation.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "corpGroupsV2",
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reason phrase: Corporation not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/corp-groups": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of multiple corporations.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.\n     *                  Skips corporations that are not found in the local database.",
+                "operationId": "corpGroupsBulkV1",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "body",
+                        "description": "EVE corporation IDs array.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of corporations with groups but without alliance.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Corporation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid body."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/alliance-groups/{aid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the alliance.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "allianceGroupsV1",
+                "parameters": [
+                    {
+                        "name": "aid",
+                        "in": "path",
+                        "description": "EVE alliance ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Alliance not found. (default reason phrase)"
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v2/alliance-groups/{aid}": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of the alliance.",
+                "description": "Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
+                "operationId": "allianceGroupsV2",
+                "parameters": [
+                    {
+                        "name": "aid",
+                        "in": "path",
+                        "description": "EVE alliance ID.",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reason phrase: Alliance not found."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/alliance-groups": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Return groups of multiple alliances.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.\n     *                  Skips alliances that are not found in the local database.",
+                "operationId": "allianceGroupsBulkV1",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "body",
+                        "description": "EVE alliance IDs array.",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of alliances with groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Alliance"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid body."
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/app/v1/groups-with-fallback": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Returns groups from the character's account, if available, or the corporation and alliance.",
+                "description": "Needs role: app-groups.<br>\n     *                  Returns only groups that have been added to the app as well.<br>\n     *                  It is not checked if character, corporation and alliance match.",
+                "operationId": "groupsWithFallbackV1",
+                "parameters": [
+                    {
+                        "name": "character",
+                        "in": "query",
+                        "description": "EVE character ID.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "corporation",
+                        "in": "query",
+                        "description": "EVE corporation ID.",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "alliance",
+                        "in": "query",
+                        "description": "EVE alliance ID.",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of groups.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized."
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "CharacterGroups": {
+            "required": [
+                "character",
+                "groups"
+            ],
+            "properties": {
+                "character": {
+                    "$ref": "#/definitions/Character"
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "Alliance": {
+            "required": [
+                "id",
+                "name",
+                "ticker"
+            ],
+            "properties": {
+                "id": {
+                    "description": "EVE alliance ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE alliance name.",
+                    "type": "string"
+                },
+                "ticker": {
+                    "description": "Alliance ticker.",
+                    "type": "string"
+                },
+                "groups": {
+                    "description": "Groups for automatic assignment (API: not included by default).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "App": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "App ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "App name",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "roles": {
+                    "description": "Roles for authorization.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Role"
+                    }
+                },
+                "groups": {
+                    "description": "Groups the app can see.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "Character": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "EVE character ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE character name.",
+                    "type": "string"
+                },
+                "main": {
+                    "type": "boolean"
+                },
+                "validToken": {
+                    "description": "Shows if character's refresh token is valid or not.\n\nIf there is no refresh token this is null.",
+                    "type": "boolean"
+                },
+                "validTokenTime": {
+                    "description": "Date and time when that valid token property was last changed.",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "lastUpdate": {
+                    "description": "Last ESI update.",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "corporation": {
+                    "$ref": "#/definitions/Corporation"
+                }
+            }
+        },
+        "Corporation": {
+            "required": [
+                "id",
+                "name",
+                "ticker"
+            ],
+            "properties": {
+                "id": {
+                    "description": "EVE corporation ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE corporation name.",
+                    "type": "string"
+                },
+                "ticker": {
+                    "description": "Corporation ticker.",
+                    "type": "string"
+                },
+                "alliance": {
+                    "$ref": "#/definitions/Alliance"
+                },
+                "groups": {
+                    "description": "Groups for automatic assignment (API: not included by default).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                }
+            }
+        },
+        "CorporationMember": {
+            "description": "The player property contains only id and name, character does not contain corporation.",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "player": {
+                    "$ref": "#/definitions/Player"
+                },
+                "id": {
+                    "description": "EVE Character ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "description": "EVE Character name.",
+                    "type": "string"
+                },
+                "locationId": {
+                    "description": "Corporation ticker.",
+                    "type": "integer"
+                },
+                "logoffDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "logonDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "shipTypeId": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "character": {
+                    "$ref": "#/definitions/Character"
+                }
+            }
+        },
+        "Group": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Group ID.",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "A unique group name (can be changed).",
+                    "type": "string",
+                    "maxLength": 64,
+                    "pattern": "^[-._a-zA-Z0-9]+$"
+                },
+                "visibility": {
+                    "type": "string",
+                    "enum": [
+                        "private",
+                        "public",
+                        "conditioned"
+                    ]
+                }
+            }
+        },
+        "GroupApplication": {
+            "description": "The player property contains only id and name.",
+            "required": [
+                "id",
+                "player",
+                "group",
+                "created"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "player": {
+                    "$ref": "#/definitions/Player"
+                },
+                "group": {
+                    "$ref": "#/definitions/Group"
+                },
+                "created": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "status": {
+                    "description": "Group application status.",
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "accepted",
+                        "denied"
+                    ]
+                }
+            }
+        },
+        "Player": {
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "A name for the player.\n\nThis is the EVE character name of the current main character or of\nthe last main character if there is currently none.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Player account status.",
+                    "type": "string",
+                    "enum": [
+                        "standard",
+                        "managed"
+                    ]
+                },
+                "roles": {
+                    "description": "Roles for authorization.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Role"
+                    }
+                },
+                "characters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Character"
+                    }
+                },
+                "groups": {
+                    "description": "Group membership.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                },
+                "managerGroups": {
+                    "description": "Manager of groups.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Group"
+                    }
+                },
+                "managerApps": {
+                    "description": "Manager of apps.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/App"
+                    }
+                },
+                "removedCharacters": {
+                    "description": "Characters that were removed from a player (API: not included by default).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RemovedCharacter"
+                    }
+                }
+            }
+        },
+        "RemovedCharacter": {
+            "required": [
+                "characterId",
+                "characterName",
+                "removedDate",
+                "reason"
+            ],
+            "properties": {
+                "newPlayerId": {
+                    "type": "integer"
+                },
+                "newPlayerName": {
+                    "type": "string"
+                },
+                "characterId": {
+                    "description": "EVE character ID.",
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "characterName": {
+                    "description": "EVE character name.",
+                    "type": "string"
+                },
+                "removedDate": {
+                    "description": "Date of removal.",
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "reason": {
+                    "description": "How it was removed (deleted or moved to another account).",
+                    "type": "string",
+                    "enum": [
+                        "moved",
+                        "deleted-manually",
+                        "deleted-biomassed",
+                        "deleted-owner-changed"
+                    ]
+                }
+            }
+        },
+        "Role": {
+            "type": "string",
+            "enum": [
+                "app",
+                "app-groups",
+                "app-chars",
+                "app-tracking",
+                "app-esi",
+                "user",
+                "user-admin",
+                "user-manager",
+                "app-admin",
+                "app-manager",
+                "group-admin",
+                "group-manager",
+                "esi",
+                "settings",
+                "tracking"
+            ]
+        },
+        "SystemVariable": {
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "description": "Variable name.",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "value": {
+                    "description": "Variable value.",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "description": "Example: Bearer ABC",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "name": "Application",
+            "description": "API for applications."
+        }
+    ]
+}

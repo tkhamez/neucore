@@ -9,6 +9,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
+use OpenApi\Annotations as OA;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -16,7 +17,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 class EsiController
 {
@@ -81,7 +81,7 @@ class EsiController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/esi",
      *     operationId="esiV1",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
@@ -93,77 +93,77 @@ class EsiController
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
      *         description="The ESI path and query string (without the datasource parameter).",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
      *         description="The EVE character ID those token should be used to make the ESI request",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The data from ESI.",
-     *         @SWG\Schema(type="string"),
-     *         @SWG\Header(header="Expires",
+     *         @OA\JsonContent(type="string"),
+     *         @OA\Header(header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             type="integer"
+     *             @OA\Schema(type="integer")
      *         )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="304",
      *         description="Not modified",
-     *         @SWG\Header(header="Expires",
+     *         @OA\Header(header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             type="integer"
+     *             @OA\Schema(type="integer")
      *         )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Bad request, see reason phrase and/or body for more.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="401",
      *         description="Unauthorized",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Forbidden",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="420",
      *         description="Error limited",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="429",
      *         description="Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="500",
      *         description="Internal server error",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="503",
      *         description="Service unavailable",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="504",
      *         description="Gateway timeout",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */
@@ -173,7 +173,7 @@ class EsiController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/app/v1/esi",
      *     operationId="esiPostV1",
      *     summary="Makes an ESI POST request on behalf on an EVE character and returns the result.",
@@ -185,85 +185,85 @@ class EsiController
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     consumes={"text/plain"},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
      *         description="The ESI path and query string (without the datasource parameter).",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
      *         description="The EVE character ID those token should be used to make the ESI request",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Parameter(
-     *         name="data",
-     *         in="body",
+     *     @OA\RequestBody(
      *         required=true,
      *         description="JSON encoded data.",
-     *         @SWG\Schema(type="string")
+     *         @OA\MediaType(
+     *             mediaType="text/plain",
+     *             @OA\Schema(type="string")
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The data from ESI.",
-     *         @SWG\Schema(type="string"),
-     *         @SWG\Header(header="Expires",
+     *         @OA\JsonContent(type="string"),
+     *         @OA\Header(header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             type="integer"
+     *             @OA\Schema(type="integer")
      *         )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="304",
      *         description="Not modified",
-     *         @SWG\Header(header="Expires",
+     *         @OA\Header(header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             type="integer"
+     *             @OA\Schema(type="integer")
      *         )
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Bad request, see reason phrase and/or body for more.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="401",
      *         description="Unauthorized",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Forbidden",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="420",
      *         description="Error limited",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="429",
      *         description="Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="500",
      *         description="Internal server error",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="503",
      *         description="Service unavailable",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="504",
      *         description="Gateway timeout",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     )
      * )
      */

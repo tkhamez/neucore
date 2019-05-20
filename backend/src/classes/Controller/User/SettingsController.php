@@ -10,14 +10,14 @@ use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
  * Controller for system settings (and maybe user settings later).
  *
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Settings",
  *     description="System settings."
  * )
@@ -79,17 +79,17 @@ class SettingsController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/settings/system/list",
      *     operationId="systemList",
      *     summary="List all settings.",
      *     description="Some variables need the role 'settings'",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of settings.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/SystemVariable"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/SystemVariable"))
      *     )
      * )
      */
@@ -117,44 +117,50 @@ class SettingsController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/settings/system/change/{name}",
      *     operationId="systemChange",
      *     summary="Change a system settings variable.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
-     *     consumes={"application/x-www-form-urlencoded"},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the variable.",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Parameter(
-     *         name="value",
-     *         in="formData",
-     *         required=true,
-     *         description="New value for the variable.",
-     *         type="string",
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"value"},
+     *                 @OA\Property(
+     *                     property="value",
+     *                     description="New value for the variable.",
+     *                     type="string",
+     *                 )
+     *             ),
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="Variable value changed.",
-     *         @SWG\Schema(ref="#/definitions/SystemVariable")
+     *         @OA\JsonContent(ref="#/components/schemas/SystemVariable")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Variable removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Variable not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Variable not found."
      *     )
      * )
      */
@@ -193,19 +199,19 @@ class SettingsController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/user/settings/system/send-account-disabled-mail",
      *     operationId="sendAccountDisabledMail",
      *     summary="Sends a 'Account disabled' test mail to the logged-in character.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="Error message, if available.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -227,26 +233,26 @@ class SettingsController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/settings/system/validate-director/{name}",
      *     operationId="validateDirector",
      *     summary="Validates ESI token from a director and updates name and corporation.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the director variable.",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="True if the access token is valid, otherwise false",
-     *         @SWG\Schema(type="boolean")
+     *         @OA\JsonContent(type="boolean")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

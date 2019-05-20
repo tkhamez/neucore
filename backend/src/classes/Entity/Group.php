@@ -4,12 +4,11 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
- * @SWG\Definition(
- *     definition="Group",
+ * @OA\Schema(
  *     required={"id", "name"}
  * )
  * @ORM\Entity
@@ -26,7 +25,7 @@ class Group implements \JsonSerializable
     /**
      * Group ID.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -37,7 +36,7 @@ class Group implements \JsonSerializable
     /**
      * A unique group name (can be changed).
      *
-     * @SWG\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
+     * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
      * @ORM\Column(type="string", unique=true, length=64)
      * @var string
      */
@@ -45,7 +44,7 @@ class Group implements \JsonSerializable
 
     /**
      *
-     * @SWG\Property(enum={"private", "public", "conditioned"})
+     * @OA\Property(enum={"private", "public", "conditioned"})
      * @ORM\Column(type="string", length=16, options={"default" : "private"})
      * @var string
      */

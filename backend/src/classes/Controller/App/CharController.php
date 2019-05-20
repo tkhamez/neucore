@@ -4,8 +4,8 @@ namespace Neucore\Controller\App;
 
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
+use OpenApi\Annotations as OA;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 class CharController
 {
@@ -28,36 +28,36 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/main/{cid}",
      *     operationId="mainV1",
      *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The main character",
-     *         @SWG\Schema(ref="#/definitions/Character")
+     *         @OA\JsonContent(ref="#/components/schemas/Character")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="No main character found."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character (or player) not found. (default reason phrase)"
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character (or player) not found. (default reason phrase)"
      *     )
      * )
      */
@@ -77,36 +77,36 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v2/main/{cid}",
      *     operationId="mainV2",
      *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="cid",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The main character",
-     *         @SWG\Schema(ref="#/definitions/Character")
+     *         @OA\JsonContent(ref="#/components/schemas/Character")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="No main character found."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Reason phrase: Character not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Reason phrase: Character not found."
      *     )
      * )
      */
@@ -122,30 +122,30 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/player/{characterId}",
      *     operationId="playerV1",
      *     summary="Return the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="characterId",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The player, only id and name properties are returned.",
-     *         @SWG\Schema(ref="#/definitions/Player")
+     *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="404",
      *         description="Character not found."
      *     )
@@ -162,32 +162,32 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",
      *     summary="Return all characters of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="characterId",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="All characters from the player account.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Character"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character (or player) not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character (or player) not found."
      *     )
      * )
      */
@@ -202,32 +202,32 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/player-chars/{playerId}",
      *     operationId="playerCharactersV1",
      *     summary="Return all characters from the player account.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="playerId",
      *         in="path",
      *         required=true,
      *         description="Player ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="All characters from the player account.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Character"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player not found."
      *     )
      * )
      */
@@ -242,32 +242,32 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/removed-characters/{characterId}",
      *     operationId="removedCharactersV1",
      *     summary="Return all characters that were removed from the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
      *         name="characterId",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="All removed characters from the player account.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character (or player) not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character (or player) not found."
      *     )
      * )
      */
@@ -287,26 +287,26 @@ class CharController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/corp-players/{corporationId}",
      *     operationId="corporationPlayersV1",
      *     summary="Return a list of all players that have a character in the corporation.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="corporationId",
      *         in="path",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players, only id and name properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

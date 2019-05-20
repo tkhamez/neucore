@@ -2,18 +2,17 @@
 
 namespace Neucore;
 
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as OA;
 
 /**
- * @SWG\Swagger(
- *     schemes={"https", "http"},
- *     host="localhost",
- *     basePath="/api",
- *     produces={"application/json"},
- *     @SWG\Info(
- *       title="Neucore API",
- *       description="Client library of Neucore API",
- *       version=NEUCORE_VERSION
+ * @OA\OpenApi(
+ *     @OA\Info(
+ *         title="Neucore API",
+ *         description="Client library of Neucore API",
+ *         version=NEUCORE_VERSION
+ *     ),
+ *     @OA\Server(
+ *         url="https://localhost/api"
  *     )
  * )
  */
