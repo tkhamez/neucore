@@ -71,7 +71,7 @@ depending on the update method, clear the cache:
 
 ```
 cd backend
-rm -rf var/cache/{di,http,proxies}
+rm -rf var/cache/{di,http}
 vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 bin/console doctrine-fixtures-load
 ```
