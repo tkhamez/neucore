@@ -19,7 +19,11 @@ return [
             ],
         ],
         'eve' => [
-            'sso_domain_tq'   => 'localhost',
+            'oauth_urls_tq' => [
+                'authorize' => 'https://localhost/oauth/authorize',
+                'token'     => 'https://localhost/oauth/token',
+                'verify'    => 'https://localhost/oauth/verify',
+            ],
         ],
     ],
 ];

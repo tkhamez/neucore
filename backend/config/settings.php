@@ -54,8 +54,16 @@ return [
             'scopes'       => getenv('BRAVECORE_EVE_SCOPES'),
             'datasource'   => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility',
             'esi_host'     => 'https://esi.evetech.net',
-            'sso_domain_tq'   => 'login.eveonline.com',
-            'sso_domain_sisi' => 'sisilogin.testeveonline.com',
+            'oauth_urls_tq' => [
+                'authorize' => 'https://login.eveonline.com/oauth/authorize',
+                'token'     => 'https://login.eveonline.com/oauth/token',
+                'verify'    => 'https://login.eveonline.com/oauth/verify',
+            ],
+            'oauth_urls_sisi' => [
+                'authorize' => 'https://sisilogin.testeveonline.com/oauth/authorize',
+                'token'     => 'https://sisilogin.testeveonline.com/oauth/token',
+                'verify'    => 'https://sisilogin.testeveonline.com/oauth/verify',
+            ],
         ],
 
         'guzzle' => [

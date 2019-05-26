@@ -323,14 +323,14 @@ class Application
             // EVE OAuth
             GenericProvider::class => function (ContainerInterface $c) {
                 $conf = $c->get('config')['eve'];
-                $domain = $conf['datasource'] === 'singularity' ? $conf['sso_domain_sisi'] : $conf['sso_domain_tq'];
+                $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
                 return new GenericProvider([
                     'clientId'                => $conf['client_id'],
                     'clientSecret'            => $conf['secret_key'],
                     'redirectUri'             => $conf['callback_url'],
-                    'urlAuthorize'            => 'https://' . $domain . '/oauth/authorize',
-                    'urlAccessToken'          => 'https://' . $domain . '/oauth/token',
-                    'urlResourceOwnerDetails' => 'https://' . $domain . '/oauth/verify',
+                    'urlAuthorize'            => $urls['authorize'],
+                    'urlAccessToken'          => $urls['token'],
+                    'urlResourceOwnerDetails' => $urls['verify'],
                 ], [
                     'httpClient' => $c->get(ClientInterface::class)
                 ]);
