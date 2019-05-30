@@ -18,9 +18,9 @@ return [
 
         'monolog' => [
             'path' => (getenv('BRAVECORE_LOG_PATH') ?: Application::ROOT_DIR . '/var/logs') .
-                '/app-' . (
-                    getenv('BRAVECORE_LOG_ROTATION') === 'd' ? date('Ymd') : (
-                        getenv('BRAVECORE_LOG_ROTATION') === 'm' ? date('Ym') : date('o\wW')
+                '/app-' . (PHP_SAPI === 'cli' ? 'cli-' : '') . (
+                    getenv('BRAVECORE_LOG_ROTATION') === 'daily' ? date('Ymd') : (
+                        getenv('BRAVECORE_LOG_ROTATION') === 'monthly' ? date('Ym') : date('o\wW')
                     )
                 ) . '.log',
         ],
