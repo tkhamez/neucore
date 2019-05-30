@@ -117,6 +117,12 @@ Security check of packages from composer.lock:
 composer security:check
 ```
 
+Check code with PHPStan:
+```
+analyse:src
+analyse:test
+```
+
 Run the built-in web server:
 ```
 composer run

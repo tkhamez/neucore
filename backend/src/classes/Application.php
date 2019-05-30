@@ -99,9 +99,6 @@ class Application
         // set timezone - also used by Doctrine for dates/times in the database
         date_default_timezone_set('UTC');
 
-        // show error until the error handling is setup
-        ini_set('display_errors', '1');
-
         // allow group to change files
         umask(0002);
     }
@@ -437,9 +434,6 @@ class Application
         // php settings
         ini_set('display_errors', '0');
         ini_set('log_errors', '0'); // all errors are logged with Monolog
-
-        // log for exceptions caught in web/app.php and bin/console - path was already checked to be writable
-        ini_set('error_log', $this->container->get('config')['monolog']['path']);
     }
 
     private function registerRoutes(App $app): void
