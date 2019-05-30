@@ -393,8 +393,8 @@ class EsiController
         string $method,
         string $body = null
     ): ResponseInterface {
-        $url = $this->config->get('eve', 'esi_host') . $esiPath.
-            (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource') .
+        $url = $this->config['eve']['esi_host'] . $esiPath.
+            (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'] .
             (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
         $options = [
             'headers' => ['Authorization' => 'Bearer ' . $token],

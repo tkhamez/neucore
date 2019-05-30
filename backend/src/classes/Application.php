@@ -74,11 +74,18 @@ class Application
     const ROOT_DIR = __DIR__ . '/../..';
 
     /**
-     * Setting from the config dir.
+     * Slim setting from the config dir.
      *
      * @var array
      */
-    private $settings;
+    private $slimSettings;
+
+    /**
+     * App setting from the config dir.
+     *
+     * @var Config|null
+     */
+    private $config;
 
     /**
      * The current environment.
@@ -114,16 +121,16 @@ class Application
      *
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
      * @throws \RuntimeException
-     * @return array
+     * @return Config
      */
-    public function loadSettings(bool $unitTest = false): array
+    public function loadSettings(bool $unitTest = false): Config
     {
-        if ($this->settings !== null) {
-            return $this->settings;
+        if ($this->config !== null) {
+            return $this->config;
         }
 
-        // Load environment variables from file if BRAVECORE_APP_ENV env var is missing
-        if (getenv('BRAVECORE_APP_ENV') === false) {
+        // Load environment variables from file if it exists.
+        if (file_exists(Application::ROOT_DIR . '/.env')) {
             (new Dotenv())->load(Application::ROOT_DIR . '/.env');
         }
 
@@ -142,27 +149,32 @@ class Application
         }
 
         /** @noinspection PhpIncludeInspection */
-        $this->settings = require self::ROOT_DIR . '/config/settings.php';
+        $settings = require self::ROOT_DIR . '/config/settings.php';
 
         if (getenv('PATH') !== false && strpos(getenv('PATH'), '/app/.heroku/php/') !== false) {
             /** @noinspection PhpIncludeInspection */
             $heroku = require self::ROOT_DIR . '/config/settings_heroku.php';
-            $this->settings = array_replace_recursive($this->settings, $heroku);
+            $settings = array_replace_recursive($settings, $heroku);
         }
 
         if ($this->env === self::ENV_DEV) {
             /** @noinspection PhpIncludeInspection */
             $dev = require self::ROOT_DIR . '/config/settings_dev.php';
-            $this->settings = array_replace_recursive($this->settings, $dev);
+            $settings = array_replace_recursive($settings, $dev);
         }
 
         if ($unitTest) {
             /** @noinspection PhpIncludeInspection */
             $test = include self::ROOT_DIR . '/config/settings_tests.php';
-            $this->settings = array_replace_recursive($this->settings, $test);
+            $settings = array_replace_recursive($settings, $test);
         }
 
-        return $this->settings;
+        $this->config = new Config($settings['config']);
+
+        unset($settings['config']);
+        $this->slimSettings = $settings;
+
+        return $this->config;
     }
 
     /**
@@ -232,8 +244,8 @@ class Application
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
         ]));
 
-        if ($this->container->get('config')['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new PsrCors(explode(',', $this->container->get('config')['CORS']['allow_origin'])));
+        if ($this->container->get(Config::class)['CORS']['allow_origin']) { // not false or empty string
+            $app->add(new PsrCors(explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])));
         }
     }
 
@@ -248,7 +260,7 @@ class Application
         $containerBuilder = new ContainerBuilder();
 
         if ($this->env === self::ENV_PROD) {
-            $containerBuilder->enableCompilation($this->settings['config']['di']['cache_dir']);
+            $containerBuilder->enableCompilation($this->config['di']['cache_dir']);
             if (SourceCache::isSupported()) {
                 $containerBuilder->enableDefinitionCache();
             }
@@ -263,10 +275,11 @@ class Application
             $containerBuilder->addDefinitions($bridgeConfig);
         }
 
-        $containerBuilder->addDefinitions($this->settings);
+        $containerBuilder->addDefinitions($this->slimSettings);
         $containerBuilder->addDefinitions($this->getDependencies());
 
         $this->container = $containerBuilder->build();
+        $this->container->set(Config::class, $this->config);
 
         foreach ($mocks as $class => $value) {
             $this->container->set($class, $value);
@@ -279,14 +292,10 @@ class Application
     private function getDependencies()
     {
         return [
-            // Configuration class
-            Config::class => function (ContainerInterface $c) {
-                return new Config($c->get('config'));
-            },
 
             // Doctrine
             EntityManagerInterface::class => function (ContainerInterface $c) {
-                $conf = $c->get('config')['doctrine'];
+                $conf = $c->get(Config::class)['doctrine'];
                 $config = Setup::createAnnotationMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
@@ -315,7 +324,7 @@ class Application
 
             // EVE OAuth
             GenericProvider::class => function (ContainerInterface $c) {
-                $conf = $c->get('config')['eve'];
+                $conf = $c->get(Config::class)['eve'];
                 $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
                 return new GenericProvider([
                     'clientId'                => $conf['client_id'],
@@ -331,12 +340,16 @@ class Application
 
             // Monolog
             LoggerInterface::class => function (ContainerInterface $c) {
-                $path = $c->get('config')['monolog']['path'];
+                $path = $c->get(Config::class)['monolog']['path'];
+                $rotation = $c->get(Config::class)['monolog']['rotation'];
                 if (strpos($path, 'php://') === false) {
-                    $dir = (string) realpath(dirname($path));
-                    if (! is_writable($dir)) {
-                        throw new \Exception('The log directory ' . $dir . ' must be writable by the web server.');
+                    if (! is_writable($path)) {
+                        throw new \Exception('The log directory "' . $path . '" must be writable by the web server.');
                     }
+                    $path .= '/app-' . (PHP_SAPI === 'cli' ? 'cli-' : '') .
+                        ($rotation === 'daily' ? date('Ymd') : (
+                            $rotation === 'monthly' ? date('Ym') : date('o\wW')
+                        )) . '.log';
                 }
                 $formatter = new LineFormatter();
                 $formatter->allowInlineLineBreaks();
@@ -366,7 +379,7 @@ class Application
                     new CacheMiddleware(
                         new PrivateCacheStrategy(
                             new DoctrineCacheStorage(
-                                new FilesystemCache($c->get('config')['guzzle']['cache']['dir'])
+                                new FilesystemCache($c->get(Config::class)['guzzle']['cache']['dir'])
                             )
                         )
                     ),
@@ -378,7 +391,7 @@ class Application
                 return new Client([
                     'handler' => $stack,
                     'headers' => [
-                        'User-Agent' => $c->get('config')['guzzle']['user_agent'],
+                        'User-Agent' => $c->get(Config::class)['guzzle']['user_agent'],
                     ],
                 ]);
             },

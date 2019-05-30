@@ -22,6 +22,7 @@ class WebTestCase extends TestCase
      * @param array|object|null $requestData the request data
      * @param array|null $headers
      * @param array $mocks key/value paris for the dependency injection container
+     * @param string[] $envVars var=value
      * @return ResponseInterface|null
      */
     protected function runApp(
@@ -29,7 +30,8 @@ class WebTestCase extends TestCase
         $requestUri,
         $requestData = null,
         array $headers = null,
-        array $mocks = []
+        array $mocks = [],
+        array $envVars = []
     ) {
         // Create a mock environment for testing with
         $environment = Environment::mock([
@@ -58,6 +60,10 @@ class WebTestCase extends TestCase
         // create app with test settings
         $app = new Application();
         $app->loadSettings(true);
+
+        foreach ($envVars as $envVar) {
+            putenv($envVar);
+        }
 
         // Process the application
         try {

@@ -74,7 +74,7 @@ class EsiApiFactory
             if ($token !== '') {
                 $configuration->setAccessToken($token);
             }
-            $configuration->setHost($this->config->get('eve', 'esi_host'));
+            $configuration->setHost($this->config['eve']['esi_host']);
             $this->instances[$key] = new $class($this->client, $configuration);
         }
 

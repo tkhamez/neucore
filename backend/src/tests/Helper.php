@@ -56,12 +56,12 @@ class Helper
     public function getEm(bool $discrete = false): ?EntityManagerInterface
     {
         if (self::$em === null || $discrete) {
-            $settings = (new Application())->loadSettings(true);
+            $conf = (new Application())->loadSettings(true)['doctrine'];
 
             $config = Setup::createAnnotationMetadataConfiguration(
-                $settings['config']['doctrine']['meta']['entity_paths'],
-                $settings['config']['doctrine']['meta']['dev_mode'],
-                $settings['config']['doctrine']['meta']['proxy_dir'],
+                $conf['meta']['entity_paths'],
+                $conf['meta']['dev_mode'],
+                $conf['meta']['proxy_dir'],
                 null,
                 false
             );
@@ -69,7 +69,7 @@ class Helper
 
             $em = null;
             try {
-                $em = EntityManager::create($settings['config']['doctrine']['connection'], $config);
+                $em = EntityManager::create($conf['connection'], $config);
             } catch (ORMException $e) {
                 // ignore
             }

@@ -16,13 +16,15 @@ return [
 
     'config' => [
 
+        'env_var_defaults' => [
+            'BRAVECORE_EVE_DATASOURCE' => 'tranquility',
+            'BRAVECORE_LOG_PATH'       => Application::ROOT_DIR . '/var/logs',
+            'BRAVECORE_LOG_ROTATION'   => 'weekly',
+        ],
+
         'monolog' => [
-            'path' => (getenv('BRAVECORE_LOG_PATH') ?: Application::ROOT_DIR . '/var/logs') .
-                '/app-' . (PHP_SAPI === 'cli' ? 'cli-' : '') . (
-                    getenv('BRAVECORE_LOG_ROTATION') === 'daily' ? date('Ymd') : (
-                        getenv('BRAVECORE_LOG_ROTATION') === 'monthly' ? date('Ym') : date('o\wW')
-                    )
-                ) . '.log',
+            'path'     => '${BRAVECORE_LOG_PATH}',
+            'rotation' => '${BRAVECORE_LOG_ROTATION}',
         ],
 
         'doctrine' => [
@@ -34,27 +36,27 @@ return [
                 'proxy_dir' =>  Application::ROOT_DIR . '/var/cache/proxies'
             ],
             'connection' => [
-                'url' => getenv('BRAVECORE_DATABASE_URL')
+                'url' => '${BRAVECORE_DATABASE_URL}'
             ],
             'driver_options' => [
-                'mysql_ssl_ca'             => getenv('BRAVECORE_MYSQL_SSL_CA'),
-                'mysql_verify_server_cert' => getenv('BRAVECORE_MYSQL_VERIFY_SERVER_CERT'),
+                'mysql_ssl_ca'             => '${BRAVECORE_MYSQL_SSL_CA}',
+                'mysql_verify_server_cert' => '${BRAVECORE_MYSQL_VERIFY_SERVER_CERT}',
             ],
             'data_fixtures' => Application::ROOT_DIR . '/src/classes/DataFixtures'
         ],
 
         'CORS' => [
-            'allow_origin' => getenv('BRAVECORE_ALLOW_ORIGIN'),
+            'allow_origin' => '${BRAVECORE_ALLOW_ORIGIN}',
         ],
 
         'eve' => [
-            'client_id'    => getenv('BRAVECORE_EVE_CLIENT_ID'),
-            'secret_key'   => getenv('BRAVECORE_EVE_SECRET_KEY'),
-            'callback_url' => getenv('BRAVECORE_EVE_CALLBACK_URL'),
-            'scopes'       => getenv('BRAVECORE_EVE_SCOPES'),
-            'datasource'   => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility',
-            'esi_host'     => 'https://esi.evetech.net',
-            'oauth_urls_tq' => [
+            'client_id'       => '${BRAVECORE_EVE_CLIENT_ID}',
+            'secret_key'      => '${BRAVECORE_EVE_SECRET_KEY}',
+            'callback_url'    => '${BRAVECORE_EVE_CALLBACK_URL}',
+            'scopes'          => '${BRAVECORE_EVE_SCOPES}',
+            'datasource'      => '${BRAVECORE_EVE_DATASOURCE}',
+            'esi_host'        => 'https://esi.evetech.net',
+            'oauth_urls_tq'   => [
                 'authorize' => 'https://login.eveonline.com/oauth/authorize',
                 'token'     => 'https://login.eveonline.com/oauth/token',
                 'verify'    => 'https://login.eveonline.com/oauth/verify',

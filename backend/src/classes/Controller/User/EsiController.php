@@ -115,9 +115,9 @@ class EsiController
 
         $token = $this->tokenService->getToken($character);
 
-        $baseUri = $this->config->get('eve', 'esi_host');
+        $baseUri = $this->config['eve']['esi_host'];
         $path = str_replace('{character_id}', (string) $character->getId(), $route);
-        $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config->get('eve', 'datasource');
+        $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'];
 
         $response = null;
         try {

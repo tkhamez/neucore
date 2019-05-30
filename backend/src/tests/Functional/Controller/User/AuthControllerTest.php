@@ -3,7 +3,6 @@
 namespace Tests\Functional\Controller\User;
 
 use Neucore\Controller\User\AuthController;
-use Neucore\Service\Config;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Slim\Session\SessionData;
@@ -155,8 +154,8 @@ class AuthControllerTest extends WebTestCase
             [
                 ClientInterface::class => $this->client,
                 LoggerInterface::class => $log,
-                Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
-            ]
+            ],
+            ['BRAVECORE_EVE_SCOPES=read-this']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -192,10 +191,8 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [
-                ClientInterface::class => $this->client,
-                Config::class => new Config(['eve' => ['scopes' => 'read-this and-this']]),
-            ]
+            [ClientInterface::class => $this->client],
+            ['BRAVECORE_EVE_SCOPES=read-this and-this']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -230,8 +227,8 @@ class AuthControllerTest extends WebTestCase
             [
                 ClientInterface::class => $this->client,
                 LoggerInterface::class => $log,
-                Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
-            ]
+            ],
+            ['BRAVECORE_EVE_SCOPES=read-this']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -269,10 +266,8 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [
-                ClientInterface::class => $this->client,
-                Config::class => new Config(['eve' => ['scopes' => 'read-this']]),
-            ]
+            [ClientInterface::class => $this->client],
+            ['BRAVECORE_EVE_SCOPES=read-this']
         );
         $this->assertSame(302, $response->getStatusCode());
 

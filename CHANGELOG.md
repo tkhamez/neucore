@@ -4,8 +4,10 @@
 dd mm yyyy
 
 - Configurable location and rotation of log files. [#12][i12]
+- DI container no longer caches environment variables of the configuration. [#17][i17]
 
 [i12]: https://github.com/tkhamez/neucore/issues/12
+[i17]: https://github.com/tkhamez/neucore/issues/17
 
 ## 1.0.0
 

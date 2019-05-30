@@ -11,11 +11,11 @@ return [
         ],
         'doctrine' => [
             'connection' => [
-                'url' => getenv('BRAVECORE_TEST_DATABASE_URL')
+                'url' => '${BRAVECORE_TEST_DATABASE_URL}'
             ],
             'driver_options' => [
-                'mysql_ssl_ca'             => getenv('BRAVECORE_TEST_MYSQL_SSL_CA'),
-                'mysql_verify_server_cert' => getenv('BRAVECORE_TEST_MYSQL_VERIFY_SERVER_CERT'),
+                'mysql_ssl_ca'             => '${BRAVECORE_TEST_MYSQL_SSL_CA}',
+                'mysql_verify_server_cert' => '${BRAVECORE_TEST_MYSQL_VERIFY_SERVER_CERT}',
             ],
         ],
         'eve' => [

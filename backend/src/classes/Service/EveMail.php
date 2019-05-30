@@ -59,7 +59,7 @@ class EveMail
         $this->esiApiFactory = $esiApiFactory;
         $this->logger = $logger;
 
-        $this->datasource = $config->get('eve', 'datasource');
+        $this->datasource = $config['eve']['datasource'];
     }
 
     public function storeMailCharacter(EveAuthentication $eveAuth)

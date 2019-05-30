@@ -14,9 +14,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$settings = (new Application())->loadSettings();
-
-$conf = $settings['config']['doctrine'];
+$conf = (new Application())->loadSettings()['doctrine'];
 
 $config = Setup::createAnnotationMetadataConfiguration(
     $conf['meta']['entity_paths'],

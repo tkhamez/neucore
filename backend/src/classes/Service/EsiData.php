@@ -56,7 +56,7 @@ class EsiData
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
 
-        $this->datasource = $config->get('eve', 'datasource');
+        $this->datasource = $config['eve']['datasource'];
     }
 
     public function getLastErrorCode(): ?int

@@ -67,7 +67,7 @@ class MemberTracking
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
 
-        $this->datasource = $config->get('eve', 'datasource');
+        $this->datasource = $config['eve']['datasource'];
     }
 
     /**

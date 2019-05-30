@@ -43,7 +43,7 @@ class DoctrineFixturesLoad extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $loader = new Loader();
-        $loader->loadFromDirectory($this->config->get('doctrine', 'data_fixtures'));
+        $loader->loadFromDirectory($this->config['doctrine']['data_fixtures']);
 
         $executor = new ORMExecutor($this->entityManager);
         $executor->setLogger(static function ($message) use ($output) : void {

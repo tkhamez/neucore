@@ -2,7 +2,6 @@
 
 namespace Neucore\Controller\User;
 
-use Neucore\Application;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -97,10 +96,10 @@ class SettingsController
         $result = array_merge($result, [
             [
                 'name' => 'esiDataSource',
-                'value' => $this->config->get('eve', 'datasource')
+                'value' => $this->config['eve']['datasource']
             ], [
                 'name' => 'esiHost',
-                'value' => $this->config->get('eve', 'esi_host')
+                'value' => $this->config['eve']['esi_host']
             ]
         ]);
 
