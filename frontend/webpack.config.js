@@ -7,6 +7,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const Fiber = require('fibers');
+const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
 module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
@@ -123,6 +124,7 @@ module.exports = (env, argv) => {
                 //chunkFilename: devMode ? '[id].css' : '[id].[chunkhash].css',
             }),
             new VueLoaderPlugin(),
+            new LicenseWebpackPlugin(),
         ],
         optimization: {
             runtimeChunk: 'single',
