@@ -68,6 +68,14 @@ class SettingsController
         $this->config = $config;
     }
 
+    public function theme(): Response
+    {
+        $repository = $this->repositoryFactory->getSystemVariableRepository();
+        $result = $repository->find(SystemVariable::CUSTOMIZATION_DEFAULT_THEME);
+        $value = $result ? $result->getValue() : '';
+        return $this->response->withJson($value);
+    }
+
     /**
      * @SWG\Get(
      *     path="/user/settings/system/list",

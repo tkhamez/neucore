@@ -123,21 +123,13 @@ module.exports = {
                 return;
             }
             this.selectedTheme = name;
-            const $link = window.jQuery("head link[href*='dist/theme-']");
-            if ($link.length === 0) { // first load
-                const $appCss = window.jQuery("head link[href*='dist/app.']");
-                let hash = '';
-                if ($appCss.attr('href') !== 'dist/app.css') { // find hash in prod mode
-                    hash = $appCss.attr('href').replace(/^dist\/app(\.[a-zAZ0-9]+)\.css$/, '$1');
-                }
-                window.jQuery('head').append(
-                    '<link href="dist/theme-' + this.selectedTheme.toLowerCase() + hash + '.css" rel="stylesheet">'
-                );
-            } else {
-                const oldHref = $link.attr('href');
-                const newHref = oldHref.replace(/^(.*theme-)[a-z]+(.*)$/, '$1' + this.selectedTheme.toLowerCase() + '$2');
-                $link.attr('href', newHref);
+            const link = window.jQuery("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            if (link.attr('rel') === 'stylesheet') {
+                return;
             }
+            window.jQuery("head link[href*='dist/theme-']").attr('rel', 'alternate stylesheet');
+            window.jQuery("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']")
+                .attr('rel', 'stylesheet');
         }
     },
 }

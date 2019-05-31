@@ -72,8 +72,9 @@ return [
     '/api/user/player/{id}/show'             => [Role::USER_ADMIN, Role::USER_MANAGER],
     '/api/user/player'                       => [Role::USER_ADMIN],
 
-    '/api/user/settings/system/list' => [Role::ANONYMOUS, Role::USER],
-    '/api/user/settings/system'      => [Role::SETTINGS],
+    '/api/user/settings/system/theme' => [Role::ANONYMOUS, Role::USER],
+    '/api/user/settings/system/list'  => [Role::ANONYMOUS, Role::USER],
+    '/api/user/settings/system'       => [Role::SETTINGS],
 
     '/api/user' => [Role::USER],
 ];

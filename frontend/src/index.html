@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="/favicon.ico">
     <title></title>
+    <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
+        const file = htmlWebpackPlugin.files.css[i];
+        if (file.match(/^dist\/theme-/)) { %><link href="<%= file %>" rel="alternate stylesheet"><%
+        } else { %><link href="<%= file %>" rel="stylesheet"><%  }
+    } %>
+    <script type="text/javascript">
+        const xhr = new XMLHttpRequest;
+        xhr.onload = function() {
+            const links = document.getElementsByTagName('link');
+            for (let i = 0; i < links.length; i++) {
+                if (links[i].getAttribute('href') === 'dist/theme-' + xhr.response.toLowerCase() + '.css') {
+                    links[i].setAttribute('rel', 'stylesheet');
+                    break;
+                }
+            }
+        };
+        xhr.open("GET", "/api/user/settings/system/theme");
+        xhr.responseType = "json";
+        xhr.send();
+    </script>
 </head>
 <body class="neucore">
     <!--[if lt IE 11]>
@@ -44,5 +64,9 @@
             </div>
         </footer>
     </div>
+    <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
+        const file = htmlWebpackPlugin.files.js[i];
+        if (! file.match(/^dist\/theme-/)) { %><script type="text/javascript" src="<%= file %>"></script><% }
+    } %>
 </body>
 </html>
