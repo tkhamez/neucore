@@ -20,6 +20,7 @@ return [
             'BRAVECORE_EVE_DATASOURCE' => 'tranquility',
             'BRAVECORE_LOG_PATH'       => Application::ROOT_DIR . '/var/logs',
             'BRAVECORE_LOG_ROTATION'   => 'weekly',
+            'BRAVECORE_CACHE_DIR'      => Application::ROOT_DIR . '/var/cache',
         ],
 
         'monolog' => [
@@ -33,7 +34,7 @@ return [
                     Application::ROOT_DIR . '/src/classes/Entity'
                 ],
                 'dev_mode' => false,
-                'proxy_dir' =>  Application::ROOT_DIR . '/var/cache/proxies'
+                'proxy_dir' =>  '${BRAVECORE_CACHE_DIR}/proxies'
             ],
             'connection' => [
                 'url' => '${BRAVECORE_DATABASE_URL}'
@@ -70,14 +71,14 @@ return [
 
         'guzzle' => [
             'cache' => [
-                'dir' => Application::ROOT_DIR . '/var/cache/http'
+                'dir' => '${BRAVECORE_CACHE_DIR}/http'
             ],
             'user_agent' => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore) ' .
                             'GuzzleHttp/' . Client::VERSION,
         ],
 
         'di' => [
-            'cache_dir' => Application::ROOT_DIR . '/var/cache/di'
+            'cache_dir' => '${BRAVECORE_CACHE_DIR}/di'
         ]
     ],
 ];

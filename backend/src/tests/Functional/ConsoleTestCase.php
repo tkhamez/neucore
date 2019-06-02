@@ -11,10 +11,20 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ConsoleTestCase extends TestCase
 {
-    protected function runConsoleApp($name, $input = [], array $mocks = [])
+    protected function runConsoleApp(
+        string $name,
+        array $input = [],
+        array $mocks = [],
+        array $envVars = [],
+        bool $forceDevMode = false
+    )
     {
         $app = new Application();
-        $app->loadSettings(true);
+        $app->loadSettings(true, $forceDevMode);
+
+        foreach ($envVars as $envVar) {
+            putenv($envVar);
+        }
 
         try {
             $console = $app->getConsoleApp($mocks);

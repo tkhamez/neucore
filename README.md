@@ -55,9 +55,10 @@ Clone the repository or [download](https://github.com/tkhamez/neucore/releases) 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
 
-Make sure that the web server can write in `backend/var/logs` and `backend/var/cache`.
+Make sure that the web server can write to the log and cache directories, by default 
+`backend/var/logs` and `backend/var/cache`.
 
-Please note that both the web server and console user write the same files to `backend/var/cache`,
+Please note that both the web server and console user write the same files to the cache directory,
 so make sure they can override each other's files, e. g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
@@ -66,19 +67,20 @@ If available, the app uses the APCu cache in production mode. This must be clear
 
 ##### Archive file
 
-If you downloaded the .tar.gz file, you only need to run the database migrations and seeds and, 
-depending on the update method, clear the cache:
+If you downloaded the .tar.gz file, you only need to run the database migrations and seeds and clear the cache.
 
+If you are using a different cache directory, you must first generate the Doctrine proxy cache files:
+```
+cd backend
+vendor/bin/doctrine orm:generate-proxies
+```
+
+Then execute (adjust cache paths if necessary)
 ```
 cd backend
 rm -rf var/cache/{di,http}
 vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 bin/console doctrine-fixtures-load
-```
-
-If for any reason you have deleted the Doctrine proxy cache (`backend/var/cache/proxies`), regenerate it this way:
-```
-vendor/bin/doctrine orm:generate-proxies
 ```
 
 ##### Git

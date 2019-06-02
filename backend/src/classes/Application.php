@@ -3,6 +3,7 @@
 namespace Neucore;
 
 use Neucore\Command\CheckTokens;
+use Neucore\Command\ClearCache;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
 use Neucore\Command\MakeAdmin;
@@ -120,10 +121,11 @@ class Application
      * BRAVECORE_APP_ENV does not exist.
      *
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
+     * @param bool $forceDevMode Only used in unit tests.
      * @throws \RuntimeException
      * @return Config
      */
-    public function loadSettings(bool $unitTest = false): Config
+    public function loadSettings(bool $unitTest = false, $forceDevMode = false): Config
     {
         if ($this->config !== null) {
             return $this->config;
@@ -142,7 +144,7 @@ class Application
             );
         }
 
-        if (getenv('BRAVECORE_APP_ENV') === self::ENV_PROD) {
+        if (getenv('BRAVECORE_APP_ENV') === self::ENV_PROD && ! $forceDevMode) {
             $this->env = self::ENV_PROD;
         } else {
             $this->env = self::ENV_DEV;
@@ -488,5 +490,6 @@ class Application
         $console->add($this->container->get(UpdateMemberTracking::class));
         $console->add($this->container->get(DoctrineFixturesLoad::class));
         $console->add($this->container->get(DBVerifySSL::class));
+        $console->add($this->container->get(ClearCache::class));
     }
 }

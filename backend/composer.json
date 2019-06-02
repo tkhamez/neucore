@@ -58,7 +58,7 @@
             "@openapi"
         ],
         "compile:prod": [
-            "@cache:clear",
+            "bin/console clear-cache",
             "doctrine orm:generate-proxies",
             "@db:migrate",
             "@db:seed",
@@ -71,7 +71,6 @@
             "swagger src --output ../web/frontend-api.json --exclude src/classes/Controller/App",
             "swagger src --output ../web/application-api.json --exclude src/classes/Controller/User"
         ],
-        "cache:clear": "rm -rf var/cache/di; rm -rf var/cache/http; rm -rf var/cache/proxies",
         "analyse:src": "phpstan analyse src/classes --level 7",
         "analyse:tests": "phpstan analyse src/tests --level 6",
         "test": "phpunit",

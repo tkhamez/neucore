@@ -16,7 +16,7 @@ class ConfigTest extends TestCase
             'key' => ['values'],
             'key2' => ['val1' => 1, 'val2' => 2],
             'envVars' => [
-                'one' => '${CONFIG_TEST_ONE}',
+                'one' => 'One ${CONFIG_TEST_ONE}.',
                 'two' => '${CONFIG_TEST_TWO}',
                 'three' => '${CONFIG_TEST_THREE}'
             ],
@@ -27,7 +27,7 @@ class ConfigTest extends TestCase
     {
         putenv("CONFIG_TEST_ONE=env-value");
         $this->assertSame(
-            ['one' => 'env-value', 'two' => '', 'three' => 'default'],
+            ['one' => 'One env-value.', 'two' => '', 'three' => 'default'],
             $this->config['envVars']
         );
     }

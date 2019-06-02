@@ -112,11 +112,6 @@ Generate OpenAPI interface description files:
 composer openapi
 ```
 
-Clear cache:
-```
-composer cache:clear
-```
-
 Security check of packages from composer.lock:
 ```
 composer security:check

@@ -5,11 +5,13 @@ dd mm yyyy
 
 - Configurable location and rotation of log files. [#12][i12]
 - DI container no longer caches environment variables values. [#17][i17]
-- Improve loading time of the theme css file. [#11][11]
+- Improve loading time of the theme css file. [#11][i11]
+- Configurable cache directory. [#18][i18]
 
 [i12]: https://github.com/tkhamez/neucore/issues/12
 [i17]: https://github.com/tkhamez/neucore/issues/17
-[i17]: https://github.com/tkhamez/neucore/issues/11
+[i11]: https://github.com/tkhamez/neucore/issues/11
+[i18]: https://github.com/tkhamez/neucore/issues/18
 
 ## 1.0.0
 
