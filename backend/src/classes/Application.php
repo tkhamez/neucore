@@ -241,7 +241,7 @@ class Application
 
         $app->add(new NonBlockingSessionMiddleware([
             'name' => 'NCSESS',
-            'secure' => false, // prod servers should not allow unencrypted connections - maybe move it to config?
+            'secure' => $this->container->get(Config::class)['session']['secure'],
             'route_include_pattern' => ['/api/user', '/login'],
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
         ]));

@@ -21,6 +21,7 @@ return [
             'BRAVECORE_LOG_PATH'       => Application::ROOT_DIR . '/var/logs',
             'BRAVECORE_LOG_ROTATION'   => 'weekly',
             'BRAVECORE_CACHE_DIR'      => Application::ROOT_DIR . '/var/cache',
+            'BRAVECORE_SESSION_SECURE' => 1,
         ],
 
         'monolog' => [
@@ -48,6 +49,10 @@ return [
 
         'CORS' => [
             'allow_origin' => '${BRAVECORE_ALLOW_ORIGIN}',
+        ],
+
+        'session' => [
+            'secure' => '${BRAVECORE_SESSION_SECURE}',
         ],
 
         'eve' => [
