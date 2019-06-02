@@ -4,9 +4,10 @@
 dd mm yyyy
 
 - Configurable location and rotation of log files. [#12][i12]
-- DI container no longer caches environment variables values. [#17][i17]
-- Improve loading time of the theme css file. [#11][i11]
 - Configurable cache directory. [#18][i18]
+- DI container no longer caches values of environment variables. [#17][i17]
+- Improved loading time of the theme css file. [#11][i11]
+- Added BRAVECORE_SESSION_SECURE environment variable to restrict the session cookie to HTTPS.
 
 [i12]: https://github.com/tkhamez/neucore/issues/12
 [i17]: https://github.com/tkhamez/neucore/issues/17
