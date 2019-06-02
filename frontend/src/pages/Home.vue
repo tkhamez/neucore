@@ -132,7 +132,8 @@
                                     Update
                                 </button>
                                 <button v-cloak type="button" class="btn btn-danger btn-sm mt-1"
-                                        v-if="authChar.id !== char.id && settings.allow_character_deletion === '1'"
+                                        v-if="authChar && authChar.id !== char.id &&
+                                              settings.allow_character_deletion === '1'"
                                         v-on:click="askDeleteChar(char.id, char.name)">
                                     <i class="far fa-trash-alt"></i>
                                     Delete

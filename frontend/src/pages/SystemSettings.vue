@@ -453,6 +453,7 @@ module.exports = {
                         'customization_home_logo',
                         'customization_nav_logo',
                         'customization_document_title',
+                        'customization_default_theme',
                     ].indexOf(name) !== -1 ||
                     name.indexOf('director_char_') !== -1
                 ) {

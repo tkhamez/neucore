@@ -111,9 +111,7 @@ module.exports = {
 
     watch: {
         settings: function () {
-            if (this.selectedTheme === '') {
-                this.selectTheme(this.settings.customization_default_theme);
-            }
+            this.selectTheme(this.settings.customization_default_theme);
         },
     },
 
