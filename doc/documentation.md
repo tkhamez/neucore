@@ -19,7 +19,10 @@
 * Mobile-friendly.
 
 All API functions are documented with OpenAPI and can be found at 
-[https://[domain]/api.html](https://neucore.herokuapp.com/api).
+[https://your.domain/api.html](https://neucore.herokuapp.com/api). Most of these endpoints are for the frontend, 
+only the routes listed in the group `Application` are for Neucore applications. For these there is also a 
+separate OpenAPI definition file at 
+[https://your.domain/application-api.json](https://neucore.herokuapp.com/application-api.json).
 
 ## Authentication of applications
 

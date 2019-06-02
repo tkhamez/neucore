@@ -7,7 +7,7 @@ with the [PHP-DI container](http://php-di.org/).
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
 
-You can check and partially fix the code by executing the following:
+You can partially check and fix the code by executing the following:
 ```
 composer style:check
 composer style:fix
@@ -27,7 +27,7 @@ unique only within each tag.
 ### Documentation
 
 The file [doc/API.md](../doc/API.md) is automatically generated from the template file `doc/API.md.tpl`, 
-the route and security configuration from the `config` directory and `web/swagger.json` with:
+the route and security configuration from the `config` directory and `web/swagger.json`:
 ```
 bin/doc-api-gen.php
 ```
@@ -62,6 +62,11 @@ prod:
 composer install --no-dev --optimize-autoloader --no-interaction
 composer compile:prod
 ```
+
+The differences between `dev` and `prod` mode (which is determined by the environment variable 
+`BRAVECORE_APP_ENV`) are:
+- Doctrine proxy classes are auto generated in dev mode, the APCu cache is used in prod mode
+- PHP-DI uses compilation and the APCu cache in prod mode
 
 ## Console Commands
 
@@ -129,6 +134,11 @@ composer run
 ```
 
 ### Doctrine
+
+Generate proxy classes:
+```
+vendor/bin/doctrine orm:generate-proxies
+```
 
 Generate constructor, getters and setters:
 ```

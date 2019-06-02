@@ -76,6 +76,11 @@ vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 bin/console doctrine-fixtures-load
 ```
 
+If for any reason you have deleted the Doctrine proxy cache (`backend/var/cache/proxies`), regenerate it this way:
+```
+vendor/bin/doctrine orm:generate-proxies
+```
+
 ##### Git
 
 If you have cloned the repository, you must install the dependencies and build the backend and frontend:
