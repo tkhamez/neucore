@@ -127,7 +127,8 @@ You can deploy the application on a free [Heroku](https://www.heroku.com) accoun
 
 - Create a new app
 - Add a compatible database, e. g. JawsDB Maria.
-- Add the necessary config vars (see `backend/.env.dist` file)
+- Add the necessary config vars (see `backend/.env.dist` file) and set the following:
+  - BRAVECORE_LOG_PATH=php://stderr
 - Add build packs in this order:
 
 ```
@@ -135,8 +136,6 @@ heroku buildpacks:add heroku/java
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
 ```
-
-Logs are streamed to `stderr` instead of being written to files.
 
 ## Final notes
 
