@@ -6,20 +6,25 @@ use Tests\Functional\ConsoleTestCase;
 
 class ClearCacheTest extends ConsoleTestCase
 {
+    public function tearDown()
+    {
+        putenv('BRAVECORE_CACHE_DIR=');
+    }
+
     public function testExecute()
     {
         $cacheDir = __DIR__ . '/cache';
         if (! is_dir($cacheDir . '/di')) {
-            mkdir($cacheDir . '/di');
+            mkdir($cacheDir . '/di', 0775, true);
         }
         if (! is_dir($cacheDir . '/proxies')) {
-            mkdir($cacheDir . '/proxies');
+            mkdir($cacheDir . '/proxies', 0775, true);
         }
         if (! is_dir($cacheDir . '/http/dc')) {
             mkdir($cacheDir . '/http/dc', 0775, true);
         }
         if (! is_dir($cacheDir . '/another')) {
-            mkdir($cacheDir . '/another');
+            mkdir($cacheDir . '/another', 0775, true);
         }
         touch($cacheDir . '/di/CompiledContainer.php');
         touch($cacheDir . '/proxies/__CG__NeucoreEntityCorporation.php');
