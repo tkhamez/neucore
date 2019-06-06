@@ -101,7 +101,7 @@ class RemovedCharacter implements \JsonSerializable
      *
      * @SWG\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
      * @ORM\Column(type="string", length=32)
-     * @var string|null
+     * @var string
      */
     private $reason;
 
@@ -168,7 +168,7 @@ class RemovedCharacter implements \JsonSerializable
         return $this->removedDate;
     }
 
-    public function setReason(?string $reason): self
+    public function setReason(string $reason): self
     {
         $this->reason = $reason;
 

@@ -325,7 +325,7 @@ class Account
         if ($newPlayer) {
             $removedCharacter->setNewPlayer($newPlayer);
             $removedCharacter->setReason(RemovedCharacter::REASON_MOVED);
-        } else {
+        } elseif ($reason !== null) { // should never be null
             $removedCharacter->setReason($reason);
         }
 
