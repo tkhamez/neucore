@@ -1,13 +1,13 @@
 
-## next
+## 1.0.1
 
-dd mm yyyy
+7 Jun 2019
 
 - Configurable location and rotation of log files. [#12][i12]
 - Configurable cache directory. [#18][i18]
 - DI container no longer caches values of environment variables. [#17][i17]
 - Improved loading time of the theme css file. [#11][i11]
-- Added BRAVECORE_SESSION_SECURE environment variable to restrict the session cookie to HTTPS.
+- Added environment variable to optionally disable the secure attribute one the session cookie.
 
 [i12]: https://github.com/tkhamez/neucore/issues/12
 [i17]: https://github.com/tkhamez/neucore/issues/17
