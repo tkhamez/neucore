@@ -7,7 +7,7 @@
 - Configurable cache directory. [#18][i18]
 - DI container no longer caches values of environment variables. [#17][i17]
 - Improved loading time of the theme css file. [#11][i11]
-- Added environment variable to optionally disable the secure attribute one the session cookie.
+- Added environment variable to optionally disable the secure attribute on the session cookie.
 
 [i12]: https://github.com/tkhamez/neucore/issues/12
 [i17]: https://github.com/tkhamez/neucore/issues/17
