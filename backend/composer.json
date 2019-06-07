@@ -33,7 +33,7 @@
         "friendsofphp/php-cs-fixer": "^2.14",
         "phpstan/phpstan": "^0.11.5",
         "phpunit/phpunit": "^7.3",
-        "sensiolabs/security-checker": "^5.0"
+        "sensiolabs/security-checker": "^6.0"
     },
     "suggest": {
         "ext-apcu": "*",
@@ -52,7 +52,7 @@
     ],
     "scripts": {
         "compile": [
-            "@cache:clear",
+            "bin/console clear-cache",
             "@db:migrate",
             "@db:seed",
             "@openapi"

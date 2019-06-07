@@ -12,6 +12,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 
 class MemberTracking
@@ -196,7 +197,10 @@ class MemberTracking
             return false;
         }
 
-        if (! isset($roles['roles']) || ! in_array('Director', $roles['roles'])) {
+        if (! $roles instanceof GetCharactersCharacterIdRolesOk ||
+            ! is_array($roles->getRoles()) ||
+            ! in_array('Director', $roles->getRoles())
+        ) {
             return false;
         }
 
