@@ -38,7 +38,7 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 #### Server Requirements
 
 * PHP 7.1+ with Composer, see `backend/composer.json` for necessary extensions
-* Node.js 8+ with npm (tested with node 8.16, 10.15 and npm 6.4.1)
+* Node.js 8+ with npm (tested with LTS versions 8 and 10, npm 6.4/6.9)
 * MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.3)
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
