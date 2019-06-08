@@ -74,7 +74,7 @@ class SettingsController
         $result = $repository->find(SystemVariable::CUSTOMIZATION_DEFAULT_THEME);
         $value = $result ? $result->getValue() : '';
         return $this->response
-            ->write("const theme = '$value';")
+            ->write("var theme = '$value';")
             ->withHeader('Content-Type', 'text/javascript');
     }
 

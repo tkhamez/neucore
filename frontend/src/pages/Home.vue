@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
 
-        <div v-cloak class="modal fade" id="tokenModal">
+        <div v-cloak v-if="authChar" class="modal fade" id="tokenModal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div v-cloak class="modal fade" id="deleteCharModal">
+        <div v-cloak v-if="authChar" class="modal fade" id="deleteCharModal">
             <div class="modal-dialog">
                 <div v-cloak v-if="charToDelete" class="modal-content">
                     <div class="modal-header">
