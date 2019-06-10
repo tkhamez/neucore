@@ -30,13 +30,16 @@
         "zircote/swagger-php": "^2.0"
     },
     "require-dev": {
+        "drenso/phan-extensions": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.14",
+        "phan/phan": "^2.1",
         "phpstan/phpstan": "^0.11.5",
         "phpunit/phpunit": "^7.3",
         "sensiolabs/security-checker": "^6.0"
     },
     "suggest": {
         "ext-apcu": "*",
+        "ext-ast": "*",
         "ext-xdebug": "*",
         "ext-zend-opcache": "*"
     },
@@ -71,11 +74,12 @@
             "swagger src --output ../web/frontend-api.json --exclude src/classes/Controller/App",
             "swagger src --output ../web/application-api.json --exclude src/classes/Controller/User"
         ],
-        "analyse:src": "phpstan analyse src/classes --level 7",
-        "analyse:tests": "phpstan analyse src/tests --level 6",
+        "phan": "phan",
+        "phpstan:src": "phpstan analyse src/classes --level 7",
+        "phpstan:tests": "phpstan analyse src/tests --level 6",
         "test": "phpunit",
         "test:cov": "phpunit --coverage-html var/phpunit",
-        "security:check": "vendor/bin/security-checker security:check",
+        "security-checker": "vendor/bin/security-checker security:check",
         "style:check": "php-cs-fixer fix src --dry-run --diff --diff-format udiff",
         "style:fix": "php-cs-fixer fix src",
         "run": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"

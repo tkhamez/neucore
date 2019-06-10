@@ -303,7 +303,8 @@ class Account
         Player $newPlayer = null,
         string $reason = null
     ): void {
-        if ($character->getId() === null) { // should never be true, but that's not obvious here
+        // should never be true, but that's not obvious here and setCharacterId() below needs an integer
+        if ($character->getId() === null) {
             $this->log->error('Account::createRemovedCharacter(): Missing character ID.');
             return;
         }
@@ -314,7 +315,7 @@ class Account
         $removedCharacter->setPlayer($player);
         $player->addRemovedCharacter($removedCharacter);
 
-        $removedCharacter->setCharacterId($character->getId());
+        $removedCharacter->setCharacterId((int) $character->getId());
         $removedCharacter->setCharacterName($character->getName());
         try {
             $removedCharacter->setRemovedDate(new \DateTime());

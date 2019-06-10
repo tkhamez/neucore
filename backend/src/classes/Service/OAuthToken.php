@@ -47,6 +47,7 @@ class OAuthToken
      */
     public function refreshAccessToken(AccessTokenInterface $existingToken): AccessTokenInterface
     {
+        $newToken = null;
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {
             try {
                 $newToken = $this->oauth->getAccessToken('refresh_token', [
@@ -108,9 +109,9 @@ class OAuthToken
     {
         $owner = null;
         try {
-            /** @noinspection PhpParamsInspection */
-            // see also https://github.com/thephpleague/oauth2-client/issues/752
-            $owner = $this->oauth->getResourceOwner($token);
+            if ($token instanceof AccessToken) {
+                $owner = $this->oauth->getResourceOwner($token);
+            }
         } catch (\Exception $e) {
             if (! $e instanceof IdentityProviderException || $e->getMessage() !== 'invalid_token') {
                 // don't log "invalid_token" error as this is expected if the token was revoked

@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Character implements \JsonSerializable
 {
-
     /**
      * EVE character ID.
      *
@@ -42,7 +41,6 @@ class Character implements \JsonSerializable
     private $name;
 
     /**
-     *
      * @SWG\Property()
      * @ORM\Column(type="boolean")
      * @var bool
@@ -50,7 +48,6 @@ class Character implements \JsonSerializable
     private $main = false;
 
     /**
-     *
      * @ORM\Column(type="text", length=65535, name="character_owner_hash", nullable=true)
      * @var string|null
      */
@@ -126,7 +123,6 @@ class Character implements \JsonSerializable
     private $player;
 
     /**
-     *
      * @SWG\Property(ref="#/definitions/Corporation")
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
      * @var Corporation|null
@@ -307,7 +303,7 @@ class Character implements \JsonSerializable
     /**
      * Set refreshToken.
      *
-     * @param string $refreshToken
+     * @param string|null $refreshToken
      *
      * @return Character
      */

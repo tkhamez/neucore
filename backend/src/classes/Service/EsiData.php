@@ -70,7 +70,7 @@ class EsiData
      * Character must already exist in the local database.
      * Returns null if any of the ESI requests fails.
      *
-     * @param int $id EVE character ID
+     * @param int|null $id EVE character ID
      * @return NULL|Character
      */
     public function fetchCharacterWithCorporationAndAlliance(?int $id)
@@ -110,7 +110,7 @@ class EsiData
      * Returns null if the ESI requests fails or if the character
      * does not exist in the local database.
      *
-     * @param int $id
+     * @param int|null $id
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Character An instance that is attached to the Doctrine entity manager.
      */
@@ -172,7 +172,7 @@ class EsiData
      *
      * Returns null if the ESI requests fails.
      *
-     * @param int $id EVE corporation ID
+     * @param int|null $id EVE corporation ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Corporation An instance that is attached to the Doctrine entity manager.
      */
@@ -231,7 +231,7 @@ class EsiData
      *
      * Returns null if the ESI requests fails.
      *
-     * @param int $id EVE alliance ID
+     * @param int|null $id EVE alliance ID
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Alliance An instance that is attached to the Doctrine entity manager.
      */

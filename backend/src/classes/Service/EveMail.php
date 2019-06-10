@@ -115,7 +115,7 @@ class EveMail
     }
 
     /**
-     * @param int $characterId
+     * @param int|null $characterId
      * @param bool $ignoreAlreadySentAndStatus If set to true, allow the mail even if it has already been sent
      *             or if the account status is managed.
      * @return string The reason why the mail may not be send or empty

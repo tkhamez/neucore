@@ -918,7 +918,7 @@ class GroupController extends BaseController
      * Returns true if another group with that name already exists.
      *
      * @param string $name Group name.
-     * @param int $id Group ID.
+     * @param int|null $id Group ID.
      * @return boolean
      */
     private function otherGroupExists(string $name, int $id = null): bool

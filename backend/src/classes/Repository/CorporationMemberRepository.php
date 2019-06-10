@@ -14,8 +14,8 @@ class CorporationMemberRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * @param int $corporationId EVE corporation ID
-     * @param int $inactive Inactive for days
-     * @param int $active Active within days
+     * @param int|null $inactive Inactive for days
+     * @param int|null $active Active within days
      * @return CorporationMember[]
      */
     public function findByLogonDate(int $corporationId, int $inactive = null, int $active = null): array
