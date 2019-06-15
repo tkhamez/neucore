@@ -3,7 +3,6 @@
 namespace Tests\Unit\Log;
 
 use Monolog\Logger;
-use Neucore\Log\GelfMessage;
 use Neucore\Log\GelfMessageFormatter;
 use PHPUnit\Framework\TestCase;
 
@@ -22,8 +21,6 @@ class GelfMessageFormatterTest extends TestCase
         );
         $formatter = new GelfMessageFormatter();
 
-        $actual = $formatter->format($record);
-        $this->assertInstanceOf(GelfMessage::class, $actual);
-        $this->assertSame('msg', $actual->getShortMessage());
+        $this->assertContains('"short_message":"msg"', $formatter->format($record));
     }
 }

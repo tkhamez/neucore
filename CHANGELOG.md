@@ -8,6 +8,7 @@ dd mm yy
 - Cron jobs: reduced number of log entries, reduced sleep time.
 - Log format is now configurable via optional environment variable BRAVECORE_LOG_FORMAT:
   multiline (default), line (no stacktrace), fluentd, gelf, html, json, loggly, logstash
+- Other small stuff
 
 [i21]: https://github.com/tkhamez/neucore/issues/21
 [i16]: https://github.com/tkhamez/neucore/issues/16

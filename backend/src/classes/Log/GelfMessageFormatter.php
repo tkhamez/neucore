@@ -2,10 +2,14 @@
 
 namespace Neucore\Log;
 
+use Gelf\Encoder\JsonEncoder;
+
 class GelfMessageFormatter extends \Monolog\Formatter\GelfMessageFormatter
 {
     public function format(array $record)
     {
-        return new GelfMessage(parent::format($record));
+        $message = parent::format($record);
+
+        return (new JsonEncoder())->encode($message) . "\n";
     }
 }
