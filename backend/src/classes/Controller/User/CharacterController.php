@@ -17,6 +17,27 @@ use Swagger\Annotations as SWG;
  *     name="Character",
  *     description="Character related functions."
  * )
+ * @SWG\Definition(
+ *     definition="SearchResult",
+ *     required={"character_id", "character_name", "player_id", "player_name"},
+ *     @SWG\Property(
+ *         property="character_id",
+ *         type="integer",
+ *         format="int64"
+ *     ),
+ *     @SWG\Property(
+ *         property="character_name",
+ *         type="string"
+ *     ),
+ *     @SWG\Property(
+ *         property="player_id",
+ *         type="integer"
+ *     ),
+ *     @SWG\Property(
+ *         property="player_name",
+ *         type="string"
+ *     )
+ * )
  */
 class CharacterController
 {
@@ -107,8 +128,8 @@ class CharacterController
      *     ),
      *     @SWG\Response(
      *         response="200",
-     *         description="List of characters (ID and name only).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Character"))
+     *         description="List of characters.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/SearchResult"))
      *     ),
      *     @SWG\Response(
      *         response="403",
@@ -123,8 +144,10 @@ class CharacterController
         $retVal = [];
         foreach ($result as $char) {
             $retVal[] = [
-                'id' => $char->getId(),
-                'name' => $char->getName(),
+                'character_id' => $char->getId(),
+                'character_name' => $char->getName(),
+                'player_id' => $char->getPlayer()->getId(),
+                'player_name' => $char->getPlayer()->getName(),
             ];
         }
 
@@ -163,6 +186,8 @@ class CharacterController
      */
     public function findPlayerOf(string $id): Response
     {
+        // TODO currently unused
+
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
 
         if ($char === null) {

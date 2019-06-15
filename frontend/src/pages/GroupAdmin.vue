@@ -158,13 +158,14 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change
+        if (this.initialized) { // on page change + refresh
             this.getGroups();
+            this.setGroupIdAndContentType();
         }
     },
 
     watch: {
-        initialized: function() { // on refresh
+        initialized: function() { // currently not triggered
             this.getGroups();
             this.setGroupIdAndContentType();
         },

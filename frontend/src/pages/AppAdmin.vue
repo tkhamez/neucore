@@ -98,13 +98,14 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change
+        if (this.initialized) { // on page change + refresh
             this.getApps();
+            this.setAppIdAndContentType();
         }
     },
 
     watch: {
-        initialized: function() { // on refresh
+        initialized: function() { // currently not triggered
             this.getApps();
             this.setAppIdAndContentType();
         },

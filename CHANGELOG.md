@@ -1,16 +1,18 @@
 
-## next
+## 1.1.0
 
 dd mm yy
 
 - New: Optional text area on the home page with customizable text that supports Markdown syntax. [#21][i21]
+- Group management: added action buttons directly to the search result [#20][i20]
 - User admin: added list of accounts with missing ESI tokens [#16][i16]
 - Cron jobs: reduced number of log entries, reduced sleep time.
 - Log format is now configurable via optional environment variable BRAVECORE_LOG_FORMAT:
   multiline (default), line (no stacktrace), fluentd, gelf, html, json, loggly, logstash
-- Other small stuff
+- Other small stuff/fixes
 
 [i21]: https://github.com/tkhamez/neucore/issues/21
+[i20]: https://github.com/tkhamez/neucore/issues/20
 [i16]: https://github.com/tkhamez/neucore/issues/16
 
 ## 1.0.1

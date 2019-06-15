@@ -50,9 +50,9 @@
                 <div class="list-group">
                     <button v-for="char in searchResult"
                         class="list-group-item list-group-item-action"
-                        :class="{ active: isCharacterOfPlayer(char.id) }"
-                        v-on:click="findPlayer(char.id)">
-                        {{ char.name }}
+                        :class="{ active: isCharacterOfPlayer(char.character_id) }"
+                        @click="loadPlayer(char.player_id)">
+                        {{ char.character_name }}
                     </button>
                 </div>
             </div>
@@ -406,16 +406,8 @@ module.exports = {
             return false;
         },
 
-        findPlayer: function(characterId) {
-            const vm = this;
-            vm.loading(true);
-            new this.swagger.CharacterApi().findPlayerOf(characterId, function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    return;
-                }
-                window.location.hash = '#UserAdmin/' + data.id;
-            });
+        loadPlayer: function(playerId) {
+            window.location.hash = '#UserAdmin/' + playerId;
         },
 
         onSearchResult: function(result) {

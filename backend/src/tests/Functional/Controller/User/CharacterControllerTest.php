@@ -88,14 +88,17 @@ class CharacterControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/character/find-by/ser');
         $this->assertSame(200, $response->getStatusCode());
 
-        $this->assertSame(
-            [
-                ['id' => 456, 'name' => 'Another USER'],
-                ['id' => 96061222, 'name' => 'User']
-
-            ],
-            $this->parseJsonBody($response)
-        );
+        $this->assertSame([[
+            'character_id' => 456,
+            'character_name' => 'Another USER',
+            'player_id' => $this->playerId,
+            'player_name' => 'User'
+        ], [
+            'character_id' => 96061222,
+            'character_name' => 'User',
+            'player_id' => $this->playerId,
+            'player_name' => 'User'
+        ]], $this->parseJsonBody($response));
     }
 
     public function testFindPlayerOf403()

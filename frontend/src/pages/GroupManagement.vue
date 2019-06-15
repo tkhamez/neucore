@@ -53,24 +53,34 @@
 
                     <character-search :swagger="swagger" v-on:result="searchResult = $event"></character-search>
 
-                    <ul v-if="searchResult.length > 0" class="list-group search-result">
-                        <li v-for="character in searchResult" v-on:click="findPlayer(character.id)"
-                                class="list-group-item list-group-item-action search-result-item">
-                            <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'" alt="">
-                            {{ character.name }}
-                        </li>
-                    </ul>
-                    <div v-if="newMember">
-                        <span class="text-muted">Player account:</span>
-                        {{ newMember.name }} #{{ newMember.id }}
-                        <button class="btn btn-info btn-sm"
-                                v-on:click="showCharacters(newMember.id)">
-                            Show characters
-                        </button>
-                        <button class="btn btn-success btn-sm"
-                                v-on:click="addPlayer(newMember.id)">
-                            Add to group
-                        </button>
+                    <div class="search-result border border-dark" v-if="searchResult.length > 0">
+                        <table class="table table-hover table-sm table-light mb-0">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Character</th>
+                                    <th>Account</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="char in searchResult">
+                                    <td>
+                                        <img :src="'https://image.eveonline.com/Character/'
+                                            + char.character_id + '_32.jpg'"alt="character avatar">
+                                        {{ char.character_name }}
+                                    </td>
+                                    <td>{{ char.player_name }} #{{ char.player_id }}</td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm"
+                                                @click="showCharacters(char.player_id)">Show characters</button>
+                                        <button v-if="! isMember(char.player_id)" class="btn btn-success btn-sm"
+                                                @click="addPlayer(char.player_id)">Add to group</button>
+                                        <button v-if="isMember(char.player_id)" class="btn btn-danger btn-sm"
+                                                @click="removePlayer(char.player_id)">Remove from group</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -175,7 +185,6 @@ module.exports = {
             groupMembers: [],
             groupApplications: [],
             searchResult: [],
-            newMember: null,
             requiredGroups: [],
             contentType: ''
         }
@@ -212,7 +221,6 @@ module.exports = {
             // reset variables
             vm.groupMembers = [];
             vm.searchResult = [];
-            this.newMember = null;
 
             // get members
             vm.loading(true);
@@ -223,6 +231,15 @@ module.exports = {
                 }
                 vm.groupMembers = data;
             });
+        },
+
+        isMember: function(playerId) {
+            for (let member of this.groupMembers) {
+                if (member.id === playerId) {
+                    return true;
+                }
+            }
+            return false;
         },
 
         getApplications: function() {
@@ -251,35 +268,22 @@ module.exports = {
             });
         },
 
-        findPlayer: function(characterId) {
-            const vm = this;
-            vm.loading(true);
-            new this.swagger.CharacterApi().findPlayerOf(characterId, function(error, data) {
-                vm.loading(false);
-                if (error) {
-                    return;
-                }
-                vm.newMember = data;
-                vm.searchResult = [];
-            });
-        },
-
         showCharacters: function(memberId) {
             this.$refs.charactersModal.showCharacters(memberId);
         },
 
-        addPlayer: function() {
-            if (this.groupId === null || this.newMember === null) {
+        addPlayer: function(playerId) {
+            if (this.groupId === null) {
                 return;
             }
             const vm = this;
             vm.loading(true);
-            new this.swagger.GroupApi().addMember(this.groupId, this.newMember.id, function(error) {
+            new this.swagger.GroupApi().addMember(this.groupId, playerId, function(error) {
                 vm.loading(false);
                 if (error) {
                     return;
                 }
-                if (vm.newMember.id === vm.player.id) {
+                if (playerId === vm.player.id) {
                     vm.$root.$emit('playerChange'); // changes the player object which triggers getMembers()
                 } else {
                     vm.getMembers();
@@ -333,12 +337,8 @@ module.exports = {
 <style scoped>
     .search-result {
         position: absolute;
-        max-height: 230px;
+        max-height: 235px;
         width: 95%;
         overflow: auto;
-    }
-
-    .search-result-item {
-        cursor: pointer;
     }
 </style>
