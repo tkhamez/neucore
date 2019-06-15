@@ -147,7 +147,7 @@ class EsiController
      *     ),
      *     @SWG\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached.",
+     *         description="Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
      *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
@@ -247,7 +247,7 @@ class EsiController
      *     ),
      *     @SWG\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached.",
+     *         description="Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
      *         @SWG\Schema(type="string")
      *     ),
      *     @SWG\Response(
