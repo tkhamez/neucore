@@ -197,7 +197,10 @@
                         <tbody>
                             <tr v-for="character in playerEdit.characters">
                                 <td>{{ character.id }}</td>
-                                <td>{{ character.name }}</td>
+                                <td>
+                                    <a :href="'https://evewho.com/pilot/' + character.name"
+                                       title="Eve Who" target="_blank" >{{ character.name }}</a>
+                                </td>
                                 <td>
                                     <span v-if="character.corporation">
                                         [{{ character.corporation.ticker }}]
@@ -296,19 +299,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="removedCharacter in playerEdit.removedCharacters">
-                                <td>{{ removedCharacter.characterId }}</td>
-                                <td>{{ removedCharacter.characterName }}</td>
+                            <tr v-for="removedChar in playerEdit.removedCharacters">
+                                <td>{{ removedChar.characterId }}</td>
                                 <td>
-                                    <span v-if="removedCharacter.removedDate">
-                                        {{ formatDate(removedCharacter.removedDate) }}
+                                    <a :href="'https://evewho.com/pilot/' + removedChar.characterName"
+                                       title="Eve Who" target="_blank" >{{ removedChar.characterName }}</a>
+                                </td>
+                                <td>
+                                    <span v-if="removedChar.removedDate">
+                                        {{ formatDate(removedChar.removedDate) }}
                                     </span>
                                 </td>
-                                <td>{{ removedCharacter.reason }}</td>
+                                <td>{{ removedChar.reason }}</td>
                                 <td>
-                                    <a v-if="removedCharacter.newPlayerId"
-                                       :href="'#UserAdmin/' + removedCharacter.newPlayerId">
-                                        {{ removedCharacter.newPlayerName }} #{{ removedCharacter.newPlayerId }}
+                                    <a v-if="removedChar.newPlayerId"
+                                       :href="'#UserAdmin/' + removedChar.newPlayerId">
+                                        {{ removedChar.newPlayerName }} #{{ removedChar.newPlayerId }}
                                     </a>
                                 </td>
                             </tr>
