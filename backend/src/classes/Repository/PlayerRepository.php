@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Player;
 
 /**
@@ -14,10 +15,10 @@ use Neucore\Entity\Player;
  * @method Player|null findOneBy(array $criteria, array $orderBy = null)
  * @method Player[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PlayerRepository extends \Doctrine\ORM\EntityRepository
+class PlayerRepository extends EntityRepository
 {
     /**
-     * @return \Neucore\Entity\Player[]
+     * @return Player[]
      */
     public function findWithoutCharacters()
     {
@@ -30,7 +31,7 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @return \Neucore\Entity\Player[]
+     * @return Player[]
      */
     public function findWithCharacters()
     {
@@ -43,7 +44,7 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @return \Neucore\Entity\Player[]
+     * @return Player[]
      */
     public function findWithCharactersAndStatus(string $status)
     {
@@ -52,6 +53,35 @@ class PlayerRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('c.id IS NOT NULL')
             ->andWhere('p.status = :status')
             ->setParameter('status', $status)
+            ->orderBy('p.name')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Player[]
+     */
+    public function findWithInvalidToken()
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c')
+            ->andWhere('c.id IS NOT NULL')
+            ->andWhere('c.validToken = :valid_token')
+            ->setParameter('valid_token', false)
+            ->orderBy('p.name')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Player[]
+     */
+    public function findWithNoToken()
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c')
+            ->andWhere('c.id IS NOT NULL')
+            ->andWhere('c.validToken IS NULL')
             ->orderBy('p.name')
             ->getQuery()
             ->getResult();

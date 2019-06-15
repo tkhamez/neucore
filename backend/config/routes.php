@@ -108,6 +108,8 @@ return [
 
     '/api/user/player/with-characters'          => ['GET',    PlayerController::class.'::withCharacters'],
     '/api/user/player/without-characters'       => ['GET',    PlayerController::class.'::withoutCharacters'],
+    '/api/user/player/invalid-token'            => ['GET',    PlayerController::class.'::invalidToken'],
+    '/api/user/player/no-token'                 => ['GET',    PlayerController::class.'::noToken'],
     '/api/user/player/show'                     => ['GET',    PlayerController::class.'::show'],
     '/api/user/player/{id}/groups-disabled'     => ['GET',    PlayerController::class.'::groupsDisabledById'],
     '/api/user/player/groups-disabled'          => ['GET',    PlayerController::class.'::groupsDisabled'],

@@ -434,6 +434,57 @@ class PlayerControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
+    public function testInvalidToken403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/invalid-token');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin
+
+        $response = $this->runApp('GET', '/api/user/player/invalid-token');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testInvalidToken200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/invalid-token');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->player->getId(), 'name' => 'Admin'],
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testNoToken403()
+    {
+        $response = $this->runApp('GET', '/api/user/player/no-token');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(11); // not user-admin
+
+        $response = $this->runApp('GET', '/api/user/player/no-token');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testNoToken200()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('GET', '/api/user/player/no-token');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame([
+            ['id' => $this->managerId, 'name' => 'Manager'],
+            ['id' => $this->playerId, 'name' => 'User'],
+        ], $this->parseJsonBody($response));
+    }
+
     public function testAppManagers403()
     {
         $response = $this->runApp('GET', '/api/user/player/app-managers');

@@ -480,6 +480,54 @@ class PlayerController extends BaseController
 
     /**
      * @SWG\Get(
+     *     path="/user/player/invalid-token",
+     *     operationId="invalidToken",
+     *     summary="List all players with a character with an invalid token.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function invalidToken(): Response
+    {
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithInvalidToken());
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/user/player/no-token",
+     *     operationId="noToken",
+     *     summary="List all players with a character with no token.",
+     *     description="Needs role: user-admin",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @SWG\Response(
+     *         response="200",
+     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function noToken(): Response
+    {
+        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithNoToken());
+    }
+
+    /**
+     * @SWG\Get(
      *     path="/user/player/without-characters",
      *     operationId="withoutCharacters",
      *     summary="List all players without characters.",

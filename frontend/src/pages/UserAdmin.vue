@@ -84,6 +84,8 @@
                         <option value=""> ... select a list</option>
                         <option value="withCharacters">with characters</option>
                         <option value="withoutCharacters">without characters</option>
+                        <option value="invalidToken">invalid token</option>
+                        <option value="noToken">no token</option>
                     </select>
                 </div>
                 <div class="list-group">
