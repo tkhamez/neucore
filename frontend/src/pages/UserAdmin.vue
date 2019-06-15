@@ -62,12 +62,10 @@
                     Players by role
                 </h3>
                 <div class="card-body">
-                    <button v-for="role in availableRoles"
-                        type="button" class="btn mr-1 mb-1"
-                        :class="{ 'btn-secondary': activeButton !== role, 'btn-primary': activeButton === role }"
-                        v-on:click="getPlayerByRole(role)">
-                        {{ role }}
-                    </button>
+                    <select class="form-control" v-model="activeRole" @change="getPlayerByRole(activeRole)">
+                        <option value=""> ... select a role</option>
+                        <option v-for="role in availableRoles">{{ role }}</option>
+                    </select>
                 </div>
                 <div class="list-group">
                      <a v-for="pr in playersRole" class="list-group-item list-group-item-action"
@@ -82,22 +80,11 @@
                     Player accounts
                 </h3>
                 <div class="card-body">
-                    <button type="button" class="btn mr-1 mb-1"
-                            :class="{
-                                'btn-secondary': activeButton !== 'withCharacters',
-                                'btn-primary': activeButton === 'withCharacters'
-                            }"
-                            v-on:click="getPlayers('withCharacters')">
-                        with characters
-                    </button>
-                    <button type="button" class="btn mr-1 mb-1"
-                            :class="{
-                                'btn-secondary': activeButton !== 'withoutCharacters',
-                                'btn-primary': activeButton === 'withoutCharacters'
-                            }"
-                            v-on:click="getPlayers('withoutCharacters')">
-                        without characters
-                    </button>
+                    <select class="form-control" v-model="activeList" @change="getPlayers(activeList)">
+                        <option value=""> ... select a list</option>
+                        <option value="withCharacters">with characters</option>
+                        <option value="withoutCharacters">without characters</option>
+                    </select>
                 </div>
                 <div class="list-group">
                     <a v-for="emptyAcc in playersChars"
@@ -349,7 +336,8 @@ module.exports = {
         return {
             playersRole: [],
             playersChars: [],
-            activeButton: '',
+            activeRole: '',
+            activeList: '',
             playerId: null, // player ID from route
             playerEdit: null,// player being edited
             playerEditDeactivated: false,
@@ -433,19 +421,18 @@ module.exports = {
             if (result.length > 0) {
                 this.playersRole = [];
                 this.playersChars = [];
-                this.activeButton = '';
+                this.activeRole = '';
+                this.activeList = '';
             }
         },
 
         getPlayerByRole: function(roleName) {
-            if (roleName === this.activeButton) {
-                this.activeButton = '';
-                this.playersRole = [];
+            const vm = this;
+            if (roleName === '') {
+                vm.playersRole = [];
                 return;
             }
-
-            const vm = this;
-            vm.activeButton = roleName;
+            vm.activeList = '';
             vm.playersChars = [];
             vm.searchResult = [];
             vm.loading(true);
@@ -458,20 +445,18 @@ module.exports = {
             });
         },
 
-        getPlayers: function(withOutChars) {
-            if (withOutChars === this.activeButton) {
-                this.activeButton = '';
-                this.playersChars = [];
+        getPlayers: function(listName) {
+            const vm = this;
+            if (listName === '') {
+                vm.playersChars = [];
                 return;
             }
-
-            const vm = this;
-            vm.activeButton = withOutChars;
+            vm.activeRole = '';
             vm.playersRole = [];
             vm.searchResult = [];
             const api = new this.swagger.PlayerApi();
             vm.loading(true);
-            api[withOutChars].apply(api, [function(error, data) {
+            api[listName].apply(api, [function(error, data) {
                 vm.loading(false);
                 if (error) {
                     return;
