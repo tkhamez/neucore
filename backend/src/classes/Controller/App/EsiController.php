@@ -431,7 +431,7 @@ class EsiController
             $this->response->write($body);
         }
 
-        $response = $this->response->withStatus($esiResponse->getStatusCode());
+        $response = $this->response->withStatus($esiResponse->getStatusCode(), $esiResponse->getReasonPhrase());
 
         $headerWhiteList = [
             'Content-Type',
