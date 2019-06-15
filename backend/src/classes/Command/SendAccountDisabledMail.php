@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendAccountDisabledMail extends Command
 {
+    use OutputTrait;
+
     /**
      * @var EveMail
      */
@@ -31,24 +33,9 @@ class SendAccountDisabledMail extends Command
     private $objectManager;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var int
      */
     private $sleep;
-
-    /**
-     * @var bool
-     */
-    private $log;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
 
     public function __construct(
         EveMail $eveMail,
@@ -74,28 +61,27 @@ class SendAccountDisabledMail extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
                 20
-            )
-            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
+            );
+        $this->configureOutputTrait($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = intval($input->getOption('sleep'));
-        $this->log = (bool) $input->getOption('log');
-        $this->output = $output;
+        $this->executeOutputTrait($input, $output);
 
-        $this->writeln('* Started "send-account-disabled-mail"');
+        $this->writeln('Started "send-account-disabled-mail"', false);
 
         $this->send();
 
-        $this->writeln('* Finished "send-account-disabled-mail"');
+        $this->writeln('Finished "send-account-disabled-mail"', false);
     }
 
     private function send()
     {
         $notActiveReason = $this->eveMail->accountDeactivatedIsActive();
         if ($notActiveReason !== '') {
-            $this->writeln($notActiveReason);
+            $this->writeln(' ' . $notActiveReason, false);
             return;
         }
 
@@ -121,20 +107,11 @@ class SendAccountDisabledMail extends Command
             $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
             if ($errMessage === '') { // success
                 $this->eveMail->accountDeactivatedMailSent($playerId, true);
-                $this->writeln('Mail sent to ' . $characterId);
+                $this->writeln('  Mail sent to ' . $characterId);
                 usleep($this->sleep * 1000 * 1000);
             } else {
-                $this->writeln($errMessage);
+                $this->writeln(' ' . $errMessage, false);
             }
-        }
-    }
-
-    private function writeln($text)
-    {
-        if ($this->log) {
-            $this->logger->info($text);
-        } else {
-            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
         }
     }
 }

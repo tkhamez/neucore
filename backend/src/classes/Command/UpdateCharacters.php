@@ -16,6 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCharacters extends Command
 {
+    use OutputTrait;
+
     const UPDATE_OK = 'update OK';
 
     const UPDATE_NOK = 'update NOK';
@@ -46,24 +48,9 @@ class UpdateCharacters extends Command
     private $objectManager;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var int
      */
     private $sleep;
-
-    /**
-     * @var bool
-     */
-    private $log;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -90,24 +77,23 @@ class UpdateCharacters extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                200
-            )
-            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
+                50
+            );
+        $this->configureOutputTrait($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = intval($input->getOption('sleep'));
-        $this->log = (bool) $input->getOption('log');
-        $this->output = $output;
+        $this->executeOutputTrait($input, $output);
 
-        $this->writeln('* Started "update-chars"');
+        $this->writeln('Started "update-chars"', false);
 
         $this->updateChars();
         $this->updateCorps();
         $this->updateAlliances();
 
-        $this->writeln('* Finished "update-chars"');
+        $this->writeln('Finished "update-chars"', false);
     }
 
     private function updateChars()
@@ -124,9 +110,9 @@ class UpdateCharacters extends Command
             // update name, corp and alliance from ESI
             $updatedChar = $this->esiData->fetchCharacter($charId);
             if ($updatedChar === null) {
-                $this->writeln('Character ' . $charId.': ' . self::UPDATE_NOK);
+                $this->writeln('  Character ' . $charId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('Character ' . $charId.': ' . self::UPDATE_OK);
+                $this->writeln('  Character ' . $charId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);
@@ -146,9 +132,9 @@ class UpdateCharacters extends Command
 
             $updatedCorp = $this->esiData->fetchCorporation($corpId);
             if ($updatedCorp === null) {
-                $this->writeln('Corporation ' . $corpId.': ' . self::UPDATE_NOK);
+                $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('Corporation ' . $corpId.': ' . self::UPDATE_OK);
+                $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);
@@ -168,21 +154,12 @@ class UpdateCharacters extends Command
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
-                $this->writeln('Alliance ' . $alliId.': ' . self::UPDATE_NOK);
+                $this->writeln('  Alliance ' . $alliId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('Alliance ' . $alliId.': ' . self::UPDATE_OK);
+                $this->writeln('  Alliance ' . $alliId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);
-        }
-    }
-
-    private function writeln($text)
-    {
-        if ($this->log) {
-            $this->logger->info($text);
-        } else {
-            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
         }
     }
 }

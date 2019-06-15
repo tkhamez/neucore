@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckTokens extends Command
 {
+    use OutputTrait;
+
     /**
      * @var CharacterRepository
      */
@@ -36,24 +38,9 @@ class CheckTokens extends Command
     private $objectManager;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var int
      */
     private $sleep;
-
-    /**
-     * @var bool
-     */
-    private $log;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -68,7 +55,7 @@ class CheckTokens extends Command
         $this->charService = $charService;
         $this->tokenService = $tokenService;
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
+        $this->logger = $logger; // property is on the trait
     }
 
     protected function configure()
@@ -83,20 +70,19 @@ class CheckTokens extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each check',
-                200
-            )
-            ->addOption('log', 'l', InputOption::VALUE_NONE, 'Redirect output to log.');
+                50
+            );
+        $this->configureOutputTrait($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = intval($input->getOption('sleep'));
-        $this->log = (bool) $input->getOption('log');
-        $this->output = $output;
+        $this->executeOutputTrait($input, $output);
 
-        $this->writeln('* Started "check-tokens"');
+        $this->writeln('Started "check-tokens"', false);
         $this->check();
-        $this->writeln('* Finished "check-tokens"');
+        $this->writeln('Finished "check-tokens"', false);
     }
 
     private function check()
@@ -118,30 +104,21 @@ class CheckTokens extends Command
                 // check token, corporation Doomheim and character owner hash - this may delete the character!
                 $result = $this->charService->checkCharacter($char, $this->tokenService);
                 if ($result === Account::CHECK_TOKEN_NA) {
-                    $this->writeln('Character ' . $charId.': token N/A');
+                    $this->writeln('  Character ' . $charId.': token N/A');
                 } elseif ($result === Account::CHECK_TOKEN_OK) {
-                    $this->writeln('Character ' . $charId.': token OK');
+                    $this->writeln('  Character ' . $charId.': token OK');
                 } elseif ($result === Account::CHECK_TOKEN_NOK) {
-                    $this->writeln('Character ' . $charId.': token NOK');
+                    $this->writeln('  Character ' . $charId.': token NOK');
                 } elseif ($result === Account::CHECK_CHAR_DELETED) {
-                    $this->writeln('Character ' . $charId.': character deleted');
+                    $this->writeln('  Character ' . $charId.': character deleted');
                 } elseif ($result === Account::CHECK_REQUEST_ERROR) {
-                    $this->writeln('Character ' . $charId.': token request failed');
+                    $this->writeln('  Character ' . $charId.': token request failed');
                 } else {
-                    $this->writeln('Character ' . $charId.': unknown result');
+                    $this->writeln('  Character ' . $charId.': unknown result');
                 }
             }
 
             usleep($this->sleep * 1000);
-        }
-    }
-
-    private function writeln($text)
-    {
-        if ($this->log) {
-            $this->logger->info($text);
-        } else {
-            $this->output->writeln(date('Y-m-d H:i:s ') . $text);
         }
     }
 }

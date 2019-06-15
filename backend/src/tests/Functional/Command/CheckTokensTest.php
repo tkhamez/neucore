@@ -62,9 +62,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 1: token N/A', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 1: token N/A', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -82,9 +82,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: character deleted', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: character deleted', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 
         # read result
@@ -112,9 +112,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: token request failed', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: token request failed', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -135,9 +135,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: token NOK', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: token NOK', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -162,9 +162,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: character deleted', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: character deleted', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 
         # read result
@@ -194,9 +194,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: token OK', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: token OK', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 
         # read result
@@ -228,9 +228,9 @@ class CheckTokensTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "check-tokens"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: token OK', $actual[1]);
-        $this->assertStringEndsWith('* Finished "check-tokens"', $actual[2]);
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: token OK', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
         $this->assertSame(
             'Unexpected result from OAuth verify.',

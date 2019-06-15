@@ -47,9 +47,9 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
-        $this->assertStringEndsWith('"Deactivate Accounts" settings is not enabled.', $actual[1]);
-        $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
+        $this->assertStringEndsWith('Started "send-account-disabled-mail"', $actual[0]);
+        $this->assertStringEndsWith('  "Deactivate Accounts" settings is not enabled.', $actual[1]);
+        $this->assertStringEndsWith('Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -75,9 +75,9 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
-        $this->assertStringEndsWith('Missing character that can send mails.', $actual[1]);
-        $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
+        $this->assertStringEndsWith('Started "send-account-disabled-mail"', $actual[0]);
+        $this->assertStringEndsWith('  Missing character that can send mails.', $actual[1]);
+        $this->assertStringEndsWith('Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -128,9 +128,9 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "send-account-disabled-mail"', $actual[0]);
-        $this->assertStringEndsWith('Mail sent to 30', $actual[1]);
-        $this->assertStringEndsWith('* Finished "send-account-disabled-mail"', $actual[2]);
+        $this->assertStringEndsWith('Started "send-account-disabled-mail"', $actual[0]);
+        $this->assertStringEndsWith('  Mail sent to 30', $actual[1]);
+        $this->assertStringEndsWith('Finished "send-account-disabled-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 }

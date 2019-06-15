@@ -59,9 +59,9 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
-        $this->assertStringEndsWith('Character 1: ' . UpdateCharacters::UPDATE_NOK, $actual[1]);
-        $this->assertStringEndsWith('* Finished "update-chars"', $actual[2]);
+        $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
+        $this->assertStringEndsWith('  Character 1: ' . UpdateCharacters::UPDATE_NOK, $actual[1]);
+        $this->assertStringEndsWith('Finished "update-chars"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -78,10 +78,10 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
-        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
-        $this->assertStringEndsWith('Character 1: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
-        $this->assertStringEndsWith('Corporation 0: ' . UpdateCharacters::UPDATE_NOK, $actual[2]);
-        $this->assertStringEndsWith('* Finished "update-chars"', $actual[3]);
+        $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
+        $this->assertStringEndsWith('  Character 1: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
+        $this->assertStringEndsWith('  Corporation 0: ' . UpdateCharacters::UPDATE_NOK, $actual[2]);
+        $this->assertStringEndsWith('Finished "update-chars"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
     }
 
@@ -112,11 +112,11 @@ class UpdateCharactersTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(6, count($actual));
-        $this->assertStringEndsWith('* Started "update-chars"', $actual[0]);
-        $this->assertStringEndsWith('Character 3: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
-        $this->assertStringEndsWith('Corporation 101: ' . UpdateCharacters::UPDATE_OK, $actual[2]);
-        $this->assertStringEndsWith('Alliance 212: ' . UpdateCharacters::UPDATE_OK, $actual[3]);
-        $this->assertStringEndsWith('* Finished "update-chars"', $actual[4]);
+        $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
+        $this->assertStringEndsWith('  Character 3: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
+        $this->assertStringEndsWith('  Corporation 101: ' . UpdateCharacters::UPDATE_OK, $actual[2]);
+        $this->assertStringEndsWith('  Alliance 212: ' . UpdateCharacters::UPDATE_OK, $actual[3]);
+        $this->assertStringEndsWith('Finished "update-chars"', $actual[4]);
         $this->assertStringEndsWith('', $actual[5]);
 
         // read result

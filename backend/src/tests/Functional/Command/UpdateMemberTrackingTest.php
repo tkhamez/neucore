@@ -42,9 +42,9 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "update-member-tracking"', $actual[0]);
-        $this->assertStringEndsWith('Error obtaining character data from director_char_1', $actual[1]);
-        $this->assertStringEndsWith('* Finished "update-member-tracking"', $actual[2]);
+        $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
+        $this->assertStringEndsWith('  Error obtaining character data from director_char_1', $actual[1]);
+        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -58,9 +58,9 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "update-member-tracking"', $actual[0]);
-        $this->assertStringEndsWith('Corporation not found for director_char_1', $actual[1]);
-        $this->assertStringEndsWith('* Finished "update-member-tracking"', $actual[2]);
+        $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
+        $this->assertStringEndsWith('  Corporation not found for director_char_1', $actual[1]);
+        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -76,9 +76,9 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "update-member-tracking"', $actual[0]);
-        $this->assertStringEndsWith('Error refreshing token for director_char_1', $actual[1]);
-        $this->assertStringEndsWith('* Finished "update-member-tracking"', $actual[2]);
+        $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
+        $this->assertStringEndsWith('  Error refreshing token for director_char_1', $actual[1]);
+        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -103,9 +103,9 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('* Started "update-member-tracking"', $actual[0]);
-        $this->assertStringEndsWith('Error getting member tracking data from ESI for director_char_1', $actual[1]);
-        $this->assertStringEndsWith('* Finished "update-member-tracking"', $actual[2]);
+        $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
+        $this->assertStringEndsWith('  Error getting member tracking data from ESI for director_char_1', $actual[1]);
+        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
@@ -141,10 +141,10 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
-        $this->assertStringEndsWith('* Started "update-member-tracking"', $actual[0]);
-        $this->assertStringEndsWith('Updated tracking data for 1 members of corporation 1', $actual[1]);
-        $this->assertStringEndsWith('Updated tracking data for 0 members of corporation 2', $actual[2]);
-        $this->assertStringEndsWith('* Finished "update-member-tracking"', $actual[3]);
+        $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
+        $this->assertStringEndsWith('  Updated tracking data for 1 members of corporation 1', $actual[1]);
+        $this->assertStringEndsWith('  Updated tracking data for 0 members of corporation 2', $actual[2]);
+        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
     }
 }
