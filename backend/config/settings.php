@@ -20,6 +20,7 @@ return [
             'BRAVECORE_EVE_DATASOURCE' => 'tranquility',
             'BRAVECORE_LOG_PATH'       => Application::ROOT_DIR . '/var/logs',
             'BRAVECORE_LOG_ROTATION'   => 'weekly',
+            'BRAVECORE_LOG_FORMAT'     => 'multiline',
             'BRAVECORE_CACHE_DIR'      => Application::ROOT_DIR . '/var/cache',
             'BRAVECORE_SESSION_SECURE' => 1,
         ],
@@ -27,6 +28,7 @@ return [
         'monolog' => [
             'path'     => '${BRAVECORE_LOG_PATH}',
             'rotation' => '${BRAVECORE_LOG_ROTATION}',
+            'format'   => '${BRAVECORE_LOG_FORMAT}',
         ],
 
         'doctrine' => [

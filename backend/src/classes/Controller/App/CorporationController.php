@@ -3,7 +3,6 @@
 namespace Neucore\Controller\App;
 
 use Neucore\Factory\RepositoryFactory;
-use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;
@@ -20,19 +19,12 @@ class CorporationController
      */
     private $repositoryFactory;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-
     public function __construct(
         Response $response,
-        RepositoryFactory $repositoryFactory,
-        LoggerInterface $log
+        RepositoryFactory $repositoryFactory
     ) {
         $this->response = $response;
         $this->repositoryFactory = $repositoryFactory;
-        $this->log = $log;
     }
 
     /**

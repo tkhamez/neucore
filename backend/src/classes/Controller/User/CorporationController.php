@@ -8,7 +8,6 @@ use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
-use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Swagger\Annotations as SWG;
@@ -27,11 +26,6 @@ class CorporationController extends BaseController
     private $repositoryFactory;
 
     /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var Corporation
      */
     private $corp;
@@ -44,13 +38,11 @@ class CorporationController extends BaseController
     public function __construct(
         Response $response,
         ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory,
-        LoggerInterface $log
+        RepositoryFactory $repositoryFactory
     ) {
         parent::__construct($response, $objectManager);
 
         $this->repositoryFactory = $repositoryFactory;
-        $this->log = $log;
     }
 
     /**

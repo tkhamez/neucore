@@ -212,9 +212,7 @@ class Account
             }
         } else {
             // that's an error, CCP changed resource owner data
-            $this->log->error('Unexpected result from OAuth verify.', [
-                'data' => $data
-            ]);
+            $this->log->error('Unexpected result from OAuth verify.', ['data' => $data]);
         }
 
         $this->objectManager->flush();

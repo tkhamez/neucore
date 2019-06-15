@@ -2,6 +2,10 @@
 
 namespace Neucore;
 
+use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\LogglyFormatter;
+use Monolog\Formatter\LogstashFormatter;
 use Neucore\Command\CheckTokens;
 use Neucore\Command\ClearCache;
 use Neucore\Command\DBVerifySSL;
@@ -11,6 +15,8 @@ use Neucore\Command\SendAccountDisabledMail;
 use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
+use Neucore\Log\FluentdFormatter;
+use Neucore\Log\GelfMessageFormatter;
 use Neucore\Middleware\GuzzleEsiHeaders;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
@@ -353,8 +359,28 @@ class Application
                             $rotation === 'monthly' ? date('Ym') : date('o\wW')
                         )) . '.log';
                 }
-                $formatter = new LineFormatter();
-                $formatter->allowInlineLineBreaks();
+                $format = $c->get(Config::class)['monolog']['format'];
+                if ($format === 'fluentd') {
+                    $formatter = new FluentdFormatter();
+                } elseif ($format === 'gelf') {
+                    $formatter = new GelfMessageFormatter();
+                } elseif ($format === 'html') {
+                    $formatter = new HtmlFormatter();
+                } elseif ($format === 'json') {
+                    $formatter = new JsonFormatter();
+                    $formatter->includeStacktraces(true);
+                } elseif ($format === 'loggly') {
+                    $formatter = new LogglyFormatter(JsonFormatter::BATCH_MODE_JSON, true);
+                    $formatter->includeStacktraces(true);
+                } elseif ($format === 'logstash') {
+                    $formatter = new LogstashFormatter('Neucore');
+                } else { // multiline or line
+                    $formatter = new LineFormatter();
+                    $formatter->ignoreEmptyContextAndExtra(true);
+                    if ($format === 'multiline') {
+                        $formatter->includeStacktraces(true);
+                    }
+                }
                 $handler = (new StreamHandler($path, Logger::DEBUG))->setFormatter($formatter);
                 return (new Logger('app'))->pushHandler($handler);
             },

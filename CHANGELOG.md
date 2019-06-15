@@ -5,6 +5,8 @@ dd mm yy
 
 - New: Optional text area on the home page with customizable text that supports Markdown syntax. [#21][i21]
 - Cron jobs: reduced number of log entries, reduced sleep time.
+- Log format is now configurable via optional environment variable BRAVECORE_LOG_FORMAT:
+  multiline (default), line (no stacktrace), fluentd, gelf, html, json, loggly, logstash
 
 [i21]: https://github.com/tkhamez/neucore/issues/21
 
