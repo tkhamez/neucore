@@ -36,6 +36,8 @@ class SystemVariable implements \JsonSerializable
      * System settings variable, "0" or "1".
      *
      * Allow users to delete their character.
+     *
+     * Scope = public
      */
     const ALLOW_CHARACTER_DELETION = 'allow_character_deletion';
 
@@ -43,6 +45,8 @@ class SystemVariable implements \JsonSerializable
      * System settings variable, "0" or "1".
      *
      * Activates the login URL for managed accounts.
+     *
+     * Scope = settings
      */
     const ALLOW_LOGIN_MANAGED = 'allow_login_managed';
 
@@ -53,16 +57,22 @@ class SystemVariable implements \JsonSerializable
      *    if one or more of their characters has an invalid token.
      *
      * 0: ignore invalid tokens.
+     *
+     * Scope = public
      */
     const GROUPS_REQUIRE_VALID_TOKEN = 'groups_require_valid_token';
 
     /**
      * How long the deactivation of the account will be delayed after a token became invalid.
+     *
+     * Scope = settings
      */
     const ACCOUNT_DEACTIVATION_DELAY = 'account_deactivation_delay';
 
     /**
      * EVE character name for the character that can be used to send mails.
+     *
+     * Scope = settings
      */
     const MAIL_CHARACTER = 'mail_character';
 
@@ -70,27 +80,37 @@ class SystemVariable implements \JsonSerializable
      * ESI token to send mails.
      *
      * JSON with character ID, access token, expire time and refresh token.
+     *
+     * Scope = backend
      */
     const MAIL_TOKEN = 'mail_token';
 
     /**
      * Activate the "account disabled" EVE mail notification
+     *
+     * Scope = settings
      */
     const MAIL_ACCOUNT_DISABLED_ACTIVE = 'mail_account_disabled_active';
 
     /**
      * The "account disabled" EVE mail is only send to accounts that have a character in one of these alliances
      * (comma separated list of EVE alliance IDs).
+     *
+     * Scope = settings
      */
     const MAIL_ACCOUNT_DISABLED_ALLIANCES = 'mail_account_disabled_alliances';
 
     /**
      * Subject for "account disabled" EVE mail notification
+     *
+     * Scope = settings
      */
     const MAIL_ACCOUNT_DISABLED_SUBJECT = 'mail_account_disabled_subject';
 
     /**
      * Body for "account disabled" EVE mail notification
+     *
+     * Scope = settings
      */
     const MAIL_ACCOUNT_DISABLED_BODY = 'mail_account_disabled_body';
 
@@ -120,6 +140,8 @@ class SystemVariable implements \JsonSerializable
 
     /**
      * The default theme.
+     *
+     * Scope = public
      */
     const CUSTOMIZATION_DEFAULT_THEME = 'customization_default_theme';
 
@@ -178,6 +200,13 @@ class SystemVariable implements \JsonSerializable
      * Scope = public
      */
     const CUSTOMIZATION_HOME_LOGO = 'customization_home_logo';
+
+    /**
+     * Text area on the home page.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_HOME_MARKDOWN = 'customization_home_markdown';
 
     /**
      * Text for the footer.
@@ -264,6 +293,9 @@ class SystemVariable implements \JsonSerializable
                 if (preg_match('#^data:image/[a-z]+;base64,[a-zA-Z0-9+/]+={0,2}$#', $value)) {
                     $this->value = $value;
                 }
+                break;
+            case self::CUSTOMIZATION_HOME_MARKDOWN:
+                $this->value = $value;
                 break;
             default:
                 $this->value = trim(str_replace(["\r\n", "\n"], ' ', $value));

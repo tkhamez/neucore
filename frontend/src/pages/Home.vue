@@ -24,7 +24,7 @@
 
         <div v-cloak v-if="authChar" class="modal fade" id="deleteCharModal">
             <div class="modal-dialog">
-                <div v-cloak v-if="charToDelete" class="modal-content">
+                <div v-if="charToDelete" class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Delete Character</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -50,32 +50,29 @@
             </div>
         </div>
 
-        <div class="jumbotron mt-3">
-            <a v-cloak :href="settings.customization_website">
-                <img v-if="settings.customization_home_logo" class="float-right" alt="Logo"
-                    :src="settings.customization_home_logo">
+        <div v-cloak v-if="! authChar" class="jumbotron mt-3">
+            <title-logo :settings="settings"></title-logo>
+            <p>Click the button below to login through <i>EVE Online SSO</i>.</p>
+            <a href="/login">
+                <img src="/static/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
             </a>
-            <h1 v-cloak class="display-3">{{ settings.customization_home_headline }}</h1>
-            <p v-cloak class="lead">{{ settings.customization_home_description }}</p>
-            <hr class="my-4">
-
-            <div v-cloak v-if="! authChar">
-                <p>Click the button below to login through <i>EVE Online SSO</i>.</p>
-                <a href="/login">
-                    <img src="/static/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
-                </a>
-                <p class="small">
-                    <br>
-                    Learn more about the security of <i>EVE Online SSO</i> in this
-                    <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
-                        target="_blank">dev-blog</a> article.
-                </p>
-            </div>
-
-            <div v-cloak v-if="authChar">
+            <p class="small">
+                <br>
+                Learn more about the security of <i>EVE Online SSO</i> in this
+                <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
+                    target="_blank">dev-blog</a> article.
+            </p>
+        </div>
+        <div v-cloak v-if="authChar" class="card mt-3 mb-3">
+            <div class="card-body">
+                <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
                 <p><a href="/login-alt"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
             </div>
+        </div>
+
+        <div v-cloak v-if="authChar && markdownHtml" class="card mb-3">
+            <div class="card-body pb-0" v-html="markdownHtml"></div>
         </div>
 
         <div v-cloak v-if="deactivated" class="alert alert-danger">
@@ -131,7 +128,7 @@
                                     <i class="fas fa-sync"></i>
                                     Update
                                 </button>
-                                <button v-cloak type="button" class="btn btn-danger btn-sm mt-1"
+                                <button type="button" class="btn btn-danger btn-sm mt-1"
                                         v-if="authChar && authChar.id !== char.id &&
                                               settings.allow_character_deletion === '1'"
                                         v-on:click="askDeleteChar(char.id, char.name)">
@@ -156,7 +153,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div v-cloak v-if="player.roles.length > 1" class="card border-secondary mb-3" >
+                    <div v-if="player.roles.length > 1" class="card border-secondary mb-3" >
                         <h3 class="card-header">Roles</h3>
                         <ul class="list-group list-group-flush">
                             <li v-for="role in player.roles" class="list-group-item">
@@ -171,7 +168,27 @@
 </template>
 
 <script>
+import TitleLogo from './Home--title-logo.vue';
+
+const md = require('markdown-it')({
+    typographer: true,
+})
+    .use(require('markdown-it-emoji/light'))
+    .use(require('markdown-it-sup'))
+    .use(require('markdown-it-sub'))
+    .use(require('markdown-it-abbr'))
+    .use(require('markdown-it-mark'))
+    .use(require('markdown-it-attrs')) // for classes, like .text-warning, .bg-primary
+;
+md.renderer.rules.emoji = function(token, idx) {
+    return '<span class="emoji">' + token[idx].content + '</span>';
+};
+
 module.exports = {
+    components: {
+        TitleLogo
+    },
+
     props: {
         route: Array,
         swagger: Object,
@@ -185,11 +202,13 @@ module.exports = {
         return {
             deactivated: false,
             charToDelete: null,
+            markdownHtml: '',
         }
     },
 
     mounted: function() { // after "redirect" from another page
         this.checkDeactivated();
+        this.markdownHtml = md.render(this.settings.customization_home_markdown);
     },
 
     watch: {
@@ -209,10 +228,6 @@ module.exports = {
             });
             this.checkDeactivated();
         },
-
-        settings: function() {
-            this.checkDeactivated();
-        }
     },
 
     methods: {
@@ -272,11 +287,6 @@ module.exports = {
 </script>
 
 <style scoped>
-    .jumbotron {
-        position: relative;
-        min-height: 430px;
-    }
-
     .player-hdl {
         position: relative;
     }

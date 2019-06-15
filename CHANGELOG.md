@@ -1,4 +1,12 @@
 
+## next
+
+dd mm yy
+
+- New: Optional text area on the home page with customizable text that supports Markdown syntax. [#21][i21]
+
+[i21]: https://github.com/tkhamez/neucore/issues/21
+
 ## 1.0.1
 
 7 Jun 2019

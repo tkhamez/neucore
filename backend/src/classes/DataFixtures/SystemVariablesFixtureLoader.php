@@ -48,6 +48,7 @@ class SystemVariablesFixtureLoader implements FixtureInterface
                 $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo_300.png')),
                 SystemVariable::SCOPE_PUBLIC
             ],
+            SystemVariable::CUSTOMIZATION_HOME_MARKDOWN     => ['', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_FOOTER_TEXT       => [
                 'Documentation is available on GitHub.',
                 SystemVariable::SCOPE_PUBLIC

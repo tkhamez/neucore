@@ -74,6 +74,12 @@ class SystemVariableTest extends TestCase
         $this->assertSame('data:image/png;base64,T/3+a=', $var->setValue('data:image/png;base64,T/3+a=')->getValue());
     }
 
+    public function testSetValueCustomizationHomeMarkdown()
+    {
+        $var = new SystemVariable(SystemVariable::CUSTOMIZATION_HOME_MARKDOWN);
+        $this->assertSame(" Test\ntext\n ", $var->setValue(" Test\ntext\n ")->getValue());
+    }
+
     public function testSetValueMailAccountDisabledSubject()
     {
         // this is the default validation, single line text, so no extra test for others like this.

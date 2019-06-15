@@ -26,8 +26,10 @@
                     <div class="form-group">
                         <label class="col-form-label" for="customizationDefaultTheme">Theme</label>
                         <select id="customizationDefaultTheme" class="form-control"
-                               v-model="settings.customization_default_theme"
-                               @change="changeSetting('customization_default_theme', settings.customization_default_theme)">
+                                v-model="settings.customization_default_theme"
+                                @change="changeSetting(
+                                    'customization_default_theme', settings.customization_default_theme
+                                )">
                             <option v-for="theme in themes" v-bind:value="theme">
                                 {{ theme }}
                             </option>
@@ -94,6 +96,29 @@
                                id="customizationHomeLogo" v-on:change="handleFileUpload('customization_home_logo')">
                         <small class="form-text text-muted">
                             Organization logo used on the home page.
+                        </small>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="customizationHomeMarkdown" class="col-form-label">Home Page Text Area</label><br>
+                        <textarea v-model="settings.customization_home_markdown" class="form-control"
+                                  id="customizationHomeMarkdown" rows="9"></textarea>
+                        <button class="btn btn-success" v-on:click="changeSetting(
+                            'customization_home_markdown', settings.customization_home_markdown
+                        )">save</button>
+                        <small class="form-text text-muted">
+                            Optional text area on the home page.
+                            Supports <a href="https://markdown-it.github.io/" target="_blank">Markdown</a>,
+                            with "typographer" and these plugins:
+                            <a href="https://github.com/arve0/markdown-it-attrs">attrs</a>
+                                (use with Bootstrap classes "text-primary", "bg-warning"
+                                <a href="https://bootswatch.com/darkly/">etc.</a>),
+                            <a href="https://github.com/markdown-it/markdown-it-mark">mark</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json">
+                                emoji</a> light,
+                            <a href="https://github.com/markdown-it/markdown-it-sub">sub</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-sup">sup</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-abbr">abbr</a>.
                         </small>
                     </div>
                     <hr>
@@ -452,6 +477,7 @@ module.exports = {
                         'allow_character_deletion',
                         'customization_home_logo',
                         'customization_nav_logo',
+                        'customization_home_markdown',
                         'customization_document_title',
                         'customization_default_theme',
                     ].indexOf(name) !== -1 ||

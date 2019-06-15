@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const Fiber = require('fibers');
@@ -106,9 +106,7 @@ module.exports = (env, argv) => {
         optimization: {
             runtimeChunk: 'single',
             minimizer: [
-                new UglifyJsPlugin({
-                    sourceMap: true
-                }),
+                new TerserPlugin(),
                 new OptimizeCSSAssetsPlugin({
                     cssProcessorOptions: { safe: true },
                 })
