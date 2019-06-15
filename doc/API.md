@@ -62,6 +62,8 @@ Character API
 Player API
 - List all players with characters. `/user/player/with-characters`
 - List all players without characters. `/user/player/without-characters`
+- List all players with a character with an invalid token. `/user/player/invalid-token`
+- List all players with a character with no token. `/user/player/no-token`
 - Check whether groups for this account are disabled or will be disabled soon. `/user/player/{id}/groups-disabled`
 - Delete a character. `/user/player/delete-character/{id}`
 - Change the player's account status. `/user/player/{id}/set-status/{status}`
