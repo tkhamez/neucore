@@ -79,7 +79,10 @@ module.exports = (env, argv) => {
                     options: {
                         presets: ['env']
                     }
-                }
+                },
+            }, {
+                test: /node_modules\/markdown-it-attrs\/.*\.js$/,
+                use: 'babel-loader'
             }]
         },
         plugins: [
