@@ -8,7 +8,7 @@
                 <div class="form-group">
                     <label>EVE Character</label>
                     <multiselect v-model="selectedCharacter" :options="charSearchResult"
-                                 label="name" track-by="id"
+                                 label="character_name" track-by="character_id"
                                  placeholder="Type to search"
                                  :searchable="true"
                                  :loading="charSearchIsLoading"
@@ -104,7 +104,7 @@ module.exports = {
             const vm = this;
             vm.loading(true);
             new this.swagger.ESIApi().request({
-                character: this.selectedCharacter.id,
+                character: this.selectedCharacter.character_id,
                 route: this.esiRoute
             }, function(error, data, response) {
                 vm.loading(false);
