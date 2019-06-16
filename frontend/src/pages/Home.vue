@@ -176,6 +176,7 @@ const md = require('markdown-it')({
     .use(require('markdown-it-emoji/light'))
     .use(require('markdown-it-sup'))
     .use(require('markdown-it-sub'))
+    .use(require('markdown-it-ins'))
     .use(require('markdown-it-abbr'))
     .use(require('markdown-it-mark'))
     .use(require('markdown-it-attrs')) // for classes, like .text-warning, .bg-primary

@@ -113,11 +113,12 @@
                             <a href="https://github.com/arve0/markdown-it-attrs">attrs</a>
                                 (use with Bootstrap classes "text-primary", "bg-warning"
                                 <a href="https://bootswatch.com/darkly/">etc.</a>),
-                            <a href="https://github.com/markdown-it/markdown-it-mark">mark</a>,
                             <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json">
                                 emoji</a> light,
+                            <a href="https://github.com/markdown-it/markdown-it-mark">mark</a>,
                             <a href="https://github.com/markdown-it/markdown-it-sub">sub</a>,
                             <a href="https://github.com/markdown-it/markdown-it-sup">sup</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-ins">ins</a>,
                             <a href="https://github.com/markdown-it/markdown-it-abbr">abbr</a>.
                         </small>
                     </div>

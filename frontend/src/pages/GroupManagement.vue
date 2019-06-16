@@ -333,12 +333,3 @@ module.exports = {
     },
 }
 </script>
-
-<style scoped>
-    .search-result {
-        position: absolute;
-        max-height: 235px;
-        width: 95%;
-        overflow: auto;
-    }
-</style>

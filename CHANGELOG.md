@@ -1,7 +1,7 @@
 
 ## 1.1.0
 
-dd mm yy
+16 Jun 2019
 
 - New: Optional text area on the home page with customizable text that supports Markdown syntax. [#21][i21]
 - Group management: added action buttons directly to the search result [#20][i20]
