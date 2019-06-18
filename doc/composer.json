@@ -4,7 +4,7 @@
     "require": {
         "tkhamez/swagger-eve-php": "^2.0",
         "eveseat/eseye": "^1.1",
-        "bravecollective/neucore-api": "*@dev"
+        "bravecollective/neucore-api": "^1.0"
     },
     "repositories": [
         { "type": "git", "url": "https://github.com/bravecollective/neucore-api.git" }
