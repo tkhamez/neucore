@@ -47,6 +47,9 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
     * A sample Nginx configuration can be found in the doc directory [nginx.conf](doc/nginx.conf)
 * Java 8+ runtime (only for openapi-generator)
 
+If your're using the pre-build releases, you only need PHP, a Database and a HTTP Server (not Composer,
+Node.js or Java).
+
 #### Install/Update
 
 Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the distribution 
