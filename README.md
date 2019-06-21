@@ -44,7 +44,7 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 
       is a [.htaccess](web/.htaccess) file in the web directory.
-    * A sample Nginx configuration can be found in the doc directory [nginx.conf](doc/nginx.conf)
+    * A sample Nginx configuration can be found here [docker-nginx.conf](docker-nginx.conf)
 * Java 8+ runtime (only for openapi-generator)
 
 If your're using the pre-build releases, you only need PHP, a Database and a HTTP Server (not Composer,
@@ -123,6 +123,44 @@ machine that is performed each time `vagrant up` or `vagrant reload` is executed
 
 The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
 The values for the EVE application must be adjusted.
+
+### Using Docker
+
+Create the `backend/.env` file.
+
+Execute the following to start the containers and build the app:
+```
+$ export UID
+
+$ docker-compose up -d
+
+# Install backend
+$ docker-compose run composer install
+$ docker-compose run composer composer compile
+
+# Generate OpenAPI JavaScript client
+$ docker-compose run java /app/frontend/openapi.sh
+
+# Build frontend
+$ docker-compose run node npm install
+$ docker-compose run node npm run build
+
+# Install Swagger UI
+$ docker-compose run node npm install --prefix /app/web
+```
+
+Browse to `http://localhost:8080`
+
+Stop containers: `docker-compose stop`
+
+Create database for unit tests
+```
+$ docker exec neucore_db sh -c 'mysql -e "CREATE DATABASE IF NOT EXISTS neucore_test" -pneucore'
+$ docker exec neucore_db sh -c 'mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@\"%\" IDENTIFIED BY \"neucore\"" -pneucore'
+```
+
+Known problems:
+- Unit tests that need the database don't work: "Aborted connection to db" errors.
 
 ### Deploy on Heroku
 

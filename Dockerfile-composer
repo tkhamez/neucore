@@ -1,0 +1,2 @@
+FROM composer:1
+RUN docker-php-ext-install pdo_mysql
