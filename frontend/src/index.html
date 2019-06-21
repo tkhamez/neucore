@@ -41,10 +41,10 @@
             </button>
         </div>
 
-        <nav-bar v-if="settings.customization_default_theme"
+        <nav-bar v-if="settings.customization_default_theme" v-cloak
                  :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
 
-        <component v-if="settings.customization_default_theme" v-bind:is="page"
+        <component v-if="settings.customization_default_theme" v-cloak v-bind:is="page"
             :route="route"
             :initialized="initialized"
             :swagger="swagger"
@@ -53,7 +53,7 @@
             :auth-char="authChar">
         </component>
 
-        <footer class="footer bg-light text-dark text-muted small">
+        <footer v-if="settings.customization_github" v-cloak class="footer bg-light text-dark text-muted small">
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
                 <a v-cloak :href="settings.customization_github" class="github text-dark text-muted"
