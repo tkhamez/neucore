@@ -9,6 +9,7 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -65,6 +66,7 @@ class CheckTokens extends Command
                 'Checks refresh token. ' .
                 'If the character owner hash has changed or the character has been biomassed, it will be deleted.'
             )
+            ->addArgument('character', InputArgument::OPTIONAL, 'Check only one char.')
             ->addOption(
                 'sleep',
                 's',
@@ -77,20 +79,25 @@ class CheckTokens extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $charId = (int) $input->getArgument('character');
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeOutputTrait($input, $output);
 
         $this->writeln('Started "check-tokens"', false);
-        $this->check();
+        $this->check($charId);
         $this->writeln('Finished "check-tokens"', false);
     }
 
-    private function check()
+    private function check($charId = 0)
     {
-        $charIds = [];
-        $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
-        foreach ($chars as $char) {
-            $charIds[] = $char->getId();
+        if ($charId !== 0) {
+            $charIds = [$charId];
+        } else {
+            $charIds = [];
+            $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
+            foreach ($chars as $char) {
+                $charIds[] = $char->getId();
+            }
         }
 
         foreach ($charIds as $charId) {

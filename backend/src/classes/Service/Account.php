@@ -202,9 +202,11 @@ class Account
         $char->setValidToken(true);
         $result = self::CHECK_TOKEN_OK;
 
-        // check owner change
+        // Check owner change
         $data = $resourceOwner->toArray();
         if (isset($data['CharacterOwnerHash'])) {
+            // This check should never be true because the token is already invalid
+            // after a character transfer - I hope ...
             if ($char->getCharacterOwnerHash() !== $data['CharacterOwnerHash']) {
                 $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;

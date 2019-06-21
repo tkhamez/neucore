@@ -890,11 +890,12 @@ class PlayerController extends BaseController
      *         type="integer"
      *     ),
      *     @SWG\Parameter(
-     *         name="admin",
+     *         name="admin-reason",
      *         in="query",
-     *         description="Indicates that the deletion was triggered from the admin interface.",
-     *         type="integer",
-     *         enum={0, 1}
+     *         description="Specifies a reason if a user admin triggered the deletion.
+                            ('deleted-by-admin' will not create a 'Removed Character' entry.)",
+     *         type="string",
+     *         enum={"deleted-owner-changed", "deleted-by-admin", "deleted-manually"}
      *     ),
      *     @SWG\Response(
      *         response="204",
@@ -916,8 +917,8 @@ class PlayerController extends BaseController
      */
     public function deleteCharacter(string $id, Request $request, Account $characterService): Response
     {
-        $admin = $this->getUser()->getPlayer()->hasRole(Role::USER_ADMIN) &&
-            (int) $request->getParam('admin', 0) === 1;
+        $reason = $request->getParam('admin-reason', '');
+        $admin = $this->getUser()->getPlayer()->hasRole(Role::USER_ADMIN) && $reason !== '';
 
         // check "allow deletion" settings
         if (! $admin) {
@@ -940,9 +941,14 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // Check if character belongs to the logged in player account or if an admin deletes it.
-        if ($admin) {
-            $reason = RemovedCharacter::REASON_DELETED_BY_ADMIN;
+        // check for a valid reason if an admin deletes the character,
+        // otherwise check if character belongs to the logged in player account.
+        if ($admin && in_array($reason, [
+            RemovedCharacter::REASON_DELETED_MANUALLY,
+            RemovedCharacter::REASON_DELETED_OWNER_CHANGED,
+            RemovedCharacter::REASON_DELETED_BY_ADMIN,
+        ])) {
+            // okay
         } elseif ($this->getUser()->getPlayer()->hasCharacter((int) $char->getId())) {
             $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
         } else {

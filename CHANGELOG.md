@@ -1,4 +1,12 @@
 
+## 1.1.1
+
+22 Jun 2019
+
+Fix "Core does not detect a character transfer" [#23][i23]
+
+[i23]: https://github.com/tkhamez/neucore/issues/23
+
 ## 1.1.0
 
 16 Jun 2019

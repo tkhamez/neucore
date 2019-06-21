@@ -133,23 +133,27 @@ window.Vue.mixin({
 
         /**
          * @param {int} characterId
-         * @param {int} [admin]
+         * @param {string|null} [adminReason]
          * @param {function} [callback]
          */
-        deleteCharacter(characterId, admin, callback) {
+        deleteCharacter(characterId, adminReason, callback) {
             const vm = this;
             vm.loading(true);
-            new this.swagger.PlayerApi().deleteCharacter(characterId, { admin: admin || 0 }, function(error) {
-                vm.loading(false);
-                if (error) { // 403 usually
-                    vm.message('Deletion denied.', 'error');
-                    return;
+            new this.swagger.PlayerApi().deleteCharacter(
+                characterId,
+                { adminReason: adminReason || '' },
+                function(error) {
+                    vm.loading(false);
+                    if (error) { // 403 usually
+                        vm.message('Deletion denied.', 'error');
+                        return;
+                    }
+                    vm.message('Deleted character.', 'success');
+                    if (typeof callback === typeof Function) {
+                        callback();
+                    }
                 }
-                vm.message('Deleted character.', 'success');
-                if (typeof callback === typeof Function) {
-                    callback();
-                }
-            });
+            );
         },
     }
 });

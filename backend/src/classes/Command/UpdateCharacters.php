@@ -10,6 +10,7 @@ use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -72,6 +73,7 @@ class UpdateCharacters extends Command
     {
         $this->setName('update-chars')
             ->setDescription('Updates all characters, corporations and alliances from ESI.')
+            ->addArgument('character', InputArgument::OPTIONAL, 'Update one char, no corporations or alliances.')
             ->addOption(
                 'sleep',
                 's',
@@ -84,24 +86,31 @@ class UpdateCharacters extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $charId = (int) $input->getArgument('character');
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeOutputTrait($input, $output);
 
         $this->writeln('Started "update-chars"', false);
 
-        $this->updateChars();
-        $this->updateCorps();
-        $this->updateAlliances();
+        $this->updateChars($charId);
+        if ($charId === 0) {
+            $this->updateCorps();
+            $this->updateAlliances();
+        }
 
         $this->writeln('Finished "update-chars"', false);
     }
 
-    private function updateChars()
+    private function updateChars($charId = 0)
     {
-        $charIds = [];
-        $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
-        foreach ($chars as $char) {
-            $charIds[] = $char->getId();
+        if ($charId !== 0) {
+            $charIds = [$charId];
+        } else {
+            $charIds = [];
+            $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
+            foreach ($chars as $char) {
+                $charIds[] = $char->getId();
+            }
         }
 
         foreach ($charIds as $charId) {

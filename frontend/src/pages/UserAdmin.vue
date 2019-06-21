@@ -13,12 +13,47 @@
                 <div class="modal-body">
                     <p>
                         Are you sure you want to delete this character?<br>
-                        This will not create a "Removed Character" entry in the database.
+                        <span class="text-warning">{{ charToDelete.name }}</span>
                     </p>
-                    <p class="text-warning">{{ charToDelete.name }}</p>
+                    <p>If so, please choose a reason:</p>
+                    <div class="form-group">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="reason" value="deleted-owner-changed" v-model="deleteReason">
+                                Character Owner Changed<br>
+                                <span class="text-muted small">
+                                    Choose this if the character was sold to another player, check the
+                                    <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
+                                        target="_blank">Character Bazaar</a>.<br>
+                                    Creates an appropriate "removed character" entry.
+                                </span>
+                            </label>
+                            <br>
+                            <label>
+                                <input type="radio" name="reason" value="deleted-manually" v-model="deleteReason">
+                                Simon says<br>
+                                <span class="text-muted small">
+                                     Creates a "removed character" entry with the reason "deleted-manually".
+                                </span>
+                            </label>
+                            <br>
+                            <label>
+                                <input type="radio" name="reason" value="deleted-by-admin" v-model="deleteReason">
+                                <span title="see no evil">&#x1F648</span>
+                                <span title="hear no evil">&#x1F649</span>
+                                <span title="speak no evil">&#x1F64A</span>
+                                <span class="small"> - Nope</span>
+                                <br>
+                                <span class="text-muted small">
+                                    Does <em>not</em> create a "removed character" entry.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                            :disabled="deleteReason === ''" v-on:click="deleteChar()">
                         DELETE character
                     </button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -357,6 +392,7 @@ module.exports = {
             newRole: '',
             searchResult: [],
             charToDelete: null,
+            deleteReason: '',
         }
     },
 
@@ -541,12 +577,13 @@ module.exports = {
                 id: characterId,
                 name: characterName,
             };
+            this.deleteReason = '';
             window.jQuery('#deleteCharModal').modal('show');
         },
 
         deleteChar() {
             const vm = this;
-            this.deleteCharacter(this.charToDelete.id, 1, function() {
+            this.deleteCharacter(this.charToDelete.id, this.deleteReason, function() {
                 vm.getPlayer();
                 if (vm.playerEdit.id === vm.player.id) {
                     vm.updateCharacter(vm.authChar.id, function() {

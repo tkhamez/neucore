@@ -143,6 +143,9 @@ class CheckTokensTest extends ConsoleTestCase
 
     public function testExecuteCharacterDeleted()
     {
+        // This should not be possible in real scenario because the
+        // tokens should already be invalid after a character transfer - right!?.
+
         $player = (new Player())->setName('p');
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
