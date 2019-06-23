@@ -82,6 +82,8 @@ steps:
   - mkdir -p dist/neucore
   - mv backend dist/neucore/backend
   - rm -r dist/neucore/backend/src/tests
+  - rm -r dist/neucore/backend/var/cache/di
+  - rm -r dist/neucore/backend/var/cache/http
   - mv doc dist/neucore/doc
   - rm -r dist/neucore/doc/screenshots
   - mv web dist/neucore/web
