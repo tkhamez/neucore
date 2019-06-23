@@ -67,9 +67,6 @@ steps:
     sonar_token:
       from_secret: sonar_token
     sources: backend/src/classes,frontend/src
-  when:
-    branch:
-    - drone
 
 - name: distribution
   image: composer:1.8
