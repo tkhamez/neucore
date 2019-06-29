@@ -7,3 +7,4 @@ ${DIR}/console update-player-groups --log --hide-details
 ${DIR}/console check-tokens --log --hide-details
 ${DIR}/console update-member-tracking --log
 ${DIR}/console send-account-disabled-mail --log
+${DIR}/console clean-http-cache --log

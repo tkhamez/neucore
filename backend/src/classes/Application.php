@@ -7,6 +7,7 @@ use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LogglyFormatter;
 use Monolog\Formatter\LogstashFormatter;
 use Neucore\Command\CheckTokens;
+use Neucore\Command\CleanHttpCache;
 use Neucore\Command\ClearCache;
 use Neucore\Command\DBVerifySSL;
 use Neucore\Command\DoctrineFixturesLoad;
@@ -517,5 +518,6 @@ class Application
         $console->add($this->container->get(DoctrineFixturesLoad::class));
         $console->add($this->container->get(DBVerifySSL::class));
         $console->add($this->container->get(ClearCache::class));
+        $console->add($this->container->get(CleanHttpCache::class));
     }
 }

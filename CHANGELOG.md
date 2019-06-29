@@ -4,6 +4,7 @@
 dd mm yyyy
 
 - Member tracking: added option to limit to members that do not belong to a player account.
+- Added command to delete expired Guzzle cache entries.
 
 ## 1.1.1
 
