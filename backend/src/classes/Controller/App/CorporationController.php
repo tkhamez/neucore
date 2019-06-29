@@ -54,6 +54,13 @@ class CorporationController
      *         description="Limit to members who were active in the last x days.",
      *         type="integer"
      *     ),
+     *     @SWG\Parameter(
+     *         name="account",
+     *         in="query",
+     *         description="Limit to members with (true) or without (false) an account.",
+     *         type="string",
+     *         enum={"true", "false"}
+     *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="Members ordered by logonDate descending (character and player properties excluded).",
@@ -67,12 +74,17 @@ class CorporationController
      */
     public function memberTrackingV1(string $id, Request $request)
     {
-        $inactive = (int) $request->getParam('inactive', 0);
-        $active = (int) $request->getParam('active', 0);
+        $inactive = $request->getParam('inactive');
+        $active = $request->getParam('active');
+        $account = $request->getParam('account');
+        $account = $account === 'true' ? true : ($account === 'false' ? false : null);
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
-            ->findByLogonDate((int) $id, $inactive, $active);
+            ->setInactive($inactive !== null ? (int) $inactive : null)
+            ->setActive($active !== null ? (int) $active : null)
+            ->setAccount($account)
+            ->findMatching((int) $id);
 
         $result = [];
         foreach ($members as $member) {

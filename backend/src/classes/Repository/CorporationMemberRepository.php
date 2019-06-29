@@ -2,39 +2,111 @@
 
 namespace Neucore\Repository;
 
-use Neucore\Entity\Corporation;
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\CorporationMember;
-use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method CorporationMember|null find($id, $lockMode = null, $lockVersion = null)
  * @method CorporationMember[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CorporationMemberRepository extends \Doctrine\ORM\EntityRepository
+class CorporationMemberRepository extends EntityRepository
 {
     /**
-     * @param int $corporationId EVE corporation ID
-     * @param int|null $inactive Inactive for days
-     * @param int|null $active Active within days
-     * @return CorporationMember[]
+     * @var int|null
      */
-    public function findByLogonDate(int $corporationId, int $inactive = null, int $active = null): array
+    private $active;
+
+    /**
+     * @var int|null
+     */
+    private $inactive;
+
+    /**
+     * @var bool|null
+     */
+    private $account;
+
+    /**
+     * Limit to members who were active in the last x days.
+     *
+     * @see CorporationMemberRepository::findMatching()
+     */
+    public function setActive(?int $days): self
     {
-        $criteria = new Criteria();
-        $criteria
-            ->where($criteria->expr()->eq('corporation', (new Corporation())->setId($corporationId)))
-            ->orderBy(['logonDate' => 'DESC']);
+        $this->active = $days;
 
-        if ($active > 0) {
-            $activeDate = date_create('now -'.$active.' days');
-            $criteria->andWhere($criteria->expr()->gte('logonDate', $activeDate));
+        return $this;
+    }
+
+    /**
+     * Limit to members who have been inactive for x days or longer.
+     *
+     * @see CorporationMemberRepository::findMatching()
+     */
+    public function setInactive(?int $days): self
+    {
+        $this->inactive = $days;
+
+        return $this;
+    }
+
+    /**
+     * Limit to members with (true) or without (false) an account
+     *
+     * @see CorporationMemberRepository::findMatching()
+     */
+    public function setAccount(?bool $account): self
+    {
+        $this->account = $account;
+
+        return $this;
+    }
+
+    /**
+     * Reset filter variables.
+     *
+     * @see CorporationMemberRepository::setActive()
+     * @see CorporationMemberRepository::setInactive()
+     * @see CorporationMemberRepository::setAccount()
+     */
+    public function resetCriteria()
+    {
+        $this->setInactive(null);
+        $this->setActive(null);
+        $this->setAccount(null);
+
+        return $this;
+    }
+
+    /**
+     * @param int $corporationId EVE corporation ID
+     * @return CorporationMember[]
+     * @see CorporationMemberRepository::setActive()
+     * @see CorporationMemberRepository::setInactive()
+     * @see CorporationMemberRepository::setAccount()
+     */
+    public function findMatching(int $corporationId): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.corporation = :corporation_id')->setParameter('corporation_id', $corporationId)
+            ->orderBy('c.logonDate', 'DESC');
+
+        if ($this->active > 0) {
+            $activeDate = date_create('now -'.$this->active.' days');
+            $qb->andWhere('c.logonDate >= :active')->setParameter('active', $activeDate->format('Y-m-d'));
         }
 
-        if ($inactive > 0) {
-            $inactiveDate = date_create('now -'.$inactive.' days');
-            $criteria->andWhere($criteria->expr()->lt('logonDate', $inactiveDate));
+        if ($this->inactive > 0) {
+            $inactiveDate = date_create('now -'.$this->inactive.' days');
+            $qb->andWhere('c.logonDate < :inactive')->setParameter('inactive', $inactiveDate->format('Y-m-d'));
         }
 
-        return $this->matching($criteria)->getValues();
+        if ($this->account) {
+            $qb->andWhere($qb->expr()->isNotNull('c.character'));
+        } elseif ($this->account === false) {
+            $qb->andWhere($qb->expr()->isNull('c.character'));
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

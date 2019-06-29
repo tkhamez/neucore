@@ -18,16 +18,25 @@
                         </option>
                     </select>
                 </div>
-                <label class="mt-2">
-                    <input type="text" pattern="[0-9]*" class="form-control input-days"
+                <label>
+                    <input type="text" pattern="[0-9]*" class="form-control input-option"
                            v-model="daysInactive">
                     Limit to members who have been inactive for x days or longer.
                 </label>
                 <br>
-                <label class="mt-2">
-                    <input type="text" pattern="[0-9]*" class="form-control input-days"
+                <label>
+                    <input type="text" pattern="[0-9]*" class="form-control input-option"
                            v-model="daysActive">
                     Limit to members who were active in the last x days.
+                </label>
+                <br>
+                <label>
+                    <select class="form-control input-option" v-model="account">
+                        <option></option>
+                        <option value="true">with</option>
+                        <option value="false">without</option>
+                    </select>
+                    Limit to members with/without an account
                 </label>
 
                 <table class="table table-hover table-sm">
@@ -108,6 +117,7 @@ module.exports = {
             members: [],
             daysActive: null,
             daysInactive: null,
+            account: null,
         }
     },
 
@@ -141,6 +151,10 @@ module.exports = {
         },
 
         daysInactive: function() {
+            this.getMembersDelayed(this);
+        },
+
+        account: function() {
             this.getMembersDelayed(this);
         }
     },
@@ -186,7 +200,8 @@ module.exports = {
             const corporationId = parseInt(this.route[1], 10);
             const opts = {
                 inactive: this.daysInactive,
-                active: this.daysActive
+                active: this.daysActive,
+                account: this.account
             };
 
             const vm = this;
@@ -211,8 +226,8 @@ module.exports = {
     table {
         font-size: 90%;
     }
-    .input-days {
+    .input-option {
         display: inline;
-        width: 70px;
+        width: 100px;
     }
 </style>

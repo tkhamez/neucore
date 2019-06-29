@@ -2,7 +2,9 @@
 
 namespace Tests\Functional\Controller\App;
 
+use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Tests\Functional\WebTestCase;
@@ -48,12 +50,16 @@ class CorporationControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_TRACKING])->getId();
         $corp = (new Corporation())->setId(10)->setTicker('t1')->setName('corp 1');
+        $player = (new Player())->setName('p');
+        $char = (new Character())->setId(1)->setName('c')->setPlayer($player);
         $member1 = (new CorporationMember())->setId(110)->setName('m1')->setCorporation($corp)
             ->setLogonDate(new \DateTime('now -5 days'));
         $member2 = (new CorporationMember())->setId(111)->setName('m2')->setCorporation($corp)
-            ->setLogonDate(new \DateTime('now -10 days'));
+            ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char);
         $member3 = (new CorporationMember())->setId(112)->setName('m3')->setCorporation($corp)
             ->setLogonDate(new \DateTime('now -15 days'));
+        $this->helper->getEm()->persist($player);
+        $this->helper->getEm()->persist($char);
         $this->helper->getEm()->persist($corp);
         $this->helper->getEm()->persist($member1);
         $this->helper->getEm()->persist($member2);
@@ -62,7 +68,7 @@ class CorporationControllerTest extends WebTestCase
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
-        $params = '?inactive=7&active=12';
+        $params = '?inactive=7&active=12&account=true';
         $response1 = $this->runApp('GET', '/api/app/v1/corporation/11/member-tracking'.$params, null, $headers);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response1));

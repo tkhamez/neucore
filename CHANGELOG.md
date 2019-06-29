@@ -1,4 +1,10 @@
 
+## next
+
+dd mm yyyy
+
+- Member tracking: added option to limit to members that do not belong to a player account.
+
 ## 1.1.1
 
 22 Jun 2019

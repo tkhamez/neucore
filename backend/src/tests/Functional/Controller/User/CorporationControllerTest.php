@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\Events;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Role;
 use Neucore\Repository\AllianceRepository;
@@ -28,7 +29,7 @@ class CorporationControllerTest extends WebTestCase
     private $h;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -384,7 +385,7 @@ class CorporationControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $em = $this->h->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $res = $this->runApp(
             'PUT',
@@ -466,7 +467,7 @@ class CorporationControllerTest extends WebTestCase
 
         $this->loginUser(7);
 
-        $params = '?inactive=7&active=12';
+        $params = '?inactive=7&active=12&account=true';
         $response = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
         $this->assertEquals(200, $response->getStatusCode());
         $result = $this->parseJsonBody($response);
@@ -484,7 +485,7 @@ class CorporationControllerTest extends WebTestCase
     {
         $this->h->emptyDb();
 
-        $this->h->addCharacterMain('User', 6, [Role::USER]);
+        $char = $this->h->addCharacterMain('User', 6, [Role::USER]);
         $this->h->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
@@ -495,7 +496,7 @@ class CorporationControllerTest extends WebTestCase
         $group2 = (new Group())->setName('group 2');
 
         $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2)
-            ->setLogonDate(new \DateTime('now -10 days'));
+            ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char);
 
         $corp1->addGroup($group1);
         $corp2->addGroup($group1);
