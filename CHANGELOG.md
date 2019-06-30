@@ -1,7 +1,7 @@
 
-## next
+## 1.2.0
 
-dd mm yyyy
+30 Jun 2019
 
 - Member tracking: added option to limit to members that do not belong to a player account.
 - Added command to delete expired Guzzle cache entries.
