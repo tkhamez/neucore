@@ -92,13 +92,15 @@ class CorporationMemberRepository extends EntityRepository
             ->orderBy('c.logonDate', 'DESC');
 
         if ($this->active > 0) {
-            $activeDate = date_create('now -'.$this->active.' days');
-            $qb->andWhere('c.logonDate >= :active')->setParameter('active', $activeDate->format('Y-m-d'));
+            if ($activeDate = date_create('now -'.$this->active.' days')) {
+                $qb->andWhere('c.logonDate >= :active')->setParameter('active', $activeDate->format('Y-m-d'));
+            }
         }
 
         if ($this->inactive > 0) {
-            $inactiveDate = date_create('now -'.$this->inactive.' days');
-            $qb->andWhere('c.logonDate < :inactive')->setParameter('inactive', $inactiveDate->format('Y-m-d'));
+            if ($inactiveDate = date_create('now -'.$this->inactive.' days')) {
+                $qb->andWhere('c.logonDate < :inactive')->setParameter('inactive', $inactiveDate->format('Y-m-d'));
+            }
         }
 
         if ($this->account) {

@@ -984,7 +984,8 @@ class PlayerControllerTest extends WebTestCase
             'DELETE',
             '/api/user/player/delete-character/10?admin-reason=' . RemovedCharacter::REASON_DELETED_BY_ADMIN,
             null,
-            null, [LoggerInterface::class => $this->log]
+            null,
+            [LoggerInterface::class => $this->log]
         );
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -1014,7 +1015,8 @@ class PlayerControllerTest extends WebTestCase
             'DELETE',
             '/api/user/player/delete-character/10?admin-reason=' . RemovedCharacter::REASON_DELETED_OWNER_CHANGED,
             null,
-            null, [LoggerInterface::class => $this->log]
+            null,
+            [LoggerInterface::class => $this->log]
         );
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -1045,7 +1047,8 @@ class PlayerControllerTest extends WebTestCase
             'DELETE',
             '/api/user/player/delete-character/10?admin-reason=' . RemovedCharacter::REASON_DELETED_BIOMASSED,
             null,
-            null, [LoggerInterface::class => $this->log]
+            null,
+            [LoggerInterface::class => $this->log]
         );
         $this->assertEquals(403, $response->getStatusCode());
 

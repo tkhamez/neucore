@@ -114,13 +114,18 @@ composer openapi
 
 Security check of packages from composer.lock:
 ```
-composer security:check
+composer security-checker
 ```
 
 Check code with PHPStan:
 ```
-analyse:src
-analyse:test
+composer phpstan:src
+composer phpstan:test
+```
+
+Check code with Phan:
+```
+composer phan
 ```
 
 Run the built-in web server:

@@ -125,6 +125,7 @@ The console application has commands to:
 - perform automatic group assignment based on corporation and alliance to group configuration
 - update member tracking data
 - send EVE mail to deactivated accounts
+- delete expired HTTP cache entries
 
 ## Data Structure (Backend)
 

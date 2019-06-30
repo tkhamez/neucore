@@ -86,7 +86,7 @@ class UpdateCharacters extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $charId = (int) $input->getArgument('character');
+        $charId = intval($input->getArgument('character'));
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeOutputTrait($input, $output);
 

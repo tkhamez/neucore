@@ -72,16 +72,18 @@ If available, the app uses the APCu cache in production mode. This must be clear
 
 If you downloaded the .tar.gz file, you only need to run the database migrations and seeds and clear the cache.
 
-If you are using a different cache directory, you must first generate the Doctrine proxy cache files:
+If you are using a different cache directory, you must first copy or generate the Doctrine proxy cache files:
 ```
+cp -R backend/var/cache/proxies /path/to/your/cache/proxies
+# or
 cd backend
 vendor/bin/doctrine orm:generate-proxies
 ```
 
-Then execute (adjust cache paths if necessary)
+Then execute (adjust cache path if necessary)
 ```
 cd backend
-rm -rf var/cache/{di,http}
+rm -rf var/cache/di
 vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 bin/console doctrine-fixtures-load
 ```
@@ -89,10 +91,11 @@ bin/console doctrine-fixtures-load
 ##### Git
 
 If you have cloned the repository, you must install the dependencies and build the backend and frontend:
-
-`./install.sh` or
-
-`./install.sh prod`
+```
+./install.sh
+# or
+./install.sh prod
+```
 
 #### Cron Job
 
@@ -120,6 +123,7 @@ Only tested with Vagrant 2 + libvirt.
 
 Please note that the `rsync` synchronization method used is a one-way synchronization from host to virtual 
 machine that is performed each time `vagrant up` or `vagrant reload` is executed.
+See https://www.vagrantup.com/docs/synced-folders for other methods. 
 
 The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
 The values for the EVE application must be adjusted.

@@ -8,7 +8,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  *
@@ -47,17 +46,22 @@ class CleanHttpCache extends Command
     {
         $this->executeOutputTrait($input, $output);
 
+        /* @var $files \SplFileInfo[] */
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(
             $this->config['guzzle']['cache']['dir']
         ));
-        foreach ($files as $fileInfo) { /* @var $file SplFileInfo */
+        foreach ($files as $fileInfo) {
             if ($fileInfo->isDir()) {
                 continue;
             }
             $file = $fileInfo->getRealPath();
 
-            $lifetime = -1;
             $resource = fopen($file, 'r');
+            if (! $resource) {
+                continue;
+            }
+
+            $lifetime = -1;
             $line = fgets($resource);
             if ($line !== false) {
                 $lifetime = (int) $line;

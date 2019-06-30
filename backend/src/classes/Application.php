@@ -312,6 +312,7 @@ class Application
                     null,
                     false
                 );
+                /* @phan-suppress-next-line PhanDeprecatedFunction */
                 AnnotationRegistry::registerLoader('class_exists');
                 if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '' &&
                     (
