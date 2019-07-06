@@ -101,6 +101,12 @@ class Character implements \JsonSerializable
     private $scopes;
 
     /**
+     * @ORM\Column(type="datetime", name="created", nullable=true)
+     * @var \DateTime|null
+     */
+    private $created;
+
+    /**
      * @ORM\Column(type="datetime", name="last_login", nullable=true)
      * @var \DateTime|null
      */
@@ -384,6 +390,18 @@ class Character implements \JsonSerializable
     public function getScopes()
     {
         return $this->scopes;
+    }
+
+    public function setCreated(\DateTime $created)
+    {
+        $this->created = clone $created;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTime
+    {
+        return $this->created;
     }
 
     /**

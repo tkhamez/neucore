@@ -226,6 +226,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(2, count($chars));
 
         $this->assertSame(101, $chars[1]->getId());
+        $this->assertLessThanOrEqual(time(), $chars[1]->getCreated()->getTimestamp());
         $this->assertSame('Alt 1', $chars[1]->getName());
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame('tk', $chars[1]->getAccessToken());

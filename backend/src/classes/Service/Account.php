@@ -77,6 +77,11 @@ class Account
         $char->setId($characterId);
         $char->setName($characterName);
         $char->setMain(true);
+        try {
+            $char->setCreated(new \DateTime());
+        } catch (\Exception $e) {
+            // ignore
+        }
         $char->setPlayer($player);
         $player->addCharacter($char);
 

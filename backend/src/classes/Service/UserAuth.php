@@ -163,6 +163,11 @@ class UserAuth implements RoleProviderInterface
         } else {
             $alt = new Character();
             $alt->setId($characterId);
+            try {
+                $alt->setCreated(new \DateTime());
+            } catch (\Exception $e) {
+                // ignore
+            }
         }
 
         // add alt to account if it is not the currently logged in user

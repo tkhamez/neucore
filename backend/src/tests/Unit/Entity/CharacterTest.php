@@ -6,8 +6,9 @@ use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Corporation;
+use PHPUnit\Framework\TestCase;
 
-class CharacterTest extends \PHPUnit\Framework\TestCase
+class CharacterTest extends TestCase
 {
     public function testJsonSerialize()
     {
@@ -163,6 +164,23 @@ class CharacterTest extends \PHPUnit\Framework\TestCase
         $char = new Character();
         $char->setScopes('esi.one esi.two');
         $this->assertSame('esi.one esi.two', $char->getScopes());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testSetGetCreated()
+    {
+        $dt1 = new \DateTime('2019-07-06 14:56:52');
+
+        $char = new Character();
+        $this->assertNull($char->getCreated());
+
+        $char->setCreated($dt1);
+        $dt2 = $char->getCreated();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2019-07-06T14:56:52+00:00', $dt2->format(\DateTime::ATOM));
     }
 
     /**
