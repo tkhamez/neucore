@@ -55,7 +55,7 @@ matrix:
     - php: nightly
       env: NODE_VERSION="10.16.0" DB=mariadb:10.4
       addons:
-        mariadb: "10.3"
+        mariadb: "10.4"
 
 before_install:
   - if [[ "$DB" == "mysql:8.0" ]]; then wget https://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb; fi
