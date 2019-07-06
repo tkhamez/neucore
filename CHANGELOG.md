@@ -1,4 +1,10 @@
 
+## next
+
+dd mm yyyy
+
+- The minimum required Node.js version has been increased to 8.12.0.
+
 ## 1.2.0
 
 30 Jun 2019

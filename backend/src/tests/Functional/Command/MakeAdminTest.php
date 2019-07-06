@@ -2,7 +2,6 @@
 
 namespace Tests\Functional\Command;
 
-use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;

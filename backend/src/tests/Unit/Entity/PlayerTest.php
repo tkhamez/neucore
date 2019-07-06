@@ -180,8 +180,8 @@ class PlayerTest extends TestCase
         $player = new Player();
         $player->addCharacter($char1);
 
-        $this->assertTrue($player->hasCharacter($char1->getId()));
-        $this->assertFalse($player->hasCharacter($char2->getId()));
+        $this->assertTrue($player->hasCharacter((int) $char1->getId()));
+        $this->assertFalse($player->hasCharacter((int) $char2->getId()));
     }
 
     /**

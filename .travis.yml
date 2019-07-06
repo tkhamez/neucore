@@ -23,9 +23,9 @@ env:
     - BRAVECORE_DATABASE_URL=mysql://neu:core@localhost/neucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://neu:core@localhost/neucore
   matrix:
-    - NODE_VERSION="8.16.0" DB=mysql:5.7
-    - NODE_VERSION="10.16.0" DB=mysql:8.0
-    - NODE_VERSION="10.16.0" DB=mariadb:10.3
+    - NODE_VERSION="8.12.0" DB=mysql:5.7
+    - NODE_VERSION="8.16.0" DB=mysql:8.0
+    - NODE_VERSION="10.13.0" DB=mariadb:10.3
     - NODE_VERSION="10.16.0" DB=mariadb:10.4
 
 matrix:
@@ -39,13 +39,13 @@ matrix:
     - php: nightly
   include:
     - php: "7.1"
-      env: NODE_VERSION="8.16.0" DB=mysql:5.7
+      env: NODE_VERSION="8.12.0" DB=mysql:5.7
       services:
         - mysql
     - php: "7.2"
-      env: NODE_VERSION="10.16.0" DB=mysql:8.0
+      env: NODE_VERSION="8.16.0" DB=mysql:8.0
     - php: "7.3"
-      env: NODE_VERSION="10.16.0" DB=mariadb:10.3
+      env: NODE_VERSION="10.13.0" DB=mariadb:10.3
       addons:
         mariadb: "10.3"
     - php: "7.3"
@@ -53,7 +53,7 @@ matrix:
       addons:
         mariadb: "10.4"
     - php: nightly
-      env: NODE_VERSION="10.16.0" DB=mariadb:10.3
+      env: NODE_VERSION="10.16.0" DB=mariadb:10.4
       addons:
         mariadb: "10.3"
 
@@ -71,6 +71,8 @@ before_install:
   - if [[ "$DB" != "mysql:8.0" && "$DB" != "mariadb:10.4" ]]; then mysql -e "CREATE USER 'neu'@'localhost' IDENTIFIED BY 'core';"; fi
   - sudo mysql -e "GRANT ALL PRIVILEGES ON neucore.* TO 'neu'@'localhost'"
   - nvm install $NODE_VERSION
+  - node -v
+  - npm -v
 
 install:
   - ./install.sh

@@ -57,7 +57,7 @@ class GuzzleEsiHeadersTest extends TestCase
         );
 
         $function = $this->obj->__invoke($this->getHandler($response));
-        $function(new Request('', ''), []);
+        $function(new Request('GET', 'https://local.host/esi/path'), []);
 
         $var = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
         $val = \json_decode($var->getValue());

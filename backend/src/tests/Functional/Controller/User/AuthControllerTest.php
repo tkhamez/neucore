@@ -114,7 +114,7 @@ class AuthControllerTest extends WebTestCase
     public function testCallbackException()
     {
         $state = '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
+        $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         $response = $this->runApp('GET', '/login-callback?state=INVALID'); // fail early
         $this->assertSame(302, $response->getStatusCode());
@@ -131,7 +131,7 @@ class AuthControllerTest extends WebTestCase
         (new Helper())->emptyDb();
 
         $state = '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
+        $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken
@@ -174,7 +174,7 @@ class AuthControllerTest extends WebTestCase
         $h->addRoles([Role::USER]);
 
         $state = '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
+        $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken()
@@ -204,7 +204,7 @@ class AuthControllerTest extends WebTestCase
         (new Helper())->emptyDb();
 
         $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
-        $_SESSION = ['auth_state' => $state];
+        $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": "t"}'), // for getAccessToken

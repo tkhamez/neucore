@@ -1198,7 +1198,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->playerId = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer()->getId();
 
-        $player = $this->managerId = $this->h->addCharacterMain(
+        $player = $this->h->addCharacterMain(
             'Manager',
             11,
             [Role::USER, Role::APP_MANAGER, Role::GROUP_MANAGER]

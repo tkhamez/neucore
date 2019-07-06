@@ -4,12 +4,15 @@ namespace Tests\Unit\Middleware;
 
 use Neucore\Middleware\PsrCors;
 use PHPUnit\Framework\TestCase;
+use Slim\Http\Environment;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class PsrCorsTest extends TestCase
 {
     public function testAddsHeader()
     {
-        $req = new PsrCorsTestRequest();
+        $req = Request::createFromEnvironment(Environment::mock());
         $req = $req->withHeader('HTTP_ORIGIN', 'https://domain.tld');
 
         $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
@@ -17,7 +20,7 @@ class PsrCorsTest extends TestCase
         };
 
         $cors = new PsrCors(['https://domain.tld', 'https://domain2.tld']);
-        $response = $cors($req, new PsrCorsTestResponse(), $next);
+        $response = $cors($req, new Response(), $next);
 
         $headers = $response->getHeaders();
         $this->assertSame([
@@ -28,7 +31,7 @@ class PsrCorsTest extends TestCase
 
     public function testDoesNotAddHeader()
     {
-        $req = new PsrCorsTestRequest();
+        $req = Request::createFromEnvironment(Environment::mock());
         $req = $req->withHeader('HTTP_ORIGIN', 'http://domain.tld');
 
         $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
@@ -36,7 +39,7 @@ class PsrCorsTest extends TestCase
         };
 
         $cors = new PsrCors(['https://domain.tld', 'https://domain2.tld']);
-        $response = $cors($req, new PsrCorsTestResponse(), $next);
+        $response = $cors($req, new Response(), $next);
 
         $this->assertSame([], $response->getHeaders());
     }

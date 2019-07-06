@@ -20,7 +20,6 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 
@@ -53,7 +52,7 @@ class Helper
         (new SessionData())->setReadOnly(true);
     }
 
-    public function getEm(bool $discrete = false): ?EntityManagerInterface
+    public function getEm(bool $discrete = false): EntityManagerInterface
     {
         if (self::$em === null || $discrete) {
             $conf = (new Application())->loadSettings(true)['doctrine'];
@@ -65,14 +64,10 @@ class Helper
                 null,
                 false
             );
+            /* @phan-suppress-next-line PhanDeprecatedFunction */
             AnnotationRegistry::registerLoader('class_exists');
 
-            $em = null;
-            try {
-                $em = EntityManager::create($conf['connection'], $config);
-            } catch (ORMException $e) {
-                // ignore
-            }
+            $em = EntityManager::create($conf['connection'], $config);
 
             if ($discrete) {
                 return $em;
