@@ -193,10 +193,15 @@ This is also where the name "Neucore" comes from.
 
 ### Related Software
 
-Clients for the application API are available on the Brave Collective GitHub for PHP and Python:
-
-- [neucore-api](https://github.com/bravecollective/neucore-api)
-- [neucore-api-python](https://github.com/bravecollective/neucore-api-python)
+- [neucore-api](https://github.com/bravecollective/neucore-api) PHP OpenAPI client
+- [neucore-api-python](https://github.com/bravecollective/neucore-api-python) Python OpenAPI client
+- [Neucore connector boilerplate](https://github.com/bravecollective/neucore-connector-boilerplate) 
+  An example application that uses ESE SSO and Neucore groups for access control.
+- A [TimerBoard](https://github.com/tkhamez/neucore-timerboard) (based on the boilerplate).
+- Neucore integration with other apps:
+  [EVE-SRP](https://github.com/eve-n0rman/evesrp/tree/feature/braveneucore),
+  [phpBB](https://github.com/bravecollective/forum-auth),
+  [Mumble](https://github.com/bravecollective/mumble-sso).
 
 ### Contact
 
