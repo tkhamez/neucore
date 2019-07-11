@@ -73,7 +73,7 @@ try {
     $result = $apiInstance->esiPostV1WithHttpInfo(
         '/latest/characters/'.$coreCharId.'/assets/names/',
         $coreCharId,
-        \json_encode([$itemId])
+        json_encode([$itemId])
     );
 
     echo 'Status: ', $result[1], PHP_EOL;
@@ -83,7 +83,7 @@ try {
         $header[$name] = $value[0];
     }
     print_r($header);
-    echo 'name: ', \json_decode($result[0], true)[0]['name'], PHP_EOL;
+    echo 'name: ', json_decode($result[0], true)[0]['name'], PHP_EOL;
 } catch (Exception $e) {
     echo 'Exception when calling ApplicationApi->esiV1: ', $e->getMessage(), PHP_EOL;
 }
