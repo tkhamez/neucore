@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Service;
 
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -95,7 +96,7 @@ class OAuthTokenTest extends TestCase
     }
 
     /**
-     * @expectedException \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     * @throws IdentityProviderException
      */
     public function testRefreshAccessTokenIdentityProviderException()
     {
@@ -110,11 +111,13 @@ class OAuthTokenTest extends TestCase
             'expires' => 1349067601 // 2012-10-01 + 1
         ]);
 
+        $this->expectException(IdentityProviderException::class);
+
         $this->es->refreshAccessToken($token);
     }
 
     /**
-     * @expectedException \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     * @throws IdentityProviderException
      */
     public function testRefreshAccessTokenNoRefresh()
     {
@@ -126,11 +129,13 @@ class OAuthTokenTest extends TestCase
             'expires' => time() - 10000
         ]);
 
+        $this->expectException(IdentityProviderException::class);
+
         $this->es->refreshAccessToken($token);
     }
 
     /**
-     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     * @throws IdentityProviderException
      */
     public function testRefreshAccessTokenNotExpired()
     {

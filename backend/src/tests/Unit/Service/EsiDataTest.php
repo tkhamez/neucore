@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Repository\AllianceRepository;
@@ -14,12 +16,13 @@ use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Client;
 use Tests\Logger;
 use Tests\WriteErrorListener;
 
-class EsiDataTest extends \PHPUnit\Framework\TestCase
+class EsiDataTest extends TestCase
 {
     /**
      * @var Helper
@@ -27,7 +30,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
     private $testHelper;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -92,7 +95,7 @@ class EsiDataTest extends \PHPUnit\Framework\TestCase
 
         // a second EsiData instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
         $this->csError = new EsiData(
             $this->log,
             $esiApiFactory,

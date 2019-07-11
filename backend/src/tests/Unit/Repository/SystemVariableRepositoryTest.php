@@ -2,15 +2,17 @@
 
 namespace Tests\Unit\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
-class SystemVariableRepositoryTest extends \PHPUnit\Framework\TestCase
+class SystemVariableRepositoryTest extends TestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 

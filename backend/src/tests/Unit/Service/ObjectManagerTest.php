@@ -2,12 +2,14 @@
 
 namespace Tests\Unit\Service;
 
+use Doctrine\ORM\Events;
 use Neucore\Service\ObjectManager;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;
 
-class ObjectManagerTest extends \PHPUnit\Framework\TestCase
+class ObjectManagerTest extends TestCase
 {
     public function testFlush()
     {
@@ -19,7 +21,7 @@ class ObjectManagerTest extends \PHPUnit\Framework\TestCase
     public function testFlushException()
     {
         $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $log = new Logger('Test');
 

@@ -7,6 +7,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
 use Slim\Http\Cookies;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
@@ -15,7 +16,7 @@ use Slim\Http\RequestBody;
 use Slim\Http\Uri;
 use Tests\Helper;
 
-class AppAuthTest extends \PHPUnit\Framework\TestCase
+class AppAuthTest extends TestCase
 {
     /**
      * @var AppAuth

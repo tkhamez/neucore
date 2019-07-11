@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Migrations;
 
+use Doctrine\DBAL\DBALException;
 use Neucore\Entity\Player;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
@@ -19,7 +20,7 @@ final class Version20190220185537 extends AbstractMigration
     }
 
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function up(Schema $schema) : void
     {
@@ -31,7 +32,7 @@ final class Version20190220185537 extends AbstractMigration
     }
 
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function down(Schema $schema) : void
     {

@@ -6,8 +6,9 @@ use Neucore\Entity\App;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use PHPUnit\Framework\TestCase;
 
-class AppTest extends \PHPUnit\Framework\TestCase
+class AppTest extends TestCase
 {
     public function testJsonSerialize()
     {

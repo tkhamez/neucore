@@ -6,8 +6,9 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
+use PHPUnit\Framework\TestCase;
 
-class CorporationMemberTest extends \PHPUnit\Framework\TestCase
+class CorporationMemberTest extends TestCase
 {
     /**
      * @throws \Exception

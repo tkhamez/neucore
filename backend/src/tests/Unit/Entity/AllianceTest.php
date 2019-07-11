@@ -5,8 +5,9 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
+use PHPUnit\Framework\TestCase;
 
-class AllianceTest extends \PHPUnit\Framework\TestCase
+class AllianceTest extends TestCase
 {
     public function testJsonSerialize()
     {

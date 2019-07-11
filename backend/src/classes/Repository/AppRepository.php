@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\App;
 
 /**
@@ -14,6 +15,6 @@ use Neucore\Entity\App;
  * @method App|null findOneBy(array $criteria, array $orderBy = null)
  * @method App[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AppRepository extends \Doctrine\ORM\EntityRepository
+class AppRepository extends EntityRepository
 {
 }

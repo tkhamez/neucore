@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Group;
 
 /**
@@ -14,6 +15,6 @@ use Neucore\Entity\Group;
  * @method Group|null findOneBy(array $criteria, array $orderBy = null)
  * @method Group[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class GroupRepository extends \Doctrine\ORM\EntityRepository
+class GroupRepository extends EntityRepository
 {
 }

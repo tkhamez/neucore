@@ -3,8 +3,9 @@
 namespace Tests\Unit\Service;
 
 use Neucore\Service\Random;
+use PHPUnit\Framework\TestCase;
 
-class RandomTest extends \PHPUnit\Framework\TestCase
+class RandomTest extends TestCase
 {
     public function testBytes()
     {

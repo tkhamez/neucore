@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Migrations;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -19,7 +20,7 @@ final class Version20190706125237 extends AbstractMigration
 
     /**
      * @param Schema $schema
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function up(Schema $schema) : void
     {
@@ -31,7 +32,7 @@ final class Version20190706125237 extends AbstractMigration
 
     /**
      * @param Schema $schema
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function down(Schema $schema) : void
     {

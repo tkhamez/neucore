@@ -5,11 +5,12 @@ namespace Tests\Unit\Slim\Handlers;
 use Neucore\Slim\Handlers\Error;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class ErrorTest extends \PHPUnit\Framework\TestCase
+class ErrorTest extends TestCase
 {
     public function testInvoke()
     {

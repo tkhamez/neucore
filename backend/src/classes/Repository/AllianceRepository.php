@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Alliance;
 
 /**
@@ -14,10 +15,10 @@ use Neucore\Entity\Alliance;
  * @method Alliance|null findOneBy(array $criteria, array $orderBy = null)
  * @method Alliance[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AllianceRepository extends \Doctrine\ORM\EntityRepository
+class AllianceRepository extends EntityRepository
 {
     /**
-     * @return \Neucore\Entity\Alliance[]
+     * @return Alliance[]
      */
     public function getAllWithGroups()
     {

@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\SystemVariable;
 use GuzzleHttp\ClientInterface;
@@ -15,7 +16,7 @@ use Tests\Logger;
 class UpdateMemberTrackingTest extends ConsoleTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 

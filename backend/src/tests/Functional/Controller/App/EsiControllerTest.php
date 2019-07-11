@@ -89,15 +89,15 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
-        $response1 = $this->runApp('GET', '/api/app/v1/esi/lastest/alliances/', null, $headers);
+        $response1 = $this->runApp('GET', '/api/app/v1/esi/latest/alliances/', null, $headers);
         $this->assertSame(400, $response1->getStatusCode());
         $this->assertSame('Public ESI routes are not allowed.', $response1->getReasonPhrase());
 
-        $response2 = $this->runApp('GET', '/api/app/v1/esi/lastest/alliances/123456/icons/', null, $headers);
+        $response2 = $this->runApp('GET', '/api/app/v1/esi/latest/alliances/123456/icons/', null, $headers);
         $this->assertSame(400, $response2->getStatusCode());
         $this->assertSame('Public ESI routes are not allowed.', $response2->getReasonPhrase());
 
-        $response3 = $this->runApp('GET', '/api/app/v1/esi/lastest/killmails/123456/123abc/', null, $headers);
+        $response3 = $this->runApp('GET', '/api/app/v1/esi/latest/killmails/123456/123abc/', null, $headers);
         $this->assertSame(400, $response3->getStatusCode());
         $this->assertSame('Public ESI routes are not allowed.', $response3->getReasonPhrase());
     }

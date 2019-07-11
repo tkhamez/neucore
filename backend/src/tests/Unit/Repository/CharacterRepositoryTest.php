@@ -3,10 +3,11 @@
 namespace Tests\Unit\Repository;
 
 use Neucore\Factory\RepositoryFactory;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Neucore\Entity\Character;
 
-class CharacterRepositoryTest extends \PHPUnit\Framework\TestCase
+class CharacterRepositoryTest extends TestCase
 {
     public function testFindByNamePartialMatch()
     {

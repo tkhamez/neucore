@@ -5,8 +5,9 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\App;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use PHPUnit\Framework\TestCase;
 
-class RoleTest extends \PHPUnit\Framework\TestCase
+class RoleTest extends TestCase
 {
     public function testJsonSerialize()
     {

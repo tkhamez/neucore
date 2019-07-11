@@ -7,8 +7,9 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Group;
+use PHPUnit\Framework\TestCase;
 
-class CorporationTest extends \PHPUnit\Framework\TestCase
+class CorporationTest extends TestCase
 {
     public function testJsonSerialize()
     {

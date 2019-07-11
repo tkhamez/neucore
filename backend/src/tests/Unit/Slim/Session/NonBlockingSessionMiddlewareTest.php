@@ -4,12 +4,13 @@ namespace Tests\Unit\Slim\Session;
 
 use Neucore\Slim\Session\NonBlockingSessionMiddleware;
 use Neucore\Slim\Session\SessionData;
+use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\RouteInterface;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class NonBlockingSessionMiddlewareTest extends \PHPUnit\Framework\TestCase
+class NonBlockingSessionMiddlewareTest extends TestCase
 {
     public function setUp()
     {

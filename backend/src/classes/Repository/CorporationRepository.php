@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Corporation;
 
 /**
@@ -14,10 +15,10 @@ use Neucore\Entity\Corporation;
  * @method Corporation|null findOneBy(array $criteria, array $orderBy = null)
  * @method Corporation[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CorporationRepository extends \Doctrine\ORM\EntityRepository
+class CorporationRepository extends EntityRepository
 {
     /**
-     * @return \Neucore\Entity\Corporation[]
+     * @return Corporation[]
      */
     public function getAllWithGroups()
     {
@@ -30,7 +31,7 @@ class CorporationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @return \Neucore\Entity\Corporation[]
+     * @return Corporation[]
      */
     public function getAllWithMemberTrackingData()
     {

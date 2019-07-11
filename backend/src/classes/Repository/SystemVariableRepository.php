@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\SystemVariable;
 
 /**
@@ -11,7 +12,7 @@ use Neucore\Entity\SystemVariable;
  * @method SystemVariable[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  * @method SystemVariable|null findOneBy(array $criteria, array $orderBy = null)
  */
-class SystemVariableRepository extends \Doctrine\ORM\EntityRepository
+class SystemVariableRepository extends EntityRepository
 {
     /**
      * @return SystemVariable[]

@@ -3,11 +3,12 @@
 namespace Tests\Unit\Repository;
 
 use Neucore\Factory\RepositoryFactory;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Group;
 
-class AllianceRepositoryTest extends \PHPUnit\Framework\TestCase
+class AllianceRepositoryTest extends TestCase
 {
     public function testGetAllWithGroups()
     {

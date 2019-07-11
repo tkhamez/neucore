@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
+use GuzzleHttp\Psr7\Response;
 use Neucore\Entity\Role;
 use GuzzleHttp\ClientInterface;
 use Tests\Functional\WebTestCase;
@@ -51,7 +52,7 @@ class EsiControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $httpClient = new Client();
-        $httpClient->setResponse(new \GuzzleHttp\Psr7\Response(
+        $httpClient->setResponse(new Response(
             200,
             [
                 'X-Esi-Error-Limit-Remain' => [100],

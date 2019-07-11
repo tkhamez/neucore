@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
@@ -11,6 +12,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
+use Neucore\Repository\AllianceRepository;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -25,7 +27,7 @@ class AllianceControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -38,7 +40,7 @@ class AllianceControllerTest extends WebTestCase
     private $groupId2;
 
     /**
-     * @var \Neucore\Repository\AllianceRepository
+     * @var AllianceRepository
      */
     private $alliRepo;
 
@@ -315,7 +317,7 @@ class AllianceControllerTest extends WebTestCase
         $this->loginUser(7);
 
         $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(\Doctrine\ORM\Events::onFlush, new WriteErrorListener());
+        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
 
         $res = $this->runApp(
             'PUT',

@@ -5,13 +5,14 @@ namespace Tests\Unit\Factory;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Service\Config;
 use GuzzleHttp\Client;
+use PHPUnit\Framework\TestCase;
 use Swagger\Client\Eve\Api\AllianceApi;
 use Swagger\Client\Eve\Api\CharacterApi;
 use Swagger\Client\Eve\Api\CorporationApi;
 use Swagger\Client\Eve\Api\MailApi;
 use Swagger\Client\Eve\Api\UniverseApi;
 
-class EsiApiFactoryTest extends \PHPUnit\Framework\TestCase
+class EsiApiFactoryTest extends TestCase
 {
     public function testGetAllianceApi()
     {

@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Character;
 
 /**
@@ -14,11 +15,11 @@ use Neucore\Entity\Character;
  * @method Character|null findOneBy(array $criteria, array $orderBy = null)
  * @method Character[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CharacterRepository extends \Doctrine\ORM\EntityRepository
+class CharacterRepository extends EntityRepository
 {
     /**
      * @param string $name
-     * @return \Neucore\Entity\Character[]
+     * @return Character[]
      */
     public function findByNamePartialMatch($name)
     {

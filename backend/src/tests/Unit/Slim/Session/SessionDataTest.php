@@ -3,9 +3,10 @@
 namespace Tests\Unit\Slim\Session;
 
 use Neucore\Slim\Session\SessionData;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
-class SessionDataTest extends \PHPUnit\Framework\TestCase
+class SessionDataTest extends TestCase
 {
     public function setUp()
     {

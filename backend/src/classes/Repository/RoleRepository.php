@@ -2,6 +2,7 @@
 
 namespace Neucore\Repository;
 
+use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Role;
 
 /**
@@ -14,6 +15,6 @@ use Neucore\Entity\Role;
  * @method Role|null findOneBy(array $criteria, array $orderBy = null)
  * @method Role[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RoleRepository extends \Doctrine\ORM\EntityRepository
+class RoleRepository extends EntityRepository
 {
 }

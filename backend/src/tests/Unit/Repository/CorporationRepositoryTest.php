@@ -2,17 +2,19 @@
 
 namespace Tests\Unit\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CorporationRepository;
+use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
-class CorporationRepositoryTest extends \PHPUnit\Framework\TestCase
+class CorporationRepositoryTest extends TestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
