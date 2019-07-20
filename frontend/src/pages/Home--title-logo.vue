@@ -17,3 +17,14 @@ module.exports = {
     },
 }
 </script>
+
+<style scoped>
+    @media (max-width: 767px) {
+        img {
+            max-width: 50%;
+        }
+        h1 {
+            font-size: 2.2rem;
+        }
+    }
+</style>
