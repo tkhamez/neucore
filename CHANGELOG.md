@@ -1,8 +1,10 @@
 
-## next
+## 1.2.1
 
-dd mm yyyy
+20 Jul 2019
 
+- Fix: Edge does not load theme stylesheet.
+- UI: Optimization for small screens.
 - The minimum required Node.js version has been increased to 8.12.0.
 
 ## 1.2.0
