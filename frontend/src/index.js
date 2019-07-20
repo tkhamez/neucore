@@ -304,6 +304,8 @@ const app = new window.Vue({
                 this.logout();
             } else if (['login', 'login-alt'].indexOf(this.route[0]) !== -1) {
                 authResult();
+                // Remove the hash value so that it does not appear in bookmarks, for example.
+                location.hash = '';
             } else if (this.route[0] === 'login-director') {
                 authResult('info');
             }  else if (this.route[0] === 'login-mail') {
