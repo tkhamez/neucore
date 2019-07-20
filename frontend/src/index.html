@@ -8,8 +8,11 @@
 
     <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
         const file = htmlWebpackPlugin.files.css[i];
-        if (file.match(/^dist\/theme-/)) { %><link href="<%= file %>" rel="alternate stylesheet"><%
-        } else { %><link href="<%= file %>" rel="stylesheet"><%  }
+        if (file.match(/^dist\/theme-/)) {
+            %><link href="<%= file %>" rel="alternate stylesheet" disabled title="theme"><%
+        } else {
+            %><link href="<%= file %>" rel="stylesheet">
+        <%  }
     } %>
 
     <script src="api/user/settings/system/theme"></script>
@@ -17,7 +20,11 @@
         // activate theme css - the above script defined the variable "theme"
         var links = document.getElementsByTagName('link');
         for (var i = 0; i < links.length; i++) {
+            if (links[i].getAttribute('title') !== 'theme') {
+                continue;
+            }
             if (links[i].getAttribute('href').indexOf('dist/theme-' + theme.toLowerCase()) !== -1) {
+                links[i].disabled = false;
                 links[i].setAttribute('rel', 'stylesheet');
                 break;
             }

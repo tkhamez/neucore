@@ -125,9 +125,12 @@ module.exports = {
             if (link.attr('rel') === 'stylesheet') {
                 return;
             }
-            window.jQuery("head link[href*='dist/theme-']").attr('rel', 'alternate stylesheet');
-            window.jQuery("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']")
-                .attr('rel', 'stylesheet');
+            const disable = window.jQuery("head link[href*='dist/theme-']");
+            const enable = window.jQuery("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            disable.attr('rel', 'alternate stylesheet');
+            disable.attr('disabled', true);
+            enable.attr('rel', 'stylesheet');
+            enable.attr('disabled', false);
         }
     },
 }
