@@ -9,6 +9,29 @@ There is also an OpenAPI definition file available that contains only the API fo
 
 ## Roles Overview
 
+<!-- toc -->
+
+- [User API](#user-api)
+  * [anonymous](#anonymous)
+  * [user](#user)
+  * [user-admin](#user-admin)
+  * [user-manager](#user-manager)
+  * [group-admin](#group-admin)
+  * [group-manager](#group-manager)
+  * [app-admin](#app-admin)
+  * [app-manager](#app-manager)
+  * [esi](#esi)
+  * [settings](#settings)
+  * [tracking](#tracking)
+- [Application API](#application-api)
+  * [app](#app)
+  * [app-groups](#app-groups)
+  * [app-chars](#app-chars)
+  * [app-tracking](#app-tracking)
+  * [app-esi](#app-esi)
+
+<!-- tocstop -->
+
 ### User API
 
 #### anonymous

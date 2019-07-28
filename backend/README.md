@@ -3,6 +3,24 @@
 The backend is based on the [Slim Framework](https://www.slimframework.com)
 with the [PHP-DI container](http://php-di.org/).
 
+## Table of Contents
+
+<!-- toc -->
+
+- [Style Guide](#style-guide)
+- [API](#api)
+  * [operationId](#operationid)
+  * [Documentation](#documentation)
+  * [ESI routes](#esi-routes)
+- [Install](#install)
+- [Console Commands](#console-commands)
+  * [Console application](#console-application)
+    + [Making yourself an admin](#making-yourself-an-admin)
+  * [Commands via Composer](#commands-via-composer)
+  * [Doctrine](#doctrine)
+
+<!-- tocstop -->
+
 ## Style Guide
 
 [PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)

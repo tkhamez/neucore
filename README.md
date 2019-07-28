@@ -6,6 +6,31 @@
 An application for managing access for [EVE Online](https://www.eveonline.com/) players to external services 
 of an alliance.
 
+## Table of Contents
+
+<!-- toc -->
+
+- [Overview](#overview)
+- [Installation](#installation)
+  * [EVE API Setup](#eve-api-setup)
+  * [App Setup](#app-setup)
+    + [Server Requirements](#server-requirements)
+    + [Install/Update](#installupdate)
+      - [Archive file](#archive-file)
+      - [Git](#git)
+    + [Cron Job](#cron-job)
+  * [First login and Customization](#first-login-and-customization)
+  * [Using Vagrant](#using-vagrant)
+  * [Using Docker](#using-docker)
+  * [Deploy on Heroku](#deploy-on-heroku)
+- [Final notes](#final-notes)
+  * [Origin](#origin)
+  * [Related Software](#related-software)
+  * [Contact](#contact)
+  * [TOC](#toc)
+
+<!-- tocstop -->
+
 ## Overview
 
 Objectives:
@@ -207,3 +232,16 @@ This is also where the name "Neucore" comes from.
 
 If you have any questions or feedback, you can contact Tian Khamez on [Tweetfleet Slack](https://tweetfleet.slack.com)
 (get invites [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
+
+### TOC
+
+Just a quick reminder to myself of how to generate the tables of contents:
+
+```
+npm install -g markdown-toc
+markdown-toc README.md -i
+markdown-toc doc/documentation.md -i
+markdown-toc doc/API.md -i
+markdown-toc backend/README.md -i
+markdown-toc frontend/README.md -i
+```

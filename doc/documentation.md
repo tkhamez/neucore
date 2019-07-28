@@ -1,5 +1,22 @@
 # Documentation
 
+<!-- toc -->
+
+- [Features](#features)
+- [Authentication of applications](#authentication-of-applications)
+- [Player Accounts](#player-accounts)
+  * [Character Registration](#character-registration)
+  * [Removing Characters](#removing-characters)
+  * [Account status](#account-status)
+- [Groups](#groups)
+  * [Automatic Group Assignment](#automatic-group-assignment)
+  * [Group Deactivation](#group-deactivation)
+  * [Required Groups](#required-groups)
+- [Console Application](#console-application)
+- [Data Structure (Backend)](#data-structure-backend)
+
+<!-- tocstop -->
+
 ## Features
 
 * EVE SSO login with configurable permission scopes.

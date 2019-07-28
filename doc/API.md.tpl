@@ -9,6 +9,8 @@ There is also an OpenAPI definition file available that contains only the API fo
 
 ## Roles Overview
 
+<!-- toc -->
+
 ### User API
 
 #### anonymous

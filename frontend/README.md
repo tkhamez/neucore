@@ -3,6 +3,16 @@
 The frontend is based on [Vue.js](https://vuejs.org) and
 [Bootstrap](https://getbootstrap.com) with a [Bootswatch](https://bootswatch.com) theme.
 
+## Table of Contents
+
+<!-- toc -->
+
+- [Style Guide](#style-guide)
+- [OpenAPI Client](#openapi-client)
+- [Install](#install)
+
+<!-- tocstop -->
+
 ## Style Guide
 
 - Use 4 spaces for indenting please.
