@@ -260,6 +260,8 @@
                     <p>
                         Login URL for characters with director role:
                         <a :href="loginUrlDirector">{{ loginUrlDirector }}</a>
+                        <br>
+                        This is used to get the <a href="#Tracking">Member Tracking</a> data from ESI.
                     </p>
                     <table class="table table-hover table-sm">
                         <thead>
