@@ -10,7 +10,7 @@
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div v-cloak class="navbar-collapse collapse" id="navbar01" style="">
+        <div v-cloak class="navbar-collapse collapse" id="navbar01">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
@@ -107,6 +107,13 @@ module.exports = {
             otherPages: ['Tracking', 'Esi'],
             selectedTheme: '',
         }
+    },
+
+    mounted: function() {
+        const $navMain = window.$("#navbar01");
+        $navMain.on("click", "a:not([data-toggle])", null, function() {
+            $navMain.collapse('hide');
+        });
     },
 
     watch: {
