@@ -121,16 +121,16 @@ module.exports = {
                 return;
             }
             this.selectedTheme = name;
-            const link = window.jQuery("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
-            if (link.attr('rel') === 'stylesheet') {
+            const $link = window.$("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            if ($link.attr('rel') === 'stylesheet') {
                 return;
             }
-            const disable = window.jQuery("head link[href*='dist/theme-']");
-            const enable = window.jQuery("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
-            disable.attr('rel', 'alternate stylesheet');
-            disable.attr('disabled', true);
-            enable.attr('rel', 'stylesheet');
-            enable.attr('disabled', false);
+            const $disable = window.$("head link[href*='dist/theme-']");
+            const $enable = window.$("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            $disable.attr('rel', 'alternate stylesheet');
+            $disable.attr('disabled', true);
+            $enable.attr('rel', 'stylesheet');
+            $enable.attr('disabled', false);
         }
     },
 }

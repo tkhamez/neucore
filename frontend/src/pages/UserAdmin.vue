@@ -578,7 +578,7 @@ module.exports = {
                 name: characterName,
             };
             this.deleteReason = '';
-            window.jQuery('#deleteCharModal').modal('show');
+            window.$('#deleteCharModal').modal('show');
         },
 
         deleteChar() {
@@ -591,7 +591,7 @@ module.exports = {
                     });
                 }
             });
-            window.jQuery('#deleteCharModal').modal('hide');
+            window.$('#deleteCharModal').modal('hide');
             this.charToDelete = null;
         },
     },

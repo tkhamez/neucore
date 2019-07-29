@@ -272,7 +272,7 @@ module.exports = {
                 id: characterId,
                 name: characterName,
             };
-            window.jQuery('#deleteCharModal').modal('show');
+            window.$('#deleteCharModal').modal('show');
         },
 
         deleteChar() {
@@ -280,7 +280,7 @@ module.exports = {
             this.deleteCharacter(this.charToDelete.id, null, function() {
                 vm.update(vm.authChar.id);
             });
-            window.jQuery('#deleteCharModal').modal('hide');
+            window.$('#deleteCharModal').modal('hide');
             this.charToDelete = null;
         },
     }

@@ -81,7 +81,7 @@ module.exports = {
                 }
                 vm.selectedPlayer = data;
                 window.setTimeout(function() {
-                    window.jQuery('#playerModal').modal('show');
+                    window.$('#playerModal').modal('show');
                 }, 10);
             });
         },

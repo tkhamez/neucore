@@ -117,11 +117,11 @@ module.exports = {
 
     methods: {
         mouseover (ele) {
-            window.jQuery(ele.target).addClass('text-warning');
+            window.$(ele.target).addClass('text-warning');
         },
 
         mouseleave (ele) {
-            window.jQuery(ele.target).removeClass('text-warning');
+            window.$(ele.target).removeClass('text-warning');
         },
 
         showCreateAppModal: function() {

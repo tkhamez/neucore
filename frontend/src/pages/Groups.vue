@@ -164,7 +164,7 @@ module.exports = {
                 id: groupId,
                 name: groupName,
             };
-            window.jQuery('#leaveGroupModal').modal('show');
+            window.$('#leaveGroupModal').modal('show');
         },
 
         leave: function() {
@@ -174,7 +174,7 @@ module.exports = {
                 vm.loading(false);
                 vm.$root.$emit('playerChange');
             });
-            window.jQuery('#leaveGroupModal').modal('hide');
+            window.$('#leaveGroupModal').modal('hide');
             this.groupToLeave = null;
         }
     }

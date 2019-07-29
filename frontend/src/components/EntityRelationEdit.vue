@@ -395,7 +395,7 @@ module.exports = {
                 }
             }
             window.setTimeout(function() {
-                window.jQuery('#showGroupsModal').modal('show');
+                window.$('#showGroupsModal').modal('show');
             }, 10);
         },
 

@@ -66,7 +66,7 @@ module.exports = {
     },
 
     mounted: function() {
-        window.jQuery.get('/static/esi-paths-http-get.json').then((data) => {
+        window.$.get('/static/esi-paths-http-get.json').then((data) => {
             this.paths = data;
         });
     },

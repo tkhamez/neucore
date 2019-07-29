@@ -1,10 +1,11 @@
 
 // bootstrap JS (css is included via theme* entry point) and required jquery + popper
 window.jQuery = require('jquery');
+window.$ = window.jQuery;
 window.popper = require('popper.js');
 require('bootstrap');
-window.jQuery(function() {
-    window.jQuery('[data-toggle="popover"]').popover();
+window.$(function() {
+    window.$('[data-toggle="popover"]').popover();
 });
 
 // fontawesome (contains font files)

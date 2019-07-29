@@ -177,11 +177,11 @@ module.exports = {
 
     methods: {
         mouseover (ele) {
-            window.jQuery(ele.target).addClass('text-warning');
+            window.$(ele.target).addClass('text-warning');
         },
 
         mouseleave (ele) {
-            window.jQuery(ele.target).removeClass('text-warning');
+            window.$(ele.target).removeClass('text-warning');
         },
 
         showCreateGroupModal: function() {
@@ -213,7 +213,7 @@ module.exports = {
             this.addType = addType;
             this.searchResults = [];
             this.searchSelected = null;
-            window.jQuery('#addAlliCorpModal').modal('show');
+            window.$('#addAlliCorpModal').modal('show');
         },
 
         searchAlliCorp (query) {
@@ -239,12 +239,12 @@ module.exports = {
 
             vm.searchIsLoading = true;
             vm.searchResults = [];
-            window.jQuery.get(url).always(response1 => {
+            window.$.get(url).always(response1 => {
                 if (typeof response1[category] !== typeof []) {
                     vm.searchIsLoading = false;
                     return;
                 }
-                window.jQuery.post(
+                window.$.post(
                     vm.settings.esiHost + '/latest/universe/names/?datasource=' + vm.settings.esiDataSource,
                     JSON.stringify(response1[category])
                 ).always(response2 => {
@@ -285,7 +285,7 @@ module.exports = {
                 } else if (error) {
                     vm.message('Error adding ' + vm.addType, 'error');
                 } else {
-                    window.jQuery('#addAlliCorpModal').modal('hide');
+                    window.$('#addAlliCorpModal').modal('hide');
                     vm.message(vm.addType + ' "['+ data.ticker +'] '+ data.name +'" added.', 'success');
                     if (vm.$refs.admin) {
                         vm.$refs.admin.getSelectContent();
