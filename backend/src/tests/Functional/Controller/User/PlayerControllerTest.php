@@ -135,6 +135,7 @@ class PlayerControllerTest extends WebTestCase
                     'main' => true,
                     'lastUpdate' => null,
                     'validToken' => null,
+                    'validTokenTime' => null,
                     'corporation' => [
                         'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
                             'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
@@ -322,6 +323,7 @@ class PlayerControllerTest extends WebTestCase
                 'main' => true,
                 'lastUpdate' => null,
                 'validToken' => true,
+                'validTokenTime' => '2019-08-03T23:12:45Z',
                 'corporation' => null
             ],
             $this->parseJsonBody($response)
@@ -825,6 +827,7 @@ class PlayerControllerTest extends WebTestCase
                     'main' => true,
                     'lastUpdate' => null,
                     'validToken' => false,
+                    'validTokenTime' => '2019-08-03T23:12:45Z',
                     'corporation' => [
                         'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                             'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
@@ -837,6 +840,7 @@ class PlayerControllerTest extends WebTestCase
                     'main' => false,
                     'lastUpdate' => null,
                     'validToken' => true,
+                    'validTokenTime' => '2019-08-03T23:12:45Z',
                     'corporation' => null
                 ],
             ],
@@ -883,6 +887,7 @@ class PlayerControllerTest extends WebTestCase
                     'main' => true,
                     'lastUpdate' => null,
                     'validToken' => false,
+                    'validTokenTime' => '2019-08-03T23:12:45Z',
                     'corporation' => [
                         'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                             'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
@@ -895,6 +900,7 @@ class PlayerControllerTest extends WebTestCase
                     'main' => false,
                     'lastUpdate' => null,
                     'validToken' => true,
+                    'validTokenTime' => '2019-08-03T23:12:45Z',
                     'corporation' => null
                 ],
             ],
@@ -1215,7 +1221,7 @@ class PlayerControllerTest extends WebTestCase
             12,
             [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]
         );
-        $char->setValidToken(false);
+        $char->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
         $char->setCorporation($corp);
         $this->player = $char->getPlayer();
 
@@ -1226,7 +1232,7 @@ class PlayerControllerTest extends WebTestCase
         $this->h->getEm()->persist($emptyAcc);
 
         $char2 = $this->h->addCharacterToPlayer('Alt', 13, $this->player);
-        $char2->setValidToken(true);
+        $char2->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
 
         $this->player3Id = $this->h->addCharacterMain('User3', 14, [Role::USER])
             ->setValidToken(true)->getPlayer()->getId();

@@ -330,6 +330,19 @@ class CorporationController extends BaseController
      *         type="string",
      *         enum={"true", "false"}
      *     ),
+     *     @SWG\Parameter(
+     *         name="valid-token",
+     *         in="query",
+     *         description="Limit to characters with a valid (true) or invalid (false) token.",
+     *         type="string",
+     *         enum={"true", "false"}
+     *     ),
+     *     @SWG\Parameter(
+     *         name="token-status-changed",
+     *         in="query",
+     *         description="Limit to characters whose ESI token status has not changed for x days.",
+     *         type="integer"
+     *     ),
      *     @SWG\Response(
      *         response="200",
      *         description="List of corporation members.",
@@ -346,13 +359,16 @@ class CorporationController extends BaseController
         $inactive = $request->getParam('inactive');
         $active = $request->getParam('active');
         $account = $request->getParam('account');
-        $account = $account === 'true' ? true : ($account === 'false' ? false : null);
+        $validToken = $request->getParam('valid-token');
+        $tokenStatusChanged = $request->getParam('token-status-changed');
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
             ->setInactive($inactive !== null ? (int) $inactive : null)
             ->setActive($active !== null ? (int) $active : null)
-            ->setAccount($account)
+            ->setAccount($account === 'true' ? true : ($account === 'false' ? false : null))
+            ->setValidToken($validToken === 'true' ? true : ($validToken === 'false' ? false : null))
+            ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
             ->findMatching((int) $id);
 
         return $this->response->withJson($members);

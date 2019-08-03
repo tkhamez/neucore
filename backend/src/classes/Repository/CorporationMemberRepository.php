@@ -27,9 +27,17 @@ class CorporationMemberRepository extends EntityRepository
     private $account;
 
     /**
+     * @var bool|null
+     */
+    private $validToken;
+
+    /**
+     * @var int|null
+     */
+    private $tokenChanged;
+
+    /**
      * Limit to members who were active in the last x days.
-     *
-     * @see CorporationMemberRepository::findMatching()
      */
     public function setActive(?int $days): self
     {
@@ -40,8 +48,6 @@ class CorporationMemberRepository extends EntityRepository
 
     /**
      * Limit to members who have been inactive for x days or longer.
-     *
-     * @see CorporationMemberRepository::findMatching()
      */
     public function setInactive(?int $days): self
     {
@@ -52,8 +58,6 @@ class CorporationMemberRepository extends EntityRepository
 
     /**
      * Limit to members with (true) or without (false) an account
-     *
-     * @see CorporationMemberRepository::findMatching()
      */
     public function setAccount(?bool $account): self
     {
@@ -63,17 +67,35 @@ class CorporationMemberRepository extends EntityRepository
     }
 
     /**
+     * Limit to characters with a valid (true) or invalid (false) token
+     */
+    public function setValidToken(?bool $validToken): self
+    {
+        $this->validToken = $validToken;
+
+        return $this;
+    }
+
+    /**
+     * Limit to characters whose ESI token status has not changed for x days
+     */
+    public function setTokenChanged(?int $days): self
+    {
+        $this->tokenChanged = $days;
+
+        return $this;
+    }
+
+    /**
      * Reset filter variables.
-     *
-     * @see CorporationMemberRepository::setActive()
-     * @see CorporationMemberRepository::setInactive()
-     * @see CorporationMemberRepository::setAccount()
      */
     public function resetCriteria()
     {
         $this->setInactive(null);
         $this->setActive(null);
         $this->setAccount(null);
+        $this->setValidToken(null);
+        $this->setTokenChanged(null);
 
         return $this;
     }
@@ -81,9 +103,6 @@ class CorporationMemberRepository extends EntityRepository
     /**
      * @param int $corporationId EVE corporation ID
      * @return CorporationMember[]
-     * @see CorporationMemberRepository::setActive()
-     * @see CorporationMemberRepository::setInactive()
-     * @see CorporationMemberRepository::setAccount()
      */
     public function findMatching(int $corporationId): array
     {
@@ -93,13 +112,15 @@ class CorporationMemberRepository extends EntityRepository
 
         if ($this->active > 0) {
             if ($activeDate = date_create('now -'.$this->active.' days')) {
-                $qb->andWhere('c.logonDate >= :active')->setParameter('active', $activeDate->format('Y-m-d'));
+                $qb->andWhere('c.logonDate >= :active')
+                    ->setParameter('active', $activeDate->format('Y-m-d H:i:s'));
             }
         }
 
         if ($this->inactive > 0) {
             if ($inactiveDate = date_create('now -'.$this->inactive.' days')) {
-                $qb->andWhere('c.logonDate < :inactive')->setParameter('inactive', $inactiveDate->format('Y-m-d'));
+                $qb->andWhere('c.logonDate < :inactive')
+                    ->setParameter('inactive', $inactiveDate->format('Y-m-d H:i:s'));
             }
         }
 
@@ -107,6 +128,24 @@ class CorporationMemberRepository extends EntityRepository
             $qb->andWhere($qb->expr()->isNotNull('c.character'));
         } elseif ($this->account === false) {
             $qb->andWhere($qb->expr()->isNull('c.character'));
+        }
+
+        if ($this->validToken !== null || $this->tokenChanged > 0) {
+            $qb->leftJoin('c.character', 'char');
+            $qb->andWhere('char.id IS NOT NULL');
+        }
+
+        if ($this->validToken) {
+            $qb->andWhere($qb->expr()->eq('char.validToken', 1));
+        } elseif ($this->validToken === false) {
+            $qb->andWhere($qb->expr()->eq('char.validToken', 0));
+        }
+
+        if ($this->tokenChanged > 0) {
+            if ($tokenChangedDate = date_create('now -'.$this->tokenChanged.' days')) {
+                $qb->andWhere('char.validTokenTime < :tokenChanged')
+                    ->setParameter('tokenChanged', $tokenChangedDate->format('Y-m-d H:i:s'));
+            }
         }
 
         return $qb->getQuery()->getResult();

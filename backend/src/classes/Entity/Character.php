@@ -85,8 +85,9 @@ class Character implements \JsonSerializable
     private $validToken;
 
     /**
-     * Date and time when that valid token property was changed.
+     * Date and time when that valid token property was last changed.
      *
+     * @SWG\Property()
      * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
      * @var \DateTime|null
      */
@@ -155,6 +156,8 @@ class Character implements \JsonSerializable
             'main' => $this->main,
             'lastUpdate' => $this->getLastUpdate() !== null ? $this->getLastUpdate()->format(Api::DATE_FORMAT) : null,
             'validToken' => $this->validToken,
+            'validTokenTime' => $this->getValidTokenTime() !== null ?
+                $this->getValidTokenTime()->format(Api::DATE_FORMAT) : null,
         ];
         if ($withRelations) {
             $result['corporation'] = $this->corporation;

@@ -23,6 +23,7 @@ class CharacterTest extends TestCase
             'main' => false,
             'lastUpdate' => null,
             'validToken' => null,
+            'validTokenTime' => null,
             'corporation' => null
         ], json_decode((string) json_encode($char), true));
 
@@ -31,7 +32,8 @@ class CharacterTest extends TestCase
             'name' => 'test char',
             'main' => false,
             'lastUpdate' => null,
-            'validToken' => null
+            'validToken' => null,
+            'validTokenTime' => null,
         ], $char->jsonSerialize(false));
     }
 

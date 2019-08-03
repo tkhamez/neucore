@@ -51,6 +51,7 @@ class PlayerTest extends TestCase
                 'main' => true,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => ['id' => null, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
                     'id' => null, 'name' => 'alli1', 'ticker' => 'DEF'
                 ]]
@@ -61,6 +62,7 @@ class PlayerTest extends TestCase
                 'main' => false,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => null
             ]],
             'groups' => [

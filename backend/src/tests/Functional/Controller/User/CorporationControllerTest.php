@@ -467,7 +467,7 @@ class CorporationControllerTest extends WebTestCase
 
         $this->loginUser(7);
 
-        $params = '?inactive=7&active=12&account=true';
+        $params = '?inactive=7&active=12&account=true&valid-token=false&token-status-changed=1';
         $response = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
         $this->assertEquals(200, $response->getStatusCode());
         $result = $this->parseJsonBody($response);
@@ -485,7 +485,8 @@ class CorporationControllerTest extends WebTestCase
     {
         $this->h->emptyDb();
 
-        $char = $this->h->addCharacterMain('User', 6, [Role::USER]);
+        $char = $this->h->addCharacterMain('User', 6, [Role::USER])
+            ->setValidToken(false)->setValidTokenTime(new \DateTime('-1 day -1 minute'));
         $this->h->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');

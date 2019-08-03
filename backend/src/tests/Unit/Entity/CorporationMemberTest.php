@@ -57,6 +57,7 @@ class CorporationMemberTest extends TestCase
                 'main' => false,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
             ],
             'player' => [
                 'id' => null,

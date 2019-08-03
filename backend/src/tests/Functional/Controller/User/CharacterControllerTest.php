@@ -62,6 +62,7 @@ class CharacterControllerTest extends WebTestCase
                 'main' => true,
                 'lastUpdate' => null,
                 'validToken' => true,
+                'validTokenTime' => '2019-08-03T23:12:45Z',
                 'corporation' => null
             ],
             $this->parseJsonBody($response)
@@ -229,6 +230,7 @@ class CharacterControllerTest extends WebTestCase
             'name' => 'Char 96061222',
             'main' => true,
             'validToken' => true,
+            'validTokenTime' => '2019-08-03T23:12:45Z',
             'corporation' => [
                 'id' => $this->corpId,
                 'name' => 'The Corp updated.',
@@ -284,7 +286,8 @@ class CharacterControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER]);
-        $char->setValidToken(true)->setCharacterOwnerHash('coh1');
+        $char->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'))
+            ->setCharacterOwnerHash('coh1');
         $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();
         $this->helper->addCharacterMain('Admin', 9, [Role::USER, Role::USER_ADMIN]);

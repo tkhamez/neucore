@@ -18,25 +18,41 @@
                         </option>
                     </select>
                 </div>
-                <label>
-                    <input type="text" pattern="[0-9]*" class="form-control input-option"
-                           v-model="daysInactive">
+
+                <label class="small">
+                    <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
+                           v-model="formOptions.daysInactive">
                     Limit to members who have been inactive for x days or longer.
                 </label>
                 <br>
-                <label>
-                    <input type="text" pattern="[0-9]*" class="form-control input-option"
-                           v-model="daysActive">
+                <label class="small">
+                    <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
+                           v-model="formOptions.daysActive">
                     Limit to members who were active in the last x days.
                 </label>
                 <br>
-                <label>
-                    <select class="form-control input-option" v-model="account">
+                <label class="small">
+                    <select class="form-control form-control-sm input-option" v-model="formOptions.account">
                         <option></option>
                         <option value="true">with</option>
                         <option value="false">without</option>
                     </select>
                     Limit to members with/without an account
+                </label>
+                <br>
+                <label class="small">
+                    <select class="form-control form-control-sm input-option" v-model="formOptions.validToken">
+                        <option></option>
+                        <option value="true">valid</option>
+                        <option value="false">invalid</option>
+                    </select>
+                    Limit to characters with a valid/invalid token
+                </label>
+                <br>
+                <label class="small">
+                    <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
+                           v-model="formOptions.tokenChanged">
+                    Limit to characters whose ESI token status has not changed for x days
                 </label>
 
                 <table class="table table-hover table-sm">
@@ -46,6 +62,7 @@
                             <th>Character Name</th>
                             <th>Player Account</th>
                             <th>ESI Token</th>
+                            <th>Token status changed</th>
                             <th>Logon Date (GMT)</th>
                             <th>Logoff Date (GMT)</th>
                             <th>Location ID</th>
@@ -67,6 +84,11 @@
                                     <span v-if="member.character.validToken">valid</span>
                                     <span v-if="member.character.validToken === false">invalid</span>
                                     <span v-if="member.character.validToken === null">n/a</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span v-if="member.character && member.character.validTokenTime">
+                                    {{ $root.formatDate(member.character.validTokenTime) }}
                                 </span>
                             </td>
                             <td>
@@ -115,9 +137,13 @@ module.exports = {
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],
             members: [],
-            daysActive: null,
-            daysInactive: null,
-            account: null,
+            formOptions: {
+                daysActive: null,
+                daysInactive: null,
+                account: null,
+                validToken: null,
+                tokenChanged: null,
+            }
         }
     },
 
@@ -146,16 +172,11 @@ module.exports = {
             }
         },
 
-        daysActive: function() {
-            this.getMembersDelayed(this);
-        },
-
-        daysInactive: function() {
-            this.getMembersDelayed(this);
-        },
-
-        account: function() {
-            this.getMembersDelayed(this);
+        formOptions: {
+            handler() {
+                this.getMembersDelayed(this);
+            },
+            deep: true
         }
     },
 
@@ -199,9 +220,11 @@ module.exports = {
 
             const corporationId = parseInt(this.route[1], 10);
             const opts = {
-                inactive: this.daysInactive,
-                active: this.daysActive,
-                account: this.account
+                inactive: this.formOptions.daysInactive,
+                active: this.formOptions.daysActive,
+                account: this.formOptions.account,
+                validToken: this.formOptions.validToken,
+                tokenChanged: this.formOptions.tokenChanged,
             };
 
             const vm = this;
@@ -228,6 +251,6 @@ module.exports = {
     }
     .input-option {
         display: inline;
-        width: 100px;
+        width: 80px;
     }
 </style>

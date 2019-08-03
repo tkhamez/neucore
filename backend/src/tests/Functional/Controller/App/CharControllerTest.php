@@ -113,6 +113,7 @@ class CharControllerTest extends WebTestCase
                 'main' => true,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => null
             ],
             $body1
@@ -203,6 +204,7 @@ class CharControllerTest extends WebTestCase
                 'main' => true,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => null
             ],[
                 'id' => 456,
@@ -210,6 +212,7 @@ class CharControllerTest extends WebTestCase
                 'main' => false,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => null
             ]],
             $body1
@@ -256,6 +259,7 @@ class CharControllerTest extends WebTestCase
                 'main' => true,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => null
             ],[
                 'id' => 456,
@@ -263,6 +267,7 @@ class CharControllerTest extends WebTestCase
                 'main' => false,
                 'lastUpdate' => null,
                 'validToken' => null,
+                'validTokenTime' => null,
                 'corporation' => null
             ]],
             $body
