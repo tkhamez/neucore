@@ -245,13 +245,10 @@ Application API
 Allows an app to get groups from a player account.
 
 Application API
-- Return groups of the character's player account. `/app/v1/groups/{cid}`
 - Return groups of the character's player account. `/app/v2/groups/{cid}`
 - Return groups of multiple players, identified by one of their character IDs. `/app/v1/groups`
-- Return groups of the corporation. `/app/v1/corp-groups/{cid}`
 - Return groups of the corporation. `/app/v2/corp-groups/{cid}`
 - Return groups of multiple corporations. `/app/v1/corp-groups`
-- Return groups of the alliance. `/app/v1/alliance-groups/{aid}`
 - Return groups of the alliance. `/app/v2/alliance-groups/{aid}`
 - Return groups of multiple alliances. `/app/v1/alliance-groups`
 - Returns groups from the character's account, if available, or the corporation and alliance. `/app/v1/groups-with-fallback`
@@ -261,11 +258,12 @@ Application API
 Allows an app to get characters from a player account.
 
 Application API
-- Returns the main character of the player account to which the character ID belongs. `/app/v1/main/{cid}`
 - Return the main character of the player account to which the character ID belongs. `/app/v2/main/{cid}`
 - Return the player account to which the character ID belongs. `/app/v1/player/{characterId}`
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
+- Return all characters from the player account. `/app/v1/player-chars/{playerId}`
 - Return all characters that were removed from the player account to which the character ID belongs. `/app/v1/removed-characters/{characterId}`
+- Return a list of all player IDs that have a character in the corporation. `/app/v1/corp-players/{corporationId}`
 
 #### app-tracking
 

@@ -47,13 +47,21 @@ echo "wrote doc/API.md", PHP_EOL;
  */
 function getRoutesForRole(string $role, array $routes, array $securityDef): array
 {
+    $skip = [
+        '/api/app/v1/esi[{path:.*}]',
+        '/api/app/v1/groups/{cid}',
+        '/api/app/v1/corp-groups/{cid}',
+        '/api/app/v1/alliance-groups/{aid}',
+        '/api/app/v1/main/{cid}',
+    ];
+
     $result = [];
     foreach ($routes as $pattern => $conf) {
         foreach ($securityDef as $secured => $roles) {
             if (strpos($pattern, $secured) !== 0) {
                 continue;
             }
-            if (in_array($role, $roles) && isset($conf[0])) { // skips "/api/app/v1/esi"
+            if (in_array($role, $roles) && ! in_array($pattern, $skip)) {
                 $apiPath = substr($pattern, strlen('/api'));
                 $result[] = [$apiPath, $conf[0]];
             }

@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\App;
 
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
@@ -215,6 +216,59 @@ class CharControllerTest extends WebTestCase
         );
     }
 
+    public function testPlayerCharactersV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/player-chars/5000');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setUpDb();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-chars/5000', null, $headers);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testPlayerCharactersV1404()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-chars/5000', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Player not found.', $response->getReasonPhrase());
+    }
+
+    public function testPlayerCharactersV1200()
+    {
+        $this->setUpDb();
+        $player = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer();
+        $this->helper->addCharacterToPlayer('C2', 456, $player);
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-chars/'.$player->getId(), null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = $this->parseJsonBody($response);
+        $this->assertSame(
+            [[
+                'id' => 123,
+                'name' => 'C1',
+                'main' => true,
+                'lastUpdate' => null,
+                'validToken' => null,
+                'corporation' => null
+            ],[
+                'id' => 456,
+                'name' => 'C2',
+                'main' => false,
+                'lastUpdate' => null,
+                'validToken' => null,
+                'corporation' => null
+            ]],
+            $body
+        );
+    }
+
     public function testRemovedCharactersV1403()
     {
         $response = $this->runApp('GET', '/api/app/v1/removed-characters/123');
@@ -276,6 +330,50 @@ class CharControllerTest extends WebTestCase
                 'newPlayerName' => 'p2'
             ]],
             $this->parseJsonBody($response)
+        );
+    }
+
+    public function testCorporationPlayersV1403()
+    {
+        $response1 = $this->runApp('GET', '/api/app/v1/corp-players/1000');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->setUpDb();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s1')];
+        $response2 = $this->runApp('GET', '/api/app/v1/corp-players/1000', null, $headers);
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testCorporationPlayersV1200InvalidCorp()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/corp-players/1000', null, $headers);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response));
+    }
+
+    public function testCorporationPlayersV1200()
+    {
+        $this->setUpDb();
+        $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $corp = (new Corporation())->setId(1000)->setName('Corp one');
+        $this->helper->getEm()->persist($corp);
+        $char->setCorporation($corp);
+        $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/corp-players/1000', null, $headers);
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $body = $this->parseJsonBody($response);
+
+        $this->assertSame(
+            [['id' => $char->getPlayer()->getId(), 'name' => 'C1']],
+            $body
         );
     }
 

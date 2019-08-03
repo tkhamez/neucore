@@ -86,4 +86,19 @@ class PlayerRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return Player[]
+     */
+    public function findInCorporation(int $corporationId)
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c')
+            ->andWhere('c.id IS NOT NULL')
+            ->andWhere('c.corporation = :corp')
+            ->setParameter('corp', $corporationId)
+            ->orderBy('p.name')
+            ->getQuery()
+            ->getResult();
+    }
 }

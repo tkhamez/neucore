@@ -23,7 +23,9 @@ return [
     '/api/app/v2/main'                             => [Role::APP_CHARS],
     '/api/app/v1/player/{characterId}'             => [Role::APP_CHARS],
     '/api/app/v1/characters'                       => [Role::APP_CHARS],
+    '/api/app/v1/player-chars'                     => [Role::APP_CHARS],
     '/api/app/v1/removed-characters'               => [Role::APP_CHARS],
+    '/api/app/v1/corp-players/{corporationId}'     => [Role::APP_CHARS],
 
     '/api/app'                                     => [Role::APP],
 

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Repository;
 
 use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
@@ -26,8 +27,11 @@ class PlayerRepositoryTest extends TestCase
         $player1->getCharacters()[0]->setValidToken(true);
         $char1a = (new Character())->setId(11)->setName('c1a')->setValidToken(false);
         $char1a->setPlayer($player1);
+        $corp = (new Corporation())->setId(100)->setName('corp1');
+        $char1a->setCorporation($corp);
         $player1->addCharacter($char1a);
         $em->persist($char1a);
+        $em->persist($corp);
 
         $helper->addCharacterMain('c2', 2)->getPlayer();
 
@@ -98,5 +102,13 @@ class PlayerRepositoryTest extends TestCase
 
         $this->assertSame(1, count($actual));
         $this->assertSame('c2', $actual[0]->getName());
+    }
+
+    public function testFindInCorporation()
+    {
+        $actual = $this->repo->findInCorporation(100);
+
+        $this->assertSame(1, count($actual));
+        $this->assertSame('c1', $actual[0]->getName());
     }
 }
