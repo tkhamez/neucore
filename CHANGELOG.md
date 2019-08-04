@@ -1,6 +1,6 @@
-# next
+# 1.3.0
 
-dd mmm yyyy
+4 Aug 2019
 
 - Add: API endpoint for apps that returns all characters from a player account.
 - Add: API endpoint for apps that accepts a corporation ID and returns a list of all player IDs that have a 
