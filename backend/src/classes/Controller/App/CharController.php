@@ -290,7 +290,7 @@ class CharController
      * @SWG\Get(
      *     path="/app/v1/corp-players/{corporationId}",
      *     operationId="corporationPlayersV1",
-     *     summary="Return a list of all player IDs that have a character in the corporation.",
+     *     summary="Return a list of all players that have a character in the corporation.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
      *     security={{"Bearer"={}}},
