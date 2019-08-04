@@ -1,3 +1,12 @@
+
+# next
+
+dd mmm yyyy
+
+- Fix: Frontend: Filter for member tracking by token status change date does not work [#25][i25]
+
+[i25]: https://github.com/tkhamez/neucore/issues/25
+
 # 1.3.0
 
 4 Aug 2019
