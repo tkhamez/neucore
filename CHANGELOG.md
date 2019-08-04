@@ -2,10 +2,10 @@
 
 4 Aug 2019
 
-- Add: API endpoint for apps that returns all characters from a player account.
-- Add: API endpoint for apps that accepts a corporation ID and returns a list of all player IDs that have a 
+- App API: new endpoint that accepts an EVE corporation ID and returns a list of all player IDs that have a 
   character in the corporation.
-- Member tracking: added filter options for member list
+- App API: new endpoint that accepts a player ID and returns all characters from that account.
+- Member tracking: added more filter options for the member list
 - Small improvements for UI, frontend and documentation.
 
 ## 1.2.1
