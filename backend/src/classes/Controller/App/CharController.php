@@ -208,7 +208,7 @@ class CharController
      *     summary="Return all characters from the player account.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="playerId",
      *         in="path",
@@ -293,7 +293,7 @@ class CharController
      *     summary="Return a list of all players that have a character in the corporation.",
      *     description="Needs role: app-chars.",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
+     *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="corporationId",
      *         in="path",
