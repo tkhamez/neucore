@@ -1,6 +1,10 @@
 ## sso v2
 
 - Breaking: requires gmp PHP extension
+- Switch to SSO v2 [#15][i15]
+
+[i15]: https://github.com/tkhamez/neucore/issues/15
+
 # next
 
 dd mmm yyyy
