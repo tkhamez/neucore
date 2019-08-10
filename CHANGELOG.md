@@ -1,21 +1,17 @@
-## sso v2
-
-- Breaking: requires gmp PHP extension
-- Switch to SSO v2 [#15][i15]
-
-[i15]: https://github.com/tkhamez/neucore/issues/15
-
 # next
 
 dd mmm yyyy
 
-- OpenAPI 3: There is a new OpenAPI interface description file at `/application-api-3.yml` for the App API in 
-  OpenAPI version 3 format. The file `/application-api.json` in OpenAPI version 2 format is still available,
-  but will not be updated anymore.  [#9][i9]
+- Breaking: requires gmp PHP extension
+- Switch to SSO v2 [#15][i15]
+- Deprecate Swagger 2.0, switch to OpenAPI 3.0: there is a new OpenAPI interface description file at 
+  `/application-api-3.yml` for the App API in OpenAPI version 3 format. The file `/application-api.json` 
+  in OpenAPI version 2 format is still available, but will not be updated anymore. [#9][i9]
 - Fix: Frontend: Filter for member tracking by token status change date does not work. [#25][i25]
 
 [i9]: https://github.com/tkhamez/neucore/issues/9
 [i25]: https://github.com/tkhamez/neucore/issues/25
+[i15]: https://github.com/tkhamez/neucore/issues/15
 
 # 1.3.0
 
