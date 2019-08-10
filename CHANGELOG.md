@@ -5,10 +5,22 @@
 
 dd mmm yyyy
 
-- Add: API endpoint for apps that returns all characters from a player account.
-- Add: API endpoint for apps that accepts a corporation ID and returns a list of all player IDs that have a 
+- OpenAPI 3: There is a new OpenAPI interface description file at `/application-api-3.yml` for the App API in 
+  OpenAPI version 3 format. The file `/application-api.json` in OpenAPI version 2 format is still available,
+  but will not be updated anymore.  [#9][i9]
+- Fix: Frontend: Filter for member tracking by token status change date does not work. [#25][i25]
+
+[i9]: https://github.com/tkhamez/neucore/issues/9
+[i25]: https://github.com/tkhamez/neucore/issues/25
+
+# 1.3.0
+
+4 Aug 2019
+
+- App API: new endpoint that accepts an EVE corporation ID and returns a list of all player IDs that have a 
   character in the corporation.
-- Member tracking: added filter options for member list
+- App API: new endpoint that accepts a player ID and returns all characters from that account.
+- Member tracking: added more filter options for the member list
 - Small improvements for UI, frontend and documentation.
 
 ## 1.2.1

@@ -2,14 +2,13 @@
 
 namespace Neucore\Entity;
 
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
  * A system settings variable.
  *
- * @SWG\Definition(
- *     definition="SystemVariable",
+ * @OA\Schema(
  *     required={"name", "value"}
  * )
  * @ORM\Entity
@@ -218,7 +217,7 @@ class SystemVariable implements \JsonSerializable
     /**
      * Variable name.
      *
-     * @SWG\Property(maxLength=255)
+     * @OA\Property(maxLength=255)
      * @ORM\Column(type="string", length=255)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
@@ -229,7 +228,7 @@ class SystemVariable implements \JsonSerializable
     /**
      * Variable value.
      *
-     * @SWG\Property
+     * @OA\Property()
      * @ORM\Column(type="text", length=16777215, nullable=true)
      * @var string
      */

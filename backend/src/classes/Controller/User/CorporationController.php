@@ -8,12 +8,12 @@ use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
+use OpenApi\Annotations as OA;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Corporation",
  *     description="Corporation management (for automatic group assignment) and tracking."
  * )
@@ -46,19 +46,19 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/corporation/all",
      *     operationId="all",
      *     summary="List all corporations.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of corporations.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -72,19 +72,19 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/corporation/with-groups",
      *     operationId="withGroups",
      *     summary="List all corporations that have groups assigned.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of corporations (this one includes the groups property).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -104,7 +104,7 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/user/corporation/add/{id}",
      *     operationId="add",
      *     summary="Add an EVE corporation to the database.",
@@ -113,35 +113,35 @@ class CorporationController extends BaseController
      *                  Also adds the corresponding alliance, if there is one.",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="EVE corporation ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="201",
      *         description="The new corporation.",
-     *         @SWG\Schema(ref="#/definitions/Corporation")
+     *         @OA\JsonContent(ref="#/components/schemas/Corporation")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid corporation ID."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Corporation not found."
-     *     ),
-     *     @SWG\Response(
-     *         response="409",
-     *         description="The corporation already exists."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation not found."
+     *     ),
+     *     @OA\Response(
+     *         response="409",
+     *         description="The corporation already exists."
+     *     ),
+     *     @OA\Response(
      *         response="503",
      *         description="ESI request failed."
      *     )
@@ -175,38 +175,38 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/corporation/{id}/add-group/{gid}",
      *     operationId="addGroup",
      *     summary="Add a group to the corporation.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the corporation.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group added."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Corporation and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation and/or group not found."
      *     )
      * )
      */
@@ -224,38 +224,38 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/corporation/{id}/remove-group/{gid}",
      *     operationId="removeGroup",
      *     summary="Remove a group from the corporation.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the corporation.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Corporation and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation and/or group not found."
      *     )
      * )
      */
@@ -271,19 +271,19 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/corporation/tracked-corporations",
      *     operationId="trackedCorporations",
      *     summary="Returns all corporations that have member tracking data.",
      *     description="Needs role: tracking",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of characters.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Corporation"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -297,58 +297,56 @@ class CorporationController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/corporation/{id}/members",
      *     operationId="members",
      *     summary="Returns tracking data of corporation members.",
      *     description="Needs role: tracking",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the corporation.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="inactive",
      *         in="query",
      *         description="Limit to members who have been inactive for x days or longer.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="active",
      *         in="query",
      *         description="Limit to members who were active in the last x days.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="account",
      *         in="query",
      *         description="Limit to members with (true) or without (false) an account.",
-     *         type="string",
-     *         enum={"true", "false"}
+     *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="valid-token",
      *         in="query",
      *         description="Limit to characters with a valid (true) or invalid (false) token.",
-     *         type="string",
-     *         enum={"true", "false"}
+     *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="token-status-changed",
      *         in="query",
      *         description="Limit to characters whose ESI token status has not changed for x days.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of corporation members.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/CorporationMember"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CorporationMember"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

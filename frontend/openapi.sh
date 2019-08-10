@@ -2,9 +2,9 @@
 
 DIR=$(dirname "$(realpath "$0")")
 
-# generate the Swagger client
+# generate the OpenAPI client
 
-VERSION=3.3.4
+VERSION=4.0.3
 FILENAME=openapi-generator-cli-${VERSION}.jar
 
 if [[ ! -f ${DIR}/${FILENAME} ]]; then
@@ -16,6 +16,11 @@ rm -Rf ${DIR}/neucore-js-client/*
 
 java -jar ${DIR}/${FILENAME} generate \
     -c ${DIR}/neucore-js-client-config.json \
-    -i ${DIR}/../web/frontend-api.json \
+    -i ${DIR}/../web/frontend-api-3.yml \
     -g javascript \
-    -o ${DIR}/neucore-js-client
+    -o ${DIR}/neucore-js-client \
+    --skip-validate-spec
+
+cd neucore-js-client
+npm i
+npm run build

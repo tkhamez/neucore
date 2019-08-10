@@ -11,13 +11,13 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="App",
  *     description="Application management."
  * )
@@ -74,19 +74,19 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/app/all",
      *     operationId="all",
      *     summary="List all apps.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of apps (only id and name properties are returned).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/App"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/App"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -105,36 +105,42 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/user/app/create",
      *     operationId="create",
      *     summary="Create an app.",
      *     description="Needs role: app-admin<br>Generates a random secret that must be changed by an app manager.",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     consumes={"application/x-www-form-urlencoded"},
-     *     @SWG\Parameter(
-     *         name="name",
-     *         in="formData",
-     *         required=true,
-     *         description="Name of the app.",
-     *         type="string",
-     *         maxLength=255
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="name",
+     *                     description="Name of the app.",
+     *                     type="string",
+     *                     maxLength=255
+     *                 )
+     *             ),
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="201",
      *         description="The new app.",
-     *         @SWG\Schema(ref="#/definitions/App")
+     *         @OA\JsonContent(ref="#/components/schemas/App")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="App name is invalid/missing."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="500",
      *         description="If creation of app failed."
      *     )
@@ -169,45 +175,51 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/rename",
      *     operationId="rename",
      *     summary="Rename an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     consumes={"application/x-www-form-urlencoded"},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
-     *         name="name",
-     *         in="formData",
-     *         required=true,
-     *         description="New name for the app.",
-     *         type="string",
-     *         maxLength=64
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="name",
+     *                     description="New name for the app.",
+     *                     type="string",
+     *                     maxLength=255
+     *                 )
+     *             ),
+     *         ),
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="App was renamed.",
-     *         @SWG\Schema(ref="#/definitions/App")
+     *         @OA\JsonContent(ref="#/components/schemas/App")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="App name is invalid/missing."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="App not found."
      *     )
      * )
      */
@@ -229,31 +241,31 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Delete(
+     * @OA\Delete(
      *     path="/user/app/{id}/delete",
      *     operationId="delete",
      *     summary="Delete an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="App was deleted."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="App not found."
      *     )
      * )
      */
@@ -270,32 +282,32 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/app/{id}/managers",
      *     operationId="managers",
      *     summary="List all managers of an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="App ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of players ordered by name. Only id, name and roles properties are returned.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Player"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="App not found."
      *     )
      * )
      */
@@ -320,38 +332,38 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/add-manager/{pid}",
      *     operationId="addManager",
      *     summary="Assign a player as manager to an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Player added as manager."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or app not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or app not found."
      *     )
      * )
      */
@@ -373,38 +385,38 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/remove-manager/{pid}",
      *     operationId="removeManager",
      *     summary="Remove a manager (player) from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="pid",
      *         in="path",
      *         required=true,
      *         description="ID of the player.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Player removed from managers."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Player and/or app not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player and/or app not found."
      *     )
      * )
      */
@@ -420,7 +432,7 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/app/{id}/show",
      *     operationId="show",
      *     summary="Shows app information.",
@@ -428,25 +440,25 @@ class AppController extends BaseController
      *                  Managers can only see groups of their own apps.",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="App ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The app information",
-     *         @SWG\Schema(ref="#/definitions/App")
+     *         @OA\JsonContent(ref="#/components/schemas/App")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="App not found."
      *     )
      * )
      */
@@ -467,38 +479,38 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/add-group/{gid}",
      *     operationId="addGroup",
      *     summary="Add a group to an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group added to app."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group and/or app not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group and/or app not found."
      *     )
      * )
      */
@@ -520,38 +532,38 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/remove-group/{gid}",
      *     operationId="removeGroup",
      *     summary="Remove a group from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group removed from the app."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Group and/or app not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group and/or app not found."
      *     )
      * )
      */
@@ -567,39 +579,38 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/add-role/{name}",
      *     operationId="addRole",
      *     summary="Add a role to the app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         type="string",
-     *         enum={"app-groups", "app-chars", "app-tracking", "app-esi"}
+     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Role added."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App and/or role not found or invalid."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="App and/or role not found or invalid."
      *     )
      * )
      */
@@ -617,39 +628,38 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/remove-role/{name}",
      *     operationId="removeRole",
      *     summary="Remove a role from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the role.",
-     *         type="string",
-     *         enum={"app-groups", "app-chars", "app-tracking", "app-esi"}
+     *         @OA\Schema(type="string", enum={"app-groups", "app-chars", "app-tracking", "app-esi"})
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Role removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App and/or role not found or invalid."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="App and/or role not found or invalid."
      *     )
      * )
      */
@@ -665,34 +675,34 @@ class AppController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/app/{id}/change-secret",
      *     operationId="changeSecret",
      *     summary="Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
      *     description="Needs role: app-manager",
      *     tags={"App"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the app.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The new secret.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="App not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
+     *         response="404",
+     *         description="App not found."
+     *     ),
+     *     @OA\Response(
      *         response="500",
      *         description="Failed to created new secret."
      *     )

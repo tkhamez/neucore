@@ -4,14 +4,12 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
  *
- * @SWG\Definition(
- *     definition="Player",
+ * @OA\Schema(
  *     required={"id", "name"}
  * )
  *
@@ -35,7 +33,7 @@ class Player implements \JsonSerializable
     const STATUS_MANAGED = 'managed';
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -49,7 +47,7 @@ class Player implements \JsonSerializable
      * This is the EVE character name of the current main character or of
      * the last main character if there is currently none.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", length=255)
      * @var string
      */
@@ -66,7 +64,7 @@ class Player implements \JsonSerializable
     /**
      * Player account status.
      *
-     * @SWG\Property(
+     * @OA\Property(
      *     enum={"standard", "managed"})
      * )
      * @ORM\Column(type="string", length=16)
@@ -88,7 +86,7 @@ class Player implements \JsonSerializable
     /**
      * Roles for authorization.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Role"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Role"))
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="players")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -96,7 +94,7 @@ class Player implements \JsonSerializable
     private $roles;
 
     /**
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Character"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Character"))
      * @ORM\OneToMany(targetEntity="Character", mappedBy="player")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -115,7 +113,7 @@ class Player implements \JsonSerializable
     /**
      * Group membership.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="players")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -125,7 +123,7 @@ class Player implements \JsonSerializable
     /**
      * Manager of groups.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", mappedBy="managers")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -135,7 +133,7 @@ class Player implements \JsonSerializable
     /**
      * Manager of apps.
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/App"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/App"))
      * @ORM\ManyToMany(targetEntity="App", mappedBy="managers")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -145,7 +143,7 @@ class Player implements \JsonSerializable
     /**
      * Characters that were removed from a player (API: not included by default).
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/RemovedCharacter"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
      * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="player")
      * @ORM\OrderBy({"removedDate" = "ASC"})
      * @var Collection

@@ -9,7 +9,7 @@
                     <label>EVE Character</label>
                     <multiselect v-model="selectedCharacter" :options="charSearchResult"
                                  label="character_name" track-by="character_id"
-                                 placeholder="Type to search"
+                                 placeholder="Type to search (min. 3 characters)"
                                  :searchable="true"
                                  :loading="charSearchIsLoading"
                                  :internal-search="false"
@@ -29,8 +29,11 @@
                                  placeholder="Select route"></multiselect>
                     <input class="form-control" v-model="esiRoute" placeholder="route" id="esiRoute">
                     <small class="form-text text-muted">
-                        {character_id} is automatically replaced by the ID of the selected character,
-                        other placeholders must be replaced manually.
+                        Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically 
+                        replaced with the corresponding IDs of the selected character, other placeholders 
+                        must be replaced manually.<br>
+                        If the result contains an "X-Pages" header, you can request the other pages by 
+                        adding "?page=2" etc. to the route.
                     </small>
                 </div>
                 <button type="submit" class="btn btn-primary" v-on:click="request()">Submit</button>

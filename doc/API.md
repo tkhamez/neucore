@@ -2,10 +2,10 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with OpenAPI, it is available at `https://[domain]/swagger.json`.
+The API is documented with OpenAPI, it is available at `https://[domain]/openapi-3.yaml`.
 
 There is also an OpenAPI definition file available that contains only the API for applications at
-[https://[domain]/application-api.json](https://neucore.herokuapp.com/application-api.json).
+[https://[domain]/application-api-3.yml](https://neucore.herokuapp.com/application-api-3.yml).
 
 ## Roles Overview
 
@@ -263,7 +263,7 @@ Application API
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
 - Return all characters from the player account. `/app/v1/player-chars/{playerId}`
 - Return all characters that were removed from the player account to which the character ID belongs. `/app/v1/removed-characters/{characterId}`
-- Return a list of all player IDs that have a character in the corporation. `/app/v1/corp-players/{corporationId}`
+- Return a list of all players that have a character in the corporation. `/app/v1/corp-players/{corporationId}`
 
 #### app-tracking
 

@@ -9,31 +9,31 @@ use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Character",
  *     description="Character related functions."
  * )
- * @SWG\Definition(
- *     definition="SearchResult",
+ * @OA\Schema(
+ *     schema="SearchResult",
  *     required={"character_id", "character_name", "player_id", "player_name"},
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="character_id",
  *         type="integer",
  *         format="int64"
  *     ),
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="character_name",
  *         type="string"
  *     ),
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="player_id",
  *         type="integer"
  *     ),
- *     @SWG\Property(
+ *     @OA\Property(
  *         property="player_name",
  *         type="string"
  *     )
@@ -88,19 +88,19 @@ class CharacterController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/character/show",
      *     operationId="show",
      *     summary="Return the logged in EVE character.",
      *     description="Needs role: user",
      *     tags={"Character"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The logged in EVE character.",
-     *         @SWG\Schema(ref="#/definitions/Character")
+     *         @OA\JsonContent(ref="#/components/schemas/Character")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized"
      *     )
@@ -112,26 +112,26 @@ class CharacterController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/character/find-by/{name}",
      *     operationId="findBy",
      *     summary="Return a list of characters that matches the name (partial matching).",
      *     description="Needs role: user-admin or group-manager",
      *     tags={"Character"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="name",
      *         in="path",
      *         required=true,
      *         description="Name of the character.",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of characters.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/SearchResult"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/SearchResult"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized"
      *     )
@@ -155,30 +155,30 @@ class CharacterController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/character/find-player-of/{id}",
      *     operationId="findPlayerOf",
      *     summary="Return the player to whom the character belongs.",
      *     description="Needs role: user-admin or group-manager",
      *     tags={"Character"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the character.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The player with id and name properties only.",
-     *         @SWG\Schema(ref="#/definitions/Player")
+     *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="No player found."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized"
      *     )
@@ -198,7 +198,7 @@ class CharacterController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/character/{id}/update",
      *     operationId="update",
      *     summary="Update a character with data from ESI.",
@@ -206,31 +206,31 @@ class CharacterController
      *                  It also updates groups and verifies the OAuth token.",
      *     tags={"Character"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The updated character.",
-     *         @SWG\Schema(ref="#/definitions/Character")
+     *         @OA\JsonContent(ref="#/components/schemas/Character")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="If the character was deleted because the owner hash changed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Character not found on this account."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character not found on this account."
+     *     ),
+     *     @OA\Response(
      *         response="503",
      *         description="ESI request failed."
      *     )

@@ -224,7 +224,7 @@ module.exports = {
                 active: this.formOptions.daysActive,
                 account: this.formOptions.account,
                 validToken: this.formOptions.validToken,
-                tokenChanged: this.formOptions.tokenChanged,
+                tokenStatusChanged: this.formOptions.tokenChanged,
             };
 
             const vm = this;

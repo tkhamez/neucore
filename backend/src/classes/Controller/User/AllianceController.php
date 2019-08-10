@@ -8,11 +8,11 @@ use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
+use OpenApi\Annotations as OA;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Alliance",
  *     description="Alliance management (for automatic group assignment)."
  * )
@@ -42,19 +42,19 @@ class AllianceController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/alliance/all",
      *     operationId="all",
      *     summary="List all alliances.",
      *     description="Needs role: group-admin",
      *     tags={"Alliance"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of alliances.",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -68,19 +68,19 @@ class AllianceController extends BaseController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/alliance/with-groups",
      *     operationId="withGroups",
      *     summary="List all alliances that have groups assigned.",
      *     description="Needs role: group-admin",
      *     tags={"Alliance"},
      *     security={{"Session"={}}},
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="List of alliances (this one includes the groups property).",
-     *         @SWG\Schema(type="array", @SWG\Items(ref="#/definitions/Alliance"))
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -100,7 +100,7 @@ class AllianceController extends BaseController
     }
 
     /**
-     * @SWG\Post(
+     * @OA\Post(
      *     path="/user/alliance/add/{id}",
      *     operationId="add",
      *     summary="Add an EVE alliance to the database.",
@@ -108,35 +108,35 @@ class AllianceController extends BaseController
      *                  This makes an ESI request and adds the alliance only if it exists",
      *     tags={"Alliance"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="EVE alliance ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="201",
      *         description="The new alliance.",
-     *         @SWG\Schema(ref="#/definitions/Alliance")
+     *         @OA\JsonContent(ref="#/components/schemas/Alliance")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Invalid alliance ID."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Alliance not found."
-     *     ),
-     *     @SWG\Response(
-     *         response="409",
-     *         description="The alliance already exists."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
+     *         response="404",
+     *         description="Alliance not found."
+     *     ),
+     *     @OA\Response(
+     *         response="409",
+     *         description="The alliance already exists."
+     *     ),
+     *     @OA\Response(
      *         response="503",
      *         description="ESI request failed."
      *     )
@@ -165,38 +165,38 @@ class AllianceController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/alliance/{id}/add-group/{gid}",
      *     operationId="addGroup",
      *     summary="Add a group to the alliance.",
      *     description="Needs role: group-admin",
      *     tags={"Alliance"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the alliance.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group added."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Alliance and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Alliance and/or group not found."
      *     )
      * )
      */
@@ -214,38 +214,38 @@ class AllianceController extends BaseController
     }
 
     /**
-     * @SWG\Put(
+     * @OA\Put(
      *     path="/user/alliance/{id}/remove-group/{gid}",
      *     operationId="removeGroup",
      *     summary="Remove a group from the alliance.",
      *     description="Needs role: group-admin",
      *     tags={"Alliance"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="ID of the alliance.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="gid",
      *         in="path",
      *         required=true,
      *         description="ID of the group.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="204",
      *         description="Group removed."
      *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Alliance and/or group not found."
-     *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Alliance and/or group not found."
      *     )
      * )
      */

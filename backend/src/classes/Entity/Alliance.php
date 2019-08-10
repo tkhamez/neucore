@@ -4,14 +4,13 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
  * EVE Alliance.
  *
- * @SWG\Definition(
- *     definition="Alliance",
+ * @OA\Schema(
  *     required={"id", "name", "ticker"}
  * )
  * @ORM\Entity
@@ -22,7 +21,7 @@ class Alliance implements \JsonSerializable
     /**
      * EVE alliance ID.
      *
-     * @SWG\Property(format="int64")
+     * @OA\Property(format="int64")
      * @ORM\ID
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
@@ -33,7 +32,7 @@ class Alliance implements \JsonSerializable
     /**
      * EVE alliance name.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
@@ -42,7 +41,7 @@ class Alliance implements \JsonSerializable
     /**
      * Alliance ticker.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", length=16, nullable=true)
      * @var string
      */
@@ -67,7 +66,7 @@ class Alliance implements \JsonSerializable
     /**
      * Groups for automatic assignment (API: not included by default).
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="alliances")
      * @ORM\JoinTable(name="alliance_group")
      * @ORM\OrderBy({"name" = "ASC"})

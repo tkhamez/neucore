@@ -2,13 +2,12 @@
 
 namespace Neucore\Entity;
 
-use Neucore\Api;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Api;
+use OpenApi\Annotations as OA;
 
 /**
- * @SWG\Definition(
- *     definition="GroupApplication",
+ * @OA\Schema(
  *     required={"id", "player", "group", "created"},
  *     description="The player property contains only id and name."
  * )
@@ -37,7 +36,7 @@ class GroupApplication implements \JsonSerializable
     const STATUS_DENIED = 'denied';
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -46,7 +45,7 @@ class GroupApplication implements \JsonSerializable
     private $id;
 
     /**
-     * @SWG\Property(ref="#/definitions/Player")
+     * @OA\Property(ref="#/components/schemas/Player")
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="groupApplications")
      * @ORM\JoinColumn(nullable=false)
      * @var Player
@@ -54,7 +53,7 @@ class GroupApplication implements \JsonSerializable
     private $player;
 
     /**
-     * @SWG\Property(ref="#/definitions/Group")
+     * @OA\Property(ref="#/components/schemas/Group")
      * @ORM\ManyToOne(targetEntity="Group", inversedBy="applications")
      * @ORM\JoinColumn(nullable=false)
      * @var Group
@@ -62,7 +61,7 @@ class GroupApplication implements \JsonSerializable
     private $group;
 
     /**
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="datetime", nullable=true)
      * @var \DateTime
      */
@@ -71,7 +70,7 @@ class GroupApplication implements \JsonSerializable
     /**
      * Group application status.
      *
-     * @SWG\Property(
+     * @OA\Property(
      *     enum={"pending", "accepted", "denied"})
      * )
      * @ORM\Column(type="string", length=16)

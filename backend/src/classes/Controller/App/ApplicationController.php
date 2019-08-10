@@ -3,22 +3,21 @@
 namespace Neucore\Controller\App;
 
 use Neucore\Service\AppAuth;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="Application",
  *     description="API for applications.",
  * )
  *
- * @SWG\SecurityScheme(
- *     securityDefinition="Bearer",
- *     type="apiKey",
- *     name="Authorization",
- *     in="header",
- *     description="Example: Bearer ABC"
+ * @OA\SecurityScheme(
+ *     securityScheme="BearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     description="The API key is a base64-encoded string containing the app ID and secret separated by a colon"
  * )
  */
 class ApplicationController
@@ -40,19 +39,19 @@ class ApplicationController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/app/v1/show",
      *     operationId="showV1",
      *     summary="Show app information.",
      *     description="Needs role: app",
      *     tags={"Application"},
-     *     security={{"Bearer"={}}},
-     *     @SWG\Response(
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Response(
      *         response="200",
      *         description="The app information",
-     *         @SWG\Schema(ref="#/definitions/App")
+     *         @OA\JsonContent(ref="#/components/schemas/App")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )

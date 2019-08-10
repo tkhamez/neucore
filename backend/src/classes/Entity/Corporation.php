@@ -4,14 +4,13 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Swagger\Annotations as SWG;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
  * EVE corporation.
  *
- * @SWG\Definition(
- *     definition="Corporation",
+ * @OA\Schema(
  *     required={"id", "name", "ticker"}
  * )
  * @ORM\Entity
@@ -23,7 +22,7 @@ class Corporation implements \JsonSerializable
     /**
      * EVE corporation ID.
      *
-     * @SWG\Property(format="int64")
+     * @OA\Property(format="int64")
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
@@ -34,7 +33,7 @@ class Corporation implements \JsonSerializable
     /**
      * EVE corporation name.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
@@ -43,7 +42,7 @@ class Corporation implements \JsonSerializable
     /**
      * Corporation ticker.
      *
-     * @SWG\Property()
+     * @OA\Property()
      * @ORM\Column(type="string", length=16, nullable=true)
      * @var string
      */
@@ -59,7 +58,7 @@ class Corporation implements \JsonSerializable
 
     /**
      *
-     * @SWG\Property(ref="#/definitions/Alliance")
+     * @OA\Property(ref="#/components/schemas/Alliance")
      * @ORM\ManyToOne(targetEntity="Alliance", inversedBy="corporations")
      * @var Alliance|null
      */
@@ -68,7 +67,7 @@ class Corporation implements \JsonSerializable
     /**
      * Groups for automatic assignment (API: not included by default).
      *
-     * @SWG\Property(type="array", @SWG\Items(ref="#/definitions/Group"))
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Group"))
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="corporations")
      * @ORM\JoinTable(name="corporation_group")
      * @ORM\OrderBy({"name" = "ASC"})

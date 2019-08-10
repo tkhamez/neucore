@@ -1,7 +1,7 @@
 # backend
-/application-api.json
-/frontend-api.json
-/swagger.json
+/application-api-3.yml
+/frontend-api-3.yml
+/openapi-3.yaml
 
 # frontend
 /dist

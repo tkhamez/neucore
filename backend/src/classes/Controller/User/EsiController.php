@@ -8,13 +8,13 @@ use Neucore\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\MessageInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 
 /**
- * @SWG\Tag(
+ * @OA\Tag(
  *     name="ESI",
  *     description="ESI requests"
  * )
@@ -61,7 +61,7 @@ class EsiController
     }
 
     /**
-     * @SWG\Get(
+     * @OA\Get(
      *     path="/user/esi/request",
      *     operationId="request",
      *     summary="ESI request.",
@@ -71,29 +71,29 @@ class EsiController
      *                  Only the {character_id} placeholder is implemented.",
      *     tags={"ESI"},
      *     security={{"Session"={}}},
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="character",
      *         in="query",
      *         description="EVE character ID.",
-     *         type="integer"
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @SWG\Parameter(
+     *     @OA\Parameter(
      *         name="route",
      *         in="query",
      *         description="The ESI route.",
-     *         type="string"
+     *         @OA\Schema(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="200",
      *         description="The result from ESI or an error message.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="400",
      *         description="Error.",
-     *         @SWG\Schema(type="string")
+     *         @OA\JsonContent(type="string")
      *     ),
-     *     @SWG\Response(
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     )
@@ -104,21 +104,31 @@ class EsiController
         $charId = $request->getParam('character', '');
         $route = $request->getParam('route', '');
 
+        // validate input
         if ($route === '' || $charId === '') {
             return $this->response->withJson('Missing route and/or character parameter.', 400);
         }
-
         $character = $this->repositoryFactory->getCharacterRepository()->find($charId);
         if ($character === null) {
             return $this->response->withJson('Character not found.', 400);
         }
 
-        $token = $this->tokenService->getToken($character);
-
+        // replace placeholders
         $baseUri = $this->config['eve']['esi_host'];
-        $path = str_replace('{character_id}', (string) $character->getId(), $route);
+        $corp = $character->getCorporation();
+        $path = str_replace(
+            ['{character_id}', '{corporation_id}', '{alliance_id}'], 
+            [
+                $character->getId(),
+                $corp ? $corp->getId() : '',
+                $corp ? ($corp->getAlliance() ? $corp->getAlliance()->getId() : '') : ''
+            ],
+            $route
+        );
         $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'];
 
+        // make request
+        $token = $this->tokenService->getToken($character);
         $response = null;
         try {
             $response = $this->httpClient->request('GET', $baseUri . $path, [
@@ -130,13 +140,13 @@ class EsiController
             return $this->prepareResponse($ge->getMessage(), null, 400);
         }
 
+        // get body from response
         $json = null;
         try {
             $json = $response->getBody()->getContents();
         } catch (\RuntimeException $re) {
             return $this->prepareResponse($re->getMessage(), $response, 400);
         }
-
         $body = null;
         try {
             $body = \GuzzleHttp\json_decode($json);
