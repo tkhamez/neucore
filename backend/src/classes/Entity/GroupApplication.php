@@ -61,7 +61,7 @@ class GroupApplication implements \JsonSerializable
     private $group;
 
     /**
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", nullable=true)
      * @var \DateTime
      */

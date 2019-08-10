@@ -30,6 +30,7 @@ class CharController
     /**
      * @OA\Get(
      *     path="/app/v1/main/{cid}",
+     *     deprecated=true,
      *     operationId="mainV1",
      *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",

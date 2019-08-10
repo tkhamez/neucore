@@ -32,7 +32,7 @@ class Alliance implements \JsonSerializable
     /**
      * EVE alliance name.
      *
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
@@ -41,7 +41,7 @@ class Alliance implements \JsonSerializable
     /**
      * Alliance ticker.
      *
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=16, nullable=true)
      * @var string
      */

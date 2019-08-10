@@ -33,7 +33,7 @@ class Corporation implements \JsonSerializable
     /**
      * EVE corporation name.
      *
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string
      */
@@ -42,7 +42,7 @@ class Corporation implements \JsonSerializable
     /**
      * Corporation ticker.
      *
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=16, nullable=true)
      * @var string
      */

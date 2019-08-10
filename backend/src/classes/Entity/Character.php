@@ -77,7 +77,7 @@ class Character implements \JsonSerializable
      *
      * If there is no refresh token this is null.
      *
-     * @OA\Property(type="boolean")
+     * @OA\Property(type="boolean", nullable=true)
      * @ORM\Column(type="boolean", name="valid_token", nullable=true)
      * @var bool|null
      */
@@ -86,7 +86,7 @@ class Character implements \JsonSerializable
     /**
      * Date and time when that valid token property was last changed.
      *
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
      * @var \DateTime|null
      */
@@ -115,7 +115,7 @@ class Character implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime
      */
