@@ -65,10 +65,6 @@ module.exports = (env, argv) => {
                     options: { name: '../fonts/[name].[ext]' }
                 }]
             }, {
-                // Swagger client AMD define fails, https://github.com/swagger-api/swagger-codegen/issues/3466
-                test: /neucore-js-client\/.*\.js$/,
-                use: 'imports-loader?define=>false'
-            }, {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             }, {
