@@ -63,6 +63,7 @@ class GroupController
     /**
      * @OA\Get(
      *     path="/app/v1/groups/{cid}",
+     *     deprecated=true,
      *     operationId="groupsV1",
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
@@ -184,6 +185,7 @@ class GroupController
     /**
      * @OA\Get(
      *     path="/app/v1/corp-groups/{cid}",
+     *     deprecated=true,
      *     operationId="corpGroupsV1",
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
@@ -298,6 +300,7 @@ class GroupController
     /**
      * @OA\Get(
      *     path="/app/v1/alliance-groups/{aid}",
+     *     deprecated=true,
      *     operationId="allianceGroupsV1",
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
