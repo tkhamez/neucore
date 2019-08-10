@@ -31,7 +31,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * EVE Character name.
      *
-     * @OA\Property(type="string")
+     * @OA\Property(type="string", nullable=true)
      * @ORM\Column(type="string", length=255, nullable=true)
      * @var string|null
      */
@@ -40,35 +40,35 @@ class CorporationMember implements \JsonSerializable
     /**
      * Corporation ticker.
      *
-     * @OA\Property(type="integer")
+     * @OA\Property(type="integer", nullable=true)
      * @ORM\Column(type="bigint", name="location_id", nullable=true)
      * @var integer|null
      */
     private $locationId;
 
     /**
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="logoff_date", nullable=true)
      * @var \DateTime
      */
     private $logoffDate;
 
     /**
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="logon_date", nullable=true)
      * @var \DateTime
      */
     private $logonDate;
 
     /**
-     * @OA\Property(type="integer")
+     * @OA\Property(type="integer", nullable=true)
      * @ORM\Column(type="bigint", name="ship_type_id", nullable=true)
      * @var integer|null
      */
     private $shipTypeId;
 
     /**
-     * @OA\Property()
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="start_date", nullable=true)
      * @var \DateTime
      */
