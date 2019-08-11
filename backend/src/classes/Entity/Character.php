@@ -129,7 +129,7 @@ class Character implements \JsonSerializable
     private $player;
 
     /**
-     * @OA\Property(ref="#/components/schemas/Corporation")
+     * @OA\Property(ref="#/components/schemas/Corporation", nullable=true)
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
      * @var Corporation|null
      */

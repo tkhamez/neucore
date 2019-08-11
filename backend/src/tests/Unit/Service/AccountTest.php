@@ -360,7 +360,7 @@ class AccountTest extends TestCase
         $this->helper->getEm()->persist($member);
         $this->helper->getEm()->flush();
 
-        $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY);
+        $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY, $player);
         $this->helper->getEm()->flush();
 
         $this->assertSame(0, count($player->getCharacters()));
@@ -379,6 +379,7 @@ class AccountTest extends TestCase
         $this->assertEquals(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), '', 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChars[0]->getReason());
+        $this->assertSame($player->getId(), $removedChars[0]->getDeletedBy()->getId());
     }
 
     public function testDeleteCharacterByAdmin()
@@ -406,7 +407,8 @@ class AccountTest extends TestCase
         $this->assertSame(0, count($this->removedCharRepo->findAll()));
 
         $this->assertSame(
-            'An admin deleted character "char" [10] from player "player 1" [' . $player->getId() . ']',
+            'An admin (player ID: unknown) deleted character "char" [10] from player "player 1" [' . 
+                $player->getId() . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }

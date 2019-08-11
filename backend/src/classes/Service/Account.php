@@ -252,15 +252,16 @@ class Account
      *
      * Does not flush the entity manager.
      */
-    public function deleteCharacter(Character $character, string $reason): void
+    public function deleteCharacter(Character $character, string $reason, Player $deletedBy = null): void
     {
         if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
             $this->log->info(
-                'An admin deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
+                'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') ' . 
+                'deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
                 'from player "' . $character->getPlayer()->getName() . '" [' . $character->getPlayer()->getId() . ']'
             );
         } else {
-            $this->createRemovedCharacter($character, null, $reason);
+            $this->createRemovedCharacter($character, null, $reason, $deletedBy);
         }
 
         // remove corporation member reference
@@ -312,7 +313,8 @@ class Account
     private function createRemovedCharacter(
         Character $character,
         Player $newPlayer = null,
-        string $reason = null
+        string $reason = null,
+        Player $deletedBy = null
     ): void {
         // should never be true, but that's not obvious here and setCharacterId() below needs an integer
         if ($character->getId() === null) {
@@ -324,6 +326,7 @@ class Account
 
         $player = $character->getPlayer();
         $removedCharacter->setPlayer($player);
+        $removedCharacter->setDeletedBy($deletedBy);
         $player->addRemovedCharacter($removedCharacter);
 
         $removedCharacter->setCharacterId((int) $character->getId());

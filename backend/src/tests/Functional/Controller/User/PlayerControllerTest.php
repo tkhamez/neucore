@@ -1000,7 +1000,8 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($this->charRepo->find(10));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 10]));
         $this->assertSame(
-            'An admin deleted character "User" [10] from player "User" [' . $this->playerId . ']',
+            'An admin (player ID: ' . $this->player->getId() . ') ' .
+                'deleted character "User" [10] from player "User" [' . $this->playerId . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -1035,6 +1036,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame($this->playerId, $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
+        $this->assertSame($this->player->getId(), $removedChar->getDeletedBy()->getId());
     }
 
     public function testDeleteCharacter204AdminInvalidReason()
@@ -1083,7 +1085,8 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($this->charRepo->find(13));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 13]));
         $this->assertSame(
-            'An admin deleted character "Alt" [13] from player "Admin" [' . $this->player->getId() . ']',
+            'An admin (player ID: ' . $this->player->getId() . ') ' . 
+                'deleted character "Alt" [13] from player "Admin" [' . $this->player->getId() . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }

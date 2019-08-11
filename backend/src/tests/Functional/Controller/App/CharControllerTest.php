@@ -303,7 +303,8 @@ class CharControllerTest extends WebTestCase
         $player2 = (new Player())->setName('p2');
         $removedChar1 = (new RemovedCharacter())->setCharacterId(100)->setCharacterName('c1')
             ->setRemovedDate(new \DateTime('2019-04-20 20:41:46'))
-            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY)
+            ->setDeletedBy($player1);
         $removedChar2 = (new RemovedCharacter())->setCharacterId(101)->setCharacterName('c2')
             ->setRemovedDate(new \DateTime('2019-04-20 20:41:47'))
             ->setReason(RemovedCharacter::REASON_MOVED)->setNewPlayer($player2);
@@ -324,6 +325,7 @@ class CharControllerTest extends WebTestCase
                 'characterName' => 'c1',
                 'removedDate' => '2019-04-20T20:41:46Z',
                 'reason' => RemovedCharacter::REASON_DELETED_MANUALLY,
+                'deletedBy' => ['id' => $player1->getId(), 'name' => 'p1'],
                 'newPlayerId' => null,
                 'newPlayerName' => null
             ],[
@@ -331,6 +333,7 @@ class CharControllerTest extends WebTestCase
                 'characterName' => 'c2',
                 'removedDate' => '2019-04-20T20:41:47Z',
                 'reason' => RemovedCharacter::REASON_MOVED,
+                'deletedBy' => null,
                 'newPlayerId' => $player2->getId(),
                 'newPlayerName' => 'p2'
             ]],

@@ -320,6 +320,7 @@
                                 <th>Date Removed (GMT)</th>
                                 <th>Reason</th>
                                 <th>New Player</th>
+                                <th>Deleted by</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -339,6 +340,12 @@
                                     <a v-if="removedChar.newPlayerId"
                                        :href="'#UserAdmin/' + removedChar.newPlayerId">
                                         {{ removedChar.newPlayerName }} #{{ removedChar.newPlayerId }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a v-if="removedChar.deletedBy"
+                                       :href="'#UserAdmin/' + removedChar.deletedBy.id">
+                                        {{ removedChar.deletedBy.name }} #{{ removedChar.deletedBy.id }}
                                     </a>
                                 </td>
                             </tr>

@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     required={"id", "name"},
  *     description="The player property contains only id and name, character does not contain corporation.",
- *     @OA\Property(property="player", ref="#/components/schemas/Player")
+ *     @OA\Property(property="player", ref="#/components/schemas/Player", nullable=true)
  * )
  * @ORM\Entity
  * @ORM\Table(name="corporation_members")
@@ -82,7 +82,7 @@ class CorporationMember implements \JsonSerializable
     private $corporation;
 
     /**
-     * @OA\Property(ref="#/components/schemas/Character")
+     * @OA\Property(ref="#/components/schemas/Character", nullable=true)
      * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
      * @var Character|null
      */

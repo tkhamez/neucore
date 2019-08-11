@@ -105,6 +105,16 @@ class RemovedCharacter implements \JsonSerializable
     private $reason;
 
     /**
+     * The player who deleted the character (only set if it was deleted via the API).
+     *
+     * @OA\Property(ref="#/components/schemas/Player", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\JoinColumn(name="deleted_by")
+     * @var Player|null
+     */
+    private $deletedBy;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -118,6 +128,7 @@ class RemovedCharacter implements \JsonSerializable
             'removedDate' => $this->getRemovedDate() !== null ?
                 $this->getRemovedDate()->format(Api::DATE_FORMAT) : null,
             'reason' => $this->reason,
+            'deletedBy' => $this->deletedBy ? $this->deletedBy->jsonSerialize(true) : null,
 
             // The JS client has problems if the newPLayer (type Player) property is added here
             'newPlayerId' => $this->newPlayer ? $this->newPlayer->getId() : null,
@@ -130,6 +141,30 @@ class RemovedCharacter implements \JsonSerializable
         return $this->id;
     }
 
+    public function setPlayer(Player $player): self
+    {
+        $this->player = $player;
+
+        return $this;
+    }
+
+    public function getPlayer(): ?Player
+    {
+        return $this->player;
+    }
+
+    public function setNewPlayer(Player $newPlayer = null): self
+    {
+        $this->newPlayer = $newPlayer;
+
+        return $this;
+    }
+
+    public function getNewPlayer(): ?Player
+    {
+        return $this->newPlayer;
+    }
+    
     public function setCharacterId(int $characterId): self
     {
         $this->characterId = $characterId;
@@ -179,27 +214,15 @@ class RemovedCharacter implements \JsonSerializable
         return (string) $this->reason;
     }
 
-    public function setPlayer(Player $player): self
+    public function setDeletedBy(?Player $deletedBy): self
     {
-        $this->player = $player;
+        $this->deletedBy = $deletedBy;
 
         return $this;
     }
 
-    public function getPlayer(): ?Player
+    public function getDeletedBy(): ?Player
     {
-        return $this->player;
-    }
-
-    public function setNewPlayer(Player $newPlayer = null): self
-    {
-        $this->newPlayer = $newPlayer;
-
-        return $this;
-    }
-
-    public function getNewPlayer(): ?Player
-    {
-        return $this->newPlayer;
+        return $this->deletedBy;
     }
 }

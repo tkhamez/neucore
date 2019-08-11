@@ -898,7 +898,7 @@ class PlayerController extends BaseController
      *         in="query",
      *         description="Specifies a reason if a user admin triggered the deletion.
                             ('deleted-by-admin' will not create a 'Removed Character' entry.)",
-     *         @OA\Schema(type="string", enum={"deleted-owner-changed", "deleted-by-admin", "deleted-manually"})
+     *         @OA\Schema(type="string", enum={"deleted-owner-changed", "deleted-manually", "deleted-by-admin"})
      *     ),
      *     @OA\Response(
      *         response="204",
@@ -959,7 +959,7 @@ class PlayerController extends BaseController
         }
 
         // delete char
-        $characterService->deleteCharacter($char, $reason);
+        $characterService->deleteCharacter($char, $reason, $this->getUser()->getPlayer());
 
         return $this->flushAndReturn(204);
     }
