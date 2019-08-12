@@ -55,10 +55,10 @@
             <div class="card border-secondary mb-3">
                 <h3 class="card-header">
                     Groups
-                    <i class="far fa-plus-square add-group"
+                    <span class="far fa-plus-square add-group"
                        @mouseover="mouseover"
                        @mouseleave="mouseleave"
-                       v-on:click="showCreateGroupModal()"></i>
+                       v-on:click="showCreateGroupModal()"></span>
                 </h3>
                 <div class="list-group">
                     <a v-for="group in groups" class="list-group-item list-group-item-action"
@@ -68,14 +68,14 @@
                         {{ group.name }}
                         <span class="text-muted small">{{ group.visibility }}</span>
                         <span class="group-actions" v-cloak v-if="groupId === group.id">
-                            <i class="far fa-trash-alt mr-1 delete-group"
+                            <span class="far fa-trash-alt mr-1 delete-group"
                                @mouseover="mouseover"
                                @mouseleave="mouseleave"
-                               v-on:click="showDeleteGroupModal(group)" title="delete"></i>
-                            <i class="fas fa-pencil-alt mr-1 edit-group"
+                               v-on:click="showDeleteGroupModal(group)" title="delete"></span>
+                            <span class="fas fa-pencil-alt mr-1 edit-group"
                                @mouseover="mouseover"
                                @mouseleave="mouseleave"
-                               v-on:click="showEditGroupModal(group)" title="edit"></i>
+                               v-on:click="showEditGroupModal(group)" title="edit"></span>
                         </span>
                     </a>
                 </div>
@@ -93,10 +93,10 @@
                             :class="{ 'active': contentType === 'alliances' }"
                             :href="'#GroupAdmin/' + groupId + '/alliances'">
                         Alliances
-                        <i class="far fa-plus-square add-alli-corp"
+                        <span class="far fa-plus-square add-alli-corp"
                            @mouseover="mouseover"
                            @mouseleave="mouseleave"
-                            v-on:click="showAddAlliCorpModal('Alliance')"></i>
+                            v-on:click="showAddAlliCorpModal('Alliance')"></span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -104,10 +104,10 @@
                             :class="{ 'active': contentType === 'corporations' }"
                             :href="'#GroupAdmin/' + groupId + '/corporations'">
                         Corporations
-                        <i class="far fa-plus-square add-alli-corp"
+                        <span class="far fa-plus-square add-alli-corp"
                            @mouseover="mouseover"
                            @mouseleave="mouseleave"
-                            v-on:click="showAddAlliCorpModal('Corporation')"></i>
+                            v-on:click="showAddAlliCorpModal('Corporation')"></span>
                     </a>
                 </li>
                 <li class="nav-item">

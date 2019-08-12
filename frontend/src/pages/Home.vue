@@ -106,7 +106,7 @@
                             </div>
                             <div class="card-footer">
                                 <span v-if="char.main" class="text-warning align-middle">
-                                    <i class="fas fa-star"></i> Main
+                                    <span class="fas fa-star"></span> Main
                                 </span>
                                 <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
@@ -120,19 +120,19 @@
                                 <button v-if="! char.main && char.validToken !== false"
                                         type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="makeMain(char.id)">
-                                    <i class="fas fa-star"></i>
+                                    <span class="fas fa-star"></span>
                                     Make Main
                                 </button>
                                 <button type="button" class="btn btn-primary btn-sm mt-1"
                                         v-on:click="update(char.id)">
-                                    <i class="fas fa-sync"></i>
+                                    <span class="fas fa-sync"></span>
                                     Update
                                 </button>
                                 <button type="button" class="btn btn-danger btn-sm mt-1"
                                         v-if="authChar && authChar.id !== char.id &&
                                               settings.allow_character_deletion === '1'"
                                         v-on:click="askDeleteChar(char.id, char.name)">
-                                    <i class="far fa-trash-alt"></i>
+                                    <span class="far fa-trash-alt"></span>
                                     Delete
                                 </button>
                             </div>

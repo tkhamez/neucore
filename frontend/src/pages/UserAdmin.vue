@@ -172,7 +172,7 @@
                         <button type="button" class="btn btn-danger mr-5"
                                 :disabled="role === 'user-admin' && playerEdit.id === player.id"
                                 v-on:click="removeRole(role)">
-                            <i class="fas fa-minus-circle"></i>
+                            <span class="fas fa-minus-circle"></span>
                             remove
                         </button>
                         {{ role }}

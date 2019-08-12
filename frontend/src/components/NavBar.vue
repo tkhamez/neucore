@@ -86,7 +86,7 @@
             </div>
 
             <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign out">
-                <i class="fas fa-sign-out-alt"></i>
+                <span class="fas fa-sign-out-alt"></span>
             </a>
         </div>
     </nav>

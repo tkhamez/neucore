@@ -282,14 +282,14 @@
                                 <td>
                                     <button type="button" class="btn btn-info"
                                             v-on:click="validateDirector(director.name)">
-                                        <i class="fas fa-check"></i>
+                                        <span class="fas fa-check"></span>
                                         validate
                                     </button>
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-danger"
                                             v-on:click="removeDirector(director.name)">
-                                        <i class="fas fa-minus-circle"></i>
+                                        <span class="fas fa-minus-circle"></span>
                                         remove
                                     </button>
                                 </td>

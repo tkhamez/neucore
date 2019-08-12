@@ -17,10 +17,10 @@
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
                     Apps
-                    <i class="far fa-plus-square add-app"
+                    <span class="far fa-plus-square add-app"
                        @mouseover="mouseover"
                        @mouseleave="mouseleave"
-                       v-on:click="showCreateAppModal()"></i>
+                       v-on:click="showCreateAppModal()"></span>
                 </h3>
                 <div class="list-group">
                     <span v-for="app in apps">
