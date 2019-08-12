@@ -204,7 +204,7 @@ class Account
             // should not happen, don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
-        $data = json_decode($jws->getPayload());
+        $data = json_decode((string)$jws->getPayload());
         if ($data === null) {
             // should not happen, don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
@@ -256,7 +256,7 @@ class Account
     {
         if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
             $this->log->info(
-                'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') ' . 
+                'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') ' .
                 'deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
                 'from player "' . $character->getPlayer()->getName() . '" [' . $character->getPlayer()->getId() . ']'
             );

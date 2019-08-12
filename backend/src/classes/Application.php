@@ -3,32 +3,6 @@
 namespace Neucore;
 
 use Brave\Sso\Basics\AuthenticationProvider;
-use Monolog\Formatter\HtmlFormatter;
-use Monolog\Formatter\JsonFormatter;
-use Monolog\Formatter\LogglyFormatter;
-use Monolog\Formatter\LogstashFormatter;
-use Neucore\Command\CheckTokens;
-use Neucore\Command\CleanHttpCache;
-use Neucore\Command\ClearCache;
-use Neucore\Command\DBVerifySSL;
-use Neucore\Command\DoctrineFixturesLoad;
-use Neucore\Command\MakeAdmin;
-use Neucore\Command\RevokeToken;
-use Neucore\Command\SendAccountDisabledMail;
-use Neucore\Command\UpdateCharacters;
-use Neucore\Command\UpdateMemberTracking;
-use Neucore\Command\UpdatePlayerGroups;
-use Neucore\Log\FluentdFormatter;
-use Neucore\Log\GelfMessageFormatter;
-use Neucore\Middleware\GuzzleEsiHeaders;
-use Neucore\Psr\ResponseFactory;
-use Neucore\Service\AppAuth;
-use Neucore\Service\Config;
-use Neucore\Service\UserAuth;
-use Neucore\Middleware\PsrCors;
-use Neucore\Slim\Handlers\Error;
-use Neucore\Slim\Handlers\PhpError;
-use Neucore\Slim\Session\NonBlockingSessionMiddleware;
 use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
@@ -48,15 +22,43 @@ use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\ErrorHandler;
+use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\LogglyFormatter;
+use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Neucore\Command\CheckTokens;
+use Neucore\Command\CleanHttpCache;
+use Neucore\Command\ClearCache;
+use Neucore\Command\DBVerifySSL;
+use Neucore\Command\DoctrineFixturesLoad;
+use Neucore\Command\MakeAdmin;
+use Neucore\Command\RevokeToken;
+use Neucore\Command\SendAccountDisabledMail;
+use Neucore\Command\UpdateCharacters;
+use Neucore\Command\UpdateMemberTracking;
+use Neucore\Command\UpdatePlayerGroups;
+use Neucore\Log\FluentdFormatter;
+use Neucore\Log\GelfMessageFormatter;
+use Neucore\Middleware\GuzzleEsiHeaders;
+use Neucore\Middleware\PsrCors;
+use Neucore\Psr\ResponseFactory;
+use Neucore\Service\AppAuth;
+use Neucore\Service\Config;
+use Neucore\Service\UserAuth;
+use Neucore\Slim\Handlers\Error;
+use Neucore\Slim\Handlers\PhpError;
+use Neucore\Slim\Session\NonBlockingSessionMiddleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Symfony\Component\Console\Application as ConsoleApplication;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Dotenv\Exception\FormatException;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
@@ -144,7 +146,11 @@ class Application
 
         // Load environment variables from file if it exists.
         if (file_exists(Application::ROOT_DIR . '/.env')) {
-            (new Dotenv())->load(Application::ROOT_DIR . '/.env');
+            try {
+                (new Dotenv())->load(Application::ROOT_DIR . '/.env');
+            } catch (FormatException $e) {
+                error_log((string) $e);
+            }
         }
 
         if (getenv('BRAVECORE_APP_ENV') === false) {
@@ -317,6 +323,7 @@ class Application
                     false
                 );
                 /* @phan-suppress-next-line PhanDeprecatedFunction */
+                /** @noinspection PhpDeprecationInspection */
                 AnnotationRegistry::registerLoader('class_exists');
                 if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '' &&
                     (
@@ -436,7 +443,7 @@ class Application
             },
 
             // Slim
-            ResponseInterface::class => function (ContainerInterface $c) {
+            ResponseInterface::class => function () {
                 return (new ResponseFactory())->createResponse();
             },
             'errorHandler' => function (ContainerInterface $c) {
@@ -519,6 +526,7 @@ class Application
     /**
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws LogicException
      */
     private function addCommands(ConsoleApplication $console): void
     {

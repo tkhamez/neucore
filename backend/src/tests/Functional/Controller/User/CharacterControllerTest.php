@@ -2,7 +2,6 @@
 
 namespace Tests\Functional\Controller\User;
 
-use League\OAuth2\Client\Provider\GenericProvider;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -14,7 +13,6 @@ use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
-use Tests\OAuthProvider;
 
 class CharacterControllerTest extends WebTestCase
 {

@@ -5,6 +5,9 @@ parameters:
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
 			path: %currentWorkingDirectory%/src/classes/Slim/Session/SessionData.php
 		-
+			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
+			path: %currentWorkingDirectory%/src/tests/Unit/Slim/Session/NonBlockingSessionMiddlewareTest.php
+		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
 			path: %currentWorkingDirectory%/src/classes/Service/EsiData.php
 		-
@@ -13,9 +16,6 @@ parameters:
 		-
 			message: '#MemberTracking::fetchData() should return array<(.*)GetCorporationsCorporationIdMembertracking200Ok>|null but returns(.*)GetCorporationsCorporationIdMembertracking200Ok#'
 			path: %currentWorkingDirectory%/src/classes/Service/MemberTracking.php
-		-
-			message: '#AbstractProvider::getResourceOwner\(\) expects(.*)AccessToken(.*)AccessTokenInterface given#'
-			path: %currentWorkingDirectory%/src/classes/Service/OAuthToken.php
 		-
 			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/AppController.php
@@ -28,9 +28,3 @@ parameters:
 		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/PlayerController.php
-		-
-			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Slim/Session/NonBlockingSessionMiddlewareTest.php
-		-
-			message: '#Brave\\Sso\\Basics\\EveAuthentication constructor expects string, int given.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Service/*

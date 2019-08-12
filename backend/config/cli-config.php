@@ -4,12 +4,12 @@
  * Required configuration for vendor/bin/doctrine
  */
 
-use Neucore\Application;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\ORM\Tools\Setup;
+use Neucore\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 
 require __DIR__ . '/../vendor/autoload.php';

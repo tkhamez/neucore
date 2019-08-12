@@ -407,7 +407,7 @@ class AccountTest extends TestCase
         $this->assertSame(0, count($this->removedCharRepo->findAll()));
 
         $this->assertSame(
-            'An admin (player ID: unknown) deleted character "char" [10] from player "player 1" [' . 
+            'An admin (player ID: unknown) deleted character "char" [10] from player "player 1" [' .
                 $player->getId() . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );

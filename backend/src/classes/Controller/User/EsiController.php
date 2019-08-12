@@ -109,11 +109,11 @@ class EsiController extends BaseController
         $baseUri = $this->config['eve']['esi_host'];
         $corp = $character->getCorporation();
         $path = str_replace(
-            ['{character_id}', '{corporation_id}', '{alliance_id}'], 
+            ['{character_id}', '{corporation_id}', '{alliance_id}'],
             [
                 $character->getId(),
                 $corp ? $corp->getId() : '',
-                $corp ? ($corp->getAlliance() ? $corp->getAlliance()->getId() : '') : ''
+                $corp ? ($corp->getAlliance() !== null ? $corp->getAlliance()->getId() : '') : ''
             ],
             $route
         );

@@ -39,18 +39,17 @@ class RevokeToken extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $id = (int) $input->getArgument('id');
+        $id = intval($input->getArgument('id'));
         $character = $this->charRepo->find($id);
         if ($character === null) {
             $output->writeln('Character not found.');
-            return;
+            return null;
         }
 
         $token = $this->tokenService->createAccessTokenFromCharacter($character);
         if ($token === null) {
             $output->writeln('Character has no token.');
-            return;
-
+            return null;
         }
 
         if ($this->tokenService->revokeRefreshToken($token)) {

@@ -66,14 +66,22 @@ class OAuthTokenTest extends TestCase
         $oauth = new OAuthProvider($this->client);
 
         $this->es = new OAuthToken(
-            $oauth, new ObjectManager($this->em, $this->log), $this->log, $this->client, new Config([])
+            $oauth,
+            new ObjectManager($this->em, $this->log),
+            $this->log,
+            $this->client,
+            new Config([])
         );
 
         // a second OAuthToken instance with another entity manager that throws an exception on flush.
         $em = $this->helper->getEm(true);
         $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
         $this->esError = new OAuthToken(
-            $oauth, new ObjectManager($em, $this->log), $this->log, $this->client, new Config([])
+            $oauth,
+            new ObjectManager($em, $this->log),
+            $this->log,
+            $this->client,
+            new Config([])
         );
     }
 

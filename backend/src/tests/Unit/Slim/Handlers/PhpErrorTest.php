@@ -21,8 +21,8 @@ class PhpErrorTest extends TestCase
         $exception = new \ErrorException('msg');
 
         $phpError->__invoke(
-            RequestFactory::createRequest(), 
-            (new ResponseFactory())->createResponse(), 
+            RequestFactory::createRequest(),
+            (new ResponseFactory())->createResponse(),
             $exception
         );
 

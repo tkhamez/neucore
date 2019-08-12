@@ -67,7 +67,7 @@ class Helper
         // create token
         $algorithmManager = AlgorithmManager::create([new RS256()]);
         $jwsBuilder = new JWSBuilder(null, $algorithmManager);
-        $payload = json_encode([
+        $payload = (string)json_encode([
             'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
             'sub' => 'CHARACTER:EVE:123',
             'name' => $charName,
@@ -95,7 +95,7 @@ class Helper
     {
         $serializerManager = JWSSerializerManager::create([new CompactSerializer()]);
         $jws = $serializerManager->unserialize($token);
-        return json_decode($jws->getPayload(), true);
+        return json_decode((string)$jws->getPayload(), true);
     }
 
     public function resetSessionData(): void

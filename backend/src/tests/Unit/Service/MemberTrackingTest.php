@@ -76,7 +76,11 @@ class MemberTrackingTest extends TestCase
             $objectManager,
             new EsiData($this->logger, $esiApiFactory, $objectManager, $this->repositoryFactory, $config),
             new OAuthToken(
-                new OAuthProvider($this->client), $objectManager, $this->logger, $this->client, new Config([])
+                new OAuthProvider($this->client),
+                $objectManager,
+                $this->logger,
+                $this->client,
+                new Config([])
             ),
             $config
         );

@@ -115,7 +115,7 @@ class AuthController extends BaseController
 
     /**
      * Login for "managed" accounts, redirects to EVE SSO login.
-     * 
+     *
      * @noinspection PhpUnused
      */
     public function loginManaged(): ResponseInterface
