@@ -40,7 +40,6 @@ return [
     '/api/user/auth/result'   => [Role::ANONYMOUS, Role::USER],
 
     '/api/user/character/find-by'        => [Role::USER_ADMIN, Role::GROUP_MANAGER],
-    '/api/user/character/find-player-of' => [Role::USER_ADMIN, Role::GROUP_MANAGER],
     '/api/user/character/{id}/update'    => [Role::USER, Role::USER_ADMIN],
 
     '/api/user/corporation/tracked-corporations' => [Role::TRACKING],

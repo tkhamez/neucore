@@ -73,7 +73,6 @@ return [
     '/api/user/auth/logout'   => ['POST', AuthController::class.'::logout'],
 
     '/api/user/character/find-by/{name}'      => ['GET',  CharacterController::class.'::findBy'],
-    '/api/user/character/find-player-of/{id}' => ['GET',  CharacterController::class.'::findPlayerOf'],
     '/api/user/character/show'                => ['GET',  CharacterController::class.'::show'],
     '/api/user/character/{id}/update'         => ['PUT',  CharacterController::class.'::update'],
 

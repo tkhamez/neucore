@@ -104,41 +104,6 @@ class CharacterControllerTest extends WebTestCase
         ]], $this->parseJsonBody($response));
     }
 
-    public function testFindPlayerOf403()
-    {
-        $this->setupDb();
-
-        $response1 = $this->runApp('GET', '/api/user/character/find-player-of/123');
-        $this->assertSame(403, $response1->getStatusCode());
-
-        $this->loginUser(96061222); // not an admin
-        $response2 = $this->runApp('GET', '/api/user/character/find-player-of/123');
-        $this->assertSame(403, $response2->getStatusCode());
-    }
-
-    public function testFindPlayerOf204()
-    {
-        $this->setupDb();
-        $this->loginUser(9);
-
-        $response = $this->runApp('GET', '/api/user/character/find-player-of/123');
-        $this->assertSame(204, $response->getStatusCode());
-    }
-
-    public function testFindPlayerOf200()
-    {
-        $this->setupDb();
-        $this->loginUser(9);
-
-        $response = $this->runApp('GET', '/api/user/character/find-player-of/456');
-        $this->assertSame(200, $response->getStatusCode());
-
-        $this->assertSame([
-            'id' => $this->playerId,
-            'name' => 'User',
-        ], $this->parseJsonBody($response));
-    }
-
     public function testUpdate403()
     {
         $response = $this->runApp('PUT', '/api/user/character/96061222/update');

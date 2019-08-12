@@ -79,7 +79,6 @@ Allows a player to add and remove roles from players.
 
 Character API
 - Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
-- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 - Update a character with data from ESI. `/user/character/{id}/update`
 
 Player API
@@ -153,7 +152,6 @@ Allows a player to add and remove members to his groups.
 
 Character API
 - Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
-- Return the player to whom the character belongs. `/user/character/find-player-of/{id}`
 
 Group API
 - List all required groups of a group. `/user/group/{id}/required-groups`

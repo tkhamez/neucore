@@ -155,49 +155,6 @@ class CharacterController
     }
 
     /**
-     * @OA\Get(
-     *     path="/user/character/find-player-of/{id}",
-     *     operationId="findPlayerOf",
-     *     summary="Return the player to whom the character belongs.",
-     *     description="Needs role: user-admin or group-manager",
-     *     tags={"Character"},
-     *     security={{"Session"={}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the character.",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="The player with id and name properties only.",
-     *         @OA\JsonContent(ref="#/components/schemas/Player")
-     *     ),
-     *     @OA\Response(
-     *         response="204",
-     *         description="No player found."
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized"
-     *     )
-     * )
-     */
-    public function findPlayerOf(string $id): Response
-    {
-        // TODO currently unused
-
-        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
-
-        if ($char === null) {
-            return $this->res->withStatus(204);
-        }
-
-        return $this->res->withJson($char->getPlayer()->jsonSerialize(true));
-    }
-
-    /**
      * @OA\Put(
      *     path="/user/character/{id}/update",
      *     operationId="update",
