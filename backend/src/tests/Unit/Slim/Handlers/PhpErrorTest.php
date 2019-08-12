@@ -2,13 +2,12 @@
 
 namespace Tests\Unit\Slim\Handlers;
 
+use Neucore\Psr\ResponseFactory;
 use Neucore\Slim\Handlers\PhpError;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Slim\Http\Environment;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Tests\RequestFactory;
 
 class PhpErrorTest extends TestCase
 {
@@ -21,7 +20,11 @@ class PhpErrorTest extends TestCase
         $phpError = new PhpError(true, $logger);
         $exception = new \ErrorException('msg');
 
-        $phpError->__invoke(Request::createFromEnvironment(Environment::mock()), new Response(), $exception);
+        $phpError->__invoke(
+            RequestFactory::createRequest(), 
+            (new ResponseFactory())->createResponse(), 
+            $exception
+        );
 
         $this->assertSame('msg', $handler->getRecords()[0]['message']);
         $this->assertSame($exception, $handler->getRecords()[0]['context']['exception']);

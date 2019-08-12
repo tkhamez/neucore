@@ -2,15 +2,17 @@
 
 namespace Neucore\Controller\User;
 
+use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
+use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @OA\Tag(
@@ -39,17 +41,12 @@ use Slim\Http\Response;
  *     )
  * )
  */
-class CharacterController
+class CharacterController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $res;
-
     /**
      * @var UserAuth
      */
-    private $uas;
+    private $userAuth;
 
     /**
      * @var EsiData
@@ -66,25 +63,21 @@ class CharacterController
      */
     private $tokenService;
 
-    /**
-     * @var repositoryFactory
-     */
-    private $repositoryFactory;
-
     public function __construct(
-        Response $response,
-        UserAuth $uas,
+        ResponseInterface $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        UserAuth $userAuth,
         EsiData $esiData,
         Account $charService,
-        OAuthToken $tokenService,
-        RepositoryFactory $repositoryFactory
+        OAuthToken $tokenService
     ) {
-        $this->res = $response;
-        $this->uas = $uas;
+        parent::__construct($response, $objectManager, $repositoryFactory);
+        
+        $this->userAuth = $userAuth;
         $this->esiData = $esiData;
         $this->charService = $charService;
         $this->tokenService = $tokenService;
-        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
@@ -106,9 +99,9 @@ class CharacterController
      *     )
      * )
      */
-    public function show(): Response
+    public function show(): ResponseInterface
     {
-        return $this->res->withJson($this->uas->getUser());
+        return $this->withJson($this->userAuth->getUser());
     }
 
     /**
@@ -137,7 +130,7 @@ class CharacterController
      *     )
      * )
      */
-    public function findBy(string $name): Response
+    public function findBy(string $name): ResponseInterface
     {
         $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name);
 
@@ -151,7 +144,7 @@ class CharacterController
             ];
         }
 
-        return $this->res->withJson($retVal);
+        return $this->withJson($retVal);
     }
 
     /**
@@ -193,10 +186,10 @@ class CharacterController
      *     )
      * )
      */
-    public function update(string $id, AutoGroupAssignment $groupAssign): Response
+    public function update(string $id, AutoGroupAssignment $groupAssign): ResponseInterface
     {
         // get player account
-        $player = $this->uas->getUser()->getPlayer();
+        $player = $this->userAuth->getUser()->getPlayer();
 
         // find character
         $char = null;
@@ -212,13 +205,13 @@ class CharacterController
         }
 
         if ($char === null) {
-            return $this->res->withStatus(404);
+            return $this->response->withStatus(404);
         }
 
         // update from ESI
         $updatedChar = $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId());
         if ($updatedChar === null) {
-            return $this->res->withStatus(503);
+            return $this->response->withStatus(503);
         }
 
         // check token and character owner hash - this may delete the character!
@@ -232,9 +225,9 @@ class CharacterController
             $groupAssign->assign($updatedChar->getPlayer()->getId());
             $groupAssign->checkRequiredGroups($updatedChar->getPlayer()->getId());
 
-            return $this->res->withJson($updatedChar);
+            return $this->withJson($updatedChar);
         } else {
-            return $this->res->withStatus(204);
+            return $this->response->withStatus(204);
         }
     }
 }

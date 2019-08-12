@@ -2,10 +2,11 @@
 
 namespace Neucore\Controller\App;
 
+use Neucore\Controller\BaseController;
 use Neucore\Service\AppAuth;
 use OpenApi\Annotations as OA;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Response;
 
 /**
  * @OA\Tag(
@@ -20,25 +21,10 @@ use Slim\Http\Response;
  *     description="The API key is a base64-encoded string containing the app ID and secret separated by a colon"
  * )
  */
-class ApplicationController
+class ApplicationController extends BaseController
 {
     /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var AppAuth
-     */
-    private $appAuthService;
-
-    public function __construct(Response $response, AppAuth $appAuthService)
-    {
-        $this->response = $response;
-        $this->appAuthService = $appAuthService;
-    }
-
-    /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/show",
      *     operationId="showV1",
@@ -57,8 +43,8 @@ class ApplicationController
      *     )
      * )
      */
-    public function showV1(ServerRequestInterface $request): Response
+    public function showV1(ServerRequestInterface $request, AppAuth $appAuthService): ResponseInterface
     {
-        return $this->response->withJson($this->appAuthService->getApp($request));
+        return $this->withJson($appAuthService->getApp($request));
     }
 }

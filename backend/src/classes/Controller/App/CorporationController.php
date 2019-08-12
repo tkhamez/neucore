@@ -2,32 +2,15 @@
 
 namespace Neucore\Controller\App;
 
-use Neucore\Factory\RepositoryFactory;
+use Neucore\Controller\BaseController;
 use OpenApi\Annotations as OA;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-class CorporationController
+class CorporationController extends BaseController
 {
     /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    public function __construct(
-        Response $response,
-        RepositoryFactory $repositoryFactory
-    ) {
-        $this->response = $response;
-        $this->repositoryFactory = $repositoryFactory;
-    }
-
-    /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/corporation/{id}/member-tracking",
      *     operationId="memberTrackingV1",
@@ -71,11 +54,11 @@ class CorporationController
      *     )
      * )
      */
-    public function memberTrackingV1(string $id, Request $request)
+    public function memberTrackingV1(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $inactive = $request->getParam('inactive');
-        $active = $request->getParam('active');
-        $account = $request->getParam('account');
+        $inactive = $this->getQueryParam($request, 'inactive');
+        $active = $this->getQueryParam($request, 'active');
+        $account = $this->getQueryParam($request, 'account');
         $account = $account === 'true' ? true : ($account === 'false' ? false : null);
 
         $members = $this->repositoryFactory
@@ -90,6 +73,6 @@ class CorporationController
             $result[] = $member->jsonSerialize(false);
         }
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 }

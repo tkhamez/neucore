@@ -15,9 +15,9 @@ use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 /**
  * @OA\Tag(
@@ -33,14 +33,9 @@ class PlayerController extends BaseController
     private $log;
 
     /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    /**
      * @var UserAuth
      */
-    private $userAuthService;
+    private $userAuth;
 
     private $availableRoles = [
         Role::APP_ADMIN,
@@ -60,17 +55,16 @@ class PlayerController extends BaseController
     ];
 
     public function __construct(
-        Response $response,
+        ResponseInterface $response,
         ObjectManager $objectManager,
-        LoggerInterface $log,
         RepositoryFactory $repositoryFactory,
-        UserAuth $uas
+        LoggerInterface $log,
+        UserAuth $userAuth
     ) {
-        parent::__construct($response, $objectManager);
+        parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->log = $log;
-        $this->repositoryFactory = $repositoryFactory;
-        $this->userAuthService = $uas;
+        $this->userAuth = $userAuth;
     }
 
     /**
@@ -92,12 +86,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function show(): Response
+    public function show(): ResponseInterface
     {
-        return $this->response->withJson($this->getUser()->getPlayer());
+        return $this->withJson($this->getUser()->getPlayer());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/groups-disabled",
      *     operationId="groupsDisabled",
@@ -116,16 +111,17 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function groupsDisabled(Account $accountService): Response
+    public function groupsDisabled(Account $accountService): ResponseInterface
     {
         if ($accountService->groupsDeactivated($this->getUser()->getPlayer(), true)) { // true = ignore delay
-            return $this->response->withJson(true);
+            return $this->withJson(true);
         }
 
-        return $this->response->withJson(false);
+        return $this->withJson(false);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/{id}/groups-disabled",
      *     operationId="groupsDisabledById",
@@ -155,7 +151,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function groupsDisabledById(string $id, Account $accountService): Response
+    public function groupsDisabledById(string $id, Account $accountService): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -164,13 +160,14 @@ class PlayerController extends BaseController
         }
 
         if ($accountService->groupsDeactivated($player, true)) { // true = ignore delay
-            return $this->response->withJson(true);
+            return $this->withJson(true);
         }
 
-        return $this->response->withJson(false);
+        return $this->withJson(false);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/player/add-application/{gid}",
      *     operationId="addApplication",
@@ -198,12 +195,8 @@ class PlayerController extends BaseController
      *         description="Group not found."
      *     )
      * )
-     *
-     * @param string $gid
-     * @return Response
-     * @throws \Exception
      */
-    public function addApplication(string $gid): Response
+    public function addApplication(string $gid): ResponseInterface
     {
         // players can only apply to public groups
         $criteria = ['id' => (int) $gid, 'visibility' => Group::VISIBILITY_PUBLIC];
@@ -232,6 +225,7 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/player/remove-application/{gid}",
      *     operationId="removeApplication",
@@ -260,7 +254,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function removeApplication(string $gid): Response
+    public function removeApplication(string $gid): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
             ->findBy(['player' => $this->getUser()->getPlayer()->getId(), 'group' => (int) $gid]);
@@ -277,6 +271,7 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/show-applications",
      *     operationId="showApplications",
@@ -295,15 +290,16 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function showApplications(): Response
+    public function showApplications(): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
             ->findBy(['player' => $this->getUser()->getPlayer()->getId()]);
 
-        return $this->response->withJson($groupApplications);
+        return $this->withJson($groupApplications);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/player/leave-group/{gid}",
      *     operationId="leaveGroup",
@@ -332,7 +328,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function leaveGroup(string $gid): Response
+    public function leaveGroup(string $gid): ResponseInterface
     {
         $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['id' => (int) $gid]);
         if ($group === null) {
@@ -374,7 +370,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function setMain(string $cid): Response
+    public function setMain(string $cid): ResponseInterface
     {
         $main = null;
         $player = $this->getUser()->getPlayer();
@@ -431,7 +427,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function setStatus(string $id, string $status): Response
+    public function setStatus(string $id, string $status): ResponseInterface
     {
         $validStatus = [
             Player::STATUS_STANDARD,
@@ -454,6 +450,7 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/with-characters",
      *     operationId="withCharacters",
@@ -472,12 +469,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function withCharacters(): Response
+    public function withCharacters(): ResponseInterface
     {
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithCharacters());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/invalid-token",
      *     operationId="invalidToken",
@@ -496,12 +494,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function invalidToken(): Response
+    public function invalidToken(): ResponseInterface
     {
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithInvalidToken());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/no-token",
      *     operationId="noToken",
@@ -520,12 +519,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function noToken(): Response
+    public function noToken(): ResponseInterface
     {
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithNoToken());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/without-characters",
      *     operationId="withoutCharacters",
@@ -544,12 +544,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function withoutCharacters(): Response
+    public function withoutCharacters(): ResponseInterface
     {
         return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithoutCharacters());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/app-managers",
      *     operationId="appManagers",
@@ -568,12 +569,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function appManagers(): Response
+    public function appManagers(): ResponseInterface
     {
         return $this->getPlayerByRole(Role::APP_MANAGER);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/group-managers",
      *     operationId="groupManagers",
@@ -592,12 +594,13 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function groupManagers(): Response
+    public function groupManagers(): ResponseInterface
     {
         return $this->getPlayerByRole(Role::GROUP_MANAGER);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/with-role/{name}",
      *     operationId="withRole",
@@ -631,7 +634,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function withRole(string $name): Response
+    public function withRole(string $name): ResponseInterface
     {
         if (! in_array($name, $this->availableRoles)) {
             return $this->response->withStatus(400);
@@ -670,7 +673,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function withStatus(string $name): Response
+    public function withStatus(string $name): ResponseInterface
     {
         if (! in_array($name, $this->availableStatus)) {
             return $this->response->withStatus(400);
@@ -719,7 +722,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function addRole(string $id, string $name): Response
+    public function addRole(string $id, string $name): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
@@ -736,6 +739,7 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/player/{id}/remove-role/{name}",
      *     operationId="removeRole",
@@ -775,7 +779,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function removeRole(string $id, string $name): Response
+    public function removeRole(string $id, string $name): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
@@ -790,6 +794,7 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/player/{id}/show",
      *     operationId="showById",
@@ -819,7 +824,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function showById(string $id): Response
+    public function showById(string $id): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -830,7 +835,7 @@ class PlayerController extends BaseController
         $json = $player->jsonSerialize();
         $json['removedCharacters'] = $player->getRemovedCharacters();
 
-        return $this->response->withJson($json);
+        return $this->withJson($json);
     }
 
     /**
@@ -863,7 +868,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function characters(string $id): Response
+    public function characters(string $id): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -871,7 +876,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        return $this->response->withJson([
+        return $this->withJson([
             'id' => $player->getId(),
             'name' => $player->getName(),
             'characters' => $player->getCharacters(),
@@ -879,6 +884,7 @@ class PlayerController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Delete(
      *     path="/user/player/delete-character/{id}",
      *     operationId="deleteCharacter",
@@ -918,9 +924,9 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function deleteCharacter(string $id, Request $request, Account $characterService): Response
+    public function deleteCharacter(string $id, ServerRequestInterface $request, Account $characterService): ResponseInterface
     {
-        $reason = $request->getParam('admin-reason', '');
+        $reason = $this->getQueryParam($request, 'admin-reason', '');
         $admin = $this->getUser()->getPlayer()->hasRole(Role::USER_ADMIN) && $reason !== '';
 
         // check "allow deletion" settings
@@ -964,12 +970,12 @@ class PlayerController extends BaseController
         return $this->flushAndReturn(204);
     }
 
-    private function getPlayerByRole(string $roleName): Response
+    private function getPlayerByRole(string $roleName): ResponseInterface
     {
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if ($role === null) {
             $this->log->critical('PlayerController->getManagers(): role "'.$roleName.'" not found.');
-            return $this->response->withJson([]);
+            return $this->withJson([]);
         }
 
         return $this->playerList($role->getPlayers());
@@ -977,20 +983,20 @@ class PlayerController extends BaseController
 
     /**
      * @param Player[] $players
-     * @return Response
+     * @return ResponseInterface
      */
-    private function playerList(array $players): Response
+    private function playerList(array $players): ResponseInterface
     {
         $ret = [];
         foreach ($players as $player) {
             $ret[] = $player->jsonSerialize(true);
         }
 
-        return $this->response->withJson($ret);
+        return $this->withJson($ret);
     }
 
     private function getUser(): Character
     {
-        return $this->userAuthService->getUser();
+        return $this->userAuth->getUser();
     }
 }

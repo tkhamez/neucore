@@ -11,8 +11,8 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -22,11 +22,6 @@ use Slim\Http\Response;
  */
 class GroupController extends BaseController
 {
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
     /**
      * @var UserAuth
      */
@@ -48,14 +43,13 @@ class GroupController extends BaseController
     private $player;
 
     public function __construct(
-        Response $response,
+        ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth
     ) {
-        parent::__construct($response, $objectManager);
+        parent::__construct($response, $objectManager, $repositoryFactory);
 
-        $this->repositoryFactory = $repositoryFactory;
         $this->userAuth = $userAuth;
     }
 
@@ -78,9 +72,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function all(): Response
+    public function all(): ResponseInterface
     {
-        return $this->response->withJson($this->repositoryFactory->getGroupRepository()->findBy([], ['name' => 'ASC']));
+        return $this->withJson($this->repositoryFactory->getGroupRepository()->findBy([], ['name' => 'ASC']));
     }
 
     /**
@@ -102,9 +96,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function public(): Response
+    public function public(): ResponseInterface
     {
-        return $this->response->withJson($this->repositoryFactory->getGroupRepository()->findBy(
+        return $this->withJson($this->repositoryFactory->getGroupRepository()->findBy(
             ['visibility' => Group::VISIBILITY_PUBLIC],
             ['name' => 'ASC']
         ));
@@ -153,9 +147,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function create(Request $request): Response
+    public function create(ServerRequestInterface $request): ResponseInterface
     {
-        $name = $request->getParam('name', '');
+        $name = $this->getParsedBodyParam($request, 'name', '');
         if (! preg_match($this->namePattern, $name)) {
             return $this->response->withStatus(400);
         }
@@ -226,13 +220,13 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function rename(string $id, Request $request): Response
+    public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
         if (! $this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
-        $name = $request->getParam('name', '');
+        $name = $this->getParsedBodyParam($request, 'name', '');
         if (! preg_match($this->namePattern, $name)) {
             return $this->response->withStatus(400);
         }
@@ -286,7 +280,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function setVisibility(string $id, string $choice): Response
+    public function setVisibility(string $id, string $choice): ResponseInterface
     {
         if (! $this->findGroup($id)) {
             return $this->response->withStatus(404);
@@ -330,7 +324,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function delete(string $id): Response
+    public function delete(string $id): ResponseInterface
     {
         if (! $this->findGroup($id)) {
             return $this->response->withStatus(404);
@@ -371,7 +365,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function managers(string $id): Response
+    public function managers(string $id): ResponseInterface
     {
         return $this->getPlayersFromGroup($id, 'managers', false);
     }
@@ -406,13 +400,13 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function corporations(string $id): Response
+    public function corporations(string $id): ResponseInterface
     {
         if (! $this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
-        return $this->response->withJson($this->group->getCorporations());
+        return $this->withJson($this->group->getCorporations());
     }
 
     /**
@@ -445,16 +439,17 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function alliances(string $id): Response
+    public function alliances(string $id): ResponseInterface
     {
         if (! $this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
-        return $this->response->withJson($this->group->getAlliances());
+        return $this->withJson($this->group->getAlliances());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/group/{id}/required-groups",
      *     operationId="requiredGroups",
@@ -484,17 +479,18 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function requiredGroups(string $id): Response
+    public function requiredGroups(string $id): ResponseInterface
     {
         $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
         if (! $group) {
             return $this->response->withStatus(404, 'Group not found.');
         }
 
-        return $this->response->withJson($group->getRequiredGroups());
+        return $this->withJson($group->getRequiredGroups());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/add-required/{groupId}",
      *     operationId="addRequiredGroup",
@@ -530,7 +526,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addRequiredGroup(string $id, string $groupId): Response
+    public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
@@ -554,6 +550,7 @@ class GroupController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/remove-required/{groupId}",
      *     operationId="removeRequiredGroup",
@@ -589,7 +586,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeRequiredGroup(string $id, string $groupId): Response
+    public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
 
@@ -614,6 +611,7 @@ class GroupController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/add-manager/{pid}",
      *     operationId="addManager",
@@ -649,12 +647,13 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addManager(string $id, string $pid): Response
+    public function addManager(string $id, string $pid): ResponseInterface
     {
         return $this->addPlayerAs($id, $pid, 'manager', false);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/remove-manager/{pid}",
      *     operationId="removeManager",
@@ -690,7 +689,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeManager(string $id, string $pid): Response
+    public function removeManager(string $id, string $pid): ResponseInterface
     {
         return $this->removePlayerFrom($id, $pid, 'managers', false);
     }
@@ -725,7 +724,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function applications(string $id): Response
+    public function applications(string $id): ResponseInterface
     {
         if (! $this->findGroup($id)) {
             return $this->response->withStatus(404);
@@ -737,10 +736,11 @@ class GroupController extends BaseController
 
         $apps = $this->repositoryFactory->getGroupApplicationRepository()->findBy(['group' => $id]);
 
-        return $this->response->withJson($apps);
+        return $this->withJson($apps);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/accept-application/{id}",
      *     operationId="acceptApplication",
@@ -769,12 +769,13 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function acceptApplication(string $id): Response
+    public function acceptApplication(string $id): ResponseInterface
     {
         return $this->handleApplication($id, 'accept');
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/deny-application/{id}",
      *     operationId="denyApplication",
@@ -803,12 +804,13 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function denyApplication(string $id): Response
+    public function denyApplication(string $id): ResponseInterface
     {
         return $this->handleApplication($id, 'deny');
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/add-member/{pid}",
      *     operationId="addMember",
@@ -844,12 +846,13 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addMember(string $id, string $pid): Response
+    public function addMember(string $id, string $pid): ResponseInterface
     {
         return $this->addPlayerAs($id, $pid, 'member', true);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/remove-member/{pid}",
      *     operationId="removeMember",
@@ -885,7 +888,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeMember(string $id, string $pid): Response
+    public function removeMember(string $id, string $pid): ResponseInterface
     {
         return $this->removePlayerFrom($id, $pid, 'members', true);
     }
@@ -920,7 +923,7 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function members(string $id): Response
+    public function members(string $id): ResponseInterface
     {
         return $this->getPlayersFromGroup($id, 'members', true);
     }
@@ -947,7 +950,7 @@ class GroupController extends BaseController
         return true;
     }
 
-    private function getPlayersFromGroup(string $groupId, string $type, bool $onlyIfManager): Response
+    private function getPlayersFromGroup(string $groupId, string $type, bool $onlyIfManager): ResponseInterface
     {
         if (! $this->findGroup($groupId)) {
             return $this->response->withStatus(404);
@@ -973,7 +976,7 @@ class GroupController extends BaseController
             $ret[] = $result;
         }
 
-        return $this->response->withJson($ret);
+        return $this->withJson($ret);
     }
 
     private function addPlayerAs(
@@ -981,7 +984,7 @@ class GroupController extends BaseController
         string $playerId,
         string $type,
         bool $onlyIfManagerOrAdmin
-    ): Response {
+    ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
@@ -1004,7 +1007,7 @@ class GroupController extends BaseController
         string $playerId,
         string $type,
         bool $onlyIfManagerOrAdmin
-    ): Response {
+    ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
@@ -1025,9 +1028,9 @@ class GroupController extends BaseController
     /**
      * @param string $id application ID
      * @param string $action "accept" or "deny"
-     * @return Response
+     * @return ResponseInterface
      */
-    private function handleApplication(string $id, string $action): Response
+    private function handleApplication(string $id, string $action): ResponseInterface
     {
         $app = $this->repositoryFactory->getGroupApplicationRepository()->find($id);
 

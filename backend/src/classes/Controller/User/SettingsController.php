@@ -2,17 +2,16 @@
 
 namespace Neucore\Controller\User;
 
+use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
-use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Controller for system settings (and maybe user settings later).
@@ -22,63 +21,25 @@ use Slim\Http\Response;
  *     description="System settings."
  * )
  */
-class SettingsController
+class SettingsController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
     /**
      * @var array
      */
     private $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
 
-    public function __construct(
-        Response $response,
-        RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager,
-        UserAuth $userAuth,
-        Config $config
-    ) {
-        $this->response = $response;
-        $this->repositoryFactory = $repositoryFactory;
-        $this->objectManager = $objectManager;
-        $this->userAuth = $userAuth;
-        $this->config = $config;
-    }
-
-    public function theme(): Response
+    /** @noinspection PhpUnused */
+    public function theme(): ResponseInterface
     {
         $repository = $this->repositoryFactory->getSystemVariableRepository();
         $result = $repository->find(SystemVariable::CUSTOMIZATION_DEFAULT_THEME);
         $value = $result ? $result->getValue() : '';
-        return $this->response
-            ->write("var theme = '$value';")
-            ->withHeader('Content-Type', 'text/javascript');
+        $this->response->getBody()->write("var theme = '$value';");
+        return $this->response->withHeader('Content-Type', 'text/javascript');
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/settings/system/list",
      *     operationId="systemList",
@@ -93,10 +54,10 @@ class SettingsController
      *     )
      * )
      */
-    public function systemList(): Response
+    public function systemList(UserAuth $userAuth, Config $config): ResponseInterface
     {
         $repository = $this->repositoryFactory->getSystemVariableRepository();
-        if (in_array(Role::SETTINGS, $this->userAuth->getRoles())) {
+        if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
             $scopes = $this->validScopes;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
@@ -106,17 +67,18 @@ class SettingsController
         $result = array_merge($result, [
             [
                 'name' => 'esiDataSource',
-                'value' => $this->config['eve']['datasource']
+                'value' => $config['eve']['datasource']
             ], [
                 'name' => 'esiHost',
-                'value' => $this->config['eve']['esi_host']
+                'value' => $config['eve']['esi_host']
             ]
         ]);
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/settings/system/change/{name}",
      *     operationId="systemChange",
@@ -164,7 +126,7 @@ class SettingsController
      *     )
      * )
      */
-    public function systemChange(string $name, Request $request, MemberTracking $memberTracking): Response
+    public function systemChange(string $name, ServerRequestInterface $request, MemberTracking $memberTracking): ResponseInterface
     {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
@@ -184,7 +146,7 @@ class SettingsController
                 $variable = null;
             }
         } else {
-            $variable->setValue((string) $request->getParam('value'));
+            $variable->setValue((string) $this->getParsedBodyParam($request, 'value'));
         }
 
         if (! $this->objectManager->flush()) {
@@ -192,13 +154,14 @@ class SettingsController
         }
 
         if ($variable !== null) {
-            return $this->response->withJson($variable);
+            return $this->withJson($variable);
         } else {
             return $this->response->withStatus(204);
         }
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Post(
      *     path="/user/settings/system/send-account-disabled-mail",
      *     operationId="sendAccountDisabledMail",
@@ -217,9 +180,9 @@ class SettingsController
      *     )
      * )
      */
-    public function sendAccountDisabledMail(EveMail $eveMail): Response
+    public function sendAccountDisabledMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
     {
-        $charId = $this->userAuth->getUser() !== null ? $this->userAuth->getUser()->getId() : null;
+        $charId = $userAuth->getUser() !== null ? $userAuth->getUser()->getId() : null;
 
         $result = $eveMail->accountDeactivatedIsActive();
         if ($result === '') {
@@ -229,10 +192,11 @@ class SettingsController
             $result = $eveMail->accountDeactivatedSend((int) $charId);
         }
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/settings/system/validate-director/{name}",
      *     operationId="validateDirector",
@@ -258,11 +222,11 @@ class SettingsController
      *     )
      * )
      */
-    public function validateDirector(string $name, MemberTracking $memberTracking): Response
+    public function validateDirector(string $name, MemberTracking $memberTracking): ResponseInterface
     {
         $success = $memberTracking->updateDirector($name);
         if (! $success) {
-            return $this->response->withJson(false);
+            return $this->withJson(false);
         }
 
         $valid = false;
@@ -275,6 +239,6 @@ class SettingsController
             );
         }
 
-        return $this->response->withJson($valid);
+        return $this->withJson($valid);
     }
 }

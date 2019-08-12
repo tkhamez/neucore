@@ -5,12 +5,10 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
-use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -21,11 +19,6 @@ use Slim\Http\Response;
 class CorporationController extends BaseController
 {
     /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    /**
      * @var Corporation
      */
     private $corp;
@@ -34,16 +27,6 @@ class CorporationController extends BaseController
      * @var Group
      */
     private $group;
-
-    public function __construct(
-        Response $response,
-        ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory
-    ) {
-        parent::__construct($response, $objectManager);
-
-        $this->repositoryFactory = $repositoryFactory;
-    }
 
     /**
      * @OA\Get(
@@ -64,14 +47,15 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function all(): Response
+    public function all(): ResponseInterface
     {
-        return $this->response->withJson(
+        return $this->withJson(
             $this->repositoryFactory->getCorporationRepository()->findBy([], ['name' => 'ASC'])
         );
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/corporation/with-groups",
      *     operationId="withGroups",
@@ -90,7 +74,7 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function withGroups(): Response
+    public function withGroups(): ResponseInterface
     {
         $result = [];
         foreach ($this->repositoryFactory->getCorporationRepository()->getAllWithGroups() as $corp) {
@@ -100,7 +84,7 @@ class CorporationController extends BaseController
             $result[] = $json;
         }
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 
     /**
@@ -147,7 +131,7 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function add(string $id, EsiData $service): Response
+    public function add(string $id, EsiData $service): ResponseInterface
     {
         $corpId = (int) $id;
 
@@ -210,7 +194,7 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function addGroup(string $id, string $gid): Response
+    public function addGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findCorpAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
@@ -259,7 +243,7 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function removeGroup(string $id, string $gid): Response
+    public function removeGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findCorpAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
@@ -271,6 +255,7 @@ class CorporationController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/corporation/tracked-corporations",
      *     operationId="trackedCorporations",
@@ -289,11 +274,11 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function trackedCorporations()
+    public function trackedCorporations(): ResponseInterface
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
 
-        return $this->response->withJson($corporations);
+        return $this->withJson($corporations);
     }
 
     /**
@@ -352,13 +337,13 @@ class CorporationController extends BaseController
      *     )
      * )
      */
-    public function members(string $id, Request $request)
+    public function members(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        $inactive = $request->getParam('inactive');
-        $active = $request->getParam('active');
-        $account = $request->getParam('account');
-        $validToken = $request->getParam('valid-token');
-        $tokenStatusChanged = $request->getParam('token-status-changed');
+        $inactive = $this->getQueryParam($request, 'inactive');
+        $active = $this->getQueryParam($request, 'active');
+        $account = $this->getQueryParam($request, 'account');
+        $validToken = $this->getQueryParam($request, 'valid-token');
+        $tokenStatusChanged = $this->getQueryParam($request, 'token-status-changed');
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
@@ -369,7 +354,7 @@ class CorporationController extends BaseController
             ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
             ->findMatching((int) $id);
 
-        return $this->response->withJson($members);
+        return $this->withJson($members);
     }
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool

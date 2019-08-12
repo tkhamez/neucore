@@ -3,18 +3,20 @@
 namespace Neucore\Controller\User;
 
 use Brave\Sso\Basics\AuthenticationProvider;
+use Neucore\Controller\BaseController;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Entity\Role;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
+use Neucore\Service\ObjectManager;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
 use Neucore\Slim\Session\SessionData;
 use OpenApi\Annotations as OA;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\SecurityScheme(
@@ -41,7 +43,7 @@ use Slim\Http\Response;
  *     )
  * )
  */
-class AuthController
+class AuthController extends BaseController
 {
     /**
      * A prefix for the OAuth state parameter that identifies a login of "managed" accounts.
@@ -74,11 +76,6 @@ class AuthController
     const STATE_PREFIX_DIRECTOR = 'd.';
 
     /**
-     * @var Response
-     */
-    private $response;
-
-    /**
      * @var SessionData
      */
     private $session;
@@ -93,44 +90,43 @@ class AuthController
      */
     private $config;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
     public function __construct(
-        Response $response,
+        ResponseInterface $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
         SessionData $session,
         AuthenticationProvider $authProvider,
-        Config $config,
-        RepositoryFactory $repositoryFactory
+        Config $config
     ) {
-        $this->response = $response;
+        parent::__construct($response, $objectManager, $repositoryFactory);
+        
         $this->session = $session;
         $this->authProvider = $authProvider;
         $this->config = $config;
-        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
      * Main login, redirects to EVE SSO login.
      */
-    public function login(): Response
+    public function login(): ResponseInterface
     {
         return $this->redirectToLoginUrl(Random::chars(12), '/#login');
     }
 
     /**
      * Login for "managed" accounts, redirects to EVE SSO login.
+     * 
+     * @noinspection PhpUnused
      */
-    public function loginManaged(): Response
+    public function loginManaged(): ResponseInterface
     {
         // check "allow managed login" settings
         $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
             ['name' => SystemVariable::ALLOW_LOGIN_MANAGED]
         );
         if (! $allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
-            return $this->response->withStatus(403, 'Forbidden')->write('Forbidden');
+            $this->response->getBody()->write('Forbidden');
+            return $this->response->withStatus(403, 'Forbidden');
         }
 
         return $this->redirectToLoginUrl(self::STATE_PREFIX_STATUS_MANAGED . Random::chars(12), '/#login');
@@ -138,24 +134,30 @@ class AuthController
 
     /**
      * Alt login, redirects to EVE SSO login.
+     *
+     * @noinspection PhpUnused
      */
-    public function loginAlt(): Response
+    public function loginAlt(): ResponseInterface
     {
         return $this->redirectToLoginUrl(self::STATE_PREFIX_ALT . Random::chars(12), '/#login-alt');
     }
 
     /**
      * Mail char login, redirects to EVE SSO login.
+     *
+     * @noinspection PhpUnused
      */
-    public function loginMail(): Response
+    public function loginMail(): ResponseInterface
     {
         return $this->redirectToLoginUrl(self::STATE_PREFIX_MAIL . Random::chars(12), '/#login-mail');
     }
 
     /**
      * Director char login, redirects to EVE SSO login.
+     *
+     * @noinspection PhpUnused
      */
-    public function loginDirector(): Response
+    public function loginDirector(): ResponseInterface
     {
         return $this->redirectToLoginUrl(self::STATE_PREFIX_DIRECTOR . Random::chars(12), '/#login-director');
     }
@@ -164,11 +166,11 @@ class AuthController
      * EVE SSO callback URL.
      */
     public function callback(
-        Request $request,
+        ServerRequestInterface $request,
         UserAuth $userAuth,
         EveMail $mailService,
         MemberTracking $memberTrackingService
-    ): Response {
+    ): ResponseInterface {
         $redirectUrl = $this->session->get('auth_redirect', '/');
         $this->session->delete('auth_redirect');
 
@@ -179,16 +181,16 @@ class AuthController
 
         try {
             $eveAuth = $this->authProvider->validateAuthenticationV2(
-                $request->getQueryParam('state'),
+                $this->getQueryParam($request, 'state'),
                 $state,
-                $request->getQueryParam('code', '')
+                $this->getQueryParam($request, 'code', '')
             );
         } catch (\UnexpectedValueException $uve) {
             $this->session->set('auth_result', [
                 'success' => false,
                 'message' => $uve->getMessage(),
             ]);
-            return $this->response->withRedirect($redirectUrl);
+            return $this->response->withHeader('Location', (string)$redirectUrl)->withStatus(302);
         }
 
         // handle login
@@ -224,7 +226,7 @@ class AuthController
             'message' => $success ? $successMessage : $errorMessage
         ]);
 
-        return $this->response->withRedirect($redirectUrl);
+        return $this->response->withHeader('Location', (string)$redirectUrl)->withStatus(302);
     }
 
     /**
@@ -240,7 +242,7 @@ class AuthController
      *     )
      * )
      */
-    public function result(): Response
+    public function result(): ResponseInterface
     {
         $result = $this->session->get('auth_result');
 
@@ -249,7 +251,7 @@ class AuthController
             'message' => 'No login attempt recorded.',
         ];
 
-        return $this->response->withJson($result ?: $default);
+        return $this->withJson($result ?: $default);
     }
 
     /**
@@ -270,24 +272,24 @@ class AuthController
      *     )
      * )
      */
-    public function logout(): Response
+    public function logout(): ResponseInterface
     {
         $this->session->clear();
 
         return $this->response->withStatus(204);
     }
 
-    private function redirectToLoginUrl(string $state, string $redirect)
+    private function redirectToLoginUrl(string $state, string $redirect): ResponseInterface
     {
         $this->session->set('auth_state', $state);
         $this->session->set('auth_redirect', $redirect);
 
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
-        return $this->response->withRedirect($this->authProvider->buildLoginUrl($state));
+        return $this->response->withHeader('Location', $this->authProvider->buildLoginUrl($state))->withStatus(302);
     }
 
-    private function getLoginScopes($state)
+    private function getLoginScopes($state): array
     {
         if (substr($state, 0, 2) === self::STATE_PREFIX_STATUS_MANAGED) {
             return [];

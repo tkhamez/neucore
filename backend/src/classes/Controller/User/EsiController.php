@@ -2,16 +2,17 @@
 
 namespace Neucore\Controller\User;
 
+use Neucore\Controller\BaseController;
 use Neucore\Service\Config;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\OAuthToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
-use Psr\Http\Message\MessageInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -19,18 +20,8 @@ use Slim\Http\Response;
  *     description="ESI requests"
  * )
  */
-class EsiController
+class EsiController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
     /**
      * @var OAuthToken
      */
@@ -47,14 +38,15 @@ class EsiController
     private $config;
 
     public function __construct(
-        Response $response,
+        ResponseInterface $response,
+        ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         OAuthToken $tokenService,
         ClientInterface $httpClient,
         Config $config
     ) {
-        $this->response = $response;
-        $this->repositoryFactory = $repositoryFactory;
+        parent::__construct($response, $objectManager, $repositoryFactory);
+        
         $this->tokenService = $tokenService;
         $this->httpClient = $httpClient;
         $this->config = $config;
@@ -99,18 +91,18 @@ class EsiController
      *     )
      * )
      */
-    public function request(Request $request): Response
+    public function request(ServerRequestInterface $request): ResponseInterface
     {
-        $charId = $request->getParam('character', '');
-        $route = $request->getParam('route', '');
+        $charId = $this->getQueryParam($request, 'character', '');
+        $route = $this->getQueryParam($request, 'route', '');
 
         // validate input
         if ($route === '' || $charId === '') {
-            return $this->response->withJson('Missing route and/or character parameter.', 400);
+            return $this->withJson('Missing route and/or character parameter.', 400);
         }
         $character = $this->repositoryFactory->getCharacterRepository()->find($charId);
         if ($character === null) {
-            return $this->response->withJson('Character not found.', 400);
+            return $this->withJson('Character not found.', 400);
         }
 
         // replace placeholders
@@ -157,15 +149,15 @@ class EsiController
         return $this->prepareResponse($body, $response);
     }
 
-    private function prepareResponse($body, MessageInterface $response = null, $code = 200)
+    private function prepareResponse($body, ResponseInterface $response = null, $code = 200): ResponseInterface
     {
-        return $this->response->withJson([
+        return $this->withJson([
             'headers' => $this->extractHeaders($response),
             'body' => $body,
         ], $code);
     }
 
-    private function extractHeaders(MessageInterface $response = null): ?array
+    private function extractHeaders(ResponseInterface $response = null): ?array
     {
         if ($response === null) {
             return null;

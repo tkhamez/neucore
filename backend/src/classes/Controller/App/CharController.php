@@ -2,31 +2,13 @@
 
 namespace Neucore\Controller\App;
 
+use Neucore\Controller\BaseController;
 use Neucore\Entity\Player;
-use Neucore\Factory\RepositoryFactory;
 use OpenApi\Annotations as OA;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
-class CharController
+class CharController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    public function __construct(
-        Response $response,
-        RepositoryFactory $repositoryFactory
-    ) {
-        $this->response = $response;
-        $this->repositoryFactory = $repositoryFactory;
-    }
-
     /**
      * @OA\Get(
      *     path="/app/v1/main/{cid}",
@@ -62,7 +44,7 @@ class CharController
      *     )
      * )
      */
-    public function mainV1(string $cid): Response
+    public function mainV1(string $cid): ResponseInterface
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $cid);
         if ($char === null) {
@@ -74,10 +56,11 @@ class CharController
             return $this->response->withStatus(204);
         }
 
-        return $this->response->withJson($main);
+        return $this->withJson($main);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v2/main/{cid}",
      *     operationId="mainV2",
@@ -111,7 +94,7 @@ class CharController
      *     )
      * )
      */
-    public function mainV2(string $cid): Response
+    public function mainV2(string $cid): ResponseInterface
     {
         $this->response = $this->mainV1($cid);
 
@@ -123,6 +106,7 @@ class CharController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/player/{characterId}",
      *     operationId="playerV1",
@@ -152,17 +136,18 @@ class CharController
      *     )
      * )
      */
-    public function playerV1(string $characterId): Response
+    public function playerV1(string $characterId): ResponseInterface
     {
         $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($character === null) {
             return $this->response->withStatus(404, 'Character not found.');
         }
 
-        return $this->response->withJson($character->getPlayer()->jsonSerialize(true));
+        return $this->withJson($character->getPlayer()->jsonSerialize(true));
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",
@@ -192,17 +177,18 @@ class CharController
      *     )
      * )
      */
-    public function charactersV1(string $characterId): Response
+    public function charactersV1(string $characterId): ResponseInterface
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
             return $this->response->withStatus(404, 'Character not found.');
         }
 
-        return $this->response->withJson($char->getPlayer()->getCharacters());
+        return $this->withJson($char->getPlayer()->getCharacters());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/player-chars/{playerId}",
      *     operationId="playerCharactersV1",
@@ -232,17 +218,18 @@ class CharController
      *     )
      * )
      */
-    public function playerCharactersV1(string $playerId): Response
+    public function playerCharactersV1(string $playerId): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if ($player === null) {
             return $this->response->withStatus(404, 'Player not found.');
         }
 
-        return $this->response->withJson($player->getCharacters());
+        return $this->withJson($player->getCharacters());
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/removed-characters/{characterId}",
      *     operationId="removedCharactersV1",
@@ -272,7 +259,7 @@ class CharController
      *     )
      * )
      */
-    public function removedCharactersV1(string $characterId): Response
+    public function removedCharactersV1(string $characterId): ResponseInterface
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
@@ -284,10 +271,11 @@ class CharController
             $result[] = $character;
         }
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/corp-players/{corporationId}",
      *     operationId="corporationPlayersV1",
@@ -313,11 +301,11 @@ class CharController
      *     )
      * )
      */
-    public function corporationPlayersV1(string $corporationId): Response
+    public function corporationPlayersV1(string $corporationId): ResponseInterface
     {
         $players = $this->repositoryFactory->getPlayerRepository()->findInCorporation((int) $corporationId);
 
-        return $this->response->withJson(array_map(function (Player $player) {
+        return $this->withJson(array_map(function (Player $player) {
             return $player->jsonSerialize(true);
         }, $players));
     }

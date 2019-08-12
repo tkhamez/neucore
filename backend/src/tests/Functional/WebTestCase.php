@@ -3,11 +3,10 @@
 namespace Tests\Functional;
 
 use Neucore\Application;
+use Neucore\Psr\ResponseFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Environment;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Tests\RequestFactory;
 
 /**
  * Runs the application.
@@ -32,15 +31,12 @@ class WebTestCase extends TestCase
         array $headers = null,
         array $mocks = [],
         array $envVars = []
-    ) {
-        // Create a mock environment for testing with
-        $environment = Environment::mock([
+    ): ?ResponseInterface {
+        // Set up a request object based on a mocked environment
+        $request = RequestFactory::createRequest([
             'REQUEST_METHOD' => $requestMethod,
             'REQUEST_URI' => $requestUri
         ]);
-
-        // Set up a request object based on the environment
-        $request = Request::createFromEnvironment($environment);
 
         // Add request data, if it exists
         if (isset($requestData)) {
@@ -55,7 +51,7 @@ class WebTestCase extends TestCase
         }
 
         // Set up a response object
-        $response = new Response();
+        $response = (new ResponseFactory())->createResponse();
 
         // create app with test settings
         $app = new Application();

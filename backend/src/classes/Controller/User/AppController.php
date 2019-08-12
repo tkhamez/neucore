@@ -7,14 +7,12 @@ use Neucore\Entity\App;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
-use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\ObjectManager;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 /**
  * @OA\Tag(
@@ -24,16 +22,6 @@ use Slim\Http\Response;
  */
 class AppController extends BaseController
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
     /**
      * @var App
      */
@@ -61,18 +49,6 @@ class AppController extends BaseController
         Role::APP_ESI,
     ];
 
-    public function __construct(
-        Response $response,
-        ObjectManager $objectManager,
-        LoggerInterface $log,
-        RepositoryFactory $repositoryFactory
-    ) {
-        parent::__construct($response, $objectManager);
-
-        $this->log = $log;
-        $this->repositoryFactory = $repositoryFactory;
-    }
-
     /**
      * @OA\Get(
      *     path="/user/app/all",
@@ -92,7 +68,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function all(): Response
+    public function all(): ResponseInterface
     {
         $apps = [];
         foreach ($this->repositoryFactory->getAppRepository()->findBy([]) as $app) {
@@ -101,7 +77,7 @@ class AppController extends BaseController
                 'name' => $app->getName(),
             ];
         }
-        return $this->response->withJson($apps);
+        return $this->withJson($apps);
     }
 
     /**
@@ -146,16 +122,16 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function create(Request $request): Response
+    public function create(ServerRequestInterface $request, LoggerInterface $log): ResponseInterface
     {
-        $name = $this->sanitize($request->getParam('name', ''));
+        $name = $this->sanitize($this->getParsedBodyParam($request, 'name', ''));
         if ($name === '') {
             return $this->response->withStatus(400);
         }
 
         $appRole = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::APP]);
         if ($appRole === null) {
-            $this->log->critical('AppController->create(): Role "'.Role::APP.'" not found.');
+            $log->critical('AppController->create(): Role "'.Role::APP.'" not found.');
             return $this->response->withStatus(500);
         }
 
@@ -223,14 +199,14 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function rename(string $id, Request $request): Response
+    public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
             return $this->response->withStatus(404);
         }
 
-        $name = $this->sanitize($request->getParam('name', ''));
+        $name = $this->sanitize($this->getParsedBodyParam($request, 'name', ''));
         if ($name === '') {
             return $this->response->withStatus(400);
         }
@@ -269,7 +245,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function delete(string $id): Response
+    public function delete(string $id): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
@@ -311,7 +287,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function managers(string $id): Response
+    public function managers(string $id): ResponseInterface
     {
         $ret = [];
 
@@ -328,10 +304,11 @@ class AppController extends BaseController
             ];
         }
 
-        return $this->response->withJson($ret);
+        return $this->withJson($ret);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/app/{id}/add-manager/{pid}",
      *     operationId="addManager",
@@ -367,7 +344,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function addManager(string $id, string $pid): Response
+    public function addManager(string $id, string $pid): ResponseInterface
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
             return $this->response->withStatus(404);
@@ -385,6 +362,7 @@ class AppController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/app/{id}/remove-manager/{pid}",
      *     operationId="removeManager",
@@ -420,7 +398,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function removeManager(string $id, string $pid): Response
+    public function removeManager(string $id, string $pid): ResponseInterface
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
             return $this->response->withStatus(404);
@@ -462,7 +440,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function show(string $id, UserAuth $uas): Response
+    public function show(string $id, UserAuth $uas): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
@@ -475,7 +453,7 @@ class AppController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->response->withJson($app);
+        return $this->withJson($app);
     }
 
     /**
@@ -514,7 +492,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function addGroup(string $id, string $gid): Response
+    public function addGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findAppAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
@@ -567,7 +545,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function removeGroup(string $id, string $gid): Response
+    public function removeGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findAppAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
@@ -614,7 +592,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function addRole(string $id, string $name)
+    public function addRole(string $id, string $name): ResponseInterface
     {
         if (! $this->findAppAndRole($id, $name)) {
             return $this->response->withStatus(404);
@@ -628,6 +606,7 @@ class AppController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/app/{id}/remove-role/{name}",
      *     operationId="removeRole",
@@ -663,7 +642,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function removeRole(string $id, string $name)
+    public function removeRole(string $id, string $name): ResponseInterface
     {
         if (! $this->findAppAndRole($id, $name)) {
             return $this->response->withStatus(404);
@@ -675,6 +654,7 @@ class AppController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/app/{id}/change-secret",
      *     operationId="changeSecret",
@@ -708,7 +688,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function changeSecret(string $id, UserAuth $uas): Response
+    public function changeSecret(string $id, UserAuth $uas): ResponseInterface
     {
         $app = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if ($app === null) {
@@ -764,7 +744,7 @@ class AppController extends BaseController
         return true;
     }
 
-    private function findApp($id)
+    private function findApp($id): bool
     {
         $application = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if (! $application) {

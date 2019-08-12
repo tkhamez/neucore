@@ -2,35 +2,27 @@
 
 namespace Neucore\Controller\App;
 
+use GuzzleHttp\Psr7\Response;
 use Neucore\Application;
+use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
+use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
-class EsiController
+class EsiController extends BaseController
 {
     const ERROR_MESSAGE_PREFIX = 'App\EsiController->esiV1()';
-
-    /**
-     * @var Response
-     */
-    private $response;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
 
     /**
      * @var LoggerInterface
@@ -58,12 +50,13 @@ class EsiController
     private $appAuth;
 
     /**
-     * @var App|NULL
+     * @var App|null
      */
     private $app;
 
     public function __construct(
-        Response $response,
+        ResponseInterface $response,
+        ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
         OAuthToken $tokenService,
@@ -71,8 +64,8 @@ class EsiController
         ClientInterface $httpClient,
         AppAuth $appAuth
     ) {
-        $this->response = $response;
-        $this->repositoryFactory = $repositoryFactory;
+        parent::__construct($response, $objectManager, $repositoryFactory);
+        
         $this->log = $log;
         $this->tokenService = $tokenService;
         $this->config = $config;
@@ -81,6 +74,7 @@ class EsiController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/esi",
      *     operationId="esiV1",
@@ -167,12 +161,13 @@ class EsiController
      *     )
      * )
      */
-    public function esiV1(Request $request, $path = null): ResponseInterface
+    public function esiV1(ServerRequestInterface $request, $path = null): ResponseInterface
     {
         return $this->esiRequest($request, 'GET', $path);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Post(
      *     path="/app/v1/esi",
      *     operationId="esiPostV1",
@@ -267,12 +262,12 @@ class EsiController
      *     )
      * )
      */
-    public function esiPostV1(Request $request, $path = null): ResponseInterface
+    public function esiPostV1(ServerRequestInterface $request, $path = null): ResponseInterface
     {
         return $this->esiRequest($request, 'POST', $path);
     }
 
-    private function esiRequest(Request $request, string $method, $path = null): ResponseInterface
+    private function esiRequest(ServerRequestInterface $request, string $method, $path = null): ResponseInterface
     {
         $this->app = $this->appAuth->getApp($request);
 
@@ -302,7 +297,7 @@ class EsiController
             return $this->response->withStatus(400, 'Public ESI routes are not allowed.');
         }
 
-        $characterId = $request->getParam('datasource', '');
+        $characterId = $this->getQueryParam($request, 'datasource', '');
         if (empty($characterId)) {
             return $this->response->withStatus(
                 400,
@@ -350,13 +345,13 @@ class EsiController
         return false;
     }
 
-    private function getEsiPathAndQueryParams(Request $request, $path): array
+    private function getEsiPathAndQueryParams(ServerRequestInterface $request, $path): array
     {
         $esiParams = [];
 
         if (empty($path)) {
             // for URLs like: /api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1
-            $esiPath = $request->getParam('esi-path-query');
+            $esiPath = $this->getQueryParam($request, 'esi-path-query');
         } else {
             // for URLs like /api/app/v1/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
             $esiPath = $path;
@@ -409,7 +404,7 @@ class EsiController
             $esiResponse = $re->getResponse(); // may still be null
         } catch (GuzzleException $ge) {
             $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $ge->getMessage());
-            $esiResponse = new \GuzzleHttp\Psr7\Response(
+            $esiResponse = new Response(
                 500, // status
                 [], // header
                 $ge->getMessage() // body
@@ -428,7 +423,7 @@ class EsiController
             $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $e->getMessage());
         }
         if ($body !== null) {
-            $this->response->write($body);
+            $this->response->getBody()->write($body);
         }
 
         $response = $this->response->withStatus($esiResponse->getStatusCode(), $esiResponse->getReasonPhrase());

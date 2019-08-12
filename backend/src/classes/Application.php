@@ -21,6 +21,7 @@ use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Middleware\GuzzleEsiHeaders;
+use Neucore\Psr\ResponseFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
@@ -51,6 +52,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Symfony\Component\Console\Application as ConsoleApplication;
@@ -433,7 +435,10 @@ class Application
                 ]);
             },
 
-            // Replace Slim's error handler
+            // Slim
+            ResponseInterface::class => function (ContainerInterface $c) {
+                return (new ResponseFactory())->createResponse();
+            },
             'errorHandler' => function (ContainerInterface $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
             },

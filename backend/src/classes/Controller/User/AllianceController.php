@@ -5,11 +5,9 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Group;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
-use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @OA\Tag(
@@ -20,11 +18,6 @@ use Slim\Http\Response;
 class AllianceController extends BaseController
 {
     /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    /**
      * @var Alliance
      */
     private $alliance;
@@ -33,13 +26,6 @@ class AllianceController extends BaseController
      * @var Group
      */
     private $group;
-
-    public function __construct(Response $response, ObjectManager $objectManager, RepositoryFactory $repositoryFactory)
-    {
-        parent::__construct($response, $objectManager);
-
-        $this->repositoryFactory = $repositoryFactory;
-    }
 
     /**
      * @OA\Get(
@@ -60,14 +46,15 @@ class AllianceController extends BaseController
      *     )
      * )
      */
-    public function all(): Response
+    public function all(): ResponseInterface
     {
-        return $this->response->withJson(
+        return $this->withJson(
             $this->repositoryFactory->getAllianceRepository()->findBy([], ['name' => 'ASC'])
         );
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/alliance/with-groups",
      *     operationId="withGroups",
@@ -86,7 +73,7 @@ class AllianceController extends BaseController
      *     )
      * )
      */
-    public function withGroups(): Response
+    public function withGroups(): ResponseInterface
     {
         $result = [];
         foreach ($this->repositoryFactory->getAllianceRepository()->getAllWithGroups() as $alliance) {
@@ -96,7 +83,7 @@ class AllianceController extends BaseController
             $result[] = $json;
         }
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 
     /**
@@ -142,7 +129,7 @@ class AllianceController extends BaseController
      *     )
      * )
      */
-    public function add(string $id, EsiData $service): Response
+    public function add(string $id, EsiData $service): ResponseInterface
     {
         $allianceId = (int) $id;
 
@@ -200,7 +187,7 @@ class AllianceController extends BaseController
      *     )
      * )
      */
-    public function addGroup(string $id, string $gid): Response
+    public function addGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findAllianceAndGroup($id, $gid)) {
             return $this->response->withStatus(404);
@@ -249,7 +236,7 @@ class AllianceController extends BaseController
      *     )
      * )
      */
-    public function removeGroup(string $id, string $gid): Response
+    public function removeGroup(string $id, string $gid): ResponseInterface
     {
         if (! $this->findAllianceAndGroup($id, $gid)) {
             return $this->response->withStatus(404);

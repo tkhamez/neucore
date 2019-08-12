@@ -2,14 +2,15 @@
 
 namespace Neucore\Controller\App;
 
+use Neucore\Controller\BaseController;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\AppAuth;
+use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 /**
  * @OA\Schema(
@@ -26,22 +27,12 @@ use Slim\Http\Response;
  *     )
  * )
  */
-class GroupController
+class GroupController extends BaseController
 {
-    /**
-     * @var Response
-     */
-    private $response;
-
     /**
      * @var AppAuth
      */
     private $appAuthService;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
 
     /**
      * @var Account
@@ -49,14 +40,15 @@ class GroupController
     private $accountService;
 
     public function __construct(
-        Response $response,
-        AppAuth $appAuthService,
+        ResponseInterface $response,
+        ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
+        AppAuth $appAuthService,
         Account $accountService
     ) {
-        $this->response = $response;
+        parent::__construct($response, $objectManager, $repositoryFactory);
+        
         $this->appAuthService = $appAuthService;
-        $this->repositoryFactory = $repositoryFactory;
         $this->accountService = $accountService;
     }
 
@@ -91,7 +83,7 @@ class GroupController
      *     )
      * )
      */
-    public function groupsV1(string $cid, ServerRequestInterface $request): Response
+    public function groupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
         $result = $this->getGroupsForPlayer((int) $cid, $appGroups);
@@ -100,10 +92,11 @@ class GroupController
             return $this->response->withStatus(404);
         }
 
-        return $this->response->withJson($result['groups']);
+        return $this->withJson($result['groups']);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v2/groups/{cid}",
      *     operationId="groupsV2",
@@ -133,7 +126,7 @@ class GroupController
      *     )
      * )
      */
-    public function groupsV2(string $cid, ServerRequestInterface $request): Response
+    public function groupsV2(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $this->response = $this->groupsV1($cid, $request);
 
@@ -145,6 +138,7 @@ class GroupController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Post(
      *     path="/app/v1/groups",
      *     operationId="groupsBulkV1",
@@ -177,7 +171,7 @@ class GroupController
      *     )
      * )
      */
-    public function groupsBulkV1(ServerRequestInterface $request): Response
+    public function groupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
         return $this->groupsBulkFor('Player', $request);
     }
@@ -213,12 +207,13 @@ class GroupController
      *     )
      * )
      */
-    public function corpGroupsV1(string $cid, ServerRequestInterface $request): Response
+    public function corpGroupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         return $this->corpOrAllianceGroups($cid, 'Corporation', $request);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v2/corp-groups/{cid}",
      *     operationId="corpGroupsV2",
@@ -248,7 +243,7 @@ class GroupController
      *     )
      * )
      */
-    public function corpGroupsV2(string $cid, ServerRequestInterface $request): Response
+    public function corpGroupsV2(string $cid, ServerRequestInterface $request): ResponseInterface
     {
         $this->response = $this->corpGroupsV1($cid, $request);
 
@@ -260,6 +255,7 @@ class GroupController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Post(
      *     path="/app/v1/corp-groups",
      *     operationId="corpGroupsBulkV1",
@@ -292,7 +288,7 @@ class GroupController
      *     )
      * )
      */
-    public function corpGroupsBulkV1(ServerRequestInterface $request): Response
+    public function corpGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
         return $this->groupsBulkFor('Corporation', $request);
     }
@@ -328,12 +324,13 @@ class GroupController
      *     )
      * )
      */
-    public function allianceGroupsV1(string $aid, ServerRequestInterface $request): Response
+    public function allianceGroupsV1(string $aid, ServerRequestInterface $request): ResponseInterface
     {
         return $this->corpOrAllianceGroups($aid, 'Alliance', $request);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v2/alliance-groups/{aid}",
      *     operationId="allianceGroupsV2",
@@ -363,7 +360,7 @@ class GroupController
      *     )
      * )
      */
-    public function allianceGroupsV2(string $aid, ServerRequestInterface $request): Response
+    public function allianceGroupsV2(string $aid, ServerRequestInterface $request): ResponseInterface
     {
         $this->response = $this->allianceGroupsV1($aid, $request);
 
@@ -375,6 +372,7 @@ class GroupController
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Post(
      *     path="/app/v1/alliance-groups",
      *     operationId="allianceGroupsBulkV1",
@@ -407,12 +405,13 @@ class GroupController
      *     )
      * )
      */
-    public function allianceGroupsBulkV1(ServerRequestInterface $request): Response
+    public function allianceGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
         return $this->groupsBulkFor('Alliance', $request);
     }
 
     /**
+     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/groups-with-fallback",
      *     operationId="groupsWithFallbackV1",
@@ -453,18 +452,18 @@ class GroupController
      *     )
      * )
      */
-    public function groupsWithFallbackV1(Request $request): Response
+    public function groupsWithFallbackV1(ServerRequestInterface $request): ResponseInterface
     {
-        $characterId = (int) $request->getParam('character');
-        $corporationId = (int) $request->getParam('corporation');
-        $allianceId = (int) $request->getParam('alliance');
+        $characterId = (int) $this->getQueryParam($request, 'character');
+        $corporationId = (int) $this->getQueryParam($request, 'corporation');
+        $allianceId = (int) $this->getQueryParam($request, 'alliance');
 
         $appGroups = $this->getAppGroups($request);
 
         $characterResult = $this->getGroupsForPlayer($characterId, $appGroups);
         if ($characterResult !== null) {
             // could be an empty result
-            return $this->response->withJson($characterResult['groups']);
+            return $this->withJson($characterResult['groups']);
         }
 
         $fallbackGroups = [];
@@ -490,10 +489,10 @@ class GroupController
             }
         }
 
-        return $this->response->withJson($fallbackGroups);
+        return $this->withJson($fallbackGroups);
     }
 
-    private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request)
+    private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
         $result = $this->getGroupsFor($type, (int) $id, $appGroups);
@@ -502,22 +501,21 @@ class GroupController
             return $this->response->withStatus(404);
         }
 
-        return $this->response->withJson($result['groups']);
+        return $this->withJson($result['groups']);
     }
 
     /**
      * @param string $type "Player", "Corporation" or "Alliance"
-     * @param ServerRequestInterface $request
-     * @return Response
+     * @return ResponseInterface
      */
-    private function groupsBulkFor(string $type, ServerRequestInterface $request): Response
+    private function groupsBulkFor(string $type, ServerRequestInterface $request): ResponseInterface
     {
         $ids = $this->getIntegerArrayFromBody($request);
         if ($ids === null) {
             return $this->response->withStatus(400);
         }
         if (count($ids) === 0) {
-            return $this->response->withJson([]);
+            return $this->withJson([]);
         }
 
         $appGroups = $this->getAppGroups($request);
@@ -540,10 +538,10 @@ class GroupController
             $result[] = $groups;
         }
 
-        return $this->response->withJson($result);
+        return $this->withJson($result);
     }
 
-    private function getIntegerArrayFromBody(ServerRequestInterface $request)
+    private function getIntegerArrayFromBody(ServerRequestInterface $request): ?array
     {
         $ids = $request->getParsedBody();
 
@@ -561,7 +559,7 @@ class GroupController
      * @param Group[] $appGroups
      * @return null|array Returns NULL if character was not found.
      */
-    private function getGroupsForPlayer(int $characterId, array $appGroups)
+    private function getGroupsForPlayer(int $characterId, array $appGroups): ?array
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($char === null) {
@@ -606,7 +604,7 @@ class GroupController
      * @see \Neucore\Entity\Alliance::jsonSerialize()
      * @see \Neucore\Entity\Group::jsonSerialize()
      */
-    private function getGroupsFor(string $entityName, int $entityId, array $appGroups)
+    private function getGroupsFor(string $entityName, int $entityId, array $appGroups): ?array
     {
         $repository = $entityName === 'Corporation' ?
             $this->repositoryFactory->getCorporationRepository() :

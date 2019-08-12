@@ -2,13 +2,12 @@
 
 namespace Tests\Unit\Slim\Session;
 
+use Neucore\Psr\ResponseFactory;
 use Neucore\Slim\Session\NonBlockingSessionMiddleware;
 use Neucore\Slim\Session\SessionData;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\RouteInterface;
-use Slim\Http\Environment;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Tests\RequestFactory;
 
 class NonBlockingSessionMiddlewareTest extends TestCase
 {
@@ -86,7 +85,7 @@ class NonBlockingSessionMiddlewareTest extends TestCase
         $route = $this->createMock(RouteInterface::class);
         $route->method('getPattern')->willReturn($path);
 
-        $req = Request::createFromEnvironment(Environment::mock());
+        $req = RequestFactory::createRequest();
         if ($addRoute) {
             $req = $req->withAttribute('route', $route);
         }
@@ -97,6 +96,6 @@ class NonBlockingSessionMiddlewareTest extends TestCase
             return $res;
         };
 
-        return $nbs($req, new Response(), $next);
+        return $nbs($req, (new ResponseFactory())->createResponse(), $next);
     }
 }

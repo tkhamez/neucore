@@ -8,13 +8,8 @@ use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Slim\Http\Cookies;
-use Slim\Http\Environment;
-use Slim\Http\Headers;
-use Slim\Http\Request;
-use Slim\Http\RequestBody;
-use Slim\Http\Uri;
 use Tests\Helper;
+use Tests\RequestFactory;
 
 class AppAuthTest extends TestCase
 {
@@ -60,7 +55,7 @@ class AppAuthTest extends TestCase
 
     public function testGetAppNoAuth()
     {
-        $req = Request::createFromEnvironment(Environment::mock());
+        $req = RequestFactory::createRequest();
         $app = $this->service->getApp($req);
 
         $this->assertNull($app);
@@ -121,38 +116,10 @@ class AppAuthTest extends TestCase
 
     private function getRequest(string $authHeader = null)
     {
-        $environment = Environment::mock();
-
-        $method = $environment['REQUEST_METHOD'];
-        $uri = Uri::createFromEnvironment($environment);
-        $headers = Headers::createFromEnvironment($environment);
-        $cookies = Cookies::parseHeader($headers->get('Cookie', [''])[0]);
-        $serverParams = $environment->all();
-        $body = new RequestBody();
-
-        $request = new class($method, $uri, $headers, $cookies, $serverParams, $body) extends Request {
-            private $fakeHeaders = [];
-
-            public function hasHeader($name)
-            {
-                return isset($this->fakeHeaders[$name]);
-            }
-
-            public function setAuthHeader(string $authHeader)
-            {
-                $this->fakeHeaders['Authorization'] = [$authHeader];
-            }
-
-            public function getHeader($name)
-            {
-                return $this->fakeHeaders[$name];
-            }
-        };
-
+        $request = RequestFactory::createRequest();
         if ($authHeader !== null) {
-            $request->setAuthHeader($authHeader);
+            $request = $request->withHeader('Authorization', $authHeader);
         }
-
         return $request;
     }
 }
