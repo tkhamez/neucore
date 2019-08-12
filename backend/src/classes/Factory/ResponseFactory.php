@@ -1,6 +1,6 @@
 <?php
 
-namespace Neucore\Psr;
+namespace Neucore\Factory;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;

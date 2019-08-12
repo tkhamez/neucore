@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Psr;
+namespace Tests\Unit\Factory;
 
+use Neucore\Factory\ResponseFactory;
 use PHPUnit\Framework\TestCase;
-use Neucore\Psr\ResponseFactory;
 
 class ResponseFactoryTest extends TestCase
 {

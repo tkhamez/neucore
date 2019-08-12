@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Slim\Session;
 
-use Neucore\Psr\ResponseFactory;
+use Neucore\Factory\ResponseFactory;
 use Neucore\Slim\Session\NonBlockingSessionMiddleware;
 use Neucore\Slim\Session\SessionData;
 use PHPUnit\Framework\TestCase;

@@ -3,7 +3,7 @@
 namespace Tests\Functional;
 
 use Neucore\Application;
-use Neucore\Psr\ResponseFactory;
+use Neucore\Factory\ResponseFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Tests\RequestFactory;

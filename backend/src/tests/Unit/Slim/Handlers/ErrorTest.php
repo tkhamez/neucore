@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Slim\Handlers;
 
-use Neucore\Psr\ResponseFactory;
+use Neucore\Factory\ResponseFactory;
 use Neucore\Slim\Handlers\Error;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;

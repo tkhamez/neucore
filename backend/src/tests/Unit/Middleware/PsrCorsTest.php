@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Middleware;
 
+use Neucore\Factory\ResponseFactory;
 use Neucore\Middleware\PsrCors;
-use Neucore\Psr\ResponseFactory;
 use PHPUnit\Framework\TestCase;
 use Tests\RequestFactory;
 
