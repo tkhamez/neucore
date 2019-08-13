@@ -9,7 +9,7 @@ use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
-use Neucore\Slim\Session\SessionData;
+use Neucore\Middleware\Slim\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;

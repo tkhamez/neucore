@@ -21,7 +21,7 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Slim\Session\SessionData;
+use Neucore\Middleware\Slim\Session\SessionData;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;

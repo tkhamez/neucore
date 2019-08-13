@@ -4,16 +4,16 @@ namespace Neucore\Controller\User;
 
 use Brave\Sso\Basics\AuthenticationProvider;
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Middleware\Slim\Session\SessionData;
 use Neucore\Service\Config;
-use Neucore\Entity\Role;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
-use Neucore\Slim\Session\SessionData;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

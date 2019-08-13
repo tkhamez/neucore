@@ -5,7 +5,7 @@ namespace Tests\Functional\Controller\User;
 use Neucore\Controller\User\AuthController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
-use Neucore\Slim\Session\SessionData;
+use Neucore\Middleware\Slim\Session\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;

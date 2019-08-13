@@ -43,14 +43,14 @@ use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Factory\ResponseFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
-use Neucore\Middleware\GuzzleEsiHeaders;
-use Neucore\Middleware\PsrCors;
+use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Middleware\Slim\Cors;
+use Neucore\Middleware\Slim\Session\NonBlockingSession;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
 use Neucore\Slim\Handlers\Error;
 use Neucore\Slim\Handlers\PhpError;
-use Neucore\Slim\Session\NonBlockingSessionMiddleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -256,7 +256,7 @@ class Application
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
-        $app->add(new NonBlockingSessionMiddleware([
+        $app->add(new NonBlockingSession([
             'name' => 'NCSESS',
             'secure' => $this->container->get(Config::class)['session']['secure'],
             'route_include_pattern' => ['/api/user', '/login'],
@@ -264,7 +264,7 @@ class Application
         ]));
 
         if ($this->container->get(Config::class)['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new PsrCors(explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])));
+            $app->add(new Cors(explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])));
         }
     }
 
@@ -431,7 +431,7 @@ class Application
                     ),
                     'cache'
                 );
-                $stack->push($c->get(GuzzleEsiHeaders::class));
+                $stack->push($c->get(EsiHeaders::class));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
                 return new Client([

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Middleware;
+namespace Tests\Unit\Middleware\Guzzle;
 
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\GuzzleEsiHeaders;
+use Neucore\Middleware\Guzzle\EsiHeaders;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
 
-class GuzzleEsiHeadersTest extends TestCase
+class EsiHeadersTest extends TestCase
 {
     /**
      * @var EntityManagerInterface
@@ -30,7 +30,7 @@ class GuzzleEsiHeadersTest extends TestCase
     private $logger;
 
     /**
-     * @var GuzzleEsiHeaders
+     * @var \Neucore\Middleware\Guzzle\EsiHeaders
      */
     private $obj;
 
@@ -42,7 +42,7 @@ class GuzzleEsiHeadersTest extends TestCase
 
         $this->repositoryFactory = new RepositoryFactory($this->em);
         $this->logger = new Logger('test');
-        $this->obj = new GuzzleEsiHeaders($this->logger, $this->repositoryFactory, $this->em);
+        $this->obj = new \Neucore\Middleware\Guzzle\EsiHeaders($this->logger, $this->repositoryFactory, $this->em);
     }
 
     public function testInvokeErrorLimit()

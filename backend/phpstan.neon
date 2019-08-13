@@ -6,7 +6,7 @@ parameters:
 			path: %currentWorkingDirectory%/src/classes/Slim/Session/SessionData.php
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Slim/Session/NonBlockingSessionMiddlewareTest.php
+			path: %currentWorkingDirectory%/src/tests/Unit/Slim/Session/NonBlockingSessionTest.php
 		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
 			path: %currentWorkingDirectory%/src/classes/Service/EsiData.php

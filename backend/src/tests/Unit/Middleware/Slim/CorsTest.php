@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Middleware;
+namespace Tests\Unit\Middleware\Slim;
 
 use Neucore\Factory\ResponseFactory;
-use Neucore\Middleware\PsrCors;
+use Neucore\Middleware\Slim\Cors;
 use PHPUnit\Framework\TestCase;
 use Tests\RequestFactory;
 
-class PsrCorsTest extends TestCase
+class CorsTest extends TestCase
 {
     public function testAddsHeader()
     {
@@ -18,7 +18,7 @@ class PsrCorsTest extends TestCase
             return $res;
         };
 
-        $cors = new PsrCors(['https://domain.tld', 'https://domain2.tld']);
+        $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
         $response = $cors($req, (new ResponseFactory())->createResponse(), $next);
 
         $headers = $response->getHeaders();
@@ -37,7 +37,7 @@ class PsrCorsTest extends TestCase
             return $res;
         };
 
-        $cors = new PsrCors(['https://domain.tld', 'https://domain2.tld']);
+        $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
         $response = $cors($req, (new ResponseFactory())->createResponse(), $next);
 
         $this->assertSame([], $response->getHeaders());

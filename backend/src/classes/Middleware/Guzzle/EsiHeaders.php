@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Neucore\Middleware;
+namespace Neucore\Middleware\Guzzle;
 
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -10,7 +10,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
-class GuzzleEsiHeaders
+class EsiHeaders
 {
     /**
      * @var LoggerInterface
@@ -61,7 +61,7 @@ class GuzzleEsiHeaders
             $entity = $this->systemVariableRepository->find(SystemVariable::ESI_ERROR_LIMIT);
             if (! $entity) {
                 $this->logger->error(
-                    'GuzzleEsiHeaders::handleResponseHeaders: system variable' .
+                    'EsiHeaders::handleResponseHeaders: system variable' .
                     SystemVariable::ESI_ERROR_LIMIT . ' not found.'
                 );
                 return;

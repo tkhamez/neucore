@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Neucore\Slim\Session;
+namespace Neucore\Middleware\Slim\Session;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,8 +17,11 @@ use Slim\Interfaces\RouteInterface;
  * Can optionally be writable (blocking) for certain routes, so session will not be closed for these.
  * Can optionally be restricted to certain routes, so session will not be started for any other route.
  */
-class NonBlockingSessionMiddleware
+class NonBlockingSession
 {
+    /**
+     * @var array
+     */
     private $options;
 
     /**

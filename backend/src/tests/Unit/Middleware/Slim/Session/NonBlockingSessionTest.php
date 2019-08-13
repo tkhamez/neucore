@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Slim\Session;
+namespace Tests\Unit\Middleware\Slim\Session;
 
 use Neucore\Factory\ResponseFactory;
-use Neucore\Slim\Session\NonBlockingSessionMiddleware;
-use Neucore\Slim\Session\SessionData;
+use Neucore\Middleware\Slim\Session\NonBlockingSession;
+use Neucore\Middleware\Slim\Session\SessionData;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\RouteInterface;
 use Tests\RequestFactory;
 
-class NonBlockingSessionMiddlewareTest extends TestCase
+class NonBlockingSessionTest extends TestCase
 {
     public function setUp()
     {
@@ -90,7 +90,7 @@ class NonBlockingSessionMiddlewareTest extends TestCase
             $req = $req->withAttribute('route', $route);
         }
 
-        $nbs = new NonBlockingSessionMiddleware($conf);
+        $nbs = new NonBlockingSession($conf);
 
         $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
             return $res;

@@ -5,7 +5,7 @@ namespace Tests\Functional\Controller\App;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\GuzzleEsiHeaders;
+use Neucore\Middleware\Guzzle\EsiHeaders;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
@@ -225,7 +225,7 @@ class EsiControllerTest extends WebTestCase
 
         // create client with middleware
         $httpClient = new Client([
-            new GuzzleEsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getEm())
+            new EsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getEm())
         ]);
 
         $httpClient->setResponse(new Response(
