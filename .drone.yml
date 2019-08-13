@@ -2,118 +2,102 @@ kind: pipeline
 name: default
 
 steps:
-- name: backend-build
-  image: composer:1.8
-  commands:
-  - cd backend
-  - composer install --ignore-platform-reqs
-  - composer openapi
+  - name: backend-build
+    image: composer:1
+    commands:
+      - cd backend
+      - composer install --ignore-platform-reqs
+      - composer openapi
 
-- name: backend-test-71
-  image: php:7.1
-  environment:
-    BRAVECORE_APP_ENV: dev
-    BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
-  commands:
-  - docker-php-ext-install pdo_mysql
-  - cd backend
-  - vendor/bin/phpunit
+  - name: backend-test-73
+    image: php:7.3
+    environment:
+      BRAVECORE_APP_ENV: prod
+      BRAVECORE_DATABASE_URL: mysql://root:@database/test
+      BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
+    commands:
+      - apt-get update -y && apt-get -y install libgmp-dev
+      - docker-php-ext-install pdo_mysql
+      - docker-php-ext-install gmp
+      - pecl install xdebug
+      - docker-php-ext-enable xdebug
+      - cd backend
+      - vendor/bin/doctrine orm:generate-proxies
+      - vendor/bin/phpunit
 
-- name: backend-test-72
-  image: php:7.2
-  environment:
-    BRAVECORE_APP_ENV: prod
-    BRAVECORE_DATABASE_URL: mysql://root:@database/test
-    BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
-  commands:
-  - pecl install xdebug
-  - docker-php-ext-enable xdebug
-  - docker-php-ext-install pdo_mysql
-  - cd backend
-  - vendor/bin/doctrine orm:generate-proxies
-  - vendor/bin/phpunit
+  - name: generate-api-client
+    image: openjdk:11
+    commands:
+      - cd frontend
+      - ./openapi.sh
 
-- name: backend-test-73
-  image: php:7.3
-  environment:
-    BRAVECORE_APP_ENV: dev
-    BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
-  commands:
-  - docker-php-ext-install pdo_mysql
-  - cd backend
-  - vendor/bin/phpunit
+  - name: frontend-build
+    image: node:10
+    commands:
+      - node -v && npm -v
+      - cd frontend
+      - npm install
+      - npm run build:prod
+      - cd ../web
+      - npm install
 
-- name: generate-api-client
-  image: openjdk:11
-  commands:
-  - cd frontend
-  - ./openapi.sh
+  - name: code-analysis
+    image: aosapps/drone-sonar-plugin:1.0
+    settings:
+      sonar_host:
+        from_secret: sonar_host
+      sonar_token:
+        from_secret: sonar_token
+      sources: backend/src/classes,frontend/src
 
-- name: frontend-build
-  image: node:10
-  commands:
-  - node -v && npm -v
-  - cd frontend
-  - npm install
-  - npm run build:prod
-  - cd ../web
-  - npm install
+  - name: distribution
+    image: composer:1
+    environment:
+      BRAVECORE_APP_ENV: prod
+      BRAVECORE_DATABASE_URL: mysql://root:@database/test?serverVersion=5.7
+    commands:
+      - docker-php-ext-install pdo_mysql
+      - cd backend
+      - composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
+      - vendor/bin/doctrine orm:generate-proxies
+      - cd ..
+      - mkdir -p dist/neucore
+      - mv backend dist/neucore/backend
+      - rm -r dist/neucore/backend/src/tests
+      - rm -r dist/neucore/backend/var/cache/di
+      - rm -r dist/neucore/backend/var/cache/http
+      - mv doc dist/neucore/doc
+      - rm -r dist/neucore/doc/screenshots
+      - mv web dist/neucore/web
+      - mv LICENSE dist/neucore/LICENSE
+      - mv CHANGELOG.md dist/neucore/CHANGELOG.md
+      - mv README.md dist/neucore/README.md
+      - cd dist
+      - tar -czf neucore-${DRONE_TAG}.tar.gz neucore
+      - sha256sum neucore-${DRONE_TAG}.tar.gz > neucore-${DRONE_TAG}.sha256
+    when:
+      event:
+        - tag
 
-- name: code-analysis
-  image: aosapps/drone-sonar-plugin:1.0
-  settings:
-    sonar_host:
-      from_secret: sonar_host
-    sonar_token:
-      from_secret: sonar_token
-    sources: backend/src/classes,frontend/src
-
-- name: distribution
-  image: composer:1.8
-  environment:
-    BRAVECORE_APP_ENV: prod
-    BRAVECORE_DATABASE_URL: mysql://root:@database/test?serverVersion=5.7
-  commands:
-  - docker-php-ext-install pdo_mysql
-  - cd backend
-  - composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
-  - vendor/bin/doctrine orm:generate-proxies
-  - cd ..
-  - mkdir -p dist/neucore
-  - mv backend dist/neucore/backend
-  - rm -r dist/neucore/backend/src/tests
-  - rm -r dist/neucore/backend/var/cache/di
-  - rm -r dist/neucore/backend/var/cache/http
-  - mv doc dist/neucore/doc
-  - rm -r dist/neucore/doc/screenshots
-  - mv web dist/neucore/web
-  - mv LICENSE dist/neucore/LICENSE
-  - mv CHANGELOG.md dist/neucore/CHANGELOG.md
-  - mv README.md dist/neucore/README.md
-  - cd dist
-  - tar -czf neucore-${DRONE_TAG}.tar.gz neucore
-  - sha256sum neucore-${DRONE_TAG}.tar.gz > neucore-${DRONE_TAG}.sha256
-  when:
-    event: tag
-
-- name: release
-  image: plugins/gitea-release:1.1
-  settings:
-    api_key:
-      from_secret: GITEA_TOKEN
-    base_url:
-      from_secret: GITEA_URL
-    files:
-    - dist/*.gz
-    - dist/*.sha256
-  when:
-    event: tag
+  - name: release
+    image: plugins/gitea-release:1.1
+    settings:
+      api_key:
+        from_secret: GITEA_TOKEN
+      base_url:
+        from_secret: GITEA_URL
+      files:
+        - dist/*.gz
+        - dist/*.sha256
+    when:
+      event:
+        - tag
 
 services:
-- name: database
-  image: mariadb:10.3
-  ports:
-  - 3306
-  environment:
-    MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-    MYSQL_DATABASE: test
+  - name: database
+    image: mariadb:10.3
+    ports:
+      - 3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: test
