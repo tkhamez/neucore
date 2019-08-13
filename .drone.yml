@@ -9,7 +9,7 @@ steps:
       - composer install --ignore-platform-reqs
       - composer openapi
 
-  - name: backend-test-73
+  - name: backend-test
     image: php:7.3
     environment:
       BRAVECORE_APP_ENV: prod

@@ -1,4 +1,5 @@
-FROM php:7.3-fpm
+FROM php:7.3
 RUN apt-get update -y && apt-get -y install libgmp-dev
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install gmp
+RUN pecl install xdebug && docker-php-ext-enable xdebug

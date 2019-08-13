@@ -26,18 +26,14 @@ Vagrant.configure("2") do |config|
         apt-get autoremove -y
 
         # install php + composer
-        apt-get install -y php php7.2 php7.2-fpm
-        apt-get install -y php-cli php-curl php-xml php-json php-mbstring php-mysql php7.2-opcache
-        apt-get install -y php-apcu php-xdebug
-        apt-get install -y composer
+        apt-get install -y php-fpm php-cli php-curl php-gmp php-json php-mbstring php-xml php-mysql php7.2-opcache \
+            php-apcu php-xdebug composer
 
-        # install node + npm (npm version in Ubuntu does not yet support package-lock.json)
-        apt-get install -y nodejs npm
-        npm install -y npm@6.4.1 -g
-        apt-get remove -y npm
-        apt-get autoremove -y
+        # install node + npm (versions in Ubuntu are too old)
+        curl -sL https://deb.nodesource.com/setup_10.x | bash -
+        apt-get install -y nodejs
 
-        # install mariadb server
+        # install mariadb server (10.1)
         apt-get install -y mariadb-server
         mysql -e 'CREATE DATABASE IF NOT EXISTS core'
         mysql -e 'CREATE DATABASE IF NOT EXISTS core_test'

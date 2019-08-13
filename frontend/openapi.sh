@@ -20,7 +20,3 @@ java -jar ${DIR}/${FILENAME} generate \
     -g javascript \
     -o ${DIR}/neucore-js-client \
     --skip-validate-spec
-
-cd neucore-js-client
-npm i
-npm run build

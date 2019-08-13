@@ -46,6 +46,7 @@
         "webpack-cli": "^3.3.6"
     },
     "scripts": {
+        "preinstall": "cd neucore-js-client && npm i && npm run build",
         "build": "webpack --mode development",
         "build:prod": "webpack --mode production",
         "watch": "webpack --mode development --watch"

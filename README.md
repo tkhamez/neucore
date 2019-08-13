@@ -64,7 +64,7 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 
 * PHP >=7.1.3 with Composer, see `backend/composer.json` for necessary extensions
 * Node.js >=8.12.0 with npm (tested with LTS versions 8 and 10, npm 6)
-* MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.3, 10.4)
+* MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.2, 10.3, 10.4)
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 
@@ -155,17 +155,21 @@ The values for the EVE application must be adjusted.
 
 ### Using Docker
 
-Create the `backend/.env` file.
+Create the `backend/.env` file.  
+Environment variables defined in `docker-compose.yml` have priority over `backend/.env`.
 
 Execute the following to start the containers and build the app:
-```
-$ export UID
+```sh
+# rebuild if necessary
+$ docker-compose build
 
+# start services
+$ export UID
 $ docker-compose up -d
 
-# Install backend
-$ docker-compose run composer install
-$ docker-compose run composer composer compile
+# Install backend and generate OpenAPI files
+$ docker-compose run composer install --ignore-platform-reqs
+$ docker-compose run composer composer openapi
 
 # Generate OpenAPI JavaScript client
 $ docker-compose run java /app/frontend/openapi.sh
@@ -176,16 +180,28 @@ $ docker-compose run node npm run build
 
 # Install Swagger UI
 $ docker-compose run node npm install --prefix /app/web
+
+# Update the database schema and seed data
+$ docker-compose run php-cli vendor/bin/doctrine-migrations migrations:migrate --no-interaction
+$ docker-compose run php-cli bin/console doctrine-fixtures-load
 ```
 
-Browse to `http://localhost:8080`
-
-Stop containers: `docker-compose stop`
+Browse to http://localhost:8080
 
 Create database for unit tests
 ```
 $ docker exec neucore_db sh -c 'mysql -e "CREATE DATABASE IF NOT EXISTS neucore_test" -pneucore'
 $ docker exec neucore_db sh -c 'mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@\"%\" IDENTIFIED BY \"neucore\"" -pneucore'
+```
+
+Run tests and other commands in the php-cli container: 
+```
+$ docker-compose run php-cli /bin/bash
+```
+
+Stop containers: 
+```
+docker-compose stop
 ```
 
 Known problems:
