@@ -46,7 +46,6 @@ module.exports = (env, argv) => {
             rules: [{
                 test: /\.(css|scss)$/,
                 use: [
-                    //devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
                     MiniCssExtractPlugin.loader,
                     'css-loader',
                     {
