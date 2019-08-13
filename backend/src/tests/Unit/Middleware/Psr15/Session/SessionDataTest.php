@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Middleware\Slim\Session;
+namespace Tests\Unit\Middleware\Psr15\Session;
 
-use Neucore\Middleware\Slim\Session\SessionData;
+use Neucore\Middleware\Psr15\Session\SessionData;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 

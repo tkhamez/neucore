@@ -3,10 +3,10 @@ parameters:
 	ignoreErrors:
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/classes/Slim/Session/SessionData.php
+			path: %currentWorkingDirectory%/src/classes/Middleware/Psr15/Session/SessionData.php
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Slim/Session/NonBlockingSessionTest.php
+			path: %currentWorkingDirectory%/src/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
 		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
 			path: %currentWorkingDirectory%/src/classes/Service/EsiData.php

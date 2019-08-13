@@ -2,6 +2,7 @@
 
 namespace Neucore;
 
+use Bnf\Slim3Psr15\Adapter\PsrMiddleware;
 use Brave\Sso\Basics\AuthenticationProvider;
 use DI\Container;
 use DI\ContainerBuilder;
@@ -44,8 +45,8 @@ use Neucore\Factory\ResponseFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Middleware\Guzzle\EsiHeaders;
-use Neucore\Middleware\Slim\Cors;
-use Neucore\Middleware\Slim\Session\NonBlockingSession;
+use Neucore\Middleware\Psr15\Cors;
+use Neucore\Middleware\Psr15\Session\NonBlockingSession;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
@@ -256,15 +257,17 @@ class Application
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
-        $app->add(new NonBlockingSession([
+        $app->add(new PsrMiddleware(new NonBlockingSession([
             'name' => 'NCSESS',
             'secure' => $this->container->get(Config::class)['session']['secure'],
             'route_include_pattern' => ['/api/user', '/login'],
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
-        ]));
+        ])));
 
         if ($this->container->get(Config::class)['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new Cors(explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])));
+            $app->add(new PsrMiddleware(new Cors(
+                explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])
+            )));
         }
     }
 
@@ -322,8 +325,8 @@ class Application
                     null,
                     false
                 );
-                /* @phan-suppress-next-line PhanDeprecatedFunction */
                 /** @noinspection PhpDeprecationInspection */
+                /* @phan-suppress-next-line PhanDeprecatedFunction */
                 AnnotationRegistry::registerLoader('class_exists');
                 if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '' &&
                     (
@@ -443,8 +446,8 @@ class Application
             },
 
             // Slim
-            ResponseInterface::class => function () {
-                return (new ResponseFactory())->createResponse();
+            ResponseInterface::class => function (ContainerInterface $c) {
+                return $c->get(ResponseFactory::class)->createResponse();
             },
             'errorHandler' => function (ContainerInterface $c) {
                 return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));

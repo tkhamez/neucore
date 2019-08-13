@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Neucore\Middleware\Slim\Session;
+namespace Neucore\Middleware\Psr15\Session;
 
 /**
  * Wraps $_SESSION variable.

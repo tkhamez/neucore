@@ -21,7 +21,7 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Slim\Session\SessionData;
+use Neucore\Middleware\Psr15\Session\SessionData;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
@@ -116,9 +116,11 @@ class Helper
                 null,
                 false
             );
+            /** @noinspection PhpDeprecationInspection */
             /* @phan-suppress-next-line PhanDeprecatedFunction */
             AnnotationRegistry::registerLoader('class_exists');
 
+            /** @noinspection PhpUnhandledExceptionInspection */
             $em = EntityManager::create($conf['connection'], $config);
 
             if ($discrete) {

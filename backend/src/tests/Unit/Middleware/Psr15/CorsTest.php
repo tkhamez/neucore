@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Middleware\Slim;
+namespace Tests\Unit\Middleware\Psr15;
 
-use Neucore\Factory\ResponseFactory;
-use Neucore\Middleware\Slim\Cors;
+use Neucore\Middleware\Psr15\Cors;
 use PHPUnit\Framework\TestCase;
 use Tests\RequestFactory;
+use Tests\RequestHandler;
 
 class CorsTest extends TestCase
 {
@@ -14,12 +14,8 @@ class CorsTest extends TestCase
         $req = RequestFactory::createRequest();
         $req = $req->withHeader('HTTP_ORIGIN', 'https://domain.tld');
 
-        $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
-            return $res;
-        };
-
         $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
-        $response = $cors($req, (new ResponseFactory())->createResponse(), $next);
+        $response = $cors->process($req, new RequestHandler());
 
         $headers = $response->getHeaders();
         $this->assertSame([
@@ -33,12 +29,8 @@ class CorsTest extends TestCase
         $req = RequestFactory::createRequest();
         $req = $req->withHeader('HTTP_ORIGIN', 'http://domain.tld');
 
-        $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
-            return $res;
-        };
-
         $cors = new Cors(['https://domain.tld', 'https://domain2.tld']);
-        $response = $cors($req, (new ResponseFactory())->createResponse(), $next);
+        $response = $cors->process($req, new RequestHandler());
 
         $this->assertSame([], $response->getHeaders());
     }

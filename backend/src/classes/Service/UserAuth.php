@@ -6,7 +6,7 @@ use Brave\Sso\Basics\EveAuthentication;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Slim\Session\SessionData;
+use Neucore\Middleware\Psr15\Session\SessionData;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
@@ -22,7 +22,7 @@ use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
 class UserAuth implements RoleProviderInterface
 {
     /**
-     * @var \Neucore\Middleware\Session\SessionData
+     * @var SessionData
      */
     private $session;
 

@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neucore\Middleware\Slim;
+namespace Neucore\Middleware\Psr15;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * CORS headers.
@@ -11,28 +13,26 @@ use Psr\Http\Message\ServerRequestInterface;
  * Checks HTTP_ORIGIN request header and if it matches one of the allow
  * origins, adds Access-Control-Allow-* headers to the response.
  */
-class Cors
+class Cors implements MiddlewareInterface
 {
+    /**
+     * @var array
+     */
     private $allowOrigin;
 
     /**
-     *
-     * Option (required): allowed origins
-     *
-     * Example:
-     * ['https://frontend.domain.tld']
+     * @param array $allowOrigin Example: ['https://frontend.domain.tld']
      */
-    public function __construct(array $allowOrigin = [])
+    public function __construct(array $allowOrigin)
     {
         $this->allowOrigin = $allowOrigin;
     }
 
-    public function __invoke(ServerRequestInterface $req, ResponseInterface $res, callable $next): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /** @var ResponseInterface $response */
-        $response = $next($req, $res);
+        $response = $handler->handle($request);
 
-        $origin = $req->getHeader('HTTP_ORIGIN')[0] ?? null;
+        $origin = $request->getHeader('HTTP_ORIGIN')[0] ?? null;
         if ($origin !== null && in_array($origin, $this->allowOrigin)) {
             $response = $response
                 ->withHeader('Access-Control-Allow-Origin', $origin)

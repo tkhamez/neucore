@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neucore\Middleware\Slim\Session;
+namespace Neucore\Middleware\Psr15\Session;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Interfaces\RouteInterface;
 
 /**
@@ -17,7 +19,7 @@ use Slim\Interfaces\RouteInterface;
  * Can optionally be writable (blocking) for certain routes, so session will not be closed for these.
  * Can optionally be restricted to certain routes, so session will not be started for any other route.
  */
-class NonBlockingSession
+class NonBlockingSession implements MiddlewareInterface
 {
     /**
      * @var array
@@ -45,14 +47,11 @@ class NonBlockingSession
         $this->options = $options;
     }
 
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        callable $next
-    ): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         // check if session should be started
         if (! $this->shouldStartSession($request->getAttribute('route'))) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
         $this->start();
@@ -65,7 +64,7 @@ class NonBlockingSession
             $this->close();
         }
 
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 
     private function shouldStartSession(RouteInterface $route = null): bool

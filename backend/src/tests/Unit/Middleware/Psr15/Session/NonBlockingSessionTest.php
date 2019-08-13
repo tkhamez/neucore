@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Middleware\Slim\Session;
+namespace Tests\Unit\Middleware\Psr15\Session;
 
-use Neucore\Factory\ResponseFactory;
-use Neucore\Middleware\Slim\Session\NonBlockingSession;
-use Neucore\Middleware\Slim\Session\SessionData;
+use Neucore\Middleware\Psr15\Session\NonBlockingSession;
+use Neucore\Middleware\Psr15\Session\SessionData;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\RouteInterface;
 use Tests\RequestFactory;
+use Tests\RequestHandler;
 
 class NonBlockingSessionTest extends TestCase
 {
@@ -92,10 +92,6 @@ class NonBlockingSessionTest extends TestCase
 
         $nbs = new NonBlockingSession($conf);
 
-        $next = function (/** @noinspection PhpUnusedParameterInspection */$req, $res) {
-            return $res;
-        };
-
-        return $nbs($req, (new ResponseFactory())->createResponse(), $next);
+        return $nbs->process($req, new RequestHandler());
     }
 }

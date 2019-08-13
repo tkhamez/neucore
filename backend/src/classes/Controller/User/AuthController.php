@@ -7,7 +7,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Slim\Session\SessionData;
+use Neucore\Middleware\Psr15\Session\SessionData;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
