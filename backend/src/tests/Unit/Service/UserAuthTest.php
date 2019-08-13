@@ -116,7 +116,7 @@ class UserAuthTest extends TestCase
     public function testAuthenticateNewUser()
     {
         $this->helper->addRoles([Role::USER]);
-        (new SessionData())->setReadOnly(false);
+        SessionData::setReadOnly(false);
 
         $this->assertFalse(isset($_SESSION['character_id']));
 
@@ -144,7 +144,7 @@ class UserAuthTest extends TestCase
 
     public function testAuthenticateExistingUser()
     {
-        (new SessionData())->setReadOnly(false);
+        SessionData::setReadOnly(false);
         $char = $this->helper->addCharacterMain('Test User', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $player = $char->getPlayer();
 
@@ -178,7 +178,7 @@ class UserAuthTest extends TestCase
 
     public function testAuthenticateNewOwner()
     {
-        (new SessionData())->setReadOnly(false);
+        SessionData::setReadOnly(false);
         $char1 = $this->helper->addCharacterMain('Test User1', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $player = $char1->getPlayer();
         $char2 = $this->helper->addCharacterToPlayer('Test User2', 9014, $player);

@@ -59,7 +59,7 @@ class NonBlockingSession
 
         $readOnly = $this->isReadOnly($request->getAttribute('route'));
 
-        (new SessionData())->setReadOnly($readOnly);
+        SessionData::setReadOnly($readOnly);
 
         if ($readOnly) {
             $this->close();

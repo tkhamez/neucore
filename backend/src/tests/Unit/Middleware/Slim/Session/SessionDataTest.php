@@ -65,20 +65,20 @@ class SessionDataTest extends TestCase
     public function testSetReadOnlyGetReadOnly()
     {
         $sd = new SessionData();
-        $this->assertTrue($sd->isReadOnly());
+        $this->assertTrue($sd::isReadOnly());
 
-        $sd->setReadOnly(false);
-        $this->assertFalse($sd->isReadOnly());
+        $sd::setReadOnly(false);
+        $this->assertFalse($sd::isReadOnly());
 
-        $sd->setReadOnly(true);
-        $this->assertTrue($sd->isReadOnly());
+        $sd::setReadOnly(true);
+        $this->assertTrue($sd::isReadOnly());
     }
 
     public function testSetGetDelete()
     {
         $_SESSION = []; // "start" session
         $sd = new SessionData();
-        $sd->setReadOnly(false);
+        $sd::setReadOnly(false);
 
         $this->assertSame(null, $sd->get('k'));
 
@@ -98,7 +98,7 @@ class SessionDataTest extends TestCase
     {
         $_SESSION = []; // "start" session
         $sd = new SessionData();
-        $sd->setReadOnly(false);
+        $sd::setReadOnly(false);
 
         $sd->set('k', 'v');
         $sd->set('k2', 'v2');
@@ -114,7 +114,7 @@ class SessionDataTest extends TestCase
     {
         $_SESSION = []; // "start" session
         $sd = new SessionData();
-        $sd->setReadOnly(false);
+        $sd::setReadOnly(false);
 
         $this->assertSame($_SESSION, $sd->getAll());
 

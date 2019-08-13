@@ -11,12 +11,12 @@ class SessionData
 {
     private static $readOnly = true;
 
-    public function setReadOnly(bool $readOnly)
+    public static function setReadOnly(bool $readOnly): void
     {
         self::$readOnly = $readOnly;
     }
 
-    public function isReadOnly(): bool
+    public static function isReadOnly(): bool
     {
         return self::$readOnly;
     }

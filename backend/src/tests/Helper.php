@@ -101,7 +101,7 @@ class Helper
     public function resetSessionData(): void
     {
         unset($_SESSION);
-        (new SessionData())->setReadOnly(true);
+        SessionData::setReadOnly(true);
     }
 
     public function getEm(bool $discrete = false): EntityManagerInterface

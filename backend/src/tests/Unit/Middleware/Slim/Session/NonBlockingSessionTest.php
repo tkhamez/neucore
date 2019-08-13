@@ -53,7 +53,7 @@ class NonBlockingSessionTest extends TestCase
         $this->invokeMiddleware('/sess', $conf, true);
 
         $this->assertTrue(isset($_SESSION));
-        $this->assertTrue((new SessionData())->isReadOnly());
+        $this->assertTrue(SessionData::isReadOnly());
     }
 
     public function testStartWritable()
@@ -65,7 +65,7 @@ class NonBlockingSessionTest extends TestCase
         $this->invokeMiddleware('/sess/set', $conf, true);
 
         $this->assertTrue(isset($_SESSION));
-        $this->assertFalse((new SessionData())->isReadOnly());
+        $this->assertFalse(SessionData::isReadOnly());
     }
 
     public function testStartWritableStartsWith()
@@ -77,7 +77,7 @@ class NonBlockingSessionTest extends TestCase
         $this->invokeMiddleware('/sess/set', $conf, true);
 
         $this->assertTrue(isset($_SESSION));
-        $this->assertFalse((new SessionData())->isReadOnly());
+        $this->assertFalse(SessionData::isReadOnly());
     }
 
     private function invokeMiddleware($path, $conf, $addRoute)
