@@ -68,8 +68,8 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 
-      is a [.htaccess](web/.htaccess) file in the web directory.
-    * A sample Nginx configuration can be found here [docker-nginx.conf](docker-nginx.conf)
+      is a [.htaccess](web/.htaccess) file in the `web` directory.
+    * A sample [Nginx configuration](doc/docker-nginx.conf) file can be found in the `doc` directory.
 * Java 8+ runtime (only for openapi-generator)
 
 If your're using the pre-build releases, you only need PHP, a Database and a HTTP Server (not Composer,
@@ -261,3 +261,4 @@ markdown-toc doc/API.md -i
 markdown-toc backend/README.md -i
 markdown-toc frontend/README.md -i
 ```
+

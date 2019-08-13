@@ -40,7 +40,7 @@ services:
   php-fpm:
     container_name: neucore_php-fpm
     build:
-      context: .
+      context: doc
       dockerfile: Dockerfile-php-fpm
     depends_on:
       - db
@@ -57,14 +57,14 @@ services:
       - php-fpm
     volumes:
       - .:/app
-      - ./docker-nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./doc/docker-nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 8080:80
 
   php-cli:
     container_name: neucore_php-cli
     build:
-      context: .
+      context: doc
       dockerfile: Dockerfile-php-cli
     depends_on:
       - db
