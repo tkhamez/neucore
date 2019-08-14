@@ -226,8 +226,9 @@ heroku buildpacks:add heroku/php
 
 ### Deploy on AWS Beanstalk
 
-- Create a database
-- Create environment:
+- Add an IAM user with Policy "AWSElasticBeanstalkFullAccess"
+- Create a database (RDS)
+- Create app environment:
     ```
     eb init -i
     eb create dev-env
@@ -235,10 +236,7 @@ heroku buildpacks:add heroku/php
 - Add a security group for the database that includes the new environment
 - Add a database for Neucore
 - Add environment Variables (BRAVECORE_APP_ENV, BRAVECORE_DATABASE_URL etc.)
-- Deploy again:
-    ```
-    eb deploy
-    ```
+- Deploy again: `eb deploy`
 
 ## Final notes
 
