@@ -14,20 +14,24 @@ if [[ -f backend/.env ]]; then
     cp backend/.env dist/build/backend/.env
 fi
 
-cd dist/build/backend
+cd dist/build/backend || exit
 composer install --no-dev --optimize-autoloader --no-interaction
 vendor/bin/doctrine orm:generate-proxies
 composer openapi
 
-cd ../frontend
+cd ../frontend || exit
 ./openapi.sh
+cd neucore-js-client || exit
+npm install
+npm run build
+cd ..
 npm install
 npm run build:prod
 
-cd ../web
+cd ../web || exit
 npm install
 
-cd ../..
+cd ../.. || exit
 mkdir neucore
 mv build/backend neucore/backend
 rm neucore/backend/.env
