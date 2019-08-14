@@ -23,6 +23,7 @@ of an alliance.
   * [Using Vagrant](#using-vagrant)
   * [Using Docker](#using-docker)
   * [Deploy on Heroku](#deploy-on-heroku)
+  * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
 - [Final notes](#final-notes)
   * [Origin](#origin)
   * [Related Software](#related-software)
@@ -222,6 +223,22 @@ heroku buildpacks:add heroku/java
 heroku buildpacks:add heroku/nodejs
 heroku buildpacks:add heroku/php
 ```
+
+### Deploy on AWS Beanstalk
+
+- Create a database
+- Create environment:
+    ```
+    eb init -i
+    eb create dev-env
+    ```
+- Add a security group for the database that includes the new environment
+- Add a database for Neucore
+- Add environment Variables (BRAVECORE_APP_ENV, BRAVECORE_DATABASE_URL etc.)
+- Deploy again:
+    ```
+    eb deploy
+    ```
 
 ## Final notes
 

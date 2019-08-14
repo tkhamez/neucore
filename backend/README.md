@@ -148,7 +148,7 @@ composer phan
 
 Run the built-in web server:
 ```
-composer run
+composer start
 ```
 
 ### Doctrine

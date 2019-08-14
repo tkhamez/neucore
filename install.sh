@@ -1,20 +1,30 @@
 #!/usr/bin/env bash
 
-# build backend
-cd backend
-if [[ $1 = prod ]]; then
-    composer install --no-dev --optimize-autoloader --no-interaction
-    composer compile:prod --no-dev --no-interaction
+# build backend (PHP)
+cd backend || exit
+if hash composer 2>/dev/null; then
+    COMPOSER_CMD=composer
 else
-    composer install
-    composer compile
+    # for AWS Beanstalk
+    COMPOSER_CMD=composer.phar
+fi
+if [[ $1 = prod ]]; then
+    $COMPOSER_CMD install --no-dev --optimize-autoloader --no-interaction
+    $COMPOSER_CMD compile:prod --no-dev --no-interaction
+else
+    $COMPOSER_CMD install
+    $COMPOSER_CMD compile
 fi
 
-# generate Swagger JS client
-cd ../frontend
+# generate OpenAPI JS client (Java)
+cd ../frontend || exit
 ./openapi.sh
 
-# build frontend
+# build frontend (Node.js)
+cd neucore-js-client || exit
+npm install
+npm run build
+cd .. || exit
 npm install
 if [[ $1 = prod ]]; then
     npm run build:prod
@@ -23,5 +33,5 @@ else
 fi
 
 # install Swagger UI
-cd ../web
+cd ../web || exit
 npm install

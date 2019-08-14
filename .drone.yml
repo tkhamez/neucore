@@ -35,12 +35,9 @@ steps:
     image: node:10
     commands:
       - node -v && npm -v
-
-      # preinstall does not work: "@~preinstall: cannot run in wd ...", so:
       - cd frontend/neucore-js-client
       - npm install
       - npm run build
-
       - cd ..
       - npm install
       - npm run build:prod
