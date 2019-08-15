@@ -2,6 +2,9 @@
 
 namespace Neucore\Command;
 
+use Neucore\Entity\Alliance;
+use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\CharacterRepository;
@@ -53,6 +56,11 @@ class UpdateCharacters extends Command
      */
     private $sleep;
 
+    /**
+     * @var int
+     */
+    private $dbResultLimit = 1000;
+
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
@@ -101,62 +109,66 @@ class UpdateCharacters extends Command
         $this->writeln('Finished "update-chars"', false);
     }
 
-    private function updateChars($charId = 0)
+    private function updateChars($characterId = 0)
     {
-        if ($charId !== 0) {
-            $charIds = [$charId];
-        } else {
-            $charIds = [];
-            $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
-            foreach ($chars as $char) {
-                $charIds[] = $char->getId();
-            }
-        }
-
-        foreach ($charIds as $charId) {
-            $this->objectManager->clear(); // detaches all objects from Doctrine
-
-            // update name, corp and alliance from ESI
-            $updatedChar = $this->esiData->fetchCharacter($charId);
-            if ($updatedChar === null) {
-                $this->writeln('  Character ' . $charId.': ' . self::UPDATE_NOK);
+        $offset = $this->dbResultLimit * -1;
+        do {
+            if ($characterId !== 0) {
+                $charIds = [$characterId];
             } else {
-                $this->writeln('  Character ' . $charId.': ' . self::UPDATE_OK);
+                $offset += $this->dbResultLimit;
+                $charIds = array_map(function(Character $char) {
+                    return $char->getId();
+                }, $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
             }
 
-            usleep($this->sleep * 1000);
-        }
+            foreach ($charIds as $charId) {
+                $this->objectManager->clear(); // detaches all objects from Doctrine
+
+                // update name, corp and alliance from ESI
+                $updatedChar = $this->esiData->fetchCharacter($charId);
+                if ($updatedChar === null) {
+                    $this->writeln('  Character ' . $charId.': ' . self::UPDATE_NOK);
+                } else {
+                    $this->writeln('  Character ' . $charId.': ' . self::UPDATE_OK);
+                }
+
+                usleep($this->sleep * 1000);
+            }
+
+        } while (count($charIds) === $this->dbResultLimit);
     }
 
     private function updateCorps()
     {
-        $corpIds = [];
-        $corps = $this->corpRepo->findBy([], ['lastUpdate' => 'ASC']);
-        foreach ($corps as $corp) {
-            $corpIds[] = $corp->getId();
-        }
+        $offset = $this->dbResultLimit * -1;
+        do {
+            $offset += $this->dbResultLimit;
+            $corpIds = array_map(function(Corporation $corp) {
+                return $corp->getId();
+            }, $this->corpRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
 
-        foreach ($corpIds as $corpId) {
-            $this->objectManager->clear();
+            foreach ($corpIds as $corpId) {
+                $this->objectManager->clear();
 
-            $updatedCorp = $this->esiData->fetchCorporation($corpId);
-            if ($updatedCorp === null) {
-                $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_NOK);
-            } else {
-                $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_OK);
+                $updatedCorp = $this->esiData->fetchCorporation($corpId);
+                if ($updatedCorp === null) {
+                    $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_NOK);
+                } else {
+                    $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_OK);
+                }
+
+                usleep($this->sleep * 1000);
             }
 
-            usleep($this->sleep * 1000);
-        }
+        } while (count($corpIds) === $this->dbResultLimit);
     }
 
     private function updateAlliances()
     {
-        $alliIds = [];
-        $allis = $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']);
-        foreach ($allis as $alli) {
-            $alliIds[] = $alli->getId();
-        }
+        $alliIds = array_map(function(Alliance $alli) {
+            return $alli->getId();
+        }, $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']));
 
         foreach ($alliIds as $alliId) {
             $this->objectManager->clear();

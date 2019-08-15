@@ -58,23 +58,33 @@ class UpdatePlayerGroups extends Command
 
         $this->writeln('Started "update-player-groups"', false);
 
-        $playerIds = [];
-        $players = $this->playerRepo->findBy(['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC']);
-        foreach ($players as $player) {
-            $playerIds[] = $player->getId();
-        }
-        $this->objectManager->clear(); // detaches all objects from Doctrine
+        $dbResultLimit = 1000;
+        $offset = $dbResultLimit * -1;
+        do {
+            $offset += $dbResultLimit;
+            $playerIds = array_map(function(Player $player) {
+                return $player->getId();
+            }, $this->playerRepo->findBy(
+                ['status' => Player::STATUS_STANDARD],
+                ['lastUpdate' => 'ASC'],
+                $dbResultLimit,
+                $offset
+            ));
 
-        foreach ($playerIds as $playerId) {
-            $success1 = $this->autoGroup->assign($playerId);
-            $success2 = $this->autoGroup->checkRequiredGroups($playerId);
-            $this->objectManager->clear();
-            if (! $success1 || ! $success2) {
-                $this->writeln('  Error updating ' . $playerId);
-            } else {
-                $this->writeln('  Account ' . $playerId . ' groups updated');
+            $this->objectManager->clear(); // detaches all objects from Doctrine
+
+            foreach ($playerIds as $playerId) {
+                $success1 = $this->autoGroup->assign($playerId);
+                $success2 = $this->autoGroup->checkRequiredGroups($playerId);
+                $this->objectManager->clear();
+                if (! $success1 || ! $success2) {
+                    $this->writeln('  Error updating ' . $playerId);
+                } else {
+                    $this->writeln('  Account ' . $playerId . ' groups updated');
+                }
             }
-        }
+
+        } while (count($playerIds) === $dbResultLimit);
 
         $this->writeln('Finished "update-player-groups"', false);
     }

@@ -2,6 +2,7 @@
 
 namespace Neucore\Command;
 
+use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\Account;
@@ -88,44 +89,48 @@ class CheckTokens extends Command
         $this->writeln('Finished "check-tokens"', false);
     }
 
-    private function check($charId = 0)
+    private function check($characterId = 0)
     {
-        if ($charId !== 0) {
-            $charIds = [$charId];
-        } else {
-            $charIds = [];
-            $chars = $this->charRepo->findBy([], ['lastUpdate' => 'ASC']);
-            foreach ($chars as $char) {
-                $charIds[] = $char->getId();
-            }
-        }
-
-        foreach ($charIds as $charId) {
-            $this->objectManager->clear(); // detaches all objects from Doctrine
-
-            $char = $this->charRepo->find($charId);
-            if ($char === null) {
-                $this->writeln('Character ' . $charId.': not found.');
+        $dbResultLimit = 1000;
+        $offset = $dbResultLimit * -1;
+        do {
+            $offset += $dbResultLimit;
+            if ($characterId !== 0) {
+                $charIds = [$characterId];
             } else {
-
-                // check token, corporation Doomheim and character owner hash - this may delete the character!
-                $result = $this->charService->checkCharacter($char, $this->tokenService);
-                if ($result === Account::CHECK_TOKEN_NA) {
-                    $this->writeln('  Character ' . $charId.': token N/A');
-                } elseif ($result === Account::CHECK_TOKEN_OK) {
-                    $this->writeln('  Character ' . $charId.': token OK');
-                } elseif ($result === Account::CHECK_TOKEN_NOK) {
-                    $this->writeln('  Character ' . $charId.': token NOK');
-                } elseif ($result === Account::CHECK_CHAR_DELETED) {
-                    $this->writeln('  Character ' . $charId.': character deleted');
-                } elseif ($result === Account::CHECK_TOKEN_PARSE_ERROR) {
-                    $this->writeln('  Character ' . $charId.': token parse error');
-                } else {
-                    $this->writeln('  Character ' . $charId.': unknown result');
-                }
+                $charIds = array_map(function(Character $char) {
+                    return $char->getId();
+                }, $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $dbResultLimit, $offset));
             }
 
-            usleep($this->sleep * 1000);
-        }
+            foreach ($charIds as $charId) {
+                $this->objectManager->clear(); // detaches all objects from Doctrine
+
+                $char = $this->charRepo->find($charId);
+                if ($char === null) {
+                    $this->writeln('Character ' . $charId.': not found.');
+                } else {
+
+                    // check token, corporation Doomheim and character owner hash - this may delete the character!
+                    $result = $this->charService->checkCharacter($char, $this->tokenService);
+                    if ($result === Account::CHECK_TOKEN_NA) {
+                        $this->writeln('  Character ' . $charId.': token N/A');
+                    } elseif ($result === Account::CHECK_TOKEN_OK) {
+                        $this->writeln('  Character ' . $charId.': token OK');
+                    } elseif ($result === Account::CHECK_TOKEN_NOK) {
+                        $this->writeln('  Character ' . $charId.': token NOK');
+                    } elseif ($result === Account::CHECK_CHAR_DELETED) {
+                        $this->writeln('  Character ' . $charId.': character deleted');
+                    } elseif ($result === Account::CHECK_TOKEN_PARSE_ERROR) {
+                        $this->writeln('  Character ' . $charId.': token parse error');
+                    } else {
+                        $this->writeln('  Character ' . $charId.': unknown result');
+                    }
+                }
+
+                usleep($this->sleep * 1000);
+            }
+
+        } while (count($charIds) === $dbResultLimit);
     }
 }
