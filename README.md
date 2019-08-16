@@ -231,12 +231,15 @@ heroku buildpacks:add heroku/php
 - Create app environment:
     ```
     eb init -i
-    eb create dev-env
+    eb create neucore-dev
     ```
 - Add a security group for the database that includes the new environment
 - Add a database for Neucore
 - Add environment Variables (BRAVECORE_APP_ENV, BRAVECORE_DATABASE_URL etc.)
 - Deploy again: `eb deploy`
+
+See also [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) 
+for an example of how to deploy the pre-build releases.
 
 ## Final notes
 

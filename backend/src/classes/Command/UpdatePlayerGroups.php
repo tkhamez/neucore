@@ -10,6 +10,7 @@ use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdatePlayerGroups extends Command
@@ -48,13 +49,21 @@ class UpdatePlayerGroups extends Command
     protected function configure()
     {
         $this->setName('update-player-groups')
-            ->setDescription('Assigns groups to players based on corporation configuration.');
+            ->setDescription('Assigns groups to players based on corporation configuration.')
+            ->addOption(
+                'sleep',
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Time to sleep in milliseconds after each update',
+                50
+            );
         $this->configureOutputTrait($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->executeOutputTrait($input, $output);
+        $sleep = intval($input->getOption('sleep'));
 
         $this->writeln('Started "update-player-groups"', false);
 
@@ -82,6 +91,8 @@ class UpdatePlayerGroups extends Command
                 } else {
                     $this->writeln('  Account ' . $playerId . ' groups updated');
                 }
+
+                usleep($sleep * 1000);
             }
 
         } while (count($playerIds) === $dbResultLimit);

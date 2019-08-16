@@ -39,7 +39,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $em->flush();
 
         // run
-        $output = $this->runConsoleApp('update-player-groups', [], [
+        $output = $this->runConsoleApp('update-player-groups', ['--sleep' => 0], [
             LoggerInterface::class => new Logger('test')
         ]);
 

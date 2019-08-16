@@ -1,5 +1,5 @@
 {
-    "name": "tkhamez/neucore-heroku",
+    "name": "tkhamez/neucore-deploy",
     "type": "project",
     "license": "MIT",
     "description": "For Heroku and AWS Beanstalk to setup the PHP environment and install the backend and frontend.",
