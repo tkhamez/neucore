@@ -98,7 +98,7 @@ class CheckTokens extends Command
             if ($characterId !== 0) {
                 $charIds = [$characterId];
             } else {
-                $charIds = array_map(function(Character $char) {
+                $charIds = array_map(function (Character $char) {
                     return $char->getId();
                 }, $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $dbResultLimit, $offset));
             }
@@ -130,7 +130,6 @@ class CheckTokens extends Command
 
                 usleep($this->sleep * 1000);
             }
-
         } while (count($charIds) === $dbResultLimit);
     }
 }

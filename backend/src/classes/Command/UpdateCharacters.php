@@ -117,7 +117,7 @@ class UpdateCharacters extends Command
                 $charIds = [$characterId];
             } else {
                 $offset += $this->dbResultLimit;
-                $charIds = array_map(function(Character $char) {
+                $charIds = array_map(function (Character $char) {
                     return $char->getId();
                 }, $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
             }
@@ -135,7 +135,6 @@ class UpdateCharacters extends Command
 
                 usleep($this->sleep * 1000);
             }
-
         } while (count($charIds) === $this->dbResultLimit);
     }
 
@@ -144,7 +143,7 @@ class UpdateCharacters extends Command
         $offset = $this->dbResultLimit * -1;
         do {
             $offset += $this->dbResultLimit;
-            $corpIds = array_map(function(Corporation $corp) {
+            $corpIds = array_map(function (Corporation $corp) {
                 return $corp->getId();
             }, $this->corpRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
 
@@ -160,13 +159,12 @@ class UpdateCharacters extends Command
 
                 usleep($this->sleep * 1000);
             }
-
         } while (count($corpIds) === $this->dbResultLimit);
     }
 
     private function updateAlliances()
     {
-        $alliIds = array_map(function(Alliance $alli) {
+        $alliIds = array_map(function (Alliance $alli) {
             return $alli->getId();
         }, $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']));
 

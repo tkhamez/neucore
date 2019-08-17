@@ -5,9 +5,4 @@ use Neucore\Application;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-// Run the console application.
-try {
-    (new Application())->getConsoleApp()->run();
-} catch (Throwable $e) {
-    error_log((string) $e);
-}
+(new Application())->runConsoleApp();

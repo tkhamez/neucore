@@ -9,12 +9,13 @@ dd mmm yyyy
   format is still available, but will not be updated anymore. [#9][i9]
 - Memory consumption of cron jobs significantly reduced
 - Frontend fix: Filter for member tracking by token status change date does not work. [#25][i25]
-- Some preparations for the Slim 4 Update
+- Some preparations for the Slim 4 Update [#24][i24]
 - Other small stuff
 
 [i9]: https://github.com/tkhamez/neucore/issues/9
 [i25]: https://github.com/tkhamez/neucore/issues/25
 [i15]: https://github.com/tkhamez/neucore/issues/15
+[i24]: https://github.com/tkhamez/neucore/issues/24
 
 # 1.3.0
 

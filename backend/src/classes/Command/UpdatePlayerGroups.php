@@ -71,7 +71,7 @@ class UpdatePlayerGroups extends Command
         $offset = $dbResultLimit * -1;
         do {
             $offset += $dbResultLimit;
-            $playerIds = array_map(function(Player $player) {
+            $playerIds = array_map(function (Player $player) {
                 return $player->getId();
             }, $this->playerRepo->findBy(
                 ['status' => Player::STATUS_STANDARD],
@@ -94,7 +94,6 @@ class UpdatePlayerGroups extends Command
 
                 usleep($sleep * 1000);
             }
-
         } while (count($playerIds) === $dbResultLimit);
 
         $this->writeln('Finished "update-player-groups"', false);

@@ -52,6 +52,7 @@ use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
 use Neucore\Slim\Handlers\Error;
 use Neucore\Slim\Handlers\PhpError;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -78,6 +79,16 @@ class Application
      * @var string
      */
     const ENV_DEV = 'dev';
+
+    /**
+     * @var string
+     */
+    const RUN_WEB = 'web';
+
+    /**
+     * @var string
+     */
+    const RUN_CONSOLE = 'console';
 
     /**
      * Path to application root directory.
@@ -110,6 +121,11 @@ class Application
      * @var string
      */
     private $env;
+
+    /**
+     * @var string|null self::RUN_WEB or self::RUN_CONSOLE
+     */
+    private $runEnv;
 
     /**
      * @var Container
@@ -150,7 +166,7 @@ class Application
             try {
                 (new Dotenv())->load(Application::ROOT_DIR . '/.env');
             } catch (FormatException $e) {
-                error_log((string) $e);
+                $this->logException($e);
             }
         }
 
@@ -197,6 +213,16 @@ class Application
         return $this->config;
     }
 
+    public function runWebApp()
+    {
+        $this->runEnv = self::RUN_WEB;
+        try {
+            $this->getApp()->run();
+        } catch (\Throwable $e) {
+            $this->logException($e);
+        }
+    }
+
     /**
      * Creates the Slim app
      *
@@ -217,6 +243,19 @@ class Application
         $this->registerRoutes($app);
 
         return $app;
+    }
+
+    public function runConsoleApp()
+    {
+        $this->runEnv = self::RUN_CONSOLE;
+        try {
+            $app = $this->getConsoleApp();
+            $app->setCatchExceptions(false);
+            $app->setAutoExit(false);
+            $app->run();
+        } catch (\Throwable $e) {
+            $this->logException($e);
+        }
     }
 
     /**
@@ -424,16 +463,10 @@ class Application
 
                 $stack = HandlerStack::create();
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
-                $stack->push(
-                    new CacheMiddleware(
-                        new PrivateCacheStrategy(
-                            new DoctrineCacheStorage(
-                                new FilesystemCache($c->get(Config::class)['guzzle']['cache']['dir'])
-                            )
-                        )
-                    ),
-                    'cache'
-                );
+                $cache = new CacheMiddleware(new PrivateCacheStrategy(new DoctrineCacheStorage(
+                    new FilesystemCache($c->get(Config::class)['guzzle']['cache']['dir'])
+                )));
+                $stack->push($cache, 'cache');
                 $stack->push($c->get(EsiHeaders::class));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
@@ -544,5 +577,27 @@ class Application
         $console->add($this->container->get(ClearCache::class));
         $console->add($this->container->get(CleanHttpCache::class));
         $console->add($this->container->get(RevokeToken::class));
+    }
+
+    private function logException(\Throwable $e)
+    {
+        $log = null;
+        if ($this->container instanceof ContainerInterface) {
+            try {
+                $log = $this->container->get(LoggerInterface::class);
+            } catch (ContainerExceptionInterface $e) {
+                // do nothing
+            }
+        }
+        if ($log) {
+            $log->error($e->getMessage(), ['exception' => $e]);
+        } else {
+            error_log((string) $e);
+        }
+
+        if ($this->runEnv === self::RUN_CONSOLE) {
+            echo 'Error: ', $e->getMessage(), PHP_EOL;
+            exit(1);
+        }
     }
 }

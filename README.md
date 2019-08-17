@@ -125,10 +125,10 @@ If you have cloned the repository, you must install the dependencies and build t
 
 #### Cron Job
 
-Set up necessary cron jobs, e. g. 3 times daily (adjust user and paths):
+Set up necessary cron jobs, e. g. 3 times daily using a lock file (adjust user and paths):
 
 ```
-0 4,12,20 * * * neucore /var/app/backend/bin/run-jobs.sh
+0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-run-jobs.lock /var/www/neucore/backend/bin/run-jobs.sh
 ```
 
 The output is logged to backend/var/logs.
