@@ -104,6 +104,10 @@ class CheckTokens extends Command
             }
 
             foreach ($charIds as $charId) {
+                if (! $this->objectManager->isOpen()) {
+                    $this->logger->critical('CheckTokens: cannot continue without an open entity manager.');
+                    break;
+                }
                 $this->objectManager->clear(); // detaches all objects from Doctrine
 
                 $char = $this->charRepo->find($charId);

@@ -74,15 +74,16 @@ class UpdatePlayerGroups extends Command
             $playerIds = array_map(function (Player $player) {
                 return $player->getId();
             }, $this->playerRepo->findBy(
-                ['status' => Player::STATUS_STANDARD],
-                ['lastUpdate' => 'ASC'],
-                $dbResultLimit,
-                $offset
+                ['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC'], $dbResultLimit, $offset
             ));
 
             $this->objectManager->clear(); // detaches all objects from Doctrine
 
             foreach ($playerIds as $playerId) {
+                if (! $this->objectManager->isOpen()) {
+                    $this->logger->critical('UpdatePlayerGroups: cannot continue without an open entity manager.');
+                    break;
+                }
                 $success1 = $this->autoGroup->assign($playerId);
                 $success2 = $this->autoGroup->checkRequiredGroups($playerId);
                 $this->objectManager->clear();

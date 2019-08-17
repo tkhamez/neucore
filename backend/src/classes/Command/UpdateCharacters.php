@@ -123,6 +123,10 @@ class UpdateCharacters extends Command
             }
 
             foreach ($charIds as $charId) {
+                if (! $this->objectManager->isOpen()) {
+                    $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
+                    break;
+                }
                 $this->objectManager->clear(); // detaches all objects from Doctrine
 
                 // update name, corp and alliance from ESI
@@ -148,6 +152,10 @@ class UpdateCharacters extends Command
             }, $this->corpRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
 
             foreach ($corpIds as $corpId) {
+                if (! $this->objectManager->isOpen()) {
+                    $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
+                    break;
+                }
                 $this->objectManager->clear();
 
                 $updatedCorp = $this->esiData->fetchCorporation($corpId);
@@ -169,6 +177,10 @@ class UpdateCharacters extends Command
         }, $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']));
 
         foreach ($alliIds as $alliId) {
+            if (! $this->objectManager->isOpen()) {
+                $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
+                break;
+            }
             $this->objectManager->clear();
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);

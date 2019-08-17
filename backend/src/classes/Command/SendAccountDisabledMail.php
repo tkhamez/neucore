@@ -85,33 +85,43 @@ class SendAccountDisabledMail extends Command
             return;
         }
 
-        $playerIds = [];
-        $players = $this->playerRepository->findBy(['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC']);
-        foreach ($players as $player) {
-            $playerIds[] = $player->getId();
-        }
-        $this->objectManager->clear(); // detaches all objects from Doctrine
+        $dbResultLimit = 1000;
+        $offset = $dbResultLimit * -1;
+        do {
+            $offset += $dbResultLimit;
+            $playerIds = array_map(function (Player $player) {
+                return $player->getId();
+            }, $this->playerRepository->findBy(
+                ['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC'], $dbResultLimit, $offset
+            ));
+            $this->objectManager->clear(); // detaches all objects from Doctrine
 
-        foreach ($playerIds as $playerId) {
-            $characterId = $this->eveMail->accountDeactivatedFindCharacter($playerId);
-            if ($characterId === null) {
-                $this->eveMail->accountDeactivatedMailSent($playerId, false);
-                continue;
-            }
+            foreach ($playerIds as $playerId) {
+                if (! $this->objectManager->isOpen()) {
+                    $this->logger->critical('SendAccountDisabledMail: cannot continue without an open entity manager.');
+                    break;
+                }
 
-            $mayNotSendReason = $this->eveMail->accountDeactivatedMaySend($characterId);
-            if ($mayNotSendReason !== '') {
-                continue;
-            }
+                $characterId = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+                if ($characterId === null) {
+                    $this->eveMail->accountDeactivatedMailSent($playerId, false);
+                    continue;
+                }
 
-            $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
-            if ($errMessage === '') { // success
-                $this->eveMail->accountDeactivatedMailSent($playerId, true);
-                $this->writeln('  Mail sent to ' . $characterId);
-                usleep($this->sleep * 1000 * 1000);
-            } else {
-                $this->writeln(' ' . $errMessage, false);
+                $mayNotSendReason = $this->eveMail->accountDeactivatedMaySend($characterId);
+                if ($mayNotSendReason !== '') {
+                    continue;
+                }
+
+                $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
+                if ($errMessage === '') { // success
+                    $this->eveMail->accountDeactivatedMailSent($playerId, true);
+                    $this->writeln('  Mail sent to ' . $characterId);
+                    usleep($this->sleep * 1000 * 1000);
+                } else {
+                    $this->writeln(' ' . $errMessage, false);
+                }
             }
-        }
+        } while (count($playerIds) === $dbResultLimit);
     }
 }
