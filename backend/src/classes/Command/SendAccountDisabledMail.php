@@ -92,7 +92,10 @@ class SendAccountDisabledMail extends Command
             $playerIds = array_map(function (Player $player) {
                 return $player->getId();
             }, $this->playerRepository->findBy(
-                ['status' => Player::STATUS_STANDARD], ['lastUpdate' => 'ASC'], $dbResultLimit, $offset
+                ['status' => Player::STATUS_STANDARD],
+                ['lastUpdate' => 'ASC'],
+                $dbResultLimit,
+                $offset
             ));
             $this->objectManager->clear(); // detaches all objects from Doctrine
 
