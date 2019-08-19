@@ -10,7 +10,7 @@
   * [Account status](#account-status)
 - [Groups](#groups)
   * [Automatic Group Assignment](#automatic-group-assignment)
-  * [Group Deactivation](#group-deactivation)
+  * [Group Deactivation with Mail Notification](#group-deactivation-with-mail-notification)
   * [Required Groups](#required-groups)
 - [Console Application](#console-application)
 - [Data Structure (Backend)](#data-structure-backend)
@@ -75,12 +75,12 @@ yet been added to the main account.
 
 ### Removing Characters
 
-If an EVE character is deleted or transferred to another EVE account, it will be removed from its current 
-player account.
+When it was detected that an EVE character is deleted or was transferred to another EVE account, 
+it will be removed from its current player account.
 
-A player can also manually delete a character if that is enabled in the system setting.
+An admin can also manually delete a character, a player can do this if that is enabled in the system setting.
 
-All character removals are recorded and are visible to user admins (unless they have been deleted by an admin).
+All character removals are recorded and are visible to user admins.
 
 ### Account status
 
@@ -112,20 +112,19 @@ automatically. This also means that all players who are currently members of thi
 remain so. To correct this, this group can simply be deleted, or it must be assigned a manager 
 who can then manually remove all members.
 
-### Group Deactivation
+### Group Deactivation with Mail Notification
 
-If the ESI token of one or more characters on an account is invalid, the account is disabled. 
-A character without a token (no ESI scopes requested during login) counts as invalid.
+If the ESI token of one or more characters on an account is invalid, the account is disabled. A character 
+without a token (no ESI scopes were requested during login) counts as invalid.
 
-This means that the API for apps no longer returns groups for that account (if this feature is enabled). 
+Deactivation means that the API for apps no longer returns groups for that account (if this feature is enabled). 
 The deactivation of the account can be delayed, e. g. by 24 hours after a token became invalid.
 
-As soon as the token is updated by logging in with this character, the account will be reactivated.
+As soon as the token was updated by logging in with the appropriate character, the account will be reactivated.
 
-A mail notification can be sent for deactivated accounts. This mail will only be sent once and 
-only if one of the characters in the account is a member of an alliance that was 
-previously configured. It will be sent to the main character, if any, or to any of the characters 
-that have an invalid token.
+A mail notification can be sent for deactivated accounts. This mail will only be sent once and only if one 
+of the characters in the account is a member of an alliance that was previously configured. It will be sent 
+to the main character, if any, or to one of the characters that have an invalid token.
 
 ### Required Groups
 

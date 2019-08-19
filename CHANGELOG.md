@@ -8,6 +8,7 @@ dd mmm yyyy
   for the "App" API in OpenAPI version 3.0 format. The file `/application-api.json` in Swagger version 2.0 
   format is still available, but will not be updated anymore. [#9][i9]
 - Memory consumption of cron jobs significantly reduced
+- Added ESI error limit checking to the "update" commands and delayed execution if it is too low.
 - Frontend fix: Filter for member tracking by token status change date does not work. [#25][i25]
 - Some preparations for the Slim 4 Update [#24][i24]
 - Other small stuff
