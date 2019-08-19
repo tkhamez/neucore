@@ -2,6 +2,8 @@
 
 namespace Neucore\Command;
 
+use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
@@ -15,7 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendAccountDisabledMail extends Command
 {
-    use OutputTrait;
+    use LogOutput;
+    use EsiRateLimited;
 
     /**
      * @var EveMail
@@ -44,11 +47,12 @@ class SendAccountDisabledMail extends Command
         LoggerInterface $logger
     ) {
         parent::__construct();
+        $this->logOutput($logger);
+        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
 
         $this->eveMail = $eveMail;
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -62,26 +66,26 @@ class SendAccountDisabledMail extends Command
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
                 20
             );
-        $this->configureOutputTrait($this);
+        $this->configureLogOutput($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->sleep = intval($input->getOption('sleep'));
-        $this->executeOutputTrait($input, $output);
+        $this->executeLogOutput($input, $output);
 
-        $this->writeln('Started "send-account-disabled-mail"', false);
+        $this->writeLine('Started "send-account-disabled-mail"', false);
 
         $this->send();
 
-        $this->writeln('Finished "send-account-disabled-mail"', false);
+        $this->writeLine('Finished "send-account-disabled-mail"', false);
     }
 
     private function send()
     {
         $notActiveReason = $this->eveMail->accountDeactivatedIsActive();
         if ($notActiveReason !== '') {
-            $this->writeln(' ' . $notActiveReason, false);
+            $this->writeLine(' ' . $notActiveReason, false);
             return;
         }
 
@@ -104,6 +108,7 @@ class SendAccountDisabledMail extends Command
                     $this->logger->critical('SendAccountDisabledMail: cannot continue without an open entity manager.');
                     break;
                 }
+                $this->checkErrorLimit();
 
                 $characterId = $this->eveMail->accountDeactivatedFindCharacter($playerId);
                 if ($characterId === null) {
@@ -119,10 +124,10 @@ class SendAccountDisabledMail extends Command
                 $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
                 if ($errMessage === '') { // success
                     $this->eveMail->accountDeactivatedMailSent($playerId, true);
-                    $this->writeln('  Mail sent to ' . $characterId);
+                    $this->writeLine('  Mail sent to ' . $characterId);
                     usleep($this->sleep * 1000 * 1000);
                 } else {
-                    $this->writeln(' ' . $errMessage, false);
+                    $this->writeLine(' ' . $errMessage, false);
                 }
             }
         } while (count($playerIds) === $dbResultLimit);

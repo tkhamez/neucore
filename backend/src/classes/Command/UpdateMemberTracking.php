@@ -2,6 +2,8 @@
 
 namespace Neucore\Command;
 
+use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
@@ -13,7 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateMemberTracking extends Command
 {
-    use OutputTrait;
+    use LogOutput;
+    use EsiRateLimited;
 
     /**
      * @var RepositoryFactory
@@ -37,11 +40,12 @@ class UpdateMemberTracking extends Command
         LoggerInterface $logger
     ) {
         parent::__construct();
+        $this->logOutput($logger);
+        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
         $this->esiData = $esiData;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -57,39 +61,41 @@ class UpdateMemberTracking extends Command
                 'Time to sleep in milliseconds after each update',
                 50
             );
-        $this->configureOutputTrait($this);
+        $this->configureLogOutput($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $sleep = intval($input->getOption('sleep'));
-        $this->executeOutputTrait($input, $output);
+        $this->executeLogOutput($input, $output);
 
-        $this->writeln('Started "update-member-tracking"', false);
+        $this->writeLine('Started "update-member-tracking"', false);
 
         $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
         foreach ($systemVariableRepository->getDirectors() as $characterVariable) {
+            $this->checkErrorLimit();
+
             $character = \json_decode($characterVariable->getValue());
             if ($character === null) {
-                $this->writeln('  Error obtaining character data from ' . $characterVariable->getName(), false);
+                $this->writeLine('  Error obtaining character data from ' . $characterVariable->getName(), false);
                 continue;
             }
 
             $corporation = $this->repositoryFactory->getCorporationRepository()->find($character->corporation_id);
             if ($corporation === null) {
-                $this->writeln('  Corporation not found for ' . $characterVariable->getName(), false);
+                $this->writeLine('  Corporation not found for ' . $characterVariable->getName(), false);
                 continue;
             }
 
             $token = $this->memberTracking->refreshDirectorToken($characterVariable->getName());
             if ($token === null) {
-                $this->writeln('  Error refreshing token for ' . $characterVariable->getName(), false);
+                $this->writeLine('  Error refreshing token for ' . $characterVariable->getName(), false);
                 continue;
             }
 
             $trackingData = $this->memberTracking->fetchData($token->getToken(), (int) $corporation->getId());
             if (! is_array($trackingData)) {
-                $this->writeln(
+                $this->writeLine(
                     '  Error getting member tracking data from ESI for ' . $characterVariable->getName(),
                     false
                 );
@@ -97,7 +103,7 @@ class UpdateMemberTracking extends Command
             }
             $this->memberTracking->processData($corporation, $trackingData);
 
-            $this->writeln(
+            $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .
                 ' members of corporation ' . $corporation->getId()
             );
@@ -105,6 +111,6 @@ class UpdateMemberTracking extends Command
             usleep($sleep * 1000);
         }
 
-        $this->writeln('Finished "update-member-tracking"', false);
+        $this->writeLine('Finished "update-member-tracking"', false);
     }
 }

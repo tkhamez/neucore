@@ -3,6 +3,7 @@
 namespace Neucore\Command;
 
 use Kevinrob\GuzzleCache\CacheEntry;
+use Neucore\Command\Traits\LogOutput;
 use Neucore\Service\Config;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CleanHttpCache extends Command
 {
-    use OutputTrait;
+    use LogOutput;
 
     /**
      * @var Config
@@ -25,15 +26,16 @@ class CleanHttpCache extends Command
     public function __construct(Config $config, LoggerInterface $logger)
     {
         parent::__construct();
+        $this->logOutput($logger);
+
         $this->config = $config;
-        $this->logger = $logger;
     }
 
     protected function configure()
     {
         $this->setName('clean-http-cache')
             ->setDescription('Deletes expired entries from the Guzzle cache.');
-        $this->configureOutputTrait($this);
+        $this->configureLogOutput($this);
     }
 
     /**
@@ -44,7 +46,7 @@ class CleanHttpCache extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->executeOutputTrait($input, $output);
+        $this->executeLogOutput($input, $output);
 
         /* @var $files \SplFileInfo[] */
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(
@@ -84,6 +86,6 @@ class CleanHttpCache extends Command
             }
         }
 
-        $this->writeln('Guzzle cache cleaned.', false);
+        $this->writeLine('Guzzle cache cleaned.', false);
     }
 }

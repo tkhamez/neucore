@@ -2,6 +2,8 @@
 
 namespace Neucore\Command;
 
+use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
@@ -17,7 +19,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckTokens extends Command
 {
-    use OutputTrait;
+    use LogOutput;
+    use EsiRateLimited;
 
     /**
      * @var CharacterRepository
@@ -52,12 +55,13 @@ class CheckTokens extends Command
         LoggerInterface $logger
     ) {
         parent::__construct();
+        $this->logOutput($logger);
+        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->charService = $charService;
         $this->tokenService = $tokenService;
         $this->objectManager = $objectManager;
-        $this->logger = $logger; // property is on the trait
     }
 
     protected function configure()
@@ -75,18 +79,18 @@ class CheckTokens extends Command
                 'Time to sleep in milliseconds after each check',
                 50
             );
-        $this->configureOutputTrait($this);
+        $this->configureLogOutput($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $charId = intval($input->getArgument('character'));
         $this->sleep = intval($input->getOption('sleep'));
-        $this->executeOutputTrait($input, $output);
+        $this->executeLogOutput($input, $output);
 
-        $this->writeln('Started "check-tokens"', false);
+        $this->writeLine('Started "check-tokens"', false);
         $this->check($charId);
-        $this->writeln('Finished "check-tokens"', false);
+        $this->writeLine('Finished "check-tokens"', false);
     }
 
     private function check($characterId = 0)
@@ -109,26 +113,27 @@ class CheckTokens extends Command
                     break;
                 }
                 $this->objectManager->clear(); // detaches all objects from Doctrine
+                $this->checkErrorLimit();
 
                 $char = $this->charRepo->find($charId);
                 if ($char === null) {
-                    $this->writeln('Character ' . $charId.': not found.');
+                    $this->writeLine('Character ' . $charId.': not found.');
                 } else {
 
                     // check token, corporation Doomheim and character owner hash - this may delete the character!
                     $result = $this->charService->checkCharacter($char, $this->tokenService);
                     if ($result === Account::CHECK_TOKEN_NA) {
-                        $this->writeln('  Character ' . $charId.': token N/A');
+                        $this->writeLine('  Character ' . $charId.': token N/A');
                     } elseif ($result === Account::CHECK_TOKEN_OK) {
-                        $this->writeln('  Character ' . $charId.': token OK');
+                        $this->writeLine('  Character ' . $charId.': token OK');
                     } elseif ($result === Account::CHECK_TOKEN_NOK) {
-                        $this->writeln('  Character ' . $charId.': token NOK');
+                        $this->writeLine('  Character ' . $charId.': token NOK');
                     } elseif ($result === Account::CHECK_CHAR_DELETED) {
-                        $this->writeln('  Character ' . $charId.': character deleted');
+                        $this->writeLine('  Character ' . $charId.': character deleted');
                     } elseif ($result === Account::CHECK_TOKEN_PARSE_ERROR) {
-                        $this->writeln('  Character ' . $charId.': token parse error');
+                        $this->writeLine('  Character ' . $charId.': token parse error');
                     } else {
-                        $this->writeln('  Character ' . $charId.': unknown result');
+                        $this->writeLine('  Character ' . $charId.': unknown result');
                     }
                 }
 

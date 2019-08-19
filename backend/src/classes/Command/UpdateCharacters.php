@@ -2,6 +2,8 @@
 
 namespace Neucore\Command;
 
+use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
@@ -20,7 +22,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCharacters extends Command
 {
-    use OutputTrait;
+    use LogOutput;
+    use EsiRateLimited;
 
     const UPDATE_OK = 'update OK';
 
@@ -68,13 +71,14 @@ class UpdateCharacters extends Command
         LoggerInterface $logger
     ) {
         parent::__construct();
+        $this->logOutput($logger);
+        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
         $this->esiData = $esiData;
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -89,16 +93,16 @@ class UpdateCharacters extends Command
                 'Time to sleep in milliseconds after each update',
                 50
             );
-        $this->configureOutputTrait($this);
+        $this->configureLogOutput($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $charId = intval($input->getArgument('character'));
         $this->sleep = intval($input->getOption('sleep'));
-        $this->executeOutputTrait($input, $output);
+        $this->executeLogOutput($input, $output);
 
-        $this->writeln('Started "update-chars"', false);
+        $this->writeLine('Started "update-chars"', false);
 
         $this->updateChars($charId);
         if ($charId === 0) {
@@ -106,7 +110,7 @@ class UpdateCharacters extends Command
             $this->updateAlliances();
         }
 
-        $this->writeln('Finished "update-chars"', false);
+        $this->writeLine('Finished "update-chars"', false);
     }
 
     private function updateChars($characterId = 0)
@@ -128,13 +132,14 @@ class UpdateCharacters extends Command
                     break;
                 }
                 $this->objectManager->clear(); // detaches all objects from Doctrine
+                $this->checkErrorLimit();
 
                 // update name, corp and alliance from ESI
                 $updatedChar = $this->esiData->fetchCharacter($charId);
                 if ($updatedChar === null) {
-                    $this->writeln('  Character ' . $charId.': ' . self::UPDATE_NOK);
+                    $this->writeLine('  Character ' . $charId.': ' . self::UPDATE_NOK);
                 } else {
-                    $this->writeln('  Character ' . $charId.': ' . self::UPDATE_OK);
+                    $this->writeLine('  Character ' . $charId.': ' . self::UPDATE_OK);
                 }
 
                 usleep($this->sleep * 1000);
@@ -157,12 +162,13 @@ class UpdateCharacters extends Command
                     break;
                 }
                 $this->objectManager->clear();
+                $this->checkErrorLimit();
 
                 $updatedCorp = $this->esiData->fetchCorporation($corpId);
                 if ($updatedCorp === null) {
-                    $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_NOK);
+                    $this->writeLine('  Corporation ' . $corpId.': ' . self::UPDATE_NOK);
                 } else {
-                    $this->writeln('  Corporation ' . $corpId.': ' . self::UPDATE_OK);
+                    $this->writeLine('  Corporation ' . $corpId.': ' . self::UPDATE_OK);
                 }
 
                 usleep($this->sleep * 1000);
@@ -182,12 +188,13 @@ class UpdateCharacters extends Command
                 break;
             }
             $this->objectManager->clear();
+            $this->checkErrorLimit();
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {
-                $this->writeln('  Alliance ' . $alliId.': ' . self::UPDATE_NOK);
+                $this->writeLine('  Alliance ' . $alliId.': ' . self::UPDATE_NOK);
             } else {
-                $this->writeln('  Alliance ' . $alliId.': ' . self::UPDATE_OK);
+                $this->writeLine('  Alliance ' . $alliId.': ' . self::UPDATE_OK);
             }
 
             usleep($this->sleep * 1000);

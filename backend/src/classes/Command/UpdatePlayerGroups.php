@@ -2,6 +2,7 @@
 
 namespace Neucore\Command;
 
+use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdatePlayerGroups extends Command
 {
-    use OutputTrait;
+    use LogOutput;
 
     /**
      * @var PlayerRepository
@@ -39,11 +40,11 @@ class UpdatePlayerGroups extends Command
         LoggerInterface $logger
     ) {
         parent::__construct();
+        $this->logOutput($logger);
 
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
         $this->autoGroup = $autoGroup;
         $this->objectManager = $objectManager;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -57,15 +58,15 @@ class UpdatePlayerGroups extends Command
                 'Time to sleep in milliseconds after each update',
                 50
             );
-        $this->configureOutputTrait($this);
+        $this->configureLogOutput($this);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->executeOutputTrait($input, $output);
+        $this->executeLogOutput($input, $output);
         $sleep = intval($input->getOption('sleep'));
 
-        $this->writeln('Started "update-player-groups"', false);
+        $this->writeLine('Started "update-player-groups"', false);
 
         $dbResultLimit = 1000;
         $offset = $dbResultLimit * -1;
@@ -91,15 +92,15 @@ class UpdatePlayerGroups extends Command
                 $success2 = $this->autoGroup->checkRequiredGroups($playerId);
                 $this->objectManager->clear();
                 if (! $success1 || ! $success2) {
-                    $this->writeln('  Error updating ' . $playerId);
+                    $this->writeLine('  Error updating ' . $playerId);
                 } else {
-                    $this->writeln('  Account ' . $playerId . ' groups updated');
+                    $this->writeLine('  Account ' . $playerId . ' groups updated');
                 }
 
                 usleep($sleep * 1000);
             }
         } while (count($playerIds) === $dbResultLimit);
 
-        $this->writeln('Finished "update-player-groups"', false);
+        $this->writeLine('Finished "update-player-groups"', false);
     }
 }

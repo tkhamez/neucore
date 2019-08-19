@@ -141,7 +141,7 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
+     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
@@ -242,7 +242,7 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached (this is lower than X-Esi-Error-Limit-Remain).",
+     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
