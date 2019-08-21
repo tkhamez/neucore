@@ -1,4 +1,6 @@
-# 1.4.0
+# Changelog
+
+## 1.4.0
 
 21 Aug 2019
 
@@ -18,7 +20,7 @@
 [i15]: https://github.com/tkhamez/neucore/issues/15
 [i24]: https://github.com/tkhamez/neucore/issues/24
 
-# 1.3.0
+## 1.3.0
 
 4 Aug 2019
 
