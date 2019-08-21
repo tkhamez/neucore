@@ -1,8 +1,8 @@
 # 1.4.0
 
-dd mmm yyyy
+21 Aug 2019
 
-- Breaking: requires gmp PHP extension
+- **Breaking**: requires gmp PHP extension
 - Switch to SSO v2 [#15][i15]
 - Switch to OpenAPI 3.0: there is a new OpenAPI interface description file at `/application-api-3.yml` 
   for the "App" API in OpenAPI version 3.0 format. The file `/application-api.json` in Swagger version 2.0 
