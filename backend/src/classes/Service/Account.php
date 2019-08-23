@@ -201,7 +201,8 @@ class Account
         try {
             $jws = $serializerManager->unserialize($token->getToken());
         } catch (\Exception $e) {
-            // should not happen, don't change the valid flag in this case.
+            // Fails if a SSOv1 access token is still valid (up to ~20 minutes after it was created).
+            // Should not happen otherwise. Don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
         $data = json_decode((string)$jws->getPayload());
