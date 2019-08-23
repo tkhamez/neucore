@@ -60,9 +60,6 @@
     	},
         "files": ["config/version.php"]
     },
-    "repositories": [
-        { "type": "git", "url": "https://github.com/bravecollective/sso-basics.git" }
-    ],
     "scripts": {
         "compile": [
             "bin/console clear-cache",
