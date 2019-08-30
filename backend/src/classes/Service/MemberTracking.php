@@ -226,35 +226,42 @@ class MemberTracking
     /**
      * @param Corporation $corporation An instance that is attached to the Doctrine entity manager.
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
-     * @return bool
+     * @param int $sleep milliseconds
      */
-    public function processData(Corporation $corporation, array $trackingData): bool
+    public function processData(Corporation $corporation, array $trackingData, $sleep = 0): void
     {
         // get character names
         $charIds = [];
         foreach ($trackingData as $data) {
             $charIds[] = (int) $data->getCharacterId();
         }
-        $names = null;
-        if (count($charIds) > 0) {
+        $names = [];
+        while (count($charIds) > 0) {
+            $checkIds = array_splice($charIds, 0, 1000);
             try {
                 // it's possible that postUniverseNames() returns null
-                $names = $this->esiApiFactory
+                $result = $this->esiApiFactory
                     ->getUniverseApi()
-                    ->postUniverseNames($charIds, $this->datasource);
+                    ->postUniverseNames($checkIds, $this->datasource);
+                if ($result !== null) {
+                    $names = array_merge($names, $result);
+                }
             } catch (\Exception $e) {
                 $this->log->error($e->getMessage(), ['exception' => $e]);
             }
         }
         $charNames = [];
-        if (is_array($names)) {
-            foreach ($names as $name) {
-                $charNames[(int) $name->getId()] = $name->getName();
-            }
+        foreach ($names as $name) {
+            $charNames[(int) $name->getId()] = $name->getName();
         }
 
         // store member data
-        foreach ($trackingData as $data) {
+        foreach ($trackingData as $num => $data) {
+            if (! $this->objectManager->isOpen()) {
+                $this->log->critical('MemberTracking::processData: cannot continue without an open entity manager.');
+                break;
+            }
+
             $id = (int) $data->getCharacterId();
             $corpMember = $this->repositoryFactory->getCorporationMemberRepository()->find($id);
             $character = $this->repositoryFactory->getCharacterRepository()->find($id);
@@ -278,9 +285,15 @@ class MemberTracking
             $corpMember->setCorporation($corporation);
 
             $this->objectManager->persist($corpMember);
+            if ($num > 0 && $num % 10 === 0) {
+                $this->objectManager->flush();
+                #$this->objectManager->clear();
+            }
+
+            usleep($sleep * 1000);
         }
 
-        return $this->objectManager->flush();
+        $this->objectManager->flush();
     }
 
     private function storeDirector(EveAuthentication $eveAuth, Corporation $corporation): bool

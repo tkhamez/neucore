@@ -290,7 +290,7 @@ class MemberTrackingTest extends TestCase
             {"category": "character", "id": "101", "name": "char 2"}
         ]')); // postUniverseNames
 
-        $this->assertTrue($this->memberTracking->processData($corp, $data));
+        $this->assertNull($this->memberTracking->processData($corp, $data));
 
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
         $this->assertSame(2, count($result));
