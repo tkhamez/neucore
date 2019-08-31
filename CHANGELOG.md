@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1
+
+31 Aug 2019
+
+- Fixed/Improved Member Tracking page.
+
 ## 1.4.0
 
 21 Aug 2019
