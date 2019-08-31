@@ -72,8 +72,8 @@
 
         <div class="row mt-3">
             <div class="col-lg-12">
-                <table class="table table-hover table-sm data-table">
-                    <thead>
+                <table class="table table-hover table-sm member-table">
+                    <thead class="thead-dark">
                         <tr>
                             <th>Character ID</th>
                             <th>Character Name</th>
@@ -126,7 +126,7 @@ module.exports = {
 
     mounted: function() {
         const vm = this;
-        vm.table = $('.data-table').DataTable({
+        vm.table = $('.member-table').DataTable({
             lengthMenu: [[10, 50, 200, 500, 1000, -1], [10, 50, 200, 500, 1000, "All"]],
             pageLength: 50,
             columns: [
@@ -297,11 +297,17 @@ module.exports = {
 </script>
 
 <style scoped>
-    table {
-        font-size: 90%;
-    }
     .input-option {
         display: inline;
         width: 80px;
+    }
+    .member-table {
+        font-size: 90%;
+    }
+    .member-table thead th {
+        @supports (position: sticky) {
+            position: sticky;
+            top: 80px;
+        }
     }
 </style>
