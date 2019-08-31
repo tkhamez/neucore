@@ -8,6 +8,10 @@ window.$(function() {
     window.$('[data-toggle="popover"]').popover();
 });
 
+// data tables
+require('datatables.net');
+require('datatables.net-bs4')(window, $);
+
 // fontawesome (contains font files)
 require('../node_modules/@fortawesome/fontawesome-free/css/all.css');
 

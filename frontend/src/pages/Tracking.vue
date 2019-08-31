@@ -1,9 +1,10 @@
 <template>
     <div class="container-fluid">
 
+        <!--suppress HtmlUnknownTag -->
         <characters :swagger="swagger" ref="charactersModal"></characters>
 
-        <div class="row mb-3 mt-3">
+        <div class="row mb-3">
             <div class="col-lg-12">
                 <h1>Member Tracking</h1>
 
@@ -18,44 +19,60 @@
                         </option>
                     </select>
                 </div>
+            </div>
+        </div>
 
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.daysInactive">
-                    Limit to members who have been inactive for x days or longer.
+                    Limit to members who have been <strong>inactive</strong> for x days or longer.
                 </label>
-                <br>
+            </div>
+            <div class="col-sm-12 col-md-6">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.daysActive">
-                    Limit to members who were active in the last x days.
+                    Limit to members who were <strong>active</strong> in the last x days.
                 </label>
-                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
                 <label class="small">
                     <select class="form-control form-control-sm input-option" v-model="formOptions.account">
                         <option></option>
                         <option value="true">with</option>
                         <option value="false">without</option>
                     </select>
-                    Limit to members with/without an account
+                    Limit to members with/without an <strong>account</strong>
                 </label>
-                <br>
+            </div>
+            <div class="col-sm-12 col-md-6">
                 <label class="small">
                     <select class="form-control form-control-sm input-option" v-model="formOptions.validToken">
                         <option></option>
                         <option value="true">valid</option>
                         <option value="false">invalid</option>
                     </select>
-                    Limit to characters with a valid/invalid token
+                    Limit to characters with a valid/invalid <strong>token</strong>
                 </label>
-                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.tokenChanged">
-                    Limit to characters whose ESI token status has not changed for x days
+                    Limit to characters whose ESI <strong>token status</strong> has not changed for x days
                 </label>
+            </div>
+        </div>
 
-                <table class="table table-hover table-sm">
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <table class="table table-hover table-sm data-table">
                     <thead>
                         <tr>
                             <th>Character ID</th>
@@ -70,48 +87,7 @@
                             <th>Start Date (GMT)</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="member in members">
-                            <td>{{ member.id }}</td>
-                            <td>{{ member.name }}</td>
-                            <td>
-                                <a href="#" v-if="member.player" v-on:click.prevent="showCharacters(member.player.id)">
-                                    {{ member.player.name }} #{{ member.player.id }}
-                                </a>
-                            </td>
-                            <td>
-                                <span v-if="member.character">
-                                    <span v-if="member.character.validToken">valid</span>
-                                    <span v-if="member.character.validToken === false">invalid</span>
-                                    <span v-if="member.character.validToken === null">n/a</span>
-                                </span>
-                            </td>
-                            <td>
-                                <span v-if="member.character && member.character.validTokenTime">
-                                    {{ $root.formatDate(member.character.validTokenTime) }}
-                                </span>
-                            </td>
-                            <td>
-                                <span v-if="member.logonDate">
-                                    {{ $root.formatDate(member.logonDate) }}
-                                </span>
-                            </td>
-                            <td>
-                                <span v-if="member.logoffDate">
-                                    {{ $root.formatDate(member.logoffDate) }}
-                                </span>
-                            </td>
-                            <td>{{ member.locationId }}</td>
-                            <td>{{ member.shipTypeId }}</td>
-                            <td>
-                                <span v-if="member.startDate">
-                                    {{ $root.formatDate(member.startDate) }}
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
                 </table>
-
             </div>
         </div>
 
@@ -136,18 +112,79 @@ module.exports = {
         return {
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],
-            members: [],
+            currentCorporationId: null,
             formOptions: {
                 daysActive: null,
                 daysInactive: null,
                 account: null,
                 validToken: null,
                 tokenChanged: null,
-            }
+            },
+            table: null,
         }
     },
 
     mounted: function() {
+        const vm = this;
+        vm.table = $('.data-table').DataTable({
+            lengthMenu: [[50, 200, 500, 1000, -1], [50, 200, 500, 1000, "All"]],
+            columns: [
+                { data: 'id' },
+                { data: 'name' },
+                {
+                    data: function (row) {
+                        if (row.player) {
+                            return '' +
+                                '<a href="#Tracking/98169165/' + row.player.id + '">' +
+                                    row.player.name + ' #' + row.player.id +
+                                '</a>';
+                        }
+                        return '';
+                    }
+                }, {
+                    data: function (row) {
+                        if (row.character) {
+                            if (row.character.validToken) return 'valid';
+                            if (row.character.validToken === false) return 'invalid';
+                            if (row.character.validToken === null) return 'n/a';
+                        }
+                        return '';
+                    }
+                }, {
+                    data: function (row) {
+                        if (row.character && row.character.validTokenTime) {
+                            return vm.$root.formatDate(row.character.validTokenTime);
+                        }
+                        return '';
+                    }
+                }, {
+                    data: function (row) {
+                        if (row.logonDate) {
+                            return vm.$root.formatDate(row.logonDate);
+                        }
+                        return '';
+                    }
+                }, {
+                    data: function (row) {
+                        if (row.logoffDate) {
+                            return vm.$root.formatDate(row.logoffDate);
+                        }
+                        return '';
+                    }
+                },
+                { data: 'locationId' },
+                { data: 'shipTypeId' },
+                {
+                    data: function (row) {
+                        if (row.startDate) {
+                            return vm.$root.formatDate(row.startDate);
+                        }
+                        return '';
+                    }
+                },
+            ]
+        });
+
         if (this.initialized) { // on page change
             this.getCorporations();
             this.getMembers();
@@ -161,7 +198,12 @@ module.exports = {
         },
 
         route: function() {
-            this.getMembers();
+            if (this.currentCorporationId !== this.corporation.id) {
+                this.currentCorporationId = this.corporation.id;
+                this.getMembers();
+            } else if (this.route.length === 3) {
+                this.showCharacters(this.route[2]);
+            }
         },
 
         corporation: function() {
@@ -181,7 +223,6 @@ module.exports = {
     },
 
     methods: {
-
         getCorporations: function() {
             const vm = this;
             vm.loading(true);
@@ -213,7 +254,8 @@ module.exports = {
         }, 250),
 
         getMembers: function() {
-            this.members = [];
+            this.table.clear();
+            this.table.draw();
             if (! this.route[1]) {
                 return;
             }
@@ -234,7 +276,8 @@ module.exports = {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.members = data;
+                vm.table.rows.add(data);
+                vm.table.draw();
             });
         },
 
@@ -242,7 +285,7 @@ module.exports = {
             this.$refs.charactersModal.showCharacters(playerId);
         },
     }
-}
+};
 </script>
 
 <style scoped>

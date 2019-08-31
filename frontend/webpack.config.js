@@ -78,6 +78,9 @@ module.exports = (env, argv) => {
             }, {
                 test: /node_modules\/markdown-it-attrs\/.*\.js$/,
                 use: 'babel-loader'
+            }, {
+                test: /datatables\.net.*/,
+                loader: 'imports-loader?define=>false'
             }]
         },
         plugins: [
