@@ -175,6 +175,10 @@ $ docker-compose run composer composer openapi
 # Generate OpenAPI JavaScript client
 $ docker-compose run java /app/frontend/openapi.sh
 
+# Build OpenAPI JS client
+docker-compose run node npm install --prefix /app/frontend/neucore-js-client
+docker-compose run node npm run build --prefix /app/frontend/neucore-js-client
+
 # Build frontend
 $ docker-compose run node npm install
 $ docker-compose run node npm run build
