@@ -53,6 +53,13 @@ class AuthController extends BaseController
     const STATE_PREFIX_STATUS_MANAGED = 's.';
 
     /**
+     * A prefix for the OAuth state parameter that identifies a login of "managed" alt.
+     *
+     * @var string
+     */
+    const STATE_PREFIX_STATUS_MANAGED_ALT = 'z.';
+
+    /**
      * A prefix for the OAuth state parameter that identifies an alt login.
      *
      * @var string
@@ -118,7 +125,7 @@ class AuthController extends BaseController
      *
      * @noinspection PhpUnused
      */
-    public function loginManaged(): ResponseInterface
+    public function loginManaged($prefix = self::STATE_PREFIX_STATUS_MANAGED): ResponseInterface
     {
         // check "allow managed login" settings
         $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
@@ -129,7 +136,17 @@ class AuthController extends BaseController
             return $this->response->withStatus(403, 'Forbidden');
         }
 
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_STATUS_MANAGED . Random::chars(12), '/#login');
+        return $this->redirectToLoginUrl($prefix . Random::chars(12), '/#login');
+    }
+
+    /**
+     * Login for "managed" alts, redirects to EVE SSO login.
+     *
+     * @noinspection PhpUnused
+     */
+    public function loginManagedAlt(): ResponseInterface
+    {
+        return $this->loginManaged(self::STATE_PREFIX_STATUS_MANAGED_ALT);
     }
 
     /**
@@ -196,6 +213,7 @@ class AuthController extends BaseController
         // handle login
         switch (substr($state, 0, 2)) {
             case self::STATE_PREFIX_ALT:
+            case self::STATE_PREFIX_STATUS_MANAGED_ALT:
                 $success = $userAuth->addAlt($eveAuth);
                 $successMessage = 'Character added to player account.';
                 $errorMessage = 'Failed to add alt to account.';
@@ -291,11 +309,12 @@ class AuthController extends BaseController
 
     private function getLoginScopes($state): array
     {
-        if (substr($state, 0, 2) === self::STATE_PREFIX_STATUS_MANAGED) {
+        $prefix = substr($state, 0, 2);
+        if (in_array($prefix, [self::STATE_PREFIX_STATUS_MANAGED, self::STATE_PREFIX_STATUS_MANAGED_ALT])) {
             return [];
-        } elseif (substr($state, 0, 2) === self::STATE_PREFIX_MAIL) {
+        } elseif ($prefix === self::STATE_PREFIX_MAIL) {
             return ['esi-mail.send_mail.v1'];
-        } elseif (substr($state, 0, 2) === self::STATE_PREFIX_DIRECTOR) {
+        } elseif ($prefix === self::STATE_PREFIX_DIRECTOR) {
             return [
                 'esi-characters.read_corporation_roles.v1',
                 'esi-corporations.track_members.v1',

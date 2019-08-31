@@ -17,12 +17,13 @@ use Neucore\Controller\User\SettingsController;
 
 return [
 
-    '/login'          => ['GET',  AuthController::class.'::login'],
-    '/login-managed'  => ['GET',  AuthController::class.'::loginManaged'],
-    '/login-alt'      => ['GET',  AuthController::class.'::loginAlt'],
-    '/login-mail'     => ['GET',  AuthController::class.'::loginMail'],
-    '/login-director' => ['GET',  AuthController::class.'::loginDirector'],
-    '/login-callback' => ['GET',  AuthController::class.'::callback'],
+    '/login'             => ['GET',  AuthController::class.'::login'],
+    '/login-managed'     => ['GET',  AuthController::class.'::loginManaged'],
+    '/login-managed-alt' => ['GET',  AuthController::class.'::loginManagedAlt'],
+    '/login-alt'         => ['GET',  AuthController::class.'::loginAlt'],
+    '/login-mail'        => ['GET',  AuthController::class.'::loginMail'],
+    '/login-director'    => ['GET',  AuthController::class.'::loginDirector'],
+    '/login-callback'    => ['GET',  AuthController::class.'::callback'],
 
     '/api/app/v1/show'                               => ['GET',  ApplicationController::class.'::showV1'],
     '/api/app/v1/groups/{cid}'                       => ['GET',  AppGroupController::class.'::groupsV1'],

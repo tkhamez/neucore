@@ -33,7 +33,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -64,7 +64,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -72,12 +72,44 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith(AuthController::STATE_PREFIX_STATUS_MANAGED, $sess->get('auth_state'));
     }
 
+    public function testLoginManagedAltForbidden()
+    {
+        (new Helper())->emptyDb();
+
+        $response = $this->runApp('GET', '/login-managed-alt');
+
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('Forbidden', $response->getReasonPhrase());
+        $this->assertSame('Forbidden', $response->getBody()->__toString());
+    }
+
+    public function testLoginManagedAlt()
+    {
+        // activate login "managed"
+        $helper = new Helper();
+        $helper->emptyDb();
+        $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
+        $setting->setValue('1');
+        $helper->getEm()->persist($setting);
+        $helper->getEm()->flush();
+
+        $response = $this->runApp('GET', '/login-managed-alt');
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+
+        $sess = new SessionData();
+        $this->assertSame('/#login', $sess->get('auth_redirect'));
+        $this->assertSame(14, strlen($sess->get('auth_state')));
+        $this->assertStringStartsWith(AuthController::STATE_PREFIX_STATUS_MANAGED_ALT, $sess->get('auth_state'));
+    }
+
     public function testLoginAlt()
     {
         $response = $this->runApp('GET', '/login-alt');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
@@ -90,7 +122,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-mail');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
@@ -103,7 +135,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-director');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('login.eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-director', $sess->get('auth_redirect'));
@@ -155,7 +187,7 @@ class AuthControllerTest extends WebTestCase
                 ClientInterface::class => $this->client,
                 LoggerInterface::class => $log,
             ],
-            ['BRAVECORE_EVE_SCOPES=read-this']
+            ['BRAVECORE_EVE_SCOPES=read-this', 'BRAVECORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -191,7 +223,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['BRAVECORE_EVE_SCOPES=read-this and-this']
+            ['BRAVECORE_EVE_SCOPES=read-this and-this', 'BRAVECORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -226,7 +258,7 @@ class AuthControllerTest extends WebTestCase
                 ClientInterface::class => $this->client,
                 LoggerInterface::class => $log,
             ],
-            ['BRAVECORE_EVE_SCOPES=read-this']
+            ['BRAVECORE_EVE_SCOPES=read-this', 'BRAVECORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -264,7 +296,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['BRAVECORE_EVE_SCOPES=read-this']
+            ['BRAVECORE_EVE_SCOPES=read-this', 'BRAVECORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -305,7 +337,8 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
+            ['BRAVECORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -346,7 +379,8 @@ class AuthControllerTest extends WebTestCase
             '/login-callback?state='.$state,
             null,
             null,
-            [ClientInterface::class => $this->client]
+            [ClientInterface::class => $this->client],
+            ['BRAVECORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 
@@ -371,9 +405,14 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}')
         );
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
-            ClientInterface::class => $this->client
-        ]);
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client],
+            ['BRAVECORE_EVE_DATASOURCE=tranquility']
+        );
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
             ['success' => false, 'message' => 'Required scopes do not match.'],
@@ -412,9 +451,13 @@ class AuthControllerTest extends WebTestCase
             new Response(200, [], '{"name": "c123", "ticker": "-c-"}')
         );
 
-        $response = $this->runApp('GET', '/login-callback?state='.$state, null, null, [
-            ClientInterface::class => $this->client
-        ]);
+        $response = $this->runApp(
+            'GET', '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client],
+            ['BRAVECORE_EVE_DATASOURCE=tranquility']
+        );
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
             ['success' => true, 'message' => 'Character with director roles added.'],

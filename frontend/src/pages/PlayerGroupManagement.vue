@@ -6,7 +6,11 @@
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Player Groups Management</h1>
-                <p class="mb-0">Login URL: <a :href="loginUrlManaged">{{ loginUrlManaged }}</a></p>
+                <p class="mb-0">
+                    Login URLs:
+                    <a :href="httpBaseUrl + '/login-managed'">{{ httpBaseUrl }}/login-managed</a>,
+                    <a :href="httpBaseUrl + '/login-managed-alt'">{{ httpBaseUrl }}/login-managed-alt</a>
+                </p>
                 <p class="small text-muted">
                     This login URL does not require ESI scopes. Characters who use it will not have an
                     ESI token afterwards. This disables groups for their player accounts (if this feature
@@ -90,7 +94,7 @@
                 players: [],
                 playerId: null, // current player
                 playerData: null, // current player
-                loginUrlManaged: null,
+                httpBaseUrl: null,
             }
         },
 
@@ -105,7 +109,7 @@
             if (location.port !== "" && location.port !== 80 && location.port !== 443) {
                 port = ':' + location.port;
             }
-            this.loginUrlManaged = location.protocol + "//" + location.hostname + port + "/login-managed"
+            this.httpBaseUrl = location.protocol + "//" + location.hostname + port
         },
 
         watch: {
