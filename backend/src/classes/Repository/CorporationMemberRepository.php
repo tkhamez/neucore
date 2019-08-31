@@ -150,4 +150,15 @@ class CorporationMemberRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function removeFormerMembers(int $corporationId, array $currentMemberIds): int
+    {
+        $qb = $this->createQueryBuilder('m');
+        $qb->delete()
+            ->where('m.corporation = :corpId')
+            ->andWhere($qb->expr()->notIn('m.id', ':ids'))
+            ->setParameter('corpId', $corporationId)
+            ->setParameter('ids', $currentMemberIds);
+        return $qb->getQuery()->getResult();
+    }
 }

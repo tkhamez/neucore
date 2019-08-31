@@ -75,19 +75,19 @@
                 <table class="table table-hover table-sm member-table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Character ID</th>
                             <th>Character Name</th>
                             <th>Player Account</th>
                             <th>ESI Token</th>
-                            <th>Token status changed</th>
-                            <th>Logon Date (GMT)</th>
-                            <th>Logoff Date (GMT)</th>
+                            <th>Token status changed *</th>
+                            <th>Logon Date *</th>
+                            <th>Logoff Date *</th>
                             <th>Location ID</th>
                             <th>Ship Type ID</th>
-                            <th>Start Date (GMT)</th>
+                            <th>Start Date *</th>
                         </tr>
                     </thead>
                 </table>
+                <p class="small text-muted">* All dates are GMT</p>
             </div>
         </div>
 
@@ -129,33 +129,33 @@ module.exports = {
         vm.table = $('.member-table').DataTable({
             lengthMenu: [[10, 50, 200, 500, 1000, -1], [10, 50, 200, 500, 1000, "All"]],
             pageLength: 50,
+            order: [[4, "desc"]],
             columns: [
-                { data: 'id' },
                 {
                     data: function (row) {
                         return '' +
                             '<a href="https://evewho.com/character/' + row.id + '" target="_blank" title="Eve Who">' +
-                                row.name +
+                                (row.name ? row.name : row.id) +
                             '</a>';
                     }
                 }, {
                     data: function (row) {
-                        if (row.player) {
-                            return '' +
-                                '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
-                                    row.player.name + ' #' + row.player.id +
-                                '</a>';
+                        if (! row.player) {
+                            return '';
                         }
-                        return '';
+                        return '' +
+                            '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
+                                row.player.name + ' #' + row.player.id +
+                            '</a>';
                     }
                 }, {
                     data: function (row) {
-                        if (row.character) {
-                            if (row.character.validToken) return 'valid';
-                            if (row.character.validToken === false) return 'invalid';
-                            if (row.character.validToken === null) return 'n/a';
+                        if (! row.character) {
+                            return '';
                         }
-                        return '';
+                        if (row.character.validToken) return 'valid';
+                        if (row.character.validToken === false) return 'invalid';
+                        if (row.character.validToken === null) return 'n/a';
                     }
                 }, {
                     data: function (row) {

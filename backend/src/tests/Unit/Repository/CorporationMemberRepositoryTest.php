@@ -166,4 +166,11 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame(1, count($actual));
         $this->assertSame('Char 2', $actual[0]->getCharacter()->getName());
     }
+
+    public function testRemoveFormerMembers()
+    {
+        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $actual = $repository->removeFormerMembers(1, [10, 30]);
+        $this->assertSame(1, $actual);
+    }
 }

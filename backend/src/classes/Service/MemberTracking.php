@@ -230,11 +230,26 @@ class MemberTracking
      */
     public function processData(Corporation $corporation, array $trackingData, $sleep = 0): void
     {
-        // get character names
-        $charIds = [];
-        foreach ($trackingData as $data) {
-            $charIds[] = (int) $data->getCharacterId();
+        if (count($trackingData) === 0) {
+            return;
         }
+
+        // collect IDs
+        $charIds = array_map(function (GetCorporationsCorporationIdMembertracking200Ok $item) {
+            return (int) $item->getCharacterId();
+        }, $trackingData);
+
+        // delete members that left
+        $this->repositoryFactory->getCorporationMemberRepository()
+            ->removeFormerMembers($corporation->getId(), $charIds);
+
+        $charNames = $this->fetchCharacterNames($charIds);
+
+        $this->storeMemberData($corporation, $trackingData, $charNames, $sleep);
+    }
+
+    private function fetchCharacterNames(array $charIds): array
+    {
         $names = [];
         while (count($charIds) > 0) {
             $checkIds = array_splice($charIds, 0, 1000);
@@ -255,7 +270,11 @@ class MemberTracking
             $charNames[(int) $name->getId()] = $name->getName();
         }
 
-        // store member data
+        return $charNames;
+    }
+
+    private function storeMemberData(Corporation $corporation, array $trackingData, array $charNames, int $sleep): void
+    {
         foreach ($trackingData as $num => $data) {
             if (! $this->objectManager->isOpen()) {
                 $this->log->critical('MemberTracking::processData: cannot continue without an open entity manager.');
