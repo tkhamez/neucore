@@ -17,6 +17,7 @@ use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\TestCase;
+use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 use Tests\Helper;
 use Tests\Client;
 use Tests\Logger;
@@ -423,5 +424,30 @@ class EsiDataTest extends TestCase
 
         $alli = $this->csError->fetchAlliance(345, true);
         $this->assertNull($alli);
+    }
+
+    public function testFetchUniverseNames()
+    {
+        $this->testHelper->emptyDb();
+
+        $this->client->setResponse(new Response(200, [], '[{
+            "id": 123,
+            "name": "The Name",
+            "category": "character"
+        }, {
+            "id": 124,
+            "name": "Another Name",
+            "category": "inventory_type"
+        }]'));
+
+        $names = $this->cs->fetchUniverseNames([123, 124]);
+
+        $this->assertSame(2, count($names));
+        $this->assertSame(123, $names[0]->getId());
+        $this->assertSame(124, $names[1]->getId());
+        $this->assertSame('The Name', $names[0]->getName());
+        $this->assertSame('Another Name', $names[1]->getName());
+        $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
+        $this->assertSame(PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE, $names[1]->getCategory());
     }
 }

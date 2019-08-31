@@ -101,7 +101,7 @@ class UpdateMemberTracking extends Command
                 );
                 continue;
             }
-            $this->memberTracking->processData($corporation, $trackingData, $sleep);
+            $this->memberTracking->processData($corporation->getId(), $trackingData, $sleep);
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .

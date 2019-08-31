@@ -285,12 +285,15 @@ class MemberTrackingTest extends TestCase
             ]),
             new GetCorporationsCorporationIdMembertracking200Ok(['character_id' => 101]),
         ];
-        $this->client->setResponse(new Response(200, [], '[
-            {"category": "character", "id": "100", "name": "char 1"},
-            {"category": "character", "id": "101", "name": "char 2"}
-        ]')); // postUniverseNames
+        $this->client->setResponse(
+            new Response(200, [], '[
+                {"category": "character", "id": "100", "name": "char 1"},
+                {"category": "character", "id": "101", "name": "char 2"}
+            ]'), // postUniverseNames for char names
+            new Response(200, [], '[]') // postUniverseNames for types
+        );
 
-        $this->assertNull($this->memberTracking->processData($corp, $data));
+        $this->assertNull($this->memberTracking->processData($corp->getId(), $data));
 
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
         $this->assertSame(2, count($result));
@@ -299,7 +302,7 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(200, $result[0]->getLocationId());
         $this->assertSame('2018-12-25T19:45:10+00:00', $result[0]->getLogoffDate()->format(\DATE_ATOM));
         $this->assertSame('2018-12-25T19:45:11+00:00', $result[0]->getLogonDate()->format(\DATE_ATOM));
-        $this->assertSame(300, $result[0]->getShipTypeId());
+        $this->assertSame(300, $result[0]->getShipType()->getId());
         $this->assertSame('2018-12-25T19:45:12+00:00', $result[0]->getStartDate()->format(\DATE_ATOM));
         $this->assertSame(101, $result[1]->getId());
         $this->assertNull($result[1]->getCharacter());

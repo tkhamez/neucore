@@ -82,7 +82,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame(null, $result2[0]['locationId']);
         $this->assertSame(null, $result2[0]['logoffDate']);
         $this->assertStringStartsWith((new \DateTime('now -10 days'))->format('Y-m-d'), $result2[0]['logonDate']);
-        $this->assertSame(null, $result2[0]['shipTypeId']);
+        $this->assertSame(null, $result2[0]['shipType']);
         $this->assertSame(null, $result2[0]['startDate']);
     }
 }

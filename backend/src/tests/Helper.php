@@ -14,6 +14,7 @@ use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -50,6 +51,7 @@ class Helper
         Corporation::class,
         Alliance::class,
         SystemVariable::class,
+        EsiType::class,
     ];
 
     /**

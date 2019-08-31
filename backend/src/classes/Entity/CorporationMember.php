@@ -61,11 +61,11 @@ class CorporationMember implements \JsonSerializable
     private $logonDate;
 
     /**
-     * @OA\Property(type="integer", nullable=true)
-     * @ORM\Column(type="bigint", name="ship_type_id", nullable=true)
-     * @var integer|null
+     * @OA\Property(ref="#/components/schemas/EsiType", nullable=true)
+     * @ORM\ManyToOne(targetEntity="EsiType")
+     * @var EsiType|null
      */
-    private $shipTypeId;
+    private $shipType;
 
     /**
      * @OA\Property(nullable=true)
@@ -100,7 +100,7 @@ class CorporationMember implements \JsonSerializable
             'locationId' => $this->locationId,
             'logoffDate' => $this->getLogoffDate() !== null ? $this->getLogoffDate()->format(Api::DATE_FORMAT) : null,
             'logonDate' => $this->getLogonDate() !== null ? $this->getLogonDate()->format(Api::DATE_FORMAT) : null,
-            'shipTypeId' => $this->shipTypeId,
+            'shipType' => $this->shipType,
             'startDate' => $this->getStartDate() !== null ? $this->getStartDate()->format(Api::DATE_FORMAT) : null,
         ];
 
@@ -234,28 +234,16 @@ class CorporationMember implements \JsonSerializable
         return $this->logonDate;
     }
 
-    /**
-     * Set shipTypeId.
-     *
-     * @param int|null $shipTypeId
-     *
-     * @return CorporationMember
-     */
-    public function setShipTypeId($shipTypeId = null)
+    public function setShipType(EsiType $shipType = null): CorporationMember
     {
-        $this->shipTypeId = $shipTypeId;
+        $this->shipType = $shipType;
 
         return $this;
     }
 
-    /**
-     * Get shipTypeId.
-     *
-     * @return int|null
-     */
-    public function getShipTypeId()
+    public function getShipType(): ?EsiType
     {
-        return $this->shipTypeId;
+        return $this->shipType;
     }
 
     /**

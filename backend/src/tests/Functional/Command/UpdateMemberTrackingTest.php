@@ -133,6 +133,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->client->setResponse(
             new Response(200, [], '[{"character_id": 100}]'), // corporations/1/membertracking/
             new Response(200, [], '[{"category": "character", "id": "100", "name": "Paul"}]'), // universe/names/
+            new Response(200, [], '[]'), // postUniverseNames for types
             new Response(200, [], '[]') // corporations/1/membertracking/
         );
 

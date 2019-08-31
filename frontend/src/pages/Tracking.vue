@@ -82,7 +82,7 @@
                             <th>Logon Date *</th>
                             <th>Logoff Date *</th>
                             <th>Location ID</th>
-                            <th>Ship Type ID</th>
+                            <th>Ship Type</th>
                             <th>Start Date *</th>
                         </tr>
                     </thead>
@@ -180,8 +180,14 @@ module.exports = {
                     }
                 },
                 { data: 'locationId' },
-                { data: 'shipTypeId' },
                 {
+                    data: function (row) {
+                        if (row.shipType) {
+                            return row.shipType.name ? row.shipType.name : row.shipType.id;
+                        }
+                        return '';
+                    }
+                },  {
                     data: function (row) {
                         if (row.startDate) {
                             return vm.$root.formatDate(row.startDate);

@@ -4,6 +4,7 @@ namespace Neucore\Service;
 
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
@@ -14,6 +15,7 @@ use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
+use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
@@ -224,11 +226,11 @@ class MemberTracking
     }
 
     /**
-     * @param Corporation $corporation An instance that is attached to the Doctrine entity manager.
+     * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
      * @param int $sleep milliseconds
      */
-    public function processData(Corporation $corporation, array $trackingData, $sleep = 0): void
+    public function processData(int $corporationId, array $trackingData, $sleep = 0): void
     {
         if (count($trackingData) === 0) {
             return;
@@ -238,46 +240,86 @@ class MemberTracking
         $charIds = array_map(function (GetCorporationsCorporationIdMembertracking200Ok $item) {
             return (int) $item->getCharacterId();
         }, $trackingData);
+        $typeIds = array_map(function (GetCorporationsCorporationIdMembertracking200Ok $item) {
+            return (int) $item->getShipTypeId();
+        }, $trackingData);
+        $typeIds = array_unique($typeIds);
 
         // delete members that left
-        $this->repositoryFactory->getCorporationMemberRepository()
-            ->removeFormerMembers($corporation->getId(), $charIds);
+        $this->repositoryFactory->getCorporationMemberRepository()->removeFormerMembers($corporationId, $charIds);
 
+        $this->updateTypeNames($typeIds, $sleep);
         $charNames = $this->fetchCharacterNames($charIds);
 
-        $this->storeMemberData($corporation, $trackingData, $charNames, $sleep);
+        $this->storeMemberData($corporationId, $trackingData, $charNames, $sleep);
     }
 
     private function fetchCharacterNames(array $charIds): array
     {
-        $names = [];
-        while (count($charIds) > 0) {
-            $checkIds = array_splice($charIds, 0, 1000);
-            try {
-                // it's possible that postUniverseNames() returns null
-                $result = $this->esiApiFactory
-                    ->getUniverseApi()
-                    ->postUniverseNames($checkIds, $this->datasource);
-                if ($result !== null) {
-                    $names = array_merge($names, $result);
-                }
-            } catch (\Exception $e) {
-                $this->log->error($e->getMessage(), ['exception' => $e]);
-            }
-        }
         $charNames = [];
-        foreach ($names as $name) {
+        foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
             $charNames[(int) $name->getId()] = $name->getName();
         }
-
         return $charNames;
     }
 
-    private function storeMemberData(Corporation $corporation, array $trackingData, array $charNames, int $sleep): void
+    /**
+     * @param array $typeIds
+     * @param int $sleep
+     */
+    private function updateTypeNames(array $typeIds, $sleep): void
     {
+        // create all database entries first
+        foreach ($typeIds as $typeId) {
+            $type = $this->repositoryFactory->getEsiTypeRepository()->find($typeId);
+            if ($type === null) {
+                $type = new EsiType();
+                $type->setId($typeId);
+            }
+            $this->objectManager->persist($type);
+
+            usleep($sleep * 1000);
+        }
+        $this->objectManager->flush();
+
+        // supplement with ESI data
+        foreach ($this->esiData->fetchUniverseNames($typeIds) as $name) {
+            if ($name->getCategory() !== PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE) {
+                continue;
+            }
+            $id = (int) $name->getId();
+            $type = $this->repositoryFactory->getEsiTypeRepository()->find($id);
+            if ($type === null) {
+                continue;
+            }
+            $type->setName($name->getName());
+            $this->objectManager->persist($type);
+
+            usleep($sleep * 1000);
+        }
+
+        $this->objectManager->flush();
+        $this->objectManager->clear();
+    }
+
+    /**
+     * @param int $corporationId
+     * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
+     * @param array $charNames
+     * @param int $sleep
+     */
+    private function storeMemberData(int $corporationId, array $trackingData, array $charNames, int $sleep): void
+    {
+        $corporation = null;
         foreach ($trackingData as $num => $data) {
             if (! $this->objectManager->isOpen()) {
                 $this->log->critical('MemberTracking::processData: cannot continue without an open entity manager.');
+                break;
+            }
+            if ($corporation === null) {
+                $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
+            }
+            if ($corporation === null) {
                 break;
             }
 
@@ -297,16 +339,22 @@ class MemberTracking
             if ($data->getLogonDate() instanceof \DateTime) {
                 $corpMember->setLogonDate($data->getLogonDate());
             }
-            $corpMember->setShipTypeId((int) $data->getShipTypeId());
+            if ($data->getShipTypeId() !== null) {
+                $type = $this->repositoryFactory->getEsiTypeRepository()->find($data->getShipTypeId());
+                $corpMember->setShipType($type);
+            } else {
+                $corpMember->setShipType(null);
+            }
             if ($data->getStartDate() instanceof \DateTime) {
                 $corpMember->setStartDate($data->getStartDate());
             }
             $corpMember->setCorporation($corporation);
 
             $this->objectManager->persist($corpMember);
-            if ($num > 0 && $num % 10 === 0) {
+            if ($num > 0 && $num % 100 === 0) {
                 $this->objectManager->flush();
-                #$this->objectManager->clear();
+                $this->objectManager->clear(); // clear to free memory
+                $corporation = null; // not usable anymore after clear()
             }
 
             usleep($sleep * 1000);

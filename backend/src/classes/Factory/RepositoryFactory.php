@@ -7,6 +7,7 @@ use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -18,6 +19,7 @@ use Neucore\Repository\AppRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
+use Neucore\Repository\EsiTypeRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
 use Neucore\Repository\PlayerRepository;
@@ -71,6 +73,11 @@ class RepositoryFactory
     public function getCorporationMemberRepository(): CorporationMemberRepository
     {
         return $this->getRepository(CorporationMemberRepository::class, CorporationMember::class);
+    }
+
+    public function getEsiTypeRepository(): EsiTypeRepository
+    {
+        return $this->getRepository(EsiTypeRepository::class, EsiType::class);
     }
 
     public function getGroupRepository(): GroupRepository

@@ -8,6 +8,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 /**
  * Fetch and process data from ESI.
@@ -270,6 +271,31 @@ class EsiData
         }
 
         return $alliance;
+    }
+
+    /**
+     * @param array $ids Valid IDs
+     * @return PostUniverseNames200Ok[]
+     * @see https://esi.evetech.net/ui/#/Universe/post_universe_names
+     */
+    public function fetchUniverseNames(array $ids): array
+    {
+        $names = [];
+        while (count($ids) > 0) {
+            $checkIds = array_splice($ids, 0, 1000);
+            try {
+                // it's possible that postUniverseNames() returns null
+                $result = $this->esiApiFactory
+                    ->getUniverseApi()
+                    ->postUniverseNames($checkIds, $this->datasource);
+                if ($result !== null) {
+                    $names = array_merge($names, $result);
+                }
+            } catch (\Exception $e) {
+                $this->log->error($e->getMessage(), ['exception' => $e]);
+            }
+        }
+        return $names;
     }
 
     private function getCorporationEntity(int $id): Corporation

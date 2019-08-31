@@ -5,6 +5,7 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\Player;
 use PHPUnit\Framework\TestCase;
 
@@ -25,7 +26,7 @@ class CorporationMemberTest extends TestCase
             'locationId' => null,
             'logoffDate' => null,
             'logonDate' => null,
-            'shipTypeId' => null,
+            'shipType' => null,
             'startDate' => null,
             'character' => null,
             'player' => null,
@@ -34,7 +35,7 @@ class CorporationMemberTest extends TestCase
         $member->setLocationId(234);
         $member->setLogoffDate(new \DateTime('2018-12-25 19:14:57'));
         $member->setLogonDate(new \DateTime('2018-12-25 19:14:58'));
-        $member->setShipTypeId(345);
+        $member->setShipType((new EsiType())->setId(345));
         $member->setStartDate(new \DateTime('2018-12-25 19:14:58'));
         $member->setCharacter(
             (new Character())
@@ -49,7 +50,7 @@ class CorporationMemberTest extends TestCase
             'locationId' => 234,
             'logoffDate' => '2018-12-25T19:14:57Z',
             'logonDate' => '2018-12-25T19:14:58Z',
-            'shipTypeId' => 345,
+            'shipType' => ['id' => 345, 'name' => null],
             'startDate' => '2018-12-25T19:14:58Z',
             'character' => [
                 'id' => 123,
@@ -115,11 +116,12 @@ class CorporationMemberTest extends TestCase
         $this->assertSame('2018-12-25T19:14:58+00:00', $dt2->format(\DateTime::ATOM));
     }
 
-    public function testSetGetShipTypeId()
+    public function testSetGetShipType()
     {
+        $shipType = new EsiType();
         $member = new CorporationMember();
-        $member->setShipTypeId(22);
-        $this->assertSame(22, $member->getShipTypeId());
+        $member->setShipType($shipType);
+        $this->assertSame($shipType, $member->getShipType());
     }
 
     /**
