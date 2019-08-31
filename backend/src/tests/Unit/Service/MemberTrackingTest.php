@@ -293,7 +293,7 @@ class MemberTrackingTest extends TestCase
             new Response(200, [], '[]') // postUniverseNames for types
         );
 
-        $this->assertNull($this->memberTracking->processData($corp->getId(), $data));
+        $this->memberTracking->processData((int) $corp->getId(), $data);
 
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
         $this->assertSame(2, count($result));

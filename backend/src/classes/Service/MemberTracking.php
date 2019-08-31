@@ -320,6 +320,7 @@ class MemberTracking
                 $corporation = $this->repositoryFactory->getCorporationRepository()->find($corporationId);
             }
             if ($corporation === null) {
+                $this->log->error("MemberTracking::storeMemberData: Corporation $corporationId not found");
                 break;
             }
 

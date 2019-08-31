@@ -28,3 +28,6 @@ parameters:
 		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/PlayerController.php
+		-
+			message: '/Parameter #1 \$environment of static method/'
+			path: %currentWorkingDirectory%/src/tests/RequestFactory.php

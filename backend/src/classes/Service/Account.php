@@ -197,7 +197,7 @@ class Account
         }
 
         // get owner
-        $serializerManager = JWSSerializerManager::create([new CompactSerializer()]);
+        $serializerManager = new JWSSerializerManager([new CompactSerializer()]);
         try {
             $jws = $serializerManager->unserialize($token->getToken());
         } catch (\Exception $e) {

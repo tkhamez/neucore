@@ -288,7 +288,7 @@ class EsiData
                 $result = $this->esiApiFactory
                     ->getUniverseApi()
                     ->postUniverseNames($checkIds, $this->datasource);
-                if ($result !== null) {
+                if (is_array($result)) {
                     $names = array_merge($names, $result);
                 }
             } catch (\Exception $e) {

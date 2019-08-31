@@ -452,7 +452,8 @@ class AuthControllerTest extends WebTestCase
         );
 
         $response = $this->runApp(
-            'GET', '/login-callback?state='.$state,
+            'GET',
+            '/login-callback?state='.$state,
             null,
             null,
             [ClientInterface::class => $this->client],

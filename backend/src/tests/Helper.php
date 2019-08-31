@@ -67,7 +67,7 @@ class Helper
         $jwk = JWKFactory::createRSAKey(2048, ['alg' => 'RS256', 'use' => 'sig']);
 
         // create token
-        $algorithmManager = AlgorithmManager::create([new RS256()]);
+        $algorithmManager = new AlgorithmManager([new RS256()]);
         $jwsBuilder = new JWSBuilder(null, $algorithmManager);
         $payload = (string)json_encode([
             'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
@@ -95,7 +95,7 @@ class Helper
      */
     public static function parseToken(string $token)
     {
-        $serializerManager = JWSSerializerManager::create([new CompactSerializer()]);
+        $serializerManager = new JWSSerializerManager([new CompactSerializer()]);
         $jws = $serializerManager->unserialize($token);
         return json_decode((string)$jws->getPayload(), true);
     }

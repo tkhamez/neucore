@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.2
+
+dd mm 2019
+
+- Member Tracking: more fixes and improvements.
+- Documentation: fixes and improvements.
+
 ## 1.4.1
 
 31 Aug 2019
