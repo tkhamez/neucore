@@ -79,7 +79,7 @@ module.exports = (env, argv) => {
                 test: /node_modules\/markdown-it-attrs\/.*\.js$/,
                 use: 'babel-loader'
             }, {
-                test: /datatables\.net.*/,
+                test: /datatables\.net.*\.js$/,
                 loader: 'imports-loader?define=>false'
             }]
         },

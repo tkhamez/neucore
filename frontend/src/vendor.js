@@ -11,6 +11,7 @@ window.$(function() {
 // data tables
 require('datatables.net');
 require('datatables.net-bs4')(window, $);
+require('datatables.net-bs4/css/dataTables.bootstrap4.css');
 
 // fontawesome (contains font files)
 require('../node_modules/@fortawesome/fontawesome-free/css/all.css');

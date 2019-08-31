@@ -127,15 +127,22 @@ module.exports = {
     mounted: function() {
         const vm = this;
         vm.table = $('.data-table').DataTable({
-            lengthMenu: [[50, 200, 500, 1000, -1], [50, 200, 500, 1000, "All"]],
+            lengthMenu: [[10, 50, 200, 500, 1000, -1], [10, 50, 200, 500, 1000, "All"]],
+            pageLength: 50,
             columns: [
                 { data: 'id' },
-                { data: 'name' },
                 {
+                    data: function (row) {
+                        return '' +
+                            '<a href="https://evewho.com/pilot/' + row.id + '" target="_blank" title="Eve Who">' +
+                                row.name +
+                            '</a>';
+                    }
+                }, {
                     data: function (row) {
                         if (row.player) {
                             return '' +
-                                '<a href="#Tracking/98169165/' + row.player.id + '">' +
+                                '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
                                     row.player.name + ' #' + row.player.id +
                                 '</a>';
                         }
@@ -198,11 +205,11 @@ module.exports = {
         },
 
         route: function() {
-            if (this.currentCorporationId !== this.corporation.id) {
-                this.currentCorporationId = this.corporation.id;
+            if (this.route.length < 3) {
                 this.getMembers();
-            } else if (this.route.length === 3) {
+            } else if (this.route.length === 3 && this.route[2] !== '0') {
                 this.showCharacters(this.route[2]);
+                window.location.hash = '#Tracking/' + this.corporation.id + '/0';
             }
         },
 
@@ -276,6 +283,7 @@ module.exports = {
                 if (error) { // 403 usually
                     return;
                 }
+                vm.table.clear(); // it can happen that two of these requests run in parallel
                 vm.table.rows.add(data);
                 vm.table.draw();
             });
