@@ -222,7 +222,7 @@
                             <tr v-for="character in playerEdit.characters">
                                 <td>{{ character.id }}</td>
                                 <td>
-                                    <a :href="'https://evewho.com/pilot/' + character.name"
+                                    <a :href="'https://evewho.com/character/' + character.id"
                                        title="Eve Who" target="_blank" >{{ character.name }}</a>
                                 </td>
                                 <td>
@@ -327,7 +327,7 @@
                             <tr v-for="removedChar in playerEdit.removedCharacters">
                                 <td>{{ removedChar.characterId }}</td>
                                 <td>
-                                    <a :href="'https://evewho.com/pilot/' + removedChar.characterName"
+                                    <a :href="'https://evewho.com/character/' + removedChar.characterId"
                                        title="Eve Who" target="_blank" >{{ removedChar.characterName }}</a>
                                 </td>
                                 <td>

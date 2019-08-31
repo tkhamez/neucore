@@ -134,7 +134,7 @@ module.exports = {
                 {
                     data: function (row) {
                         return '' +
-                            '<a href="https://evewho.com/pilot/' + row.id + '" target="_blank" title="Eve Who">' +
+                            '<a href="https://evewho.com/character/' + row.id + '" target="_blank" title="Eve Who">' +
                                 row.name +
                             '</a>';
                     }

@@ -30,7 +30,7 @@ Modal window with all characters of one player.
                             </span>
                             <span v-if="character.validToken === null" class="badge badge-info ml-1">No token</span>
                             <a class="badge badge-secondary ml-1"
-                               :href="'https://evewho.com/pilot/' + character.name"
+                               :href="'https://evewho.com/character/' + character.id"
                                target="_blank">Eve Who</a>
                         </div>
                     </div>
