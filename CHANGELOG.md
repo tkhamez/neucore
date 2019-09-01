@@ -2,7 +2,7 @@
 
 ## 1.4.2
 
-dd mm 2019
+1 Sep 2019
 
 - Member Tracking: more fixes and improvements.
 - Documentation: fixes and improvements.
