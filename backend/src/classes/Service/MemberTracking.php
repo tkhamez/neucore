@@ -326,7 +326,9 @@ class MemberTracking
                 if (isset($esiNames[$id])) {
                     $entity->setName($esiNames[$id]->getName());
                 }
-                if (in_array($category, [EsiLocation::CATEGORY_SYSTEM, EsiLocation::CATEGORY_STATION])) {
+                if ($entity instanceof EsiLocation
+                    && in_array($category, [EsiLocation::CATEGORY_SYSTEM, EsiLocation::CATEGORY_STATION])
+                ) {
                     $entity->setCategory($category);
                 }
 

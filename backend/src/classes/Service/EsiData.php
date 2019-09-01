@@ -9,6 +9,7 @@ use Neucore\Entity\EsiLocation;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 /**
@@ -318,19 +319,22 @@ class EsiData
             return null;
         }
 
-        $location = $this->repositoryFactory->getEsiLocationRepository()->find($id);
-        if ($location === null) {
-            $location = new EsiLocation();
-            $location->setId($id);
-            $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
-            $this->objectManager->persist($location);
-        }
-        $location->setName((string) $result->getName());
-        $location->setOwnerId((int) $result->getOwnerId());
-        $location->setSystemId((int) $result->getSolarSystemId());
+        $location = null;
+        if ($result instanceof GetUniverseStructuresStructureIdOk) {
+            $location = $this->repositoryFactory->getEsiLocationRepository()->find($id);
+            if ($location === null) {
+                $location = new EsiLocation();
+                $location->setId($id);
+                $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+                $this->objectManager->persist($location);
+            }
+            $location->setName((string) $result->getName());
+            $location->setOwnerId((int) $result->getOwnerId());
+            $location->setSystemId((int) $result->getSolarSystemId());
 
-        if ($flush) {
-            $this->objectManager->flush();
+            if ($flush) {
+                $this->objectManager->flush();
+            }
         }
 
         return $location;
