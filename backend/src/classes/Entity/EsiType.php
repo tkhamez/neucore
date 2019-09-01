@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neucore\Entity;
 
@@ -9,7 +9,7 @@ use OpenApi\Annotations as OA;
  * An EVE name from the category "inventory_type".
  *
  * @OA\Schema(
- *     required={"id", "name", "category"}
+ *     required={"id", "name"}
  * )
  * @ORM\Entity
  * @ORM\Table(name="esi_types")
@@ -40,7 +40,7 @@ class EsiType implements \JsonSerializable
         ];
     }
 
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -53,9 +53,9 @@ class EsiType implements \JsonSerializable
         return $this->id !== null ? (int) $this->id : null;
     }
 
-    public function setName(string $name)
+    public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->name = mb_substr($name, 0, 255);
 
         return $this;
     }

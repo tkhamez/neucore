@@ -2,7 +2,7 @@
 
 namespace Neucore\Command;
 
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\EsiRateLimitedTrait;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateCharacters extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiRateLimitedTrait;
 
     const UPDATE_OK = 'update OK';
 

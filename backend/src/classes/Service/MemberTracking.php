@@ -4,8 +4,10 @@ namespace Neucore\Service;
 
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
+use Neucore\EsiRateLimitedTrait;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
@@ -19,6 +21,8 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
+    use EsiRateLimitedTrait;
+
     /**
      * @var LoggerInterface
      */
@@ -63,6 +67,8 @@ class MemberTracking
         OAuthToken $oauthToken,
         Config $config
     ) {
+        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
         $this->repositoryFactory = $repositoryFactory;
@@ -237,18 +243,34 @@ class MemberTracking
         }
 
         // collect IDs
-        $charIds = array_map(function (GetCorporationsCorporationIdMembertracking200Ok $item) {
-            return (int) $item->getCharacterId();
-        }, $trackingData);
-        $typeIds = array_map(function (GetCorporationsCorporationIdMembertracking200Ok $item) {
-            return (int) $item->getShipTypeId();
-        }, $trackingData);
+        $charIds = [];
+        $typeIds = [];
+        $systemIds = [];
+        $stationIds = [];
+        $structures = [];
+        foreach ($trackingData as $item) {
+            $charIds[] = (int) $item->getCharacterId();
+            $typeIds[] = (int) $item->getShipTypeId();
+
+            // see also https://github.com/esi/esi-docs/blob/master/docs/asset_location_id.md
+            $locationId = (int) $item->getLocationId();
+            if ($locationId >= 30000000 && $locationId <= 33000000) {
+                $systemIds[] = $locationId;
+            } elseif ($locationId >= 60000000 && $locationId <= 64000000) {
+                $stationIds[] = $locationId;
+            } else { // structures - there should be nothing else (I think)
+                $structures[] = $item;
+            }
+        }
         $typeIds = array_unique($typeIds);
+        $systemIds = array_unique($systemIds);
+        $stationIds = array_unique($stationIds);
 
         // delete members that left
         $this->repositoryFactory->getCorporationMemberRepository()->removeFormerMembers($corporationId, $charIds);
 
-        $this->updateTypeNames($typeIds, $sleep);
+        $this->updateNames($typeIds, $systemIds, $stationIds, $sleep);
+        $this->updateStructures($structures, $sleep);
         $charNames = $this->fetchCharacterNames($charIds);
 
         $this->storeMemberData($corporationId, $trackingData, $charNames, $sleep);
@@ -263,43 +285,103 @@ class MemberTracking
         return $charNames;
     }
 
+    private function updateNames(array $typeIds, array $systemIds, array $stationIds, $sleep): void
+    {
+        // get ESI data
+        $esiNames = []; /* @var PostUniverseNames200Ok[] $esiNames */
+        foreach ($this->esiData->fetchUniverseNames(array_merge($typeIds, $systemIds, $stationIds)) as $name) {
+            if (! in_array($name->getCategory(), [
+                PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE,
+                PostUniverseNames200Ok::CATEGORY_SOLAR_SYSTEM,
+                PostUniverseNames200Ok::CATEGORY_STATION
+            ])) {
+                continue;
+            }
+            $esiNames[$name->getId()] = $name;
+        }
+
+        // create database entries
+        $allIds = [
+            PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE => $typeIds,
+            EsiLocation::CATEGORY_SYSTEM => $systemIds,
+            EsiLocation::CATEGORY_STATION => $stationIds
+        ];
+        $num = 0;
+        foreach ($allIds as $category => $ids) {
+            foreach ($ids as $id) {
+                if ($category === PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE) {
+                    $entity = $this->repositoryFactory->getEsiTypeRepository()->find($id);
+                } else {
+                    $entity = $this->repositoryFactory->getEsiLocationRepository()->find($id);
+                }
+                if ($entity === null) {
+                    if ($category === PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE) {
+                        $entity = new EsiType();
+                    } else {
+                        $entity = new EsiLocation();
+                    }
+                    $entity->setId($id);
+                    $this->objectManager->persist($entity);
+                }
+                if (isset($esiNames[$id])) {
+                    $entity->setName($esiNames[$id]->getName());
+                }
+                if (in_array($category, [EsiLocation::CATEGORY_SYSTEM, EsiLocation::CATEGORY_STATION])) {
+                    $entity->setCategory($category);
+                }
+
+                $num ++;
+                if ($num % 100 === 0) {
+                    $this->objectManager->flush();
+                    $this->objectManager->clear();
+                }
+
+                usleep($sleep * 1000);
+            }
+        }
+    }
+
     /**
-     * @param array $typeIds
+     * @param GetCorporationsCorporationIdMembertracking200Ok[] $memberData
      * @param int $sleep
      */
-    private function updateTypeNames(array $typeIds, $sleep): void
+    private function updateStructures(array $memberData, int $sleep): void
     {
-        // create all database entries first
-        foreach ($typeIds as $typeId) {
-            $type = $this->repositoryFactory->getEsiTypeRepository()->find($typeId);
-            if ($type === null) {
-                $type = new EsiType();
-                $type->setId($typeId);
+        // create/update db entries
+        foreach ($memberData as $num => $member) {
+            if (! $this->objectManager->isOpen()) {
+                $this->log->critical('UpdateCharacters: cannot continue without an open entity manager.');
+                break;
             }
-            $this->objectManager->persist($type);
+            $this->checkErrorLimit();
+
+            $structureId = (int) $member->getLocationId();
+
+            // fetch ESI data
+            $location = null;
+            $character = $this->repositoryFactory->getCharacterRepository()->find($member->getCharacterId());
+            if ($character !== null) {
+                $token = $this->oauthToken->getToken($character);
+                $location = $this->esiData->fetchStructure($structureId, $token, false);
+            }
+
+            // if ESI failed, create location db entry with ID only
+            if ($location === null) {
+                if ($this->repositoryFactory->getEsiLocationRepository()->find($structureId) === null) {
+                    $location = new EsiLocation();
+                    $location->setId($structureId);
+                    $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+                    $this->objectManager->persist($location);
+                }
+            }
+
+            if ($num > 0 && $num % 20 === 0) {
+                $this->objectManager->flush();
+                $this->objectManager->clear();
+            }
 
             usleep($sleep * 1000);
         }
-        $this->objectManager->flush();
-
-        // supplement with ESI data
-        foreach ($this->esiData->fetchUniverseNames($typeIds) as $name) {
-            if ($name->getCategory() !== PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE) {
-                continue;
-            }
-            $id = (int) $name->getId();
-            $type = $this->repositoryFactory->getEsiTypeRepository()->find($id);
-            if ($type === null) {
-                continue;
-            }
-            $type->setName($name->getName());
-            $this->objectManager->persist($type);
-
-            usleep($sleep * 1000);
-        }
-
-        $this->objectManager->flush();
-        $this->objectManager->clear();
     }
 
     /**
@@ -333,7 +415,12 @@ class MemberTracking
             }
             $corpMember->setCharacter($character);
             $corpMember->setName($charNames[$id] ?? null);
-            $corpMember->setLocationId((int) $data->getLocationId());
+            if ($data->getLocationId() !== null) {
+                $location = $this->repositoryFactory->getEsiLocationRepository()->find($data->getLocationId());
+                $corpMember->setLocation($location);
+            } else {
+                $corpMember->setLocation(null);
+            }
             if ($data->getLogoffDate() instanceof \DateTime) {
                 $corpMember->setLogoffDate($data->getLogoffDate());
             }

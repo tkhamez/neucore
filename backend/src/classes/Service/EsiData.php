@@ -5,6 +5,7 @@ namespace Neucore\Service;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EsiLocation;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
@@ -285,9 +286,7 @@ class EsiData
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 // it's possible that postUniverseNames() returns null
-                $result = $this->esiApiFactory
-                    ->getUniverseApi()
-                    ->postUniverseNames($checkIds, $this->datasource);
+                $result = $this->esiApiFactory->getUniverseApi()->postUniverseNames($checkIds, $this->datasource);
                 if (is_array($result)) {
                     $names = array_merge($names, $result);
                 }
@@ -296,6 +295,45 @@ class EsiData
             }
         }
         return $names;
+    }
+
+    /**
+     * Fetch structure info from ESI and create/update DB entry on success.
+     */
+    public function fetchStructure(int $id, string $accessToken, $flush = true): ?EsiLocation
+    {
+        if ($accessToken === '') {
+            return null;
+        }
+
+        try {
+            $result = $this->esiApiFactory->getUniverseApi($accessToken)
+                ->getUniverseStructuresStructureId($id, $this->datasource);
+        } catch (\Exception $e) {
+            if (in_array($e->getCode(), [401, 403])) {
+                $this->log->info("EsiData::fetchStructure: ". $e->getCode() . " Unauthorized/Forbidden: $id");
+            } else {
+                $this->log->error($e->getMessage(), ['exception' => $e]);
+            }
+            return null;
+        }
+
+        $location = $this->repositoryFactory->getEsiLocationRepository()->find($id);
+        if ($location === null) {
+            $location = new EsiLocation();
+            $location->setId($id);
+            $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+            $this->objectManager->persist($location);
+        }
+        $location->setName((string) $result->getName());
+        $location->setOwnerId((int) $result->getOwnerId());
+        $location->setSystemId((int) $result->getSolarSystemId());
+
+        if ($flush) {
+            $this->objectManager->flush();
+        }
+
+        return $location;
     }
 
     private function getCorporationEntity(int $id): Corporation

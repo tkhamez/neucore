@@ -38,13 +38,12 @@ class CorporationMember implements \JsonSerializable
     private $name;
 
     /**
-     * Corporation ticker.
-     *
-     * @OA\Property(type="integer", nullable=true)
-     * @ORM\Column(type="bigint", name="location_id", nullable=true)
-     * @var integer|null
+     * @OA\Property(ref="#/components/schemas/EsiLocation", nullable=true)
+     * @ORM\ManyToOne(targetEntity="EsiLocation")
+     * @ORM\JoinColumn(name="esi_location_id")
+     * @var EsiLocation|null
      */
-    private $locationId;
+    private $location;
 
     /**
      * @OA\Property(nullable=true)
@@ -63,6 +62,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * @OA\Property(ref="#/components/schemas/EsiType", nullable=true)
      * @ORM\ManyToOne(targetEntity="EsiType")
+     * @ORM\JoinColumn(name="esi_type_id")
      * @var EsiType|null
      */
     private $shipType;
@@ -97,7 +97,7 @@ class CorporationMember implements \JsonSerializable
         $result = [
             'id' => $this->getId(),
             'name' => $this->name,
-            'locationId' => $this->locationId,
+            'location' => $this->location,
             'logoffDate' => $this->getLogoffDate() !== null ? $this->getLogoffDate()->format(Api::DATE_FORMAT) : null,
             'logonDate' => $this->getLogonDate() !== null ? $this->getLogonDate()->format(Api::DATE_FORMAT) : null,
             'shipType' => $this->shipType,
@@ -162,28 +162,16 @@ class CorporationMember implements \JsonSerializable
         return $this->name;
     }
 
-    /**
-     * Set locationId.
-     *
-     * @param int|null $locationId
-     *
-     * @return CorporationMember
-     */
-    public function setLocationId($locationId = null)
+    public function setLocation(?EsiLocation $location): self
     {
-        $this->locationId = $locationId;
+        $this->location = $location;
 
         return $this;
     }
 
-    /**
-     * Get locationId.
-     *
-     * @return int|null
-     */
-    public function getLocationId()
+    public function getLocation(): ?EsiLocation
     {
-        return $this->locationId;
+        return $this->location;
     }
 
     /**

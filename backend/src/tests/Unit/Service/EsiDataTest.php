@@ -5,11 +5,9 @@ namespace Tests\Unit\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
+use Neucore\Entity\EsiLocation;
 use Neucore\Factory\EsiApiFactory;
-use Neucore\Repository\AllianceRepository;
-use Neucore\Repository\CharacterRepository;
 use Neucore\Entity\Corporation;
-use Neucore\Repository\CorporationRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
@@ -41,19 +39,9 @@ class EsiDataTest extends TestCase
     private $client;
 
     /**
-     * @var AllianceRepository
+     * @var RepositoryFactory
      */
-    private $alliRepo;
-
-    /**
-     * @var CorporationRepository
-     */
-    private $corpRepo;
-
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private $repoFactory;
 
     /**
      * @var EsiData
@@ -81,16 +69,13 @@ class EsiDataTest extends TestCase
         $this->client = new Client();
         $esiApiFactory = new EsiApiFactory($this->client, new Config([]));
 
-        $repoFactory = new RepositoryFactory($this->em);
-        $this->alliRepo = $repoFactory->getAllianceRepository();
-        $this->corpRepo = $repoFactory->getCorporationRepository();
-        $this->charRepo = $repoFactory->getCharacterRepository();
+        $this->repoFactory = new RepositoryFactory($this->em);
 
         $this->cs = new EsiData(
             $this->log,
             $esiApiFactory,
             new ObjectManager($this->em, $this->log),
-            $repoFactory,
+            $this->repoFactory,
             new Config([])
         );
 
@@ -101,7 +86,7 @@ class EsiDataTest extends TestCase
             $this->log,
             $esiApiFactory,
             new ObjectManager($em, $this->log),
-            $repoFactory,
+            $this->repoFactory,
             new Config([])
         );
     }
@@ -231,7 +216,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char->getCorporation()->getName());
 
         $this->em->clear();
-        $charDb = $this->charRepo->find(123);
+        $charDb = $this->repoFactory->getCharacterRepository()->find(123);
         $this->assertNull($charDb->getCorporation());
     }
 
@@ -257,7 +242,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char->getCorporation()->getName());
 
         $this->em->clear();
-        $charDb = $this->charRepo->find(123);
+        $charDb = $this->repoFactory->getCharacterRepository()->find(123);
         $this->assertSame(234, $charDb->getCorporation()->getId());
         $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2018-03-26 17:24:30', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
@@ -295,7 +280,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($corp->getAlliance());
 
         $this->em->clear();
-        $corpDb = $this->corpRepo->find(234);
+        $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
         $this->assertNull($corpDb);
     }
 
@@ -326,7 +311,7 @@ class EsiDataTest extends TestCase
         $this->assertGreaterThan('2018-07-29 16:30:30', $corp->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $this->em->clear();
-        $corpDb = $this->corpRepo->find(234);
+        $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
         $this->assertSame(234, $corpDb->getId());
         $this->assertSame(345, $corpDb->getAlliance()->getId());
     }
@@ -352,9 +337,9 @@ class EsiDataTest extends TestCase
         $this->em->clear();
 
         // load from DB
-        $corporation = $this->corpRepo->find(200);
+        $corporation = $this->repoFactory->getCorporationRepository()->find(200);
         $this->assertNull($corporation->getAlliance());
-        $alliance = $this->alliRepo->find(100);
+        $alliance = $this->repoFactory->getAllianceRepository()->find(100);
         $this->assertSame([], $alliance->getCorporations());
     }
 
@@ -388,7 +373,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('-A-', $alli->getTicker());
 
         $this->em->clear();
-        $alliDb = $this->alliRepo->find(345);
+        $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
         $this->assertNull($alliDb);
     }
 
@@ -409,7 +394,7 @@ class EsiDataTest extends TestCase
         $this->assertGreaterThan('2018-07-29 16:30:30', $alli->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $this->em->clear();
-        $alliDb = $this->alliRepo->find(345);
+        $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
         $this->assertSame(345, $alliDb->getId());
     }
 
@@ -428,8 +413,6 @@ class EsiDataTest extends TestCase
 
     public function testFetchUniverseNames()
     {
-        $this->testHelper->emptyDb();
-
         $this->client->setResponse(new Response(200, [], '[{
             "id": 123,
             "name": "The Name",
@@ -449,5 +432,33 @@ class EsiDataTest extends TestCase
         $this->assertSame('Another Name', $names[1]->getName());
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_CHARACTER, $names[0]->getCategory());
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE, $names[1]->getCategory());
+    }
+
+    public function testFetchStructure()
+    {
+        $this->testHelper->emptyDb();
+
+        $this->client->setResponse(new Response(200, [], '{
+            "name": "V-3YG7 VI - The Capital",
+            "owner_id": 109299958,
+            "solar_system_id": 30000142
+        }'));
+
+        $location = $this->cs->fetchStructure(1023100200300, 'access-token');
+
+        $this->assertSame(1023100200300, $location->getId());
+        $this->assertSame('V-3YG7 VI - The Capital', $location->getName());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
+        $this->assertSame(109299958, $location->getOwnerId());
+        $this->assertSame(30000142, $location->getSystemId());
+
+        $this->em->clear();
+
+        $locationDb = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
+        $this->assertSame(1023100200300, $locationDb->getId());
+        $this->assertSame('V-3YG7 VI - The Capital', $locationDb->getName());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $locationDb->getCategory());
+        $this->assertSame(109299958, $locationDb->getOwnerId());
+        $this->assertSame(30000142, $locationDb->getSystemId());
     }
 }

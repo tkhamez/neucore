@@ -269,42 +269,57 @@ class MemberTrackingTest extends TestCase
     public function testProcessData()
     {
         $corp = (new Corporation())->setId(10)->setName('corp')->setTicker('C');
-        $char = (new Character())->setId(100)->setName('char 1');
-        $member = (new CorporationMember())->setId(100)->setName('char 1')->setCharacter($char)->setCorporation($corp);
+        $char = (new Character())->setId(102)->setName('char 2')->setAccessToken('at');
+        $member = (new CorporationMember())->setId(100)->setName('char 2')->setCharacter($char)->setCorporation($corp);
         $this->em->persist($corp);
         $this->em->persist($member);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
         $data = [
             new GetCorporationsCorporationIdMembertracking200Ok([
-                'character_id' => 100,
-                'location_id' => 200,
+                'character_id' => 101,
+                'location_id' => 60008494,
                 'logoff_date' => new \DateTime('2018-12-25 19:45:10'),
                 'logon_date' => new \DateTime('2018-12-25 19:45:11'),
-                'ship_type_id' => 300,
+                'ship_type_id' => 670,
                 'start_date' => new \DateTime('2018-12-25 19:45:12'),
             ]),
-            new GetCorporationsCorporationIdMembertracking200Ok(['character_id' => 101]),
+            new GetCorporationsCorporationIdMembertracking200Ok([
+                'character_id' => 102,
+                'location_id' => 1023100200300,
+            ]),
         ];
         $this->client->setResponse(
             new Response(200, [], '[
-                {"category": "character", "id": "100", "name": "char 1"},
-                {"category": "character", "id": "101", "name": "char 2"}
-            ]'), // postUniverseNames for char names
-            new Response(200, [], '[]') // postUniverseNames for types
+                {"category": "solar_system", "id": 60008494, "name": "Amarr ..."},
+                {"category": "inventory_type", "id": 670, "name": "Capsule"}
+            ]'), // postUniverseNames for types, system, stations
+            new Response(200, [], '{"name": "the structure name"}'), // structure
+            new Response(200, [], '[
+                {"category": "character", "id": "101", "name": "char 1"},
+                {"category": "character", "id": "102", "name": "char 2"}
+            ]') // postUniverseNames for char names
         );
 
         $this->memberTracking->processData((int) $corp->getId(), $data);
 
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
         $this->assertSame(2, count($result));
-        $this->assertSame(100, $result[0]->getId());
-        $this->assertSame(100, $result[0]->getCharacter()->getId());
-        $this->assertSame(200, $result[0]->getLocationId());
+
+        $this->assertSame(101, $result[0]->getId());
+        $this->assertSame('char 1', $result[0]->getName());
+        $this->assertNull($result[0]->getCharacter());
+        $this->assertSame(60008494, $result[0]->getLocation()->getId());
+        $this->assertSame('Amarr ...', $result[0]->getLocation()->getName());
         $this->assertSame('2018-12-25T19:45:10+00:00', $result[0]->getLogoffDate()->format(\DATE_ATOM));
         $this->assertSame('2018-12-25T19:45:11+00:00', $result[0]->getLogonDate()->format(\DATE_ATOM));
-        $this->assertSame(300, $result[0]->getShipType()->getId());
+        $this->assertSame(670, $result[0]->getShipType()->getId());
+        $this->assertSame('Capsule', $result[0]->getShipType()->getName());
         $this->assertSame('2018-12-25T19:45:12+00:00', $result[0]->getStartDate()->format(\DATE_ATOM));
-        $this->assertSame(101, $result[1]->getId());
-        $this->assertNull($result[1]->getCharacter());
+
+        $this->assertSame(102, $result[1]->getId());
+        $this->assertSame('char 2', $result[1]->getName());
+        $this->assertSame(102, $result[1]->getCharacter()->getId());
+        $this->assertSame(1023100200300, $result[1]->getLocation()->getId());
+        $this->assertSame('the structure name', $result[1]->getLocation()->getName());
     }
 }

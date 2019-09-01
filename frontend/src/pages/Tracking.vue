@@ -81,7 +81,7 @@
                             <th>Token status changed *</th>
                             <th>Logon Date *</th>
                             <th>Logoff Date *</th>
-                            <th>Location ID</th>
+                            <th>Location</th>
                             <th>Ship Type</th>
                             <th>Start Date *</th>
                         </tr>
@@ -130,72 +130,75 @@ module.exports = {
             lengthMenu: [[10, 50, 200, 500, 1000, -1], [10, 50, 200, 500, 1000, "All"]],
             pageLength: 50,
             order: [[4, "desc"]],
-            columns: [
-                {
-                    data: function (row) {
-                        return '' +
-                            '<a href="https://evewho.com/character/' + row.id + '" target="_blank" title="Eve Who">' +
-                                (row.name ? row.name : row.id) +
-                            '</a>';
-                    }
-                }, {
-                    data: function (row) {
-                        if (! row.player) {
-                            return '';
-                        }
-                        return '' +
-                            '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
-                                row.player.name + ' #' + row.player.id +
-                            '</a>';
-                    }
-                }, {
-                    data: function (row) {
-                        if (! row.character) {
-                            return '';
-                        }
-                        if (row.character.validToken) return 'valid';
-                        if (row.character.validToken === false) return 'invalid';
-                        if (row.character.validToken === null) return 'n/a';
-                    }
-                }, {
-                    data: function (row) {
-                        if (row.character && row.character.validTokenTime) {
-                            return vm.$root.formatDate(row.character.validTokenTime);
-                        }
+            columns: [{
+                data: function (row) {
+                    return '' +
+                        '<a href="https://evewho.com/character/' + row.id + '" target="_blank" title="Eve Who">' +
+                            (row.name ? row.name : row.id) +
+                        '</a>';
+                }
+            }, {
+                data: function (row) {
+                    if (! row.player) {
                         return '';
                     }
-                }, {
-                    data: function (row) {
-                        if (row.logonDate) {
-                            return vm.$root.formatDate(row.logonDate);
-                        }
+                    return '' +
+                        '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
+                            row.player.name + ' #' + row.player.id +
+                        '</a>';
+                }
+            }, {
+                data: function (row) {
+                    if (! row.character) {
                         return '';
                     }
-                }, {
-                    data: function (row) {
-                        if (row.logoffDate) {
-                            return vm.$root.formatDate(row.logoffDate);
-                        }
-                        return '';
+                    if (row.character.validToken) return 'valid';
+                    if (row.character.validToken === false) return 'invalid';
+                    if (row.character.validToken === null) return 'n/a'; // only SSOv1
+                }
+            }, {
+                data: function (row) {
+                    if (row.character && row.character.validTokenTime) {
+                        return vm.$root.formatDate(row.character.validTokenTime);
                     }
-                },
-                { data: 'locationId' },
-                {
-                    data: function (row) {
-                        if (row.shipType) {
-                            return row.shipType.name ? row.shipType.name : row.shipType.id;
-                        }
-                        return '';
+                    return '';
+                }
+            }, {
+                data: function (row) {
+                    if (row.logonDate) {
+                        return vm.$root.formatDate(row.logonDate);
                     }
-                },  {
-                    data: function (row) {
-                        if (row.startDate) {
-                            return vm.$root.formatDate(row.startDate);
-                        }
-                        return '';
+                    return '';
+                }
+            }, {
+                data: function (row) {
+                    if (row.logoffDate) {
+                        return vm.$root.formatDate(row.logoffDate);
                     }
-                },
-            ]
+                    return '';
+                }
+            }, {
+                data: function (row) {
+                    if (row.location) {
+                        return row.location.name ? row.location.name : row.location.id;
+                    }
+                    return '';
+                }
+            }, {
+                data: function (row) {
+                    if (row.shipType) {
+                        return row.shipType.name ? row.shipType.name : row.shipType.id;
+                    }
+                    return '';
+                }
+            }, {
+                data: function (row) {
+                    if (row.startDate) {
+                        return vm.$root.formatDate(row.startDate);
+                    }
+                    return '';
+                }
+            }]
         });
 
         if (this.initialized) { // on page change

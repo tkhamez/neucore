@@ -14,6 +14,7 @@ use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
@@ -52,6 +53,7 @@ class Helper
         Alliance::class,
         SystemVariable::class,
         EsiType::class,
+        EsiLocation::class,
     ];
 
     /**

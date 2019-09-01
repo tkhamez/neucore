@@ -5,6 +5,7 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\Player;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +24,7 @@ class CorporationMemberTest extends TestCase
         $this->assertSame([
             'id' => 123,
             'name' => 'test char',
-            'locationId' => null,
+            'location' => null,
             'logoffDate' => null,
             'logonDate' => null,
             'shipType' => null,
@@ -32,7 +33,7 @@ class CorporationMemberTest extends TestCase
             'player' => null,
         ], json_decode((string) json_encode($member), true));
 
-        $member->setLocationId(234);
+        $member->setLocation((new EsiLocation())->setId(234));
         $member->setLogoffDate(new \DateTime('2018-12-25 19:14:57'));
         $member->setLogonDate(new \DateTime('2018-12-25 19:14:58'));
         $member->setShipType((new EsiType())->setId(345));
@@ -47,7 +48,7 @@ class CorporationMemberTest extends TestCase
         $this->assertSame([
             'id' => 123,
             'name' => 'test char',
-            'locationId' => 234,
+            'location' => ['id' => 234, 'name' => null, 'category' => null],
             'logoffDate' => '2018-12-25T19:14:57Z',
             'logonDate' => '2018-12-25T19:14:58Z',
             'shipType' => ['id' => 345, 'name' => null],
@@ -81,11 +82,16 @@ class CorporationMemberTest extends TestCase
         $this->assertSame('nam', $member->getName());
     }
 
-    public function testSetGetLocationId()
+    public function testSetGetLocation()
     {
         $member = new CorporationMember();
-        $member->setLocationId(11);
-        $this->assertSame(11, $member->getLocationId());
+        $location = new EsiLocation();
+
+        $member->setLocation($location);
+        $this->assertSame($location, $member->getLocation());
+
+        $member->setLocation(null);
+        $this->assertNull($member->getLocation());
     }
 
     /**

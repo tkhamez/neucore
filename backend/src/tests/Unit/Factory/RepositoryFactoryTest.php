@@ -7,6 +7,7 @@ use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
@@ -19,6 +20,7 @@ use Neucore\Repository\AppRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
+use Neucore\Repository\EsiLocationRepository;
 use Neucore\Repository\EsiTypeRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
@@ -87,6 +89,13 @@ class RepositoryFactoryTest extends TestCase
         $repo = $this->factory->getCorporationMemberRepository();
         $this->assertInstanceOf(CorporationMemberRepository::class, $repo);
         $this->assertSame(CorporationMember::class, $repo->getClassName());
+    }
+
+    public function testGetEsiLocationRepository()
+    {
+        $repo = $this->factory->getEsiLocationRepository();
+        $this->assertInstanceOf(EsiLocationRepository::class, $repo);
+        $this->assertSame(EsiLocation::class, $repo->getClassName());
     }
 
     public function testGetEsiTypeRepository()

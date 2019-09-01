@@ -2,7 +2,7 @@
 
 namespace Neucore\Command;
 
-use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\EsiRateLimitedTrait;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateMemberTracking extends Command
 {
     use LogOutput;
-    use EsiRateLimited;
+    use EsiRateLimitedTrait;
 
     /**
      * @var RepositoryFactory

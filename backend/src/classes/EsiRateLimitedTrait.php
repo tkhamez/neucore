@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Neucore\Command\Traits;
+namespace Neucore;
 
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\SystemVariableRepository;
 
-trait EsiRateLimited
+trait EsiRateLimitedTrait
 {
     /**
      * @var SystemVariableRepository

@@ -60,9 +60,9 @@ class EsiApiFactory
         return $this->getInstance(MailApi::class, $accessToken);
     }
 
-    public function getUniverseApi(): UniverseApi
+    public function getUniverseApi(string $accessToken = ''): UniverseApi
     {
-        return $this->getInstance(UniverseApi::class);
+        return $this->getInstance(UniverseApi::class, $accessToken);
     }
 
     private function getInstance(string $class, string $token = '')
