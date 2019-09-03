@@ -4,6 +4,7 @@
 
 1 Sep 2019
 
+- API **BC break**: CorporationMember model changed
 - Member Tracking: more fixes and improvements.
 - Documentation: fixes and improvements.
 
