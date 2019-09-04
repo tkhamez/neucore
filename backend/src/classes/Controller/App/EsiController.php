@@ -314,7 +314,7 @@ class EsiController extends BaseController
         // get the token
         $token = $this->tokenService->getToken($character);
         if ($token === '') {
-            return $this->response->withStatus(400, 'Character has no token.');
+            return $this->response->withStatus(400, 'Character has no valid token.');
         }
 
         $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $method, $body);
