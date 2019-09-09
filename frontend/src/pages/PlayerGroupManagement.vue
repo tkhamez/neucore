@@ -27,11 +27,11 @@
                         <span class="hdl-small">status = managed</span>
                     </h3>
                     <div class="list-group">
-                        <span v-for="player in players">
+                        <span v-for="managedPlayer in players">
                             <a class="list-group-item list-group-item-action"
-                               :class="{ active: playerId === player.id }"
-                               :href="'#PlayerGroupManagement/' + player.id">
-                                {{ player.name }} #{{ player.id }}
+                               :class="{ active: playerId === managedPlayer.id }"
+                               :href="'#PlayerGroupManagement/' + managedPlayer.id">
+                                {{ managedPlayer.name }} #{{ managedPlayer.id }}
                             </a>
                         </span>
                     </div>
@@ -45,9 +45,9 @@
                     <div v-if="playerData" class="card-body">
                         <span class="text-muted">
                             <span v-if="hasRole('user-admin')">
-                                <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }} #{{ player.id }}</a>,
+                                <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }} #{{ playerData.id }}</a>,
                             </span>
-                            <span v-if="! hasRole('user-admin')">{{ playerData.name }} #{{ player.id }},</span>
+                            <span v-if="! hasRole('user-admin')">{{ playerData.name }} #{{ playerData.id }},</span>
                             status: {{ playerData.status }}
                         </span>
                         <a class="badge badge-info ml-1" href="" v-on:click.prevent="showCharacters(playerData.id)">
