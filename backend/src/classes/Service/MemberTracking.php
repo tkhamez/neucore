@@ -161,9 +161,9 @@ class MemberTracking
 
     /**
      * @param string $name
-     * @return ResourceOwnerAccessTokenInterface|null Token including the resource_owner_id property.
+     * @return array|null The value from the system variable plus "character_id"
      */
-    public function refreshDirectorToken(string $name): ?ResourceOwnerAccessTokenInterface
+    public function getDirectorTokenVariableData(string $name): ?array
     {
         $number = (int) explode('_', $name)[2];
 
@@ -177,6 +177,18 @@ class MemberTracking
             return null;
         }
 
+        $tokenData['character_id'] = $characterData['character_id'];
+
+        return $tokenData;
+    }
+
+    /**
+     * @param array $tokenData The result from getDirectorTokenVariableData()
+     * @return ResourceOwnerAccessTokenInterface|null Token including the resource_owner_id property.
+     * @see MemberTracking::getDirectorTokenVariableData()
+     */
+    public function refreshDirectorToken(array $tokenData): ?ResourceOwnerAccessTokenInterface
+    {
         try {
             $token = $this->oauthToken->refreshAccessToken(new AccessToken([
                 'access_token' => $tokenData['access'],
@@ -191,7 +203,7 @@ class MemberTracking
             'access_token' => $token->getToken(),
             'refresh_token' => $token->getRefreshToken(),
             'expires' => $token->getExpires(),
-            'resource_owner_id' => $characterData['character_id'],
+            'resource_owner_id' => $tokenData['character_id'],
         ]);
     }
 
@@ -231,52 +243,7 @@ class MemberTracking
         return $memberTracking;
     }
 
-    /**
-     * @param int $corporationId
-     * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
-     * @param int $sleep milliseconds
-     */
-    public function processData(int $corporationId, array $trackingData, $sleep = 0): void
-    {
-        if (count($trackingData) === 0) {
-            return;
-        }
-
-        // collect IDs
-        $charIds = [];
-        $typeIds = [];
-        $systemIds = [];
-        $stationIds = [];
-        $structures = [];
-        foreach ($trackingData as $item) {
-            $charIds[] = (int) $item->getCharacterId();
-            $typeIds[] = (int) $item->getShipTypeId();
-
-            // see also https://github.com/esi/esi-docs/blob/master/docs/asset_location_id.md
-            $locationId = (int) $item->getLocationId();
-            if ($locationId >= 30000000 && $locationId <= 33000000) {
-                $systemIds[] = $locationId;
-            } elseif ($locationId >= 60000000 && $locationId <= 64000000) {
-                $stationIds[] = $locationId;
-            } else { // structures - there should be nothing else (I think)
-                $structures[] = $item;
-            }
-        }
-        $typeIds = array_unique($typeIds);
-        $systemIds = array_unique($systemIds);
-        $stationIds = array_unique($stationIds);
-
-        // delete members that left
-        $this->repositoryFactory->getCorporationMemberRepository()->removeFormerMembers($corporationId, $charIds);
-
-        $this->updateNames($typeIds, $systemIds, $stationIds, $sleep);
-        $this->updateStructures($structures, $sleep);
-        $charNames = $this->fetchCharacterNames($charIds);
-
-        $this->storeMemberData($corporationId, $trackingData, $charNames, $sleep);
-    }
-
-    private function fetchCharacterNames(array $charIds): array
+    public function fetchCharacterNames(array $charIds): array
     {
         $charNames = [];
         foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
@@ -285,7 +252,15 @@ class MemberTracking
         return $charNames;
     }
 
-    private function updateNames(array $typeIds, array $systemIds, array $stationIds, $sleep): void
+    /**
+     * Resolves ESI IDs to names and creates/updates database entries.
+     *
+     * @param array $typeIds
+     * @param array $systemIds
+     * @param array $stationIds
+     * @param int $sleep
+     */
+    public function updateNames(array $typeIds, array $systemIds, array $stationIds, $sleep = 0): void
     {
         // get ESI data
         $esiNames = []; /* @var PostUniverseNames200Ok[] $esiNames */
@@ -341,14 +316,21 @@ class MemberTracking
                 usleep($sleep * 1000);
             }
         }
+
+        $this->objectManager->flush();
     }
 
     /**
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $memberData
+     * @param ResourceOwnerAccessTokenInterface $directorToken Director char access token as primary token to
+     *        resolve structure IDs to names.
      * @param int $sleep
      */
-    private function updateStructures(array $memberData, int $sleep): void
-    {
+    public function updateStructures(
+        array $memberData,
+        ResourceOwnerAccessTokenInterface $directorToken = null,
+        int $sleep = 0
+    ): void {
         // create/update db entries
         foreach ($memberData as $num => $member) {
             if (! $this->objectManager->isOpen()) {
@@ -359,12 +341,22 @@ class MemberTracking
 
             $structureId = (int) $member->getLocationId();
 
-            // fetch ESI data
+            // fetch ESI data, try director token first, then character's token if available
             $location = null;
-            $character = $this->repositoryFactory->getCharacterRepository()->find($member->getCharacterId());
-            if ($character !== null) {
-                $token = $this->oauthToken->getToken($character);
-                $location = $this->esiData->fetchStructure($structureId, $token, false);
+            if ($directorToken) {
+                try {
+                    $directorAccessToken = $this->oauthToken->refreshAccessToken($directorToken)->getToken();
+                } catch (IdentityProviderException $e) {
+                    $directorAccessToken = '';
+                }
+                $location = $this->esiData->fetchStructure($structureId, $directorAccessToken, false);
+            }
+            if ($location === null) {
+                $character = $this->repositoryFactory->getCharacterRepository()->find($member->getCharacterId());
+                if ($character !== null) {
+                    $characterAccessToken = $this->oauthToken->getToken($character);
+                    $location = $this->esiData->fetchStructure($structureId, $characterAccessToken, false);
+                }
             }
 
             // if ESI failed, create location db entry with ID only
@@ -384,6 +376,8 @@ class MemberTracking
 
             usleep($sleep * 1000);
         }
+
+        $this->objectManager->flush();
     }
 
     /**
@@ -392,7 +386,7 @@ class MemberTracking
      * @param array $charNames
      * @param int $sleep
      */
-    private function storeMemberData(int $corporationId, array $trackingData, array $charNames, int $sleep): void
+    public function storeMemberData(int $corporationId, array $trackingData, array $charNames, int $sleep = 0): void
     {
         $corporation = null;
         foreach ($trackingData as $num => $data) {
@@ -455,35 +449,53 @@ class MemberTracking
 
     private function storeDirector(EveAuthentication $eveAuth, Corporation $corporation): bool
     {
-        // determine next available number suffix
-        $existingDirectors = $this->repositoryFactory->getSystemVariableRepository()->getDirectors();
+        $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
+
+        // check if character already exists and determine next available number suffix
         $maxNumber = 0;
-        foreach ($existingDirectors as $existingDirector) {
+        $existingDirectors = [];
+        foreach ($systemVariableRepository->getDirectors() as $existingDirector) {
             $number = (int) explode('_', $existingDirector->getName())[2];
             $maxNumber = max($maxNumber, $number);
+            $value = \json_decode($existingDirector->getValue(), true);
+            if ($value && isset($value['character_id'])) {
+                $existingDirectors[$value['character_id']] = [
+                    'system_variable' => $existingDirector,
+                    'number' => $number
+                ];
+            }
         }
         $nextNumber = $maxNumber + 1;
 
         // store new director
-        $newDirectorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $nextNumber);
-        $newDirectorChar->setScope(SystemVariable::SCOPE_SETTINGS);
-        $newDirectorChar->setValue((string) json_encode([
-            'character_id' => (int) $eveAuth->getCharacterId(),
+        $authCharacterId = (int) $eveAuth->getCharacterId();
+        if (isset($existingDirectors[$authCharacterId])) {
+            $directorChar = $existingDirectors[$authCharacterId]['system_variable'];
+            $directorToken = $systemVariableRepository->find(
+                SystemVariable::DIRECTOR_TOKEN . $existingDirectors[$authCharacterId]['number']
+            );
+        } else {
+            $directorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $nextNumber);
+            $directorChar->setScope(SystemVariable::SCOPE_SETTINGS);
+            $directorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $nextNumber);
+            $this->objectManager->persist($directorChar);
+            $this->objectManager->persist($directorToken);
+        }
+        $directorChar->setValue((string) json_encode([
+            'character_id' => $authCharacterId,
             'character_name' => $eveAuth->getCharacterName(),
             'corporation_id' => $corporation->getId(),
             'corporation_name' => $corporation->getName(),
-            'corporation_ticker' => $corporation->getTicker(),
+            'corporation_ticker' => $corporation->getTicker()
         ]));
-        $newDirectorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $nextNumber);
-        $newDirectorToken->setScope(SystemVariable::SCOPE_BACKEND);
-        $newDirectorToken->setValue((string) json_encode([
+        $directorToken->setScope(SystemVariable::SCOPE_BACKEND);
+        $directorToken->setValue((string) json_encode([
             'access' => $eveAuth->getToken()->getToken(),
             'refresh' => $eveAuth->getToken()->getRefreshToken(),
             'expires' => $eveAuth->getToken()->getExpires(),
+            'scopes' => $eveAuth->getScopes(),
         ]));
 
-        $this->objectManager->persist($newDirectorChar);
-        $this->objectManager->persist($newDirectorToken);
         return $this->objectManager->flush();
     }
 }

@@ -5,6 +5,8 @@ namespace Tests\Unit\Service;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
@@ -58,7 +60,7 @@ class MemberTrackingTest extends TestCase
      */
     private $memberTracking;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
@@ -130,7 +132,7 @@ class MemberTrackingTest extends TestCase
             new Response(200, [], '{"name": "ten", "ticker": "-10-"}') // getCorporation
         );
 
-        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));
+        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']), ['s1']);
         $result = $this->memberTracking->verifyAndStoreDirector($eveAuth);
 
         $this->assertTrue($result);
@@ -148,7 +150,48 @@ class MemberTrackingTest extends TestCase
             'access' => 'at',
             'refresh' => null,
             'expires' => null,
+            'scopes' => ['s1'],
         ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 2)->getValue(), true));
+    }
+
+    public function testVerifyAndStoreDirectorUpdateExistingDirector()
+    {
+        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue(\json_encode([
+            'character_id' => 100,
+            'character_name' => 'cname',
+            'corporation_id' => 10,
+            'corporation_name' => 'ten',
+            'corporation_ticker' => '-10-',
+        ]));
+        $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
+        $this->em->persist($char);
+        $this->em->persist($token);
+        $this->em->flush();
+        $this->client->setResponse(
+            new Response(200, [], '{"corporation_id": 11}'), // getCharactersCharacterId
+            new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
+            new Response(200, [], '{"name": "not ten", "ticker": "-11-"}') // getCorporation
+        );
+
+        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']), ['s1', 's2']);
+        $result = $this->memberTracking->verifyAndStoreDirector($eveAuth);
+
+        $this->assertTrue($result);
+        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
+        $this->assertSame([
+            'character_id' => 100,
+            'character_name' => 'cname',
+            'corporation_id' => 11,
+            'corporation_name' => 'not ten',
+            'corporation_ticker' => '-11-',
+        ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_CHAR . 1)->getValue(), true));
+        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
+        $this->assertSame([
+            'access' => 'at',
+            'refresh' => null,
+            'expires' => null,
+            'scopes' => ['s1', 's2'],
+        ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 1)->getValue(), true));
     }
 
     public function testRemoveDirector()
@@ -196,35 +239,45 @@ class MemberTrackingTest extends TestCase
         ], $data);
     }
 
-    public function testRefreshDirectorTokenNoData()
+    public function testGetDirectorTokenVariable()
     {
-        $this->assertNull($this->memberTracking->refreshDirectorToken(SystemVariable::DIRECTOR_CHAR . 1));
+        $this->assertNull($this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1));
+
+        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"character_id": 100}');
+        $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
+            ->setValue('{"access": "at", "refresh": "rt", "expires": 1568471332}');
+        $this->em->persist($char);
+        $this->em->persist($token);
+        $this->em->flush();
+
+        $this->assertSame([
+            'access' => 'at',
+            'refresh' => 'rt',
+            'expires' => 1568471332,
+            'character_id' => 100,
+         ], $this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1));
     }
 
     public function testRefreshDirectorTokenIdentityProviderException()
     {
-        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"character_id": 100}');
-        $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
-            ->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() - 1).'}');
-        $this->em->persist($char);
-        $this->em->persist($token);
-        $this->em->flush();
-
         $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
 
-        $this->assertNull($this->memberTracking->refreshDirectorToken(SystemVariable::DIRECTOR_CHAR . 1));
+        $this->assertNull($this->memberTracking->refreshDirectorToken([
+            'access' => 'at',
+            'refresh' => 'rt',
+            'expires' => 1568471332,
+            'character_id' => 100,
+        ]));
     }
 
     public function testRefreshDirectorTokenSuccess()
     {
-        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"character_id": 100}');
-        $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
-            ->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
-        $this->em->persist($char);
-        $this->em->persist($token);
-        $this->em->flush();
-
-        $result = $this->memberTracking->refreshDirectorToken(SystemVariable::DIRECTOR_CHAR . 1);
+        $result = $this->memberTracking->refreshDirectorToken([
+            'access' => 'at',
+            'refresh' => 'rt',
+            'expires' => time() + 60*20,
+            'character_id' => 100,
+        ]);
         $this->assertInstanceOf(AccessTokenInterface::class, $result);
     }
 
@@ -263,17 +316,91 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(101, $actual[1]->getCharacterId());
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testProcessData()
+    public function testUpdateNames()
+    {
+        $this->client->setResponse(
+            new Response(200, [], '[
+                {"category": "station", "id": 60008494, "name": "Amarr VIII (Oris) - Emperor Family Academy"},
+                {"category": "solar_system", "id": 30000142, "name": "Jita"},
+                {"category": "inventory_type", "id": 670, "name": "Capsule"}
+            ]') // postUniverseNames for types, system, stations
+        );
+
+        $this->memberTracking->updateNames([670], [30000142], [60008494]);
+
+        $resultTypes = $this->repositoryFactory->getEsiTypeRepository()->findBy([]);
+        $this->assertSame(1, count($resultTypes));
+        $this->assertSame(670, $resultTypes[0]->getId());
+        $this->assertSame('Capsule', $resultTypes[0]->getName());
+
+        $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);
+        $this->assertSame(2, count($resultLocations));
+        $this->assertSame(30000142, $resultLocations[0]->getId());
+        $this->assertSame(EsiLocation::CATEGORY_SYSTEM, $resultLocations[0]->getCategory());
+        $this->assertSame('Jita', $resultLocations[0]->getName());
+        $this->assertSame(60008494, $resultLocations[1]->getId());
+        $this->assertSame(EsiLocation::CATEGORY_STATION, $resultLocations[1]->getCategory());
+        $this->assertSame('Amarr VIII (Oris) - Emperor Family Academy', $resultLocations[1]->getName());
+    }
+
+    public function testUpdateStructures()
+    {
+        $data =  new GetCorporationsCorporationIdMembertracking200Ok([
+            'character_id' => 102,
+            'location_id' => 1023100200300,
+        ]);
+
+        $this->client->setResponse(
+            new Response(200, [], '{
+                "name": "the structure name",
+                "owner_id": 123,
+                "solar_system_id": 456
+            }') // structure
+        );
+
+        $this->memberTracking->updateStructures([$data], new AccessToken(['access_token' => 'at']));
+
+        $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);
+        $this->assertSame(1, count($resultLocations));
+        $this->assertSame(1023100200300, $resultLocations[0]->getId());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $resultLocations[0]->getCategory());
+        $this->assertSame('the structure name', $resultLocations[0]->getName());
+        $this->assertSame(123, $resultLocations[0]->getOwnerId());
+        $this->assertSame(456, $resultLocations[0]->getSystemId());
+    }
+
+    public function testFetchCharacterNames()
+    {
+        $this->client->setResponse(
+            new Response(200, [], '[
+                {"category": "character", "id": "101", "name": "char 1"},
+                {"category": "character", "id": "102", "name": "char 2"},
+                {"category": "character", "id": "103", "name": "char 3"}
+            ]') // postUniverseNames for char names
+        );
+
+        $names = $this->memberTracking->fetchCharacterNames([101, 102, 103]);
+
+        $this->assertSame([101 => 'char 1', 102 => 'char 2', 103 => 'char 3'], $names);
+    }
+
+    public function testStoreMemberData()
     {
         $corp = (new Corporation())->setId(10)->setName('corp')->setTicker('C');
         $char = (new Character())->setId(102)->setName('char 2')->setAccessToken('at');
-        $member = (new CorporationMember())->setId(100)->setName('char 2')->setCharacter($char)->setCorporation($corp);
+        $member = (new CorporationMember())->setId(102)->setName('char 2')->setCharacter($char)->setCorporation($corp);
+        $type = (new EsiType())->setId(670);
+        $location1 = (new EsiLocation())->setId(60008494)->setCategory(EsiLocation::CATEGORY_STATION);
+        $location2 = (new EsiLocation())->setId(1023100200300)->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+        $location3 = (new EsiLocation())->setId(30000142)->setCategory(EsiLocation::CATEGORY_STATION);
         $this->em->persist($corp);
         $this->em->persist($member);
+        $this->em->persist($type);
+        $this->em->persist($location1);
+        $this->em->persist($location2);
+        $this->em->persist($location3);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
+
         $data = [
             new GetCorporationsCorporationIdMembertracking200Ok([
                 'character_id' => 101,
@@ -287,39 +414,35 @@ class MemberTrackingTest extends TestCase
                 'character_id' => 102,
                 'location_id' => 1023100200300,
             ]),
+            new GetCorporationsCorporationIdMembertracking200Ok([
+                'character_id' => 103,
+                'location_id' => 30000142,
+            ]),
         ];
-        $this->client->setResponse(
-            new Response(200, [], '[
-                {"category": "solar_system", "id": 60008494, "name": "Amarr ..."},
-                {"category": "inventory_type", "id": 670, "name": "Capsule"}
-            ]'), // postUniverseNames for types, system, stations
-            new Response(200, [], '{"name": "the structure name"}'), // structure
-            new Response(200, [], '[
-                {"category": "character", "id": "101", "name": "char 1"},
-                {"category": "character", "id": "102", "name": "char 2"}
-            ]') // postUniverseNames for char names
-        );
+        $names = [101 => 'char 1', 102 => 'char 2', 103 => 'char 3'];
 
-        $this->memberTracking->processData((int) $corp->getId(), $data);
+        $this->memberTracking->storeMemberData((int) $corp->getId(), $data, $names);
 
+        $this->em->clear();
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
-        $this->assertSame(2, count($result));
+        $this->assertSame(3, count($result));
 
         $this->assertSame(101, $result[0]->getId());
         $this->assertSame('char 1', $result[0]->getName());
         $this->assertNull($result[0]->getCharacter());
         $this->assertSame(60008494, $result[0]->getLocation()->getId());
-        $this->assertSame('Amarr ...', $result[0]->getLocation()->getName());
         $this->assertSame('2018-12-25T19:45:10+00:00', $result[0]->getLogoffDate()->format(\DATE_ATOM));
         $this->assertSame('2018-12-25T19:45:11+00:00', $result[0]->getLogonDate()->format(\DATE_ATOM));
         $this->assertSame(670, $result[0]->getShipType()->getId());
-        $this->assertSame('Capsule', $result[0]->getShipType()->getName());
         $this->assertSame('2018-12-25T19:45:12+00:00', $result[0]->getStartDate()->format(\DATE_ATOM));
 
         $this->assertSame(102, $result[1]->getId());
         $this->assertSame('char 2', $result[1]->getName());
         $this->assertSame(102, $result[1]->getCharacter()->getId());
         $this->assertSame(1023100200300, $result[1]->getLocation()->getId());
-        $this->assertSame('the structure name', $result[1]->getLocation()->getName());
+
+        $this->assertSame(103, $result[2]->getId());
+        $this->assertSame('char 3', $result[2]->getName());
+        $this->assertSame(30000142, $result[2]->getLocation()->getId());
     }
 }

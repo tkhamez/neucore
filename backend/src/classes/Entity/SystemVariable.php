@@ -285,6 +285,7 @@ class SystemVariable implements \JsonSerializable
                 $this->value = implode(',', $allianceIds);
                 break;
             case self::MAIL_ACCOUNT_DISABLED_BODY:
+            case self::CUSTOMIZATION_HOME_MARKDOWN:
                 $this->value = $value;
                 break;
             case self::CUSTOMIZATION_HOME_LOGO:
@@ -292,9 +293,6 @@ class SystemVariable implements \JsonSerializable
                 if (preg_match('#^data:image/[a-z]+;base64,[a-zA-Z0-9+/]+={0,2}$#', $value)) {
                     $this->value = $value;
                 }
-                break;
-            case self::CUSTOMIZATION_HOME_MARKDOWN:
-                $this->value = $value;
                 break;
             default:
                 $this->value = trim(str_replace(["\r\n", "\n"], ' ', $value));

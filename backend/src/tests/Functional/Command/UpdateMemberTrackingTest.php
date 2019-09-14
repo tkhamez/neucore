@@ -133,8 +133,9 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->client->setResponse(
             new Response(200, [], '[{"character_id": 100}]'), // corporations/1/membertracking/
             new Response(200, [], '[{"category": "character", "id": "100", "name": "Paul"}]'), // universe/names/
-            new Response(200, [], '[]'), // postUniverseNames for types
-            new Response(200, [], '[]') // corporations/1/membertracking/
+            new Response(200, [], '[]'), // structure
+            new Response(200, [], '[]'), // postUniverseNames for char names
+            new Response(200, [], '[]') // corporations/2/membertracking/
         );
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0], [
@@ -142,11 +143,13 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         ]);
 
         $actual = explode("\n", $output);
-        $this->assertSame(5, count($actual));
+        $this->assertSame(7, count($actual));
         $this->assertStringEndsWith('Started "update-member-tracking"', $actual[0]);
-        $this->assertStringEndsWith('  Updated tracking data for 1 members of corporation 1', $actual[1]);
-        $this->assertStringEndsWith('  Updated tracking data for 0 members of corporation 2', $actual[2]);
-        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[3]);
-        $this->assertStringEndsWith('', $actual[4]);
+        $this->assertStringEndsWith('  Updated ship/system/station names', $actual[1]);
+        $this->assertStringEndsWith('  Updated structure names', $actual[2]);
+        $this->assertStringEndsWith('  Updated tracking data for 1 members of corporation 1', $actual[3]);
+        $this->assertStringEndsWith('  Updated tracking data for 0 members of corporation 2', $actual[4]);
+        $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[5]);
+        $this->assertStringEndsWith('', $actual[6]);
     }
 }

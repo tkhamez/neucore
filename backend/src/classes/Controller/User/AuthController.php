@@ -3,6 +3,7 @@
 namespace Neucore\Controller\User;
 
 use Brave\Sso\Basics\AuthenticationProvider;
+use Neucore\Api;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -313,12 +314,9 @@ class AuthController extends BaseController
         if (in_array($prefix, [self::STATE_PREFIX_STATUS_MANAGED, self::STATE_PREFIX_STATUS_MANAGED_ALT])) {
             return [];
         } elseif ($prefix === self::STATE_PREFIX_MAIL) {
-            return ['esi-mail.send_mail.v1'];
+            return [Api::SCOPE_MAIL];
         } elseif ($prefix === self::STATE_PREFIX_DIRECTOR) {
-            return [
-                'esi-characters.read_corporation_roles.v1',
-                'esi-corporations.track_members.v1',
-            ];
+            return [API::SCOPE_ROLES, API::SCOPE_TRACKING, Api::SCOPE_STRUCTURES];
         }
 
         $scopes = $this->config['eve']['scopes'];

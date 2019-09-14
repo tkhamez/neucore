@@ -2,6 +2,7 @@
 
 namespace Tests\Functional\Controller\User;
 
+use Neucore\Api;
 use Neucore\Controller\User\AuthController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -323,7 +324,7 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
-        list($token, $keySet) = Helper::generateToken(['esi-mail.send_mail.v1']);
+        list($token, $keySet) = Helper::generateToken([Api::SCOPE_MAIL]);
         $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
@@ -365,7 +366,7 @@ class AuthControllerTest extends WebTestCase
         $h->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
         $this->loginUser(123456);
 
-        list($token, $keySet) = Helper::generateToken(['esi-mail.send_mail.v1']);
+        list($token, $keySet) = Helper::generateToken([Api::SCOPE_MAIL]);
         $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
@@ -395,7 +396,7 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackDirectorLoginWrongScopes()
     {
-        list($token, $keySet) = Helper::generateToken(['esi-characters.read_corporation_roles.v1']);
+        list($token, $keySet) = Helper::generateToken([API::SCOPE_ROLES]);
         $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
         $this->client->setResponse(
@@ -426,7 +427,7 @@ class AuthControllerTest extends WebTestCase
     public function testCallbackDirectorLoginSuccess()
     {
         list($token, $keySet) = Helper::generateToken(
-            ['esi-characters.read_corporation_roles.v1', 'esi-corporations.track_members.v1'],
+            [API::SCOPE_ROLES, API::SCOPE_TRACKING, Api::SCOPE_STRUCTURES],
             'hs'
         );
 

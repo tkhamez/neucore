@@ -231,7 +231,11 @@ class SettingsController extends BaseController
 
         $valid = false;
 
-        $accessToken = $memberTracking->refreshDirectorToken($name);
+        $accessToken = null;
+        $tokenData = $memberTracking->getDirectorTokenVariableData($name);
+        if ($tokenData) {
+            $accessToken = $memberTracking->refreshDirectorToken($tokenData);
+        }
         if ($accessToken !== null) {
             $valid = $memberTracking->verifyDirectorRole(
                 (int) $accessToken->getResourceOwnerId(),

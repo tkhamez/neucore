@@ -2,12 +2,15 @@
 
 namespace Neucore\Command;
 
+use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
+use Neucore\Api;
 use Neucore\EsiRateLimitedTrait;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -72,6 +75,7 @@ class UpdateMemberTracking extends Command
         $this->writeLine('Started "update-member-tracking"', false);
 
         $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
+        $processedCorporations = [];
         foreach ($systemVariableRepository->getDirectors() as $characterVariable) {
             $this->checkErrorLimit();
 
@@ -81,13 +85,22 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
+            if (in_array($character->corporation_id, $processedCorporations)) {
+                // don't process the same corp twice
+                continue;
+            }
+
             $corporation = $this->repositoryFactory->getCorporationRepository()->find($character->corporation_id);
             if ($corporation === null) {
                 $this->writeLine('  Corporation not found for ' . $characterVariable->getName(), false);
                 continue;
             }
 
-            $token = $this->memberTracking->refreshDirectorToken($characterVariable->getName());
+            $token = null;
+            $tokenData = $this->memberTracking->getDirectorTokenVariableData($characterVariable->getName());
+            if ($tokenData) {
+                $token = $this->memberTracking->refreshDirectorToken($tokenData);
+            }
             if ($token === null) {
                 $this->writeLine('  Error refreshing token for ' . $characterVariable->getName(), false);
                 continue;
@@ -101,16 +114,76 @@ class UpdateMemberTracking extends Command
                 );
                 continue;
             }
-            $this->memberTracking->processData((int) $corporation->getId(), $trackingData, $sleep);
+
+            if (! isset($tokenData['scopes']) || ! in_array(Api::SCOPE_STRUCTURES, $tokenData['scopes'])) {
+                $token = null;
+            }
+            $this->processData((int) $corporation->getId(), $trackingData, $sleep, $token);
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .
                 ' members of corporation ' . $corporation->getId()
             );
 
+            $processedCorporations[] = $corporation->getId();
+
             usleep($sleep * 1000);
         }
 
         $this->writeLine('Finished "update-member-tracking"', false);
+    }
+
+    /**
+     * @param int $corporationId
+     * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
+     * @param int $sleep milliseconds
+     * @param ResourceOwnerAccessTokenInterface $token Used to resolve structure IDs to names if available
+     */
+    private function processData(
+        int $corporationId,
+        array $trackingData,
+        $sleep,
+        ResourceOwnerAccessTokenInterface $token = null
+    ): void {
+        if (count($trackingData) === 0) {
+            return;
+        }
+
+        // collect IDs
+        $charIds = [];
+        $typeIds = [];
+        $systemIds = [];
+        $stationIds = [];
+        $structures = [];
+        foreach ($trackingData as $item) {
+            $charIds[] = (int) $item->getCharacterId();
+            $typeIds[] = (int) $item->getShipTypeId();
+
+            // see also https://github.com/esi/esi-docs/blob/master/docs/asset_location_id.md
+            $locationId = (int) $item->getLocationId();
+            if ($locationId >= 30000000 && $locationId <= 33000000) {
+                $systemIds[] = $locationId;
+            } elseif ($locationId >= 60000000 && $locationId <= 64000000) {
+                $stationIds[] = $locationId;
+            } else { // structures - there should be nothing else
+                $structures[] = $item;
+            }
+        }
+        $typeIds = array_unique($typeIds);
+        $systemIds = array_unique($systemIds);
+        $stationIds = array_unique($stationIds);
+
+        // delete members that left
+        $this->repositoryFactory->getCorporationMemberRepository()->removeFormerMembers($corporationId, $charIds);
+
+        $this->memberTracking->updateNames($typeIds, $systemIds, $stationIds, $sleep);
+        $this->writeLine('  Updated ship/system/station names');
+
+        $this->memberTracking->updateStructures($structures, $token, $sleep);
+        $this->writeLine('  Updated structure names');
+
+        $charNames = $this->memberTracking->fetchCharacterNames($charIds);
+
+        $this->memberTracking->storeMemberData($corporationId, $trackingData, $charNames, $sleep);
     }
 }
