@@ -34,7 +34,7 @@
 <body class="neucore">
     <p id="unsupportedBrowser">
         You are using an <strong>outdated</strong> browser. Please
-        <a href="https://browsehappy.com/" target="_blank">upgrade your browser</a>
+        <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
         to improve your experience and security.
     </p>
 
@@ -64,11 +64,12 @@
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
                 <a v-cloak :href="settings.customization_github" class="github text-dark text-muted"
-                   target="_blank" title="Neucore on GitHub"><span class="fab fa-github"></span></a>
+                   target="_blank" rel="noopener noreferrer"
+                   title="Neucore on GitHub"><span class="fab fa-github"></span></a>
             </div>
             <div class="container-fluid small">
                 "EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
-                <a href="http://www.ccpgames.com/" target="_blank">CCP hf</a>.
+                <a href="http://www.ccpgames.com/" target="_blank" rel="noopener noreferrer">CCP hf</a>.
             </div>
         </footer>
     </div>

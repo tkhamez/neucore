@@ -24,7 +24,7 @@
                                 <span class="text-muted small">
                                     Choose this if the character was sold to another player, check the
                                     <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
-                                        target="_blank">Character Bazaar</a>.<br>
+                                       target="_blank" rel="noopener noreferrer">Character Bazaar</a>.<br>
                                     Creates an appropriate "removed character" entry.
                                 </span>
                             </label>
@@ -152,7 +152,7 @@
                     <p v-cloak>
                         See
                         <a :href="settings.customization_github + '/blob/master/doc/API.md'"
-                           target="_blank">doc/API.md</a>
+                           target="_blank" rel="noopener noreferrer">doc/API.md</a>
                         for permissions for each role.
                     </p>
                     <div class="input-group mb-1">
@@ -223,7 +223,9 @@
                                 <td>{{ character.id }}</td>
                                 <td>
                                     <a :href="'https://evewho.com/character/' + character.id"
-                                       title="Eve Who" target="_blank" >{{ character.name }}</a>
+                                       title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                        {{ character.name }}
+                                    </a>
                                 </td>
                                 <td>
                                     <span v-if="character.corporation">
@@ -328,7 +330,9 @@
                                 <td>{{ removedChar.characterId }}</td>
                                 <td>
                                     <a :href="'https://evewho.com/character/' + removedChar.characterId"
-                                       title="Eve Who" target="_blank" >{{ removedChar.characterName }}</a>
+                                       title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                        {{ removedChar.characterName }}
+                                    </a>
                                 </td>
                                 <td>
                                     <span v-if="removedChar.removedDate">

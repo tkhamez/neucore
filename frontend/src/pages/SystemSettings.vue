@@ -108,7 +108,10 @@
                         )">save</button>
                         <small class="form-text text-muted">
                             Optional text area on the home page.
-                            Supports <a href="https://markdown-it.github.io/" target="_blank">Markdown</a>,
+                            Supports
+                            <a href="https://markdown-it.github.io/" target="_blank" rel="noopener noreferrer">
+                                Markdown
+                            </a>,
                             with "typographer" and these plugins:
                             <a href="https://github.com/arve0/markdown-it-attrs">attrs</a>
                                 (use with Bootstrap classes "text-primary", "bg-warning"

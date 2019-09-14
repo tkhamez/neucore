@@ -36,7 +36,8 @@
                             Here you can generate a new application secret.
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
-                            <a v-cloak target="_blank" :href="settings.customization_github +
+                            <a v-cloak target="_blank" rel="noopener noreferrer"
+                               :href="settings.customization_github +
                                     '/blob/master/doc/documentation.md#authentication-of-applications'">
                                 Authentication of applications</a>.
                         </p>

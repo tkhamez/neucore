@@ -60,7 +60,7 @@
                 <br>
                 Learn more about the security of <i>EVE Online SSO</i> in this
                 <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
-                    target="_blank">dev-blog</a> article.
+                    target="_blank" rel="noopener noreferrer">dev-blog</a> article.
             </p>
         </div>
         <div v-cloak v-if="authChar" class="card mt-3 mb-3">

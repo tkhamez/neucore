@@ -75,15 +75,15 @@
                 <table class="table table-hover table-sm member-table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Character Name</th>
-                            <th>Player Account</th>
-                            <th>ESI Token</th>
-                            <th>Token status changed *</th>
-                            <th>Logon Date *</th>
-                            <th>Logoff Date *</th>
-                            <th>Location</th>
-                            <th>Ship Type</th>
-                            <th>Start Date *</th>
+                            <th scope="col">Character</th>
+                            <th scope="col">Account</th>
+                            <th scope="col">ESI</th>
+                            <th scope="col" style="font-weight: normal;">changed*</th>
+                            <th scope="col">Logon*</th>
+                            <th scope="col">Logoff*</th>
+                            <th scope="col">Location (System, Structure)</th>
+                            <th scope="col">Ship</th>
+                            <th scope="col">Born*</th>
                         </tr>
                     </thead>
                 </table>
@@ -133,7 +133,8 @@ module.exports = {
             columns: [{
                 data: function (row) {
                     return '' +
-                        '<a href="https://evewho.com/character/' + row.id + '" target="_blank" title="Eve Who">' +
+                        '<a href="https://evewho.com/character/' + row.id + '" ' +
+                            'target="_blank" rel="noopener noreferrer" title="Eve Who">' +
                             (row.name ? row.name : row.id) +
                         '</a>';
                 }
@@ -155,6 +156,7 @@ module.exports = {
                     if (row.character.validToken) return 'valid';
                     if (row.character.validToken === false) return 'invalid';
                     if (row.character.validToken === null) return 'n/a'; // only SSOv1
+                    return '';
                 }
             }, {
                 data: function (row) {
@@ -313,8 +315,8 @@ module.exports = {
     .member-table {
         font-size: 90%;
     }
-    .member-table thead th {
-        @supports (position: sticky) {
+    @supports (position: sticky) {
+        .member-table thead th {
             position: sticky;
             top: 80px;
         }

@@ -22,7 +22,10 @@
                 <div class="form-group">
                     <label for="esiRoute">ESI route</label>
                     <small class="text-muted">
-                        see also <a href="https://esi.evetech.net/ui" target="_blank">https://esi.evetech.net/ui</a>,
+                        see also
+                        <a href="https://esi.evetech.net/ui" target="_blank" rel="noopener noreferrer">
+                            https://esi.evetech.net/ui
+                        </a>,
                         only GET request are implemented.
                     </small>
                     <multiselect v-model="selectedPath" :options="paths" :loading="false"
