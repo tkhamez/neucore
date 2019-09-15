@@ -109,20 +109,24 @@
                         <small class="form-text text-muted">
                             Optional text area on the home page.
                             Supports
-                            <a href="https://markdown-it.github.io/" target="_blank" rel="noopener noreferrer">
-                                Markdown
-                            </a>,
+                            <a href="https://markdown-it.github.io/" target="_blank" rel="noopener">Markdown</a>,
                             with "typographer" and these plugins:
-                            <a href="https://github.com/arve0/markdown-it-attrs">attrs</a>
-                                (use with Bootstrap classes "text-primary", "bg-warning"
-                                <a href="https://bootswatch.com/darkly/">etc.</a>),
-                            <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json">
-                                emoji</a> light,
-                            <a href="https://github.com/markdown-it/markdown-it-mark">mark</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-sub">sub</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-sup">sup</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-ins">ins</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-abbr">abbr</a>.
+                            <a href="https://github.com/arve0/markdown-it-attrs"
+                               target="_blank" rel="noopener">attrs</a>
+                            (use with Bootstrap classes "text-primary", "bg-warning"
+                            <a href="https://bootswatch.com/darkly/" target="_blank" rel="noopener">etc.</a>),
+                            <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json"
+                               target="_blank" rel="noopener">emoji</a> light,
+                            <a href="https://github.com/markdown-it/markdown-it-mark"
+                               target="_blank" rel="noopener">mark</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-sub"
+                               target="_blank" rel="noopener">sub</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-sup"
+                               target="_blank" rel="noopener">sup</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-ins"
+                               target="_blank" rel="noopener">ins</a>,
+                            <a href="https://github.com/markdown-it/markdown-it-abbr"
+                               target="_blank" rel="noopener">abbr</a>.
                         </small>
                     </div>
                     <hr>
