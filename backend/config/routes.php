@@ -77,13 +77,16 @@ return [
     '/api/user/character/show'                => ['GET',  CharacterController::class.'::show'],
     '/api/user/character/{id}/update'         => ['PUT',  CharacterController::class.'::update'],
 
-    '/api/user/corporation/all'                     => ['GET',  CorporationController::class.'::all'],
-    '/api/user/corporation/with-groups'             => ['GET',  CorporationController::class.'::withGroups'],
-    '/api/user/corporation/add/{id}'                => ['POST', CorporationController::class.'::add'],
-    '/api/user/corporation/{id}/add-group/{gid}'    => ['PUT',  CorporationController::class.'::addGroup'],
-    '/api/user/corporation/{id}/remove-group/{gid}' => ['PUT',  CorporationController::class.'::removeGroup'],
-    '/api/user/corporation/tracked-corporations'    => ['GET',  CorporationController::class.'::trackedCorporations'],
-    '/api/user/corporation/{id}/members'            => ['GET',  CorporationController::class.'::members'],
+    '/api/user/corporation/all'                                  => ['GET',  CorporationController::class.'::all'],
+    '/api/user/corporation/with-groups'                          => ['GET',  CorporationController::class.'::withGroups'],
+    '/api/user/corporation/add/{id}'                             => ['POST', CorporationController::class.'::add'],
+    '/api/user/corporation/{id}/add-group/{gid}'                 => ['PUT',  CorporationController::class.'::addGroup'],
+    '/api/user/corporation/{id}/remove-group/{gid}'              => ['PUT',  CorporationController::class.'::removeGroup'],
+    '/api/user/corporation/{id}/get-groups-tracking'             => ['GET',  CorporationController::class.'::getGroupsTracking'],
+    '/api/user/corporation/{id}/add-group-tracking/{groupId}'    => ['PUT',  CorporationController::class.'::addGroupTracking'],
+    '/api/user/corporation/{id}/remove-group-tracking/{groupId}' => ['PUT',  CorporationController::class.'::removeGroupTracking'],
+    '/api/user/corporation/tracked-corporations'                 => ['GET',  CorporationController::class.'::trackedCorporations'],
+    '/api/user/corporation/{id}/members'                         => ['GET',  CorporationController::class.'::members'],
 
     '/api/user/esi/request' => ['GET', EsiController::class.'::request'],
 

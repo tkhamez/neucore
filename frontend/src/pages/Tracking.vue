@@ -4,7 +4,7 @@
         <!--suppress HtmlUnknownTag -->
         <characters :swagger="swagger" ref="charactersModal"></characters>
 
-        <div class="row mb-3">
+        <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Member Tracking</h1>
 

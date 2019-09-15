@@ -3,17 +3,18 @@
 require("./index.scss");
 
 import NavBar from './components/NavBar.vue';
-import Home             from './pages/Home.vue';
-import Groups           from './pages/Groups.vue';
-import GroupManagement  from './pages/GroupManagement.vue';
-import AppManagement    from './pages/AppManagement.vue';
-import GroupAdmin       from './pages/GroupAdmin.vue';
-import AppAdmin         from './pages/AppAdmin.vue';
-import UserAdmin        from './pages/UserAdmin.vue';
+import Home from './pages/Home.vue';
+import Groups from './pages/Groups.vue';
+import GroupManagement from './pages/GroupManagement.vue';
+import AppManagement from './pages/AppManagement.vue';
 import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
-import Esi              from './pages/Esi.vue';
-import SystemSettings   from './pages/SystemSettings.vue';
-import Tracking         from './pages/Tracking.vue';
+import GroupAdmin from './pages/GroupAdmin.vue';
+import AppAdmin from './pages/AppAdmin.vue';
+import UserAdmin from './pages/UserAdmin.vue';
+import TrackingAdmin from './pages/TrackingAdmin.vue';
+import Esi from './pages/Esi.vue';
+import SystemSettings from './pages/SystemSettings.vue';
+import Tracking from './pages/Tracking.vue';
 
 window.Vue.mixin({
     data: function () {
@@ -167,10 +168,11 @@ const app = new window.Vue({
         Groups,
         GroupManagement,
         AppManagement,
+        PlayerGroupManagement,
         GroupAdmin,
         AppAdmin,
         UserAdmin,
-        PlayerGroupManagement,
+        TrackingAdmin,
         Esi,
         SystemSettings,
         Tracking,
@@ -191,10 +193,11 @@ const app = new window.Vue({
             'Groups',
             'GroupManagement',
             'AppManagement',
+            'PlayerGroupManagement',
             'GroupAdmin',
             'AppAdmin',
             'UserAdmin',
-            'PlayerGroupManagement',
+            'TrackingAdmin',
             'Esi',
             'SystemSettings',
             'Tracking',

@@ -106,6 +106,39 @@ class CorporationTest extends TestCase
         $this->assertFalse($corp->hasGroup($group2->getId()));
     }
 
+    public function testAddGetRemoveGroupTracking()
+    {
+        $corp = new Corporation();
+        $g1 = new Group();
+        $g2 = new Group();
+
+        $this->assertSame([], $corp->getGroupsTracking());
+
+        $corp->addGroupTracking($g1);
+        $corp->addGroupTracking($g2);
+        $this->assertSame([$g1, $g2], $corp->getGroupsTracking());
+
+        $corp->removeGroupTracking($g2);
+        $this->assertSame([$g1], $corp->getGroupsTracking());
+    }
+
+    public function testHasGroupTracking()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $corp = new Corporation();
+        $corp->addGroupTracking($group1);
+
+        $this->assertTrue($corp->hasGroupTracking($group1->getId()));
+        $this->assertFalse($corp->hasGroupTracking($group2->getId()));
+    }
+
     public function testAddGetRemoveCharacter()
     {
         $corp = new Corporation();

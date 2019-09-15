@@ -26,6 +26,9 @@ parameters:
 			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/GroupController.php
 		-
+			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
+			path: %currentWorkingDirectory%/src/classes/Controller/User/CorporationController.php
+		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'
 			path: %currentWorkingDirectory%/src/classes/Controller/User/PlayerController.php
 		-

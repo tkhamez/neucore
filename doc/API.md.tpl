@@ -77,6 +77,7 @@ Allows a player to change the system settings.
 #### tracking
 
 Allows a player to view corporation member tracking data.
+In addition, membership in a group that determines which company is visible is necessary.
 
 {tracking}
 

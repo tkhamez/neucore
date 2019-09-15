@@ -5,7 +5,12 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
+use Neucore\Entity\Player;
+use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
+use Neucore\Service\ObjectManager;
+use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,6 +24,11 @@ use Psr\Http\Message\ServerRequestInterface;
 class CorporationController extends BaseController
 {
     /**
+     * @var UserAuth
+     */
+    private $userAuth;
+
+    /**
      * @var Corporation
      */
     private $corp;
@@ -27,6 +37,17 @@ class CorporationController extends BaseController
      * @var Group
      */
     private $group;
+
+    public function __construct(
+        ResponseInterface $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        UserAuth $userAuth
+    ) {
+        parent::__construct($response, $objectManager, $repositoryFactory);
+
+        $this->userAuth = $userAuth;
+    }
 
     /**
      * @OA\Get(
@@ -257,15 +278,155 @@ class CorporationController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
+     *     path="/user/corporation/{id}/get-groups-tracking",
+     *     operationId="getGroupsTracking",
+     *     summary="Returns required groups to view member tracking data.",
+     *     description="Needs role: user-admin",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the corporation.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of groups.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation not found."
+     *     )
+     * )
+     */
+    public function getGroupsTracking(string $id): ResponseInterface
+    {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
+
+        if ($corporation === null) {
+            return $this->response->withStatus(404);
+        }
+
+        return $this->withJson($corporation->getGroupsTracking());
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/corporation/{id}/add-group-tracking/{groupId}",
+     *     operationId="addGroupTracking",
+     *     summary="Add a group to the corporation for member tracking permission.",
+     *     description="Needs role: user-admin",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the corporation.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Group added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation and/or group not found."
+     *     )
+     * )
+     */
+    public function addGroupTracking(string $id, string $groupId): ResponseInterface
+    {
+        if (! $this->findCorpAndGroup($id, $groupId)) {
+            return $this->response->withStatus(404);
+        }
+
+        if (! $this->corp->hasGroupTracking($this->group->getId())) {
+            $this->corp->addGroupTracking($this->group);
+        }
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/corporation/{id}/remove-group-tracking/{groupId}",
+     *     operationId="removeGroupTracking",
+     *     summary="Remove a group for member tracking permission from the corporation.",
+     *     description="Needs role: user-admin",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the corporation.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Group removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Corporation and/or group not found."
+     *     )
+     * )
+     */
+    public function removeGroupTracking(string $id, string $groupId): ResponseInterface
+    {
+        if (! $this->findCorpAndGroup($id, $groupId)) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->corp->removeGroupTracking($this->group);
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
      *     path="/user/corporation/tracked-corporations",
      *     operationId="trackedCorporations",
-     *     summary="Returns all corporations that have member tracking data.",
-     *     description="Needs role: tracking",
+     *     summary="Returns corporations that have member tracking data.",
+     *     description="Needs role: user-admin or tracking and membership in appropriate group",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Response(
      *         response="200",
-     *         description="List of characters.",
+     *         description="List of corporations.",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
      *     ),
      *     @OA\Response(
@@ -278,7 +439,18 @@ class CorporationController extends BaseController
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
 
-        return $this->withJson($corporations);
+        if ($this->getPlayer()->hasRole(Role::USER_ADMIN)) {
+            return $this->withJson($corporations);
+        }
+
+        $result = [];
+        foreach ($corporations as $corporation) {
+            if ($this->checkPermission($corporation)) {
+                $result[] = $corporation;
+            }
+        }
+
+        return $this->withJson($result);
     }
 
     /**
@@ -286,7 +458,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/{id}/members",
      *     operationId="members",
      *     summary="Returns tracking data of corporation members.",
-     *     description="Needs role: tracking",
+     *     description="Needs role: tracking and membership in appropriate group",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -339,6 +511,11 @@ class CorporationController extends BaseController
      */
     public function members(string $id, ServerRequestInterface $request): ResponseInterface
     {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $id);
+        if (! $corporation || !$this->checkPermission($corporation)) {
+            return $this->response->withStatus(403);
+        }
+
         $inactive = $this->getQueryParam($request, 'inactive');
         $active = $this->getQueryParam($request, 'active');
         $account = $this->getQueryParam($request, 'account');
@@ -370,5 +547,24 @@ class CorporationController extends BaseController
         $this->group = $group;
 
         return true;
+    }
+
+    /**
+     * Checks if logged in user is member of a group that may see the member tracking data of a corporation.
+     */
+    private function checkPermission(Corporation $corporation): bool
+    {
+        $playerGroups = $this->getPlayer()->getGroupIds();
+        foreach ($corporation->getGroupsTracking() as $group) {
+            if (in_array($group->getId(), $playerGroups)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function getPlayer(): Player
+    {
+        return $this->userAuth->getUser()->getPlayer();
     }
 }

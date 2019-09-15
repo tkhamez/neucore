@@ -56,6 +56,9 @@ Select and table to add and remove objects from other objects.
                    target="_blank" rel="noopener noreferrer">doc/API.md</a>
                 for permissions for each role.
             </p>
+            <p v-if="type === 'Corporation' && contentType === 'groups'">
+                Members of these groups can view the tracking data of the selected corporation.
+            </p>
 
             <div class="input-group mb-1">
                 <div class="input-group-prepend">
@@ -144,7 +147,7 @@ Select and table to add and remove objects from other objects.
                         </button>
                         <button v-if="contentType === 'groups' || contentType === 'roles'"
                                 class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveGroupOrRoleToAppPlayerOrGroup(
+                                v-on:click="addOrRemoveGroupOrRoleToAppOrPlayerOrGroupOrCorporation(
                                     row.id,
                                     contentType === 'groups' ? 'Group' : 'Role',
                                     'remove'
@@ -219,7 +222,7 @@ module.exports = {
             } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
                 this.addOrRemoveCorporationOrAllianceToGroup(this.newObject.id, 'add');
             } else if (this.contentType === 'groups' || this.contentType === 'roles') {
-                this.addOrRemoveGroupOrRoleToAppPlayerOrGroup(
+                this.addOrRemoveGroupOrRoleToAppOrPlayerOrGroupOrCorporation(
                     this.newObject.id,
                     this.contentType === 'groups' ? 'Group' : 'Role',
                     'add'
@@ -287,6 +290,8 @@ module.exports = {
                 api = new this.swagger.AppApi();
             } else if (this.type === 'Player') {
                 api = new this.swagger.PlayerApi();
+            } else if (this.type === 'Corporation') {
+                api = new this.swagger.CorporationApi();
             }
             if (this.contentType === 'managers') {
                 method = 'managers';
@@ -300,6 +305,8 @@ module.exports = {
                 method = 'showById';
             } else if (this.type === 'Group' && this.contentType === 'groups') {
                 method = 'requiredGroups';
+            } else if (this.type === 'Corporation' && this.contentType === 'groups') {
+                method = 'getGroupsTracking';
             }
             if (! api || ! method) {
                 return;
@@ -452,7 +459,7 @@ module.exports = {
             });
         },
 
-        addOrRemoveGroupOrRoleToAppPlayerOrGroup: function(id, type, action) {
+        addOrRemoveGroupOrRoleToAppOrPlayerOrGroupOrCorporation: function(id, type, action) {
             const vm = this;
             let api;
             let method;
@@ -471,6 +478,11 @@ module.exports = {
             } else if (this.type === 'Group') {
                 api = new this.swagger.GroupApi();
                 method = action + 'RequiredGroup';
+                param1 = this.typeId;
+                param2 = id;
+            } else if (this.type === 'Corporation') {
+                api = new this.swagger.CorporationApi();
+                method = action + 'GroupTracking';
                 param1 = this.typeId;
                 param2 = id;
             }

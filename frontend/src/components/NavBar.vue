@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-md navbar-dark bg-primary sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <a v-cloak class="navbar-brand" :href="settings.customization_website">
             <img v-if="settings.customization_nav_logo" class="align-top mr-2 align-middle" alt="Logo"
                  :src="settings.customization_nav_logo">
@@ -50,29 +50,25 @@
                         <a v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
+                        <a v-if="hasRole('user-admin')"
+                           class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
+                           href="#TrackingAdmin">Tracking</a>
                         <a v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['tracking', 'esi'])"
-                    class="nav-item dropdown" :class="{ active: otherPages.indexOf(page) !== -1 }">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Other</a>
-                    <div class="dropdown-menu">
-                        <a v-if="hasRole('tracking')"
-                           class="dropdown-item" :class="{ active: page === 'Tracking' }"
-                           href="#Tracking">Tracking</a>
-                        <a v-if="hasRole('esi')"
-                           class="dropdown-item" :class="{ active: page === 'Esi' }"
-                           href="#Esi">Esi</a>
-                    </div>
+                <li v-if="hasRole('tracking')" class="nav-item" :class="{ active: page === 'Tracking' }">
+                    <a class="nav-link" href="#Tracking">Tracking</a>
+                </li>
+                <li v-if="hasRole('esi')" class="nav-item" :class="{ active: page === 'Esi' }">
+                    <a class="nav-link" href="#Esi">ESI</a>
                 </li>
             </ul>
 
             <img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
                  class="d-inline-block align-top mr-2" alt="Character Portrait">
-            <div v-if="authChar" class="dropdown">
+            <span v-if="authChar" class="dropdown">
                 <button class="btn btn-primary dropdown-toggle mr-3" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                     {{ authChar.name }}
@@ -83,7 +79,7 @@
                        :class="{ 'active': selectedTheme === theme }"
                        v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
                 </div>
-            </div>
+            </span>
 
             <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign out">
                 <span class="fas fa-sign-out-alt"></span>
@@ -103,8 +99,7 @@ module.exports = {
     data: function() {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
-            adminPages: ['UserAdmin', 'GroupAdmin', 'AppAdmin', 'SystemSettings'],
-            otherPages: ['Tracking', 'Esi'],
+            adminPages: ['GroupAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
             selectedTheme: '',
         }
     },
@@ -144,7 +139,7 @@ module.exports = {
 </script>
 
 <style scoped>
-    @media (min-width: 768px) {
+    @media (min-width: 992px) {
         .dropdown:hover .dropdown-menu {
             display: block;
         }

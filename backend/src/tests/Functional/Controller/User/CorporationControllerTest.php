@@ -4,6 +4,7 @@ namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\Events;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Entity\Corporation;
@@ -33,9 +34,17 @@ class CorporationControllerTest extends WebTestCase
      */
     private $em;
 
-    private $gid1;
+    /**
+     * @var Group
+     */
+    private $group1;
 
     private $gid2;
+
+    /**
+     * @var Player
+     */
+    private $player7;
 
     /**
      * @var CorporationRepository
@@ -77,7 +86,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/all');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not a user-admin
+        $this->loginUser(6); # not a group-admin
 
         $response = $this->runApp('GET', '/api/user/corporation/all');
         $this->assertEquals(403, $response->getStatusCode());
@@ -107,7 +116,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/with-groups');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not a user-admin
+        $this->loginUser(6); # not a group-admin
 
         $response = $this->runApp('GET', '/api/user/corporation/with-groups');
         $this->assertEquals(403, $response->getStatusCode());
@@ -123,10 +132,10 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame(
             [
                 ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null, 'groups' => [
-                    ['id' => $this->gid1, 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE]
+                    ['id' => $this->group1->getId(), 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE]
                 ]],
                 ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null, 'groups' => [
-                    ['id' => $this->gid1, 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE],
+                    ['id' => $this->group1->getId(), 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE],
                     ['id' => $this->gid2, 'name' => 'group 2', 'visibility' => Group::VISIBILITY_PRIVATE]
                 ]]
             ],
@@ -141,7 +150,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/corporation/add/123');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not a user-admin
+        $this->loginUser(6); # not a group-admin
 
         $response = $this->runApp('POST', '/api/user/corporation/add/123');
         $this->assertEquals(403, $response->getStatusCode());
@@ -311,7 +320,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/corporation/123/add-group/5');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not a user-admin
+        $this->loginUser(6); # not a group-admin
 
         $response = $this->runApp('PUT', '/api/user/corporation/123/add-group/5');
         $this->assertEquals(403, $response->getStatusCode());
@@ -354,7 +363,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/corporation/123/remove-group/5');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not a user-admin
+        $this->loginUser(6); # not a group-admin
 
         $response = $this->runApp('PUT', '/api/user/corporation/123/remove-group/5');
         $this->assertEquals(403, $response->getStatusCode());
@@ -371,7 +380,7 @@ class CorporationControllerTest extends WebTestCase
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/123/remove-group/'.$this->gid1
+            '/api/user/corporation/123/remove-group/'.$this->group1->getId()
         );
         $response3 = $this->runApp('PUT', '/api/user/corporation/123/remove-group/5');
         $this->assertEquals(404, $response1->getStatusCode());
@@ -389,7 +398,7 @@ class CorporationControllerTest extends WebTestCase
 
         $res = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/'.$this->gid1,
+            '/api/user/corporation/111/remove-group/'.$this->group1->getId(),
             null,
             null,
             [
@@ -407,14 +416,151 @@ class CorporationControllerTest extends WebTestCase
 
         $response1 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/'.$this->gid1
+            '/api/user/corporation/111/remove-group/'.$this->group1->getId()
         );
         $response2 = $this->runApp(
             'PUT',
-            '/api/user/corporation/111/remove-group/'.$this->gid1
+            '/api/user/corporation/111/remove-group/'.$this->group1->getId()
         );
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
+    }
+
+    public function testGetGroupsTracking403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('GET', '/api/user/corporation/123/get-groups-tracking');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(7); # not role user-admin
+
+        $response = $this->runApp('GET', '/api/user/corporation/123/get-groups-tracking');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testGetGroupsTracking404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/corporation/123/get-groups-tracking');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGetGroupsTracking200()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('GET', '/api/user/corporation/222/get-groups-tracking');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [['id' => $this->group1->getId(), 'name' => 'group 1', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testAddGroupTracking403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/5');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(7); # not a user-admin
+
+        $response = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/5');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAddGroupTracking404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/corporation/222/add-group-tracking/5');
+        $response2 = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/'.$this->gid2);
+        $response3 = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/5');
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response3->getStatusCode());
+    }
+
+    public function testAddGroupTracking204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/corporation/222/add-group-tracking/'.$this->gid2
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            '/api/user/corporation/222/add-group-tracking/'.$this->gid2
+        );
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+        $corp = $this->corpRepo->find(222);
+        $this->assertSame(2, count($corp->getGroupsTracking()));
+        $this->assertSame($this->group1->getId(), $corp->getGroupsTracking()[0]->getId());
+        $this->assertSame($this->gid2, $corp->getGroupsTracking()[1]->getId());
+    }
+
+    public function testRemoveGroupTracking403()
+    {
+        $this->setupDb();
+
+        $response = $this->runApp('PUT', '/api/user/corporation/123/remove-group-tracking/5');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->loginUser(7); # not a user-admin
+
+        $response = $this->runApp('PUT', '/api/user/corporation/123/remove-group-tracking/5');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRemoveGroupTracking404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/corporation/222/remove-group-tracking/5'
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            '/api/user/corporation/123/remove-group-tracking/'.$this->group1->getId()
+        );
+        $response3 = $this->runApp('PUT', '/api/user/corporation/123/remove-group-tracking/5');
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response3->getStatusCode());
+    }
+
+    public function testRemoveGroupTracking204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/corporation/222/remove-group-tracking/'.$this->group1->getId()
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            '/api/user/corporation/222/remove-group-tracking/'.$this->group1->getId()
+        );
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+        $corp = $this->corpRepo->find(222);
+        $this->assertSame([], $corp->getGroupsTracking());
     }
 
     public function testTrackedCorporations403()
@@ -424,7 +570,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not role tracking
+        $this->loginUser(6); # not role tracking or user-admin
 
         $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
         $this->assertEquals(403, $response->getStatusCode());
@@ -435,14 +581,38 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
-        $this->assertEquals(200, $response->getStatusCode());
+        # tracking role but no group
+
+        $response1 = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertSame([], $this->parseJsonBody($response1));
+
+        # add user to group
+
+        $this->player7->addGroup($this->group1);
+        $this->em->flush();
+
+        $response2 = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->assertEquals(200, $response2->getStatusCode());
         $this->assertSame([[
             'id' => 222,
             'name' => 'corp 2',
             'ticker' => 't2',
             'alliance' => null,
-        ]], $this->parseJsonBody($response));
+        ]], $this->parseJsonBody($response2));
+
+        # admin
+
+        $this->loginUser(8);
+
+        $response3 = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->assertEquals(200, $response3->getStatusCode());
+        $this->assertSame([[
+            'id' => 222,
+            'name' => 'corp 2',
+            'ticker' => 't2',
+            'alliance' => null,
+        ]], $this->parseJsonBody($response3));
     }
 
     public function testMembers403()
@@ -464,13 +634,23 @@ class CorporationControllerTest extends WebTestCase
     public function testMembers200()
     {
         $this->setupDb();
+        $params = '?inactive=7&active=12&account=true&valid-token=false&token-status-changed=1';
+
+        # role tracking but missing group
 
         $this->loginUser(7);
 
-        $params = '?inactive=7&active=12&account=true&valid-token=false&token-status-changed=1';
-        $response = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
-        $this->assertEquals(200, $response->getStatusCode());
-        $result = $this->parseJsonBody($response);
+        $response1 = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        # add user to group
+
+        $this->player7->addGroup($this->group1);
+        $this->em->flush();
+
+        $response2 = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
+        $this->assertEquals(200, $response2->getStatusCode());
+        $result = $this->parseJsonBody($response2);
         $this->assertSame(1, count($result));
         $this->assertSame(101, $result[0]['id']);
         $this->assertSame('m1', $result[0]['name']);
@@ -487,32 +667,35 @@ class CorporationControllerTest extends WebTestCase
 
         $char = $this->h->addCharacterMain('User', 6, [Role::USER])
             ->setValidToken(false)->setValidTokenTime(new \DateTime('-1 day -1 minute'));
-        $this->h->addCharacterMain('Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING]);
+        $this->player7 = $this->h
+            ->addCharacterMain('Group Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING])
+            ->getPlayer();
+        $this->h->addCharacterMain('User Admin', 8, [Role::USER, Role::USER_ADMIN]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');
         $corp3 = (new Corporation())->setId(333)->setTicker('t3')->setName('corp 3');
 
-        $group1 = (new Group())->setName('group 1');
+        $this->group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');
 
         $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char);
 
-        $corp1->addGroup($group1);
-        $corp2->addGroup($group1);
+        $corp1->addGroup($this->group1);
+        $corp2->addGroup($this->group1);
         $corp2->addGroup($group2);
+        $corp2->addGroupTracking($this->group1);
 
         $this->em->persist($corp1);
         $this->em->persist($corp2);
         $this->em->persist($corp3);
-        $this->em->persist($group1);
+        $this->em->persist($this->group1);
         $this->em->persist($group2);
         $this->em->persist($member);
 
         $this->em->flush();
 
-        $this->gid1 = $group1->getId();
         $this->gid2 = $group2->getId();
     }
 }

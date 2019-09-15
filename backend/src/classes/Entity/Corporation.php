@@ -76,6 +76,16 @@ class Corporation implements \JsonSerializable
     private $groups;
 
     /**
+     * Groups those members may see this corporation member tracking data.
+     *
+     * @ORM\ManyToMany(targetEntity="Group")
+     * @ORM\JoinTable(name="corporation_group_tracking")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $groupsTracking;
+
+    /**
      *
      * @ORM\OneToMany(targetEntity="Character", mappedBy="corporation")
      * @ORM\OrderBy({"name" = "ASC"})
@@ -113,6 +123,7 @@ class Corporation implements \JsonSerializable
     public function __construct()
     {
         $this->groups = new ArrayCollection();
+        $this->groupsTracking = new ArrayCollection();
         $this->characters = new ArrayCollection();
         $this->members = new ArrayCollection();
     }
@@ -275,6 +286,36 @@ class Corporation implements \JsonSerializable
     public function hasGroup(int $groupId): bool
     {
         foreach ($this->getGroups() as $g) {
+            if ($g->getId() === $groupId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function addGroupTracking(Group $group): self
+    {
+        $this->groupsTracking[] = $group;
+
+        return $this;
+    }
+
+    public function removeGroupTracking(Group $group): bool
+    {
+        return $this->groupsTracking->removeElement($group);
+    }
+
+    /**
+     * @return Group[]
+     */
+    public function getGroupsTracking(): array
+    {
+        return $this->groupsTracking->toArray();
+    }
+
+    public function hasGroupTracking(int $groupId): bool
+    {
+        foreach ($this->getGroupsTracking() as $g) {
             if ($g->getId() === $groupId) {
                 return true;
             }
