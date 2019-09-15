@@ -87,7 +87,7 @@
                         </tr>
                     </thead>
                 </table>
-                <p class="small text-muted">* All dates are GMT</p>
+                <p class="small text-muted">* Time is GMT</p>
             </div>
         </div>
 

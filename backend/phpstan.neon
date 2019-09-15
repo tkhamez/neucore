@@ -1,5 +1,6 @@
 parameters:
 	reportUnmatchedIgnoredErrors: false
+	inferPrivatePropertyTypeFromConstructor: true
 	ignoreErrors:
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'

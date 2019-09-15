@@ -156,7 +156,7 @@ class MemberTrackingTest extends TestCase
 
     public function testVerifyAndStoreDirectorUpdateExistingDirector()
     {
-        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue(\json_encode([
+        $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue((string) \json_encode([
             'character_id' => 100,
             'character_name' => 'cname',
             'corporation_id' => 10,

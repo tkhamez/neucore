@@ -137,7 +137,7 @@ class UpdateMemberTracking extends Command
      * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
      * @param int $sleep milliseconds
-     * @param ResourceOwnerAccessTokenInterface $token Used to resolve structure IDs to names if available
+     * @param ResourceOwnerAccessTokenInterface|null $token Used to resolve structure IDs to names if available
      */
     private function processData(
         int $corporationId,

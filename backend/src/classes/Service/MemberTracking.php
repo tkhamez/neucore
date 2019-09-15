@@ -322,7 +322,7 @@ class MemberTracking
 
     /**
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $memberData
-     * @param ResourceOwnerAccessTokenInterface $directorToken Director char access token as primary token to
+     * @param ResourceOwnerAccessTokenInterface|null $directorToken Director char access token as primary token to
      *        resolve structure IDs to names.
      * @param int $sleep
      */
@@ -465,20 +465,22 @@ class MemberTracking
                 ];
             }
         }
-        $nextNumber = $maxNumber + 1;
+        $directorNumber = $maxNumber + 1;
 
         // store new director
         $authCharacterId = (int) $eveAuth->getCharacterId();
+        $directorToken = null;
         if (isset($existingDirectors[$authCharacterId])) {
+            $directorNumber = $existingDirectors[$authCharacterId]['number'];
             $directorChar = $existingDirectors[$authCharacterId]['system_variable'];
-            $directorToken = $systemVariableRepository->find(
-                SystemVariable::DIRECTOR_TOKEN . $existingDirectors[$authCharacterId]['number']
-            );
+            $directorToken = $systemVariableRepository->find(SystemVariable::DIRECTOR_TOKEN . $directorNumber);
         } else {
-            $directorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $nextNumber);
+            $directorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $directorNumber);
             $directorChar->setScope(SystemVariable::SCOPE_SETTINGS);
-            $directorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $nextNumber);
             $this->objectManager->persist($directorChar);
+        }
+        if ($directorToken === null) {
+            $directorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $directorNumber);
             $this->objectManager->persist($directorToken);
         }
         $directorChar->setValue((string) json_encode([
