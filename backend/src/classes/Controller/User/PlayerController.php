@@ -843,7 +843,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
-     *     description="Needs role: app-admin, group-admin, user-manager, group-manager, tracking",
+     *     description="Needs role: app-admin, group-admin, user-manager, group-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(

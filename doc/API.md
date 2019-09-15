@@ -232,9 +232,6 @@ Corporation API
 - Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`
 - Returns tracking data of corporation members. `/user/corporation/{id}/members`
 
-Player API
-- Show player with characters. `/user/player/{id}/characters`
-
 ### Application API
 
 #### app
