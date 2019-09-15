@@ -122,6 +122,23 @@ class CorporationTest extends TestCase
         $this->assertSame([$g1], $corp->getGroupsTracking());
     }
 
+    public function testGetGroupsTrackingIds()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $corp = new Corporation();
+        $corp->addGroupTracking($group1);
+        $corp->addGroupTracking($group2);
+
+        $this->assertSame([1, 2], $corp->getGroupsTrackingIds());
+    }
+    
     public function testHasGroupTracking()
     {
         $group1 = new Group();

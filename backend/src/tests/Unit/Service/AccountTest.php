@@ -503,4 +503,14 @@ class AccountTest extends TestCase
 
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
+    
+    public function testSyncTrackingRoleCorporationChanged()
+    {
+        # TODO
+    }
+
+    public function testSyncTrackingRolePlayerChanged()
+    {
+        # TODO
+    }
 }

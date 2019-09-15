@@ -225,8 +225,9 @@ Settings API
 
 #### tracking
 
-Allows a player to view corporation member tracking data.
-In addition, membership in a group that determines which company is visible is necessary.
+Allows a player to view corporation member tracking data.  
+In addition, membership in a group that determines which company is visible is necessary.  
+This role is assigned automatically based on group membership.
 
 Corporation API
 - Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`

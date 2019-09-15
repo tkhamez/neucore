@@ -101,4 +101,35 @@ class PlayerRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param int[] $groupIds
+     * @return Player[]
+     */
+    public function findWithGroups(array $groupIds)
+    {
+        $qb = $this->createQueryBuilder('p');
+        return $qb
+            ->leftJoin('p.groups', 'g')
+            ->where($qb->expr()->in('g.id', ':ids'))
+            ->orderBy('p.id')
+            ->setParameter('ids', $groupIds)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Player[]
+     */
+    public function findWithRole(int $roleId)
+    {
+        $qb = $this->createQueryBuilder('p');
+        return $qb
+            ->leftJoin('p.roles', 'r')
+            ->where($qb->expr()->eq('r.id', ':id'))
+            ->orderBy('p.id')
+            ->setParameter('id', $roleId)
+            ->getQuery()
+            ->getResult();
+    }
 }

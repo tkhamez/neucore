@@ -6,8 +6,10 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
+use Neucore\Entity\Role;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Account;
 use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -90,12 +92,20 @@ class AutoGroupAssignmentTest extends TestCase
         $repositoryFactory = new RepositoryFactory($this->em);
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $this->aga = new AutoGroupAssignment(new ObjectManager($this->em, $this->log), $repositoryFactory, $this->log);
+        $objectManager = new ObjectManager($this->em, $this->log);
+        $account = new Account($this->log, $objectManager, $repositoryFactory);
+        
+        $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $this->log, $account);
 
         // a second AutoGroupAssignment instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
         $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
-        $this->agaError = new AutoGroupAssignment(new ObjectManager($em, $this->log), $repositoryFactory, $this->log);
+        $this->agaError = new AutoGroupAssignment(
+            new ObjectManager($em, $this->log),
+            $repositoryFactory,
+            $this->log,
+            $account
+        );
     }
 
     public function testAssignNotFound()
@@ -133,17 +143,14 @@ class AutoGroupAssignmentTest extends TestCase
 
         $playerDb = $this->playerRepo->find($this->playerId);
         $groupIds = $playerDb->getGroupIds();
-        $this->assertSame(
-            [
-                $this->group1->getId(),
-                $this->group2->getId(),
-                $this->group3->getId(),
-                $this->group5Id,
-                $this->group6Id,
-                $this->group7Id
-            ],
-            $groupIds
-        );
+        $this->assertSame([
+            $this->group1->getId(),
+            $this->group2->getId(),
+            $this->group3->getId(),
+            $this->group5Id,
+            $this->group6Id,
+            $this->group7Id
+        ], $groupIds);
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
 
         $logs = $this->log->getHandler()->getRecords();
@@ -249,6 +256,7 @@ class AutoGroupAssignmentTest extends TestCase
         $this->em->persist($char3);
         $this->em->persist($char4);
         $this->em->persist($player);
+        $this->em->persist((new Role(11))->setName(Role::TRACKING));
         $this->em->persist($playerManaged);
         $this->em->flush();
 

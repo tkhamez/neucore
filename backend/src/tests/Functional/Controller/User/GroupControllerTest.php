@@ -969,6 +969,8 @@ class GroupControllerTest extends WebTestCase
         $this->em->persist($alli);
         $this->em->persist($corp);
 
+        $this->helper->addRoles([Role::TRACKING]);
+        
         $this->em->flush();
 
         $this->groupAppID = $groupApp->getId();

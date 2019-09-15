@@ -76,8 +76,9 @@ Allows a player to change the system settings.
 
 #### tracking
 
-Allows a player to view corporation member tracking data.
-In addition, membership in a group that determines which company is visible is necessary.
+Allows a player to view corporation member tracking data.  
+In addition, membership in a group that determines which company is visible is necessary.  
+This role is assigned automatically based on group membership.
 
 {tracking}
 
@@ -113,6 +114,6 @@ Allows an app to get corporation member tracking data.
 Allows an app to make an ESI request on behalf of a character from the database.
 
 Application API
-- Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v1/esi`
+- Makes an ESI GET or POST request on behalf on an EVE character and returns the result. `/app/v1/esi`  
   This endpoint can also be used with OpenAPI clients generated for ESI,
   see [app-esi-examples.php](app-esi-examples.php) for more.

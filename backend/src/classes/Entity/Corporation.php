@@ -313,6 +313,16 @@ class Corporation implements \JsonSerializable
         return $this->groupsTracking->toArray();
     }
 
+    /**
+     * @return int[]
+     */
+    public function getGroupsTrackingIds(): array
+    {
+        return array_map(function (Group $group) {
+            return $group->getId();
+        }, $this->groupsTracking->toArray());
+    }
+    
     public function hasGroupTracking(int $groupId): bool
     {
         foreach ($this->getGroupsTracking() as $g) {

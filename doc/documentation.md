@@ -12,6 +12,7 @@
   * [Automatic Group Assignment](#automatic-group-assignment)
   * [Group Deactivation with Mail Notification](#group-deactivation-with-mail-notification)
   * [Required Groups](#required-groups)
+- [Member Tracking](#member-tracking)
 - [Console Application](#console-application)
 - [Data Structure (Backend)](#data-structure-backend)
 
@@ -132,6 +133,14 @@ Other groups can be added to a group as a prerequisite. This means that players 
 of these other groups, otherwise they will automatically be removed from the group.
 
 This check is also done for "managed" Player accounts (see "Account status" above).
+
+## Member Tracking
+
+Access to corporation member tracking data is configured by adding groups whose members may view the 
+data to the appropriate corporation.
+
+The "tracking" role is automatically added to or removed from the player when this configuration is changed or 
+members are added or removed from these groups.
 
 ## Console Application
 

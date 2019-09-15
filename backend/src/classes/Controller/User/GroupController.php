@@ -8,6 +8,7 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
@@ -28,6 +29,11 @@ class GroupController extends BaseController
     private $userAuth;
 
     /**
+     * @var Account
+     */
+    private $account;
+
+    /**
      * @var string
      */
     private $namePattern = "/^[-._a-zA-Z0-9]+$/";
@@ -46,11 +52,13 @@ class GroupController extends BaseController
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        UserAuth $userAuth
+        UserAuth $userAuth,
+        Account $account
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->userAuth = $userAuth;
+        $this->account = $account;
     }
 
     /**
@@ -997,6 +1005,7 @@ class GroupController extends BaseController
             $this->group->addManager($this->player);
         } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
             $this->player->addGroup($this->group);
+            $this->account->syncTrackingRole($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -1020,6 +1029,7 @@ class GroupController extends BaseController
             $this->group->removeManager($this->player);
         } elseif ($type === 'members') {
             $this->player->removeGroup($this->group);
+            $this->account->syncTrackingRole($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -1046,6 +1056,7 @@ class GroupController extends BaseController
             $app->setStatus(GroupApplication::STATUS_ACCEPTED);
             if (! $app->getPlayer()->hasGroup($app->getGroup()->getId())) {
                 $app->getPlayer()->addGroup($app->getGroup());
+                $this->account->syncTrackingRole($app->getPlayer());
             }
         } elseif ($action === 'deny') {
             $app->setStatus(GroupApplication::STATUS_DENIED);

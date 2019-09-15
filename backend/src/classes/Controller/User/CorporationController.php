@@ -8,6 +8,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
@@ -29,6 +30,11 @@ class CorporationController extends BaseController
     private $userAuth;
 
     /**
+     * @var Account
+     */
+    private $account;
+
+    /**
      * @var Corporation
      */
     private $corp;
@@ -42,11 +48,13 @@ class CorporationController extends BaseController
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        UserAuth $userAuth
+        UserAuth $userAuth,
+        Account $account
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->userAuth = $userAuth;
+        $this->account = $account;
     }
 
     /**
@@ -362,6 +370,7 @@ class CorporationController extends BaseController
 
         if (! $this->corp->hasGroupTracking($this->group->getId())) {
             $this->corp->addGroupTracking($this->group);
+            $this->account->syncTrackingRole(null, $this->corp);
         }
 
         return $this->flushAndReturn(204);
@@ -411,6 +420,7 @@ class CorporationController extends BaseController
         }
 
         $this->corp->removeGroupTracking($this->group);
+        $this->account->syncTrackingRole(null, $this->corp);
 
         return $this->flushAndReturn(204);
     }

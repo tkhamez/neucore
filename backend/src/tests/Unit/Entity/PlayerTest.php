@@ -328,6 +328,26 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->hasGroup($group2->getId()));
     }
 
+    /**
+     * @throws \ReflectionException
+     */
+    public function testHasAnyGroup()
+    {
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+
+        $player = new Player();
+        $player->addGroup($group1);
+
+        $this->assertTrue($player->hasAnyGroup([1, 2]));
+        $this->assertFalse($player->hasAnyGroup([2, 3]));
+    }
+
     public function testAddGetRemoveManagerGroups()
     {
         $play = new Player();

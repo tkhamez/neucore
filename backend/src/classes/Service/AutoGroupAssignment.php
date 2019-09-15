@@ -45,6 +45,11 @@ class AutoGroupAssignment
     private $log;
 
     /**
+     * @var Account
+     */
+    private $account;
+
+    /**
      * Alliance ID to group IDs mapping.
      *
      * @var array
@@ -68,7 +73,8 @@ class AutoGroupAssignment
     public function __construct(
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Account $account
     ) {
         $this->objectManager = $objectManager;
         $this->allianceRepo = $repositoryFactory->getAllianceRepository();
@@ -76,6 +82,7 @@ class AutoGroupAssignment
         $this->groupRepo = $repositoryFactory->getGroupRepository();
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
         $this->log = $logger;
+        $this->account = $account;
     }
 
     /**
@@ -134,6 +141,7 @@ class AutoGroupAssignment
             $removeGroup = $player->findGroupById($removeId);
             if ($removeGroup) {
                 $player->removeGroup($removeGroup);
+                $this->account->syncTrackingRole($player);
                 $this->log->debug(
                     'AutoGroupAssignment: removed group ' . $removeGroup->getName() . ' [' . $removeId . '] ' .
                     'from player ' . $player->getName() . ' [' . $player->getId() . ']'
@@ -146,6 +154,7 @@ class AutoGroupAssignment
             $addGroup = $this->groupRepo->find($addId);
             if ($addGroup) {
                 $player->addGroup($addGroup);
+                $this->account->syncTrackingRole($player);
                 $this->log->debug(
                     'AutoGroupAssignment: added group ' . $addGroup->getName() . ' [' . $addId . '] ' .
                     'to player ' . $player->getName() . ' [' . $player->getId() . ']'

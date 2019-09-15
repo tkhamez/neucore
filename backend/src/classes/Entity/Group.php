@@ -250,32 +250,6 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Add player.
-     *
-     * @param Player $player
-     *
-     * @return Group
-     */
-    public function addPlayer(Player $player)
-    {
-        $this->players[] = $player;
-
-        return $this;
-    }
-
-    /**
-     * Remove player.
-     *
-     * @param Player $player
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removePlayer(Player $player)
-    {
-        return $this->players->removeElement($player);
-    }
-
-    /**
      * Get players.
      *
      * @return Player[]

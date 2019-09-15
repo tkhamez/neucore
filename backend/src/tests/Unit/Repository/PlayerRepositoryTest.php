@@ -111,4 +111,14 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame(1, count($actual));
         $this->assertSame('c1', $actual[0]->getName());
     }
+
+    public function testFindWithGroups()
+    {
+        # TODO
+    }
+
+    public function testFindWithRole()
+    {
+        # TODO
+    }
 }

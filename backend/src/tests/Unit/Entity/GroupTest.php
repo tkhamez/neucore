@@ -70,19 +70,7 @@ class GroupTest extends TestCase
 
     public function testAddGetRemovePlayer()
     {
-        $group = new Group();
-        $p1 = new Player();
-        $p2 = new Player();
-
-        $this->assertSame([], $group->getPlayers());
-
-        $group->addPlayer($p1);
-        $group->addPlayer($p2);
-        $this->assertSame([$p1, $p2], $group->getPlayers());
-
-        $group->removePlayer($p2);
-        $group->removePlayer($p1);
-        $this->assertSame([], $group->getPlayers());
+        $this->assertSame([], (new Group())->getPlayers());
     }
 
     public function testAddGetRemoveManager()

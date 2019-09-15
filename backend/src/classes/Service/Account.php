@@ -5,8 +5,10 @@ namespace Neucore\Service;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
@@ -303,6 +305,72 @@ class Account
         }
 
         return false;
+    }
+
+    /**
+     * Adds or removes the "tracking" role to players based on group membership and corporation configuration.
+     *
+     * This function modifies one or more players and does *not* flush the object manager.
+     * If the player object is provided, the corporation/group relations must be up to date in the database.
+     * If the corporation object is provided, the player/group relations must be up to date in the database.
+     */
+    public function syncTrackingRole(Player $changedPlayer = null, Corporation $changedCorporation = null): void
+    {
+        // validate params
+        if (($changedPlayer === null && $changedCorporation === null)
+            || ($changedPlayer !== null && $changedCorporation !== null)
+        ) {
+            return;
+        }
+
+        // get role
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::TRACKING]);
+        if ($role === null) { // should not happen
+            $this->log->error('Account::syncTrackingRole(): Player or Role not found.');
+            return;
+        }
+
+        // collect all groups that grant the tracking role
+        $groupIds = [];
+        foreach ($this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData() as $corp) {
+            if ($changedCorporation && $changedCorporation->getId() === $corp->getId()) {
+                // use groups from changed corporation because that may not be persisted to the database yet.
+                $groupIds = array_merge($groupIds, $changedCorporation->getGroupsTrackingIds());
+            } else {
+                $groupIds = array_merge($groupIds, $corp->getGroupsTrackingIds());
+            }
+        }
+        
+        // get all players that need the role
+        $playersAdd = [];
+        if ($changedPlayer) {
+            if ($changedPlayer->hasAnyGroup($groupIds)) {
+                $playersAdd = [$changedPlayer];
+            }
+        } else {
+            $playersAdd = $this->repositoryFactory->getPlayerRepository()->findWithGroups($groupIds);
+        }
+        
+        // assign role
+        foreach ($playersAdd as $playerAdd) {
+            if (! $playerAdd->hasRole(Role::TRACKING)) {
+                $playerAdd->addRole($role);
+            }
+        }
+
+        // get all players that have the role
+        if ($changedPlayer) {
+            $playersRemove = [$changedPlayer];
+        } else {
+            $playersRemove = $this->repositoryFactory->getPlayerRepository()->findWithRole($role->getId());
+        }
+
+        // remove role
+        foreach ($playersRemove as $playerRemove) {
+            if (! $playerRemove->hasAnyGroup($groupIds)) {
+                $playerRemove->removeRole($role);
+            }
+        }
     }
 
     /**

@@ -524,6 +524,17 @@ class Player implements \JsonSerializable
     }
 
     /**
+     * Returns true if the player is a member of one of the specified groups.
+     *
+     * @param int[] $groupIds
+     * @return bool
+     */
+    public function hasAnyGroup(array $groupIds): bool
+    {
+        return count(array_intersect($groupIds, $this->getGroupIds())) > 0;
+    }
+    
+    /**
      * Add managerGroup.
      *
      * @param Group $managerGroup
