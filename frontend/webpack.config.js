@@ -28,7 +28,7 @@ module.exports = (env, argv) => {
             'theme-pulse': './src/themes/pulse.scss',
             'theme-sandstone': './src/themes/sandstone.scss',
             'theme-simplex': './src/themes/simplex.scss',
-            //'theme-sketchy': './src/themes/sketchy.scss', // build error
+            'theme-sketchy': './src/themes/sketchy.scss',
             'theme-slate': './src/themes/slate.scss',
             'theme-solar': './src/themes/solar.scss',
             'theme-spacelab': './src/themes/spacelab.scss',
