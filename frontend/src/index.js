@@ -35,7 +35,7 @@ window.Vue.mixin({
                 'Pulse',
                 'Sandstone',
                 'Simplex',
-                'Sketchy',
+                //'Sketchy',
                 'Slate',
                 'Solar',
                 'Spacelab',
