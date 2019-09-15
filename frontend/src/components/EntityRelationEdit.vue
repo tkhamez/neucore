@@ -228,6 +228,7 @@ module.exports = {
                     'add'
                 );
             }
+            this.newObject = "";
         },
     },
 
