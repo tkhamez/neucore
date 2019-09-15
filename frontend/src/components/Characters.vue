@@ -76,10 +76,16 @@ module.exports = {
             vm.loading(true);
             new this.swagger.PlayerApi().characters(playerId, function(error, data) {
                 vm.loading(false);
-                if (error) {
+                if (error && error.status === 403) {
+                    vm.selectedPlayer = {
+                        name: 'Unauthorized.',
+                        characters: []
+                    }
+                } else if (error) {
                     return;
+                } else {
+                    vm.selectedPlayer = data;
                 }
-                vm.selectedPlayer = data;
                 window.setTimeout(function() {
                     window.$('#playerModal').modal('show');
                 }, 10);
