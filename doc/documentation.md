@@ -136,8 +136,8 @@ This check is also done for "managed" Player accounts (see "Account status" abov
 
 ## Member Tracking
 
-Access to corporation member tracking data is configured by adding groups whose members may view the 
-data to the appropriate corporation.
+Access to corporation member tracking data is configured by adding groups to a corporation whose 
+members are allowed to see the data of that corporation.
 
 The "tracking" role is automatically added to or removed from the player when this configuration is changed or 
 members are added or removed from these groups.

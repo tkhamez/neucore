@@ -2,9 +2,10 @@
 
 ## 1.4.3
 
-dd mmm 2019
+21 Sep 2019
 
 - Member Tracking: even more improvements.
+- Bug fixes.
 
 ## 1.4.2
 
