@@ -79,6 +79,7 @@ module.exports = {
                 if (error) {
                     return;
                 }
+                vm.selectedPlayer = data;
                 window.setTimeout(function() {
                     window.$('#playerModal').modal('show');
                 }, 10);
