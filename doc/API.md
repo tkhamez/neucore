@@ -81,12 +81,6 @@ Character API
 - Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
 - Update a character with data from ESI. `/user/character/{id}/update`
 
-Corporation API
-- Returns required groups to view member tracking data. `/user/corporation/{id}/get-groups-tracking`
-- Add a group to the corporation for member tracking permission. `/user/corporation/{id}/add-group-tracking/{groupId}`
-- Remove a group for member tracking permission from the corporation. `/user/corporation/{id}/remove-group-tracking/{groupId}`
-- Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`
-
 Player API
 - List all players with characters. `/user/player/with-characters`
 - List all players without characters. `/user/player/without-characters`
@@ -232,6 +226,19 @@ This role is assigned automatically based on group membership.
 Corporation API
 - Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`
 - Returns tracking data of corporation members. `/user/corporation/{id}/members`
+
+Player API
+- Show player with characters. `/user/player/{id}/characters`
+
+#### tracking-admin
+
+Allows a player to change the tracking corporation/groups configuration.
+
+Corporation API
+- Returns required groups to view member tracking data. `/user/corporation/{id}/get-groups-tracking`
+- Add a group to the corporation for member tracking permission. `/user/corporation/{id}/add-group-tracking/{groupId}`
+- Remove a group for member tracking permission from the corporation. `/user/corporation/{id}/remove-group-tracking/{groupId}`
+- Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`
 
 ### Application API
 

@@ -433,7 +433,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/123/get-groups-tracking');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(7); # not role user-admin
+        $this->loginUser(7); # not role tracking-admin
 
         $response = $this->runApp('GET', '/api/user/corporation/123/get-groups-tracking');
         $this->assertEquals(403, $response->getStatusCode());
@@ -468,7 +468,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/5');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(7); # not a user-admin
+        $this->loginUser(7); # not a tracking-admin
 
         $response = $this->runApp('PUT', '/api/user/corporation/123/add-group-tracking/5');
         $this->assertEquals(403, $response->getStatusCode());
@@ -517,7 +517,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/corporation/123/remove-group-tracking/5');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(7); # not a user-admin
+        $this->loginUser(7); # not a tracking-admin
 
         $response = $this->runApp('PUT', '/api/user/corporation/123/remove-group-tracking/5');
         $this->assertEquals(403, $response->getStatusCode());
@@ -570,7 +570,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->loginUser(6); # not role tracking or user-admin
+        $this->loginUser(6); # not role tracking or tracking-admin
 
         $response = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
         $this->assertEquals(403, $response->getStatusCode());
@@ -670,7 +670,7 @@ class CorporationControllerTest extends WebTestCase
         $this->player7 = $this->h
             ->addCharacterMain('Group Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING])
             ->getPlayer();
-        $this->h->addCharacterMain('User Admin', 8, [Role::USER, Role::USER_ADMIN]);
+        $this->h->addCharacterMain('User Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
         $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');

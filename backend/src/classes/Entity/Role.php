@@ -134,6 +134,13 @@ class Role implements \JsonSerializable
     const TRACKING = 'tracking';
 
     /**
+     * Allows a player to change the tracking corporation/groups configuration.
+     *
+     * @var string
+     */
+    const TRACKING_ADMIN = 'tracking-admin';
+
+    /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="NONE")

@@ -43,10 +43,11 @@ class PlayerController extends BaseController
         Role::GROUP_ADMIN,
         Role::GROUP_MANAGER,
         Role::USER_ADMIN,
+        Role::USER_MANAGER,
         Role::ESI,
         Role::SETTINGS,
         Role::TRACKING,
-        Role::USER_MANAGER,
+        Role::TRACKING_ADMIN,
     ];
 
     private $availableStatus = [
@@ -843,7 +844,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
-     *     description="Needs role: app-admin, group-admin, user-manager, group-manager",
+     *     description="Needs role: app-admin, group-admin, user-manager, group-manager, tracking",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(

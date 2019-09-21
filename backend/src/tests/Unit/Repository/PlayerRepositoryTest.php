@@ -4,7 +4,9 @@ namespace Tests\Unit\Repository;
 
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
+use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
 use PHPUnit\Framework\TestCase;
@@ -12,6 +14,16 @@ use Tests\Helper;
 
 class PlayerRepositoryTest extends TestCase
 {
+    /**
+     * @var Group
+     */
+    private static $group1;
+    
+    /**
+     * @var Group
+     */
+    private static $group2;
+    
     /**
      * @var PlayerRepository
      */
@@ -23,6 +35,14 @@ class PlayerRepositoryTest extends TestCase
         $helper->emptyDb();
         $em = $helper->getEm();
 
+        self::$group1 = (new Group())->setName('g1');
+        self::$group2 = (new Group())->setName('g2');
+        $em->persist(self::$group1);
+        $em->persist(self::$group2);
+        
+        $roleTracking = (new Role(10))->setName(Role::TRACKING);
+        $em->persist($roleTracking);
+        
         $player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
         $player1->getCharacters()[0]->setValidToken(true);
         $char1a = (new Character())->setId(11)->setName('c1a')->setValidToken(false);
@@ -33,12 +53,17 @@ class PlayerRepositoryTest extends TestCase
         $em->persist($char1a);
         $em->persist($corp);
 
-        $helper->addCharacterMain('c2', 2)->getPlayer();
+        $player2 = $helper->addCharacterMain('c2', 2)->getPlayer();
+        $player2->addGroup(self::$group2);
+        $player2->addRole($roleTracking);
 
         $player3 = (new Player())->setName('p3');
+        $player3->addGroup(self::$group1);
+        $player3->addGroup(self::$group2);
 
         $player4 = $helper->addCharacterMain('c4', 3)->getPlayer();
         $player4->getCharacters()[0]->setValidToken(true);
+        $player4->addRole($roleTracking);
 
         $player5 = (new Player())->setName('p5');
 
@@ -114,11 +139,19 @@ class PlayerRepositoryTest extends TestCase
 
     public function testFindWithGroups()
     {
-        # TODO
+        $actual = $this->repo->findWithGroups([self::$group1->getId(), self::$group2->getId()]);
+        
+        $this->assertSame(2, count($actual));
+        $this->assertSame('c2', $actual[0]->getName());
+        $this->assertSame('p3', $actual[1]->getName());
     }
 
     public function testFindWithRole()
     {
-        # TODO
+        $actual = $this->repo->findWithRole(10);
+        
+        $this->assertSame(2, count($actual));
+        $this->assertSame('c2', $actual[0]->getName());
+        $this->assertSame('c4', $actual[1]->getName());
     }
 }

@@ -320,6 +320,7 @@ class Account
         if (($changedPlayer === null && $changedCorporation === null)
             || ($changedPlayer !== null && $changedCorporation !== null)
         ) {
+            $this->log->error('Account::syncTrackingRole(): Invalid function call.');
             return;
         }
 

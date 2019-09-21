@@ -82,6 +82,12 @@ This role is assigned automatically based on group membership.
 
 {tracking}
 
+#### tracking-admin
+
+Allows a player to change the tracking corporation/groups configuration.
+
+{tracking-admin}
+
 ### Application API
 
 #### app

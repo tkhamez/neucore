@@ -5,12 +5,15 @@ namespace Tests\Unit\Service;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\Group;
 use Neucore\Entity\RemovedCharacter;
+use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CorporationMemberRepository;
+use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
 use Neucore\Service\Config;
@@ -59,6 +62,11 @@ class AccountTest extends TestCase
     private $charRepo;
 
     /**
+     * @var PlayerRepository
+     */
+    private $playerRepo;
+
+    /**
      * @var RemovedCharacterRepository
      */
     private $removedCharRepo;
@@ -67,6 +75,36 @@ class AccountTest extends TestCase
      * @var CorporationMemberRepository
      */
     private $corpMemberRepo;
+
+    /**
+     * @var Player
+     */
+    private $player1;
+
+    /**
+     * @var Player
+     */
+    private $player2;
+
+    /**
+     * @var Corporation
+     */
+    private $corp1;
+
+    /**
+     * @var Corporation
+     */
+    private $corp2;
+
+    /**
+     * @var Group
+     */
+    private $group1;
+
+    /**
+     * @var Group
+     */
+    private $group2;
 
     public function setUp()
     {
@@ -83,6 +121,7 @@ class AccountTest extends TestCase
         $this->token = new OAuthToken(new OAuthProvider($this->client), $om, $this->log, $this->client, new Config([]));
         $this->service = new Account($this->log, $om, new RepositoryFactory($em));
         $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
+        $this->playerRepo = (new RepositoryFactory($em))->getPlayerRepository();
         $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
         $this->corpMemberRepo = (new RepositoryFactory($em))->getCorporationMemberRepository();
     }
@@ -503,14 +542,107 @@ class AccountTest extends TestCase
 
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
+
+    public function testSyncTrackingRoleInvalidCall()
+    {
+        $this->service->syncTrackingRole();
+        $this->service->syncTrackingRole(new Player, new Corporation);
+        
+        $this->assertSame(
+            'Account::syncTrackingRole(): Invalid function call.',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+        $this->assertSame(
+            'Account::syncTrackingRole(): Invalid function call.',
+            $this->log->getHandler()->getRecords()[1]['message']
+        );
+    }
+
+    public function testSyncTrackingRoleNoRole()
+    {
+        $this->service->syncTrackingRole(new Player());
+
+        $this->assertSame(
+            'Account::syncTrackingRole(): Player or Role not found.',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testSyncTrackingRoleNoChanged()
+    {
+        $this->setUpTrackingData();
+
+        $this->service->syncTrackingRole(new Player);
+        $this->helper->getEm()->flush();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertSame(2, count($players));
+        $this->assertSame('char 1', $players[0]->getName());
+        $this->assertSame('char 1', $players[0]->getName());
+        $this->assertTrue($players[0]->hasRole(Role::TRACKING));
+        $this->assertFalse($players[1]->hasRole(Role::TRACKING));
+    }
+    
+    public function testSyncTrackingRolePlayerChanged()
+    {
+        $this->setUpTrackingData();
+
+        $this->player1->removeGroup($this->group1);
+        $this->player2->addGroup($this->group1);
+        
+        $this->service->syncTrackingRole($this->player1);
+        $this->service->syncTrackingRole($this->player2);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertFalse($players[0]->hasRole(Role::TRACKING));
+        $this->assertTrue($players[1]->hasRole(Role::TRACKING));
+    }
     
     public function testSyncTrackingRoleCorporationChanged()
     {
-        # TODO
-    }
+        $this->setUpTrackingData();
 
-    public function testSyncTrackingRolePlayerChanged()
+        $this->corp1->removeGroupTracking($this->group1);
+        $this->corp2->addGroupTracking($this->group2);
+
+        $this->service->syncTrackingRole(null, $this->corp1);
+        $this->service->syncTrackingRole(null, $this->corp2);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertFalse($players[0]->hasRole(Role::TRACKING));
+        $this->assertTrue($players[1]->hasRole(Role::TRACKING));
+    }
+    
+    private function setUpTrackingData()
     {
-        # TODO
+        $em = $this->helper->getEm();
+        
+        $role = (new Role(10))->setName(Role::TRACKING);
+        $this->corp1 = (new Corporation())->setId(11)->setTicker('t1')->setName('corp 1');
+        $this->corp2 = (new Corporation())->setId(12)->setTicker('t2')->setName('corp 2');
+        $member1 = (new CorporationMember())->setId(101)->setName('member 1')->setCorporation($this->corp1);
+        $member2 = (new CorporationMember())->setId(102)->setName('member 2')->setCorporation($this->corp2);
+        $this->group1 = (new Group())->setName('group 1');
+        $this->group2 = (new Group())->setName('group 2');
+        $this->corp1->addGroupTracking($this->group1);
+        // corp2 does not have tracking group
+        $em->persist($role);
+        $em->persist($this->corp1);
+        $em->persist($this->corp2);
+        $em->persist($member1);
+        $em->persist($member2);
+        $em->persist($this->group1);
+        $em->persist($this->group2);
+        $this->player1 = $this->helper->addCharacterMain('char 1', 101)->getPlayer();
+        $this->player2 = $this->helper->addCharacterMain('char 2', 102)->getPlayer();
+        $this->player1->addRole($role);
+        // player2 does not have tracking role
+        $this->player1->addGroup($this->group1);
+        $this->player2->addGroup($this->group2);
+        $em->flush();
     }
 }

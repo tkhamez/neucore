@@ -37,6 +37,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::ESI,
             Role::SETTINGS,
             Role::TRACKING,
+            Role::TRACKING_ADMIN,
         ]);
         self::$playerId = $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN])->getPlayer()->getId();
 
@@ -58,6 +59,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::GROUP_MANAGER,
             Role::SETTINGS,
             Role::TRACKING,
+            Role::TRACKING_ADMIN,
             Role::USER,
             Role::USER_ADMIN,
             Role::USER_MANAGER,

@@ -289,7 +289,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/{id}/get-groups-tracking",
      *     operationId="getGroupsTracking",
      *     summary="Returns required groups to view member tracking data.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: tracking-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -331,7 +331,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/{id}/add-group-tracking/{groupId}",
      *     operationId="addGroupTracking",
      *     summary="Add a group to the corporation for member tracking permission.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: tracking-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -382,7 +382,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/{id}/remove-group-tracking/{groupId}",
      *     operationId="removeGroupTracking",
      *     summary="Remove a group for member tracking permission from the corporation.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: tracking-admin",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -431,7 +431,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/tracked-corporations",
      *     operationId="trackedCorporations",
      *     summary="Returns corporations that have member tracking data.",
-     *     description="Needs role: user-admin or tracking and membership in appropriate group",
+     *     description="Needs role: tracking-admin or tracking and membership in appropriate group",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Response(
@@ -449,7 +449,7 @@ class CorporationController extends BaseController
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
 
-        if ($this->getPlayer()->hasRole(Role::USER_ADMIN)) {
+        if ($this->getPlayer()->hasRole(Role::TRACKING_ADMIN)) {
             return $this->withJson($corporations);
         }
 

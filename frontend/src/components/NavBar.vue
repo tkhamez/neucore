@@ -36,7 +36,7 @@
                            href="#PlayerGroupManagement">Player Groups</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'settings'])"
+                <li v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings'])"
                     class="nav-item dropdown" :class="{ active: adminPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
@@ -50,7 +50,7 @@
                         <a v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>
-                        <a v-if="hasRole('user-admin')"
+                        <a v-if="hasRole('tracking-admin')"
                            class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
                            href="#TrackingAdmin">Tracking</a>
                         <a v-if="hasRole('settings')"

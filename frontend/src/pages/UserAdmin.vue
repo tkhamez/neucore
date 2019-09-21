@@ -399,6 +399,7 @@ module.exports = {
                 'esi',
                 'settings',
                 'tracking',
+                'tracking-admin',
             ],
             newRole: '',
             searchResult: [],

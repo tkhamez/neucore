@@ -37,7 +37,7 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $roles = $repoFactory->getRoleRepository()->findBy([]);
         $vars = $repoFactory->getSystemVariableRepository()->findBy([], ['name' => 'asc']);
 
-        $this->assertSame(15, count($roles)); // 14 from seed + 1 from setup
+        $this->assertSame(16, count($roles)); // 15 from seed + 1 from setup
         $this->assertSame(23, count($vars)); // 22 from seed + 1 from setup
 
         // check that value was not changed

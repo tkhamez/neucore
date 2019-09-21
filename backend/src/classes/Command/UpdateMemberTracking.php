@@ -12,6 +12,7 @@ use Neucore\Service\MemberTracking;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -57,6 +58,7 @@ class UpdateMemberTracking extends Command
             ->setDescription(
                 'Updates member tracking data from all available characters with director role from settings.'
             )
+            ->addArgument('corporation', InputArgument::OPTIONAL, 'Update only one corporation.')
             ->addOption(
                 'sleep',
                 's',
@@ -69,6 +71,7 @@ class UpdateMemberTracking extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $corpId = intval($input->getArgument('corporation'));
         $sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
 
@@ -85,8 +88,9 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            if (in_array($character->corporation_id, $processedCorporations)) {
-                // don't process the same corp twice
+            if (in_array($character->corporation_id, $processedCorporations) // don't process the same corp twice
+                || $corpId > 0 && $corpId !== $character->corporation_id
+            ) {
                 continue;
             }
 
@@ -106,6 +110,8 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
+            $this->writeLine('  Start updating ' . $corporation->getId(), false);
+            
             $trackingData = $this->memberTracking->fetchData($token->getToken(), (int) $corporation->getId());
             if (! is_array($trackingData)) {
                 $this->writeLine(
