@@ -83,7 +83,7 @@
                             <th scope="col">Logoff*</th>
                             <th scope="col">Location (System, Structure)</th>
                             <th scope="col">Ship</th>
-                            <th scope="col">Born*</th>
+                            <th scope="col">Joined*</th>
                         </tr>
                     </thead>
                 </table>
