@@ -319,11 +319,12 @@
 
 <script>
 import _ from 'lodash';
+import { AllianceApi } from 'neucore-js-client';
+import { SettingsApi } from 'neucore-js-client';
 
 module.exports = {
     props: {
         route: Array,
-        swagger: Object,
         initialized: Boolean,
         player: Object,
         settings: Object,
@@ -384,11 +385,11 @@ module.exports = {
 
     methods: {
         init: function() {
-            this.api = new this.swagger.SettingsApi();
+            this.api = new SettingsApi();
 
             // get alliances
             const vm = this;
-            new this.swagger.AllianceApi().all(function(error, data) {
+            new AllianceApi().all(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -501,7 +502,7 @@ module.exports = {
 
         sendMailAccountDisabledTestMail: function() {
             const vm = this;
-            new this.swagger.SettingsApi().sendAccountDisabledMail(function(error, data) {
+            this.api.sendAccountDisabledMail(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

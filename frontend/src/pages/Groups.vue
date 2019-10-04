@@ -72,11 +72,12 @@
 
 <script>
 import $ from 'jquery';
+import { GroupApi } from 'neucore-js-client';
+import { PlayerApi } from 'neucore-js-client';
 
 module.exports = {
     props: {
         initialized: Boolean,
-        swagger: Object,
         player: Object,
     },
 
@@ -105,7 +106,7 @@ module.exports = {
     methods: {
         getPublicGroups: function() {
             const vm = this;
-            new this.swagger.GroupApi().callPublic(function(error, data) {
+            new GroupApi().callPublic(function(error, data) {
                 if (error) { // 403 usually
                     vm.groups = null;
                     return;
@@ -116,7 +117,7 @@ module.exports = {
 
         getApplications: function() {
             const vm = this;
-            new this.swagger.PlayerApi().showApplications(function(error, data) {
+            new PlayerApi().showApplications(function(error, data) {
                 if (error) { // 403 usually
                     vm.applications = null;
                     return;
@@ -141,14 +142,14 @@ module.exports = {
 
         apply: function(groupId) {
             const vm = this;
-            new this.swagger.PlayerApi().addApplication(groupId, function() {
+            new PlayerApi().addApplication(groupId, function() {
                 vm.getApplications();
             });
         },
 
         cancel: function(groupId) {
             const vm = this;
-            new this.swagger.PlayerApi().removeApplication(groupId, function() {
+            new PlayerApi().removeApplication(groupId, function() {
                 vm.getApplications();
             });
         },
@@ -163,7 +164,7 @@ module.exports = {
 
         leave: function() {
             const vm = this;
-            new this.swagger.PlayerApi().leaveGroup(this.groupToLeave.id, function() {
+            new PlayerApi().leaveGroup(this.groupToLeave.id, function() {
                 vm.$root.$emit('playerChange');
             });
             $('#leaveGroupModal').modal('hide');

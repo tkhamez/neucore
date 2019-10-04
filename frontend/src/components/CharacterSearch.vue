@@ -18,12 +18,9 @@ Input element to search for characters
 
 <script>
 import _  from 'lodash';
+import { CharacterApi } from 'neucore-js-client';
 
 module.exports = {
-    props: {
-        swagger: Object,
-    },
-
     data: function() {
         return {
             searchTerm: '',
@@ -44,7 +41,7 @@ module.exports = {
         },
 
         doFindCharacter: _.debounce((vm) => {
-            new vm.swagger.CharacterApi().findBy(vm.searchTerm, function(error, data) {
+            new CharacterApi().findBy(vm.searchTerm, function(error, data) {
                 if (error) {
                     vm.$emit('result', []);
                     return;

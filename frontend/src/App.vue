@@ -15,7 +15,6 @@
         <component v-if="settings.customization_default_theme" v-cloak v-bind:is="page"
                    :route="route"
                    :initialized="initialized"
-                   :swagger="swagger"
                    :settings="settings"
                    :player="player"
                    :auth-char="authChar">
@@ -37,261 +36,259 @@
 </template>
 
 <script>
-    const neucoreJsClient = require('neucore-js-client');
-    import superAgentPlugin from './superagent-plugin.js';
+import { ApiClient } from 'neucore-js-client';
+import { AuthApi } from 'neucore-js-client';
+import { CharacterApi } from 'neucore-js-client';
+import { PlayerApi } from 'neucore-js-client';
+import { SettingsApi } from 'neucore-js-client';
+import superAgentPlugin from './superagent-plugin.js';
 
-    import NavBar from './components/NavBar.vue';
-    import Home from './pages/Home.vue';
-    import Groups from './pages/Groups.vue';
-    import GroupManagement from './pages/GroupManagement.vue';
-    import AppManagement from './pages/AppManagement.vue';
-    import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
-    import GroupAdmin from './pages/GroupAdmin.vue';
-    import AppAdmin from './pages/AppAdmin.vue';
-    import UserAdmin from './pages/UserAdmin.vue';
-    import TrackingAdmin from './pages/TrackingAdmin.vue';
-    import Esi from './pages/Esi.vue';
-    import SystemSettings from './pages/SystemSettings.vue';
-    import Tracking from './pages/Tracking.vue';
+import NavBar from './components/NavBar.vue';
+import Home from './pages/Home.vue';
+import Groups from './pages/Groups.vue';
+import GroupManagement from './pages/GroupManagement.vue';
+import AppManagement from './pages/AppManagement.vue';
+import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
+import GroupAdmin from './pages/GroupAdmin.vue';
+import AppAdmin from './pages/AppAdmin.vue';
+import UserAdmin from './pages/UserAdmin.vue';
+import TrackingAdmin from './pages/TrackingAdmin.vue';
+import Esi from './pages/Esi.vue';
+import SystemSettings from './pages/SystemSettings.vue';
+import Tracking from './pages/Tracking.vue';
 
-    export default {
-        name: 'app',
+export default {
+    name: 'app',
 
-        components: {
-            NavBar,
-            Home,
-            Groups,
-            GroupManagement,
-            AppManagement,
-            PlayerGroupManagement,
-            GroupAdmin,
-            AppAdmin,
-            UserAdmin,
-            TrackingAdmin,
-            Esi,
-            SystemSettings,
-            Tracking,
-        },
+    components: {
+        NavBar,
+        Home,
+        Groups,
+        GroupManagement,
+        AppManagement,
+        PlayerGroupManagement,
+        GroupAdmin,
+        AppAdmin,
+        UserAdmin,
+        TrackingAdmin,
+        Esi,
+        SystemSettings,
+        Tracking,
+    },
 
-        props: {
-            player: Object,
-            loadingCount: Number,
-        },
+    props: {
+        player: Object,
+        loadingCount: Number,
+    },
 
-        data: function() {
-            return {
-                /**
-                 * Current route (hash splitted by /), first element is the current page.
-                 */
-                route: [],
+    data: function() {
+        return {
+            /**
+             * Current route (hash splitted by /), first element is the current page.
+             */
+            route: [],
 
-                /**
-                 * All available pages
-                 */
-                pages: [
-                    'Home',
-                    'Groups',
-                    'GroupManagement',
-                    'AppManagement',
-                    'PlayerGroupManagement',
-                    'GroupAdmin',
-                    'AppAdmin',
-                    'UserAdmin',
-                    'TrackingAdmin',
-                    'Esi',
-                    'SystemSettings',
-                    'Tracking',
-                ],
+            /**
+             * All available pages
+             */
+            pages: [
+                'Home',
+                'Groups',
+                'GroupManagement',
+                'AppManagement',
+                'PlayerGroupManagement',
+                'GroupAdmin',
+                'AppAdmin',
+                'UserAdmin',
+                'TrackingAdmin',
+                'Esi',
+                'SystemSettings',
+                'Tracking',
+            ],
 
-                /**
-                 * Current page
-                 */
-                page: null,
+            /**
+             * Current page
+             */
+            page: null,
 
-                /**
-                 * The authenticated character
-                 */
-                authChar: null,
+            /**
+             * The authenticated character
+             */
+            authChar: null,
 
-                /**
-                 * Neucore API client
-                 */
-                swagger: null,
+            /**
+             * System settings from backend
+             */
+            settings: {},
 
-                /**
-                 * System settings from backend
-                 */
-                settings: {},
+            /**
+             * True after first Ajax request finished.
+             *
+             * Don't do any request before this is true to avoid creating
+             * several session on the server.
+             */
+            initialized: false,
 
-                /**
-                 * True after first Ajax request finished.
-                 *
-                 * Don't do any request before this is true to avoid creating
-                 * several session on the server.
-                 */
-                initialized: false,
+            messageTxt: '',
 
-                messageTxt: '',
+            messageType: '',
+        }
+    },
 
-                messageType: '',
-            }
-        },
+    created: function() {
+        // configure neucore-js-client
+        ApiClient.instance.basePath =
+            window.location.protocol + "//" +
+            window.location.hostname + ':' +
+            window.location.port + '/api';
+        ApiClient.instance.plugins = [superAgentPlugin(this)];
 
-        created: function() {
-            // configure swagger client
-            this.swagger = neucoreJsClient;
-            this.swagger.ApiClient.instance.basePath =
-                window.location.protocol + "//" +
-                window.location.hostname + ':' +
-                window.location.port + '/api';
-            this.swagger.ApiClient.instance.plugins = [superAgentPlugin(this)];
+        // initial route
+        this.updateRoute();
 
-            // initial route
+        // route listener
+        window.addEventListener('hashchange', () => {
             this.updateRoute();
+        });
 
-            // route listener
-            window.addEventListener('hashchange', () => {
-                this.updateRoute();
-            });
-
-            // event listeners
-            this.$root.$on('playerChange', () => {
-                this.getPlayer();
-            });
-            this.$root.$on('settingsChange', () => {
-                this.getSettings();
-            });
-            this.$root.$on('message', (text, type, timeout) => {
-                this.showMessage(text, type, timeout);
-            });
-
-            // refresh session every 5 minutes
-            const vm = this;
-            window.setInterval(function() {
-                vm.getAuthenticatedCharacter(true);
-            }, 1000*60*5);
-
-            // get settings
+        // event listeners
+        this.$root.$on('playerChange', () => {
+            this.getPlayer();
+        });
+        this.$root.$on('settingsChange', () => {
             this.getSettings();
+        });
+        this.$root.$on('message', (text, type, timeout) => {
+            this.showMessage(text, type, timeout);
+        });
+
+        // refresh session every 5 minutes
+        const vm = this;
+        window.setInterval(function() {
+            vm.getAuthenticatedCharacter(true);
+        }, 1000*60*5);
+
+        // get settings
+        this.getSettings();
+    },
+
+    watch: {
+        initialized: function() {
+            this.getAuthenticatedCharacter();
+            this.getPlayer();
         },
 
-        watch: {
-            initialized: function() {
-                this.getAuthenticatedCharacter();
-                this.getPlayer();
-            },
+        settings: function() {
+            window.document.title = this.settings.customization_document_title;
+        }
+    },
 
-            settings: function() {
-                window.document.title = this.settings.customization_document_title;
+    methods: {
+        showMessage: function(text, type, timeout) {
+            this.messageTxt = text;
+            this.messageType = 'alert-' + type;
+            if (timeout) {
+                const vm = this;
+                window.setTimeout(function() {
+                    vm.messageTxt = '';
+                }, timeout);
             }
         },
 
-        methods: {
-            showMessage: function(text, type, timeout) {
-                this.messageTxt = text;
-                this.messageType = 'alert-' + type;
-                if (timeout) {
-                    const vm = this;
-                    window.setTimeout(function() {
-                        vm.messageTxt = '';
-                    }, timeout);
-                }
-            },
+        updateRoute() {
+            this.route = window.location.hash.substr(1).split('/');
 
-            updateRoute() {
-                this.route = window.location.hash.substr(1).split('/');
+            // handle routes that do not have a page
+            const vm = this;
+            if (this.route[0] === 'logout') {
+                this.logout();
+            } else if (['login', 'login-alt'].indexOf(this.route[0]) !== -1) {
+                authResult();
+                // Remove the hash value so that it does not appear in bookmarks, for example.
+                location.hash = '';
+            } else if (this.route[0] === 'login-director') {
+                authResult('info');
+            }  else if (this.route[0] === 'login-mail') {
+                location.hash = 'SystemSettings';
+            }
 
-                // handle routes that do not have a page
-                const vm = this;
-                if (this.route[0] === 'logout') {
-                    this.logout();
-                } else if (['login', 'login-alt'].indexOf(this.route[0]) !== -1) {
-                    authResult();
-                    // Remove the hash value so that it does not appear in bookmarks, for example.
-                    location.hash = '';
-                } else if (this.route[0] === 'login-director') {
-                    authResult('info');
-                }  else if (this.route[0] === 'login-mail') {
-                    location.hash = 'SystemSettings';
-                }
+            // set page, fallback to Home
+            if (this.pages.indexOf(this.route[0]) === -1) {
+                this.route[0] = 'Home';
+            }
+            this.page = this.route[0];
 
-                // set page, fallback to Home
-                if (this.pages.indexOf(this.route[0]) === -1) {
-                    this.route[0] = 'Home';
-                }
-                this.page = this.route[0];
-
-                /**
-                 * @param {string} [successMessageType]
-                 */
-                function authResult(successMessageType) {
-                    new vm.swagger.AuthApi().result(function(error, data) {
-                        if (error) {
-                            window.console.error(error);
-                            return;
-                        }
-                        if (data.success) {
-                            if (successMessageType) {
-                                vm.message(data.message, successMessageType);
-                            }
-                        } else {
-                            vm.message(data.message, 'error');
-                        }
-                    });
-                }
-            },
-
-            getSettings: function() {
-                const vm = this;
-                new this.swagger.SettingsApi().systemList(function(error, data) {
+            /**
+             * @param {string} [successMessageType]
+             */
+            function authResult(successMessageType) {
+                new AuthApi().result(function(error, data) {
                     if (error) {
+                        window.console.error(error);
                         return;
                     }
-                    const settings = {};
-                    for (let variable of data) {
-                        settings[variable.name] = variable.value;
-                    }
-                    vm.settings = settings; // watch() will work this way
-                    vm.initialized = true;
-                });
-            },
-
-            getAuthenticatedCharacter: function(ping) {
-                const vm = this;
-                new this.swagger.CharacterApi().show(function(error, data) {
-                    if (error) { // 403 usually
-                        vm.authChar = null;
-                        vm.$root.player = null;
-                        vm.page = 'Home';
-                    } else if (! ping) { // don't update because it triggers watch events
-                        vm.authChar = data;
+                    if (data.success) {
+                        if (successMessageType) {
+                            vm.message(data.message, successMessageType);
+                        }
+                    } else {
+                        vm.message(data.message, 'error');
                     }
                 });
-            },
+            }
+        },
 
-            getPlayer: function() {
-                const vm = this;
-                new this.swagger.PlayerApi().show(function(error, data) {
-                    if (error) { // 403 usually
-                        vm.$root.player = null;
-                        return;
-                    }
-                    vm.$root.player = data;
-                });
-            },
+        getSettings: function() {
+            const vm = this;
+            new SettingsApi().systemList(function(error, data) {
+                if (error) {
+                    return;
+                }
+                const settings = {};
+                for (let variable of data) {
+                    settings[variable.name] = variable.value;
+                }
+                vm.settings = settings; // watch() will work this way
+                vm.initialized = true;
+            });
+        },
 
-            logout: function() {
-                const vm = this;
-                new this.swagger.AuthApi().logout(function(error) {
-                    if (error) { // 403 usually
-                        return;
-                    }
+        getAuthenticatedCharacter: function(ping) {
+            const vm = this;
+            new CharacterApi().show(function(error, data) {
+                if (error) { // 403 usually
                     vm.authChar = null;
                     vm.$root.player = null;
-                });
-            },
+                    vm.page = 'Home';
+                } else if (! ping) { // don't update because it triggers watch events
+                    vm.authChar = data;
+                }
+            });
         },
-    }
+
+        getPlayer: function() {
+            const vm = this;
+            new PlayerApi().show(function(error, data) {
+                if (error) { // 403 usually
+                    vm.$root.player = null;
+                    return;
+                }
+                vm.$root.player = data;
+            });
+        },
+
+        logout: function() {
+            const vm = this;
+            new AuthApi().logout(function(error) {
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.authChar = null;
+                vm.$root.player = null;
+            });
+        },
+    },
+}
 </script>
 
 <style scoped>

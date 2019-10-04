@@ -60,12 +60,9 @@ Modal window with all characters of one player.
 
 <script>
 import $ from 'jquery';
+import { PlayerApi } from 'neucore-js-client';
 
 module.exports = {
-    props: {
-        swagger: Object,
-    },
-
     data: function() {
         return {
             selectedPlayer: null,
@@ -75,7 +72,7 @@ module.exports = {
     methods: {
         showCharacters: function(playerId) {
             const vm = this;
-            new this.swagger.PlayerApi().characters(playerId, function(error, data) {
+            new PlayerApi().characters(playerId, function(error, data) {
                 if (error) {
                     return;
                 }

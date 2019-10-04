@@ -1,7 +1,8 @@
 <template>
 <div class="container-fluid">
 
-    <characters :swagger="swagger" ref="charactersModal"></characters>
+    <!--suppress HtmlUnknownTag -->
+    <characters ref="charactersModal"></characters>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -51,7 +52,8 @@
                         automatically be removed from this group.
                     </p>
 
-                    <character-search :swagger="swagger" v-on:result="searchResult = $event"></character-search>
+                    <!--suppress HtmlUnknownTag -->
+                    <character-search v-on:result="searchResult = $event"></character-search>
 
                     <div class="search-result border border-dark" v-if="searchResult.length > 0">
                         <table class="table table-hover table-sm table-light mb-0">
@@ -164,6 +166,7 @@
 </template>
 
 <script>
+import { GroupApi } from 'neucore-js-client';
 import Characters      from '../components/Characters.vue';
 import CharacterSearch from '../components/CharacterSearch.vue';
 
@@ -175,7 +178,6 @@ module.exports = {
 
     props: {
         route: Array,
-        swagger: Object,
         player: Object,
     },
 
@@ -223,7 +225,7 @@ module.exports = {
             vm.searchResult = [];
 
             // get members
-            new this.swagger.GroupApi().members(this.groupId, function(error, data) {
+            new GroupApi().members(this.groupId, function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -243,7 +245,7 @@ module.exports = {
         getApplications: function() {
             const vm = this;
             vm.groupMembers = [];
-            new this.swagger.GroupApi().applications(this.groupId, function(error, data) {
+            new GroupApi().applications(this.groupId, function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -254,7 +256,7 @@ module.exports = {
         getRequiredGroups: function() {
             const vm = this;
             vm.requiredGroups = [];
-            new this.swagger.GroupApi().requiredGroups(this.groupId, function(error, data) {
+            new GroupApi().requiredGroups(this.groupId, function(error, data) {
                 if (error) {
                     return;
                 }
@@ -271,7 +273,7 @@ module.exports = {
                 return;
             }
             const vm = this;
-            new this.swagger.GroupApi().addMember(this.groupId, playerId, function(error) {
+            new GroupApi().addMember(this.groupId, playerId, function(error) {
                 if (error) {
                     return;
                 }
@@ -288,7 +290,7 @@ module.exports = {
                 return;
             }
             const vm = this;
-            new this.swagger.GroupApi().removeMember(this.groupId, playerId, function(error) {
+            new GroupApi().removeMember(this.groupId, playerId, function(error) {
                 if (error) {
                     return;
                 }
@@ -302,7 +304,7 @@ module.exports = {
 
         accept: function(applicationId, playerId) {
             const vm = this;
-            new this.swagger.GroupApi().acceptApplication(applicationId, function() {
+            new GroupApi().acceptApplication(applicationId, function() {
                 vm.getApplications();
                 if (playerId === vm.player.id) {
                     vm.$root.$emit('playerChange');
@@ -312,7 +314,7 @@ module.exports = {
 
         deny: function(applicationId) {
             const vm = this;
-            new this.swagger.GroupApi().denyApplication(applicationId, function() {
+            new GroupApi().denyApplication(applicationId, function() {
                 vm.getApplications()
             });
         },

@@ -169,23 +169,16 @@
 
 <script>
 import $ from 'jquery';
-
+import { PlayerApi } from 'neucore-js-client';
 import TitleLogo from './Home--title-logo.vue';
-
-const md = require('markdown-it')({
-    typographer: true,
-})
-    .use(require('markdown-it-emoji/light'))
-    .use(require('markdown-it-sup'))
-    .use(require('markdown-it-sub'))
-    .use(require('markdown-it-ins'))
-    .use(require('markdown-it-abbr'))
-    .use(require('markdown-it-mark'))
-    .use(require('markdown-it-attrs')) // for classes, like .text-warning, .bg-primary
-;
-md.renderer.rules.emoji = function(token, idx) {
-    return '<span class="emoji">' + token[idx].content + '</span>';
-};
+import markdownIt from 'markdown-it';
+import mdEmoji from 'markdown-it-emoji/light';
+import mdSup from 'markdown-it-sup';
+import mdSub from 'markdown-it-sub';
+import mdIns from 'markdown-it-ins';
+import mdAbbr from 'markdown-it-abbr';
+import mdMark from 'markdown-it-mark';
+import mdAttrs from 'markdown-it-attrs';
 
 module.exports = {
     components: {
@@ -194,7 +187,6 @@ module.exports = {
 
     props: {
         route: Array,
-        swagger: Object,
         initialized: Boolean,
         authChar: Object,
         player: Object,
@@ -210,6 +202,19 @@ module.exports = {
     },
 
     mounted: function() { // after "redirect" from another page
+        const md = markdownIt({ typographer: true })
+            .use(mdEmoji)
+            .use(mdSup)
+            .use(mdSub)
+            .use(mdIns)
+            .use(mdAbbr)
+            .use(mdMark)
+            .use(mdAttrs) // for classes, like .text-warning, .bg-primary
+        ;
+        md.renderer.rules.emoji = function(token, idx) {
+            return '<span class="emoji">' + token[idx].content + '</span>';
+        };
+        
         this.checkDeactivated();
         this.markdownHtml = md.render(this.settings.customization_home_markdown);
     },
@@ -240,7 +245,7 @@ module.exports = {
             }
 
             const vm = this;
-            new this.swagger.PlayerApi().groupsDisabled(function(error, data) {
+            new PlayerApi().groupsDisabled(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -250,7 +255,7 @@ module.exports = {
 
         makeMain: function(characterId) {
             const vm = this;
-            new this.swagger.PlayerApi().setMain(characterId, function(error) {
+            new PlayerApi().setMain(characterId, function(error) {
                 if (error) { // 403 usually
                     return;
                 }

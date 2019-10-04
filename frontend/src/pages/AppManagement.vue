@@ -95,10 +95,11 @@
 </template>
 
 <script>
+import { AppApi } from 'neucore-js-client';
+    
 module.exports = {
     props: {
         route: Array,
-        swagger: Object,
         player: Object,
         settings: Object,
     },
@@ -151,7 +152,7 @@ module.exports = {
         getApp: function(id) {
             const vm = this;
 
-            new this.swagger.AppApi().show(id, function(error, data) {
+            new AppApi().show(id, function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -161,7 +162,7 @@ module.exports = {
 
         generateSecret: function() {
             const vm = this;
-            new this.swagger.AppApi().changeSecret(this.app.id, function(error, data) {
+            new AppApi().changeSecret(this.app.id, function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

@@ -98,13 +98,15 @@ module.exports = (env, argv) => {
             }),
             new MiniCssExtractPlugin({
                 filename: devMode ? '[name].css' : '[name].[hash].css',
-                //chunkFilename: devMode ? '[id].css' : '[id].[chunkhash].css',
             }),
             new VueLoaderPlugin(),
             new LicenseWebpackPlugin(),
         ],
         optimization: {
             runtimeChunk: 'single',
+            splitChunks: {
+                chunks: 'all',
+            },
             minimizer: [
                 new TerserPlugin(),
                 new OptimizeCSSAssetsPlugin({

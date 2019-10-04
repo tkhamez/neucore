@@ -1,56 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <title></title>
-
-    <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
-        const file = htmlWebpackPlugin.files.css[i];
-        if (file.match(/^dist\/theme-/)) {
-            %><link href="/<%= file %>" rel="alternate stylesheet" disabled title="theme"><%
-        } else {
-            %><link href="/<%= file %>" rel="stylesheet">
-        <%  }
-    } %>
-
-    <script src="/api/user/settings/system/theme"></script>
-    <script type="text/javascript">
-        // activate theme css - the above script defined the variable "theme"
-        var links = document.getElementsByTagName('link');
-        for (var i = 0; i < links.length; i++) {
-            if (links[i].getAttribute('title') !== 'theme') {
-                continue;
-            }
-            if (links[i].getAttribute('href').indexOf('dist/theme-' + theme.toLowerCase()) !== -1) {
-                links[i].disabled = false;
-                links[i].setAttribute('rel', 'stylesheet');
-                break;
-            }
-        }
-    </script>
-</head>
-<body class="neucore">
-    <p id="unsupportedBrowser">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
-        to improve your experience and security.
-    </p>
-
-    <div id="app"></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="/favicon.ico">
+        <title></title>
     
-    <script type="text/javascript">
-        // check for old IE (lower than 11)
-        try {
-            eval('const supported = true;');
-        } catch (e) {
-            document.getElementById('unsupportedBrowser').style.display = 'block';
-        }
-    </script>
-    <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
-        const file = htmlWebpackPlugin.files.js[i];
-        if (! file.match(/^dist\/theme-/)) { %><script type="text/javascript" src="/<%= file %>"></script><% }
-    } %>
-</body>
+        <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
+            const file = htmlWebpackPlugin.files.css[i];
+            if (file.match(/^dist\/theme-/)) {
+                %><link href="/<%= file %>" rel="alternate stylesheet" disabled title="theme"><%
+            } else {
+                %><link href="/<%= file %>" rel="stylesheet">
+            <%  }
+        } %>
+    
+        <script src="/api/user/settings/system/theme"></script>
+        <script type="text/javascript">
+            // activate theme css - the above script defined the variable "theme"
+            var links = document.getElementsByTagName('link');
+            for (var i = 0; i < links.length; i++) {
+                if (links[i].getAttribute('title') !== 'theme') {
+                    continue;
+                }
+                if (links[i].getAttribute('href').indexOf('dist/theme-' + theme.toLowerCase()) !== -1) {
+                    links[i].disabled = false;
+                    links[i].setAttribute('rel', 'stylesheet');
+                    break;
+                }
+            }
+        </script>
+    </head>
+    <body class="neucore">
+        <p id="unsupportedBrowser">
+            You are using an <strong>outdated</strong> browser. Please
+            <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
+            to improve your experience and security.
+        </p>
+    
+        <div id="app"></div>
+        
+        <script type="text/javascript">
+            // check for old IE (lower than 11)
+            try {
+                eval('const supported = true;');
+            } catch (e) {
+                document.getElementById('unsupportedBrowser').style.display = 'block';
+            }
+        </script>
+        <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
+            const file = htmlWebpackPlugin.files.js[i];
+            if (! file.match(/^dist\/theme-/)) { %><script type="text/javascript" src="/<%= file %>"></script><% }
+        } %>
+    </body>
 </html>

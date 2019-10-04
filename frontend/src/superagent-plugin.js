@@ -1,5 +1,7 @@
 
-module.exports = function (vm) {
+export { superAgentPlugin as default };
+
+function superAgentPlugin(vm) {
     return function (request) {
         vm.ajaxLoading(true);
 
@@ -22,4 +24,4 @@ module.exports = function (vm) {
 
         return request;
     };
-};
+}

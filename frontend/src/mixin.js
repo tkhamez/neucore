@@ -1,3 +1,6 @@
+
+import { CharacterApi } from 'neucore-js-client';
+import { PlayerApi } from 'neucore-js-client';
 import Vue from 'vue';
 
 Vue.mixin({
@@ -92,7 +95,7 @@ Vue.mixin({
         updateCharacter: function(characterId, callback) {
             const vm = this;
 
-            new this.swagger.CharacterApi().update(characterId, function(error, data, response) {
+            new CharacterApi().update(characterId, function(error, data, response) {
                 if (error) { // usually 403 (from Core) or 503 (ESI down)
                     if (error.message) {
                         vm.message(error.message, 'error');
@@ -121,7 +124,7 @@ Vue.mixin({
          */
         deleteCharacter(characterId, adminReason, callback) {
             const vm = this;
-            new this.swagger.PlayerApi().deleteCharacter(
+            new PlayerApi().deleteCharacter(
                 characterId,
                 { adminReason: adminReason || '' },
                 function(error) {

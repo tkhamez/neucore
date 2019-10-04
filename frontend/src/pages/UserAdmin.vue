@@ -77,7 +77,8 @@
                     Characters
                 </h3>
                 <div class="card-body">
-                    <character-search :swagger="swagger" v-on:result="onSearchResult($event)"></character-search>
+                    <!--suppress HtmlUnknownTag -->
+                    <character-search v-on:result="onSearchResult($event)"></character-search>
                     <span class="text-muted small">
                         Select a character to show it's player account.
                     </span>
@@ -365,6 +366,7 @@
 
 <script>
 import $ from 'jquery';
+import { PlayerApi } from 'neucore-js-client';
 
 import CharacterSearch from '../components/CharacterSearch.vue';
 
@@ -375,7 +377,6 @@ module.exports = {
 
     props: {
         route: Array,
-        swagger: Object,
         initialized: Boolean,
         player: Object, // logged in player
         authChar: Object, // logged in character
@@ -479,7 +480,7 @@ module.exports = {
             vm.activeList = '';
             vm.playersChars = [];
             vm.searchResult = [];
-            new this.swagger.PlayerApi().withRole(roleName, function(error, data) {
+            new PlayerApi().withRole(roleName, function(error, data) {
                 if (error) {
                     return;
                 }
@@ -496,7 +497,7 @@ module.exports = {
             vm.activeRole = '';
             vm.playersRole = [];
             vm.searchResult = [];
-            const api = new this.swagger.PlayerApi();
+            const api = new PlayerApi();
             api[listName].apply(api, [function(error, data) {
                 if (error) {
                     return;
@@ -507,7 +508,7 @@ module.exports = {
 
         getPlayer: function() {
             const vm = this;
-            const api = new this.swagger.PlayerApi();
+            const api = new PlayerApi();
 
             api.showById(this.playerId, function(error, data) {
                 if (error) {
@@ -542,7 +543,7 @@ module.exports = {
                 return;
             }
             const playerId = this.playerEdit.id;
-            const api = new this.swagger.PlayerApi();
+            const api = new PlayerApi();
             const vm = this;
             api[method].apply(api, [playerId, param, function(error) {
                 if (error) {

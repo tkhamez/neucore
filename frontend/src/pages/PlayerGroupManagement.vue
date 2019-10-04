@@ -1,7 +1,8 @@
 <template>
     <div class="container-fluid">
 
-        <characters :swagger="swagger" ref="charactersModal"></characters>
+        <!--suppress HtmlUnknownTag -->
+        <characters ref="charactersModal"></characters>
 
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
@@ -61,9 +62,10 @@
                     </div>
                 </div>
 
+                <!--suppress HtmlUnknownTag -->
                 <admin v-cloak v-if="playerId" ref="admin"
                        :player="player" :contentType="'groups'" :typeId="playerId" :settings="settings"
-                       :swagger="swagger" :type="'Player'"
+                       :type="'Player'"
                        v-on:activePlayer="playerData = $event"></admin>
 
             </div>
@@ -72,6 +74,7 @@
 </template>
 
 <script>
+import { PlayerApi } from 'neucore-js-client';
 import Admin      from '../components/EntityRelationEdit.vue';
 import Characters from '../components/Characters.vue';
 
@@ -83,7 +86,6 @@ module.exports = {
 
     props: {
         route: Array,
-        swagger: Object,
         initialized: Boolean,
         player: Object,
         settings: Object,
@@ -126,7 +128,7 @@ module.exports = {
     methods: {
         getPLayers: function() {
             const vm = this;
-            new this.swagger.PlayerApi().withStatus('managed', function(error, data) {
+            new PlayerApi().withStatus('managed', function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

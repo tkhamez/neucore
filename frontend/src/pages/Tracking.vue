@@ -2,7 +2,7 @@
     <div class="container-fluid">
 
         <!--suppress HtmlUnknownTag -->
-        <characters :swagger="swagger" ref="charactersModal"></characters>
+        <characters ref="charactersModal"></characters>
 
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
@@ -97,6 +97,7 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import { CorporationApi } from 'neucore-js-client';
 
 import Characters from '../components/Characters.vue';
 
@@ -108,7 +109,6 @@ module.exports = {
     props: {
         route: Array,
         initialized: Boolean,
-        swagger: Object,
     },
 
     data: function() {
@@ -246,7 +246,7 @@ module.exports = {
     methods: {
         getCorporations: function() {
             const vm = this;
-            new this.swagger.CorporationApi().trackedCorporations(function(error, data) {
+            new CorporationApi().trackedCorporations(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -289,7 +289,7 @@ module.exports = {
             };
 
             const vm = this;
-            new this.swagger.CorporationApi().members(corporationId, opts, function(error, data) {
+            new CorporationApi().members(corporationId, opts, function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

@@ -1,7 +1,8 @@
 <template>
 <div class="container-fluid">
 
-    <edit :swagger="swagger" :type="'Group'" ref="editModal"
+    <!--suppress HtmlUnknownTag -->
+    <edit :type="'Group'" ref="editModal"
           v-on:created="groupCreated($event)"
           v-on:deleted="groupDeleted()"
           v-on:itemChange="groupChanged()"></edit>
@@ -117,9 +118,10 @@
                 </li>
             </ul>
 
+            <!--suppress HtmlUnknownTag -->
             <admin v-cloak v-if="groupId" ref="admin"
-                :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
-                :swagger="swagger" :type="'Group'"></admin>
+                   :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
+                   :type="'Group'"></admin>
 
         </div>
     </div>
@@ -129,6 +131,9 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import { AllianceApi } from 'neucore-js-client';
+import { CorporationApi } from 'neucore-js-client';
+import { GroupApi } from 'neucore-js-client';
 
 import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
@@ -142,7 +147,6 @@ module.exports = {
     props: {
         settings: Object,
         route: Array,
-        swagger: Object,
         initialized: Boolean,
         player: Object,
     },
@@ -271,9 +275,9 @@ module.exports = {
             const vm = this;
             let api;
             if (this.addType === 'Corporation') {
-                api = new this.swagger.CorporationApi();
+                api = new CorporationApi();
             } else if (this.addType === 'Alliance') {
-                api = new this.swagger.AllianceApi();
+                api = new AllianceApi();
             } else {
                 return;
             }
@@ -301,7 +305,7 @@ module.exports = {
 
         getGroups: function() {
             const vm = this;
-            new this.swagger.GroupApi().all(function(error, data) {
+            new GroupApi().all(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

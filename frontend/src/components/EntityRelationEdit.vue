@@ -5,7 +5,8 @@ Select and table to add and remove objects from other objects.
 <template>
     <div class="card border-secondary mb-3">
 
-        <characters :swagger="swagger" ref="charactersModal"></characters>
+        <!--suppress HtmlUnknownTag -->
+        <characters ref="charactersModal"></characters>
 
         <div v-cloak v-if="showGroupsEntity" class="modal fade" id="showGroupsModal">
             <div class="modal-dialog">
@@ -78,12 +79,15 @@ Select and table to add and remove objects from other objects.
                     <option v-if="contentType === 'roles'" value="">Select role ...</option>
                     <option v-if="! tableHas(option)" v-for="option in selectContent" v-bind:value="option">
                         {{ option.name }}
+                        <!--suppress HtmlUnknownTag -->
                         <template v-if="contentType === 'managers'">
                             #{{ option.id }}
                         </template>
+                        <!--suppress HtmlUnknownTag -->
                         <template v-if="contentType === 'corporations' || contentType === 'alliances'">
                             [{{ option.ticker }}]
                         </template>
+                        <!--suppress HtmlUnknownTag -->
                         <template v-if="contentType === 'corporations' && option.alliance">
                             ({{ option.alliance.name }}, [{{ option.alliance.ticker }}])
                         </template>
@@ -163,6 +167,11 @@ Select and table to add and remove objects from other objects.
 
 <script>
 import $ from 'jquery';
+import { AllianceApi } from 'neucore-js-client';
+import { AppApi } from 'neucore-js-client';
+import { CorporationApi } from 'neucore-js-client';
+import { GroupApi } from 'neucore-js-client';
+import { PlayerApi } from 'neucore-js-client';
 
 import Characters from '../components/Characters.vue';
 
@@ -172,7 +181,6 @@ module.exports = {
     },
 
     props: {
-        swagger: Object,
         contentType: '',
         type: '',
         typeId: Number,
@@ -243,20 +251,20 @@ module.exports = {
             let api;
             let method;
             if (this.contentType === 'managers') {
-                api = new this.swagger.PlayerApi();
+                api = new PlayerApi();
                 if (this.type === 'Group') {
                     method = 'groupManagers';
                 } else if (this.type === 'App') {
                     method = 'appManagers';
                 }
             } else if (this.contentType === 'corporations') {
-                api = new this.swagger.CorporationApi();
+                api = new CorporationApi();
                 method = 'all';
             } else if (this.contentType === 'alliances') {
-                api = new this.swagger.AllianceApi();
+                api = new AllianceApi();
                 method = 'all';
             } else if (this.contentType === 'groups') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
                 method = 'all';
             } else if (this.contentType === 'roles') {
                 vm.selectContent = [
@@ -286,13 +294,13 @@ module.exports = {
             let api;
             let method;
             if (this.type === 'Group') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
             } else if (this.type === 'App') {
-                api = new this.swagger.AppApi();
+                api = new AppApi();
             } else if (this.type === 'Player') {
-                api = new this.swagger.PlayerApi();
+                api = new PlayerApi();
             } else if (this.type === 'Corporation') {
-                api = new this.swagger.CorporationApi();
+                api = new CorporationApi();
             }
             if (this.contentType === 'managers') {
                 method = 'managers';
@@ -353,9 +361,9 @@ module.exports = {
 
             let api;
             if (this.contentType === 'corporations') {
-                api = new this.swagger.CorporationApi();
+                api = new CorporationApi();
             } else if (this.contentType === 'alliances') {
-                api = new this.swagger.AllianceApi();
+                api = new AllianceApi();
             } else {
                 return;
             }
@@ -410,9 +418,9 @@ module.exports = {
             let api;
             let method;
             if (this.type === 'Group') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
             } else if (this.type === 'App') {
-                api = new this.swagger.AppApi();
+                api = new AppApi();
             }
             if (action === 'add') {
                 method = 'addManager';
@@ -442,9 +450,9 @@ module.exports = {
                 method = 'removeGroup';
             }
             if (this.contentType === 'corporations') {
-                api = new this.swagger.CorporationApi();
+                api = new CorporationApi();
             } else if (this.contentType === 'alliances') {
-                api = new this.swagger.AllianceApi();
+                api = new AllianceApi();
             }
             if (! api || ! method) {
                 return;
@@ -463,22 +471,22 @@ module.exports = {
             let param1;
             let param2;
             if (this.type === 'App') {
-                api = new this.swagger.AppApi();
+                api = new AppApi();
                 method = action + type; // add/remove + Group/Role
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Player') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
                 method = action + 'Member';
                 param1 = id;
                 param2 = this.typeId;
             } else if (this.type === 'Group') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
                 method = action + 'RequiredGroup';
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Corporation') {
-                api = new this.swagger.CorporationApi();
+                api = new CorporationApi();
                 method = action + 'GroupTracking';
                 param1 = this.typeId;
                 param2 = id;
@@ -502,7 +510,7 @@ module.exports = {
             const numGroups = vm.selectContent.length;
             let numAdded = 0;
 
-            const api = new vm.swagger.AppApi();
+            const api = new AppApi();
             for (let group of vm.selectContent) {
                 this.callApi(api, 'addGroup', vm.typeId, group.id, function() {
                     done();

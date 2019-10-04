@@ -54,11 +54,12 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import { ESIApi } from 'neucore-js-client';
+import { CharacterApi } from 'neucore-js-client';
 
 module.exports = {
     props: {
         initialized: Boolean,
-        swagger: Object,
     },
 
     data: function() {
@@ -97,7 +98,7 @@ module.exports = {
         charSearchDelayed: _.debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
-            new vm.swagger.CharacterApi().findBy(searchTerm, function(error, data) {
+            new CharacterApi().findBy(searchTerm, function(error, data) {
                 vm.charSearchIsLoading = false;
                 if (error) {
                     return;
@@ -111,7 +112,7 @@ module.exports = {
                 return;
             }
             const vm = this;
-            new this.swagger.ESIApi().request({
+            new ESIApi().request({
                 character: this.selectedCharacter.character_id,
                 route: this.esiRoute
             }, function(error, data, response) {

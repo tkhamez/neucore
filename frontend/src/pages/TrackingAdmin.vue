@@ -27,9 +27,10 @@
                     </li>
                 </ul>
 
+                <!--suppress HtmlUnknownTag -->
                 <admin v-cloak v-if="corporationId" ref="admin"
                        :player="player" :contentType="contentType" :typeId="corporationId" :settings="settings"
-                       :swagger="swagger" :type="'Corporation'"></admin>
+                       :type="'Corporation'"></admin>
 
             </div>
         </div>
@@ -37,6 +38,7 @@
 </template>
 
 <script>
+import { CorporationApi } from 'neucore-js-client';
 import Admin from '../components/EntityRelationEdit.vue';
 
 module.exports = {
@@ -47,7 +49,6 @@ module.exports = {
     props: {
         settings: Object,
         route: Array,
-        swagger: Object,
         player: Object,
     },
 
@@ -73,7 +74,7 @@ module.exports = {
     methods: {
         getCorporations: function() {
             const vm = this;
-            new this.swagger.CorporationApi().trackedCorporations(function(error, data) {
+            new CorporationApi().trackedCorporations(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

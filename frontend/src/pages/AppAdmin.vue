@@ -1,7 +1,8 @@
 <template>
 <div class="container-fluid">
 
-    <edit :swagger="swagger" :type="'App'" ref="editModal"
+    <!--suppress HtmlUnknownTag -->
+    <edit :type="'App'" ref="editModal"
         v-on:created="appCreated($event)"
         v-on:deleted="appDeleted()"
         v-on:itemChange="appChanged()"></edit>
@@ -62,9 +63,10 @@
                 </li>
             </ul>
 
-            <admin v-cloak v-if="appId" ref="admin"
-                 :player="player" :contentType="contentType" :typeId="appId" :settings="settings"
-                :swagger="swagger" :type="'App'"></admin>
+            <!--suppress HtmlUnknownTag -->
+            <admin v-cloak v-if="appId" ref="admin" 
+                   :player="player" :contentType="contentType" :typeId="appId" :settings="settings" 
+                   :type="'App'"></admin>
 
         </div>
     </div>
@@ -73,6 +75,7 @@
 
 <script>
 import $ from 'jquery';
+import { AppApi } from 'neucore-js-client';
 
 import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
@@ -85,7 +88,6 @@ module.exports = {
 
     props: {
         route: Array,
-        swagger: Object,
         initialized: Boolean,
         player: Object,
         settings: Object,
@@ -158,7 +160,7 @@ module.exports = {
 
         getApps: function() {
             const vm = this;
-            new this.swagger.AppApi().all(function(error, data) {
+            new AppApi().all(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

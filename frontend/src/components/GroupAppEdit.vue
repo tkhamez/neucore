@@ -97,10 +97,11 @@ Modal windows to create, delete and edit groups and apps
 
 <script>
 import $ from 'jquery';
+import { AppApi } from 'neucore-js-client';
+import { GroupApi } from 'neucore-js-client';
 
 module.exports = {
     props: {
-        swagger: Object,
         type: ''
     },
 
@@ -149,9 +150,9 @@ module.exports = {
             const vm = this;
             let api;
             if (this.type === 'Group') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
             } else if (this.type === 'App') {
-                api = new this.swagger.AppApi();
+                api = new AppApi();
             } else {
                 return;
             }
@@ -175,9 +176,9 @@ module.exports = {
             const vm = this;
             let api;
             if (this.type === 'Group') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
             } else if (this.type === 'App') {
-                api = new this.swagger.AppApi();
+                api = new AppApi();
             } else {
                 return;
             }
@@ -197,9 +198,9 @@ module.exports = {
             const vm = this;
             let api;
             if (this.type === 'Group') {
-                api = new this.swagger.GroupApi();
+                api = new GroupApi();
             } else if (this.type === 'App') {
-                api = new this.swagger.AppApi();
+                api = new AppApi();
             } else {
                 return;
             }
@@ -221,7 +222,7 @@ module.exports = {
 
         setVisibility: function() {
             const vm = this;
-            new this.swagger.GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
+            new GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
                 if (error) {
                     vm.message('Error saving visibility.', 'error');
                 } else {
