@@ -47,13 +47,7 @@ module.exports = (env, argv) => {
                 use: [
                     MiniCssExtractPlugin.loader,
                     'css-loader',
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            implementation: require("sass"),
-                            fiber: Fiber,
-                        }
-                    }
+                    'sass-loader',
                 ]
             }, {
                 // for font awesome fonts
