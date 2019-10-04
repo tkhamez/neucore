@@ -95,6 +95,9 @@
 </template>
 
 <script>
+import _ from 'lodash';
+import $ from 'jquery';
+
 import Characters from '../components/Characters.vue';
 
 module.exports = {
@@ -265,7 +268,7 @@ module.exports = {
             }
         },
 
-        getMembersDelayed: window._.debounce((vm) => {
+        getMembersDelayed: _.debounce((vm) => {
             vm.getMembers();
         }, 250),
 
@@ -303,7 +306,7 @@ module.exports = {
 };
 </script>
 
-<style scoped>
+<style type="text/scss" scoped>
     .input-option {
         display: inline;
         width: 80px;
@@ -312,8 +315,9 @@ module.exports = {
         font-size: 90%;
     }
     @supports (position: sticky) {
+        // position needs !important because "dataTables.bootstrap4.css" sets position to absolute
         .member-table thead th {
-            position: sticky;
+            position: sticky !important;
             top: 80px;
         }
     }

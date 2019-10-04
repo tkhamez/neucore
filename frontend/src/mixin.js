@@ -1,5 +1,6 @@
+import Vue from 'vue';
 
-window.Vue.mixin({
+Vue.mixin({
     data: function () {
         return {
             themes: [
@@ -48,10 +49,10 @@ window.Vue.mixin({
                 case 'info':
                 case 'warning':
                     type = type === 'error' ? 'danger' : type;
-                    this.$root.showMessage(text, type);
+                    this.$root.$emit('message', text, type);
                     break;
                 default: // success
-                    this.$root.showMessage(text, type, 1500);
+                    this.$root.$emit('message', text, type, 1500);
                     break;
             }
         },

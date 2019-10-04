@@ -72,77 +72,77 @@
 </template>
 
 <script>
-    import Admin      from '../components/EntityRelationEdit.vue';
-    import Characters from '../components/Characters.vue';
+import Admin      from '../components/EntityRelationEdit.vue';
+import Characters from '../components/Characters.vue';
 
-    module.exports = {
-        components: {
-            Admin,
-            Characters,
+module.exports = {
+    components: {
+        Admin,
+        Characters,
+    },
+
+    props: {
+        route: Array,
+        swagger: Object,
+        initialized: Boolean,
+        player: Object,
+        settings: Object,
+    },
+
+    data: function() {
+        return {
+            players: [],
+            playerId: null, // current player
+            playerData: null, // current player
+            httpBaseUrl: null,
+        }
+    },
+
+    mounted: function() {
+        if (this.initialized) { // on page change
+            this.getPLayers();
+            this.setPlayerId();
+        }
+
+        // login URL for managed accounts
+        let port = '';
+        if (location.port !== "" && location.port !== 80 && location.port !== 443) {
+            port = ':' + location.port;
+        }
+        this.httpBaseUrl = location.protocol + "//" + location.hostname + port
+    },
+
+    watch: {
+        initialized: function() { // on refresh
+            this.getPLayers();
+            this.setPlayerId();
         },
 
-        props: {
-            route: Array,
-            swagger: Object,
-            initialized: Boolean,
-            player: [null, Object],
-            settings: Object,
+        route: function() {
+            this.setPlayerId();
+        },
+    },
+
+    methods: {
+        getPLayers: function() {
+            const vm = this;
+            new this.swagger.PlayerApi().withStatus('managed', function(error, data) {
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.players = data;
+            });
         },
 
-        data: function() {
-            return {
-                players: [],
-                playerId: null, // current player
-                playerData: null, // current player
-                httpBaseUrl: null,
-            }
+        setPlayerId: function() {
+            this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
 
-        mounted: function() {
-            if (this.initialized) { // on page change
-                this.getPLayers();
-                this.setPlayerId();
-            }
-
-            // login URL for managed accounts
-            let port = '';
-            if (location.port !== "" && location.port !== 80 && location.port !== 443) {
-                port = ':' + location.port;
-            }
-            this.httpBaseUrl = location.protocol + "//" + location.hostname + port
+        showCharacters: function(memberId) {
+            this.$refs.charactersModal.showCharacters(memberId);
         },
-
-        watch: {
-            initialized: function() { // on refresh
-                this.getPLayers();
-                this.setPlayerId();
-            },
-
-            route: function() {
-                this.setPlayerId();
-            },
-        },
-
-        methods: {
-            getPLayers: function() {
-                const vm = this;
-                new this.swagger.PlayerApi().withStatus('managed', function(error, data) {
-                    if (error) { // 403 usually
-                        return;
-                    }
-                    vm.players = data;
-                });
-            },
-
-            setPlayerId: function() {
-                this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            },
-
-            showCharacters: function(memberId) {
-                this.$refs.charactersModal.showCharacters(memberId);
-            },
-        },
-    }
+    },
+}
 </script>
 
 <style scoped>

@@ -89,9 +89,11 @@
 </template>
 
 <script>
+import $ from 'jquery';
+
 module.exports = {
     props: {
-        authChar: [null, Object],
+        authChar: Object,
         page: String,
         settings: Object,
     },
@@ -105,7 +107,7 @@ module.exports = {
     },
 
     mounted: function() {
-        const $navMain = window.$("#navbar01");
+        const $navMain = $("#navbar01");
         $navMain.on("click", "a:not([data-toggle])", null, function() {
             $navMain.collapse('hide');
         });
@@ -123,12 +125,11 @@ module.exports = {
                 return;
             }
             this.selectedTheme = name;
-            const $link = window.$("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
-            if ($link.attr('rel') === 'stylesheet') {
+            const $enable = $("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            if ($enable.attr('rel') === 'stylesheet') {
                 return;
             }
-            const $disable = window.$("head link[href*='dist/theme-']");
-            const $enable = window.$("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            const $disable = $("head link[href*='dist/theme-']");
             $disable.attr('rel', 'alternate stylesheet');
             $disable.attr('disabled', true);
             $enable.attr('rel', 'stylesheet');

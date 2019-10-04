@@ -35,8 +35,7 @@ module.exports = (env, argv) => {
             'theme-superhero': './src/themes/superhero.scss',
             'theme-united': './src/themes/united.scss',
             'theme-yeti': './src/themes/yeti.scss',
-            'vendor': './src/vendor.js',
-            'app': './src/index.js',
+            'main': './src/main.js',
         },
         output: {
             path: path.resolve(__dirname, '../web/dist'),
@@ -114,6 +113,8 @@ module.exports = (env, argv) => {
             ]
         },
         devtool: devMode ? 'inline-source-map' : 'source-map',
-        performance: { hints: false },
+        performance: { 
+            hints: devMode ? false : 'warning' 
+        },
     }
 };

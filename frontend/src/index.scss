@@ -34,51 +34,9 @@ body.neucore {
     }
 }
 
-.footer {
-    padding: 5px 0;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    max-height: 75px;
-    overflow-y: auto;
-}
-.footer .container-fluid {
-    text-align: center;
-}
-.footer .github {
-    float: right;
-}
-
 [v-cloak] {
     display: none;
     visibility: hidden;
-}
-
-.alert.app-alert {
-    position: fixed;
-    top: 60px;
-    left: 25%;
-    right: 25%;
-    z-index: 5000;
-}
-
-#loader {
-    position: fixed;
-    top: 25px;
-    left: 50%;
-    width: 120px;
-    height: 120px;
-    margin-left: -60px;
-    z-index: 5000;
-    border: 16px solid #555;
-    border-top: 16px solid #eee;
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
 
 .emoji {

@@ -52,6 +52,9 @@
 </template>
 
 <script>
+import _ from 'lodash';
+import $ from 'jquery';
+
 module.exports = {
     props: {
         initialized: Boolean,
@@ -72,7 +75,7 @@ module.exports = {
     },
 
     mounted: function() {
-        window.$.get('/static/esi-paths-http-get.json').then((data) => {
+        $.get('/static/esi-paths-http-get.json').then((data) => {
             this.paths = data;
         });
     },
@@ -91,7 +94,7 @@ module.exports = {
             this.charSearchDelayed(this, query);
         },
 
-        charSearchDelayed: window._.debounce((vm, searchTerm) => {
+        charSearchDelayed: _.debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
             new vm.swagger.CharacterApi().findBy(searchTerm, function(error, data) {

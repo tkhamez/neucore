@@ -37,58 +37,58 @@
 </template>
 
 <script>
-    import Admin from '../components/EntityRelationEdit.vue';
+import Admin from '../components/EntityRelationEdit.vue';
 
-    module.exports = {
-        components: {
-            Admin,
-        },
+module.exports = {
+    components: {
+        Admin,
+    },
 
-        props: {
-            settings: Object,
-            route: Array,
-            swagger: Object,
-            player: [null, Object],
-        },
+    props: {
+        settings: Object,
+        route: Array,
+        swagger: Object,
+        player: Object,
+    },
 
-        data: function() {
-            return {
-                corporations: [],
-                corporationId: null, // current corporation
-                contentType: '',
-            }
-        },
+    data: function() {
+        return {
+            corporations: [],
+            corporationId: null, // current corporation
+            contentType: '',
+        }
+    },
 
-        mounted: function() {
-            this.getCorporations();
+    mounted: function() {
+        this.getCorporations();
+        this.setCorporationIdAndContentType();
+    },
+
+    watch: {
+        route: function() {
             this.setCorporationIdAndContentType();
         },
+    },
 
-        watch: {
-            route: function() {
-                this.setCorporationIdAndContentType();
-            },
-        },
-
-        methods: {
-            getCorporations: function() {
-                const vm = this;
-                new this.swagger.CorporationApi().trackedCorporations(function(error, data) {
-                    if (error) { // 403 usually
-                        return;
-                    }
-                    vm.corporations = data;
-                });
-            },
-
-            setCorporationIdAndContentType: function() {
-                this.corporationId = this.route[1] ? parseInt(this.route[1], 10) : null;
-                if (this.corporationId) {
-                    this.contentType = this.route[2] ? this.route[2] : 'groups';
+    methods: {
+        getCorporations: function() {
+            const vm = this;
+            new this.swagger.CorporationApi().trackedCorporations(function(error, data) {
+                if (error) { // 403 usually
+                    return;
                 }
-            },
+                vm.corporations = data;
+            });
         },
-    }
+
+        setCorporationIdAndContentType: function() {
+            this.corporationId = this.route[1] ? parseInt(this.route[1], 10) : null;
+            if (this.corporationId) {
+                this.contentType = this.route[2] ? this.route[2] : 'groups';
+            }
+        },
+    },
+}
 </script>
 
 <style scoped>

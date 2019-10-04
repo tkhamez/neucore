@@ -59,6 +59,8 @@ Modal window with all characters of one player.
 </template>
 
 <script>
+import $ from 'jquery';
+
 module.exports = {
     props: {
         swagger: Object,
@@ -79,7 +81,7 @@ module.exports = {
                 }
                 vm.selectedPlayer = data;
                 window.setTimeout(function() {
-                    window.$('#playerModal').modal('show');
+                    $('#playerModal').modal('show');
                 }, 10);
             });
         },

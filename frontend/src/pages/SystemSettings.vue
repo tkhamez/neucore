@@ -318,12 +318,14 @@
 </template>
 
 <script>
+import _ from 'lodash';
+
 module.exports = {
     props: {
         route: Array,
         swagger: Object,
         initialized: Boolean,
-        player: [null, Object],
+        player: Object,
         settings: Object,
     },
 
@@ -470,7 +472,7 @@ module.exports = {
             this.changeSettingDebounced(this, name, value);
         },
 
-        changeSettingDebounced: window._.debounce((vm, name, value) => {
+        changeSettingDebounced: _.debounce((vm, name, value) => {
             vm.changeSetting(name, value);
         }, 250),
 

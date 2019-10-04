@@ -72,6 +72,8 @@
 </template>
 
 <script>
+import $ from 'jquery';
+
 import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
 
@@ -85,7 +87,7 @@ module.exports = {
         route: Array,
         swagger: Object,
         initialized: Boolean,
-        player: [null, Object],
+        player: Object,
         settings: Object,
     },
 
@@ -117,11 +119,11 @@ module.exports = {
 
     methods: {
         mouseover (ele) {
-            window.$(ele.target).addClass('text-warning');
+            $(ele.target).addClass('text-warning');
         },
 
         mouseleave (ele) {
-            window.$(ele.target).removeClass('text-warning');
+            $(ele.target).removeClass('text-warning');
         },
 
         showCreateAppModal: function() {

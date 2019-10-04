@@ -162,6 +162,8 @@ Select and table to add and remove objects from other objects.
 </template>
 
 <script>
+import $ from 'jquery';
+
 import Characters from '../components/Characters.vue';
 
 module.exports = {
@@ -173,8 +175,8 @@ module.exports = {
         swagger: Object,
         contentType: '',
         type: '',
-        typeId: null,
-        player: [null, Object],
+        typeId: Number,
+        player: Object,
         settings: Object,
     },
 
@@ -398,7 +400,7 @@ module.exports = {
                 }
             }
             window.setTimeout(function() {
-                window.$('#showGroupsModal').modal('show');
+                $('#showGroupsModal').modal('show');
             }, 10);
         },
 

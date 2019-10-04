@@ -176,7 +176,7 @@ module.exports = {
     props: {
         route: Array,
         swagger: Object,
-        player: [null, Object],
+        player: Object,
     },
 
     data: function() {

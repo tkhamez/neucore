@@ -127,6 +127,9 @@
 </template>
 
 <script>
+import _ from 'lodash';
+import $ from 'jquery';
+
 import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
 
@@ -141,7 +144,7 @@ module.exports = {
         route: Array,
         swagger: Object,
         initialized: Boolean,
-        player: [null, Object],
+        player: Object,
     },
 
     data: function() {
@@ -177,11 +180,11 @@ module.exports = {
 
     methods: {
         mouseover (ele) {
-            window.$(ele.target).addClass('text-warning');
+            $(ele.target).addClass('text-warning');
         },
 
         mouseleave (ele) {
-            window.$(ele.target).removeClass('text-warning');
+            $(ele.target).removeClass('text-warning');
         },
 
         showCreateGroupModal: function() {
@@ -213,7 +216,7 @@ module.exports = {
             this.addType = addType;
             this.searchResults = [];
             this.searchSelected = null;
-            window.$('#addAlliCorpModal').modal('show');
+            $('#addAlliCorpModal').modal('show');
         },
 
         searchAlliCorp (query) {
@@ -223,7 +226,7 @@ module.exports = {
             this.searchAlliCorpDelayed(this, query);
         },
 
-        searchAlliCorpDelayed: window._.debounce((vm, query) => {
+        searchAlliCorpDelayed: _.debounce((vm, query) => {
             let category;
             if (vm.addType === 'Corporation') {
                 category = 'corporation';
@@ -239,12 +242,12 @@ module.exports = {
 
             vm.searchIsLoading = true;
             vm.searchResults = [];
-            window.$.get(url).always(response1 => {
+            $.get(url).always(response1 => {
                 if (typeof response1[category] !== typeof []) {
                     vm.searchIsLoading = false;
                     return;
                 }
-                window.$.post(
+                $.post(
                     vm.settings.esiHost + '/latest/universe/names/?datasource=' + vm.settings.esiDataSource,
                     JSON.stringify(response1[category])
                 ).always(response2 => {
@@ -283,7 +286,7 @@ module.exports = {
                 } else if (error) {
                     vm.message('Error adding ' + vm.addType, 'error');
                 } else {
-                    window.$('#addAlliCorpModal').modal('hide');
+                    $('#addAlliCorpModal').modal('hide');
                     vm.message(vm.addType + ' "['+ data.ticker +'] '+ data.name +'" added.', 'success');
                     if (vm.$refs.admin) {
                         vm.$refs.admin.getSelectContent();

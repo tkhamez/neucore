@@ -71,11 +71,13 @@
 </template>
 
 <script>
+import $ from 'jquery';
+
 module.exports = {
     props: {
         initialized: Boolean,
         swagger: Object,
-        player: [null, Object],
+        player: Object,
     },
 
     data: function() {
@@ -156,7 +158,7 @@ module.exports = {
                 id: groupId,
                 name: groupName,
             };
-            window.$('#leaveGroupModal').modal('show');
+            $('#leaveGroupModal').modal('show');
         },
 
         leave: function() {
@@ -164,7 +166,7 @@ module.exports = {
             new this.swagger.PlayerApi().leaveGroup(this.groupToLeave.id, function() {
                 vm.$root.$emit('playerChange');
             });
-            window.$('#leaveGroupModal').modal('hide');
+            $('#leaveGroupModal').modal('hide');
             this.groupToLeave = null;
         }
     }

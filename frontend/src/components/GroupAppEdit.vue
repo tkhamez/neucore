@@ -96,6 +96,8 @@ Modal windows to create, delete and edit groups and apps
 </template>
 
 <script>
+import $ from 'jquery';
+
 module.exports = {
     props: {
         swagger: Object,
@@ -114,7 +116,7 @@ module.exports = {
     methods: {
         showCreateModal: function() {
             this.newName = '';
-            window.$('#createModal').modal('show');
+            $('#createModal').modal('show');
         },
 
         /**
@@ -125,7 +127,7 @@ module.exports = {
                 id: item.id,
                 name: item.name,
             };
-            window.$('#deleteModal').modal('show');
+            $('#deleteModal').modal('show');
         },
 
         showEditModal: function(item) {
@@ -136,11 +138,11 @@ module.exports = {
             if (this.type === 'Group') {
                 this.groupVisibility = item.visibility
             }
-            window.$('#editModal').modal('show');
+            $('#editModal').modal('show');
         },
 
         hideEditModal: function() {
-            window.$('#editModal').modal('hide');
+            $('#editModal').modal('hide');
         },
 
         create: function() {
@@ -162,7 +164,7 @@ module.exports = {
                 } else if (error) {
                     vm.message('Error creating ' + vm.type, 'error');
                 } else {
-                    window.$('#createModal').modal('hide');
+                    $('#createModal').modal('hide');
                     vm.message(vm.type + ' created.', 'success');
                     vm.$emit('created', data.id);
                 }
@@ -184,7 +186,7 @@ module.exports = {
                 if (error) {
                     vm.message('Error deleting ' + vm.type, 'error');
                 } else {
-                    window.$('#deleteModal').modal('hide');
+                    $('#deleteModal').modal('hide');
                     vm.message(vm.type + ' deleted.', 'success');
                     vm.$emit('deleted');
                 }

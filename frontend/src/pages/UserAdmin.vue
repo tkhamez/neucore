@@ -364,6 +364,8 @@
 </template>
 
 <script>
+import $ from 'jquery';
+
 import CharacterSearch from '../components/CharacterSearch.vue';
 
 module.exports = {
@@ -375,8 +377,8 @@ module.exports = {
         route: Array,
         swagger: Object,
         initialized: Boolean,
-        player: [null, Object], // logged in player
-        authChar: [null, Object], // logged in character
+        player: Object, // logged in player
+        authChar: Object, // logged in character
         settings: Object,
     },
 
@@ -580,7 +582,7 @@ module.exports = {
                 name: characterName,
             };
             this.deleteReason = '';
-            window.$('#deleteCharModal').modal('show');
+            $('#deleteCharModal').modal('show');
         },
 
         deleteChar() {
@@ -593,7 +595,7 @@ module.exports = {
                     });
                 }
             });
-            window.$('#deleteCharModal').modal('hide');
+            $('#deleteCharModal').modal('hide');
             this.charToDelete = null;
         },
     },

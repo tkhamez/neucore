@@ -17,6 +17,8 @@ Input element to search for characters
 </template>
 
 <script>
+import _  from 'lodash';
+
 module.exports = {
     props: {
         swagger: Object,
@@ -41,7 +43,7 @@ module.exports = {
             }
         },
 
-        doFindCharacter: window._.debounce((vm) => {
+        doFindCharacter: _.debounce((vm) => {
             new vm.swagger.CharacterApi().findBy(vm.searchTerm, function(error, data) {
                 if (error) {
                     vm.$emit('result', []);

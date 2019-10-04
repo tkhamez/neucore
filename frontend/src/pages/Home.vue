@@ -168,6 +168,8 @@
 </template>
 
 <script>
+import $ from 'jquery';
+
 import TitleLogo from './Home--title-logo.vue';
 
 const md = require('markdown-it')({
@@ -194,8 +196,8 @@ module.exports = {
         route: Array,
         swagger: Object,
         initialized: Boolean,
-        authChar: [null, Object],
-        player: [null, Object],
+        authChar: Object,
+        player: Object,
         settings: Object,
     },
 
@@ -268,7 +270,7 @@ module.exports = {
                 id: characterId,
                 name: characterName,
             };
-            window.$('#deleteCharModal').modal('show');
+            $('#deleteCharModal').modal('show');
         },
 
         deleteChar() {
@@ -276,7 +278,7 @@ module.exports = {
             this.deleteCharacter(this.charToDelete.id, null, function() {
                 vm.update(vm.authChar.id);
             });
-            window.$('#deleteCharModal').modal('hide');
+            $('#deleteCharModal').modal('hide');
             this.charToDelete = null;
         },
     }
