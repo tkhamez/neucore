@@ -275,9 +275,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api['add'].apply(api, [this.searchSelected.id, function(error, data, response) {
-                vm.loading(false);
                 if (response.statusCode === 409) {
                     vm.message(vm.addType + ' already exists.', 'warning');
                 } else if (response.statusCode === 404) {
@@ -300,9 +298,7 @@ module.exports = {
 
         getGroups: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().all(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

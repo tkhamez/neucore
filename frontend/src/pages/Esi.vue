@@ -108,12 +108,10 @@ module.exports = {
                 return;
             }
             const vm = this;
-            vm.loading(true);
             new this.swagger.ESIApi().request({
                 character: this.selectedCharacter.character_id,
                 route: this.esiRoute
             }, function(error, data, response) {
-                vm.loading(false);
                 let result;
                 try {
                     result = JSON.parse(response.text);

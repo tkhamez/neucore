@@ -154,9 +154,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api['create'].apply(api, [this.newName, function(error, data, response) {
-                vm.loading(false);
                 if (response.status === 409) {
                     vm.message('A '+ vm.type +' with this name already exists.', 'error');
                 } else if (response.status === 400) {
@@ -182,9 +180,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api['callDelete'].apply(api, [this.item.id, function(error) {
-                vm.loading(false);
                 if (error) {
                     vm.message('Error deleting ' + vm.type, 'error');
                 } else {
@@ -206,9 +202,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api['rename'].apply(api, [this.item.id, this.item.name, function(error, data, response) {
-                vm.loading(false);
                 if (response.status === 409) {
                     vm.message('A '+ vm.type +' with this name already exists.', 'error');
                 } else if (response.status === 400) {
@@ -225,9 +219,7 @@ module.exports = {
 
         setVisibility: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
-                vm.loading(false);
                 if (error) {
                     vm.message('Error saving visibility.', 'error');
                 } else {

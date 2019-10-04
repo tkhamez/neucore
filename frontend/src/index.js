@@ -2,6 +2,7 @@
 
 require("./index.scss");
 
+import superAgentPlugin from './superagent-plugin.js';
 import NavBar from './components/NavBar.vue';
 import Home from './pages/Home.vue';
 import Groups from './pages/Groups.vue';
@@ -109,6 +110,7 @@ const app = new window.Vue({
             window.location.protocol + "//" +
             window.location.hostname + ':' +
             window.location.port + '/api';
+        this.swagger.ApiClient.instance.plugins = [superAgentPlugin(this)];
 
         // initial route
         this.updateRoute();
@@ -184,9 +186,7 @@ const app = new window.Vue({
              * @param {string} [successMessageType]
              */
             function authResult(successMessageType) {
-                vm.loading(true);
                 new vm.swagger.AuthApi().result(function(error, data) {
-                    vm.loading(false);
                     if (error) {
                         window.console.error(error);
                         return;
@@ -203,9 +203,7 @@ const app = new window.Vue({
         },
 
         getSettings: function() {
-            this.loading(true);
             new this.swagger.SettingsApi().systemList(function(error, data) {
-                app.loading(false);
                 if (error) {
                     return;
                 }
@@ -219,9 +217,7 @@ const app = new window.Vue({
         },
 
         getAuthenticatedCharacter: function(ping) {
-            this.loading(true);
             new this.swagger.CharacterApi().show(function(error, data) {
-                app.loading(false);
                 if (error) { // 403 usually
                     app.authChar = null;
                     app.player = null;
@@ -233,9 +229,7 @@ const app = new window.Vue({
         },
 
         getPlayer: function() {
-            this.loading(true);
             new this.swagger.PlayerApi().show(function(error, data) {
-                app.loading(false);
                 if (error) { // 403 usually
                     app.player = null;
                     return;
@@ -245,9 +239,7 @@ const app = new window.Vue({
         },
 
         logout: function() {
-            this.loading(true);
             new this.swagger.AuthApi().logout(function(error) {
-                app.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

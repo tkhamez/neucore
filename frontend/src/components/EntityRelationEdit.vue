@@ -269,9 +269,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api[method].apply(api, [function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -313,9 +311,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api[method].apply(api, [this.typeId, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     if (vm.type === 'Player') {
                         vm.$emit('activePlayer', null); // pass data to parent
@@ -362,9 +358,7 @@ module.exports = {
                 return;
             }
 
-            vm.loading(true);
             api['withGroups'].apply(api, [function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -522,10 +516,7 @@ module.exports = {
         },
 
         callApi: function(api, method, param1, param2, callback) {
-            const vm = this;
-            vm.loading(true);
             api[method].apply(api, [param1, param2, function(error) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

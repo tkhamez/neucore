@@ -223,9 +223,7 @@ module.exports = {
             vm.searchResult = [];
 
             // get members
-            vm.loading(true);
             new this.swagger.GroupApi().members(this.groupId, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -245,9 +243,7 @@ module.exports = {
         getApplications: function() {
             const vm = this;
             vm.groupMembers = [];
-            vm.loading(true);
             new this.swagger.GroupApi().applications(this.groupId, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -258,9 +254,7 @@ module.exports = {
         getRequiredGroups: function() {
             const vm = this;
             vm.requiredGroups = [];
-            vm.loading(true);
             new this.swagger.GroupApi().requiredGroups(this.groupId, function(error, data) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }
@@ -277,9 +271,7 @@ module.exports = {
                 return;
             }
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().addMember(this.groupId, playerId, function(error) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }
@@ -296,9 +288,7 @@ module.exports = {
                 return;
             }
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().removeMember(this.groupId, playerId, function(error) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }
@@ -312,9 +302,7 @@ module.exports = {
 
         accept: function(applicationId, playerId) {
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().acceptApplication(applicationId, function() {
-                vm.loading(false);
                 vm.getApplications();
                 if (playerId === vm.player.id) {
                     vm.$root.$emit('playerChange');
@@ -324,9 +312,7 @@ module.exports = {
 
         deny: function(applicationId) {
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().denyApplication(applicationId, function() {
-                vm.loading(false);
                 vm.getApplications()
             });
         },

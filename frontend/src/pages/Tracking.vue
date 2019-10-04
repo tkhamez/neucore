@@ -243,9 +243,7 @@ module.exports = {
     methods: {
         getCorporations: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.CorporationApi().trackedCorporations(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -288,9 +286,7 @@ module.exports = {
             };
 
             const vm = this;
-            vm.loading(true);
             new this.swagger.CorporationApi().members(corporationId, opts, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

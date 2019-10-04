@@ -238,9 +238,7 @@ module.exports = {
             }
 
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().groupsDisabled(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -250,9 +248,7 @@ module.exports = {
 
         makeMain: function(characterId) {
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().setMain(characterId, function(error) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

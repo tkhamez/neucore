@@ -386,9 +386,7 @@ module.exports = {
 
             // get alliances
             const vm = this;
-            vm.loading(true);
             new this.swagger.AllianceApi().all(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -439,9 +437,7 @@ module.exports = {
 
         validateDirector: function(name) {
             const vm = this;
-            vm.loading(true);
             this.api.validateDirector(name, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -480,9 +476,7 @@ module.exports = {
 
         changeSetting: function(name, value) {
             const vm = this;
-            vm.loading(true);
             this.api.systemChange(name, value, function(error) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -505,9 +499,7 @@ module.exports = {
 
         sendMailAccountDisabledTestMail: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.SettingsApi().sendAccountDisabledMail(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

@@ -103,9 +103,7 @@ module.exports = {
     methods: {
         getPublicGroups: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.GroupApi().callPublic(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     vm.groups = null;
                     return;
@@ -116,9 +114,7 @@ module.exports = {
 
         getApplications: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().showApplications(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     vm.applications = null;
                     return;
@@ -143,18 +139,14 @@ module.exports = {
 
         apply: function(groupId) {
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().addApplication(groupId, function() {
-                vm.loading(false);
                 vm.getApplications();
             });
         },
 
         cancel: function(groupId) {
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().removeApplication(groupId, function() {
-                vm.loading(false);
                 vm.getApplications();
             });
         },
@@ -169,9 +161,7 @@ module.exports = {
 
         leave: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().leaveGroup(this.groupToLeave.id, function() {
-                vm.loading(false);
                 vm.$root.$emit('playerChange');
             });
             window.$('#leaveGroupModal').modal('hide');

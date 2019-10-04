@@ -151,9 +151,7 @@ module.exports = {
         getApp: function(id) {
             const vm = this;
 
-            vm.loading(true);
             new this.swagger.AppApi().show(id, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }
@@ -163,9 +161,7 @@ module.exports = {
 
         generateSecret: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.AppApi().changeSecret(this.app.id, function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

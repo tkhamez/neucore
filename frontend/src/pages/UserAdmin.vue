@@ -477,9 +477,7 @@ module.exports = {
             vm.activeList = '';
             vm.playersChars = [];
             vm.searchResult = [];
-            vm.loading(true);
             new this.swagger.PlayerApi().withRole(roleName, function(error, data) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }
@@ -497,9 +495,7 @@ module.exports = {
             vm.playersRole = [];
             vm.searchResult = [];
             const api = new this.swagger.PlayerApi();
-            vm.loading(true);
             api[listName].apply(api, [function(error, data) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }
@@ -511,9 +507,7 @@ module.exports = {
             const vm = this;
             const api = new this.swagger.PlayerApi();
 
-            vm.loading(true);
             api.showById(this.playerId, function(error, data) {
-                vm.loading(false);
                 if (error) {
                     vm.playerEdit = null;
                     return;
@@ -521,9 +515,7 @@ module.exports = {
                 vm.playerEdit = data;
             });
 
-            vm.loading(true);
             api.groupsDisabledById(this.playerId, function(error, data) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }
@@ -550,9 +542,7 @@ module.exports = {
             const playerId = this.playerEdit.id;
             const api = new this.swagger.PlayerApi();
             const vm = this;
-            vm.loading(true);
             api[method].apply(api, [playerId, param, function(error) {
-                vm.loading(false);
                 if (error) {
                     return;
                 }

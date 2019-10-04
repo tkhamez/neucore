@@ -156,9 +156,7 @@ module.exports = {
 
         getApps: function() {
             const vm = this;
-            vm.loading(true);
             new this.swagger.AppApi().all(function(error, data) {
-                vm.loading(false);
                 if (error) { // 403 usually
                     return;
                 }

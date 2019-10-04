@@ -30,7 +30,7 @@ window.Vue.mixin({
     },
 
     methods: {
-        loading: function(status) {
+        ajaxLoading: function(status) {
             if (status) {
                 this.$root.loadingCount ++;
             } else {
@@ -91,9 +91,7 @@ window.Vue.mixin({
         updateCharacter: function(characterId, callback) {
             const vm = this;
 
-            vm.loading(true);
             new this.swagger.CharacterApi().update(characterId, function(error, data, response) {
-                vm.loading(false);
                 if (error) { // usually 403 (from Core) or 503 (ESI down)
                     if (error.message) {
                         vm.message(error.message, 'error');
@@ -122,12 +120,10 @@ window.Vue.mixin({
          */
         deleteCharacter(characterId, adminReason, callback) {
             const vm = this;
-            vm.loading(true);
             new this.swagger.PlayerApi().deleteCharacter(
                 characterId,
                 { adminReason: adminReason || '' },
                 function(error) {
-                    vm.loading(false);
                     if (error) { // 403 usually
                         vm.message('Deletion denied.', 'error');
                         return;

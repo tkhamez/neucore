@@ -73,9 +73,7 @@
         methods: {
             getCorporations: function() {
                 const vm = this;
-                vm.loading(true);
                 new this.swagger.CorporationApi().trackedCorporations(function(error, data) {
-                    vm.loading(false);
                     if (error) { // 403 usually
                         return;
                     }
