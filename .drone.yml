@@ -51,7 +51,7 @@ steps:
         from_secret: sonar_host
       sonar_token:
         from_secret: sonar_token
-      sources: backend/src/classes,frontend/src
+      sources: backend/src,frontend/src
 
   - name: distribution
     image: composer:1
@@ -66,7 +66,7 @@ steps:
       - cd ..
       - mkdir -p dist/neucore
       - mv backend dist/neucore/backend
-      - rm -r dist/neucore/backend/src/tests
+      - rm -r dist/neucore/backend/tests
       - rm -r dist/neucore/backend/var/cache/di
       - rm -r dist/neucore/backend/var/cache/http
       - mv doc dist/neucore/doc

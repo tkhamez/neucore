@@ -309,7 +309,7 @@ class MemberTrackingTest extends TestCase
     {
         $this->client->setResponse(new Response(200, [], '[{"character_id": 100}, {"character_id": 101}]'));
 
-        $actual = $this->memberTracking->fetchData('access-token', 10);
+        $actual = (array)$this->memberTracking->fetchData('access-token', 10);
 
         $this->assertSame(2, count($actual));
         $this->assertSame(100, $actual[0]->getCharacterId());

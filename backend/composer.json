@@ -55,8 +55,8 @@
     },
     "autoload": {
         "psr-4": {
-        	"Neucore\\": "src/classes/",
-        	"Tests\\": "src/tests/"
+        	"Neucore\\": "src/",
+        	"Tests\\": "tests/"
     	},
         "files": ["config/version.php"]
     },
@@ -77,13 +77,13 @@
         "db:migrate": "doctrine-migrations migrations:migrate --no-interaction",
         "db:seed": "bin/console doctrine-fixtures-load",
         "openapi": [
-            "openapi src/classes --output ../web/openapi-3.yaml",
-            "openapi src/classes --output ../web/frontend-api-3.yml --exclude src/classes/Controller/App",
-            "openapi src/classes --output ../web/application-api-3.yml --exclude src/classes/Controller/User"
+            "openapi src --output ../web/openapi-3.yaml",
+            "openapi src --output ../web/frontend-api-3.yml --exclude src/Controller/App",
+            "openapi src --output ../web/application-api-3.yml --exclude src/Controller/User"
         ],
         "phan": "phan --color",
-        "phpstan:src": "phpstan analyse src/classes --level 7 --ansi",
-        "phpstan:tests": "phpstan analyse src/tests --level 6 --ansi",
+        "phpstan:src": "phpstan analyse src --level 7 --ansi",
+        "phpstan:tests": "phpstan analyse tests --level 6 --ansi",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --coverage-html var/phpunit",
         "security-checker": "security-checker security:check",

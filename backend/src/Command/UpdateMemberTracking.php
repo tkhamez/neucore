@@ -4,7 +4,7 @@ namespace Neucore\Command;
 
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Api;
-use Neucore\EsiRateLimitedTrait;
+use Neucore\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateMemberTracking extends Command
 {
     use LogOutput;
-    use EsiRateLimitedTrait;
+    use EsiRateLimited;
 
     /**
      * @var RepositoryFactory

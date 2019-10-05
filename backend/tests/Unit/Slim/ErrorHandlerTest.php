@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Slim\Handlers;
+namespace Tests\Unit\Slim;
 
-use Neucore\Slim\Handlers\Error;
+use Neucore\Slim\ErrorHandler;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -10,7 +10,7 @@ use Slim\CallableResolver;
 use Slim\Psr7\Factory\ResponseFactory;
 use Tests\RequestFactory;
 
-class ErrorTest extends TestCase
+class ErrorHandlerTest extends TestCase
 {
     public function testInvoke()
     {
@@ -18,7 +18,7 @@ class ErrorTest extends TestCase
         $handler = new TestHandler();
         $logger->pushHandler($handler);
 
-        $error = new Error(new CallableResolver(), new ResponseFactory(), $logger);
+        $error = new ErrorHandler(new CallableResolver(), new ResponseFactory(), $logger);
         $exception = new \ErrorException('msg');
 
         $error->__invoke(RequestFactory::createRequest(), $exception, true, true, true);

@@ -2,7 +2,7 @@
 
 namespace Neucore\Command;
 
-use Neucore\EsiRateLimitedTrait;
+use Neucore\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SendAccountDisabledMail extends Command
 {
     use LogOutput;
-    use EsiRateLimitedTrait;
+    use EsiRateLimited;
 
     /**
      * @var EveMail

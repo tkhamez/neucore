@@ -4,34 +4,34 @@ parameters:
 	ignoreErrors:
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/classes/Middleware/Psr15/Session/SessionData.php
+			path: %currentWorkingDirectory%/src/Middleware/Psr15/Session/SessionData.php
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
+			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
 		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
-			path: %currentWorkingDirectory%/src/classes/Service/EsiData.php
+			path: %currentWorkingDirectory%/src/Service/EsiData.php
 		-
 			message: '#Call to an undefined method Swagger(.*)::(getName)?(getCorporationId)?\(\)#'
-			path: %currentWorkingDirectory%/src/classes/Service/MemberTracking.php
+			path: %currentWorkingDirectory%/src/Service/MemberTracking.php
 		-
 			message: '#MemberTracking::fetchData() should return array<(.*)GetCorporationsCorporationIdMembertracking200Ok>|null but returns(.*)GetCorporationsCorporationIdMembertracking200Ok#'
-			path: %currentWorkingDirectory%/src/classes/Service/MemberTracking.php
+			path: %currentWorkingDirectory%/src/Service/MemberTracking.php
 		-
 			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Controller/User/AppController.php
+			path: %currentWorkingDirectory%/src/Controller/User/AppController.php
 		-
 			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Controller/User/CharacterController.php
+			path: %currentWorkingDirectory%/src/Controller/User/CharacterController.php
 		-
 			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Controller/User/GroupController.php
+			path: %currentWorkingDirectory%/src/Controller/User/GroupController.php
 		-
 			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/classes/Controller/User/CorporationController.php
+			path: %currentWorkingDirectory%/src/Controller/User/CorporationController.php
 		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'
-			path: %currentWorkingDirectory%/src/classes/Controller/User/PlayerController.php
+			path: %currentWorkingDirectory%/src/Controller/User/PlayerController.php
 		-
 			message: '/Parameter #1 \$environment of static method/'
-			path: %currentWorkingDirectory%/src/tests/RequestFactory.php
+			path: %currentWorkingDirectory%/tests/RequestFactory.php

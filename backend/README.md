@@ -160,7 +160,7 @@ vendor/bin/doctrine orm:generate-proxies
 
 Generate constructor, getters and setters:
 ```
-vendor/bin/doctrine orm:generate-entities src/classes
+vendor/bin/doctrine orm:generate-entities src
 ```
 
 Validate the mapping files:

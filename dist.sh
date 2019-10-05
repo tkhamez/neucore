@@ -35,7 +35,7 @@ cd ../.. || exit
 mkdir neucore
 mv build/backend neucore/backend
 rm neucore/backend/.env
-rm -r neucore/backend/src/tests
+rm -r neucore/backend/tests
 mv build/doc neucore/doc
 rm -r neucore/doc/screenshots
 mv build/web neucore/web

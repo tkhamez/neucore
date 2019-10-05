@@ -7,7 +7,7 @@ use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
-use Neucore\EsiRateLimitedTrait;
+use Neucore\Traits\EsiRateLimited;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
@@ -21,7 +21,7 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
-    use EsiRateLimitedTrait;
+    use EsiRateLimited;
 
     /**
      * @var LoggerInterface

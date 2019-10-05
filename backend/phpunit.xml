@@ -1,15 +1,15 @@
 <!DOCTYPE xml>
-<phpunit bootstrap="src/tests/bootstrap.php">
+<phpunit bootstrap="tests/bootstrap.php">
     <testsuites>
         <testsuite name="Neucore">
-            <directory>src/tests</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src/classes</directory>
+            <directory suffix=".php">./src</directory>
             <exclude>
-                <directory>./src/classes/Migrations</directory>
+                <directory>./src/Migrations</directory>
             </exclude>
         </whitelist>
     </filter>
