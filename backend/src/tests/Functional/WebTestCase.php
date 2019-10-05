@@ -3,7 +3,6 @@
 namespace Tests\Functional;
 
 use Neucore\Application;
-use Neucore\Factory\ResponseFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Tests\RequestFactory;
@@ -32,11 +31,8 @@ class WebTestCase extends TestCase
         array $mocks = [],
         array $envVars = []
     ): ?ResponseInterface {
-        // Set up a request object based on a mocked environment
-        $request = RequestFactory::createRequest([
-            'REQUEST_METHOD' => $requestMethod,
-            'REQUEST_URI' => $requestUri
-        ]);
+        // Set up a request object
+        $request = RequestFactory::createRequest($requestMethod, $requestUri);
 
         // Add request data, if it exists
         if (isset($requestData)) {
@@ -50,9 +46,6 @@ class WebTestCase extends TestCase
             }
         }
 
-        // Set up a response object
-        $response = (new ResponseFactory())->createResponse();
-
         // create app with test settings
         $app = new Application();
         $app->loadSettings(true);
@@ -63,7 +56,7 @@ class WebTestCase extends TestCase
 
         // Process the application
         try {
-            $response = $app->getApp($mocks)->process($request, $response);
+            $response = $app->getApp($mocks)->handle($request);
         } catch (\Throwable $e) {
             echo $e->getMessage();
             return null;

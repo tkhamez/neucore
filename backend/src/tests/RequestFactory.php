@@ -3,13 +3,12 @@
 namespace Tests;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Environment;
-use Slim\Http\Request;
+use Slim\Psr7\Factory\ServerRequestFactory;
 
 class RequestFactory
 {
-    public static function createRequest(array $userData = []): ServerRequestInterface
+    public static function createRequest(string $method = 'GET', $uri = '/'): ServerRequestInterface
     {
-        return Request::createFromEnvironment(Environment::mock($userData));
+        return (new ServerRequestFactory)->createServerRequest($method, $uri);
     }
 }

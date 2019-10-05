@@ -5,11 +5,9 @@
  */
 
 return [
-    'config' => [
-        'doctrine' => [
-            'meta' => [
-                'dev_mode' => true,
-            ],
-        ]
+    'doctrine' => [
+        'meta' => [
+            'dev_mode' => true,
+        ],
     ],
 ];

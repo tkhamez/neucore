@@ -34,6 +34,8 @@ class NonBlockingSession implements MiddlewareInterface
      * route_blocking_pattern <array>: patterns of routes that allow writing to the session, matched by "starts-with"
      * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with"
      *
+     *  The route_* options need the Slim routing middleware ($app->addRoutingMiddleware()).
+     * 
      * Example
      * [
      *      'name' => 'MY_SESS',

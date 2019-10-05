@@ -2,8 +2,8 @@
 
 namespace Neucore;
 
-use Bnf\Slim3Psr15\Adapter\PsrMiddleware;
 use Brave\Sso\Basics\AuthenticationProvider;
+use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
@@ -41,7 +41,6 @@ use Neucore\Command\SendAccountDisabledMail;
 use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
-use Neucore\Factory\ResponseFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Middleware\Guzzle\EsiHeaders;
@@ -51,14 +50,14 @@ use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
 use Neucore\Slim\Handlers\Error;
-use Neucore\Slim\Handlers\PhpError;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
+use Slim\Psr7\Factory\ResponseFactory;
 use Symfony\Component\Console\Application as ConsoleApplication;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Dotenv\Exception\FormatException;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
@@ -98,13 +97,6 @@ class Application
      * @var string
      */
     const ROOT_DIR = __DIR__ . '/../..';
-
-    /**
-     * Slim setting from the config dir.
-     *
-     * @var array
-     */
-    private $slimSettings;
 
     /**
      * App setting from the config dir.
@@ -205,10 +197,7 @@ class Application
             $settings = array_replace_recursive($settings, $test);
         }
 
-        $this->config = new Config($settings['config']);
-
-        unset($settings['config']);
-        $this->slimSettings = $settings;
+        $this->config = new Config($settings);
 
         return $this->config;
     }
@@ -237,7 +226,7 @@ class Application
         $this->errorHandling();
         $this->sessionHandler();
 
-        $app = new App($this->container);
+        $app = Bridge::create($this->container);
 
         $this->addMiddleware($app);
         $this->registerRoutes($app);
@@ -270,7 +259,7 @@ class Application
         set_time_limit(0);
 
         $this->loadSettings();
-        $this->buildContainer($mocks, false);
+        $this->buildContainer($mocks);
         $this->errorHandling();
 
         $console = new ConsoleApplication();
@@ -290,33 +279,46 @@ class Application
         // Add middleware, last added are executed first.
 
         /** @noinspection PhpIncludeInspection */
-        $security = include self::ROOT_DIR . '/config/security.php';
-        $app->add(new SecureRouteMiddleware($security));
+        $app->add(new SecureRouteMiddleware(
+            $this->container->get(ResponseFactoryInterface::class),
+            include self::ROOT_DIR . '/config/security.php'
+        ));
 
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
-        $app->add(new PsrMiddleware(new NonBlockingSession([
+        $app->add(new NonBlockingSession([
             'name' => 'NCSESS',
             'secure' => $this->container->get(Config::class)['session']['secure'],
             'route_include_pattern' => ['/api/user', '/login'],
             'route_blocking_pattern' => ['/api/user/auth', '/login'],
-        ])));
+        ]));
+
+        // Add routing middleware after SecureRouteMiddleware, RoleMiddleware and NonBlockingSession,
+        // so the `route` attribute is available from the ServerRequestInterface object
+        $app->addRoutingMiddleware();
 
         if ($this->container->get(Config::class)['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new PsrMiddleware(new Cors(
+            $app->add(new Cors(
                 explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])
-            )));
+            ));
         }
+
+        // add error handler last
+        $errorMiddleware = $app->addErrorMiddleware(false, true, true);
+        $errorMiddleware->setDefaultErrorHandler(new Error(
+            $app->getCallableResolver(),
+            $app->getResponseFactory(),
+            $this->container->get(LoggerInterface::class)
+        ));
     }
 
     /**
      * Builds the DI container.
      *
-     * @throws \ReflectionException
      * @throws \Exception
      */
-    private function buildContainer(array $mocks = [], $addSlimConfig = true): void
+    private function buildContainer(array $mocks = []): void
     {
         $containerBuilder = new ContainerBuilder();
 
@@ -327,16 +329,6 @@ class Application
             }
         }
 
-        if ($addSlimConfig) {
-            // include config.php from php-di/slim-bridge
-            $reflector = new \ReflectionClass(\DI\Bridge\Slim\App::class);
-            /** @noinspection PhpIncludeInspection */
-            $bridgeConfig = include dirname((string) $reflector->getFileName()) . '/config.php';
-
-            $containerBuilder->addDefinitions($bridgeConfig);
-        }
-
-        $containerBuilder->addDefinitions($this->slimSettings);
         $containerBuilder->addDefinitions($this->getDependencies());
 
         $this->container = $containerBuilder->build();
@@ -478,15 +470,12 @@ class Application
                 ]);
             },
 
-            // Slim
+            // Response
             ResponseInterface::class => function (ContainerInterface $c) {
-                return $c->get(ResponseFactory::class)->createResponse();
+                return $c->get(ResponseFactoryInterface::class)->createResponse();
             },
-            'errorHandler' => function (ContainerInterface $c) {
-                return new Error($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
-            },
-            'phpErrorHandler' => function (ContainerInterface $c) {
-                return new PhpError($c->get('settings')['displayErrorDetails'], $c->get(LoggerInterface::class));
+            ResponseFactoryInterface::class => function () {
+                return new ResponseFactory();
             },
         ];
     }
@@ -562,7 +551,6 @@ class Application
     /**
      * @throws DependencyException
      * @throws NotFoundException
-     * @throws LogicException
      */
     private function addCommands(ConsoleApplication $console): void
     {

@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Factory;
 
-use Neucore\Factory\ResponseFactory;
 use PHPUnit\Framework\TestCase;
+use Slim\Psr7\Factory\ResponseFactory;
 
 class ResponseFactoryTest extends TestCase
 {

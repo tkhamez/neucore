@@ -1,5 +1,10 @@
 # Changelog
 
+## next (1.5.0)
+
+- Frontend refactored to use a runtime-only build
+- Update to Slim 4
+
 ## 1.4.3
 
 21 Sep 2019

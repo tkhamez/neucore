@@ -5,14 +5,12 @@
  */
 
 return [
-    'config' => [
-        'guzzle' => [
-            'cache' => [
-                'dir' => '/tmp/http'
-            ],
+    'guzzle' => [
+        'cache' => [
+            'dir' => '/tmp/http'
         ],
-        'di' => [
-            'cache_dir' => '/tmp/di'
-        ]
+    ],
+    'di' => [
+        'cache_dir' => '/tmp/di'
     ],
 ];

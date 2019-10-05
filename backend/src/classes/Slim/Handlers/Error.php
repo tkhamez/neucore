@@ -2,27 +2,34 @@
 
 namespace Neucore\Slim\Handlers;
 
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Handlers\ErrorHandler;
+use Slim\Interfaces\CallableResolverInterface;
 
 /**
  * Extends Slim's error handler to add a logger.
  */
-class Error extends \Slim\Handlers\Error
+class Error extends ErrorHandler
 {
     protected $logger;
 
-    public function __construct($displayErrorDetails, LoggerInterface $logger)
-    {
+    public function __construct(
+        CallableResolverInterface $callableResolver, 
+        ResponseFactoryInterface $responseFactory,
+        LoggerInterface $logger
+    ) {
         $this->logger = $logger;
 
-        parent::__construct($displayErrorDetails);
+        parent::__construct($callableResolver, $responseFactory);
     }
 
-    /**
-     * @param \Exception $exception
-     */
-    protected function writeToErrorLog($exception)
+    protected function writeToErrorLog(): void
     {
-        $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
+        $context = [];
+        if ($this->logErrorDetails) {
+            $context['exception'] = $this->exception;
+        }
+        $this->logger->critical($this->exception->getMessage(), $context);
     }
 }

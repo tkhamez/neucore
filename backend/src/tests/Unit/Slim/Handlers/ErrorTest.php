@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Slim\Handlers;
 
-use Neucore\Factory\ResponseFactory;
 use Neucore\Slim\Handlers\Error;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Slim\CallableResolver;
+use Slim\Psr7\Factory\ResponseFactory;
 use Tests\RequestFactory;
 
 class ErrorTest extends TestCase
@@ -17,14 +18,10 @@ class ErrorTest extends TestCase
         $handler = new TestHandler();
         $logger->pushHandler($handler);
 
-        $error = new Error(true, $logger);
+        $error = new Error(new CallableResolver(), new ResponseFactory(), $logger);
         $exception = new \ErrorException('msg');
 
-        $error->__invoke(
-            RequestFactory::createRequest(),
-            (new ResponseFactory())->createResponse(),
-            $exception
-        );
+        $error->__invoke(RequestFactory::createRequest(), $exception, true, true, true);
 
         $this->assertSame('msg', $handler->getRecords()[0]['message']);
         $this->assertSame($exception, $handler->getRecords()[0]['context']['exception']);
