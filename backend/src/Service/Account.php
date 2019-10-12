@@ -198,7 +198,7 @@ class Account
             return self::CHECK_TOKEN_NOK;
         }
 
-        // get owner
+        // get token data
         $serializerManager = new JWSSerializerManager([new CompactSerializer()]);
         try {
             $jws = $serializerManager->unserialize($token->getToken());
@@ -212,10 +212,17 @@ class Account
             // should not happen, don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
-
-        // token is valid here
-        $char->setValidToken(true);
-        $result = self::CHECK_TOKEN_OK;
+        
+        // token is valid here, check scopes
+        // (scopes should not change after login since you cannot revoke individual scopes)
+        $scopeList = isset($data->scp) ? (is_string($data->scp) ? [$data->scp] : $data->scp) : [];
+        if (count($scopeList) === 0) {
+            $char->setValidToken(null);
+            $result = self::CHECK_TOKEN_NOK;
+        } else {
+            $char->setValidToken(true);
+            $result = self::CHECK_TOKEN_OK;
+        }
 
         // Check owner change
         if (isset($data->owner)) {

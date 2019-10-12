@@ -163,7 +163,8 @@
                         <label class="custom-control-label" for="groups_require_valid_token">
                             Check this if the API for applications should not return groups
                             for a player account if one or more of its characters have an invalid token
-                            (no token counts as invalid), "managed" accounts are excluded from this.
+                            (no token or tokens without any scopes count as invalid), "managed" accounts 
+                            are excluded from this.
                         </label>
                     </div>
                     <label class="mt-2">

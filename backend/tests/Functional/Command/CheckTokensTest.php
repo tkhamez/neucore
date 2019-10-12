@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
@@ -186,10 +189,10 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
-            ->setExpires(time() - 60*60);
+            ->setScopes('scope1 scope2')->setExpires(time() - 60*60);
         $this->helper->addNewPlayerToCharacterAndFlush($c);
 
-        list($token, $keySet) = Helper::generateToken([], 'Name', 'coh3');
+        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
             new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
@@ -222,10 +225,11 @@ class CheckTokensTest extends ConsoleTestCase
      */
     public function testExecuteValidTokenUnexpectedData()
     {
-        list($token, $keySet) = Helper::generateToken([], 'Name', 'coh3', 'invalid');
+        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
 
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-            ->setAccessToken($token)->setRefreshToken('at3')->setValidToken(false);
+            ->setAccessToken($token)->setRefreshToken('at3')->setValidToken(false)
+            ->setScopes('scope1 scope2');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(

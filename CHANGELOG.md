@@ -4,6 +4,7 @@
 
 - Frontend refactored to use a runtime-only build
 - Update to Slim 4
+- Fix: token state flag for SSOv2 tokens without scopes.
 
 ## 1.4.3
 

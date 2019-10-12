@@ -13,9 +13,8 @@
                     <a :href="httpBaseUrl + '/login-managed-alt'">{{ httpBaseUrl }}/login-managed-alt</a>
                 </p>
                 <p class="small text-muted">
-                    This login URL does not require ESI scopes. Characters who use it will not have an
-                    ESI token afterwards. This disables groups for their player accounts (if this feature
-                    is enabled) unless their status is "managed".
+                    This login URL does not require ESI scopes. This disables groups for the player 
+                    account (if this feature is enabled) unless the status is "managed".
                 </p>
             </div>
         </div>

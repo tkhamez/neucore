@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
@@ -297,9 +300,39 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
+    public function testCheckCharacterValidTokenNoScopes()
+    {
+        list($token, $keySet) = Helper::generateToken([]);
+        $this->client->setResponse(
+            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
+        );
+
+        $expires = time() - 1000;
+        $char = (new Character())
+            ->setId(31)->setName('n31')
+            ->setValidToken(true)
+            ->setCharacterOwnerHash('hash')
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
+
+        $result = $this->service->checkCharacter($char, $this->token);
+        $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
+
+        $this->helper->getEm()->clear();
+        $character = $this->charRepo->find(31);
+        $this->assertNull($character->getValidToken());
+        $this->assertSame('at', $character->getAccessToken()); // not updated
+        $this->assertSame('rt', $character->getRefreshToken()); // not updated
+        $this->assertSame($expires, $character->getExpires()); // not updated
+    }
+    
+    /**
+     * @throws \Exception
+     */
     public function testCheckCharacterValid()
     {
-        list($token, $keySet) = Helper::generateToken();
+        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2']);
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
             new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
@@ -310,7 +343,8 @@ class AccountTest extends TestCase
             ->setId(31)->setName('n31')
             ->setValidToken(false) // it's also the default
             ->setCharacterOwnerHash('hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires)
+            ->setScopes('scope1 scope2');
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);

@@ -158,7 +158,7 @@ module.exports = {
                     }
                     if (row.character.validToken) return 'valid';
                     if (row.character.validToken === false) return 'invalid';
-                    if (row.character.validToken === null) return 'n/a'; // only SSOv1
+                    if (row.character.validToken === null) return 'n/a';
                     return '';
                 }
             }, {
