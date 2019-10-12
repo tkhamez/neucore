@@ -124,7 +124,7 @@ class AppController extends BaseController
      */
     public function create(ServerRequestInterface $request, LoggerInterface $log): ResponseInterface
     {
-        $name = $this->sanitize($this->getParsedBodyParam($request, 'name', ''));
+        $name = $this->sanitize($this->getBodyParam($request, 'name', ''));
         if ($name === '') {
             return $this->response->withStatus(400);
         }
@@ -206,7 +206,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $name = $this->sanitize($this->getParsedBodyParam($request, 'name', ''));
+        $name = $this->sanitize($this->getBodyParam($request, 'name', ''));
         if ($name === '') {
             return $this->response->withStatus(400);
         }

@@ -126,8 +126,11 @@ class SettingsController extends BaseController
      *     )
      * )
      */
-    public function systemChange(string $name, ServerRequestInterface $request, MemberTracking $memberTracking): ResponseInterface
-    {
+    public function systemChange(
+        string $name,
+        ServerRequestInterface $request,
+        MemberTracking $memberTracking
+    ): ResponseInterface {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
         if ($variable === null || ! in_array($variable->getScope(), $this->validScopes)) {
@@ -146,7 +149,7 @@ class SettingsController extends BaseController
                 $variable = null;
             }
         } else {
-            $variable->setValue((string) $this->getParsedBodyParam($request, 'value'));
+            $variable->setValue((string) $this->getBodyParam($request, 'value'));
         }
 
         if (! $this->objectManager->flush()) {

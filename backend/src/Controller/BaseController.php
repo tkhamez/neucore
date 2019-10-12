@@ -42,8 +42,7 @@ abstract class BaseController
      */
     protected function getQueryParam(ServerRequestInterface $request, string $key, $default = null)
     {
-        $params = $request->getQueryParams();
-        return $params[$key] ?? $default;
+        return $request->getQueryParams()[$key] ?? $default;
     }
 
     /**
@@ -51,14 +50,20 @@ abstract class BaseController
      * @param string $key
      * @param  mixed $default
      * @return mixed
+     * @see \Slim\Psr7\Factory\ServerRequestFactory::createFromGlobals()
      */
-    protected function getParsedBodyParam(ServerRequestInterface $request, string $key, $default = null)
+    protected function getBodyParam(ServerRequestInterface $request, string $key, $default = null)
     {
-        $postParams = $request->getParsedBody();
-        if (is_array($postParams) && isset($postParams[$key])) {
-            return $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
-            return $postParams->$key;
+        if ($request->getMethod() === 'POST') {
+            $params = $request->getParsedBody();
+        } else { // PUT
+            parse_str($request->getBody()->getContents(), $params);
+        }
+
+        if (is_array($params) && isset($params[$key])) {
+            return $params[$key];
+        } elseif (is_object($params) && property_exists($params, $key)) {
+            return $params->$key;
         }
         return $default;
     }

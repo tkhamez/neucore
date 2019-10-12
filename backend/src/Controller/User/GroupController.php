@@ -157,7 +157,7 @@ class GroupController extends BaseController
      */
     public function create(ServerRequestInterface $request): ResponseInterface
     {
-        $name = $this->getParsedBodyParam($request, 'name', '');
+        $name = $this->getBodyParam($request, 'name', '');
         if (! preg_match($this->namePattern, $name)) {
             return $this->response->withStatus(400);
         }
@@ -234,7 +234,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $name = $this->getParsedBodyParam($request, 'name', '');
+        $name = $this->getBodyParam($request, 'name', '');
         if (! preg_match($this->namePattern, $name)) {
             return $this->response->withStatus(400);
         }

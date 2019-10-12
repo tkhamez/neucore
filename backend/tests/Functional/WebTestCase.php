@@ -36,7 +36,14 @@ class WebTestCase extends TestCase
 
         // Add request data, if it exists
         if (isset($requestData)) {
-            $request = $request->withParsedBody($requestData);
+            if ($requestMethod === 'POST') {
+                $request = $request->withParsedBody($requestData);
+            } else { // PUT
+                $body = $request->getBody();
+                $body->write(http_build_query($requestData));
+                $body->rewind();
+                $request = $request->withBody($body);
+            }
         }
 
         // add header
