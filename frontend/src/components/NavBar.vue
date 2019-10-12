@@ -68,7 +68,7 @@
 
             <img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
                  class="d-inline-block align-top mr-2" alt="Character Portrait">
-            <span v-if="authChar" class="dropdown">
+            <div v-if="authChar" class="dropdown">
                 <button class="btn btn-primary dropdown-toggle mr-3" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                     {{ authChar.name }}
@@ -79,7 +79,7 @@
                        :class="{ 'active': selectedTheme === theme }"
                        v-on:click.prevent="selectTheme(theme)">{{ theme }}</a>
                 </div>
-            </span>
+            </div>
 
             <a v-if="authChar" href="#logout" class="btn btn-outline-danger" title="Sign out">
                 <span class="fas fa-sign-out-alt"></span>
