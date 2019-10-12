@@ -10,7 +10,7 @@ const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlu
 
 module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
-    return {
+    const config = {
         entry: {
             'theme-basic': './src/themes/basic.scss',
             'theme-cerulean': './src/themes/cerulean.scss',
@@ -38,7 +38,7 @@ module.exports = (env, argv) => {
         },
         output: {
             path: path.resolve(__dirname, '../web/dist'),
-            filename: devMode ? '[name].js' : '[name].[chunkhash].js'
+            filename: devMode ? '[name].[hash].js' : '[name].[chunkhash].js'
         },
         module: {
             rules: [{
@@ -85,10 +85,9 @@ module.exports = (env, argv) => {
                 'process.env.NODE_ENV': JSON.stringify(devMode ? 'development' : 'production')
             }),
             new MiniCssExtractPlugin({
-                filename: devMode ? '[name].css' : '[name].[hash].css',
+                filename: devMode ? '[name].[hash].css' : '[name].[chunkhash].css',
             }),
             new VueLoaderPlugin(),
-            new LicenseWebpackPlugin(),
         ],
         optimization: {
             runtimeChunk: 'single',
@@ -106,5 +105,11 @@ module.exports = (env, argv) => {
         performance: { 
             hints: devMode ? false : 'warning' 
         },
+    };
+    if (! devMode) {
+        config.plugins.push(new LicenseWebpackPlugin({
+            outputFilename: '[name].[chunkhash].licenses.txt'
+        }));
     }
+    return config;
 };
