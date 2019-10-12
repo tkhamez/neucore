@@ -75,7 +75,7 @@ class Character implements \JsonSerializable
     /**
      * Shows if character's refresh token is valid or not.
      *
-     * This is null if there is no refresh token (EVE SSOv1 only) 
+     * This is null if there is no refresh token (EVE SSOv1 only)
      * or a valid token but without scopes (SSOv2).
      *
      * @OA\Property(type="boolean", nullable=true)

@@ -89,7 +89,7 @@ Select and table to add and remove objects from other objects.
                         </template>
                         <!--suppress HtmlUnknownTag -->
                         <template v-if="contentType === 'corporations' && option.alliance">
-                            ({{ option.alliance.name }}, [{{ option.alliance.ticker }}])
+                            ({{ option.alliance.name }} [{{ option.alliance.ticker }}])
                         </template>
                     </option>
                 </select>

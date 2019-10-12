@@ -2,8 +2,7 @@
 
 namespace Neucore\Service;
 
-use Jose\Component\Signature\Serializer\CompactSerializer;
-use Jose\Component\Signature\Serializer\JWSSerializerManager;
+use Brave\Sso\Basics\JsonWebToken;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
@@ -199,24 +198,18 @@ class Account
         }
 
         // get token data
-        $serializerManager = new JWSSerializerManager([new CompactSerializer()]);
         try {
-            $jws = $serializerManager->unserialize($token->getToken());
-        } catch (\Exception $e) {
+            $jwt = new JsonWebToken($token);
+        } catch (\UnexpectedValueException $e) {
             // Fails if a SSOv1 access token is still valid (up to ~20 minutes after it was created).
             // Should not happen otherwise. Don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
-        $data = json_decode((string)$jws->getPayload());
-        if ($data === null) {
-            // should not happen, don't change the valid flag in this case.
-            return self::CHECK_TOKEN_PARSE_ERROR;
-        }
+        $eveAuth = $jwt->getEveAuthentication();
         
         // token is valid here, check scopes
         // (scopes should not change after login since you cannot revoke individual scopes)
-        $scopeList = isset($data->scp) ? (is_string($data->scp) ? [$data->scp] : $data->scp) : [];
-        if (count($scopeList) === 0) {
+        if (count($eveAuth->getScopes()) === 0) {
             $char->setValidToken(null);
             $result = self::CHECK_TOKEN_NOK;
         } else {
@@ -225,17 +218,17 @@ class Account
         }
 
         // Check owner change
-        if (isset($data->owner)) {
+        if ($eveAuth->getCharacterOwnerHash() !== '') {
             // This check should never be true because the token is already invalid
             // after a character transfer - I hope ...
-            if ($char->getCharacterOwnerHash() !== $data->owner) {
+            if ($char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
                 $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;
                 $char = null;
             }
         } else {
             // that's an error, CCP changed the JWT data
-            $this->log->error('Unexpected JWT data.', ['data' => (array) $data]);
+            $this->log->error('Unexpected JWT data, missing character owner hash.');
         }
 
         $this->objectManager->flush();

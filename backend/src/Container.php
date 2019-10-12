@@ -101,7 +101,7 @@ class Container
                     }
                     $path .= '/app-' . (PHP_SAPI === 'cli' ? 'cli-' : '') .
                         ($rotation === 'daily' ? date('Ymd') : (
-                        $rotation === 'monthly' ? date('Ym') : date('o\wW')
+                            $rotation === 'monthly' ? date('Ym') : date('o\wW')
                         )) . '.log';
                 }
                 $format = $c->get(Config::class)['monolog']['format'];

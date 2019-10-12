@@ -50,6 +50,9 @@ class CheckTokensTest extends ConsoleTestCase
         $this->client = new Client();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testExecuteUpdateCharNoToken()
     {
         $c = (new Character())->setId(1)->setName('c1')
@@ -71,6 +74,9 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testExecuteDeleteCharBiomassed()
     {
         $player = (new Player())->setName('p');
@@ -99,6 +105,9 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame(1, count($removedChar));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testExecuteErrorUpdateToken()
     {
         $c = (new Character())->setId(3)->setName('char1')->setAccessToken('at3')->setRefreshToken('at3');
@@ -117,6 +126,9 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testExecuteInvalidToken()
     {
         $c = (new Character())->setId(3)->setName('char1')
@@ -249,12 +261,8 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
         $this->assertSame(
-            'Unexpected JWT data.',
+            'Unexpected JWT data, missing character owner hash.',
             $this->log->getHandler()->getRecords()[0]['message']
-        );
-        $this->assertSame(
-            ['data' => Helper::parseToken($token)],
-            $this->log->getHandler()->getRecords()[0]['context']
         );
     }
 }

@@ -7,7 +7,6 @@ use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
-use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Neucore\Application;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
@@ -90,16 +89,6 @@ class Helper
         $keySet = [$jwk->toPublic()->jsonSerialize()];
 
         return [$token, $keySet];
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public static function parseToken(string $token)
-    {
-        $serializerManager = new JWSSerializerManager([new CompactSerializer()]);
-        $jws = $serializerManager->unserialize($token);
-        return json_decode((string)$jws->getPayload(), true);
     }
 
     public function resetSessionData(): void
