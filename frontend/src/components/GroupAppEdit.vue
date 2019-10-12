@@ -100,7 +100,7 @@ import $ from 'jquery';
 import { AppApi } from 'neucore-js-client';
 import { GroupApi } from 'neucore-js-client';
 
-module.exports = {
+export default {
     props: {
         type: ''
     },

@@ -57,7 +57,7 @@ import $ from 'jquery';
 import { ESIApi } from 'neucore-js-client';
 import { CharacterApi } from 'neucore-js-client';
 
-module.exports = {
+export default {
     data: function() {
         return {
             headers: '',

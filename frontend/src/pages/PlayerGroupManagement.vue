@@ -77,7 +77,7 @@ import { PlayerApi } from 'neucore-js-client';
 import Admin      from '../components/EntityRelationEdit.vue';
 import Characters from '../components/Characters.vue';
 
-module.exports = {
+export default {
     components: {
         Admin,
         Characters,

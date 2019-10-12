@@ -323,7 +323,7 @@ import _ from 'lodash';
 import { AllianceApi } from 'neucore-js-client';
 import { SettingsApi } from 'neucore-js-client';
 
-module.exports = {
+export default {
     props: {
         route: Array,
         player: Object,

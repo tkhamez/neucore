@@ -101,7 +101,7 @@ import { CorporationApi } from 'neucore-js-client';
 
 import Characters from '../components/Characters.vue';
 
-module.exports = {
+export default {
     components: {
         Characters,
     },

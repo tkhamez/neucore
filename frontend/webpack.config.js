@@ -6,7 +6,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const Fiber = require('fibers');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
 module.exports = (env, argv) => {
@@ -62,12 +61,7 @@ module.exports = (env, argv) => {
             }, {
                 test: /\.js$/,
                 exclude: /(node_modules|neucore-js-client)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['env']
-                    }
-                },
+                loader: 'babel-loader'
             }, {
                 test: /node_modules\/markdown-it-attrs\/.*\.js$/,
                 use: 'babel-loader'

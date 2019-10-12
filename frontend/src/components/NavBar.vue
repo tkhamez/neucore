@@ -91,7 +91,7 @@
 <script>
 import $ from 'jquery';
 
-module.exports = {
+export default {
     props: {
         authChar: Object,
         page: String,

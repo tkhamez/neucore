@@ -20,7 +20,7 @@ Input element to search for characters
 import _  from 'lodash';
 import { CharacterApi } from 'neucore-js-client';
 
-module.exports = {
+export default {
     data: function() {
         return {
             searchTerm: '',

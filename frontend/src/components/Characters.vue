@@ -62,7 +62,7 @@ Modal window with all characters of one player.
 import $ from 'jquery';
 import { PlayerApi } from 'neucore-js-client';
 
-module.exports = {
+export default {
     data: function() {
         return {
             selectedPlayer: null,

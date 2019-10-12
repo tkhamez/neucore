@@ -75,7 +75,7 @@ import $ from 'jquery';
 import { GroupApi } from 'neucore-js-client';
 import { PlayerApi } from 'neucore-js-client';
 
-module.exports = {
+export default {
     props: {
         player: Object,
     },

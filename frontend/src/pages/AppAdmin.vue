@@ -80,7 +80,7 @@ import { AppApi } from 'neucore-js-client';
 import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
 
-module.exports = {
+export default {
     components: {
         Edit,
         Admin,

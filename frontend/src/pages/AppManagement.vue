@@ -96,8 +96,8 @@
 
 <script>
 import { AppApi } from 'neucore-js-client';
-    
-module.exports = {
+
+export default {
     props: {
         route: Array,
         player: Object,

@@ -370,7 +370,7 @@ import { PlayerApi } from 'neucore-js-client';
 
 import CharacterSearch from '../components/CharacterSearch.vue';
 
-module.exports = {
+export default {
     components: {
         CharacterSearch,
     },

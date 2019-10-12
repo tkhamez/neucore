@@ -182,7 +182,7 @@ import mdAbbr from 'markdown-it-abbr';
 import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
 
-module.exports = {
+export default {
     components: {
         TitleLogo
     },
