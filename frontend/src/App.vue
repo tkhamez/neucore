@@ -14,7 +14,6 @@
 
         <component v-if="settings.customization_default_theme" v-cloak v-bind:is="page"
                    :route="route"
-                   :initialized="initialized"
                    :settings="settings"
                    :player="player"
                    :auth-char="authChar">
@@ -121,14 +120,6 @@ export default {
              */
             settings: {},
 
-            /**
-             * True after first Ajax request finished.
-             *
-             * Don't do any request before this is true to avoid creating
-             * several session on the server.
-             */
-            initialized: false,
-
             messageTxt: '',
 
             messageType: '',
@@ -168,16 +159,13 @@ export default {
             vm.getAuthenticatedCharacter(true);
         }, 1000*60*5);
 
-        // get settings
+        // get initial data
         this.getSettings();
+        this.getAuthenticatedCharacter();
+        this.getPlayer();
     },
 
     watch: {
-        initialized: function() {
-            this.getAuthenticatedCharacter();
-            this.getPlayer();
-        },
-
         settings: function() {
             window.document.title = this.settings.customization_document_title;
         }
@@ -249,7 +237,6 @@ export default {
                     settings[variable.name] = variable.value;
                 }
                 vm.settings = settings; // watch() will work this way
-                vm.initialized = true;
             });
         },
 

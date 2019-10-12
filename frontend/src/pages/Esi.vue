@@ -58,10 +58,6 @@ import { ESIApi } from 'neucore-js-client';
 import { CharacterApi } from 'neucore-js-client';
 
 module.exports = {
-    props: {
-        initialized: Boolean,
-    },
-
     data: function() {
         return {
             headers: '',

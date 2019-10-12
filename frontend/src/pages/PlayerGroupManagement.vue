@@ -85,7 +85,6 @@ module.exports = {
 
     props: {
         route: Array,
-        initialized: Boolean,
         player: Object,
         settings: Object,
     },
@@ -100,10 +99,8 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change
-            this.getPLayers();
-            this.setPlayerId();
-        }
+        this.getPLayers();
+        this.setPlayerId();
 
         // login URL for managed accounts
         let port = '';
@@ -114,11 +111,6 @@ module.exports = {
     },
 
     watch: {
-        initialized: function() { // on refresh
-            this.getPLayers();
-            this.setPlayerId();
-        },
-
         route: function() {
             this.setPlayerId();
         },

@@ -51,6 +51,7 @@
         </div>
 
         <div v-cloak v-if="! authChar" class="jumbotron mt-3">
+            <!--suppress HtmlUnknownTag -->
             <title-logo :settings="settings"></title-logo>
             <p>Click the button below to login through <i>EVE Online SSO</i>.</p>
             <a href="/login">
@@ -65,6 +66,7 @@
         </div>
         <div v-cloak v-if="authChar" class="card mt-3 mb-3">
             <div class="card-body">
+                <!--suppress HtmlUnknownTag -->
                 <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
                 <p><a href="/login-alt"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
@@ -187,7 +189,6 @@ module.exports = {
 
     props: {
         route: Array,
-        initialized: Boolean,
         authChar: Object,
         player: Object,
         settings: Object,
@@ -241,6 +242,7 @@ module.exports = {
     methods: {
         checkDeactivated: function() {
             if (! this.player) {
+                this.deactivated = false;
                 return;
             }
 

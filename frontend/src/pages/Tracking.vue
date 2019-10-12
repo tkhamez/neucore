@@ -108,7 +108,6 @@ module.exports = {
 
     props: {
         route: Array,
-        initialized: Boolean,
     },
 
     data: function() {
@@ -206,18 +205,11 @@ module.exports = {
             }]
         });
 
-        if (this.initialized) { // on page change
-            this.getCorporations();
-            this.getMembers();
-        }
+        this.getCorporations();
+        this.getMembers();
     },
 
     watch: {
-        initialized: function() { // on refresh
-            this.getCorporations();
-            this.getMembers();
-        },
-
         route: function() {
             if (this.route.length < 3) {
                 this.getMembers();

@@ -88,7 +88,6 @@ module.exports = {
 
     props: {
         route: Array,
-        initialized: Boolean,
         player: Object,
         settings: Object,
     },
@@ -102,18 +101,11 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change + refresh
-            this.getApps();
-            this.setAppIdAndContentType();
-        }
+        this.getApps();
+        this.setAppIdAndContentType();
     },
 
     watch: {
-        initialized: function() { // currently not triggered
-            this.getApps();
-            this.setAppIdAndContentType();
-        },
-
         route: function() {
             this.setAppIdAndContentType();
         },

@@ -377,7 +377,6 @@ module.exports = {
 
     props: {
         route: Array,
-        initialized: Boolean,
         player: Object, // logged in player
         authChar: Object, // logged in character
         settings: Object,
@@ -412,16 +411,10 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change
-            this.setPlayerId();
-        }
+        this.setPlayerId();
     },
 
     watch: {
-        initialized: function() { // on refresh
-            this.setPlayerId();
-        },
-
         route: function() {
             this.setPlayerId();
         },

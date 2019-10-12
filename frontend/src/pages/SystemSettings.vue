@@ -326,7 +326,6 @@ import { SettingsApi } from 'neucore-js-client';
 module.exports = {
     props: {
         route: Array,
-        initialized: Boolean,
         player: Object,
         settings: Object,
     },
@@ -343,9 +342,7 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change
-            this.init();
-        }
+        this.init();
         this.$root.$emit('settingsChange'); // make sure the data is up to date
 
         // login URL for director chars
@@ -357,10 +354,6 @@ module.exports = {
     },
 
     watch: {
-        initialized: function() { // on refresh
-            this.init();
-        },
-
         settings: function() {
             this.readSettings();
         },

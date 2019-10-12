@@ -147,7 +147,6 @@ module.exports = {
     props: {
         settings: Object,
         route: Array,
-        initialized: Boolean,
         player: Object,
     },
 
@@ -165,18 +164,11 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change + refresh
-            this.getGroups();
-            this.setGroupIdAndContentType();
-        }
+        this.getGroups();
+        this.setGroupIdAndContentType();
     },
 
     watch: {
-        initialized: function() { // currently not triggered
-            this.getGroups();
-            this.setGroupIdAndContentType();
-        },
-
         route: function() {
             this.setGroupIdAndContentType();
         },

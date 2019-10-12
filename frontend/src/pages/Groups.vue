@@ -77,7 +77,6 @@ import { PlayerApi } from 'neucore-js-client';
 
 module.exports = {
     props: {
-        initialized: Boolean,
         player: Object,
     },
 
@@ -90,17 +89,8 @@ module.exports = {
     },
 
     mounted: function() {
-        if (this.initialized) { // on page change
-            this.getPublicGroups();
-            this.getApplications();
-        }
-    },
-
-    watch: {
-        initialized: function() { // on refresh
-            this.getPublicGroups();
-            this.getApplications();
-        },
+        this.getPublicGroups();
+        this.getApplications();
     },
 
     methods: {
