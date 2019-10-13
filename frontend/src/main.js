@@ -1,4 +1,6 @@
 
+import "core-js";
+
 // bootstrap JS (css is included via theme* entry point) and required jquery + popper
 import $ from 'jquery';
 //import 'popper.js';
@@ -23,8 +25,6 @@ import Vue from 'vue'
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 Vue.component('multiselect', Multiselect);
-
-import "babel-polyfill"; // for useBuiltIns
 
 
 // app
