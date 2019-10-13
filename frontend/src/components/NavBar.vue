@@ -107,10 +107,7 @@ export default {
     },
 
     mounted: function() {
-        const $navMain = $("#navbar01");
-        $navMain.on("click", "a:not([data-toggle])", null, function() {
-            $navMain.collapse('hide');
-        });
+        addNavBehaviour();
     },
 
     watch: {
@@ -137,14 +134,35 @@ export default {
         }
     },
 }
+
+function addNavBehaviour() {
+    const $navMain = $("#navbar01");
+    $navMain.on("click", "a:not([data-toggle])", null, function() {
+        $navMain.collapse('hide');
+        $(this).closest('.dropdown').removeClass('show');
+        $(this).closest('.dropdown-toggle').attr('aria-expanded', true);
+        $(this).closest('.dropdown-menu').removeClass('show');
+    });
+    $navMain.on("mouseover", ".dropdown", null, function() {
+        if ($('.navbar .navbar-toggler').is(':visible')) {
+            return;
+        }
+        $(this).addClass('show');
+        $(this).find('.dropdown-toggle').attr('aria-expanded', true);
+        $(this).find('.dropdown-menu').addClass('show');
+    });
+    $navMain.on("mouseout", ".dropdown", null, function() {
+        if ($('.navbar .navbar-toggler').is(':visible')) {
+            return;
+        }
+        $(this).removeClass('show');
+        $(this).find('.dropdown-toggle').attr('aria-expanded', false);
+        $(this).find('.dropdown-menu').removeClass('show');
+    });
+}
 </script>
 
 <style scoped>
-    @media (min-width: 992px) {
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-    }
     .dropdown-menu {
         margin: 0;
     }

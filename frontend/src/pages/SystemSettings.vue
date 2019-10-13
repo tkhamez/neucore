@@ -11,8 +11,13 @@
         <div class="col-lg-12">
             <div class="card border-secondary mb-3">
 
-                <div class="card-header">Customization</div>
-                <div class="card-body">
+                <div class="card-header" data-toggle="collapse" data-target="#collapseOne"
+                     aria-expanded="true" aria-controls="collapseOne" id="headingOne">
+                    <span class="far fa-minus-square" aria-hidden="true"></span>
+                    <span class="far fa-plus-square" aria-hidden="true"></span>
+                    Customization
+                </div>
+                <div class="card-body collapse show" id="collapseOne" aria-labelledby="headingOne">
                     <div class="form-group">
                         <label class="col-form-label" for="customizationDocumentTitle">Document Title</label>
                         <input id="customizationDocumentTitle" type="text" class="form-control"
@@ -151,8 +156,13 @@
                     </div>
                 </div>
 
-                <div class="card-header">Features</div>
-                <div class="card-body">
+                <div class="card-header" data-toggle="collapse" data-target="#collapseTwo"
+                     aria-expanded="true" aria-controls="collapseTwo" id="headingTwo">
+                    <span class="far fa-minus-square" aria-hidden="true"></span>
+                    <span class="far fa-plus-square" aria-hidden="true"></span>
+                    Features
+                </div>
+                <div class="card-body collapse show" id="collapseTwo" aria-labelledby="headingTwo">
                     <em>Deactivate Accounts:</em>
                     <div class="custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" value="1"
@@ -199,8 +209,13 @@
                     </div>
                 </div>
 
-                <div class="card-header">EVE Mails</div>
-                <div class="card-body">
+                <div class="card-header" data-toggle="collapse" data-target="#collapseThree"
+                     aria-expanded="true" aria-controls="collapseThree" id="headingThree">
+                    <span class="far fa-minus-square" aria-hidden="true"></span>
+                    <span class="far fa-plus-square" aria-hidden="true"></span>
+                    EVE Mails
+                </div>
+                <div class="card-body collapse show" id="collapseThree" aria-labelledby="headingThree">
                     <h4>Sender</h4>
                     <p>
                         <span v-if="settings.mail_character === ''">
@@ -213,14 +228,17 @@
                                 remove
                             </button>
                         </span>
+                        <br>
+                        <span class="small">The character is used for all mails.</span>
                     </p>
 
                     <hr>
 
-                    <h4 class="mt-4">"Account disabled" Notification</h4>
+                    <h4 class="mt-4">Notification for deactivated accounts</h4>
                     <p>
                         This EVE mail is sent when an account has been deactivated
-                        because one of its characters contains an invalid or no ESI token.
+                        because one of its characters contains an invalid or no ESI token.<br>
+                        The mail is only sent if that feature is activated above.
                     </p>
 
                     <button class="btn btn-success btn-sm" v-on:click="sendMailAccountDisabledTestMail()">
@@ -263,8 +281,13 @@
                     </div>
                 </div>
 
-                <div class="card-header">Directors</div>
-                <div class="card-body">
+                <div class="card-header" data-toggle="collapse" data-target="#collapseFour"
+                     aria-expanded="true" aria-controls="collapseFour" id="headingFour">
+                    <span class="far fa-minus-square" aria-hidden="true"></span>
+                    <span class="far fa-plus-square" aria-hidden="true"></span>
+                    Directors
+                </div>
+                <div class="card-body collapse show" id="collapseFour" aria-labelledby="headingFour">
                     <p>
                         Login URL for characters with director role:
                         <a :href="loginUrlDirector">{{ loginUrlDirector }}</a>
@@ -342,8 +365,12 @@ export default {
     },
 
     mounted: function() {
+        window.scrollTo(0,0);
+
         this.init();
-        this.$root.$emit('settingsChange'); // make sure the data is up to date
+
+        // make sure the data is up to date
+        this.$root.$emit('settingsChange');
 
         // login URL for director chars
         let port = '';
@@ -511,9 +538,19 @@ export default {
 }
 </script>
 
-<style scoped>
-.input-delay {
-    display: inline;
-    width: 70px;
-}
+<style type="text/scss" scoped>
+    .card-header {
+        cursor: pointer;
+    }
+    .card-header[aria-expanded=true] .fa-plus-square {
+        display: none;
+    }
+    .card-header[aria-expanded=false] .fa-minus-square {
+        display: none;
+    }
+
+    .input-delay {
+        display: inline;
+        width: 70px;
+    }
 </style>

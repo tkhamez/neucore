@@ -164,6 +164,7 @@ export default {
     },
 
     mounted: function() {
+        window.scrollTo(0,0);
         this.getGroups();
         this.setGroupIdAndContentType();
     },

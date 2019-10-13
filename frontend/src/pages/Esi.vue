@@ -72,6 +72,8 @@ export default {
     },
 
     mounted: function() {
+        window.scrollTo(0,0);
+
         $.get('/static/esi-paths-http-get.json').then((data) => {
             this.paths = data;
         });

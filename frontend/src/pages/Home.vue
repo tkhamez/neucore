@@ -203,6 +203,8 @@ export default {
     },
 
     mounted: function() { // after "redirect" from another page
+        window.scrollTo(0,0);
+
         const md = markdownIt({ typographer: true })
             .use(mdEmoji)
             .use(mdSup)

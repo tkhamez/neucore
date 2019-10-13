@@ -45,12 +45,16 @@ Select and table to add and remove objects from other objects.
             <p v-if="contentType === 'alliances' || contentType === 'corporations'">
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
             </p>
-            <p v-if="type === 'App' && contentType === 'groups'">
-                The application can only see the membership of players to groups that are listed here.
-                <button class="btn btn-outline-warning float-right mb-1" v-on:click="addAllGroupsToApp()">
-                    Add all groups to app
-                </button>
-            </p>
+            <div class="row mb-1" v-if="type === 'App' && contentType === 'groups'">
+                <p class="col-9">
+                    The application can only see the membership of players to groups that are listed here.
+                </p>
+                <div class="col-3 text-right">
+                    <button class="btn btn-sm btn-outline-warning" v-on:click="addAllGroupsToApp()">
+                        Add all groups to app
+                    </button>
+                </div>
+            </div>
             <p v-cloak v-if="contentType === 'roles'">
                 See
                 <a :href="settings.customization_github + '/blob/master/doc/API.md'"
@@ -60,40 +64,12 @@ Select and table to add and remove objects from other objects.
             <p v-if="type === 'Corporation' && contentType === 'groups'">
                 Members of these groups can view the tracking data of the selected corporation.
             </p>
-
-            <div class="input-group mb-1">
-                <div class="input-group-prepend">
-                    <label class="input-group-text" for="entityRelationEditSelect">
-                        <span v-if="contentType === 'managers'">Add manager</span>
-                        <span v-if="contentType === 'alliances'">Add alliance</span>
-                        <span v-if="contentType === 'corporations'">Add corporation</span>
-                        <span v-if="contentType === 'groups'">Add group</span>
-                        <span v-if="contentType === 'roles'">Add role</span>
-                    </label>
-                </div>
-                <select class="custom-select" v-model="newObject" id="entityRelationEditSelect">
-                    <option v-if="contentType === 'managers'" value="">Select player ...</option>
-                    <option v-if="contentType === 'alliances'" value="">Select alliance ...</option>
-                    <option v-if="contentType === 'corporations'" value="">Select corporation ...</option>
-                    <option v-if="contentType === 'groups'" value="">Select group ...</option>
-                    <option v-if="contentType === 'roles'" value="">Select role ...</option>
-                    <option v-if="! tableHas(option)" v-for="option in selectContent" v-bind:value="option">
-                        {{ option.name }}
-                        <!--suppress HtmlUnknownTag -->
-                        <template v-if="contentType === 'managers'">
-                            #{{ option.id }}
-                        </template>
-                        <!--suppress HtmlUnknownTag -->
-                        <template v-if="contentType === 'corporations' || contentType === 'alliances'">
-                            [{{ option.ticker }}]
-                        </template>
-                        <!--suppress HtmlUnknownTag -->
-                        <template v-if="contentType === 'corporations' && option.alliance">
-                            ({{ option.alliance.name }} [{{ option.alliance.ticker }}])
-                        </template>
-                    </option>
-                </select>
-            </div>
+            <multiselect v-model="newObject" :options="currentSelectContent"
+                         v-bind:placeholder="placeholder"
+                         label="name" track-by="id"
+                         :loading="false"
+                         :custom-label="customLabel">
+            </multiselect>
         </div>
 
         <table v-cloak v-if="typeId" class="table table-hover mb-0">
@@ -191,7 +167,9 @@ export default {
     data: function() {
         return {
             newObject: "", // empty string to select the first entry in the drop-down
-            selectContent: [],
+            placeholder: "", // placeholder for the multi-select
+            selectContent: [], // all options from backend
+            currentSelectContent: [], // copy of selectContent without items from the table
             tableContent: [],
             showGroupsEntity: null, // one alliance or corporation object with groups
             withGroups: [], // all alliances or corporations with groups
@@ -199,6 +177,7 @@ export default {
     },
 
     mounted: function() {
+        this.customPlaceholder();
         this.getSelectContent();
         if (this.typeId) {
             this.getTableContent();
@@ -216,6 +195,7 @@ export default {
 
         contentType: function() {
             this.newObject = "";
+            this.customPlaceholder();
             this.getSelectContent();
             if (this.typeId) {
                 this.getTableContent();
@@ -240,9 +220,43 @@ export default {
             }
             this.newObject = "";
         },
+
+        selectContent: function() {
+            this.removeSelectedOptions();
+        },
+
+        tableContent: function() {
+            this.removeSelectedOptions();
+        },
     },
 
     methods: {
+        customPlaceholder: function() {
+            if (this.contentType === 'managers') {
+                this.placeholder = 'Add manager';
+            } else if (this.contentType === 'alliances') {
+                this.placeholder = 'Add alliance';
+            } else if (this.contentType === 'corporations') {
+                this.placeholder = 'Add corporation';
+            } else if (this.contentType === 'groups') {
+                this.placeholder = 'Add group';
+            } else if (this.contentType === 'roles') {
+                this.placeholder = 'Add role';
+            }
+        },
+
+        customLabel: function(option) {
+            let label = option.name;
+            if (this.contentType === 'managers') {
+                label += ' #' + option.id
+            } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
+                label += ' [' + option.ticker + ']';
+            }
+            if (this.contentType === 'corporations' && option.alliance) {
+                label += ' - ' + option.alliance.name +  ' [' + option.alliance.ticker + ']';
+            }
+            return label
+        },
 
         getSelectContent: function() {
             const vm = this;
@@ -376,13 +390,18 @@ export default {
             }]);
         },
 
-        tableHas: function(option) {
-            for (let row of this.tableContent) {
-                if (row.id === option.id) {
-                    return true;
+        removeSelectedOptions: function() {
+            this.currentSelectContent = [...this.selectContent]; // copy by value
+            let removed = 0;
+            for (const [index, option] of this.selectContent.entries()) {
+                for (const row of this.tableContent) {
+                    if (row.id === option.id) {
+                        this.currentSelectContent.splice(index - removed, 1);
+                        removed ++;
+                        break;
+                    }
                 }
             }
-            return false;
         },
 
         hasRequiredRole: function(row) {

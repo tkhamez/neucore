@@ -127,6 +127,8 @@ export default {
     },
 
     mounted: function() {
+        window.scrollTo(0,0);
+
         const vm = this;
         vm.table = $('.member-table').DataTable({
             lengthMenu: [[10, 50, 200, 500, 1000, -1], [10, 50, 200, 500, 1000, "All"]],
