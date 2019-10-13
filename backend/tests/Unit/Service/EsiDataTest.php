@@ -66,9 +66,9 @@ class EsiDataTest extends TestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $this->client = new Client();
-        $esiApiFactory = new EsiApiFactory($this->client, new Config([]));
-
+        $esiApiFactory = new EsiApiFactory($this->client, $config);
         $this->repoFactory = new RepositoryFactory($this->em);
 
         $this->cs = new EsiData(
@@ -76,7 +76,7 @@ class EsiDataTest extends TestCase
             $esiApiFactory,
             new ObjectManager($this->em, $this->log),
             $this->repoFactory,
-            new Config([])
+            $config
         );
 
         // a second EsiData instance with another entity manager that throws an exception on flush.
@@ -87,7 +87,7 @@ class EsiDataTest extends TestCase
             $esiApiFactory,
             new ObjectManager($em, $this->log),
             $this->repoFactory,
-            new Config([])
+            $config
         );
     }
 

@@ -69,8 +69,8 @@ class MemberTrackingTest extends TestCase
         $this->client = new Client();
         $objectManager = new ObjectManager($this->em, $this->logger);
         $this->repositoryFactory = new RepositoryFactory($this->em);
-        $esiApiFactory = new EsiApiFactory($this->client, new Config([]));
-        $config = new Config([]);
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $esiApiFactory = new EsiApiFactory($this->client, $config);
         $this->memberTracking = new MemberTracking(
             $this->logger,
             $esiApiFactory,
@@ -82,7 +82,7 @@ class MemberTrackingTest extends TestCase
                 $objectManager,
                 $this->logger,
                 $this->client,
-                new Config([])
+                $config
             ),
             $config
         );

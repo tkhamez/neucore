@@ -64,13 +64,19 @@ class OAuthTokenTest extends TestCase
 
         $this->client = new Client();
         $oauth = new OAuthProvider($this->client);
+        $config = new Config(['eve' => [
+            'datasource' => '',
+            'oauth_urls_tq' => ['revoke' => ''],
+            'client_id' => '',
+            'secret_key' => '',
+        ]]);
 
         $this->es = new OAuthToken(
             $oauth,
             new ObjectManager($this->em, $this->log),
             $this->log,
             $this->client,
-            new Config([])
+            $config
         );
 
         // a second OAuthToken instance with another entity manager that throws an exception on flush.
@@ -81,7 +87,7 @@ class OAuthTokenTest extends TestCase
             new ObjectManager($em, $this->log),
             $this->log,
             $this->client,
-            new Config([])
+            $config
         );
     }
 

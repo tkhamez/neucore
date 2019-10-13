@@ -61,11 +61,12 @@ class EveMailTest extends TestCase
 
         $this->logger = new Logger('test');
         $objManager = new ObjectManager($this->em, $this->logger);
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
 
-        $esiFactory = new EsiApiFactory($this->client, new Config([]));
+        $esiFactory = new EsiApiFactory($this->client, $config);
 
         $oauth = new OAuthProvider($this->client);
-        $oauthToken = new OAuthToken($oauth, $objManager, $this->logger, $this->client, new Config([]));
+        $oauthToken = new OAuthToken($oauth, $objManager, $this->logger, $this->client, $config);
 
         $this->eveMail = new EveMail(
             $this->repoFactory,
@@ -73,7 +74,7 @@ class EveMailTest extends TestCase
             $oauthToken,
             $esiFactory,
             $this->logger,
-            new Config([])
+            $config
         );
     }
 
