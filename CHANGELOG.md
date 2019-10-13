@@ -2,9 +2,10 @@
 
 ## next (1.5.0)
 
-- Frontend refactored to use a runtime-only build
+- Dropped Node.js 8.x support, minimum required version is now 10.13.0
 - Update to Slim 4
 - Update to Babel 7
+- Frontend refactored to use a runtime-only build
 - Some UI improvements
 - Fix: token state flag for SSOv2 tokens without scopes.
 
