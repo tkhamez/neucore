@@ -37,7 +37,7 @@ class SettingsControllerTest extends WebTestCase
      */
     private $systemVariableRepository;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = null;
 

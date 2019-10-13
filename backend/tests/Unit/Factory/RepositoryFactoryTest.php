@@ -45,7 +45,7 @@ class RepositoryFactoryTest extends TestCase
      */
     private $factory;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->em = (new Helper())->getEm();
         $this->factory = new RepositoryFactory($this->em);

@@ -34,7 +34,7 @@ class CharacterControllerTest extends WebTestCase
      */
     private $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = null;
         $this->helper = new Helper();

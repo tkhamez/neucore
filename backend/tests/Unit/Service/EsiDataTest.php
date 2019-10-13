@@ -58,7 +58,7 @@ class EsiDataTest extends TestCase
      */
     private $log;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->testHelper = new Helper();
         $this->em = $this->testHelper->getEm();

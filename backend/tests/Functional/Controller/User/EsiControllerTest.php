@@ -11,7 +11,7 @@ use Tests\Client;
 
 class EsiControllerTest extends WebTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = [];
     }

@@ -9,7 +9,7 @@ class ConfigTest extends TestCase
 {
     private $config;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->config = new Config([
             'env_var_defaults' => ['CONFIG_TEST_THREE' => 'default'],
@@ -45,21 +45,19 @@ class ConfigTest extends TestCase
         $this->assertSame(1, $this->config['key2']['val1']);
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Read only.
-     */
     public function testOffsetSet()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage('Read only.');
+
         $this->config['nothing'] = 1;
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Read only.
-     */
     public function testOffsetUnset()
     {
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage('Read only.');
+
         unset($this->config['key']);
     }
 }

@@ -13,7 +13,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
     private $file1;
     private $file2;
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         putenv('BRAVECORE_CACHE_DIR=');
 
@@ -44,7 +44,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
         $output = $this->runConsoleApp('clean-http-cache', [], [], ['BRAVECORE_CACHE_DIR=' . $dir], true);
         $actual = explode("\n", $output);
 
-        $this->assertContains('Guzzle cache cleaned.', $actual[0]);
+        $this->assertStringContainsString('Guzzle cache cleaned.', $actual[0]);
         $this->assertSame('', $actual[1]);
         $this->assertSame(2, count($actual));
 

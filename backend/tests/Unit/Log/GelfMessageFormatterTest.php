@@ -21,6 +21,6 @@ class GelfMessageFormatterTest extends TestCase
         );
         $formatter = new GelfMessageFormatter();
 
-        $this->assertContains('"short_message":"msg"', $formatter->format($record));
+        $this->assertStringContainsString('"short_message":"msg"', $formatter->format($record));
     }
 }

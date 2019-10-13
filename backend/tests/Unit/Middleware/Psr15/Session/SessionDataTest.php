@@ -8,7 +8,7 @@ use Tests\Helper;
 
 class SessionDataTest extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         (new Helper())->resetSessionData();
     }

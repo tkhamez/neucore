@@ -6,7 +6,7 @@ use Tests\Functional\ConsoleTestCase;
 
 class ClearCacheTest extends ConsoleTestCase
 {
-    public function tearDown()
+    protected function tearDown(): void
     {
         putenv('BRAVECORE_CACHE_DIR=');
     }

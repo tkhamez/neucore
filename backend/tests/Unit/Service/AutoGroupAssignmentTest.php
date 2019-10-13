@@ -82,7 +82,7 @@ class AutoGroupAssignmentTest extends TestCase
 
     private $group7Id;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->th = new Helper();
         $this->em = $this->th->getEm();
@@ -155,12 +155,12 @@ class AutoGroupAssignmentTest extends TestCase
 
         $logs = $this->log->getHandler()->getRecords();
         $this->assertSame(6, count($logs));
-        $this->assertContains('removed group g4 ['.$this->group4->getId().']', $logs[0]['message']);
-        $this->assertContains('added group g1 ['.$this->group1->getId().']', $logs[1]['message']);
-        $this->assertContains('added group g2 ['.$this->group2->getId().']', $logs[2]['message']);
-        $this->assertContains('added group g3 ['.$this->group3->getId().']', $logs[3]['message']);
-        $this->assertContains('added group g7 ['.$this->group7Id.']', $logs[4]['message']);
-        $this->assertContains('added group g6 ['.$this->group6Id.']', $logs[5]['message']);
+        $this->assertStringContainsString('removed group g4 ['.$this->group4->getId().']', $logs[0]['message']);
+        $this->assertStringContainsString('added group g1 ['.$this->group1->getId().']', $logs[1]['message']);
+        $this->assertStringContainsString('added group g2 ['.$this->group2->getId().']', $logs[2]['message']);
+        $this->assertStringContainsString('added group g3 ['.$this->group3->getId().']', $logs[3]['message']);
+        $this->assertStringContainsString('added group g7 ['.$this->group7Id.']', $logs[4]['message']);
+        $this->assertStringContainsString('added group g6 ['.$this->group6Id.']', $logs[5]['message']);
     }
 
     public function testAssignFlushError()

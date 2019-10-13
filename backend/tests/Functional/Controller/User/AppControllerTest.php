@@ -50,7 +50,7 @@ class AppControllerTest extends WebTestCase
 
     private $pid3;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = null;
 

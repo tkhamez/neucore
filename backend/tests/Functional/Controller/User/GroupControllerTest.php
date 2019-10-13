@@ -60,7 +60,7 @@ class GroupControllerTest extends WebTestCase
 
     private $groupAppID;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = null;
 

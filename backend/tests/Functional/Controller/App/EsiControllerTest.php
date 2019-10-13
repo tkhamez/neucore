@@ -31,7 +31,7 @@ class EsiControllerTest extends WebTestCase
      */
     private $logger;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->repoFactory = new RepositoryFactory($this->helper->getEm());

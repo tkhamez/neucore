@@ -11,7 +11,7 @@ use Tests\RequestHandler;
 
 class NonBlockingSessionTest extends TestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         unset($_SESSION);
     }

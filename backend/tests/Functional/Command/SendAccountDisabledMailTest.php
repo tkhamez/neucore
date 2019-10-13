@@ -32,7 +32,7 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
      */
     private $repoFactory;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

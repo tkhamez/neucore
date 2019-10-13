@@ -34,7 +34,7 @@ class EsiHeadersTest extends TestCase
      */
     private $obj;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

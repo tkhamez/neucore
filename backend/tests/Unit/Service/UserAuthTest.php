@@ -44,7 +44,7 @@ class UserAuthTest extends TestCase
      */
     private $removedCharRepo;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
@@ -139,7 +139,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Role::USER], $this->service->getRoles());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
-        $this->assertEquals(time(), $user->getLastLogin()->getTimestamp(), '', 10);
+        $this->assertEqualsWithDelta(time(), $user->getLastLogin()->getTimestamp(), 10);
     }
 
     public function testAuthenticateExistingUser()
@@ -172,7 +172,7 @@ class UserAuthTest extends TestCase
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertTrue($char->getValidToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
-        $this->assertEquals(time(), $user->getLastLogin()->getTimestamp(), '', 10);
+        $this->assertEqualsWithDelta(time(), $user->getLastLogin()->getTimestamp(), 10);
         $this->assertSame($user->getPlayer()->getId(), $player->getId());
     }
 

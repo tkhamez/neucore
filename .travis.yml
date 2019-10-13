@@ -6,7 +6,6 @@ git:
   depth: false
 
 php:
-  - "7.1"
   - "7.2"
   - "7.3"
   - 7.4snapshot
@@ -34,12 +33,11 @@ matrix:
   allow_failures:
     - php: 7.4snapshot
   exclude:
-    - php: "7.1"
     - php: "7.2"
     - php: "7.3"
     - php: 7.4snapshot
   include:
-    - php: "7.1"
+    - php: "7.2"
       env: NODE_VERSION="10.13.0" DB=mysql:5.7
       services:
         - mysql
@@ -84,7 +82,7 @@ install:
 
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
-  - if [ $(phpenv version-name) = "7.2" ] && [ $TRAVIS_REPO_SLUG = "tkhamez/neucore" ]; then sonar-scanner; fi
+  - if [[ $(phpenv version-name) == "7.2" ]] && [[ "$DB" == "mysql:8.0" ]] && [[ $TRAVIS_REPO_SLUG == "tkhamez/neucore" ]]; then sonar-scanner; fi
 
 before_deploy:
   - ./dist.sh $TRAVIS_TAG

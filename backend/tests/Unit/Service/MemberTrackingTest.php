@@ -60,7 +60,7 @@ class MemberTrackingTest extends TestCase
      */
     private $memberTracking;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();

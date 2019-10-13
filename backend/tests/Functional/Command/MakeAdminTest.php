@@ -21,7 +21,7 @@ class MakeAdminTest extends ConsoleTestCase
 
     private static $playerId;
 
-    public static function setUpBeforeClass()
+    public static function setupBeforeClass(): void
     {
         $h = new Helper();
         $h->emptyDb();

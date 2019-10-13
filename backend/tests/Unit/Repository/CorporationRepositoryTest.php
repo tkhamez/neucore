@@ -23,7 +23,7 @@ class CorporationRepositoryTest extends TestCase
      */
     private $repository;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

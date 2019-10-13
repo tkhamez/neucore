@@ -4,7 +4,7 @@ namespace Neucore\Log;
 
 class FluentdFormatter extends \Monolog\Formatter\FluentdFormatter
 {
-    public function format(array $record)
+    public function format(array $record): string
     {
         foreach ($record['context'] as $key => $value) {
             if ($value instanceof \Throwable) {

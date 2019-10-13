@@ -50,7 +50,7 @@ class EveMailTest extends TestCase
      */
     private $logger;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

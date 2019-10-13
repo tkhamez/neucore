@@ -32,6 +32,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Symfony\Component\Console\Application as ConsoleApplication;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Dotenv\Exception\FormatException;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
@@ -384,6 +385,7 @@ class Application
     /**
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws LogicException
      */
     private function addCommands(ConsoleApplication $console): void
     {

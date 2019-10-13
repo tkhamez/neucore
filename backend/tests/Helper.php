@@ -69,7 +69,7 @@ class Helper
 
         // create token
         $algorithmManager = new AlgorithmManager([new RS256()]);
-        $jwsBuilder = new JWSBuilder(null, $algorithmManager);
+        $jwsBuilder = new JWSBuilder($algorithmManager);
         $payload = (string)json_encode([
             'scp' => count($scopes) > 1 ? $scopes : ($scopes[0] ?? null),
             'sub' => 'CHARACTER:EVE:123',

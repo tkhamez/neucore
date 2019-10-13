@@ -34,7 +34,7 @@ class GroupControllerTest extends WebTestCase
 
     private $group5Id;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->repoFactory = new RepositoryFactory($this->helper->getEm());

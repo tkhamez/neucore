@@ -23,7 +23,7 @@ class CorporationControllerTest extends WebTestCase
      */
     private $repoFactory;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->repoFactory = new RepositoryFactory($this->helper->getEm());

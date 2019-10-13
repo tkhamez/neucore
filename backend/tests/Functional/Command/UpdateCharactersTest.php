@@ -36,7 +36,7 @@ class UpdateCharactersTest extends ConsoleTestCase
      */
     private $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();

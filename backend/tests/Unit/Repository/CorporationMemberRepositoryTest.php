@@ -21,7 +21,7 @@ class CorporationMemberRepositoryTest extends TestCase
     /**
      * @throws \Exception
      */
-    public static function setUpBeforeClass()
+    public static function setupBeforeClass(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

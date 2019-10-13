@@ -25,7 +25,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
      */
     private $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

@@ -29,7 +29,7 @@ class PlayerRepositoryTest extends TestCase
      */
     private $repo;
 
-    public static function setupBeforeClass()
+    public static function setupBeforeClass(): void
     {
         $helper = new Helper();
         $helper->emptyDb();
@@ -77,7 +77,7 @@ class PlayerRepositoryTest extends TestCase
         $em->flush();
     }
 
-    protected function setup()
+    protected function setup(): void
     {
         $em = (new Helper())->getEm();
         $this->repo = (new RepositoryFactory($em))->getPlayerRepository();

@@ -80,7 +80,7 @@ class PlayerControllerTest extends WebTestCase
      */
     private $log;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = null;
 

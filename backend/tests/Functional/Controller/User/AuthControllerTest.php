@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
@@ -23,7 +26,7 @@ class AuthControllerTest extends WebTestCase
      */
     private $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $_SESSION = null;
         $this->client = new Client();
@@ -34,7 +37,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -65,7 +68,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -97,7 +100,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-managed-alt');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
@@ -110,7 +113,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-alt');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
@@ -123,7 +126,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-mail');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
@@ -136,7 +139,7 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/login-director');
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertContains('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
+        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
         $this->assertSame('/#login-director', $sess->get('auth_redirect'));

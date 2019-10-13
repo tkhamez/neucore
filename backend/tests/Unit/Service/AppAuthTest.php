@@ -23,7 +23,7 @@ class AppAuthTest extends TestCase
      */
     private $repo;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $log = new Logger('test');
         $em = (new Helper())->getEm();
