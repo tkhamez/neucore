@@ -53,6 +53,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * The old player account.
      *
+     * @OA\Property(ref="#/components/schemas/Player", description="The old player account.")
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
      * @ORM\JoinColumn(nullable=false)
      * @var Player
@@ -62,7 +63,7 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * The new player account.
      *
-     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\ManyToOne(targetEntity="Player", inversedBy="incomingCharacters")
      * @ORM\JoinColumn(name="new_player_id")
      * @var Player|null
      */
@@ -123,6 +124,7 @@ class RemovedCharacter implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'player' => $this->player->jsonSerialize(true),
             'characterId' => $this->getCharacterId(),
             'characterName' => $this->characterName,
             'removedDate' => $this->getRemovedDate() !== null ?
@@ -130,7 +132,8 @@ class RemovedCharacter implements \JsonSerializable
             'reason' => $this->reason,
             'deletedBy' => $this->deletedBy ? $this->deletedBy->jsonSerialize(true) : null,
 
-            // The JS client has problems if the newPLayer (type Player) property is added here
+            // The JS client used to have problems if the newPLayer (type Player) property was added here
+            // (keep it for backwards compatibility)
             'newPlayerId' => $this->newPlayer ? $this->newPlayer->getId() : null,
             'newPlayerName' => $this->newPlayer ? $this->newPlayer->getName() : null,
         ];

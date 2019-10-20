@@ -316,20 +316,23 @@
                         </tbody>
                     </table>
 
-                    <h4>Removed Characters</h4>
-                    <table class="table table-hover table-sm">
-                        <thead class="thead-dark">
+                    <div v-for="(charGroup, idx)  in [playerEdit.removedCharacters, playerEdit.incomingCharacters]">
+                        <h4 v-if="idx === 0">Removed Characters</h4>
+                        <h4 v-else>Incoming Characters</h4>
+                        <table class="table table-hover table-sm">
+                            <thead class="thead-dark">
                             <tr>
                                 <th>Character ID</th>
                                 <th>Character Name</th>
-                                <th>Date Removed (GMT)</th>
-                                <th>Reason</th>
-                                <th>New Player</th>
-                                <th>Deleted by</th>
+                                <th>Date (re)moved (GMT)</th>
+                                <th v-if="idx === 0">Reason</th>
+                                <th v-if="idx === 0">New Player</th>
+                                <th v-if="idx === 1">Old Player</th>
+                                <th v-if="idx === 0">Deleted by</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="removedChar in playerEdit.removedCharacters">
+                            </thead>
+                            <tbody>
+                            <tr v-for="removedChar in charGroup">
                                 <td>{{ removedChar.characterId }}</td>
                                 <td>
                                     <a :href="'https://evewho.com/character/' + removedChar.characterId"
@@ -342,22 +345,28 @@
                                         {{ formatDate(removedChar.removedDate) }}
                                     </span>
                                 </td>
-                                <td>{{ removedChar.reason }}</td>
-                                <td>
+                                <td v-if="idx === 0">{{ removedChar.reason }}</td>
+                                <td v-if="idx === 0">
                                     <a v-if="removedChar.newPlayerId"
                                        :href="'#UserAdmin/' + removedChar.newPlayerId">
                                         {{ removedChar.newPlayerName }} #{{ removedChar.newPlayerId }}
                                     </a>
                                 </td>
-                                <td>
+                                <td v-if="idx === 1">
+                                    <a :href="'#UserAdmin/' + removedChar.player.id">
+                                        {{ removedChar.player.name }} #{{ removedChar.player.id }}
+                                    </a>
+                                </td>
+                                <td v-if="idx === 0">
                                     <a v-if="removedChar.deletedBy"
                                        :href="'#UserAdmin/' + removedChar.deletedBy.id">
                                         {{ removedChar.deletedBy.name }} #{{ removedChar.deletedBy.id }}
                                     </a>
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
             </div>

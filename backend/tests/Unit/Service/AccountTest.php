@@ -153,14 +153,26 @@ class AccountTest extends TestCase
 
         $character = $this->service->moveCharacterToNewAccount($char);
 
+        $newPlayer = $character->getPlayer();
+
         $this->assertSame($char, $character);
-        $this->assertNotSame($player, $character->getPlayer());
-        $this->assertSame('char name', $character->getPlayer()->getName());
+        $this->assertNotSame($player, $newPlayer);
+        $this->assertSame('char name', $newPlayer->getName());
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
-        $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
+        $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_MOVED, $player->getRemovedCharacters()[0]->getReason());
-        $this->assertSame($character->getPlayer(), $player->getRemovedCharacters()[0]->getNewPlayer());
+        $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
+
+        // test relation after persist
+        $this->helper->getEm()->persist($player);
+        $this->helper->getEm()->persist($char);
+        $this->helper->getEm()->persist($character);
+        $this->helper->getEm()->persist($character->getPlayer());
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+        $newPlayerLoaded = $this->playerRepo->find($newPlayer->getId());
+        $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
 
     public function testUpdateAndStoreCharacterWithPlayer()

@@ -835,6 +835,7 @@ class PlayerController extends BaseController
 
         $json = $player->jsonSerialize();
         $json['removedCharacters'] = $player->getRemovedCharacters();
+        $json['incomingCharacters'] = $player->getIncomingCharacters();
 
         return $this->withJson($json);
     }

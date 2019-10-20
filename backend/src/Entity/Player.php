@@ -151,6 +151,16 @@ class Player implements \JsonSerializable
     private $removedCharacters;
 
     /**
+     * Characters that were moved from another player account to this account (API: not included by default).
+     *
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
+     * @ORM\OneToMany(targetEntity="RemovedCharacter", mappedBy="newPlayer")
+     * @ORM\OrderBy({"removedDate" = "ASC"})
+     * @var Collection
+     */
+    private $incomingCharacters;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -190,6 +200,7 @@ class Player implements \JsonSerializable
         $this->managerGroups = new ArrayCollection();
         $this->managerApps = new ArrayCollection();
         $this->removedCharacters = new ArrayCollection();
+        $this->incomingCharacters = new ArrayCollection();
     }
 
     /**
@@ -651,5 +662,20 @@ class Player implements \JsonSerializable
     public function getRemovedCharacters(): array
     {
         return $this->removedCharacters->toArray();
+    }
+
+    public function addIncomingCharacters(RemovedCharacter $incomingCharacters): self
+    {
+        $this->incomingCharacters[] = $incomingCharacters;
+
+        return $this;
+    }
+
+    /**
+     * @return RemovedCharacter[]
+     */
+    public function getIncomingCharacters(): array
+    {
+        return $this->incomingCharacters->toArray();
     }
 }

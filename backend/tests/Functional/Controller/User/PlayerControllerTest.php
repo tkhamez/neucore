@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
@@ -848,6 +851,7 @@ class PlayerControllerTest extends WebTestCase
             'managerGroups' => [],
             'managerApps' => [],
             'removedCharacters' => [],
+            'incomingCharacters' => [],
         ], $this->parseJsonBody($response));
     }
 

@@ -410,4 +410,15 @@ class PlayerTest extends TestCase
         $play->removeRemovedCharacter($rc2);
         $this->assertSame([$rc1], $play->getRemovedCharacters());
     }
+
+    public function testAddGetIncomingCharacters()
+    {
+        $play = new Player();
+        $rc1 = new RemovedCharacter();
+
+        $this->assertSame([], $play->getIncomingCharacters());
+
+        $play->addIncomingCharacters($rc1);
+        $this->assertSame([$rc1], $play->getIncomingCharacters());
+    }
 }

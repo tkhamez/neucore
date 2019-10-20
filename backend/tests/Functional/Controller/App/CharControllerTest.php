@@ -321,6 +321,7 @@ class CharControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [[
+                'player' => ['id' => $player1->getId(), 'name' => 'p1'],
                 'characterId' => 100,
                 'characterName' => 'c1',
                 'removedDate' => '2019-04-20T20:41:46Z',
@@ -329,6 +330,7 @@ class CharControllerTest extends WebTestCase
                 'newPlayerId' => null,
                 'newPlayerName' => null
             ],[
+                'player' => ['id' => $player1->getId(), 'name' => 'p1'],
                 'characterId' => 101,
                 'characterName' => 'c2',
                 'removedDate' => '2019-04-20T20:41:47Z',

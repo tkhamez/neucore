@@ -14,6 +14,7 @@ class RemovedCharacterTest extends TestCase
     public function testJsonSerialize()
     {
         $char = new RemovedCharacter();
+        $char->setPlayer((new Player())->setName('Old Player'));
         $char->setCharacterId(123);
         $char->setCharacterName('test char');
         $char->setRemovedDate(new \DateTime('2018-04-26 18:59:35'));
@@ -22,6 +23,7 @@ class RemovedCharacterTest extends TestCase
         $char->setDeletedBy((new Player())->setName('Deleted By'));
 
         $this->assertSame([
+            'player' => ['id' => null, 'name' => 'Old Player'],
             'characterId' => 123,
             'characterName' => 'test char',
             'removedDate' => '2018-04-26T18:59:35Z',
