@@ -65,8 +65,7 @@ echo PHP_EOL;
 // Change the host to the Neucore domain including the API path and add the app token
 $config = Brave\NeucoreApi\Configuration::getDefaultConfiguration();
 $config->setHost($coreHttpScheme .'://'. $coreDomain . '/api');
-$config->setApiKeyPrefix('Authorization', 'Bearer');
-$config->setApiKey('Authorization', $coreAppToken);
+$config->setAccessToken($coreAppToken);
 
 $apiInstance = new Brave\NeucoreApi\Api\ApplicationApi(null, $config);
 try {
@@ -107,7 +106,7 @@ echo PHP_EOL;
 // Set the EVE character ID as the datasource
 $configuration = \Seat\Eseye\Configuration::getInstance();
 $configuration->datasource = $coreCharId;
-$configuration->esi_scheme = $coreHttpScheme; // available since version 1.1.7
+$configuration->esi_scheme = $coreHttpScheme;
 $configuration->esi_host = $coreDomain . '/api/app/v1/esi';
 
 // Create an authorization object with the Core app token that does not expire
