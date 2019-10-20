@@ -2,7 +2,7 @@
 
 ## 1.5.0
 
-20 Okt 2019
+20 Oct 2019
 
 - **BC break**: Raised minimum required PHP Version to 7.2.0
 - **BC break**: Raised minimum required Node.js Version to 10.13.0
