@@ -87,9 +87,6 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame('Member 3', $actual3[0]->getName());
         $this->assertSame('Member 2', $actual3[1]->getName());
         $this->assertSame('Member 1', $actual3[2]->getName());
-        $this->assertSame('Corp 1', $actual2[0]->getCorporation()->getName());
-        $this->assertSame('Corp 1', $actual3[0]->getCorporation()->getName());
-        $this->assertSame('Corp 1', $actual3[1]->getCorporation()->getName());
     }
 
     public function testFindMatchingInactive()
@@ -109,9 +106,6 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame('Member 1', $actual1[2]->getName());
         $this->assertSame('Member 2', $actual2[0]->getName());
         $this->assertSame('Member 1', $actual2[1]->getName());
-        $this->assertSame('Corp 1', $actual1[0]->getCorporation()->getName());
-        $this->assertSame('Corp 1', $actual1[1]->getCorporation()->getName());
-        $this->assertSame('Corp 1', $actual2[0]->getCorporation()->getName());
     }
 
     public function testFindMatchingActiveRange()
@@ -123,7 +117,6 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame(1, count($actual));
 
         $this->assertSame('Member 2', $actual[0]->getName());
-        $this->assertSame('Corp 1', $actual[0]->getCorporation()->getName());
     }
 
     public function testFindMatchingWithOutAccount()

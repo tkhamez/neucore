@@ -7,7 +7,7 @@
 - Update to Slim 4
 - Update to Babel 7
 - Refactored frontend to use a runtime-only build
-- Some UI improvements
+- Some UI and performance improvements
 - Fix: token state flag for SSOv2 tokens without scopes.
 
 ## 1.4.3

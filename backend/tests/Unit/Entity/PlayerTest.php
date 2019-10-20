@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
@@ -75,9 +78,10 @@ class PlayerTest extends TestCase
         $this->assertSame(['id' => null, 'name' => 'test user'], $play->jsonSerialize(true));
     }
 
-    public function testGetId()
+    public function testSetGetId()
     {
         $this->assertNull((new Player())->getId());
+        $this->assertSame(5, (new Player())->setId(5)->getId());
     }
 
     public function testSetGetName()

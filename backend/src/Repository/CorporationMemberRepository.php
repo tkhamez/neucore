@@ -3,7 +3,11 @@
 namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiType;
+use Neucore\Entity\Player;
 
 /**
  * @method CorporationMember|null find($id, $lockMode = null, $lockVersion = null)
@@ -101,54 +105,132 @@ class CorporationMemberRepository extends EntityRepository
     }
 
     /**
+     * Find members.
+     *
+     * This sets only objects and properties that are used in jsonSerialize(),
+     * for example the corporation is not included.
+     *
      * @param int $corporationId EVE corporation ID
      * @return CorporationMember[]
      */
     public function findMatching(int $corporationId): array
     {
-        $qb = $this->createQueryBuilder('c')
-            ->where('c.corporation = :corporation_id')->setParameter('corporation_id', $corporationId)
-            ->orderBy('c.logonDate', 'DESC');
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.character', 'c')
+            ->leftJoin('m.location', 'l')
+            ->leftJoin('m.shipType', 's')
+            ->leftJoin('c.player', 'p')
+            ->select(
+                'm.id',
+                'm.name',
+                'm.logoffDate',
+                'm.logonDate',
+                'm.startDate',
+                'l.id AS locationId',
+                'l.name AS locationName',
+                'l.category AS locationCategory',
+                's.id AS shipId',
+                's.name AS shipName',
+                'c.id AS characterId',
+                'c.name AS characterName',
+                'c.main',
+                'c.lastUpdate',
+                'c.validToken',
+                'c.validTokenTime',
+                'p.id AS playerId',
+                'p.name AS playerName'
+            )
+            ->where('m.corporation = :corporation_id')->setParameter('corporation_id', $corporationId)
+            ->orderBy('m.logonDate', 'DESC');
 
         if ($this->active > 0) {
             if ($activeDate = date_create('now -'.$this->active.' days')) {
-                $qb->andWhere('c.logonDate >= :active')
+                $qb->andWhere('m.logonDate >= :active')
                     ->setParameter('active', $activeDate->format('Y-m-d H:i:s'));
             }
         }
-
         if ($this->inactive > 0) {
             if ($inactiveDate = date_create('now -'.$this->inactive.' days')) {
-                $qb->andWhere('c.logonDate < :inactive')
+                $qb->andWhere('m.logonDate < :inactive')
                     ->setParameter('inactive', $inactiveDate->format('Y-m-d H:i:s'));
             }
         }
-
         if ($this->account) {
-            $qb->andWhere($qb->expr()->isNotNull('c.character'));
+            $qb->andWhere($qb->expr()->isNotNull('m.character'));
         } elseif ($this->account === false) {
-            $qb->andWhere($qb->expr()->isNull('c.character'));
+            $qb->andWhere($qb->expr()->isNull('m.character'));
         }
-
         if ($this->validToken !== null || $this->tokenChanged > 0) {
-            $qb->leftJoin('c.character', 'char');
-            $qb->andWhere('char.id IS NOT NULL');
+            $qb->andWhere('c.id IS NOT NULL');
         }
-
         if ($this->validToken) {
-            $qb->andWhere($qb->expr()->eq('char.validToken', 1));
+            $qb->andWhere($qb->expr()->eq('c.validToken', 1));
         } elseif ($this->validToken === false) {
-            $qb->andWhere($qb->expr()->eq('char.validToken', 0));
+            $qb->andWhere($qb->expr()->eq('c.validToken', 0));
         }
-
         if ($this->tokenChanged > 0) {
             if ($tokenChangedDate = date_create('now -'.$this->tokenChanged.' days')) {
-                $qb->andWhere('char.validTokenTime < :tokenChanged')
+                $qb->andWhere('c.validTokenTime < :tokenChanged')
                     ->setParameter('tokenChanged', $tokenChangedDate->format('Y-m-d H:i:s'));
             }
         }
 
-        return $qb->getQuery()->getResult();
+        $result = $qb->getQuery()->getResult();
+
+        return array_map(function ($r) {
+            $member = (new CorporationMember())
+                ->setId((int) $r['id'])
+                ->setName($r['name'])
+            ;
+            if ($r['logoffDate']) {
+                $member->setLogoffDate($r['logoffDate']);
+            }
+            if ($r['logonDate']) {
+                $member->setLogonDate($r['logonDate']);
+            }
+            if ($r['startDate']) {
+                $member->setStartDate($r['startDate']);
+            }
+
+            if ($r['locationId']) {
+                $location = (new EsiLocation())
+                    ->setId((int) $r['locationId'])
+                    ->setName((string) $r['locationName'])
+                    ->setCategory($r['locationCategory']);
+                $member->setLocation($location);
+            }
+
+            if ($r['shipId']) {
+                $ship = (new EsiType())
+                    ->setId((int) $r['shipId'])
+                    ->setName((string) $r['shipName']);
+                $member->setShipType($ship);
+            }
+
+            if ($r['characterId']) {
+                $character = (new Character())
+                    ->setId((int) $r['characterId'])
+                    ->setName($r['characterName'])
+                    ->setMain((bool) $r['main'])
+                    ->setValidToken($r['validToken'] !== null ? (bool) $r['validToken'] : null);
+                if ($r['lastUpdate']) {
+                    $character->setLastUpdate($r['lastUpdate']);
+                }
+                if ($r['validTokenTime']) {
+                    $character->setValidTokenTime($r['validTokenTime']);
+                }
+                $member->setCharacter($character);
+
+                if ($r['playerId']) {
+                    $player = (new Player())
+                        ->setId((int) $r['playerId'])
+                        ->setName($r['playerName']);
+                    $character->setPlayer($player);
+                }
+            }
+
+            return $member;
+        }, $result);
     }
 
     public function removeFormerMembers(int $corporationId, array $currentMemberIds): int

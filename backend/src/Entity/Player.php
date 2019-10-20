@@ -193,6 +193,19 @@ class Player implements \JsonSerializable
     }
 
     /**
+     * Setter for identifier (autoincrement).
+     *
+     * @param int $id
+     * @return $this
+     */
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id.
      *
      * @return int

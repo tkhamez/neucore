@@ -64,7 +64,7 @@ class EsiLocation implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->getId(),
             'name' => $this->name,
             'category' => $this->category,
         ];

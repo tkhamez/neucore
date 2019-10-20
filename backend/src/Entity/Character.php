@@ -166,169 +166,87 @@ class Character implements \JsonSerializable
         return $result;
     }
 
-    /**
-     * Set id.
-     *
-     * @param int $id
-     *
-     * @return Character
-     */
-    public function setId(int $id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get id.
-     */
     public function getId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
         return $this->id !== null ? (int) $this->id : null;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Character
-     */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Set main.
-     *
-     * @param bool $main
-     *
-     * @return Character
-     */
-    public function setMain(bool $main)
+    public function setMain(bool $main): self
     {
         $this->main = $main;
 
         return $this;
     }
 
-    /**
-     * Get main.
-     *
-     * @return bool
-     */
-    public function getMain()
+    public function getMain(): bool
     {
         return $this->main;
     }
 
-    /**
-     * Set characterOwnerHash.
-     *
-     * @param string|null $characterOwnerHash
-     *
-     * @return Character
-     */
-    public function setCharacterOwnerHash(string $characterOwnerHash = null)
+    public function setCharacterOwnerHash(string $characterOwnerHash = null): self
     {
         $this->characterOwnerHash = $characterOwnerHash;
 
         return $this;
     }
 
-    /**
-     * Get characterOwnerHash.
-     *
-     * @return string|null
-     */
-    public function getCharacterOwnerHash()
+    public function getCharacterOwnerHash(): ?string
     {
         return $this->characterOwnerHash;
     }
 
-    /**
-     * Set accessToken.
-     *
-     * @param string|null $accessToken
-     *
-     * @return Character
-     */
-    public function setAccessToken(string $accessToken = null)
+    public function setAccessToken(string $accessToken = null): self
     {
         $this->accessToken = $accessToken;
 
         return $this;
     }
 
-    /**
-     * Get accessToken.
-     *
-     * @return string|null
-     */
-    public function getAccessToken()
+    public function getAccessToken(): ?string
     {
         return $this->accessToken;
     }
 
-    /**
-     * Set expires.
-     *
-     * @param int|null $expires
-     *
-     * @return Character
-     */
-    public function setExpires(int $expires = null)
+    public function setExpires(int $expires = null): self
     {
         $this->expires = $expires;
 
         return $this;
     }
 
-    /**
-     * Get expires.
-     *
-     * @return int|null
-     */
-    public function getExpires()
+    public function getExpires(): ?int
     {
         return $this->expires;
     }
 
-    /**
-     * Set refreshToken.
-     *
-     * @param string|null $refreshToken
-     *
-     * @return Character
-     */
-    public function setRefreshToken(string $refreshToken = null)
+    public function setRefreshToken(string $refreshToken = null): self
     {
         $this->refreshToken = $refreshToken;
 
         return $this;
     }
 
-    /**
-     * Get refreshToken.
-     *
-     * @return string|null
-     */
-    public function getRefreshToken()
+    public function getRefreshToken(): ?string
     {
         return $this->refreshToken;
     }
@@ -371,31 +289,19 @@ class Character implements \JsonSerializable
         return $this->validTokenTime;
     }
 
-    /**
-     * Set scopes.
-     *
-     * @param string|null $scopes
-     *
-     * @return Character
-     */
-    public function setScopes($scopes = null)
+    public function setScopes(string $scopes = null): self
     {
         $this->scopes = $scopes;
 
         return $this;
     }
 
-    /**
-     * Get scopes.
-     *
-     * @return string|null
-     */
-    public function getScopes()
+    public function getScopes(): ?string
     {
         return $this->scopes;
     }
 
-    public function setCreated(\DateTime $created)
+    public function setCreated(\DateTime $created): self
     {
         $this->created = clone $created;
 
@@ -407,62 +313,31 @@ class Character implements \JsonSerializable
         return $this->created;
     }
 
-    /**
-     * Set lastLogin.
-     *
-     * @param \DateTime $lastLogin
-     *
-     * @return Character
-     */
-    public function setLastLogin($lastLogin)
+    public function setLastLogin(\DateTime $lastLogin): self
     {
         $this->lastLogin = clone $lastLogin;
 
         return $this;
     }
 
-    /**
-     * Get lastLogin.
-     *
-     * @return \DateTime|null
-     */
-    public function getLastLogin()
+    public function getLastLogin(): ?\DateTime
     {
         return $this->lastLogin;
     }
 
-    /**
-     * Set lastUpdate.
-     *
-     * @param \DateTime $lastUpdate
-     *
-     * @return Character
-     */
-    public function setLastUpdate($lastUpdate)
+    public function setLastUpdate(\DateTime $lastUpdate): self
     {
         $this->lastUpdate = clone $lastUpdate;
 
         return $this;
     }
 
-    /**
-     * Get lastUpdate.
-     *
-     * @return \DateTime|null
-     */
-    public function getLastUpdate()
+    public function getLastUpdate(): ?\DateTime
     {
         return $this->lastUpdate;
     }
 
-    /**
-     * Set player.
-     *
-     * @param Player $player
-     *
-     * @return Character
-     */
-    public function setPlayer(Player $player)
+    public function setPlayer(Player $player): self
     {
         $this->player = $player;
 
@@ -473,58 +348,32 @@ class Character implements \JsonSerializable
      * Get player.
      *
      * A character always belongs to a player.
-     *
-     * @return Player
      */
-    public function getPlayer()
+    public function getPlayer(): Player
     {
         return $this->player;
     }
 
-    /**
-     * Set corporation.
-     *
-     * @param Corporation|null $corporation
-     *
-     * @return Character
-     */
-    public function setCorporation(Corporation $corporation = null)
+    public function setCorporation(Corporation $corporation = null): Character
     {
         $this->corporation = $corporation;
 
         return $this;
     }
 
-    /**
-     * Get corporation.
-     *
-     * @return Corporation|null
-     */
-    public function getCorporation()
+    public function getCorporation(): ?Corporation
     {
         return $this->corporation;
     }
 
-    /**
-     * Set corporationMember.
-     *
-     * @param CorporationMember|null $corporationMember
-     *
-     * @return Character
-     */
-    public function setCorporationMember(CorporationMember $corporationMember = null)
+    public function setCorporationMember(CorporationMember $corporationMember = null): self
     {
         $this->corporationMember = $corporationMember;
 
         return $this;
     }
 
-    /**
-     * Get corporationMember.
-     *
-     * @return CorporationMember|null
-     */
-    public function getCorporationMember()
+    public function getCorporationMember(): ?CorporationMember
     {
         return $this->corporationMember;
     }
