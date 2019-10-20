@@ -520,28 +520,25 @@ export default {
         },
 
         addAllGroupsToApp: function() {
-            const vm = this;
-
-            if (! vm.typeId || vm.type !== 'App') {
+            if (! this.typeId || this.type !== 'App') {
                 return;
             }
-
-            const numGroups = vm.selectContent.length;
-            let numAdded = 0;
-
+            const vm = this;
+            const groups = [...vm.currentSelectContent];
             const api = new AppApi();
-            for (let group of vm.selectContent) {
-                this.callApi(api, 'addGroup', vm.typeId, group.id, function() {
-                    done();
-                });
-            }
 
-            function done() {
-                numAdded ++;
-                if (numGroups === numAdded) {
+            function addGroup() {
+                if (groups.length > 0) {
+                    const id = groups[0].id;
+                    groups.splice(0, 1);
+                    vm.callApi(api, 'addGroup', vm.typeId, id, function() {
+                        addGroup();
+                    });
+                } else {
                     vm.getTableContent();
                 }
             }
+            addGroup();
         },
 
         callApi: function(api, method, param1, param2, callback) {

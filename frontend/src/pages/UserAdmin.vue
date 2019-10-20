@@ -95,10 +95,11 @@
 
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
-                    Players by role
+                    <label for="roleList">Players by role</label>
                 </h3>
                 <div class="card-body">
-                    <select class="form-control" v-model="activeRole" @change="getPlayerByRole(activeRole)">
+                    <select class="form-control" id="roleList"
+                            v-model="activeRole" @change="getPlayerByRole(activeRole)">
                         <option value=""> ... select a role</option>
                         <option v-for="role in availableRoles">{{ role }}</option>
                     </select>
@@ -113,10 +114,11 @@
             </div>
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
-                    Player accounts
+                    <label for="accountList">Player accounts ...</label>
                 </h3>
                 <div class="card-body">
-                    <select class="form-control" v-model="activeList" @change="getPlayers(activeList)">
+                    <select class="form-control" id="accountList"
+                            v-model="activeList" @change="getPlayers(activeList)">
                         <option value=""> ... select a list</option>
                         <option value="withCharacters">with characters</option>
                         <option value="withoutCharacters">without characters</option>
@@ -555,20 +557,23 @@ export default {
                 return;
             }
             const vm = this;
-            const charsCount = this.playerEdit.characters.length;
-            let charsUpdated = 0;
-            this.playerEdit.characters.forEach(function(character) {
-                vm.updateCharacter(character.id, function() {
-                    charsUpdated ++;
-                    if (charsUpdated < charsCount) {
-                        return;
-                    }
+            const characters = [...this.playerEdit.characters];
+
+            function updateCharacter() {
+                if (characters.length > 0) {
+                    const id = characters[0].id;
+                    characters.splice(0, 1);
+                    vm.updateCharacter(id, function() {
+                        updateCharacter();
+                    });
+                } else {
                     vm.getPlayer();
                     if (vm.playerEdit.id === vm.player.id) {
                         vm.$root.$emit('playerChange');
                     }
-                });
-            });
+                }
+            }
+            updateCharacter();
         },
 
         askDeleteChar(characterId, characterName) {

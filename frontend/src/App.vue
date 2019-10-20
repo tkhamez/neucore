@@ -19,7 +19,7 @@
                    :auth-char="authChar">
         </component>
 
-        <footer v-if="settings.customization_github" v-cloak class="footer bg-light text-dark text-muted small">
+        <footer v-if="settings.customization_github" v-cloak class="footer border-top text-muted small">
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
                 <a v-cloak :href="settings.customization_github" class="github text-dark text-muted"
