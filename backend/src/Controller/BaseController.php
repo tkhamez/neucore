@@ -69,12 +69,24 @@ abstract class BaseController
     }
 
     /**
+     * @return mixed
+     */
+    protected function getJsonBody(ServerRequestInterface $request)
+    {
+        $body = $request->getBody()->__toString();
+        if (strlen($body) > 0) {
+            return \json_decode($body);
+        }
+        return null;
+    }
+
+    /**
      * @param mixed $data
      * @return ResponseInterface
      */
     protected function withJson($data, $status = null): ResponseInterface
     {
-        $this->response->getBody()->write((string)json_encode($data));
+        $this->response->getBody()->write((string) \json_encode($data));
         if (isset($status)) {
             $this->response = $this->response->withStatus($status);
         }

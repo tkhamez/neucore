@@ -543,7 +543,7 @@ class GroupController extends BaseController
 
     private function getIntegerArrayFromBody(ServerRequestInterface $request): ?array
     {
-        $ids = $request->getParsedBody();
+        $ids = $this->getJsonBody($request);
 
         if (! is_array($ids)) {
             return null;

@@ -29,15 +29,22 @@ class WebTestCase extends TestCase
         $requestData = null,
         array $headers = null,
         array $mocks = [],
-        array $envVars = []
+        array $envVars = [],
+        $contentType = null
     ): ?ResponseInterface {
         // Set up a request object
         $request = RequestFactory::createRequest($requestMethod, $requestUri);
 
         // Add request data, if it exists
         if (isset($requestData)) {
-            if ($requestMethod === 'POST') {
+            if ($requestMethod === 'POST' && $contentType !== 'application/json') {
+                // Only for Content-Type: application/x-www-form-urlencoded or multipart/form-data
                 $request = $request->withParsedBody($requestData);
+            } elseif ($contentType === 'application/json') { // POST with Content-Type: application/json
+                $body = $request->getBody();
+                $body->write((string) \json_encode($requestData));
+                $body->rewind();
+                $request = $request->withBody($body);
             } else { // PUT
                 $body = $request->getBody();
                 $body->write(http_build_query($requestData));
