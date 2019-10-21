@@ -4,7 +4,7 @@
 
 21 Oct 2019
 
-Fix: Endpoints POST `/api/app/v1/groups`, POST `/app/v1/corp-groups` and POST `/app/v1/alliance-groups`.
+Fix: Endpoints POST `/api/app/v1/groups`, POST `/api/app/v1/corp-groups` and POST `/api/app/v1/alliance-groups`.
 
 ## 1.5.0
 
