@@ -6,6 +6,7 @@
 
 - **BC break**: Raised minimum required PHP Version to 7.2.0
 - **BC break**: Raised minimum required Node.js Version to 10.13.0
+- **BC break**: URLs like `domain.tdl//api` (note the double slash) do not work anymore.
 - Update to Slim 4
 - Update to Babel 7
 - Refactored frontend to use a runtime-only build
