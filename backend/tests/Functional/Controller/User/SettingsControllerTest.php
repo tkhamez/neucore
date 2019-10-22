@@ -170,7 +170,8 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp(
             'PUT',
             '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
-            ['value' => '1']
+            ['value' => '1'],
+            ['Content-Type' => 'application/x-www-form-urlencoded']
         );
         $this->assertEquals(200, $response->getStatusCode());
 

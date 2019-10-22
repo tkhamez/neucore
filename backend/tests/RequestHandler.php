@@ -9,8 +9,17 @@ use Slim\Psr7\Factory\ResponseFactory;
 
 class RequestHandler implements RequestHandlerInterface
 {
+    private $request;
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $this->request = $request;
+
         return (new ResponseFactory())->createResponse();
+    }
+
+    public function getRequest(): ServerRequestInterface
+    {
+        return $this->request;
     }
 }

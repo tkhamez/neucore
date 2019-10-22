@@ -149,7 +149,9 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('POST', '/api/user/group/create', ['name' => 'group-one']);
+        $response = $this->runApp('POST', '/api/user/group/create', ['name' => 'group-one'], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
         $this->assertEquals(409, $response->getStatusCode());
     }
 
@@ -158,7 +160,9 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response = $this->runApp('POST', '/api/user/group/create', ['name' => 'new-g']);
+        $response = $this->runApp('POST', '/api/user/group/create', ['name' => 'new-g'], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
         $this->assertEquals(201, $response->getStatusCode());
 
         $ng = $this->gr->findOneBy(['name' => 'new-g']);
@@ -208,7 +212,9 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->addGroups(['group-two']);
 
-        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'group-two']);
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'group-two'], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
         $this->assertEquals(409, $response->getStatusCode());
     }
 
@@ -217,8 +223,12 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'group-one']);
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'new-name']);
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'group-one'], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/rename', ['name' => 'new-name'], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
 

@@ -119,7 +119,9 @@ class AppControllerTest extends WebTestCase
 
         $log = new Logger('test');
 
-        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], null, [
+        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ], [
             LoggerInterface::class => $log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
@@ -135,7 +137,9 @@ class AppControllerTest extends WebTestCase
         $this->helper->addRoles([Role::APP]);
         $this->loginUser(8);
 
-        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"]);
+        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
         $this->assertEquals(201, $response->getStatusCode());
 
         $na = $this->appRepo->findOneBy(['name' => 'new app']);
@@ -186,8 +190,12 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => "n\n a n"]);
-        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => 'new name']);
+        $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => "n\n a n"], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/rename', ['name' => 'new name'], [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
 

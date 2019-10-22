@@ -169,16 +169,11 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp(
-            'POST',
-            '/api/app/v1/groups',
-            [123, 789, 789, 12],
-            $headers,
-            [],
-            [],
-            'application/json'
-        );
+        $headers = [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json'
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789, 789, 12], $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -213,16 +208,11 @@ class GroupControllerTest extends WebTestCase
         $this->helper->getEm()->persist($active);
         $this->helper->getEm()->flush();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp(
-            'POST',
-            '/api/app/v1/groups',
-            [123, 789],
-            $headers,
-            [],
-            [],
-            'application/json'
-        );
+        $headers = [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json'
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/groups', [123, 789], $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -331,16 +321,11 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp(
-            'POST',
-            '/api/app/v1/corp-groups',
-            [500, 500, 789, 501],
-            $headers,
-            [],
-            [],
-            'application/json'
-        );
+        $headers = [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json'
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/corp-groups', [500, 500, 789, 501], $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -447,16 +432,11 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb();
 
-        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp(
-            'POST',
-            '/api/app/v1/alliance-groups',
-            [100, 100, 789, 101],
-            $headers,
-            [],
-            [],
-            'application/json'
-        );
+        $headers = [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json'
+        ];
+        $response = $this->runApp('POST', '/api/app/v1/alliance-groups', [100, 100, 789, 101], $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
 

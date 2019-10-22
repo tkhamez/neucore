@@ -22,6 +22,7 @@ use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Middleware\Psr15\Cors;
+use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\Session\NonBlockingSession;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
@@ -278,6 +279,8 @@ class Application
                 explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])
             ));
         }
+
+        $app->add(new BodyParams());
 
         // add error handler last
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);

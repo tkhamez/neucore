@@ -54,30 +54,14 @@ abstract class BaseController
      */
     protected function getBodyParam(ServerRequestInterface $request, string $key, $default = null)
     {
-        if ($request->getMethod() === 'POST') {
-            $params = $request->getParsedBody();
-        } else { // PUT
-            parse_str($request->getBody()->getContents(), $params);
-        }
-
+        $params = $request->getParsedBody();
         if (is_array($params) && isset($params[$key])) {
             return $params[$key];
         } elseif (is_object($params) && property_exists($params, $key)) {
             return $params->$key;
         }
-        return $default;
-    }
 
-    /**
-     * @return mixed
-     */
-    protected function getJsonBody(ServerRequestInterface $request)
-    {
-        $body = $request->getBody()->__toString();
-        if (strlen($body) > 0) {
-            return \json_decode($body);
-        }
-        return null;
+        return $default;
     }
 
     /**
@@ -90,6 +74,7 @@ abstract class BaseController
         if (isset($status)) {
             $this->response = $this->response->withStatus($status);
         }
+
         return $this->response->withHeader('Content-Type', 'application/json');
     }
 
