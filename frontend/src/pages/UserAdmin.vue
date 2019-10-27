@@ -208,57 +208,70 @@
                     <hr>
 
                     <h4>Characters</h4>
-                    <table class="table table-hover table-sm">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Corporation</th>
-                                <th>Alliance</th>
-                                <th>Main</th>
-                                <th>Valid Token</th>
-                                <th>Last Update (GMT)</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="character in playerEdit.characters">
-                                <td>{{ character.id }}</td>
-                                <td>
-                                    <a :href="'https://evewho.com/character/' + character.id"
-                                       title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                        {{ character.name }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <span v-if="character.corporation">
-                                        [{{ character.corporation.ticker }}]
-                                        {{ character.corporation.name }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span v-if="character.corporation && character.corporation.alliance">
-                                        [{{ character.corporation.alliance.ticker }}]
-                                        {{ character.corporation.alliance.name }}
-                                    </span>
-                                </td>
-                                <td>{{ character.main }}</td>
-                                <td>{{ character.validToken }}</td>
-                                <td>
-                                    <span v-if="character.lastUpdate">
-                                        {{ formatDate(character.lastUpdate) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm mt-1"
-                                            :disabled="authChar.id === character.id"
-                                            v-on:click="askDeleteChar(character.id, character.name)">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Corporation</th>
+                                    <th>Alliance</th>
+                                    <th>Main</th>
+                                    <th>Token status</th>
+                                    <th>Token status changed*</th>
+                                    <th>Last updated*</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="character in playerEdit.characters">
+                                    <td>{{ character.id }}</td>
+                                    <td>
+                                        <a :href="'https://evewho.com/character/' + character.id"
+                                           title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                            {{ character.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span v-if="character.corporation">
+                                            [{{ character.corporation.ticker }}]
+                                            {{ character.corporation.name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span v-if="character.corporation && character.corporation.alliance">
+                                            [{{ character.corporation.alliance.ticker }}]
+                                            {{ character.corporation.alliance.name }}
+                                        </span>
+                                    </td>
+                                    <td>{{ character.main }}</td>
+                                    <td>
+                                        <span v-if="character.validToken">valid</span>
+                                        <span v-if="character.validToken === false">invalid</span>
+                                        <span v-if="character.validToken === null">n/a</span>
+                                    </td>
+                                    <td>
+                                        <span v-if="character.validTokenTime">
+                                            {{ formatDate(character.validTokenTime) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span v-if="character.lastUpdate">
+                                            {{ formatDate(character.lastUpdate) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm mt-1"
+                                                :disabled="authChar.id === character.id"
+                                                v-on:click="askDeleteChar(character.id, character.name)">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="small text-muted">* Time is GMT</p>
 
                     <h4>Group Membership</h4>
                     <p v-if="playerEditDeactivated" class="small text-info">
@@ -319,53 +332,56 @@
                     <div v-for="(charGroup, idx)  in [playerEdit.removedCharacters, playerEdit.incomingCharacters]">
                         <h4 v-if="idx === 0">Removed Characters</h4>
                         <h4 v-else>Incoming Characters</h4>
-                        <table class="table table-hover table-sm">
-                            <thead class="thead-dark">
-                            <tr>
-                                <th>Character ID</th>
-                                <th>Character Name</th>
-                                <th>Date (re)moved (GMT)</th>
-                                <th v-if="idx === 0">Reason</th>
-                                <th v-if="idx === 0">New Player</th>
-                                <th v-if="idx === 1">Old Player</th>
-                                <th v-if="idx === 0">Deleted by</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="removedChar in charGroup">
-                                <td>{{ removedChar.characterId }}</td>
-                                <td>
-                                    <a :href="'https://evewho.com/character/' + removedChar.characterId"
-                                       title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                        {{ removedChar.characterName }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <span v-if="removedChar.removedDate">
-                                        {{ formatDate(removedChar.removedDate) }}
-                                    </span>
-                                </td>
-                                <td v-if="idx === 0">{{ removedChar.reason }}</td>
-                                <td v-if="idx === 0">
-                                    <a v-if="removedChar.newPlayerId"
-                                       :href="'#UserAdmin/' + removedChar.newPlayerId">
-                                        {{ removedChar.newPlayerName }} #{{ removedChar.newPlayerId }}
-                                    </a>
-                                </td>
-                                <td v-if="idx === 1">
-                                    <a :href="'#UserAdmin/' + removedChar.player.id">
-                                        {{ removedChar.player.name }} #{{ removedChar.player.id }}
-                                    </a>
-                                </td>
-                                <td v-if="idx === 0">
-                                    <a v-if="removedChar.deletedBy"
-                                       :href="'#UserAdmin/' + removedChar.deletedBy.id">
-                                        {{ removedChar.deletedBy.name }} #{{ removedChar.deletedBy.id }}
-                                    </a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Character ID</th>
+                                    <th>Character Name</th>
+                                    <th v-if="idx === 0">Date removed (GMT)</th>
+                                    <th v-else>Date added (GMT)</th>
+                                    <th v-if="idx === 0">Reason</th>
+                                    <th v-if="idx === 0">New Player</th>
+                                    <th v-else>Old Player</th>
+                                    <th v-if="idx === 0">Deleted by</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="removedChar in charGroup">
+                                    <td>{{ removedChar.characterId }}</td>
+                                    <td>
+                                        <a :href="'https://evewho.com/character/' + removedChar.characterId"
+                                           title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                            {{ removedChar.characterName }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span v-if="removedChar.removedDate">
+                                            {{ formatDate(removedChar.removedDate) }}
+                                        </span>
+                                    </td>
+                                    <td v-if="idx === 0">{{ removedChar.reason }}</td>
+                                    <td v-if="idx === 0">
+                                        <a v-if="removedChar.newPlayerId"
+                                           :href="'#UserAdmin/' + removedChar.newPlayerId">
+                                            {{ removedChar.newPlayerName }} #{{ removedChar.newPlayerId }}
+                                        </a>
+                                    </td>
+                                    <td v-else>
+                                        <a :href="'#UserAdmin/' + removedChar.player.id">
+                                            {{ removedChar.player.name }} #{{ removedChar.player.id }}
+                                        </a>
+                                    </td>
+                                    <td v-if="idx === 0">
+                                        <a v-if="removedChar.deletedBy"
+                                           :href="'#UserAdmin/' + removedChar.deletedBy.id">
+                                            {{ removedChar.deletedBy.name }} #{{ removedChar.deletedBy.id }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                 </div>

@@ -15,7 +15,7 @@
                     <select class="custom-select" v-model="corporation" id="corporation-select">
                         <option value=""></option>
                         <option v-for="option in corporations" v-bind:value="option">
-                            [{{ option.ticker }}] {{ option.name }}
+                            {{ option.name }} [{{ option.ticker }}]
                         </option>
                     </select>
                 </div>
@@ -78,7 +78,7 @@
                             <th scope="col">Character</th>
                             <th scope="col">Account</th>
                             <th scope="col">ESI</th>
-                            <th scope="col" style="font-weight: normal;">changed*</th>
+                            <th scope="col" class="font-weight-normal">changed*</th>
                             <th scope="col">Logon*</th>
                             <th scope="col">Logoff*</th>
                             <th scope="col">Location (System, Structure)</th>
