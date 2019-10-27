@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- UI improvements
+
+
 ## 1.5.1
 
 21 Oct 2019

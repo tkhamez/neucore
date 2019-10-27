@@ -71,14 +71,37 @@
         </div>
 
         <div class="row mt-3">
+            <div class="col-lg-12 text-right">
+                <div class="dropdown">
+                    <span class="small">Search in:</span>
+                    <button title="Columns" class="btn btn-secondary btn-sm dropdown-toggle"
+                            type="button" data-toggle="dropdown" aria-label="Columns" aria-expanded="false">
+                        <i class="fa fa-th-list"></i>
+                        <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu" v-on:click.stop="">
+                        <span class="dropdown-item small">Search in:</span>
+                        <div class="dropdown-item form-check small" v-for="(column, idx) in columns"
+                             v-on:click="toggleSearchableColumn(idx)">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input class="form-check-input" type="checkbox" v-model="column.searchable">
+                            <label class="form-check-label">{{ column.name }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
             <div class="col-lg-12">
                 <table class="table table-hover table-sm member-table">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Character</th>
                             <th scope="col">Account</th>
-                            <th scope="col">ESI</th>
-                            <th scope="col" class="font-weight-normal">changed*</th>
+                            <th scope="col" title="ESI token status">ESI</th>
+                            <th scope="col" title="ESI token status change date" class="font-weight-normal">
+                                changed*
+                            </th>
                             <th scope="col">Logon*</th>
                             <th scope="col">Logoff*</th>
                             <th scope="col">Location (System, Structure)</th>
@@ -123,89 +146,24 @@ export default {
                 tokenChanged: null,
             },
             table: null,
+            columns: [
+                { name: 'Character', searchable: true },
+                { name: 'Account', searchable: true },
+                { name: 'ESI', searchable: true },
+                { name: 'changed', searchable: true },
+                { name: 'Logon', searchable: true },
+                { name: 'Logoff', searchable: true },
+                { name: 'Location', searchable: true },
+                { name: 'Ship', searchable: true },
+                { name: 'Joined', searchable: true },
+            ],
         }
     },
 
     mounted: function() {
         window.scrollTo(0,0);
 
-        const vm = this;
-        vm.table = $('.member-table').DataTable({
-            lengthMenu: [[10, 50, 200, 500, 1000, -1], [10, 50, 200, 500, 1000, "All"]],
-            pageLength: 50,
-            order: [[4, "desc"]],
-            columns: [{
-                data: function (row) {
-                    return '' +
-                        '<a href="https://evewho.com/character/' + row.id + '" ' +
-                            'target="_blank" rel="noopener noreferrer" title="Eve Who">' +
-                            (row.name ? row.name : row.id) +
-                        '</a>';
-                }
-            }, {
-                data: function (row) {
-                    if (! row.player) {
-                        return '';
-                    }
-                    return '' +
-                        '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
-                            row.player.name + ' #' + row.player.id +
-                        '</a>';
-                }
-            }, {
-                data: function (row) {
-                    if (! row.character) {
-                        return '';
-                    }
-                    if (row.character.validToken) return 'valid';
-                    if (row.character.validToken === false) return 'invalid';
-                    if (row.character.validToken === null) return 'n/a';
-                    return '';
-                }
-            }, {
-                data: function (row) {
-                    if (row.character && row.character.validTokenTime) {
-                        return vm.$root.formatDate(row.character.validTokenTime);
-                    }
-                    return '';
-                }
-            }, {
-                data: function (row) {
-                    if (row.logonDate) {
-                        return vm.$root.formatDate(row.logonDate);
-                    }
-                    return '';
-                }
-            }, {
-                data: function (row) {
-                    if (row.logoffDate) {
-                        return vm.$root.formatDate(row.logoffDate);
-                    }
-                    return '';
-                }
-            }, {
-                data: function (row) {
-                    if (row.location) {
-                        return row.location.name ? row.location.name : row.location.id;
-                    }
-                    return '';
-                }
-            }, {
-                data: function (row) {
-                    if (row.shipType) {
-                        return row.shipType.name ? row.shipType.name : row.shipType.id;
-                    }
-                    return '';
-                }
-            }, {
-                data: function (row) {
-                    if (row.startDate) {
-                        return vm.$root.formatDate(row.startDate);
-                    }
-                    return '';
-                }
-            }]
-        });
+        configureDataTable(this);
 
         this.getCorporations();
         this.getMembers();
@@ -296,8 +254,99 @@ export default {
         showCharacters: function(playerId) {
             this.$refs.charactersModal.showCharacters(playerId);
         },
+
+        toggleSearchableColumn: function(index) {
+            this.columns[index].searchable = ! this.columns[index].searchable;
+            this.table.draw();
+        },
     }
 };
+
+function configureDataTable(vm) {
+    $.fn.dataTable.ext.search.push(
+        function(settings, searchData) {
+            const term = $('.dataTables_filter input').val();
+            for (let index = 0; index < vm.columns.length; index++) {
+                if (! vm.columns[index].searchable) {
+                    continue;
+                }
+                if (searchData[index].toLowerCase().indexOf(term) !== -1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    );
+
+    vm.table = $('.member-table').DataTable({
+        lengthMenu: [
+            [10, 25, 50, 100, 200, 500, 1000, 5000, -1],
+            [10, 25, 50, 100, 200, 500, 1000, 5000, "All"]
+        ],
+        pageLength: 25,
+        deferRender: true,
+        order: [[4, "desc"]],
+        columns: [{
+            data: function (row) {
+                return '' +
+                    '<a href="https://evewho.com/character/' + row.id + '" ' +
+                    '   target="_blank" rel="noopener noreferrer" title="Eve Who">' +
+                        (row.name ? row.name : row.id) +
+                    '</a>';
+            }
+        }, {
+            data: function (row) {
+                if (! row.player) {
+                    return '';
+                }
+                return '' +
+                    '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
+                        row.player.name + ' #' + row.player.id +
+                    '</a>';
+            }
+        }, {
+            data: function (row) {
+                if (row.character && row.character.validToken) return 'valid';
+                if (row.character && row.character.validToken === false) return 'invalid';
+                if (row.character && row.character.validToken === null) return 'n/a';
+                return '';
+            }
+        }, {
+            data: function (row) {
+                if (row.character && row.character.validTokenTime) {
+                    return vm.$root.formatDate(row.character.validTokenTime);
+                }
+                return '';
+            }
+        }, {
+            data: function (row) {
+                return row.logonDate ? vm.$root.formatDate(row.logonDate) : '';
+            }
+        }, {
+            data: function (row) {
+                return row.logoffDate ? vm.$root.formatDate(row.logoffDate) : '';
+            }
+        }, {
+            data: function (row) {
+                if (row.location) {
+                    return row.location.name ? row.location.name : row.location.id;
+                }
+                return '';
+            }
+        }, {
+            data: function (row) {
+                if (row.shipType) {
+                    return row.shipType.name ? row.shipType.name : row.shipType.id;
+                }
+                return '';
+            }
+        }, {
+            data: function (row) {
+                return row.startDate ? vm.$root.formatDate(row.startDate) : '';
+            }
+        }]
+    });
+}
 </script>
 
 <style type="text/scss" scoped>
