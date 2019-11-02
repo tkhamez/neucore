@@ -108,12 +108,21 @@ export default {
 
     mounted: function() {
         addNavBehaviour();
+        this.selectTheme(this.settings.customization_default_theme);
     },
 
     watch: {
         settings: function () {
             this.selectTheme(this.settings.customization_default_theme);
         },
+
+        selectedTheme () {
+            const $body = $('body');
+            for (const theme of this.themes) {
+                $body.removeClass(theme.toLowerCase());
+            }
+            $body.addClass(this.selectedTheme.toLowerCase());
+        }
     },
 
     methods: {

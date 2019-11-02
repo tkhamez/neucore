@@ -193,11 +193,12 @@ export default {
             } else if (['login', 'login-alt'].indexOf(this.route[0]) !== -1) {
                 authResult();
                 // Remove the hash value so that it does not appear in bookmarks, for example.
-                location.hash = '';
+                window.location.hash = '';
             } else if (this.route[0] === 'login-director') {
                 authResult('info');
+                // can't redirect to settings here because player may not be loaded yet for role check
             }  else if (this.route[0] === 'login-mail') {
-                location.hash = 'SystemSettings';
+                window.location.hash = 'SystemSettings/Mails';
             }
 
             // set page, fallback to Home
@@ -261,6 +262,11 @@ export default {
                     return;
                 }
                 vm.$root.player = data;
+
+                // redirect to settings after director login if user has the settings role
+                if (window.location.hash === '#login-director' && vm.hasRole('settings')) {
+                    window.location.hash = 'SystemSettings/Directors';
+                }
             });
         },
 

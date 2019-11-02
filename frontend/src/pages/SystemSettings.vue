@@ -7,336 +7,31 @@
         </div>
     </div>
 
+    <ul class="nav nav-pills nav-fill">
+        <li class="nav-item">
+            <a class="nav-link" :class="{ 'active': tab === 'Customization' }"
+               :href="'#SystemSettings/Customization'">Customization</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" :class="{ 'active': tab === 'Features' }"
+               :href="'#SystemSettings/Features'">Features</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" :class="{ 'active': tab === 'Mails' }"
+               :href="'#SystemSettings/Mails'">EVE Mails</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" :class="{ 'active': tab === 'Directors' }"
+               :href="'#SystemSettings/Directors'">Directors</a>
+        </li>
+    </ul>
+
     <div class="row mb-3">
         <div class="col-lg-12">
-            <div class="card border-secondary mb-3">
-
-                <div class="card-header" data-toggle="collapse" data-target="#collapseOne"
-                     aria-expanded="true" aria-controls="collapseOne" id="headingOne">
-                    <span class="far fa-minus-square" aria-hidden="true"></span>
-                    <span class="far fa-plus-square" aria-hidden="true"></span>
-                    Customization
-                </div>
-                <div class="card-body collapse show" id="collapseOne" aria-labelledby="headingOne">
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationDocumentTitle">Document Title</label>
-                        <input id="customizationDocumentTitle" type="text" class="form-control"
-                               v-model="settings.customization_document_title"
-                               v-on:input="changeSettingDelayed('customization_document_title', $event.target.value)">
-                        <small class="form-text text-muted">
-                            Value for HTML head title tag, i. e. name of the browser tab or bookmark.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationDefaultTheme">Theme</label>
-                        <select id="customizationDefaultTheme" class="form-control"
-                                v-model="settings.customization_default_theme"
-                                @change="changeSetting(
-                                    'customization_default_theme', settings.customization_default_theme
-                                )">
-                            <option v-for="theme in themes" v-bind:value="theme">
-                                {{ theme }}
-                            </option>
-                        </select>
-                        <small class="form-text text-muted">
-                            The default theme.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationHomepage">Website</label>
-                        <input id="customizationHomepage" type="text" class="form-control"
-                               v-model="settings.customization_website"
-                               v-on:input="changeSettingDelayed('customization_website', $event.target.value)">
-                        <small class="form-text text-muted">
-                            URL for the links of the logos in the navigation bar and on the home page.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationNavTitle">Navigation Title</label>
-                        <input id="customizationNavTitle" type="text" class="form-control"
-                               v-model="settings.customization_nav_title"
-                               v-on:input="changeSettingDelayed('customization_nav_title', $event.target.value)">
-                        <small class="form-text text-muted">
-                            Organization name used in navigation bar.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label for="customizationNavLogo" class="col-form-label">Navigation Logo</label><br>
-                        <img :src="settings.customization_nav_logo" alt="logo">
-                        <input type="file" class="mt-1" ref="customization_nav_logo"
-                               id="customizationNavLogo" v-on:change="handleFileUpload('customization_nav_logo')">
-                        <small class="form-text text-muted">
-                            Organization logo used in navigation bar.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationHomeHeadline">Home Page Headline</label>
-                        <input id="customizationHomeHeadline" type="text" class="form-control"
-                               v-model="settings.customization_home_headline"
-                               v-on:input="changeSettingDelayed('customization_home_headline', $event.target.value)">
-                        <small class="form-text text-muted">
-                            Headline on the home page.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationHomeDescription">Home Page Description</label>
-                        <input id="customizationHomeDescription" type="text" class="form-control"
-                               v-model="settings.customization_home_description"
-                               v-on:input="changeSettingDelayed('customization_home_description', $event.target.value)">
-                        <small class="form-text text-muted">
-                            Text below the headline on the home page.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label for="customizationHomeLogo" class="col-form-label">Home Page Logo</label><br>
-                        <img :src="settings.customization_home_logo" alt="logo">
-                        <input type="file" class="mt-1" ref="customization_home_logo"
-                               id="customizationHomeLogo" v-on:change="handleFileUpload('customization_home_logo')">
-                        <small class="form-text text-muted">
-                            Organization logo used on the home page.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label for="customizationHomeMarkdown" class="col-form-label">Home Page Text Area</label><br>
-                        <textarea v-model="settings.customization_home_markdown" class="form-control"
-                                  id="customizationHomeMarkdown" rows="9"></textarea>
-                        <button class="btn btn-success" v-on:click="changeSetting(
-                            'customization_home_markdown', settings.customization_home_markdown
-                        )">save</button>
-                        <small class="form-text text-muted">
-                            Optional text area on the home page.
-                            Supports
-                            <a href="https://markdown-it.github.io/" target="_blank"
-                               rel="noopener noreferrer">Markdown</a>,
-                            with "typographer" and these plugins:
-                            <a href="https://github.com/arve0/markdown-it-attrs"
-                               target="_blank" rel="noopener noreferrer">attrs</a>
-                            (use with Bootstrap classes "text-primary", "bg-warning"
-                            <a href="https://bootswatch.com/darkly/" target="_blank"
-                               rel="noopener noreferrer">etc.</a>),
-                            <a href="https://github.com/markdown-it/markdown-it-emoji/blob/master/lib/data/light.json"
-                               target="_blank" rel="noopener noreferrer">emoji</a> light,
-                            <a href="https://github.com/markdown-it/markdown-it-mark"
-                               target="_blank" rel="noopener noreferrer">mark</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-sub"
-                               target="_blank" rel="noopener noreferrer">sub</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-sup"
-                               target="_blank" rel="noopener noreferrer">sup</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-ins"
-                               target="_blank" rel="noopener noreferrer">ins</a>,
-                            <a href="https://github.com/markdown-it/markdown-it-abbr"
-                               target="_blank" rel="noopener noreferrer">abbr</a>.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationFooterText">Footer Text</label>
-                        <input id="customizationFooterText" type="text" class="form-control"
-                               v-model="settings.customization_footer_text"
-                               v-on:input="changeSettingDelayed('customization_footer_text', $event.target.value)">
-                        <small class="form-text text-muted">
-                            Text for the footer.
-                        </small>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label class="col-form-label" for="customizationGithub">GitHub</label>
-                        <input id="customizationGithub" type="text" class="form-control"
-                               v-model="settings.customization_github"
-                               v-on:input="changeSettingDelayed('customization_github', $event.target.value)">
-                        <small class="form-text text-muted">
-                            URL of GitHub repository for various links to the documentation.
-                        </small>
-                    </div>
-                </div>
-
-                <div class="card-header" data-toggle="collapse" data-target="#collapseTwo"
-                     aria-expanded="true" aria-controls="collapseTwo" id="headingTwo">
-                    <span class="far fa-minus-square" aria-hidden="true"></span>
-                    <span class="far fa-plus-square" aria-hidden="true"></span>
-                    Features
-                </div>
-                <div class="card-body collapse show" id="collapseTwo" aria-labelledby="headingTwo">
-                    <em>Deactivate Accounts:</em>
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" value="1"
-                               id="groups_require_valid_token" name="groups_require_valid_token"
-                               :checked="settings.groups_require_valid_token === '1'"
-                               @change="changeSetting('groups_require_valid_token', $event.target.checked ? '1' : '0')"
-                        >
-                        <label class="custom-control-label" for="groups_require_valid_token">
-                            Check this if the API for applications should not return groups
-                            for a player account if one or more of its characters have an invalid token
-                            (no token or tokens without any scopes count as invalid), "managed" accounts 
-                            are excluded from this.
-                        </label>
-                    </div>
-                    <label class="mt-2">
-                        <input type="text" pattern="[0-9]*" class="form-control input-delay"
-                               v-model="settings.account_deactivation_delay"
-                               v-on:input="changeSettingDelayed('account_deactivation_delay', $event.target.value)">
-                        Delay the deactivation after a token became invalid (hours).
-                    </label>
-                    <hr>
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" value="1"
-                               id="allow_login_managed" name="allow_login_managed"
-                               :checked="settings.allow_login_managed === '1'"
-                               @change="changeSetting('allow_login_managed', $event.target.checked ? '1' : '0')"
-                        >
-                        <label class="custom-control-label" for="allow_login_managed">
-                            <em>Allow "managed" Login:</em>
-                            Enables the login URL for managed accounts that do not require ESI scopes.
-                        </label>
-                    </div>
-                    <hr>
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" value="1"
-                               id="allow_character_deletion" name="allow_character_deletion"
-                               :checked="settings.allow_character_deletion === '1'"
-                               @change="changeSetting('allow_character_deletion', $event.target.checked ? '1' : '0')"
-                        >
-                        <label class="custom-control-label" for="allow_character_deletion">
-                            <em>Delete characters:</em>
-                            Check to allow users to delete their characters.
-                        </label>
-                    </div>
-                </div>
-
-                <div class="card-header" data-toggle="collapse" data-target="#collapseThree"
-                     aria-expanded="true" aria-controls="collapseThree" id="headingThree">
-                    <span class="far fa-minus-square" aria-hidden="true"></span>
-                    <span class="far fa-plus-square" aria-hidden="true"></span>
-                    EVE Mails
-                </div>
-                <div class="card-body collapse show" id="collapseThree" aria-labelledby="headingThree">
-                    <h4>Sender</h4>
-                    <p>
-                        <span v-if="settings.mail_character === ''">
-                            <a href="/login-mail"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
-                        </span>
-                        <span v-else>
-                            <span class="text-info">{{ settings.mail_character }}</span>
-                            <button type="button" class="btn btn-danger btn-sm ml-1"
-                                    v-on:click="removeMailChar()">
-                                remove
-                            </button>
-                        </span>
-                        <br>
-                        <span class="small">The character is used for all mails.</span>
-                    </p>
-
-                    <hr>
-
-                    <h4 class="mt-4">Notification for deactivated accounts</h4>
-                    <p>
-                        This EVE mail is sent when an account has been deactivated
-                        because one of its characters contains an invalid or no ESI token.<br>
-                        The mail is only sent if that feature is activated above.
-                    </p>
-
-                    <button class="btn btn-success btn-sm" v-on:click="sendMailAccountDisabledTestMail()">
-                        Send test mail
-                    </button>
-                    <small>Mail will be send to the logged-in user.</small>
-
-                    <div class="custom-control custom-checkbox mb-2 mt-3">
-                        <input class="custom-control-input" type="checkbox" value="1"
-                               id="mail_account_disabled_active" name="mail_account_disabled_active"
-                               :checked="settings.mail_account_disabled_active === '1'"
-                               @change="changeSetting('mail_account_disabled_active',
-                                                      $event.target.checked ? '1' : '0')"
-                        >
-                        <label class="custom-control-label" for="mail_account_disabled_active">Activate mail</label>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">Alliances</label>
-                        <multiselect v-model="mailAccountDisabledAlliances" :options="alliances"
-                                     label="name" track-by="id" :multiple="true"
-                                     :loading="false" :searchable="true"
-                                     placeholder="Select alliances"></multiselect>
-                        <small class="form-text text-muted">
-                            The mail is only sent if at least one character in a player account
-                            belongs to one of these alliances.<br>
-                            You can add missing alliances in the <a href="#GroupAdmin">Group Administration</a>.
-                        </small>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label" for="mailAccountDisabledSubject">Subject</label>
-                        <input id="mailAccountDisabledSubject" type="text" class="form-control"
-                               v-model="settings.mail_account_disabled_subject"
-                               v-on:input="changeSettingDelayed('mail_account_disabled_subject', $event.target.value)">
-                    </div>
-                    <div class="form-group">
-                        <label for="mailAccountDisabledBody">Message</label>
-                        <textarea v-model="settings.mail_account_disabled_body" class="form-control"
-                                  v-on:input="changeSettingDelayed('mail_account_disabled_body', $event.target.value)"
-                                  id="mailAccountDisabledBody" rows="6"></textarea>
-                    </div>
-                </div>
-
-                <div class="card-header" data-toggle="collapse" data-target="#collapseFour"
-                     aria-expanded="true" aria-controls="collapseFour" id="headingFour">
-                    <span class="far fa-minus-square" aria-hidden="true"></span>
-                    <span class="far fa-plus-square" aria-hidden="true"></span>
-                    Directors
-                </div>
-                <div class="card-body collapse show" id="collapseFour" aria-labelledby="headingFour">
-                    <p>
-                        Login URL for characters with director role:
-                        <a :href="loginUrlDirector">{{ loginUrlDirector }}</a>
-                        <br>
-                        This is used to get the <a href="#Tracking">Member Tracking</a> data from ESI.
-                    </p>
-                    <table class="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>Character</th>
-                                <th colspan="2">Corporation</th>
-                                <th colspan="2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="director in directors">
-                                <td>
-                                    <a :href="'https://evewho.com/character/' + director.value['character_id']"
-                                       title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                        {{ director.value['character_name'] }}
-                                    </a>
-                                </td>
-                                <td>{{ director.value['corporation_id'] }}</td>
-                                <td>
-                                    [{{ director.value['corporation_ticker'] }}]
-                                    {{ director.value['corporation_name'] }}
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-info"
-                                            v-on:click="validateDirector(director.name)">
-                                        <span class="fas fa-check"></span>
-                                        validate
-                                    </button>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger"
-                                            v-on:click="removeDirector(director.name)">
-                                        <span class="fas fa-minus-circle"></span>
-                                        remove
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
+            <component v-bind:is="tab" :settings="settings"
+                       @changeSettingDelayed="changeSettingDelayed"
+                       @changeSetting="changeSetting"
+            ></component>
         </div>
     </div>
 
@@ -345,152 +40,48 @@
 
 <script>
 import _ from 'lodash';
-import { AllianceApi } from 'neucore-js-client';
 import { SettingsApi } from 'neucore-js-client';
+import Customization from './SystemSettings--Customization.vue';
+import Directors from './SystemSettings--Directors.vue';
+import Features from './SystemSettings--Features.vue';
+import Mails from './SystemSettings--Mails.vue';
 
 export default {
+    components: {
+        Customization,
+        Directors,
+        Features,
+        Mails,
+    },
+
     props: {
         route: Array,
-        player: Object,
         settings: Object,
     },
 
-    data: function() {
+    data () {
         return {
-            api: null,
-            alliances: [],
-            alliancesLoaded: false,
-            loginUrlDirector: null,
-            mailAccountDisabledAlliances: null,
-            directors: [],
+            tab: 'Customization',
         }
     },
 
-    mounted: function() {
+    mounted () {
         window.scrollTo(0,0);
 
-        this.init();
+        setTab(this);
 
         // make sure the data is up to date
         this.$root.$emit('settingsChange');
-
-        // login URL for director chars
-        let port = '';
-        if (location.port !== "" && location.port !== 80 && location.port !== 443) {
-            port = ':' + location.port;
-        }
-        this.loginUrlDirector = location.protocol + "//" + location.hostname + port + "/login-director"
     },
 
     watch: {
-        settings: function() {
-            this.readSettings();
-        },
-
-        mailAccountDisabledAlliances: function(newValues, oldValues) {
-            if (oldValues === null) {
-                return;
-            }
-            const oldAllianceIds = [];
-            for (let oldValue of oldValues) {
-                oldAllianceIds.push(oldValue.id);
-            }
-            const newAllianceIds = [];
-            for (let alliance of this.mailAccountDisabledAlliances) {
-                newAllianceIds.push(alliance.id);
-            }
-            if (newAllianceIds.join(',') === oldAllianceIds.join(',')) {
-                return;
-            }
-            this.changeSetting('mail_account_disabled_alliances', newAllianceIds.join(','));
+        route () {
+            setTab(this);
         },
     },
 
     methods: {
-        init: function() {
-            this.api = new SettingsApi();
-
-            // get alliances
-            const vm = this;
-            new AllianceApi().all(function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.alliances = data;
-                vm.alliancesLoaded = true;
-                vm.readSettings();
-            });
-        },
-
-        readSettings: function() {
-            if (! this.alliancesLoaded || ! this.settings.hasOwnProperty('account_deactivation_delay')) {
-                return; // wait for alliance list and settings
-            }
-
-            this.directors = [];
-            this.mailAccountDisabledAlliances = [];
-
-            for (const [name, value] of Object.entries(this.settings)) {
-                if (name === 'mail_account_disabled_alliances') {
-                    for (let allianceId of value.split(',')) {
-                        allianceId = parseInt(allianceId);
-                        for (let alliance of this.alliances) {
-                            if (alliance.id === allianceId) {
-                                this.mailAccountDisabledAlliances.push(alliance);
-                                break;
-                            }
-                        }
-                    }
-                } else if (name.indexOf('director_char_') !== -1) {
-                    try {
-                        this.directors.push({
-                            'name': name,
-                            'value': JSON.parse(value)
-                        });
-                    } catch(err) {}
-                }
-            }
-        },
-
-        removeMailChar: function() {
-            this.settings.mail_character = '';
-            this.changeSetting('mail_character', '');
-        },
-
-        removeDirector: function(name) {
-            this.changeSetting(name, '');
-        },
-
-        validateDirector: function(name) {
-            const vm = this;
-            this.api.validateDirector(name, function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.$root.message(
-                    data ? 'The Token is valid and character has the director role.' : 'Validation failed.',
-                    data ? 'info' : 'warning'
-                );
-                vm.$root.$emit('settingsChange');
-            });
-        },
-
-        handleFileUpload: function(name) {
-            const vm = this;
-            const file = this.$refs[name].files[0];
-            const reader  = new FileReader();
-
-            reader.addEventListener('load', function() {
-                const image = reader.result;
-                vm.changeSetting(name, image);
-            }, false);
-
-            if (file) {
-                reader.readAsDataURL(file)
-            }
-        },
-
-        changeSettingDelayed: function(name, value) {
+        changeSettingDelayed (name, value) {
             // use value from parameter (input event) instead of value from this.settings
             // because the model is not updated on touch devices during IME composition
             this.changeSettingDebounced(this, name, value);
@@ -500,9 +91,9 @@ export default {
             vm.changeSetting(name, value);
         }, 250),
 
-        changeSetting: function(name, value) {
+        changeSetting (name, value) {
             const vm = this;
-            this.api.systemChange(name, value, function(error) {
+            new SettingsApi().systemChange(name, value, (error) => {
                 if (error) { // 403 usually
                     return;
                 }
@@ -522,37 +113,13 @@ export default {
                 }
             });
         },
-
-        sendMailAccountDisabledTestMail: function() {
-            const vm = this;
-            this.api.sendAccountDisabledMail(function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                if (data !== '') {
-                    vm.$root.message(data, 'error');
-                } else {
-                    vm.$root.message('Mail sent.', 'success');
-                }
-            });
-        },
     },
 }
+
+function setTab(vm) {
+    const tabs = ['Customization', 'Directors', 'Features', 'Mails'];
+    if (tabs.indexOf(vm.route[1]) !== -1) {
+        vm.tab = vm.route[1];
+    }
+}
 </script>
-
-<style type="text/scss" scoped>
-    .card-header {
-        cursor: pointer;
-    }
-    .card-header[aria-expanded=true] .fa-plus-square {
-        display: none;
-    }
-    .card-header[aria-expanded=false] .fa-minus-square {
-        display: none;
-    }
-
-    .input-delay {
-        display: inline;
-        width: 70px;
-    }
-</style>

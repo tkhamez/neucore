@@ -42,3 +42,33 @@ body.neucore {
 .emoji {
     font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", monospace;
 }
+
+/**
+ * Change form control background color for dark themes
+ * (solar and superhero already have different colors)
+ */
+.cyborg,
+.darkly,
+.slate {
+    .form-control,
+    .custom-select,
+    .custom-control-label::before,
+    .multiselect__tags,
+    .multiselect__input,
+    .multiselect__spinner {
+        color: #fff;
+        background-color: #666;
+    }
+    .multiselect__input::placeholder,
+    .form-control::placeholder {
+        color: #ddd;
+    }
+    .multiselect__content {
+        color: #fff;
+        background-color: #333;
+    }
+    .multiselect__option--selected{
+        color: #fff;
+        background-color: #444;
+    }
+}
