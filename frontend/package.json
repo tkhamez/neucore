@@ -30,8 +30,10 @@
     "devDependencies": {
         "@babel/core": "^7.7.2",
         "@babel/preset-env": "^7.7.1",
+        "@beyonk/google-fonts-webpack-plugin": "^1.2.3",
         "babel-loader": "^8.0.6",
         "clean-webpack-plugin": "^3.0.0",
+        "create-file-webpack": "^1.0.2",
         "css-loader": "^3.2.0",
         "fibers": "^4.0.2",
         "file-loader": "^4.2.0",

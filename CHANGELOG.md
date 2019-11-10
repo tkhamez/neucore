@@ -5,6 +5,7 @@
 - Member Tracking: Search can now be limited to individual columns.
 - API: Added "created" date to the character model.
 - UI improvements.
+- Google fonts are now bundled (no more requests to fonts.googleapis.com).
 
 ## 1.5.1
 
