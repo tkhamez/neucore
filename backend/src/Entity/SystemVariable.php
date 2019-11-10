@@ -85,33 +85,33 @@ class SystemVariable implements \JsonSerializable
     const MAIL_TOKEN = 'mail_token';
 
     /**
-     * Activate the "account disabled" EVE mail notification
+     * Activate the "invalid ESI token" EVE mail notification
      *
      * Scope = settings
      */
-    const MAIL_ACCOUNT_DISABLED_ACTIVE = 'mail_account_disabled_active';
+    const MAIL_INVALID_TOKEN_ACTIVE = 'mail_invalid_token_active';
 
     /**
-     * The "account disabled" EVE mail is only send to accounts that have a character in one of these alliances
+     * The "invalid ESI token" EVE mail is only send to accounts that have a character in one of these alliances
      * (comma separated list of EVE alliance IDs).
      *
      * Scope = settings
      */
-    const MAIL_ACCOUNT_DISABLED_ALLIANCES = 'mail_account_disabled_alliances';
+    const MAIL_INVALID_TOKEN_ALLIANCES = 'mail_invalid_token_alliances';
 
     /**
-     * Subject for "account disabled" EVE mail notification
+     * Subject for "invalid ESI token" EVE mail notification
      *
      * Scope = settings
      */
-    const MAIL_ACCOUNT_DISABLED_SUBJECT = 'mail_account_disabled_subject';
+    const MAIL_INVALID_TOKEN_SUBJECT = 'mail_invalid_token_subject';
 
     /**
-     * Body for "account disabled" EVE mail notification
+     * Body for "invalid ESI token" EVE mail notification
      *
      * Scope = settings
      */
-    const MAIL_ACCOUNT_DISABLED_BODY = 'mail_account_disabled_body';
+    const MAIL_INVALID_TOKEN_BODY = 'mail_invalid_token_body';
 
     /**
      * Character with director role for member tracking.
@@ -269,13 +269,13 @@ class SystemVariable implements \JsonSerializable
             case self::ALLOW_CHARACTER_DELETION:
             case self::ALLOW_LOGIN_MANAGED:
             case self::GROUPS_REQUIRE_VALID_TOKEN:
-            case self::MAIL_ACCOUNT_DISABLED_ACTIVE:
+            case self::MAIL_INVALID_TOKEN_ACTIVE:
                 $this->value = ((bool) $value) ? '1' : '0';
                 break;
             case self::ACCOUNT_DEACTIVATION_DELAY:
                 $this->value = (string) abs((int) $value);
                 break;
-            case self::MAIL_ACCOUNT_DISABLED_ALLIANCES:
+            case self::MAIL_INVALID_TOKEN_ALLIANCES:
                 $allianceIds = [];
                 foreach (explode(',', $value) as $allianceId) {
                     if ((int) $allianceId > 0) {
@@ -284,7 +284,7 @@ class SystemVariable implements \JsonSerializable
                 }
                 $this->value = implode(',', $allianceIds);
                 break;
-            case self::MAIL_ACCOUNT_DISABLED_BODY:
+            case self::MAIL_INVALID_TOKEN_BODY:
             case self::CUSTOMIZATION_HOME_MARKDOWN:
                 $this->value = $value;
                 break;

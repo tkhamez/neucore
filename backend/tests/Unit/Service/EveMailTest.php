@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
@@ -121,13 +124,13 @@ class EveMailTest extends TestCase
         ], json_decode($tokenActual->getValue(), true));
     }
 
-    public function testAccountDeactivateFindCharacterPlayerNotFound()
+    public function testInvalidTokenFindCharacterPlayerNotFound()
     {
-        $result = $this->eveMail->accountDeactivatedFindCharacter(100100);
+        $result = $this->eveMail->invalidTokenFindCharacter(100100);
         $this->assertNull($result);
     }
 
-    public function testAccountDeactivateFindCharacterNoInvalidToken()
+    public function testInvalidTokenFindCharacterNoInvalidToken()
     {
         $player = (new Player())->setName('n');
         $char = (new Character())->setId(100100)->setName('n')->setPlayer($player);
@@ -138,11 +141,11 @@ class EveMailTest extends TestCase
         $playerId = $player->getId();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+        $result = $this->eveMail->invalidTokenFindCharacter($playerId);
         $this->assertNull($result);
     }
 
-    public function testAccountDeactivateFindCharacterMain()
+    public function testInvalidTokenFindCharacterMain()
     {
         $player = (new Player())->setName('n');
         $char1 = (new Character())->setId(100100)->setName('n')->setPlayer($player);
@@ -154,11 +157,11 @@ class EveMailTest extends TestCase
         $playerId = $player->getId();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+        $result = $this->eveMail->invalidTokenFindCharacter($playerId);
         $this->assertSame(100101, $result);
     }
 
-    public function testAccountDeactivateFindCharacterNotMain()
+    public function testInvalidTokenFindCharacterNotMain()
     {
         $player = (new Player())->setName('n');
         $char1 = (new Character())->setId(100100)->setName('n')->setPlayer($player);
@@ -170,30 +173,30 @@ class EveMailTest extends TestCase
         $playerId = $player->getId();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+        $result = $this->eveMail->invalidTokenFindCharacter($playerId);
         $this->assertSame(100100, $result);
     }
 
-    public function testAccountDeactivateMaySendAllianceSettingsNotFound()
+    public function testInvalidTokenMaySendAllianceSettingsNotFound()
     {
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame('Alliance settings variable not found.', $result);
     }
 
-    public function testAccountDeactivateMaySendCharacterNotFound()
+    public function testInvalidTokenMaySendCharacterNotFound()
     {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $this->em->persist($varAlli);
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame('Character not found.', $result);
     }
 
-    public function testAccountDeactivateMaySendManagedAccount()
+    public function testInvalidTokenMaySendManagedAccount()
     {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $player = (new Player())->setName('n')->setStatus(Player::STATUS_MANAGED);
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player);
         $this->em->persist($varAlli);
@@ -202,13 +205,13 @@ class EveMailTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame('Player account status is managed.', $result);
     }
 
-    public function testAccountDeactivateMaySendAllianceDoesNotMatch()
+    public function testInvalidTokenMaySendAllianceDoesNotMatch()
     {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $player = (new Player())->setName('n');
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player);
         $this->em->persist($varAlli);
@@ -217,13 +220,13 @@ class EveMailTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame('No character found on account that belongs to one of the configured alliances.', $result);
     }
 
-    public function testAccountDeactivateMaySendAlreadySent()
+    public function testInvalidTokenMaySendAlreadySent()
     {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $player = (new Player())->setName('n')->setDeactivationMailSent(true);
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
@@ -236,13 +239,13 @@ class EveMailTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame('Mail already sent.', $result);
     }
 
-    public function testAccountDeactivateMaySendIgnoreAlreadySentAndAccountStatus()
+    public function testInvalidTokenMaySendIgnoreAlreadySentAndAccountStatus()
     {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $player = (new Player())->setName('n')->setDeactivationMailSent(true)->setStatus(Player::STATUS_MANAGED);
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
@@ -255,13 +258,13 @@ class EveMailTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedMaySend(100100, true);
+        $result = $this->eveMail->invalidTokenMaySend(100100, true);
         $this->assertSame('', $result);
     }
 
-    public function testAccountDeactivateMaySendTrue()
+    public function testInvalidTokenMaySendTrue()
     {
-        $varAlli = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $player = (new Player())->setName('n');
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
@@ -274,85 +277,71 @@ class EveMailTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->eveMail->accountDeactivatedMaySend(100100);
+        $result = $this->eveMail->invalidTokenMaySend(100100);
         $this->assertSame('', $result);
     }
 
-    public function testAccountDeactivateIsActiveNotRequired()
+    public function testInvalidTokenIsActiveDeactivated()
     {
-        $varToken = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('0');
-        $this->em->persist($varToken);
-        $this->em->flush();
-
-        $result = $this->eveMail->accountDeactivatedIsActive();
-        $this->assertSame('"Deactivate Accounts" settings is not enabled.', $result);
-    }
-
-    public function testAccountDeactivateIsActiveDeactivated()
-    {
-        $varToken = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('0');
-        $this->em->persist($varToken);
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('0');
         $this->em->persist($varActive);
         $this->em->flush();
 
-        $result = $this->eveMail->accountDeactivatedIsActive();
+        $result = $this->eveMail->invalidTokenIsActive();
         $this->assertSame('Mail is deactivated.', $result);
     }
 
-    public function testAccountDeactivateIsActive()
+    public function testInvalidTokenIsActive()
     {
-        $varToken = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
-        $this->em->persist($varToken);
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $this->em->persist($varActive);
         $this->em->flush();
 
-        $result = $this->eveMail->accountDeactivatedIsActive();
+        $result = $this->eveMail->invalidTokenIsActive();
         $this->assertSame('', $result);
     }
 
-    public function testAccountDeactivatedSendMissingCharacter()
+    public function testInvalidTokenSendMissingCharacter()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $this->em->persist($varActive);
         $this->em->flush();
 
-        $result = $this->eveMail->accountDeactivatedSend(123);
+        $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Missing character that can send mails.', $result);
     }
 
-    public function testAccountDeactivatedSendMissingSubject()
+    public function testInvalidTokenSendMissingSubject()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
         $this->em->persist($varActive);
         $this->em->persist($varToken);
         $this->em->flush();
 
-        $result = $this->eveMail->accountDeactivatedSend(123);
+        $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Missing subject.', $result);
     }
 
-    public function testAccountDeactivatedSendMissingBody()
+    public function testInvalidTokenSendMissingBody()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
-        $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
         $this->em->persist($varActive);
         $this->em->persist($varToken);
         $this->em->persist($varSubject);
         $this->em->flush();
 
-        $result = $this->eveMail->accountDeactivatedSend(123);
+        $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Missing body text.', $result);
     }
 
-    public function testAccountDeactivatedSendMissingTokenData()
+    public function testInvalidTokenSendMissingTokenData()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
-        $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
-        $varBody = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY))->setValue('b');
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue('b');
         $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
         $this->em->persist($varActive);
         $this->em->persist($varSubject);
@@ -360,15 +349,15 @@ class EveMailTest extends TestCase
         $this->em->persist($varToken);
         $this->em->flush();
 
-        $result = $this->eveMail->accountDeactivatedSend(123);
+        $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Missing token data.', $result);
     }
 
-    public function testAccountDeactivatedSendInvalidToken()
+    public function testInvalidTokenSendInvalidToken()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
-        $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('s');
-        $varBody = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY))->setValue('b');
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue('b');
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
         $varToken->setValue((string) \json_encode([
             'id' => 123,
@@ -387,11 +376,11 @@ class EveMailTest extends TestCase
             new Response(400, [], '{ "error": "invalid_grant" }')
         );
 
-        $result = $this->eveMail->accountDeactivatedSend(123);
+        $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Invalid token.', $result);
     }
 
-    public function testAccountDeactivatedSend()
+    public function testInvalidTokenSend()
     {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
         $varToken->setValue((string) \json_encode([
@@ -400,9 +389,9 @@ class EveMailTest extends TestCase
             'refresh' => 'refresh-token',
             'expires' => 1542546430,
         ]));
-        $varSubject = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('subject 3');
-        $varBody = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY))->setValue("body\n\ntext");
-        $varActive = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('subject 3');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue("body\n\ntext");
+        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $this->em->persist($varToken);
         $this->em->persist($varSubject);
         $this->em->persist($varBody);
@@ -423,11 +412,11 @@ class EveMailTest extends TestCase
             new Response(200, [], '373515628')
         );
 
-        $result = $this->eveMail->accountDeactivatedSend(456);
+        $result = $this->eveMail->invalidTokenSend(456);
         $this->assertSame('', $result);
     }
 
-    public function testAccountDeactivatedMailSent()
+    public function testInvalidTokenMailSent()
     {
         $player = (new Player())->setName('n');
         $this->assertFalse($player->getDeactivationMailSent());
@@ -436,12 +425,12 @@ class EveMailTest extends TestCase
         $this->em->flush();
         $playerId = $player->getId();
 
-        $this->eveMail->accountDeactivatedMailSent($playerId, true);
+        $this->eveMail->invalidTokenMailSent($playerId, true);
         $this->em->clear();
         $player2 = $this->repoFactory->getPlayerRepository()->find($playerId);
         $this->assertTrue($player2->getDeactivationMailSent());
 
-        $this->eveMail->accountDeactivatedMailSent($playerId, false);
+        $this->eveMail->invalidTokenMailSent($playerId, false);
         $this->em->clear();
         $player3 = $this->repoFactory->getPlayerRepository()->find($playerId);
         $this->assertFalse($player3->getDeactivationMailSent());

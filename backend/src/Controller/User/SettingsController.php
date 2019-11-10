@@ -166,9 +166,9 @@ class SettingsController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Post(
-     *     path="/user/settings/system/send-account-disabled-mail",
-     *     operationId="sendAccountDisabledMail",
-     *     summary="Sends a 'Account disabled' test mail to the logged-in character.",
+     *     path="/user/settings/system/send-invalid-token-mail",
+     *     operationId="sendInvalidTokenMail",
+     *     summary="Sends a 'invalid ESI token' test mail to the logged-in character.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
@@ -183,16 +183,16 @@ class SettingsController extends BaseController
      *     )
      * )
      */
-    public function sendAccountDisabledMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
+    public function sendInvalidTokenMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
     {
         $charId = $userAuth->getUser() !== null ? $userAuth->getUser()->getId() : null;
 
-        $result = $eveMail->accountDeactivatedIsActive();
+        $result = $eveMail->invalidTokenIsActive();
         if ($result === '') {
-            $result = $eveMail->accountDeactivatedMaySend($charId, true);
+            $result = $eveMail->invalidTokenMaySend($charId, true);
         }
         if ($result === '') {
-            $result = $eveMail->accountDeactivatedSend((int) $charId);
+            $result = $eveMail->invalidTokenSend((int) $charId);
         }
 
         return $this->withJson($result);

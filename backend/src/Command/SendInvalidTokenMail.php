@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SendAccountDisabledMail extends Command
+class SendInvalidTokenMail extends Command
 {
     use LogOutput;
     use EsiRateLimited;
@@ -57,8 +57,8 @@ class SendAccountDisabledMail extends Command
 
     protected function configure()
     {
-        $this->setName('send-account-disabled-mail')
-            ->setDescription('Sends "account disabled" EVE mail notification.')
+        $this->setName('send-invalid-token-mail')
+            ->setDescription('Sends "invalid ESI token" EVE mail notification.')
             ->addOption(
                 'sleep',
                 's',
@@ -74,16 +74,16 @@ class SendAccountDisabledMail extends Command
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
 
-        $this->writeLine('Started "send-account-disabled-mail"', false);
+        $this->writeLine('Started "send-invalid-token-mail"', false);
 
         $this->send();
 
-        $this->writeLine('Finished "send-account-disabled-mail"', false);
+        $this->writeLine('Finished "send-invalid-token-mail"', false);
     }
 
     private function send()
     {
-        $notActiveReason = $this->eveMail->accountDeactivatedIsActive();
+        $notActiveReason = $this->eveMail->invalidTokenIsActive();
         if ($notActiveReason !== '') {
             $this->writeLine(' ' . $notActiveReason, false);
             return;
@@ -105,25 +105,25 @@ class SendAccountDisabledMail extends Command
 
             foreach ($playerIds as $playerId) {
                 if (! $this->objectManager->isOpen()) {
-                    $this->logger->critical('SendAccountDisabledMail: cannot continue without an open entity manager.');
+                    $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }
                 $this->checkErrorLimit();
 
-                $characterId = $this->eveMail->accountDeactivatedFindCharacter($playerId);
+                $characterId = $this->eveMail->invalidTokenFindCharacter($playerId);
                 if ($characterId === null) {
-                    $this->eveMail->accountDeactivatedMailSent($playerId, false);
+                    $this->eveMail->invalidTokenMailSent($playerId, false);
                     continue;
                 }
 
-                $mayNotSendReason = $this->eveMail->accountDeactivatedMaySend($characterId);
+                $mayNotSendReason = $this->eveMail->invalidTokenMaySend($characterId);
                 if ($mayNotSendReason !== '') {
                     continue;
                 }
 
-                $errMessage = $this->eveMail->accountDeactivatedSend($characterId);
+                $errMessage = $this->eveMail->invalidTokenSend($characterId);
                 if ($errMessage === '') { // success
-                    $this->eveMail->accountDeactivatedMailSent($playerId, true);
+                    $this->eveMail->invalidTokenMailSent($playerId, true);
                     $this->writeLine('  Mail sent to ' . $characterId);
                     usleep($this->sleep * 1000 * 1000);
                 } else {

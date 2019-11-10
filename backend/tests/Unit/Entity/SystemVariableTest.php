@@ -33,7 +33,7 @@ class SystemVariableTest extends TestCase
 
     public function testSetValueAllowCharacterDeletion()
     {
-        // ALLOW_LOGIN_MANAGED, GROUPS_REQUIRE_VALID_TOKEN and MAIL_ACCOUNT_DISABLED_ACTIVE
+        // ALLOW_LOGIN_MANAGED, GROUPS_REQUIRE_VALID_TOKEN and MAIL_INVALID_TOKEN_ACTIVE
         // have the same validation, so no extra tests for those.
 
         $var = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
@@ -52,15 +52,15 @@ class SystemVariableTest extends TestCase
         $this->assertSame('0', $var->setValue('')->getValue());
     }
 
-    public function testSetValueMailAccountDisabledAlliances()
+    public function testSetValueMailInvalidTokenAlliances()
     {
-        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES);
+        $var = new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES);
         $this->assertSame('123,456', $var->setValue(' 123 , 456 , abc, ')->getValue());
     }
 
-    public function testSetValueMailAccountDisabledBody()
+    public function testSetValueMailInvalidTokenBody()
     {
-        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY);
+        $var = new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY);
         $this->assertSame(" Multiline \ntext. ", $var->setValue(" Multiline \ntext. ")->getValue());
     }
 
@@ -80,11 +80,11 @@ class SystemVariableTest extends TestCase
         $this->assertSame(" Test\ntext\n ", $var->setValue(" Test\ntext\n ")->getValue());
     }
 
-    public function testSetValueMailAccountDisabledSubject()
+    public function testSetValueMailInvalidTokenSubject()
     {
         // this is the default validation, single line text, so no extra test for others like this.
 
-        $var = new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT);
+        $var = new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT);
         $this->assertSame('Test this line', $var->setValue(" Test\nthis\r\nline ")->getValue());
     }
 

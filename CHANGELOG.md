@@ -2,6 +2,10 @@
 
 ## next
 
+- **BC break**: The notification mail "Account disabled" is now called "Invalid ESI token" and is sent 
+  regardless of the feature setting "Disable accounts".  
+  This mail is deactivated with the update.  
+  The command "send-account-disabled-mail" was renamed to "send-invalid-token-mail".
 - Member Tracking: Search can now be limited to individual columns.
 - API: Added "created" date to the character model.
 - UI improvements.

@@ -214,7 +214,7 @@ Alliance API
 
 Settings API
 - Change a system settings variable. `/user/settings/system/change/{name}`
-- Sends a 'Account disabled' test mail to the logged-in character. `/user/settings/system/send-account-disabled-mail`
+- Sends a 'invalid ESI token' test mail to the logged-in character. `/user/settings/system/send-invalid-token-mail`
 - Validates ESI token from a director and updates name and corporation. `/user/settings/system/validate-director/{name}`
 
 #### tracking

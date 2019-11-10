@@ -134,9 +134,9 @@ return [
     '/api/user/player/with-role/{name}'         => ['GET',    PlayerController::class.'::withRole'],
     '/api/user/player/with-status/{name}'       => ['GET',    PlayerController::class.'::withStatus'],
 
-    '/api/user/settings/system/theme'                      => ['GET',  SettingsController::class.'::theme'],
-    '/api/user/settings/system/list'                       => ['GET',  SettingsController::class.'::systemList'],
-    '/api/user/settings/system/change/{name}'              => ['PUT',  SettingsController::class.'::systemChange'],
-    '/api/user/settings/system/send-account-disabled-mail' => ['POST', SettingsController::class.'::sendAccountDisabledMail'],
-    '/api/user/settings/system/validate-director/{name}'   => ['PUT',  SettingsController::class.'::validateDirector'],
+    '/api/user/settings/system/theme'                    => ['GET',  SettingsController::class.'::theme'],
+    '/api/user/settings/system/list'                     => ['GET',  SettingsController::class.'::systemList'],
+    '/api/user/settings/system/change/{name}'            => ['PUT',  SettingsController::class.'::systemChange'],
+    '/api/user/settings/system/send-invalid-token-mail'  => ['POST', SettingsController::class.'::sendInvalidTokenMail'],
+    '/api/user/settings/system/validate-director/{name}' => ['PUT',  SettingsController::class.'::validateDirector'],
 ];

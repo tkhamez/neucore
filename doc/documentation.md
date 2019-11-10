@@ -10,9 +10,11 @@
   * [Account status](#account-status)
 - [Groups](#groups)
   * [Automatic Group Assignment](#automatic-group-assignment)
-  * [Group Deactivation with Mail Notification](#group-deactivation-with-mail-notification)
+  * [Group Deactivation](#group-deactivation)
   * [Required Groups](#required-groups)
 - [Member Tracking](#member-tracking)
+- [Mail Notifications](#mail-notifications)
+  * [Invalid ESI Token](#invalid-esi-token)
 - [Console Application](#console-application)
 - [Data Structure (Backend)](#data-structure-backend)
 
@@ -27,9 +29,10 @@
 * Group and app manager.
 * Customization of texts, links and images specific to your organization, including themes.
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
-* Optional automatic account deactivation with mail notification when ESI tokens are invalid.
+* Optional automatic account deactivation when ESI tokens are invalid.
 * Manually managed accounts that do not require any ESI scopes.
 * Corporation member tracking.
+* Optional EVE mail notification when ESI tokens are invalid.
 * CLI commands for data updates from ESI.
 * An API for applications to query group membership of characters and other data.
 * ESI request for authorized scopes for any character 
@@ -93,7 +96,8 @@ There a two account status: standard and managed.
   (technically, they can use this API endpoint for all players).
 - Automatic group assignment is disabled for managed accounts (but "Required Groups" are still checked, see below).
 - Groups are never deactivated for managed accounts.
-- There is a separate login URL for managed accounts that does not require ESI scopes (must be allowed in the settings).
+- There is a separate login URL for managed accounts that does not require ESI scopes 
+  (must be allowed in the settings).
 
 ## Groups
 
@@ -113,19 +117,16 @@ automatically. This also means that all players who are currently members of thi
 remain so. To correct this, this group can simply be deleted, or it must be assigned a manager 
 who can then manually remove all members.
 
-### Group Deactivation with Mail Notification
+### Group Deactivation
 
-If the ESI token of one or more characters on an account is invalid, the account is disabled. A character 
-without a token (no ESI scopes were requested during login) counts as invalid.
+If the ESI token of one or more characters on an account is invalid, the account can be disabled. This is done 
+on the settings page, feature "Deactivate Accounts". A character without a token (no ESI scopes were requested 
+during login) counts as invalid.
 
-Deactivation means that the API for apps no longer returns groups for that account (if this feature is enabled). 
-The deactivation of the account can be delayed, e. g. by 24 hours after a token became invalid.
+Deactivation means that the API for apps no longer returns groups for that account. The deactivation of the 
+account can be delayed, e. g. by 24 hours after a token became invalid.
 
 As soon as the token was updated by logging in with the appropriate character, the account will be reactivated.
-
-A mail notification can be sent for deactivated accounts. This mail will only be sent once and only if one 
-of the characters in the account is a member of an alliance that was previously configured. It will be sent 
-to the main character, if any, or to one of the characters that have an invalid token.
 
 ### Required Groups
 
@@ -141,6 +142,16 @@ members are allowed to see the data of that corporation.
 
 The "tracking" role is automatically added to or removed from the player when this configuration is changed or 
 members are added or removed from these groups.
+
+## Mail Notifications
+
+### Invalid ESI Token
+
+A mail notification can be sent for accounts with characters with an invalid ESI token.
+
+This mail will only be sent once and only if one of the characters in the account is a member of an alliance 
+that was previously configured. It will be sent to the main character, if any, or to one of the characters that 
+have an invalid token.
 
 ## Console Application
 

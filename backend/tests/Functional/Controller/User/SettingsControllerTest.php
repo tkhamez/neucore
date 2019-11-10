@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
@@ -223,48 +226,48 @@ class SettingsControllerTest extends WebTestCase
         $this->assertNull($actual);
     }
 
-    public function testSendAccountDisabledMail403()
+    public function testSendInvalidTokenMail403()
     {
-        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testSendAccountDisabledMail200Deactivated()
+    public function testSendInvalidTokenMail200Deactivated()
     {
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
 
-        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response));
     }
 
-    public function testSendAccountDisabledMail200MissingSettings()
+    public function testSendInvalidTokenMail200MissingSettings()
     {
-        $var = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
+        $var = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $this->em->persist($var);
 
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
 
-        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame('Alliance settings variable not found.', $this->parseJsonBody($response));
     }
 
-    public function testSendAccountDisabledMail200MissingChar()
+    public function testSendInvalidTokenMail200MissingChar()
     {
-        $var1 = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
-        $var2 = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('123,456');
+        $var1 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
+        $var2 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $this->em->persist($var1);
         $this->em->persist($var2);
 
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
 
-        $response = $this->runApp('POST', '/api/user/settings/system/send-account-disabled-mail');
+        $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame('Missing subject.', $this->parseJsonBody($response));

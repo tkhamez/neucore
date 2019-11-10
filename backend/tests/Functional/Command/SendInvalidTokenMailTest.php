@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
@@ -15,7 +18,7 @@ use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 
-class SendAccountDisabledMailTest extends ConsoleTestCase
+class SendInvalidTokenMailTest extends ConsoleTestCase
 {
     /**
      * @var Client
@@ -43,21 +46,21 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
     public function testExecuteNotActive()
     {
-        $output = $this->runConsoleApp('send-account-disabled-mail', ['--sleep' => 0]);
+        $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0]);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('Started "send-account-disabled-mail"', $actual[0]);
-        $this->assertStringEndsWith('  "Deactivate Accounts" settings is not enabled.', $actual[1]);
-        $this->assertStringEndsWith('Finished "send-account-disabled-mail"', $actual[2]);
+        $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
+        $this->assertStringEndsWith('  Mail is deactivated.', $actual[1]);
+        $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
     public function testExecuteMisconfiguration()
     {
         $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $active = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
-        $alliances = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('1010');
+        $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
+        $alliances = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('1010');
         $alliance = (new Alliance())->setId(1010)->setName('alli')->setTicker('A');
         $corp = (new Corporation())->setId(2020)->setName('corp')->setTicker('C')->setAlliance($alliance);
         $player = (new Player())->setName('play');
@@ -71,25 +74,25 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
         $this->em->persist($char);
         $this->em->flush();
 
-        $output = $this->runConsoleApp('send-account-disabled-mail', ['--sleep' => 0]);
+        $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0]);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('Started "send-account-disabled-mail"', $actual[0]);
+        $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith('  Missing character that can send mails.', $actual[1]);
-        $this->assertStringEndsWith('Finished "send-account-disabled-mail"', $actual[2]);
+        $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 
     public function testExecute()
     {
         $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $active = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ACTIVE))->setValue('1');
-        $alliances = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_ALLIANCES))->setValue('1010');
+        $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
+        $alliances = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('1010');
         $token = (new SystemVariable(SystemVariable::MAIL_TOKEN))
             ->setValue('{"id": 90, "access": "abc", "refresh": "", "expires": ""}');
-        $subj = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_SUBJECT))->setValue('subj');
-        $body = (new SystemVariable(SystemVariable::MAIL_ACCOUNT_DISABLED_BODY))->setValue('text');
+        $subj = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('subj');
+        $body = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue('text');
         $alliance = (new Alliance())->setId(1010)->setName('alli')->setTicker('A');
         $corp = (new Corporation())->setId(2020)->setName('corp')->setTicker('C')->setAlliance($alliance);
         $p1 = (new Player())->setName('p1'); // no character
@@ -122,15 +125,15 @@ class SendAccountDisabledMailTest extends ConsoleTestCase
 
         $this->client->setResponse(new Response(200, [], '373515628'));
 
-        $output = $this->runConsoleApp('send-account-disabled-mail', ['--sleep' => 0], [
+        $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
             ClientInterface::class => $this->client
         ]);
 
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('Started "send-account-disabled-mail"', $actual[0]);
+        $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith('  Mail sent to 30', $actual[1]);
-        $this->assertStringEndsWith('Finished "send-account-disabled-mail"', $actual[2]);
+        $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
 }
