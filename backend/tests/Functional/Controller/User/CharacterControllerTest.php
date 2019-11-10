@@ -60,6 +60,7 @@ class CharacterControllerTest extends WebTestCase
                 'id' => 96061222,
                 'name' => 'User',
                 'main' => true,
+                'created' => null,
                 'lastUpdate' => null,
                 'validToken' => true,
                 'validTokenTime' => '2019-08-03T23:12:45Z',
@@ -198,6 +199,7 @@ class CharacterControllerTest extends WebTestCase
             'id' => 96061222,
             'name' => 'Char 96061222',
             'main' => true,
+            'created' => null,
             'validToken' => true,
             'validTokenTime' => '2019-08-03T23:12:45Z',
             'corporation' => [

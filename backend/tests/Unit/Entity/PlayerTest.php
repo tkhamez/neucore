@@ -52,6 +52,7 @@ class PlayerTest extends TestCase
                 'id' => 123,
                 'name' => 'eve one',
                 'main' => true,
+                'created' => null,
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
@@ -63,6 +64,7 @@ class PlayerTest extends TestCase
                 'name' =>
                 'eve two',
                 'main' => false,
+                'created' => null,
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,

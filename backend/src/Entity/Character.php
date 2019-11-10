@@ -102,6 +102,7 @@ class Character implements \JsonSerializable
     private $scopes;
 
     /**
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="created", nullable=true)
      * @var \DateTime|null
      */
@@ -154,6 +155,7 @@ class Character implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->name,
             'main' => $this->main,
+            'created' => $this->created ? $this->created->format(Api::DATE_FORMAT) : null,
             'lastUpdate' => $this->getLastUpdate() !== null ? $this->getLastUpdate()->format(Api::DATE_FORMAT) : null,
             'validToken' => $this->validToken,
             'validTokenTime' => $this->getValidTokenTime() !== null ?

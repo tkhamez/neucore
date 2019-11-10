@@ -217,6 +217,7 @@
                                     <th>Corporation</th>
                                     <th>Alliance</th>
                                     <th>Main</th>
+                                    <th>Added*</th>
                                     <th>Token status</th>
                                     <th>Token status changed*</th>
                                     <th>Last updated*</th>
@@ -245,6 +246,11 @@
                                         </span>
                                     </td>
                                     <td>{{ character.main }}</td>
+                                    <td>
+                                        <span v-if="character.created">
+                                            {{ formatDate(character.created) }}
+                                        </span>
+                                    </td>
                                     <td>
                                         <span v-if="character.validToken">valid</span>
                                         <span v-if="character.validToken === false">invalid</span>
@@ -416,7 +422,12 @@ export default {
             activeRole: '',
             activeList: '',
             playerId: null, // player ID from route
+
+            /**
+             * {@link module:model/Player}
+             */
             playerEdit: null,// player being edited
+
             playerEditDeactivated: false,
             availableRoles: [
                 'app-admin',

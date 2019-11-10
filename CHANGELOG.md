@@ -2,8 +2,9 @@
 
 ## next
 
-- UI improvements
-
+- Member Tracking: Search can now be limited to individual columns.
+- API: Added "created" date to the character model.
+- UI improvements.
 
 ## 1.5.1
 
