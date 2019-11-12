@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.6.0
+
+12 Nov 2019
 
 - **BC break**: The notification mail "Account disabled" is now called "Invalid ESI token" and is sent 
   regardless of the feature setting "Disable accounts".  
