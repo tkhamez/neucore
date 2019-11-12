@@ -11,9 +11,14 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        The ESI token for this character is no longer valid.<br>
-                        Please use the EVE login button and login with this character
-                        again to create a new token.
+                        <p>
+                            The ESI token for this character is no longer valid.<br>
+                            Please use the EVE login button and login with this character
+                            again to create a new token.
+                        </p>
+                        <p class="align-center">
+                            <a href="/login-alt"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -107,36 +112,29 @@
                                 </p>
                             </div>
                             <div class="card-footer">
-                                <span v-if="char.main" class="text-warning align-middle">
+                                <span v-if="char.main" class="small text-warning align-middle">
                                     <span class="fas fa-star"></span> Main
                                 </span>
+                                <a v-if="! char.main" class="badge badge-primary ml-1" href="#"
+                                   v-on:click.prevent="makeMain(char.id)">Make Main</a>
+                                <a class="badge badge-primary ml-1" href="#"
+                                   v-on:click.prevent="update(char.id)">Update ESI data</a>
+                                <a v-if="authChar && authChar.id !== char.id
+                                        && settings.allow_character_deletion === '1'"
+                                   class="badge badge-danger ml-1" href="#"
+                                   v-on:click="askDeleteChar(char.id, char.name)">Delete</a>
+                                <br>
+                                <span v-if="char.validToken" class="badge badge-success ml-1">Valid ESI token</span>
+                                <span v-if="char.validToken === null"
+                                      class="badge badge-warning ml-1">No ESI token</span>
                                 <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <button v-if="char.validToken === null"
-                                        disabled type="button" class="btn btn-warning btn-sm mt-1">
-                                    No ESI token
-                                </button>
-                                <button v-if="! char.main && char.validToken !== false"
-                                        type="button" class="btn btn-primary btn-sm mt-1"
-                                        v-on:click="makeMain(char.id)">
-                                    <span class="fas fa-star"></span>
-                                    Make Main
-                                </button>
-                                <button type="button" class="btn btn-primary btn-sm mt-1"
-                                        v-on:click="update(char.id)">
-                                    <span class="fas fa-sync"></span>
-                                    Update
-                                </button>
-                                <button type="button" class="btn btn-danger btn-sm mt-1"
-                                        v-if="authChar && authChar.id !== char.id &&
-                                              settings.allow_character_deletion === '1'"
-                                        v-on:click="askDeleteChar(char.id, char.name)">
-                                    <span class="far fa-trash-alt"></span>
-                                    Delete
-                                </button>
+                                <a v-if="char.validToken === false" href="/login-alt">
+                                    <img src="/static/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                </a>
                             </div>
                         </div>
                     </div>
