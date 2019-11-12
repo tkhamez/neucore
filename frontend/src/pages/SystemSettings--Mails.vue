@@ -21,7 +21,7 @@
         </p>
 
         <button class="btn btn-success btn-sm" v-on:click="sendMailInvalidTokenTestMail()">Send test mail</button>
-        <small>Mail will be send to the logged-in user.</small>
+        <small>The mail is sent to the logged-in user.</small>
 
         <div class="custom-control custom-checkbox mb-2 mt-3">
             <input class="custom-control-input" type="checkbox" value="1"
