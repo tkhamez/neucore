@@ -217,7 +217,7 @@
                                     <th>Corporation</th>
                                     <th>Alliance</th>
                                     <th>Main</th>
-                                    <th>Added*</th>
+                                    <th>Created*</th>
                                     <th>Token status</th>
                                     <th>Token status changed*</th>
                                     <th>Last updated*</th>
