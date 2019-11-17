@@ -59,6 +59,9 @@ body.neucore {
         color: #fff;
         background-color: #666;
     }
+    .multiselect__single {
+        background-color: #666;
+    }
     .multiselect__input::placeholder,
     .form-control::placeholder {
         color: #ddd;
@@ -67,7 +70,7 @@ body.neucore {
         color: #fff;
         background-color: #333;
     }
-    .multiselect__option--selected{
+    .multiselect__option--selected {
         color: #fff;
         background-color: #444;
     }
