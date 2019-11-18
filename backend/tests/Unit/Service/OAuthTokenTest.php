@@ -236,7 +236,8 @@ class OAuthTokenTest extends TestCase
             200,
             [],
             '{"access_token": "new-token",
-            "refresh_token": "",
+            "expires_in": 1200,
+            "refresh_token": "gEy...fM0",
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));
 
@@ -244,6 +245,8 @@ class OAuthTokenTest extends TestCase
 
         $this->assertSame('new-token', $token);
         $this->assertSame('new-token', $char->getAccessToken());
+        $this->assertGreaterThan(1519933900, $char->getExpires());
+        $this->assertSame('gEy...fM0', $char->getRefreshToken());
 
         $this->em->clear();
         $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);

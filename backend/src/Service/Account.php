@@ -214,6 +214,9 @@ class Account
             $result = self::CHECK_TOKEN_NOK;
         } else {
             $char->setValidToken(true);
+            $char->setAccessToken($token->getToken());
+            $char->setExpires($token->getExpires());
+            $char->setRefreshToken($token->getRefreshToken());
             $result = self::CHECK_TOKEN_OK;
         }
 

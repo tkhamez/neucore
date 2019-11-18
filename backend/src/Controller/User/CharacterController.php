@@ -54,11 +54,6 @@ class CharacterController extends BaseController
     private $esiData;
 
     /**
-     * @var Account
-     */
-    private $charService;
-
-    /**
      * @var OAuthToken
      */
     private $tokenService;
@@ -69,14 +64,12 @@ class CharacterController extends BaseController
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth,
         EsiData $esiData,
-        Account $charService,
         OAuthToken $tokenService
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         
         $this->userAuth = $userAuth;
         $this->esiData = $esiData;
-        $this->charService = $charService;
         $this->tokenService = $tokenService;
     }
 
@@ -186,7 +179,7 @@ class CharacterController extends BaseController
      *     )
      * )
      */
-    public function update(string $id, AutoGroupAssignment $groupAssign): ResponseInterface
+    public function update(string $id, AutoGroupAssignment $groupAssign, Account $accountService): ResponseInterface
     {
         // get player account
         $player = $this->userAuth->getUser()->getPlayer();
@@ -215,7 +208,7 @@ class CharacterController extends BaseController
         }
 
         // check token and character owner hash - this may delete the character!
-        $result = $this->charService->checkCharacter($updatedChar, $this->tokenService);
+        $result = $accountService->checkCharacter($updatedChar, $this->tokenService);
         if ($result === Account::CHECK_CHAR_DELETED) {
             $updatedChar = null;
         }

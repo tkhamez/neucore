@@ -346,7 +346,13 @@ class AccountTest extends TestCase
     {
         list($token, $keySet) = Helper::generateToken(['scope1', 'scope2']);
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
+            // for getAccessToken()
+            new Response(200, [], '{
+                "access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"
+            }'),
+
             new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
@@ -365,9 +371,9 @@ class AccountTest extends TestCase
         $this->helper->getEm()->clear();
         $character = $this->charRepo->find(31);
         $this->assertTrue($character->getValidToken());
-        $this->assertSame('at', $character->getAccessToken()); // not updated
-        $this->assertSame('rt', $character->getRefreshToken()); // not updated
-        $this->assertSame($expires, $character->getExpires()); // not updated
+        $this->assertSame($token, $character->getAccessToken()); // updated
+        $this->assertGreaterThan($expires, $character->getExpires()); // updated
+        $this->assertSame('gEy...fM0', $character->getRefreshToken()); // updated
     }
 
     /**

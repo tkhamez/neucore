@@ -139,6 +139,7 @@ class OAuthToken
         if ($token->getToken() !== $existingToken->getToken()) {
             $character->setAccessToken($token->getToken());
             $character->setExpires($token->getExpires());
+            $character->setRefreshToken($token->getRefreshToken());
             if (! $this->objectManager->flush()) {
                 return ''; // old token is invalid, new token could not be saved
             }

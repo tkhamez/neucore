@@ -3,6 +3,8 @@
 ## next
 
 - UI fixes.
+- Also update refresh tokens when getting a new access token.
+- Other small stuff.
 
 ## 1.6.0
 
