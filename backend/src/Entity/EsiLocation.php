@@ -61,6 +61,15 @@ class EsiLocation implements \JsonSerializable
      */
     private $systemId;
 
+    /**
+     * Last ESI update.
+     *
+     * @OA\Property(nullable=true)
+     * @ORM\Column(type="datetime", name="last_update", nullable=true)
+     * @var \DateTime|null
+     */
+    private $lastUpdate;
+
     public function jsonSerialize(): array
     {
         return [
@@ -135,5 +144,17 @@ class EsiLocation implements \JsonSerializable
     public function getSystemId(): ?int
     {
         return $this->systemId;
+    }
+
+    public function setLastUpdate(\DateTime $lastUpdate): self
+    {
+        $this->lastUpdate = clone $lastUpdate;
+
+        return $this;
+    }
+
+    public function getLastUpdate(): ?\DateTime
+    {
+        return $this->lastUpdate;
     }
 }

@@ -59,4 +59,16 @@ class EsiLocationTest extends TestCase
         $location->setSystemId(123);
         $this->assertSame(123, $location->getSystemId());
     }
+
+    public function testSetGetLastUpdate()
+    {
+        $dt1 = new \DateTime('2019-11-18 19:34:14');
+
+        $location = new EsiLocation();
+        $location->setLastUpdate($dt1);
+        $dt2 = $location->getLastUpdate();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2019-11-18T19:34:14+00:00', $dt2->format(\DateTime::ATOM));
+    }
 }

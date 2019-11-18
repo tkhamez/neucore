@@ -298,6 +298,13 @@ class MemberTracking
                     $entity->setId($id);
                     $this->objectManager->persist($entity);
                 }
+                if ($entity instanceof EsiLocation) {
+                    try {
+                        $entity->setLastUpdate(new \DateTime());
+                    } catch (\Exception $e) {
+                        // ignore
+                    }
+                }
                 if (isset($esiNames[$id])) {
                     $entity->setName($esiNames[$id]->getName());
                 }

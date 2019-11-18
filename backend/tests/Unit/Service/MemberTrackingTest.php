@@ -318,6 +318,8 @@ class MemberTrackingTest extends TestCase
 
     public function testUpdateNames()
     {
+        $now = new \DateTime();
+
         $this->client->setResponse(
             new Response(200, [], '[
                 {"category": "station", "id": 60008494, "name": "Amarr VIII (Oris) - Emperor Family Academy"},
@@ -338,13 +340,17 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(30000142, $resultLocations[0]->getId());
         $this->assertSame(EsiLocation::CATEGORY_SYSTEM, $resultLocations[0]->getCategory());
         $this->assertSame('Jita', $resultLocations[0]->getName());
+        $this->assertGreaterThanOrEqual($now->getTimestamp(), $resultLocations[0]->getLastUpdate()->getTimestamp());
         $this->assertSame(60008494, $resultLocations[1]->getId());
         $this->assertSame(EsiLocation::CATEGORY_STATION, $resultLocations[1]->getCategory());
         $this->assertSame('Amarr VIII (Oris) - Emperor Family Academy', $resultLocations[1]->getName());
+        $this->assertGreaterThanOrEqual($now->getTimestamp(), $resultLocations[1]->getLastUpdate()->getTimestamp());
     }
 
     public function testUpdateStructures()
     {
+        $now = new \DateTime();
+
         $data =  new GetCorporationsCorporationIdMembertracking200Ok([
             'character_id' => 102,
             'location_id' => 1023100200300,
@@ -367,6 +373,7 @@ class MemberTrackingTest extends TestCase
         $this->assertSame('the structure name', $resultLocations[0]->getName());
         $this->assertSame(123, $resultLocations[0]->getOwnerId());
         $this->assertSame(456, $resultLocations[0]->getSystemId());
+        $this->assertGreaterThanOrEqual($now->getTimestamp(), $resultLocations[0]->getLastUpdate()->getTimestamp());
     }
 
     public function testFetchCharacterNames()

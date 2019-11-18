@@ -111,7 +111,7 @@ class CorporationMemberRepository extends EntityRepository
      * for example the corporation is not included.
      *
      * @param int $corporationId EVE corporation ID
-     * @return CorporationMember[]
+     * @return CorporationMember[] The returned entities are *not* attached to the entity manager.
      */
     public function findMatching(int $corporationId): array
     {

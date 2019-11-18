@@ -451,6 +451,7 @@ class EsiDataTest extends TestCase
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
         $this->assertSame(109299958, $location->getOwnerId());
         $this->assertSame(30000142, $location->getSystemId());
+        $this->assertGreaterThan('2019-11-18T19:34:14+00:00', $location->getLastUpdate()->format(\DateTime::ATOM));
 
         $this->em->clear();
 

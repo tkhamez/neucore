@@ -331,6 +331,7 @@ class EsiData
             $location->setName((string) $result->getName());
             $location->setOwnerId((int) $result->getOwnerId());
             $location->setSystemId((int) $result->getSolarSystemId());
+            $location->setLastUpdate(new \DateTime());
 
             if ($flush) {
                 $this->objectManager->flush();
