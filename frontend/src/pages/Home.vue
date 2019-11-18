@@ -17,7 +17,7 @@
                             again to create a new token.
                         </p>
                         <p class="align-center">
-                            <a href="/login-alt"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                            <a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -74,7 +74,7 @@
                 <!--suppress HtmlUnknownTag -->
                 <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
-                <p><a href="/login-alt"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
+                <p><a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
             </div>
         </div>
 
@@ -132,7 +132,7 @@
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <a v-if="char.validToken === false" href="/login-alt">
+                                <a v-if="char.validToken === false" :href="loginAltUrl">
                                     <img src="/static/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>
                             </div>
@@ -197,11 +197,12 @@ export default {
             deactivated: false,
             charToDelete: null,
             markdownHtml: '',
+            loginAltUrl: '/login-alt',
         }
     },
 
     mounted: function() { // after "redirect" from another page
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
 
         const md = markdownIt({ typographer: true })
             .use(mdEmoji)
@@ -215,13 +216,15 @@ export default {
         md.renderer.rules.emoji = function(token, idx) {
             return '<span class="emoji">' + token[idx].content + '</span>';
         };
-        
+
+        this.checkManaged();
         this.checkDeactivated();
         this.markdownHtml = md.render(this.settings.customization_home_markdown);
     },
 
     watch: {
         authChar: function() { // for primary login and logout
+            this.checkManaged();
             this.checkDeactivated();
         },
 
@@ -235,6 +238,7 @@ export default {
                     vm.update(character.id);
                 }
             });
+            this.checkManaged();
             this.checkDeactivated();
         },
     },
@@ -253,6 +257,12 @@ export default {
                 }
                 vm.deactivated = data;
             });
+        },
+
+        checkManaged: function() {
+            if (this.player && this.player.status === 'managed') {
+                this.loginAltUrl = '/login-managed-alt';
+            }
         },
 
         makeMain: function(characterId) {
