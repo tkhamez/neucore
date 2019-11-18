@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Slim;
 
+use Neucore\Application;
 use Neucore\Slim\ErrorHandler;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -18,7 +19,7 @@ class ErrorHandlerTest extends TestCase
         $handler = new TestHandler();
         $logger->pushHandler($handler);
 
-        $error = new ErrorHandler(new CallableResolver(), new ResponseFactory(), $logger);
+        $error = new ErrorHandler(new CallableResolver(), new ResponseFactory(), $logger, Application::ENV_DEV);
         $exception = new \ErrorException('msg');
 
         $error->__invoke(RequestFactory::createRequest(), $exception, true, true, true);
