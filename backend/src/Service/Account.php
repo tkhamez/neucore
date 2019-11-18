@@ -317,8 +317,8 @@ class Account
     public function syncTrackingRole(Player $changedPlayer = null, Corporation $changedCorporation = null): void
     {
         // validate params
-        if (($changedPlayer === null && $changedCorporation === null)
-            || ($changedPlayer !== null && $changedCorporation !== null)
+        if (($changedPlayer === null && $changedCorporation === null) ||
+            ($changedPlayer !== null && $changedCorporation !== null)
         ) {
             $this->log->error('Account::syncTrackingRole(): Invalid function call.');
             return;

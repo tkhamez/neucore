@@ -88,8 +88,8 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            if (in_array($character->corporation_id, $processedCorporations) // don't process the same corp twice
-                || $corpId > 0 && $corpId !== $character->corporation_id
+            if (in_array($character->corporation_id, $processedCorporations) || // don't process the same corp twice
+                $corpId > 0 && $corpId !== $character->corporation_id
             ) {
                 continue;
             }
