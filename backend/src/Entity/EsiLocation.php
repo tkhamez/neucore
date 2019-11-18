@@ -64,7 +64,6 @@ class EsiLocation implements \JsonSerializable
     /**
      * Last ESI update.
      *
-     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
      * @var \DateTime|null
      */
