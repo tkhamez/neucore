@@ -85,6 +85,7 @@ class EsiController extends BaseController
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
      *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
+               this allows to use OpenAPI clients that were generated for the ESI API,
                see doc/app-esi-examples.php for more.",
      *     tags={"Application"},
      *     security={{"BearerAuth"={}}},
@@ -104,7 +105,9 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The data from ESI.",
+     *         description="The data from ESI.<br>
+                            Please note that the JSON schema type can be an object, array or number etc.,
+                            unfortunately there is no way to document this.",
      *         @OA\JsonContent(type="string"),
      *         @OA\Header(header="Expires",
      *             description="RFC7231 formatted datetime string",
@@ -171,14 +174,7 @@ class EsiController extends BaseController
      * @OA\Post(
      *     path="/app/v1/esi",
      *     operationId="esiPostV1",
-     *     summary="Makes an ESI POST request on behalf on an EVE character and returns the result.",
-     *     description="Needs role: app-esi<br>
-     *         Public ESI routes are not allowed.<br>
-     *         The following headers from ESI are passed through to the response:
-               Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning<br>
-     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
-     *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
-               see doc/app-esi-examples.php for more.",
+     *     summary="Same as GET ​/app​/v1​/esi, but for POST requests.",
      *     tags={"Application"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
@@ -205,7 +201,7 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The data from ESI.",
+     *         description="Same as GET ​/app​/v1​/esi, see there for details.",
      *         @OA\JsonContent(type="string"),
      *         @OA\Header(header="Expires",
      *             description="RFC7231 formatted datetime string",
