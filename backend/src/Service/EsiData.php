@@ -347,6 +347,9 @@ class EsiData
             $corp = new Corporation();
             $corp->setId($id);
             $this->objectManager->persist($corp);
+
+            // Flush immediately, so that other processes do not try to add it again.
+            $this->objectManager->flush();
         }
         return $corp;
     }
@@ -358,6 +361,9 @@ class EsiData
             $alliance = new Alliance();
             $alliance->setId($id);
             $this->objectManager->persist($alliance);
+
+            // Flush immediately, so that other processes do not try to add it again.
+            $this->objectManager->flush();
         }
         return $alliance;
     }

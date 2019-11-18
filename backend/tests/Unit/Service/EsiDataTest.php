@@ -281,7 +281,7 @@ class EsiDataTest extends TestCase
 
         $this->em->clear();
         $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
-        $this->assertNull($corpDb);
+        $this->assertNull($corpDb->getName());
     }
 
     public function testFetchCorporation()
@@ -374,7 +374,7 @@ class EsiDataTest extends TestCase
 
         $this->em->clear();
         $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
-        $this->assertNull($alliDb);
+        $this->assertNull($alliDb->getName());
     }
 
     public function testFetchAlliance()
