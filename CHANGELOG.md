@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- UI fixes.
+
 ## 1.6.0
 
 12 Nov 2019

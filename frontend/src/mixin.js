@@ -43,19 +43,23 @@ Vue.mixin({
         },
 
         /**
-         * @param text
-         * @param {string} type One of: error, warning, info or success
+         * @param {string} text
+         * @param {string} [type] One of: error, warning, info or success
+         * @param {number} [timeout]
          */
-        message: function(text, type) {
+        message: function(text, type, timeout) {
+            type = type || 'info';
             switch (type) {
                 case 'error':
                 case 'info':
                 case 'warning':
                     type = type === 'error' ? 'danger' : type;
-                    this.$root.$emit('message', text, type);
+                    timeout = timeout || null;
+                    this.$root.$emit('message', text, type, timeout);
                     break;
                 default: // success
-                    this.$root.$emit('message', text, type, 1500);
+                    timeout = timeout || 1500;
+                    this.$root.$emit('message', text, type, timeout);
                     break;
             }
         },

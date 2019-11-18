@@ -241,8 +241,11 @@ export default {
             };
 
             const vm = this;
-            new CorporationApi().members(corporationId, opts, function(error, data) {
-                if (error) { // 403 usually
+            new CorporationApi().members(corporationId, opts, function(error, data, response) {
+                if (error) {
+                    if (response.statusCode === 403) {
+                        vm.message(error, 'warning', 2000);
+                    }
                     return;
                 }
                 vm.table.clear(); // it can happen that two of these requests run in parallel
@@ -265,7 +268,7 @@ export default {
 function configureDataTable(vm) {
     $.fn.dataTable.ext.search.push(
         function(settings, searchData) {
-            const term = $('.dataTables_filter input').val();
+            const term = $('.dataTables_filter input').val().toLowerCase();
             for (let index = 0; index < vm.columns.length; index++) {
                 if (! vm.columns[index].searchable) {
                     continue;
