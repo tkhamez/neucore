@@ -129,6 +129,8 @@ class Role implements \JsonSerializable
     /**
      * Allows a player to view corporation member tracking data.
      *
+     * This role is assigned automatically based on group membership.
+     *
      * @var string
      */
     const TRACKING = 'tracking';
@@ -139,6 +141,22 @@ class Role implements \JsonSerializable
      * @var string
      */
     const TRACKING_ADMIN = 'tracking-admin';
+
+    /**
+     * Allows a player to view the watchlist.
+     *
+     * This role is assigned automatically based on group membership.
+     *
+     * @var string
+     */
+    const WATCHLIST = 'watchlist';
+
+    /**
+     * Allows a player to edit watchlist exemptions and settings.
+     *
+     * @var string
+     */
+    const WATCHLIST_ADMIN = 'watchlist-admin';
 
     /**
      * @ORM\Id

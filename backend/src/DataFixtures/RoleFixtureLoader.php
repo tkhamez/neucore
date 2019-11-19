@@ -30,6 +30,8 @@ class RoleFixtureLoader implements FixtureInterface
             14 => Role::APP_CHARS,
             15 => Role::USER_MANAGER,
             16 => Role::TRACKING_ADMIN,
+            17 => Role::WATCHLIST,
+            18 => Role::WATCHLIST_ADMIN,
         ];
 
         foreach ($roles as $id => $name) {

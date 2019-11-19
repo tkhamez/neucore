@@ -55,6 +55,7 @@ import TrackingAdmin from './pages/TrackingAdmin.vue';
 import Esi from './pages/Esi.vue';
 import SystemSettings from './pages/SystemSettings.vue';
 import Tracking from './pages/Tracking.vue';
+import Watchlist from './pages/Watchlist.vue';
 
 export default {
     name: 'app',
@@ -70,9 +71,10 @@ export default {
         AppAdmin,
         UserAdmin,
         TrackingAdmin,
-        Esi,
         SystemSettings,
+        Esi,
         Tracking,
+        Watchlist,
     },
 
     props: {
@@ -103,6 +105,7 @@ export default {
                 'Esi',
                 'SystemSettings',
                 'Tracking',
+                'Watchlist',
             ],
 
             /**

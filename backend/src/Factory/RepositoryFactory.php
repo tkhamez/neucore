@@ -15,6 +15,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\AppRepository;
 use Neucore\Repository\CharacterRepository;
@@ -29,6 +30,7 @@ use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Repository\RoleRepository;
 use Neucore\Repository\SystemVariableRepository;
 use Doctrine\Common\Persistence\ObjectManager;
+use Neucore\Repository\WatchlistRepository;
 
 class RepositoryFactory
 {
@@ -115,6 +117,11 @@ class RepositoryFactory
     public function getRemovedCharacterRepository(): RemovedCharacterRepository
     {
         return $this->getRepository(RemovedCharacterRepository::class, RemovedCharacter::class);
+    }
+
+    public function getWatchlistRepository(): WatchlistRepository
+    {
+        return $this->getRepository(WatchlistRepository::class, Watchlist::class);
     }
 
     private function getRepository(string $repositoryClass, string $entityClass)

@@ -21,6 +21,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\Session\SessionData;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -40,6 +41,7 @@ class Helper
     private static $roleSequence = 0;
 
     private $entities = [
+        Watchlist::class,
         GroupApplication::class,
         App::class,
         CorporationMember::class,

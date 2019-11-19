@@ -23,6 +23,9 @@ There is also an OpenAPI definition file available that contains only the API fo
   * [esi](#esi)
   * [settings](#settings)
   * [tracking](#tracking)
+  * [tracking-admin](#tracking-admin)
+  * [watchlist](#watchlist)
+  * [watchlist-admin](#watchlist-admin)
 - [Application API](#application-api)
   * [app](#app)
   * [app-groups](#app-groups)
@@ -239,6 +242,32 @@ Corporation API
 - Add a group to the corporation for member tracking permission. `/user/corporation/{id}/add-group-tracking/{groupId}`
 - Remove a group for member tracking permission from the corporation. `/user/corporation/{id}/remove-group-tracking/{groupId}`
 - Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`
+
+#### watchlist
+
+Allows players to view the watchlist if they are also member of an appropriate group.  
+This role is assigned automatically based on group membership.
+
+Watchlist API
+- List of players on this list. `/user/watchlist/players`
+- List of exempt players. `/user/watchlist/exemption/list`
+- List of corporations for this list. `/user/watchlist/corporation/list`
+- List of alliances for this list. `/user/watchlist/alliance/list`
+
+#### watchlist-admin
+
+Allows a player to edit watchlist exemptions and settings.
+
+Watchlist API
+- Add player to exemption list. `/user/watchlist/exemption/add`
+- Remove player from exemption list. `/user/watchlist/exemption/remove`
+- Add corporation to the list. `/user/watchlist/corporation/add`
+- Remove corporation from the list. `/user/watchlist/corporation/remove`
+- Add alliance to the list. `/user/watchlist/alliance/add`
+- Remove alliance from the list. `/user/watchlist/alliance/remove`
+- List of groups with access to this list. `/user/watchlist/group/list`
+- Add access group to the list. `/user/watchlist/group/add`
+- Remove access group from the list. `/user/watchlist/group/remove`
 
 ### Application API
 
