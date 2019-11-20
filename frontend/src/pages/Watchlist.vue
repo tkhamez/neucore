@@ -28,9 +28,9 @@
     <div v-cloak v-if="tab === 'red' || tab === 'white'" class="card">
         <div class="card-body">
             <span v-if="tab === 'red'">
-                List of player accounts that have characters in one of the configured alliances or companies
-                and additionally have other characters in another player (not NPC) company
-                and have not been  manually excluded.
+                List of player accounts that have characters in one of the configured alliances or corporations
+                and additionally have other characters in another player (not NPC) corporation and have not
+                been manually excluded.
             </span>
             <span v-if="tab === 'white'">
                 Player accounts that have been manually excluded from the "Red Flags" list.

@@ -252,7 +252,9 @@ Player API
 - Show player with characters. `/user/player/{id}/characters`
 
 Watchlist API
-- List of players on this list. `/user/watchlist/{id}/players`
+- List of player accounts that have characters in one of the configured alliances or corporations
+                    and additionally have other characters in another player (not NPC) corporation and have not
+                    been manually excluded. `/user/watchlist/{id}/players`
 - List of exempt players. `/user/watchlist/{id}/exemption/list`
 - List of corporations for this list. `/user/watchlist/{id}/corporation/list`
 - List of alliances for this list. `/user/watchlist/{id}/alliance/list`

@@ -14,5 +14,4 @@ use Neucore\Entity\Watchlist;
  */
 class WatchlistRepository extends EntityRepository
 {
-
 }

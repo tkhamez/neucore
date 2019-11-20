@@ -10,6 +10,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Service\UserAuth;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -24,9 +25,9 @@ class WatchlistController extends BaseController
      * @OA\Get(
      *     path="/user/watchlist/{id}/players",
      *     operationId="watchlistPlayers",
-     *     summary="List of player accounts that have characters in one of the configured alliances or companies
-                    and additionally have other characters in another player (not NPC) company and have not been
-                   manually excluded.",
+     *     summary="List of player accounts that have characters in one of the configured alliances or corporations
+                    and additionally have other characters in another player (not NPC) corporation and have not
+                    been manually excluded.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
