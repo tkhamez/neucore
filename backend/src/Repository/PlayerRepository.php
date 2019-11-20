@@ -132,4 +132,65 @@ class PlayerRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Return all players who have characters in one of the provided corporation
+     * and do not belong to one of the provided players.
+     *
+     * @param array $corporationIds Player accounts with characters in these corporations
+     * @param array $playerIds Exclude these players
+     * @return Player[]
+     */
+    public function findInCorporationsWithExcludes(array $corporationIds, array $playerIds)
+    {
+        if (count($corporationIds) === 0) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c');
+
+        $qb->andWhere($qb->expr()->in('c.corporation', ':corporationIds'))
+            ->setParameter('corporationIds', $corporationIds);
+
+        if (count($playerIds) > 0) {
+            $qb->andWhere($qb->expr()->notIn('p.id', ':playerIds'))
+                ->setParameter('playerIds', $playerIds);
+        }
+
+        $qb->orderBy('p.name');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Return all players who have characters that are not in NPC corporations
+     * and do not belong to one of the provided players.
+     *
+     * @param array $corporationIds Exclude these corporations
+     * @param array $playerIds Exclude these players
+     * @return Player[]
+     */
+    public function findNotInNpcCorporationsWithExcludes(array $corporationIds, array $playerIds)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.characters', 'c');
+
+        $qb->andWhere($qb->expr()->gt('c.corporation', ':npc'))
+            ->setParameter('npc', 2000000);
+
+        if (count($corporationIds) > 0) {
+            $qb->andWhere($qb->expr()->notIn('c.corporation', ':corporationIds'))
+                ->setParameter('corporationIds', $corporationIds);
+        }
+
+        if (count($playerIds) > 0) {
+            $qb->andWhere($qb->expr()->notIn('p.id', ':playerIds'))
+                ->setParameter('playerIds', $playerIds);
+        }
+
+        $qb->orderBy('p.name');
+
+        return $qb->getQuery()->getResult();
+    }
 }

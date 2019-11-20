@@ -27,7 +27,7 @@ class WatchlistTest extends TestCase
         $this->assertSame('name', $watchlist->getName());
     }
 
-    public function testAddGetRemoveManager()
+    public function testAddGetRemoveExemptions()
     {
         $watchlist = new Watchlist();
         $p1 = new Player();
@@ -37,10 +37,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addExemption($p1);
         $watchlist->addExemption($p2);
-        $this->assertSame([$p1, $p2], $watchlist->getExemptions());
-
-        $watchlist->removeExemption($p2);
         $this->assertSame([$p1], $watchlist->getExemptions());
+
+        $watchlist->removeExemption($p1);
+        $this->assertSame([], $watchlist->getExemptions());
     }
 
     public function testAddGetRemoveCorporation()
@@ -53,10 +53,10 @@ class WatchlistTest extends TestCase
 
         $watchlist->addCorporation($c1);
         $watchlist->addCorporation($c2);
-        $this->assertSame([$c1, $c2], $watchlist->getCorporations());
-
-        $watchlist->removeCorporation($c2);
         $this->assertSame([$c1], $watchlist->getCorporations());
+
+        $watchlist->removeCorporation($c1);
+        $this->assertSame([], $watchlist->getCorporations());
     }
 
     public function testAddGetRemoveAlliance()
@@ -69,25 +69,25 @@ class WatchlistTest extends TestCase
 
         $watchlist->addAlliance($a1);
         $watchlist->addAlliance($a2);
-        $this->assertSame([$a1, $a2], $watchlist->getAlliances());
-
-        $watchlist->removeAlliance($a2);
         $this->assertSame([$a1], $watchlist->getAlliances());
+
+        $watchlist->removeAlliance($a1);
+        $this->assertSame([], $watchlist->getAlliances());
     }
 
     public function testAddGetRemoveGroup()
     {
         $watchlist = new Watchlist();
-        $required1 = new Group();
-        $required2 = new Group();
+        $group1 = new Group();
+        $group2 = new Group();
 
         $this->assertSame([], $watchlist->getGroups());
 
-        $watchlist->addGroup($required1);
-        $watchlist->addGroup($required2);
-        $this->assertSame([$required1, $required2], $watchlist->getGroups());
+        $watchlist->addGroup($group1);
+        $watchlist->addGroup($group2);
+        $this->assertSame([$group1], $watchlist->getGroups());
 
-        $watchlist->removeGroup($required2);
-        $this->assertSame([$required1], $watchlist->getGroups());
+        $watchlist->removeGroup($group1);
+        $this->assertSame([], $watchlist->getGroups());
     }
 }

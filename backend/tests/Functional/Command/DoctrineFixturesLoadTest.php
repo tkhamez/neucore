@@ -28,10 +28,11 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
 
         $output = explode("\n", $this->runConsoleApp('doctrine-fixtures-load'));
 
-        $this->assertSame(3, count($output));
+        $this->assertSame(4, count($output));
         $this->assertSame('loading Neucore\DataFixtures\RoleFixtureLoader', $output[0]);
         $this->assertSame('loading Neucore\DataFixtures\SystemVariablesFixtureLoader', $output[1]);
-        $this->assertSame('', $output[2]);
+        $this->assertSame('loading Neucore\DataFixtures\WatchlistFixtureLoader', $output[2]);
+        $this->assertSame('', $output[3]);
 
         $repoFactory = new RepositoryFactory($em);
         $roles = $repoFactory->getRoleRepository()->findBy([]);

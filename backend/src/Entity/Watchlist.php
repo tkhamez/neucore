@@ -105,6 +105,11 @@ class Watchlist
 
     public function addExemption(Player $exemption): Watchlist
     {
+        foreach ($this->getExemptions() as $entity) {
+            if ($entity->getId() === $exemption->getId()) {
+                return $this;
+            }
+        }
         $this->exemptions[] = $exemption;
 
         return $this;
@@ -125,6 +130,11 @@ class Watchlist
 
     public function addCorporation(Corporation $corporation): Watchlist
     {
+        foreach ($this->getCorporations() as $entity) {
+            if ($entity->getId() === $corporation->getId()) {
+                return $this;
+            }
+        }
         $this->corporations[] = $corporation;
 
         return $this;
@@ -145,6 +155,11 @@ class Watchlist
 
     public function addAlliance(Alliance $alliance): Watchlist
     {
+        foreach ($this->getAlliances() as $entity) {
+            if ($entity->getId() === $alliance->getId()) {
+                return $this;
+            }
+        }
         $this->alliances[] = $alliance;
 
         return $this;
@@ -165,6 +180,11 @@ class Watchlist
 
     public function addGroup(Group $group): Watchlist
     {
+        foreach ($this->getGroups() as $entity) {
+            if ($entity->getId() === $group->getId()) {
+                return $this;
+            }
+        }
         $this->groups[] = $group;
 
         return $this;
