@@ -83,6 +83,7 @@ class NonBlockingSessionTest extends TestCase
     private function invokeMiddleware($path, $conf, $addRoute)
     {
         $route = $this->createMock(RouteInterface::class);
+        /* @phan-suppress-next-line PhanAccessMethodInternal */
         $route->method('getPattern')->willReturn($path);
 
         $req = RequestFactory::createRequest();

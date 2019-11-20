@@ -3,7 +3,6 @@
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
-use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -89,7 +88,7 @@ class PlayerController extends BaseController
      */
     public function show(): ResponseInterface
     {
-        return $this->withJson($this->getUser()->getPlayer());
+        return $this->withJson($this->getUser($this->userAuth)->getPlayer());
     }
 
     /**
@@ -114,7 +113,8 @@ class PlayerController extends BaseController
      */
     public function groupsDisabled(Account $accountService): ResponseInterface
     {
-        if ($accountService->groupsDeactivated($this->getUser()->getPlayer(), true)) { // true = ignore delay
+        // check state and ignore delay
+        if ($accountService->groupsDeactivated($this->getUser($this->userAuth)->getPlayer(), true)) {
             return $this->withJson(true);
         }
 
@@ -206,7 +206,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $player = $this->getUser()->getPlayer();
+        $player = $this->getUser($this->userAuth)->getPlayer();
 
         // update existing or create new application
         $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
@@ -258,7 +258,7 @@ class PlayerController extends BaseController
     public function removeApplication(string $gid): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $this->getUser()->getPlayer()->getId(), 'group' => (int) $gid]);
+            ->findBy(['player' => $this->getUser($this->userAuth)->getPlayer()->getId(), 'group' => (int) $gid]);
 
         if (count($groupApplications) === 0) {
             return $this->response->withStatus(404);
@@ -294,7 +294,7 @@ class PlayerController extends BaseController
     public function showApplications(): ResponseInterface
     {
         $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $this->getUser()->getPlayer()->getId()]);
+            ->findBy(['player' => $this->getUser($this->userAuth)->getPlayer()->getId()]);
 
         return $this->withJson($groupApplications);
     }
@@ -336,7 +336,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $this->getUser()->getPlayer()->removeGroup($group);
+        $this->getUser($this->userAuth)->getPlayer()->removeGroup($group);
 
         return $this->flushAndReturn(204);
     }
@@ -374,7 +374,7 @@ class PlayerController extends BaseController
     public function setMain(string $cid): ResponseInterface
     {
         $main = null;
-        $player = $this->getUser()->getPlayer();
+        $player = $this->getUser($this->userAuth)->getPlayer();
         foreach ($player->getCharacters() as $char) {
             if ($char->getId() === (int) $cid) {
                 $char->setMain(true);
@@ -929,7 +929,7 @@ class PlayerController extends BaseController
     public function deleteCharacter(string $id, ServerRequestInterface $request, Account $characterService): ResponseInterface
     {
         $reason = $this->getQueryParam($request, 'admin-reason', '');
-        $admin = $this->getUser()->getPlayer()->hasRole(Role::USER_ADMIN) && $reason !== '';
+        $admin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::USER_ADMIN) && $reason !== '';
 
         // check "allow deletion" settings
         if (! $admin) {
@@ -942,7 +942,7 @@ class PlayerController extends BaseController
         }
 
         // check if character to delete is logged in
-        if ((int) $id === $this->getUser()->getId()) {
+        if ((int) $id === $this->getUser($this->userAuth)->getId()) {
             return $this->response->withStatus(409);
         }
 
@@ -960,14 +960,14 @@ class PlayerController extends BaseController
             RemovedCharacter::REASON_DELETED_BY_ADMIN,
         ])) {
             // okay
-        } elseif ($this->getUser()->getPlayer()->hasCharacter((int) $char->getId())) {
+        } elseif ($this->getUser($this->userAuth)->getPlayer()->hasCharacter((int) $char->getId())) {
             $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
         } else {
             return $this->response->withStatus(403);
         }
 
         // delete char
-        $characterService->deleteCharacter($char, $reason, $this->getUser()->getPlayer());
+        $characterService->deleteCharacter($char, $reason, $this->getUser($this->userAuth)->getPlayer());
 
         return $this->flushAndReturn(204);
     }
@@ -995,10 +995,5 @@ class PlayerController extends BaseController
         }
 
         return $this->withJson($ret);
-    }
-
-    private function getUser(): Character
-    {
-        return $this->userAuth->getUser();
     }
 }
