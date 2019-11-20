@@ -42,7 +42,10 @@ Select and table to add and remove objects from other objects.
             <p v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.
             </p>
-            <p v-if="contentType === 'alliances' || contentType === 'corporations'">
+            <p v-if="
+                (type === 'Group' || type === 'App') &&
+                (contentType === 'alliances' || contentType === 'corporations')
+            ">
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
             </p>
             <div class="row mb-1" v-if="type === 'App' && contentType === 'groups'">
@@ -82,7 +85,9 @@ Select and table to add and remove objects from other objects.
                     <th v-if="contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
                     <th v-if="contentType === 'managers'">Characters</th>
                     <th v-if="contentType === 'corporations'">Alliance</th>
-                    <th v-if="contentType === 'corporations' || contentType === 'alliances'">Groups</th>
+                    <th v-if="
+                        (type === 'Group' || type === 'App') &&
+                        (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
                     <th></th>
                 </tr>
             </thead>
@@ -108,10 +113,10 @@ Select and table to add and remove objects from other objects.
                             {{ row.alliance.name }}
                         </span>
                     </td>
-                    <td v-if="contentType === 'corporations' || contentType === 'alliances'">
-                        <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">
-                            Show groups
-                        </button>
+                    <td v-if="
+                            (type === 'Group' || type === 'App') &&
+                            (contentType === 'corporations' || contentType === 'alliances')">
+                        <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">Show groups</button>
                     </td>
                     <td>
                         <button v-if="contentType === 'managers'"
@@ -121,13 +126,13 @@ Select and table to add and remove objects from other objects.
                         </button>
                         <button v-if="contentType === 'corporations' || contentType === 'alliances'"
                                 class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveCorporationOrAllianceToGroup(row.id, 'remove')">
+                                v-on:click="addOrRemoveCorporationOrAllianceToEntity(row.id, 'remove')">
                             <span v-if="contentType === 'corporations'">Remove corporation</span>
                             <span v-if="contentType === 'alliances'">Remove alliance</span>
                         </button>
                         <button v-if="contentType === 'groups' || contentType === 'roles'"
                                 class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveGroupOrRoleToAppOrPlayerOrGroupOrCorporation(
+                                v-on:click="addOrRemoveEntityToEntity(
                                     row.id,
                                     contentType === 'groups' ? 'Group' : 'Role',
                                     'remove'
@@ -148,6 +153,7 @@ import { AppApi } from 'neucore-js-client';
 import { CorporationApi } from 'neucore-js-client';
 import { GroupApi } from 'neucore-js-client';
 import { PlayerApi } from 'neucore-js-client';
+import { WatchlistApi } from 'neucore-js-client';
 
 import Characters from '../components/Characters.vue';
 
@@ -157,10 +163,23 @@ export default {
     },
 
     props: {
+        /**
+         * Content of the select box, e. g. "managers"
+         */
         contentType: '',
+
+        /**
+         * Type of entity to add/remove items from, e. g. "Group"
+         */
         type: '',
+
+        /**
+         * ID of entity to add/remove items from, e. g. 12
+         */
         typeId: Number,
+
         player: Object,
+
         settings: Object,
     },
 
@@ -210,9 +229,9 @@ export default {
             if (this.contentType === 'managers') {
                 this.addOrRemoveManagerToGroupOrApp(this.newObject.id, 'add');
             } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
-                this.addOrRemoveCorporationOrAllianceToGroup(this.newObject.id, 'add');
+                this.addOrRemoveCorporationOrAllianceToEntity(this.newObject.id, 'add');
             } else if (this.contentType === 'groups' || this.contentType === 'roles') {
-                this.addOrRemoveGroupOrRoleToAppOrPlayerOrGroupOrCorporation(
+                this.addOrRemoveEntityToEntity(
                     this.newObject.id,
                     this.contentType === 'groups' ? 'Group' : 'Role',
                     'add'
@@ -315,12 +334,14 @@ export default {
                 api = new PlayerApi();
             } else if (this.type === 'Corporation') {
                 api = new CorporationApi();
+            } else if (this.type === 'Watchlist') {
+                api = new WatchlistApi();
             }
-            if (this.contentType === 'managers') {
+            if ((this.type === 'Group' || this.type === 'App') && this.contentType === 'managers') {
                 method = 'managers';
-            } else if (this.contentType === 'corporations') {
+            } else if (this.type === 'Group' && this.contentType === 'corporations') {
                 method = 'corporations';
-            } else if (this.contentType === 'alliances') {
+            } else if (this.type === 'Group' && this.contentType === 'alliances') {
                 method = 'alliances';
             } else if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
                 method = 'show';
@@ -330,6 +351,12 @@ export default {
                 method = 'requiredGroups';
             } else if (this.type === 'Corporation' && this.contentType === 'groups') {
                 method = 'getGroupsTracking';
+            } else if (this.type === 'Watchlist' && this.contentType === 'groups') {
+                method = 'watchlistGroupList';
+            } else if (this.type === 'Watchlist' && this.contentType === 'alliances') {
+                method = 'watchlistAllianceList';
+            } else if (this.type === 'Watchlist' && this.contentType === 'corporations') {
+                method = 'watchlistCorporationList';
             }
             if (! api || ! method) {
                 return;
@@ -458,32 +485,49 @@ export default {
             });
         },
 
-        addOrRemoveCorporationOrAllianceToGroup: function(id, action) {
+        addOrRemoveCorporationOrAllianceToEntity: function(id, action) {
             const vm = this;
 
             let api;
             let method;
-            if (action === 'add') {
-                method = 'addGroup';
-            } else if (action === 'remove') {
-                method = 'removeGroup';
-            }
-            if (this.contentType === 'corporations') {
-                api = new CorporationApi();
-            } else if (this.contentType === 'alliances') {
-                api = new AllianceApi();
+            let param1;
+            let param2;
+            if (this.type === 'Watchlist') {
+                api = new WatchlistApi();
+                if (this.contentType === 'corporations') {
+                    method = 'watchlistCorporation' + upperCaseFirst(action);
+                } else if (this.contentType === 'alliances') {
+                    method = 'watchlistAlliance' + upperCaseFirst(action);
+                }
+
+                param1 = this.typeId;
+                param2 = id;
+            } else if (this.type === 'Group') {
+                if (this.contentType === 'corporations') {
+                    api = new CorporationApi();
+                } else if (this.contentType === 'alliances') {
+                    api = new AllianceApi();
+                }
+                method = action + this.type; // addGroup, removeGroup
+                param1 = id;
+                param2 = this.typeId;
             }
             if (! api || ! method) {
                 return;
             }
 
-            this.callApi(api, method, id, this.typeId, function() {
+            this.callApi(api, method, param1, param2, function() {
                 vm.getTableContent();
                 vm.getWithGroups();
             });
         },
 
-        addOrRemoveGroupOrRoleToAppOrPlayerOrGroupOrCorporation: function(id, type, action) {
+        /**
+         * @param {number} id ID of the entity to be added or removed
+         * @param {string} type of the entity to be added or removed: "Group" or "Role" atm.
+         * @param {string} action "add" or "remove"
+         */
+        addOrRemoveEntityToEntity: function(id, type, action) {
             const vm = this;
             let api;
             let method;
@@ -507,6 +551,11 @@ export default {
             } else if (this.type === 'Corporation') {
                 api = new CorporationApi();
                 method = action + 'GroupTracking';
+                param1 = this.typeId;
+                param2 = id;
+            } else if (this.type === 'Watchlist') {
+                api = new WatchlistApi();
+                method = 'watchlist' + type + upperCaseFirst(action);
                 param1 = this.typeId;
                 param2 = id;
             }
@@ -551,6 +600,11 @@ export default {
         },
     },
 }
+
+function upperCaseFirst(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 </script>
 
 <style scoped>

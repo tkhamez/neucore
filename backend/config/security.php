@@ -29,7 +29,7 @@ return [
 
     '/api/app'                                     => [Role::APP],
 
-    '/api/user/alliance/all' => [Role::GROUP_ADMIN, Role::SETTINGS],
+    '/api/user/alliance/all' => [Role::GROUP_ADMIN, Role::SETTINGS, Role::WATCHLIST_ADMIN],
     '/api/user/alliance'     => [Role::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
@@ -47,12 +47,16 @@ return [
     '/api/user/corporation/{id}/get-groups-tracking'   => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/add-group-tracking'    => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/remove-group-tracking' => [Role::TRACKING_ADMIN],
+    '/api/user/corporation/all'                        => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN],
     '/api/user/corporation'                            => [Role::GROUP_ADMIN],
 
     '/api/user/esi/request' => [Role::ESI],
 
     '/api/user/group/public'                  => [Role::USER],
-    '/api/user/group/all'                     => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER],
+    '/api/user/group/all'                     => [
+                                                    Role::APP_ADMIN, Role::GROUP_ADMIN,
+                                                    Role::USER_MANAGER, Role::WATCHLIST_ADMIN
+                                                ],
     '/api/user/group/{id}/applications'       => [Role::GROUP_MANAGER],
     '/api/user/group/accept-application/{id}' => [Role::GROUP_MANAGER],
     '/api/user/group/deny-application/{id}'   => [Role::GROUP_MANAGER],
@@ -71,7 +75,12 @@ return [
     '/api/user/player/delete-character/{id}' => [Role::USER, Role::USER_ADMIN],
     '/api/user/player/app-managers'          => [Role::APP_ADMIN],
     '/api/user/player/group-managers'        => [Role::GROUP_ADMIN],
-    '/api/user/player/{id}/characters'       => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::GROUP_MANAGER, Role::TRACKING],
+    '/api/user/player/{id}/characters'       => [
+                                                    Role::APP_ADMIN, Role::GROUP_ADMIN,
+                                                    Role::USER_MANAGER, Role::GROUP_MANAGER,
+                                                    Role::TRACKING,
+                                                    Role::WATCHLIST, Role::WATCHLIST_ADMIN
+                                                ],
     '/api/user/player/with-status/{name}'    => [Role::USER_ADMIN, Role::USER_MANAGER],
     '/api/user/player/{id}/show'             => [Role::USER_ADMIN, Role::USER_MANAGER],
     '/api/user/player'                       => [Role::USER_ADMIN],

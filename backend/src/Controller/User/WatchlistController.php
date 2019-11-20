@@ -24,7 +24,9 @@ class WatchlistController extends BaseController
      * @OA\Get(
      *     path="/user/watchlist/{id}/players",
      *     operationId="watchlistPlayers",
-     *     summary="List of players on this list.",
+     *     summary="List of player accounts that have characters in one of the configured alliances or companies
+                    and additionally have other characters in another player (not NPC) company and have not been
+                   manually excluded.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
