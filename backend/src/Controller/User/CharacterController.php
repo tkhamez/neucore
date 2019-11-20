@@ -94,7 +94,7 @@ class CharacterController extends BaseController
      */
     public function show(): ResponseInterface
     {
-        return $this->withJson($this->userAuth->getUser());
+        return $this->withJson($this->getUser($this->userAuth));
     }
 
     /**
@@ -182,7 +182,7 @@ class CharacterController extends BaseController
     public function update(string $id, AutoGroupAssignment $groupAssign, Account $accountService): ResponseInterface
     {
         // get player account
-        $player = $this->userAuth->getUser()->getPlayer();
+        $player = $this->getUser($this->userAuth)->getPlayer();
 
         // find character
         $char = null;

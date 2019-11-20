@@ -185,7 +185,7 @@ class SettingsController extends BaseController
      */
     public function sendInvalidTokenMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
     {
-        $charId = $userAuth->getUser() !== null ? $userAuth->getUser()->getId() : null;
+        $charId = $this->getUser($userAuth)->getId();
 
         $result = $eveMail->invalidTokenIsActive();
         if ($result === '') {

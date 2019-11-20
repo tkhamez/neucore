@@ -5,7 +5,6 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
-use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
@@ -449,7 +448,7 @@ class CorporationController extends BaseController
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
 
-        if ($this->getPlayer()->hasRole(Role::TRACKING_ADMIN)) {
+        if ($this->getUser($this->userAuth)->getPlayer()->hasRole(Role::TRACKING_ADMIN)) {
             return $this->withJson($corporations);
         }
 
@@ -564,17 +563,12 @@ class CorporationController extends BaseController
      */
     private function checkPermission(Corporation $corporation): bool
     {
-        $playerGroups = $this->getPlayer()->getGroupIds();
+        $playerGroups = $this->getUser($this->userAuth)->getPlayer()->getGroupIds();
         foreach ($corporation->getGroupsTracking() as $group) {
             if (in_array($group->getId(), $playerGroups)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private function getPlayer(): Player
-    {
-        return $this->userAuth->getUser()->getPlayer();
     }
 }

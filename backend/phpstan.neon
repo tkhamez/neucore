@@ -18,17 +18,8 @@ parameters:
 			message: '#MemberTracking::fetchData() should return array<(.*)GetCorporationsCorporationIdMembertracking200Ok>|null but returns(.*)GetCorporationsCorporationIdMembertracking200Ok#'
 			path: %currentWorkingDirectory%/src/Service/MemberTracking.php
 		-
-			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/Controller/User/AppController.php
-		-
-			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/Controller/User/CharacterController.php
-		-
-			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/Controller/User/GroupController.php
-		-
-			message: '#Cannot call method getPlayer() on Neucore\Entity\Character|null.#'
-			path: %currentWorkingDirectory%/src/Controller/User/CorporationController.php
+			message: '#(.*)Controller\BaseController::getUser()(.*)but returns Neucore\Entity\Character|null.#'
+			path: %currentWorkingDirectory%/src/Controller/BaseController.php
 		-
 			message: '#PlayerController::getUser() should return(.*)Character but returns(.*)Character|null#'
 			path: %currentWorkingDirectory%/src/Controller/User/PlayerController.php

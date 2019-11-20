@@ -1095,7 +1095,7 @@ class GroupController extends BaseController
      */
     private function checkManager(Group $group): bool
     {
-        $currentPlayer = $this->getPlayer();
+        $currentPlayer = $this->getUser($this->userAuth)->getPlayer();
         foreach ($currentPlayer->getManagerGroups() as $mg) {
             if ($mg->getId() === $group->getId()) {
                 return true;
@@ -1107,11 +1107,6 @@ class GroupController extends BaseController
 
     private function isUserManager(): bool
     {
-        return $this->getPlayer()->hasRole(Role::USER_MANAGER);
-    }
-
-    private function getPlayer(): Player
-    {
-        return $this->userAuth->getUser()->getPlayer();
+        return $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::USER_MANAGER);
     }
 }

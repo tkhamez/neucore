@@ -2,8 +2,10 @@
 
 namespace Neucore\Controller;
 
+use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\ObjectManager;
+use Neucore\Service\UserAuth;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -95,5 +97,16 @@ abstract class BaseController
         } else {
             return $this->response;
         }
+    }
+
+    /**
+     * Returns the logged in user.
+     *
+     * Don't call it if there is no user logged in, it will return null in that case. This
+     * is not documented in the return type hint to avoid a lot of static code analysis error.
+     */
+    protected function getUser(UserAuth $userAuth): Character
+    {
+        return $userAuth->getUser();
     }
 }

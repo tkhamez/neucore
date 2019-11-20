@@ -448,7 +448,7 @@ class AppController extends BaseController
         }
 
         // check if logged in user is manager of this app or has the role app-admin
-        $player = $this->getPlayer($uas);
+        $player = $this->getUser($uas)->getPlayer();
         if (! $player->hasRole(Role::APP_ADMIN) && ! $app->isManager($player)) {
             return $this->response->withStatus(403);
         }
@@ -696,7 +696,7 @@ class AppController extends BaseController
         }
 
         // check if logged in user is manager
-        if (! $app->isManager($this->getPlayer($uas))) {
+        if (! $app->isManager($this->getUser($uas)->getPlayer())) {
             return $this->response->withStatus(403);
         }
 
@@ -758,10 +758,5 @@ class AppController extends BaseController
     private function sanitize($name): string
     {
         return str_replace(["\r", "\n"], ' ', trim($name));
-    }
-
-    private function getPlayer(UserAuth $userAuthService): Player
-    {
-        return $userAuthService->getUser()->getPlayer();
     }
 }
