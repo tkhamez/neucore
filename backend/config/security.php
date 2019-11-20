@@ -80,11 +80,11 @@ return [
     '/api/user/settings/system/list'  => [Role::ANONYMOUS, Role::USER],
     '/api/user/settings/system'       => [Role::SETTINGS],
 
-    '/api/user/watchlist/players'          => [Role::WATCHLIST],
-    '/api/user/watchlist/exemption/list'   => [Role::WATCHLIST],
-    '/api/user/watchlist/corporation/list' => [Role::WATCHLIST],
-    '/api/user/watchlist/alliance/list'    => [Role::WATCHLIST],
-    '/api/user/watchlist'                  => [Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/players'          => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/exemption/list'   => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/corporation/list' => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/alliance/list'    => [Role::WATCHLIST],
+    '/api/user/watchlist'                       => [Role::WATCHLIST_ADMIN],
 
     '/api/user' => [Role::USER],
 ];

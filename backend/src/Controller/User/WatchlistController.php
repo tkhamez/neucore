@@ -13,10 +13,6 @@ use Neucore\Service\UserAuth;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Watchlist controller.
- *
- * There is only one watchlist atm. (ID 1), which is hard coded here for now.
- *
  * @OA\Tag(
  *     name="Watchlist"
  * )
@@ -24,19 +20,21 @@ use Psr\Http\Message\ResponseInterface;
 class WatchlistController extends BaseController
 {
     /**
-     * @var int
-     */
-    private $id = 1;
-
-    /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/players",
+     *     path="/user/watchlist/{id}/players",
      *     operationId="watchlistPlayers",
      *     summary="List of players on this list.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of players.",
@@ -48,27 +46,27 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function players(UserAuth $userAuth): ResponseInterface
+    public function players(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission($userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
         $allianceIds = array_map(function (Alliance $alliance) {
             return $alliance->getId();
-        }, $this->getList('alliance'));
+        }, $this->getList((int) $id, 'alliance'));
 
         $corporationIds1 = array_map(function (Corporation $corporation) {
             return $corporation->getId();
         }, $this->repositoryFactory->getCorporationRepository()->getAllFromAlliances($allianceIds));
         $corporationIds2 = array_map(function (Corporation $corporation) {
             return $corporation->getId();
-        }, $this->getList('corporation'));
+        }, $this->getList((int) $id, 'corporation'));
         $corporationIds = array_unique(array_merge($corporationIds1, $corporationIds2));
 
         $exemptPlayers = array_map(function (array $player) {
             return $player['id'];
-        }, $this->getList('exemption'));
+        }, $this->getList((int) $id, 'exemption'));
 
         $playerRepository = $this->repositoryFactory->getPlayerRepository();
 
@@ -92,12 +90,19 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/exemption/list",
+     *     path="/user/watchlist/{id}/exemption/list",
      *     operationId="watchlistExemptionList",
      *     summary="List of exempt players.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of players, only ID and name properties are included.",
@@ -109,19 +114,19 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function exemptionList(UserAuth $userAuth): ResponseInterface
+    public function exemptionList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission($userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->getList('exemption'));
+        return $this->withJson($this->getList((int) $id, 'exemption'));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/exemption/add/{id}",
+     *     path="/user/watchlist/{id}/exemption/add/{player}",
      *     operationId="watchlistExemptionAdd",
      *     summary="Add player to exemption list.",
      *     description="Needs role: watchlist-admin",
@@ -129,6 +134,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="player",
      *         in="path",
      *         required=true,
      *         description="Player ID.",
@@ -148,15 +160,15 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function exemptionAdd(string $id): ResponseInterface
+    public function exemptionAdd(string $id, string $player): ResponseInterface
     {
-        return $this->addOrRemoveEntity('add', 'player', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'add', 'player', (int) $player);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/exemption/remove/{id}",
+     *     path="/user/watchlist/{id}/exemption/remove/{player}",
      *     operationId="watchlistExemptionRemove",
      *     summary="Remove player from exemption list.",
      *     description="Needs role: watchlist-admin",
@@ -164,6 +176,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="player",
      *         in="path",
      *         required=true,
      *         description="Player ID.",
@@ -183,20 +202,27 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function exemptionRemove(string $id): ResponseInterface
+    public function exemptionRemove(string $id, string $player): ResponseInterface
     {
-        return $this->addOrRemoveEntity('remove', 'player', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'player', (int) $player);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/corporation/list",
+     *     path="/user/watchlist/{id}/corporation/list",
      *     operationId="watchlistCorporationList",
      *     summary="List of corporations for this list.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of corporation.",
@@ -208,19 +234,19 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function corporationList(UserAuth $userAuth): ResponseInterface
+    public function corporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission($userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->getList('corporation'));
+        return $this->withJson($this->getList((int) $id, 'corporation'));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/corporation/add/{id}",
+     *     path="/user/watchlist/{id}/corporation/add/{corporation}",
      *     operationId="watchlistCorporationAdd",
      *     summary="Add corporation to the list.",
      *     description="Needs role: watchlist-admin",
@@ -228,6 +254,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
      *         in="path",
      *         required=true,
      *         description="Corporation ID.",
@@ -247,15 +280,15 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function corporationAdd(string $id): ResponseInterface
+    public function corporationAdd(string $id, string $corporation): ResponseInterface
     {
-        return $this->addOrRemoveEntity('add', 'corporation', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'add', 'corporation', (int) $corporation);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/corporation/remove/{id}",
+     *     path="/user/watchlist/{id}/corporation/remove/{corporation}",
      *     operationId="watchlistCorporationRemove",
      *     summary="Remove corporation from the list.",
      *     description="Needs role: watchlist-admin",
@@ -263,6 +296,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
      *         in="path",
      *         required=true,
      *         description="Corporation ID.",
@@ -282,20 +322,27 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function corporationRemove(string $id): ResponseInterface
+    public function corporationRemove(string $id, string $corporation): ResponseInterface
     {
-        return $this->addOrRemoveEntity('remove', 'corporation', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'corporation', (int) $corporation);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/alliance/list",
+     *     path="/user/watchlist/{id}/alliance/list",
      *     operationId="watchlistAllianceList",
      *     summary="List of alliances for this list.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of alliances.",
@@ -307,19 +354,19 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function allianceList(UserAuth $userAuth): ResponseInterface
+    public function allianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission($userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->getList('alliance'));
+        return $this->withJson($this->getList((int) $id, 'alliance'));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/alliance/add/{id}",
+     *     path="/user/watchlist/{id}/alliance/add/{alliance}",
      *     operationId="watchlistAllianceAdd",
      *     summary="Add alliance to the list.",
      *     description="Needs role: watchlist-admin",
@@ -327,6 +374,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alliance",
      *         in="path",
      *         required=true,
      *         description="Alliance ID.",
@@ -346,15 +400,15 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function allianceAdd(string $id): ResponseInterface
+    public function allianceAdd(string $id, string $alliance): ResponseInterface
     {
-        return $this->addOrRemoveEntity('add', 'alliance', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'add', 'alliance', (int) $alliance);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/alliance/remove/{id}",
+     *     path="/user/watchlist/{id}/alliance/remove/{alliance}",
      *     operationId="watchlistAllianceRemove",
      *     summary="Remove alliance from the list.",
      *     description="Needs role: watchlist-admin",
@@ -362,6 +416,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alliance",
      *         in="path",
      *         required=true,
      *         description="Alliance ID.",
@@ -381,20 +442,27 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function allianceRemove(string $id): ResponseInterface
+    public function allianceRemove(string $id, string $alliance): ResponseInterface
     {
-        return $this->addOrRemoveEntity('remove', 'alliance', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'alliance', (int) $alliance);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/group/list",
+     *     path="/user/watchlist/{id}/group/list",
      *     operationId="watchlistGroupList",
      *     summary="List of groups with access to this list.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of groups.",
@@ -406,15 +474,15 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function groupList(): ResponseInterface
+    public function groupList(string $id): ResponseInterface
     {
-        return $this->withJson($this->getList('group'));
+        return $this->withJson($this->getList((int) $id, 'group'));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/group/add/{id}",
+     *     path="/user/watchlist/{id}/group/add/{group}",
      *     operationId="watchlistGroupAdd",
      *     summary="Add access group to the list.",
      *     description="Needs role: watchlist-admin",
@@ -422,6 +490,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="group",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
@@ -437,15 +512,17 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function groupAdd(string $id): ResponseInterface
+    public function groupAdd(string $id, string $group): ResponseInterface
     {
-        return $this->addOrRemoveEntity('add', 'group', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'add', 'group', (int) $group);
+
+        # TODO add WATCHLIST role to users
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/group/remove/{id}",
+     *     path="/user/watchlist/{id}/group/remove/{group}",
      *     operationId="watchlistGroupRemove",
      *     summary="Remove access group from the list.",
      *     description="Needs role: watchlist-admin",
@@ -453,6 +530,13 @@ class WatchlistController extends BaseController
      *     security={{"Session"={}}},
      *     @OA\Parameter(
      *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="group",
      *         in="path",
      *         required=true,
      *         description="Group ID.",
@@ -468,17 +552,19 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function groupRemove(string $id): ResponseInterface
+    public function groupRemove(string $id, string $group): ResponseInterface
     {
-        return $this->addOrRemoveEntity('remove', 'group', (int) $id);
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'group', (int) $group);
+
+        # TODO remove WATCHLIST role from users
     }
 
     /**
      * Checks if logged in user is member of a group that may see this watchlist.
      */
-    private function checkPermission(UserAuth $userAuth): bool
+    private function checkPermission(int $id, UserAuth $userAuth): bool
     {
-        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($this->id);
+        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {
             return false;
         }
@@ -493,10 +579,10 @@ class WatchlistController extends BaseController
         return false;
     }
 
-    private function getList(string $type): array
+    private function getList(int $id, string $type): array
     {
         $data = [];
-        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($this->id);
+        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
 
         if ($watchlist === null) {
             return $data;
@@ -517,20 +603,20 @@ class WatchlistController extends BaseController
         return $data;
     }
 
-    private function addOrRemoveEntity(string $action, string $type, int $id): ResponseInterface
+    private function addOrRemoveEntity(int $id, string $action, string $type, int $entityId): ResponseInterface
     {
         $entity = null;
         if ($type === 'player') {
-            $entity = $this->repositoryFactory->getPlayerRepository()->find($id);
+            $entity = $this->repositoryFactory->getPlayerRepository()->find($entityId);
         } elseif ($type === 'corporation') {
-            $entity = $this->repositoryFactory->getCorporationRepository()->find($id);
+            $entity = $this->repositoryFactory->getCorporationRepository()->find($entityId);
         } elseif ($type === 'alliance') {
-            $entity = $this->repositoryFactory->getAllianceRepository()->find($id);
+            $entity = $this->repositoryFactory->getAllianceRepository()->find($entityId);
         } elseif ($type === 'group') {
-            $entity = $this->repositoryFactory->getGroupRepository()->find($id);
+            $entity = $this->repositoryFactory->getGroupRepository()->find($entityId);
         }
 
-        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($this->id);
+        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
 
         if ($entity === null || $watchlist === null) {
             return $this->response->withStatus(404);
