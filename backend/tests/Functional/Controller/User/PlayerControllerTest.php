@@ -194,7 +194,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(1, count($groupApps));
         $this->assertSame($this->group->getId(), $groupApps[0]->getGroup()->getId());
         $this->assertSame($this->player->getId(), $groupApps[0]->getPlayer()->getId());
-        $this->assertLessThanOrEqual(time(), $groupApps[0]->getCreated()->getTimestamp());
+        $this->assertGreaterThanOrEqual(time(), $groupApps[0]->getCreated()->getTimestamp());
     }
 
     public function testRemoveApplication403()
