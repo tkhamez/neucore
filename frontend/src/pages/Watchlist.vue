@@ -100,6 +100,7 @@ export default {
 
     props: {
         route: Array,
+        player: Object,
     },
 
     data: function() {
@@ -120,6 +121,9 @@ export default {
         route () {
             setTab(this);
             loadList(this);
+        },
+        player () {
+            setTab(this);
         },
     },
 
@@ -151,6 +155,8 @@ function setTab(vm) {
     }
     if (vm.route[2] && tabs.indexOf(vm.route[2]) !== -1) {
         vm.tab = vm.route[2];
+    } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-admin')) {
+        vm.tab = 'settings';
     }
 }
 

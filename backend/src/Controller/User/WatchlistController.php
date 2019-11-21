@@ -9,6 +9,8 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
+use Neucore\Entity\Role;
+use Neucore\Service\Account;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -239,7 +241,7 @@ class WatchlistController extends BaseController
      */
     public function corporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission((int) $id, $userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
             return $this->response->withStatus(403);
         }
 
@@ -359,7 +361,7 @@ class WatchlistController extends BaseController
      */
     public function allianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission((int) $id, $userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
             return $this->response->withStatus(403);
         }
 
@@ -515,11 +517,16 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function groupAdd(string $id, string $group): ResponseInterface
+    public function groupAdd(string $id, string $group, Account $account): ResponseInterface
     {
-        return $this->addOrRemoveEntity((int) $id, 'add', 'group', (int) $group);
+        $response = $this->addOrRemoveEntity((int) $id, 'add', 'group', (int) $group);
 
-        # TODO add WATCHLIST role to users
+        if ($response->getStatusCode() === 204) {
+            $account->syncWatchlistRole();
+            $this->objectManager->flush();
+        }
+
+        return $response;
     }
 
     /**
@@ -555,24 +562,35 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function groupRemove(string $id, string $group): ResponseInterface
+    public function groupRemove(string $id, string $group, Account $account): ResponseInterface
     {
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'group', (int) $group);
+        $response = $this->addOrRemoveEntity((int) $id, 'remove', 'group', (int) $group);
 
-        # TODO remove WATCHLIST role from users
+        if ($response->getStatusCode() === 204) {
+            $account->syncWatchlistRole();
+            $this->objectManager->flush();
+        }
+
+        return $response;
     }
 
     /**
      * Checks if logged in user is member of a group that may see this watchlist.
      */
-    private function checkPermission(int $id, UserAuth $userAuth): bool
+    private function checkPermission(int $id, UserAuth $userAuth, $adminFunction = false): bool
     {
         $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {
             return false;
         }
 
-        $playerGroupIds = $this->getUser($userAuth)->getPlayer()->getGroupIds();
+        $player = $this->getUser($userAuth)->getPlayer();
+
+        if ($adminFunction && $player->hasRole(Role::WATCHLIST_ADMIN)) {
+            return true;
+        }
+
+        $playerGroupIds = $player->getGroupIds();
         foreach ($watchlist->getGroups() as $group) {
             if (in_array($group->getId(), $playerGroupIds)) {
                 return true;

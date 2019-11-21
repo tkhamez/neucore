@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
@@ -256,7 +259,8 @@ class AutoGroupAssignmentTest extends TestCase
         $this->em->persist($char3);
         $this->em->persist($char4);
         $this->em->persist($player);
-        $this->em->persist((new Role(11))->setName(Role::TRACKING));
+        $this->em->persist((new Role(10))->setName(Role::TRACKING));
+        $this->em->persist((new Role(17))->setName(Role::WATCHLIST));
         $this->em->persist($playerManaged);
         $this->em->flush();
 

@@ -1006,6 +1006,7 @@ class GroupController extends BaseController
         } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
             $this->player->addGroup($this->group);
             $this->account->syncTrackingRole($this->player);
+            $this->account->syncWatchlistRole($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -1030,6 +1031,7 @@ class GroupController extends BaseController
         } elseif ($type === 'members') {
             $this->player->removeGroup($this->group);
             $this->account->syncTrackingRole($this->player);
+            $this->account->syncWatchlistRole($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -1057,6 +1059,7 @@ class GroupController extends BaseController
             if (! $app->getPlayer()->hasGroup($app->getGroup()->getId())) {
                 $app->getPlayer()->addGroup($app->getGroup());
                 $this->account->syncTrackingRole($app->getPlayer());
+                $this->account->syncWatchlistRole($app->getPlayer());
             }
         } elseif ($action === 'deny') {
             $app->setStatus(GroupApplication::STATUS_DENIED);

@@ -91,8 +91,8 @@ return [
 
     '/api/user/watchlist/{id}/players'          => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/exemption/list'   => [Role::WATCHLIST],
-    '/api/user/watchlist/{id}/corporation/list' => [Role::WATCHLIST],
-    '/api/user/watchlist/{id}/alliance/list'    => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
     '/api/user/watchlist'                       => [Role::WATCHLIST_ADMIN],
 
     '/api/user' => [Role::USER],

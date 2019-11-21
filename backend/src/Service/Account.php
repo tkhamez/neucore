@@ -5,6 +5,7 @@ namespace Neucore\Service;
 use Brave\Sso\Basics\JsonWebToken;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
@@ -330,7 +331,7 @@ class Account
         // get role
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::TRACKING]);
         if ($role === null) { // should not happen
-            $this->log->error('Account::syncTrackingRole(): Player or Role not found.');
+            $this->log->error('Account::syncTrackingRole(): Role not found.');
             return;
         }
 
@@ -370,6 +371,65 @@ class Account
         }
 
         // remove role
+        foreach ($playersRemove as $playerRemove) {
+            if (! $playerRemove->hasAnyGroup($groupIds)) {
+                $playerRemove->removeRole($role);
+            }
+        }
+    }
+
+    /**
+     * Adds or removes the "watchlist" role from players based on group membership and watchlist configuration.
+     *
+     * This function modifies one or more players and does *not* flush the object manager.
+     * If the player object is provided, the watchlist/group relations must be up to date in the database,
+     * otherwise the watchlist/group and player/group relations must be up to date in the DB.
+     */
+    public function syncWatchlistRole(Player $changedPlayer = null): void
+    {
+        // get role
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::WATCHLIST]);
+        if ($role === null) { // should not happen
+            $this->log->error('Account::syncWatchlistRole(): Role not found.');
+            return;
+        }
+
+        $watchlistRepository = $this->repositoryFactory->getWatchlistRepository();
+        $playerRepository = $this->repositoryFactory->getPlayerRepository();
+
+        // collect all groups that grant the watchlist role
+        $groupIds = [];
+        foreach ($watchlistRepository->findBy([]) as $watchlist) {
+            $groupIds = array_merge($groupIds, array_map(function (Group $group) {
+                return $group->getId();
+            }, $watchlist->getGroups()));
+        }
+
+        // get all players that need the role
+        $playersAdd = [];
+        if ($changedPlayer) {
+            if ($changedPlayer->hasAnyGroup($groupIds)) {
+                $playersAdd = [$changedPlayer];
+            }
+        } else {
+            $playersAdd = $playerRepository->findWithGroups($groupIds);
+        }
+
+        // assign role
+        foreach ($playersAdd as $playerAdd) {
+            if (! $playerAdd->hasRole(Role::WATCHLIST)) {
+                $playerAdd->addRole($role);
+            }
+        }
+
+        // get all players that have the role
+        if ($changedPlayer) {
+            $playersRemove = [$changedPlayer];
+        } else {
+            $playersRemove = $playerRepository->findWithRole($role->getId());
+        }
+
+        // remove role if needed
         foreach ($playersRemove as $playerRemove) {
             if (! $playerRemove->hasAnyGroup($groupIds)) {
                 $playerRemove->removeRole($role);

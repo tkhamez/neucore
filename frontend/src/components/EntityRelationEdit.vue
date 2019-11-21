@@ -383,11 +383,11 @@ export default {
                 }  else if (vm.type === 'Player') {
                     vm.tableContent = data.groups;
                     vm.$emit('activePlayer', data); // pass data to parent
-                    if (data.id === vm.player.id) {
-                        vm.$root.$emit('playerChange');
-                    }
                 }  else {
                     vm.tableContent = data;
+                }
+                if ((vm.type === 'Player' && data.id === vm.player.id) || vm.type === 'Watchlist') {
+                    vm.$root.$emit('playerChange');
                 }
             }]);
         },
