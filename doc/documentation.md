@@ -32,6 +32,7 @@
 * Optional automatic account deactivation when ESI tokens are invalid.
 * Manually managed accounts that do not require any ESI scopes.
 * Corporation member tracking.
+* Watchlist with accounts that have characters in other alliances or corporations.
 * Optional EVE mail notification when ESI tokens are invalid.
 * CLI commands for data updates from ESI.
 * An API for applications to query group membership of characters and other data.

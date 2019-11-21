@@ -1,3 +1,3 @@
 <?php
 
-define('NEUCORE_VERSION', '1.6.0');
+define('NEUCORE_VERSION', '1.7.0');

@@ -278,8 +278,10 @@ Player API
 Watchlist API
 - Add player to exemption list. `/user/watchlist/{id}/exemption/add/{player}`
 - Remove player from exemption list. `/user/watchlist/{id}/exemption/remove/{player}`
+- List of corporations for this list. `/user/watchlist/{id}/corporation/list`
 - Add corporation to the list. `/user/watchlist/{id}/corporation/add/{corporation}`
 - Remove corporation from the list. `/user/watchlist/{id}/corporation/remove/{corporation}`
+- List of alliances for this list. `/user/watchlist/{id}/alliance/list`
 - Add alliance to the list. `/user/watchlist/{id}/alliance/add/{alliance}`
 - Remove alliance from the list. `/user/watchlist/{id}/alliance/remove/{alliance}`
 - List of groups with access to this list. `/user/watchlist/{id}/group/list`

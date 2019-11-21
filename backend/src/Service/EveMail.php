@@ -130,8 +130,8 @@ class EveMail
         if ($allianceVar === null || $corporationVar === null) {
             return 'Alliance and/or Corporation settings variable not found.';
         }
-        $alliances = explode(',', $allianceVar->getValue());
-        $corporations = explode(',', $corporationVar->getValue());
+        $alliances = array_map('intval', explode(',', $allianceVar->getValue()));
+        $corporations = array_map('intval', explode(',', $corporationVar->getValue()));
 
         // get player
         $charRepo = $this->repositoryFactory->getCharacterRepository();

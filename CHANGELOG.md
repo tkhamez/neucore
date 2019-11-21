@@ -1,8 +1,11 @@
 # Changelog
 
-## next
+## 1.7.0
+
+21 Nov 2019
 
 - **BC break** Deactivate Groups: This is now limited to accounts with characters in configurable alliances or corporations.
+- New: Watchlist (show accounts with characters in other alliances or corporations).
 - Invalid ESI token mail: This can now also be sent to members of corporations that are not part of an alliance.
 - UI fixes.
 - Also update ESI refresh tokens when getting a new access token.

@@ -306,8 +306,8 @@ class Account
             // Alliance and/or Corporation settings variable not found
             return false;
         }
-        $alliances = explode(',', $allianceVar->getValue());
-        $corporations = explode(',', $corporationVar->getValue());
+        $alliances = array_map('intval', explode(',', $allianceVar->getValue()));
+        $corporations = array_map('intval', explode(',', $corporationVar->getValue()));
 
         // check if player account has at least one character in one of the configured alliances or corporations
         if (! $player->hasCharacterInAllianceOrCorporation($alliances, $corporations)) {
