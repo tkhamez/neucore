@@ -440,6 +440,8 @@ export default {
                 'settings',
                 'tracking',
                 'tracking-admin',
+                'watchlist',
+                'watchlist-admin',
             ],
             newRole: '',
             searchResult: [],

@@ -42,4 +42,20 @@ class CorporationRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param array $corporationIds
+     * @return Corporation[]
+     */
+    public function getAllFromAlliances(array $corporationIds): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb
+            ->leftJoin('c.alliance', 'a')
+            ->where($qb->expr()->in('a.id', ':ids'))
+            ->orderBy('c.id')
+            ->setParameter('ids', $corporationIds)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
@@ -979,8 +982,8 @@ class GroupControllerTest extends WebTestCase
         $this->em->persist($alli);
         $this->em->persist($corp);
 
-        $this->helper->addRoles([Role::TRACKING]);
-        
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST]);
+
         $this->em->flush();
 
         $this->groupAppID = $groupApp->getId();

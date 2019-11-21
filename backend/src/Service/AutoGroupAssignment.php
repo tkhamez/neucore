@@ -142,6 +142,7 @@ class AutoGroupAssignment
             if ($removeGroup) {
                 $player->removeGroup($removeGroup);
                 $this->account->syncTrackingRole($player);
+                $this->account->syncWatchlistRole($player);
                 $this->log->debug(
                     'AutoGroupAssignment: removed group ' . $removeGroup->getName() . ' [' . $removeId . '] ' .
                     'from player ' . $player->getName() . ' [' . $player->getId() . ']'
@@ -155,6 +156,7 @@ class AutoGroupAssignment
             if ($addGroup) {
                 $player->addGroup($addGroup);
                 $this->account->syncTrackingRole($player);
+                $this->account->syncWatchlistRole($player);
                 $this->log->debug(
                     'AutoGroupAssignment: added group ' . $addGroup->getName() . ' [' . $addId . '] ' .
                     'to player ' . $player->getName() . ' [' . $player->getId() . ']'

@@ -47,6 +47,8 @@ class PlayerController extends BaseController
         Role::SETTINGS,
         Role::TRACKING,
         Role::TRACKING_ADMIN,
+        Role::WATCHLIST,
+        Role::WATCHLIST_ADMIN,
     ];
 
     private $availableStatus = [

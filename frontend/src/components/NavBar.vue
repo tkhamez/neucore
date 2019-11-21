@@ -61,6 +61,10 @@
                 <li v-if="hasRole('tracking')" class="nav-item" :class="{ active: page === 'Tracking' }">
                     <a class="nav-link" href="#Tracking">Tracking</a>
                 </li>
+                <li v-if="hasAnyRole(['watchlist', 'watchlist-admin'])"
+                    class="nav-item" :class="{ active: page === 'Watchlist' }">
+                    <a class="nav-link" href="#Watchlist">Watchlist</a>
+                </li>
                 <li v-if="hasRole('esi')" class="nav-item" :class="{ active: page === 'Esi' }">
                     <a class="nav-link" href="#Esi">ESI</a>
                 </li>

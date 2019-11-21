@@ -15,6 +15,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\AppRepository;
 use Neucore\Repository\CharacterRepository;
@@ -30,6 +31,7 @@ use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Repository\RoleRepository;
 use Neucore\Repository\SystemVariableRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Neucore\Repository\WatchlistRepository;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
@@ -145,5 +147,12 @@ class RepositoryFactoryTest extends TestCase
         $repo = $this->factory->getRemovedCharacterRepository();
         $this->assertInstanceOf(RemovedCharacterRepository::class, $repo);
         $this->assertSame(RemovedCharacter::class, $repo->getClassName());
+    }
+
+    public function testGetWatchlistRepository()
+    {
+        $repo = $this->factory->getWatchlistRepository();
+        $this->assertInstanceOf(WatchlistRepository::class, $repo);
+        $this->assertSame(Watchlist::class, $repo->getClassName());
     }
 }

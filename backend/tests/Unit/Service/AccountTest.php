@@ -13,6 +13,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Entity\Watchlist;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
@@ -99,6 +100,16 @@ class AccountTest extends TestCase
      * @var Corporation
      */
     private $corp2;
+
+    /**
+     * @var Watchlist
+     */
+    private $watchlist1;
+
+    /**
+     * @var Watchlist
+     */
+    private $watchlist2;
 
     /**
      * @var Group
@@ -686,7 +697,7 @@ class AccountTest extends TestCase
         $this->service->syncTrackingRole(new Player());
 
         $this->assertSame(
-            'Account::syncTrackingRole(): Player or Role not found.',
+            'Account::syncTrackingRole(): Role not found.',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -701,7 +712,7 @@ class AccountTest extends TestCase
         $players = $this->playerRepo->findBy([]);
         $this->assertSame(2, count($players));
         $this->assertSame('char 1', $players[0]->getName());
-        $this->assertSame('char 1', $players[0]->getName());
+        $this->assertSame('char 2', $players[1]->getName());
         $this->assertTrue($players[0]->hasRole(Role::TRACKING));
         $this->assertFalse($players[1]->hasRole(Role::TRACKING));
     }
@@ -739,7 +750,67 @@ class AccountTest extends TestCase
         $this->assertFalse($players[0]->hasRole(Role::TRACKING));
         $this->assertTrue($players[1]->hasRole(Role::TRACKING));
     }
-    
+
+    public function testSyncWatchlistRoleNoRole()
+    {
+        $this->service->syncWatchlistRole(new Player());
+
+        $this->assertSame(
+            'Account::syncWatchlistRole(): Role not found.',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testSyncWatchlistRoleNoChanged()
+    {
+        $this->setUpWatchlistData();
+
+        $this->service->syncWatchlistRole(new Player);
+        $this->helper->getEm()->flush();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertSame(2, count($players));
+        $this->assertSame('char 1', $players[0]->getName());
+        $this->assertSame('char 2', $players[1]->getName());
+        $this->assertTrue($players[0]->hasRole(Role::WATCHLIST));
+        $this->assertFalse($players[1]->hasRole(Role::WATCHLIST));
+    }
+
+    public function testSyncWatchlistRolePlayerChanged()
+    {
+        $this->setUpWatchlistData();
+
+        $this->player1->removeGroup($this->group1);
+        $this->player2->addGroup($this->group1);
+
+        $this->service->syncWatchlistRole($this->player1);
+        $this->service->syncWatchlistRole($this->player2);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertFalse($players[0]->hasRole(Role::WATCHLIST));
+        $this->assertTrue($players[1]->hasRole(Role::WATCHLIST));
+    }
+
+    public function testSyncWatchlistRoleGroupChanged()
+    {
+        $this->setUpWatchlistData();
+
+        $this->watchlist1->removeGroup($this->group1);
+        $this->watchlist2->addGroup($this->group2);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $this->service->syncWatchlistRole();
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertFalse($players[0]->hasRole(Role::WATCHLIST));
+        $this->assertTrue($players[1]->hasRole(Role::WATCHLIST));
+    }
+
     private function setUpTrackingData()
     {
         $em = $this->helper->getEm();
@@ -764,6 +835,31 @@ class AccountTest extends TestCase
         $this->player2 = $this->helper->addCharacterMain('char 2', 102)->getPlayer();
         $this->player1->addRole($role);
         // player2 does not have tracking role
+        $this->player1->addGroup($this->group1);
+        $this->player2->addGroup($this->group2);
+        $em->flush();
+    }
+
+    private function setUpWatchlistData()
+    {
+        $em = $this->helper->getEm();
+
+        $role = (new Role(10))->setName(Role::WATCHLIST);
+        $this->watchlist1 = (new Watchlist())->setId(11)->setName('wl 1');
+        $this->watchlist2 = (new Watchlist())->setId(12)->setName('wl 2');
+        $this->group1 = (new Group())->setName('group 1');
+        $this->group2 = (new Group())->setName('group 2');
+        $this->watchlist1->addGroup($this->group1);
+        // watchlist2 does not have an access group
+        $em->persist($role);
+        $em->persist($this->watchlist1);
+        $em->persist($this->watchlist2);
+        $em->persist($this->group1);
+        $em->persist($this->group2);
+        $this->player1 = $this->helper->addCharacterMain('char 1', 101)->getPlayer();
+        $this->player2 = $this->helper->addCharacterMain('char 2', 102)->getPlayer();
+        $this->player1->addRole($role);
+        // player2 does not have watchlist role
         $this->player1->addGroup($this->group1);
         $this->player2->addGroup($this->group2);
         $em->flush();

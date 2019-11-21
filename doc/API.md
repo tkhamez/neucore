@@ -23,6 +23,9 @@ There is also an OpenAPI definition file available that contains only the API fo
   * [esi](#esi)
   * [settings](#settings)
   * [tracking](#tracking)
+  * [tracking-admin](#tracking-admin)
+  * [watchlist](#watchlist)
+  * [watchlist-admin](#watchlist-admin)
 - [Application API](#application-api)
   * [app](#app)
   * [app-groups](#app-groups)
@@ -239,6 +242,49 @@ Corporation API
 - Add a group to the corporation for member tracking permission. `/user/corporation/{id}/add-group-tracking/{groupId}`
 - Remove a group for member tracking permission from the corporation. `/user/corporation/{id}/remove-group-tracking/{groupId}`
 - Returns corporations that have member tracking data. `/user/corporation/tracked-corporations`
+
+#### watchlist
+
+Allows players to view the watchlist if they are also member of an appropriate group.  
+This role is assigned automatically based on group membership.
+
+Player API
+- Show player with characters. `/user/player/{id}/characters`
+
+Watchlist API
+- List of player accounts that have characters in one of the configured alliances or corporations
+                    and additionally have other characters in another player (not NPC) corporation and have not
+                    been manually excluded. `/user/watchlist/{id}/players`
+- List of exempt players. `/user/watchlist/{id}/exemption/list`
+- List of corporations for this list. `/user/watchlist/{id}/corporation/list`
+- List of alliances for this list. `/user/watchlist/{id}/alliance/list`
+
+#### watchlist-admin
+
+Allows a player to edit watchlist exemptions and settings.
+
+Alliance API
+- List all alliances. `/user/alliance/all`
+
+Corporation API
+- List all corporations. `/user/corporation/all`
+
+Group API
+- List all groups. `/user/group/all`
+
+Player API
+- Show player with characters. `/user/player/{id}/characters`
+
+Watchlist API
+- Add player to exemption list. `/user/watchlist/{id}/exemption/add/{player}`
+- Remove player from exemption list. `/user/watchlist/{id}/exemption/remove/{player}`
+- Add corporation to the list. `/user/watchlist/{id}/corporation/add/{corporation}`
+- Remove corporation from the list. `/user/watchlist/{id}/corporation/remove/{corporation}`
+- Add alliance to the list. `/user/watchlist/{id}/alliance/add/{alliance}`
+- Remove alliance from the list. `/user/watchlist/{id}/alliance/remove/{alliance}`
+- List of groups with access to this list. `/user/watchlist/{id}/group/list`
+- Add access group to the list. `/user/watchlist/{id}/group/add/{group}`
+- Remove access group from the list. `/user/watchlist/{id}/group/remove/{group}`
 
 ### Application API
 

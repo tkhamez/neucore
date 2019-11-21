@@ -14,6 +14,7 @@ use Neucore\Controller\User\EsiController;
 use Neucore\Controller\User\GroupController;
 use Neucore\Controller\User\PlayerController;
 use Neucore\Controller\User\SettingsController;
+use Neucore\Controller\User\WatchlistController;
 
 return [
 
@@ -139,4 +140,18 @@ return [
     '/api/user/settings/system/change/{name}'            => ['PUT',  SettingsController::class.'::systemChange'],
     '/api/user/settings/system/send-invalid-token-mail'  => ['POST', SettingsController::class.'::sendInvalidTokenMail'],
     '/api/user/settings/system/validate-director/{name}' => ['PUT',  SettingsController::class.'::validateDirector'],
+
+    '/api/user/watchlist/{id}/players'                          => ['GET',  WatchlistController::class.'::players'],
+    '/api/user/watchlist/{id}/exemption/list'                   => ['GET',  WatchlistController::class.'::exemptionList'],
+    '/api/user/watchlist/{id}/exemption/add/{player}'           => ['PUT',  WatchlistController::class.'::exemptionAdd'],
+    '/api/user/watchlist/{id}/exemption/remove/{player}'        => ['PUT',  WatchlistController::class.'::exemptionRemove'],
+    '/api/user/watchlist/{id}/corporation/list'                 => ['GET',  WatchlistController::class.'::corporationList'],
+    '/api/user/watchlist/{id}/corporation/add/{corporation}'    => ['PUT',  WatchlistController::class.'::corporationAdd'],
+    '/api/user/watchlist/{id}/corporation/remove/{corporation}' => ['PUT',  WatchlistController::class.'::corporationRemove'],
+    '/api/user/watchlist/{id}/alliance/list'                    => ['GET',  WatchlistController::class.'::allianceList'],
+    '/api/user/watchlist/{id}/alliance/add/{alliance}'          => ['PUT',  WatchlistController::class.'::allianceAdd'],
+    '/api/user/watchlist/{id}/alliance/remove/{alliance}'       => ['PUT',  WatchlistController::class.'::allianceRemove'],
+    '/api/user/watchlist/{id}/group/list'                       => ['GET',  WatchlistController::class.'::groupList'],
+    '/api/user/watchlist/{id}/group/add/{group}'                => ['PUT',  WatchlistController::class.'::groupAdd'],
+    '/api/user/watchlist/{id}/group/remove/{group}'             => ['PUT',  WatchlistController::class.'::groupRemove'],
 ];

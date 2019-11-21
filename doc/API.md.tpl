@@ -88,6 +88,19 @@ Allows a player to change the tracking corporation/groups configuration.
 
 {tracking-admin}
 
+#### watchlist
+
+Allows players to view the watchlist if they are also member of an appropriate group.  
+This role is assigned automatically based on group membership.
+
+{watchlist}
+
+#### watchlist-admin
+
+Allows a player to edit watchlist exemptions and settings.
+
+{watchlist-admin}
+
 ### Application API
 
 #### app
