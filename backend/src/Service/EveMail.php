@@ -124,12 +124,14 @@ class EveMail
     {
         $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
 
-        // get configured alliances
+        // get configured alliances and corporations
         $allianceVar = $sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES);
-        if ($allianceVar === null) {
-            return 'Alliance settings variable not found.';
+        $corporationVar = $sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS);
+        if ($allianceVar === null || $corporationVar === null) {
+            return 'Alliance and/or Corporation settings variable not found.';
         }
         $alliances = explode(',', $allianceVar->getValue());
+        $corporations = explode(',', $corporationVar->getValue());
 
         // get player
         $charRepo = $this->repositoryFactory->getCharacterRepository();
@@ -143,19 +145,10 @@ class EveMail
             return 'Player account status is managed.';
         }
 
-        // check if player account has at least one character in one of the configured alliances
-        $valid = false;
-        foreach ($player->getCharacters() as $character) {
-            if ($character->getCorporation() !== null &&
-                $character->getCorporation()->getAlliance() !== null &&
-                in_array($character->getCorporation()->getAlliance()->getId(), $alliances)
-            ) {
-                $valid = true;
-                break;
-            }
-        }
+        // check if player account has at least one character in one of the configured alliances or corporations
+        $valid = $player->hasCharacterInAllianceOrCorporation($alliances, $corporations);
         if (! $valid) {
-            return 'No character found on account that belongs to one of the configured alliances.';
+            return 'No character found on account that belongs to one of the configured alliances or corporations.';
         }
 
         // check if mail was sent before

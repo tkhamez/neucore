@@ -192,6 +192,31 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->hasCharacter((int) $char2->getId()));
     }
 
+    public function testHasCharacterInAllianceOrCorporation()
+    {
+        $alliance = (new Alliance())->setId(11);
+        $corporation1 = (new Corporation())->setId(101);
+        $corporation2 = (new Corporation())->setId(102);
+        $player = new Player();
+        $char1 = (new Character())->setId(1001);
+        $char2 = (new Character())->setId(1001);
+        $char3 = (new Character())->setId(1001);
+        $corporation1->setAlliance($alliance);
+        $player->addCharacter($char1);
+        $player->addCharacter($char2);
+        $player->addCharacter($char3);
+        $char1->setCorporation($corporation1);
+        $char2->setCorporation($corporation2);
+
+        // player is member of alliance 11 and corporation 101, 102
+
+        $this->assertFalse($player->hasCharacterInAllianceOrCorporation([], []));
+        $this->assertTrue($player->hasCharacterInAllianceOrCorporation([11, 12], []));
+        $this->assertTrue($player->hasCharacterInAllianceOrCorporation([], [101, 103]));
+        $this->assertTrue($player->hasCharacterInAllianceOrCorporation([11, 12], [101, 103]));
+        $this->assertFalse($player->hasCharacterInAllianceOrCorporation([12, 13], [103, 104]));
+    }
+
     /**
      * @throws \Exception
      */

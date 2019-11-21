@@ -57,7 +57,7 @@ class SystemVariable implements \JsonSerializable
      *
      * 0: ignore invalid tokens.
      *
-     * Scope = public
+     * Scope = settings
      */
     const GROUPS_REQUIRE_VALID_TOKEN = 'groups_require_valid_token';
 
@@ -67,6 +67,22 @@ class SystemVariable implements \JsonSerializable
      * Scope = settings
      */
     const ACCOUNT_DEACTIVATION_DELAY = 'account_deactivation_delay';
+
+    /**
+     * Limit deactivation of groups to players that have a character in these alliances,
+     * comma separated list of IDs
+     *
+     * Scope = settings
+     */
+    const ACCOUNT_DEACTIVATION_ALLIANCES = 'account_deactivation_alliances';
+
+    /**
+     * Limit deactivation of groups to players that have a character in these corporations,
+     * comma separated list of IDs
+     *
+     * Scope = settings
+     */
+    const ACCOUNT_DEACTIVATION_CORPORATIONS = 'account_deactivation_corporations';
 
     /**
      * EVE character name for the character that can be used to send mails.
@@ -98,6 +114,14 @@ class SystemVariable implements \JsonSerializable
      * Scope = settings
      */
     const MAIL_INVALID_TOKEN_ALLIANCES = 'mail_invalid_token_alliances';
+
+    /**
+     * The "invalid ESI token" EVE mail is only send to accounts that have a character in one of these corporations
+     * (comma separated list of EVE corporation IDs).
+     *
+     * Scope = settings
+     */
+    const MAIL_INVALID_TOKEN_CORPORATIONS = 'mail_invalid_token_corporations';
 
     /**
      * Subject for "invalid ESI token" EVE mail notification

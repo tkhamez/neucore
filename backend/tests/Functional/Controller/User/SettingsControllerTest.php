@@ -59,7 +59,6 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
@@ -74,7 +73,6 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
@@ -254,15 +252,17 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame('Alliance settings variable not found.', $this->parseJsonBody($response));
+        $this->assertSame('Alliance and/or Corporation settings variable not found.', $this->parseJsonBody($response));
     }
 
     public function testSendInvalidTokenMail200MissingChar()
     {
         $var1 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $var2 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $var3 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('');
         $this->em->persist($var1);
         $this->em->persist($var2);
+        $this->em->persist($var3);
 
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -330,6 +330,7 @@ class SettingsControllerTest extends WebTestCase
         $var7->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
         $var8->setValue("0");
 
+        $var2->setScope(SystemVariable::SCOPE_SETTINGS);
         $var4->setScope(SystemVariable::SCOPE_SETTINGS);
         $var5->setScope(SystemVariable::SCOPE_BACKEND);
         $var6->setScope(SystemVariable::SCOPE_SETTINGS);

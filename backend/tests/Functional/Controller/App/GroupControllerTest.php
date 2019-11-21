@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
@@ -111,10 +114,13 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb(36);
 
-        // activate "deactivated accounts"
-        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $setting->setValue('1');
-        $this->helper->getEm()->persist($setting);
+        // activate "deactivated groups"
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('100');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('500');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
         $this->helper->getEm()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
@@ -128,10 +134,9 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb(36);
 
-        // activate "deactivated accounts"
-        $setting = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $setting->setValue('1');
-        $this->helper->getEm()->persist($setting);
+        // activate "deactivated groups"
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $this->helper->getEm()->persist($setting1);
         $this->helper->getEm()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
@@ -202,10 +207,13 @@ class GroupControllerTest extends WebTestCase
     {
         $this->setUpDb(48);
 
-        // activate "deactivated accounts"
-        $active = new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN);
-        $active->setValue('1');
-        $this->helper->getEm()->persist($active);
+        // activate "deactivated groups"
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('100');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('500');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
         $this->helper->getEm()->flush();
 
         $headers = [

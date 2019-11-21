@@ -180,13 +180,15 @@ class EveMailTest extends TestCase
     public function testInvalidTokenMaySendAllianceSettingsNotFound()
     {
         $result = $this->eveMail->invalidTokenMaySend(100100);
-        $this->assertSame('Alliance settings variable not found.', $result);
+        $this->assertSame('Alliance and/or Corporation settings variable not found.', $result);
     }
 
     public function testInvalidTokenMaySendCharacterNotFound()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $varCorp = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('987,654');
         $this->em->persist($varAlli);
+        $this->em->persist($varCorp);
         $this->em->flush();
         $this->em->clear();
 
@@ -197,9 +199,11 @@ class EveMailTest extends TestCase
     public function testInvalidTokenMaySendManagedAccount()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $varCorp = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('987,654');
         $player = (new Player())->setName('n')->setStatus(Player::STATUS_MANAGED);
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player);
         $this->em->persist($varAlli);
+        $this->em->persist($varCorp);
         $this->em->persist($player);
         $this->em->persist($char);
         $this->em->flush();
@@ -209,29 +213,36 @@ class EveMailTest extends TestCase
         $this->assertSame('Player account status is managed.', $result);
     }
 
-    public function testInvalidTokenMaySendAllianceDoesNotMatch()
+    public function testInvalidTokenMaySendAllianceAndCorporationDoesNotMatch()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $varCorp = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('987,654');
         $player = (new Player())->setName('n');
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player);
         $this->em->persist($varAlli);
+        $this->em->persist($varCorp);
         $this->em->persist($player);
         $this->em->persist($char);
         $this->em->flush();
         $this->em->clear();
 
         $result = $this->eveMail->invalidTokenMaySend(100100);
-        $this->assertSame('No character found on account that belongs to one of the configured alliances.', $result);
+        $this->assertSame(
+            'No character found on account that belongs to one of the configured alliances or corporations.',
+            $result
+        );
     }
 
     public function testInvalidTokenMaySendAlreadySent()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $varCorp = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('987,654');
         $player = (new Player())->setName('n')->setDeactivationMailSent(true);
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);
         $this->em->persist($varAlli);
+        $this->em->persist($varCorp);
         $this->em->persist($player);
         $this->em->persist($alli);
         $this->em->persist($corp);
@@ -243,16 +254,16 @@ class EveMailTest extends TestCase
         $this->assertSame('Mail already sent.', $result);
     }
 
-    public function testInvalidTokenMaySendIgnoreAlreadySentAndAccountStatus()
+    public function testInvalidTokenMaySendCorporationIgnoreAlreadySentAndAccountStatus()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $varCorp = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('987,654');
         $player = (new Player())->setName('n')->setDeactivationMailSent(true)->setStatus(Player::STATUS_MANAGED);
-        $alli = (new Alliance())->setId(456);
-        $corp = (new Corporation())->setId(2020)->setAlliance($alli);
+        $corp = (new Corporation())->setId(987);
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);
         $this->em->persist($varAlli);
+        $this->em->persist($varCorp);
         $this->em->persist($player);
-        $this->em->persist($alli);
         $this->em->persist($corp);
         $this->em->persist($char);
         $this->em->flush();
@@ -262,14 +273,16 @@ class EveMailTest extends TestCase
         $this->assertSame('', $result);
     }
 
-    public function testInvalidTokenMaySendTrue()
+    public function testInvalidTokenMayAllianceSendTrue()
     {
         $varAlli = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
+        $varCorp = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('987,654');
         $player = (new Player())->setName('n');
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $char = (new Character())->setName('n')->setId(100100)->setPlayer($player)->setCorporation($corp);
         $this->em->persist($varAlli);
+        $this->em->persist($varCorp);
         $this->em->persist($player);
         $this->em->persist($alli);
         $this->em->persist($corp);

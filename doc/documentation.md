@@ -120,7 +120,7 @@ who can then manually remove all members.
 ### Group Deactivation
 
 If the ESI token of one or more characters on an account is invalid, the account can be disabled. This is done 
-on the settings page, feature "Deactivate Accounts". A character without a token (no ESI scopes were requested 
+on the settings page, feature "Deactivate Groups". A character without a token (no ESI scopes were requested 
 during login) counts as invalid.
 
 Deactivation means that the API for apps no longer returns groups for that account. The deactivation of the 
@@ -160,7 +160,7 @@ The console application has commands to:
 - check ESI tokens of all character
 - perform automatic group assignment based on corporation and alliance to group configuration
 - update member tracking data
-- send EVE mail to deactivated accounts
+- send EVE mail to accounts with deactivated groups
 - delete expired HTTP cache entries
 
 ## Data Structure (Backend)

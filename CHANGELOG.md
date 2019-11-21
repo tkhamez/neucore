@@ -2,8 +2,10 @@
 
 ## next
 
+- **BC break** Deactivate Groups: This is now limited to accounts with characters in configurable alliances or corporations.
+- Invalid ESI token mail: This can now also be sent to members of corporations that are not part of an alliance.
 - UI fixes.
-- Also update refresh tokens when getting a new access token.
+- Also update ESI refresh tokens when getting a new access token.
 - Other small stuff.
 
 ## 1.6.0

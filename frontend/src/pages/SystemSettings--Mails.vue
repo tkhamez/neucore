@@ -31,16 +31,22 @@
             <label class="custom-control-label" for="mail_invalid_token_active">Activate mail</label>
         </div>
         <div class="form-group">
+            <p class="form-text mt-3 mb-0">
+                The mail is only sent if at least one character in a player account
+                belongs to one of the following alliances or corporations:
+            </p>
             <label class="col-form-label">Alliances</label>
-            <multiselect v-model="mailInvalidTokenAlliances" :options="alliances"
+            <multiselect v-model="mailInvalidTokenAlliances" :options="allAlliances"
                          label="name" track-by="id" :multiple="true"
                          :loading="false" :searchable="true"
-                         placeholder="Select alliances"></multiselect>
-            <small class="form-text text-muted">
-                The mail is only sent if at least one character in a player account
-                belongs to one of these alliances.<br>
-                You can add missing alliances in the <a href="#GroupAdmin">Group Administration</a>.
-            </small>
+                         placeholder="Select alliances">
+            </multiselect>
+            <label class="col-form-label">Corporations</label>
+            <multiselect v-model="mailInvalidTokenCorporations" :options="allCorporations"
+                         label="name" track-by="id" :multiple="true"
+                         :loading="false" :searchable="true"
+                         placeholder="Select corporations">
+            </multiselect>
         </div>
         <div class="form-group">
             <label class="col-form-label" for="mailInvalidTokenSubject">Subject</label>
@@ -59,7 +65,6 @@
 </template>
 
 <script>
-import { AllianceApi } from 'neucore-js-client';
 import { SettingsApi } from 'neucore-js-client';
 
 export default {
@@ -69,14 +74,29 @@ export default {
 
     data () {
         return {
-            alliances: [],
-            alliancesLoaded: false,
+            allAlliances: [],
+            allAlliancesLoaded: false,
+            allCorporations: [],
+            allCorporationsLoaded: false,
             mailInvalidTokenAlliances: null,
+            mailInvalidTokenCorporations: null,
         }
     },
 
     mounted () {
-        init(this);
+        this.$parent.loadLists();
+
+        this.$parent.$on('alliancesLoaded', (data) => {
+            this.allAlliances = data;
+            this.allAlliancesLoaded = true;
+            readSettings(this);
+        });
+
+        this.$parent.$on('corporationsLoaded', (data) => {
+            this.allCorporations = data;
+            this.allCorporationsLoaded = true;
+            readSettings(this);
+        });
     },
 
     watch: {
@@ -85,21 +105,19 @@ export default {
         },
 
         mailInvalidTokenAlliances (newValues, oldValues) {
-            if (oldValues === null) {
+            const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenAlliances);
+            if (newValue === null) {
                 return;
             }
-            const oldAllianceIds = [];
-            for (let oldValue of oldValues) {
-                oldAllianceIds.push(oldValue.id);
-            }
-            const newAllianceIds = [];
-            for (let alliance of this.mailInvalidTokenAlliances) {
-                newAllianceIds.push(alliance.id);
-            }
-            if (newAllianceIds.join(',') === oldAllianceIds.join(',')) {
+            this.$emit('changeSetting', 'mail_invalid_token_alliances', newValue);
+        },
+
+        mailInvalidTokenCorporations (newValues, oldValues) {
+            const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailInvalidTokenCorporations);
+            if (newValue === null) {
                 return;
             }
-            this.$emit('changeSetting', 'mail_invalid_token_alliances', newAllianceIds.join(','));
+            this.$emit('changeSetting', 'mail_invalid_token_corporations', newValue);
         },
     },
 
@@ -125,37 +143,22 @@ export default {
     },
 }
 
-function init(vm) {
-    // get alliances
-    new AllianceApi().all((error, data) => {
-        if (error) { // 403 usually
-            return;
-        }
-        vm.alliances = data;
-        vm.alliancesLoaded = true;
-        readSettings(vm);
-    });
-}
-
 function readSettings(vm) {
-    if (! vm.alliancesLoaded || ! vm.settings.hasOwnProperty('account_deactivation_delay')) {
-        return; // wait for alliance list and settings
+    if (! vm.allAlliancesLoaded || ! vm.allCorporationsLoaded ||
+        ! vm.settings.hasOwnProperty('account_deactivation_delay')
+    ) {
+        return; // wait for alliance and corporation list and settings
     }
 
     vm.mailInvalidTokenAlliances = [];
+    vm.mailInvalidTokenCorporations = [];
 
     for (const [name, value] of Object.entries(vm.settings)) {
-        if (name !== 'mail_invalid_token_alliances') {
-            continue;
+        if (name === 'mail_invalid_token_alliances') {
+            vm.mailInvalidTokenAlliances = vm.$parent.buildIdArray(value, vm.allAlliances);
         }
-        for (let allianceId of value.split(',')) {
-            allianceId = parseInt(allianceId);
-            for (let alliance of vm.alliances) {
-                if (alliance.id === allianceId) {
-                    vm.mailInvalidTokenAlliances.push(alliance);
-                    break;
-                }
-            }
+        if (name === 'mail_invalid_token_corporations') {
+            vm.mailInvalidTokenCorporations = vm.$parent.buildIdArray(value, vm.allCorporations);
         }
     }
 }

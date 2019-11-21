@@ -40,6 +40,8 @@
 
 <script>
 import _ from 'lodash';
+import { AllianceApi } from 'neucore-js-client';
+import { CorporationApi } from 'neucore-js-client';
 import { SettingsApi } from 'neucore-js-client';
 import Customization from './SystemSettings--Customization.vue';
 import Directors from './SystemSettings--Directors.vue';
@@ -67,16 +69,14 @@ export default {
 
     mounted () {
         window.scrollTo(0,0);
-
         setTab(this);
-
-        // make sure the data is up to date
-        this.$root.$emit('settingsChange');
+        this.$root.$emit('settingsChange'); // make sure the data is up to date
     },
 
     watch: {
         route () {
             setTab(this);
+            this.$root.$emit('settingsChange'); // make sure the data is up to date
         },
     },
 
@@ -112,6 +112,67 @@ export default {
                     vm.$root.$emit('settingsChange');
                 }
             });
+        },
+
+        /**
+         * Load alliance and corporation list, used by child components.
+         */
+        loadLists () {
+            const vm = this;
+
+            // get alliances
+            new AllianceApi().all((error, data) => {
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.$emit('alliancesLoaded', data);
+            });
+
+            // get corporations
+            new CorporationApi().all((error, data) => {
+                if (error) { // 403 usually
+                    return;
+                }
+                vm.$emit('corporationsLoaded', data);
+            });
+        },
+
+        /**
+         * Helper function for alliance and corporation form selects used by child components.
+         */
+        buildIdArray (value, list) {
+            const result = [];
+            for (let id of value.split(',')) {
+                id = parseInt(id);
+                for (let item of list) {
+                    if (item.id === id) {
+                        result.push(item);
+                        break;
+                    }
+                }
+            }
+            return result;
+        },
+
+        /**
+         * Helper function for alliance and corporation form selects used by child components.
+         */
+        buildIdString (newValues, oldValues, model) {
+            if (oldValues === null) {
+                return null;
+            }
+            const oldIds = [];
+            for (const oldValue of oldValues) {
+                oldIds.push(oldValue.id);
+            }
+            const newIds = [];
+            for (const item of model) {
+                newIds.push(item.id);
+            }
+            if (newIds.join(',') === oldIds.join(',')) {
+                return null;
+            }
+            return newIds.join(',');
         },
     },
 }

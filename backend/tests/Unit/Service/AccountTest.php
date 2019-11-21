@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -506,13 +507,41 @@ class AccountTest extends TestCase
 
     public function testGroupsDeactivatedValidToken()
     {
-        // activate "deactivated accounts"
-        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $this->helper->getEm()->persist($setting);
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
         $this->helper->getEm()->flush();
 
-        $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(true)
+        $alliance = (new Alliance())->setId(11);
+        $corporation = (new Corporation())->setId(101);
+        $corporation->setAlliance($alliance);
+        $player = (new Player())->addCharacter((new Character())
+            ->setValidToken(true)
+            ->setCorporation($corporation)
+        );
+
+        $this->assertFalse($this->service->groupsDeactivated($player));
+    }
+
+    public function testGroupsDeactivatedWrongAllianceAndCorporation()
+    {
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->flush();
+
+        $alliance = (new Alliance())->setId(12);
+        $corporation = (new Corporation())->setId(102);
+        $corporation->setAlliance($alliance);
+        $player = (new Player())->addCharacter((new Character())
+            ->setValidToken(false)
+            ->setCorporation($corporation)
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -520,13 +549,20 @@ class AccountTest extends TestCase
 
     public function testGroupsDeactivatedInvalidToken()
     {
-        // activate "deactivated accounts"
-        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $this->helper->getEm()->persist($setting);
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
         $this->helper->getEm()->flush();
 
-        $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)
+        $alliance = (new Alliance())->setId(11);
+        $corporation = (new Corporation())->setId(101);
+        $corporation->setAlliance($alliance);
+        $player = (new Player())->addCharacter((new Character())
+            ->setValidToken(false)
+            ->setCorporation($corporation)
         );
 
         $this->assertTrue($this->service->groupsDeactivated($player));
@@ -534,29 +570,46 @@ class AccountTest extends TestCase
 
     public function testGroupsDeactivatedInvalidTokenManaged()
     {
-        // activate "deactivated accounts"
-        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $this->helper->getEm()->persist($setting);
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
         $this->helper->getEm()->flush();
 
+        $alliance = (new Alliance())->setId(11);
+        $corporation = (new Corporation())->setId(101);
+        $corporation->setAlliance($alliance);
         $player = (new Player())
             ->setStatus(Player::STATUS_MANAGED)
-            ->addCharacter((new Character())->setValidToken(false));
+            ->addCharacter((new Character())
+                ->setValidToken(false)
+                ->setCorporation($corporation)
+            );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
 
     public function testGroupsDeactivatedInvalidTokenWithDelay()
     {
-        // feature "deactivated accounts" is active, account has invalid token but only for a short time
-        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $delay = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
-        $this->helper->getEm()->persist($setting);
-        $this->helper->getEm()->persist($delay);
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->persist($setting4);
         $this->helper->getEm()->flush();
 
-        $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
+        $alliance = (new Alliance())->setId(11);
+        $corporation = (new Corporation())->setId(101);
+        $corporation->setAlliance($alliance);
+        $player = (new Player())->addCharacter((new Character())
+            ->setValidToken(false)
+            ->setValidTokenTime(new \DateTime("now -12 hours"))
+            ->setCorporation($corporation)
         );
 
         $this->assertFalse($this->service->groupsDeactivated($player));
@@ -564,15 +617,23 @@ class AccountTest extends TestCase
 
     public function testGroupsDeactivatedInvalidTokenIgnoreDelay()
     {
-        // feature "deactivated accounts" is active, account has invalid token but only for a short time
-        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $delay = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
-        $this->helper->getEm()->persist($setting);
-        $this->helper->getEm()->persist($delay);
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->persist($setting4);
         $this->helper->getEm()->flush();
 
-        $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime("now -12 hours"))
+        $alliance = (new Alliance())->setId(11);
+        $corporation = (new Corporation())->setId(101);
+        $corporation->setAlliance($alliance);
+        $player = (new Player())->addCharacter((new Character())
+            ->setValidToken(false)
+            ->setValidTokenTime(new \DateTime("now -12 hours"))
+            ->setCorporation($corporation)
         );
 
         $this->assertTrue($this->service->groupsDeactivated($player, true));
@@ -580,16 +641,26 @@ class AccountTest extends TestCase
 
     public function testGroupsDeactivatedInvalidTokenSettingNotActive()
     {
-        $player = (new Player())->addCharacter(
-            (new Character())->setValidToken(false)
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->flush();
+
+        $alliance = (new Alliance())->setId(11);
+        $corporation = (new Corporation())->setId(101);
+        $corporation->setAlliance($alliance);
+        $player = (new Player())->addCharacter((new Character())
+            ->setValidToken(false)
+            ->setCorporation($corporation)
         );
 
         // test with missing setting
         $this->assertFalse($this->service->groupsDeactivated($player));
 
-        // add "deactivated accounts" setting set to 0
-        $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('0');
-        $this->helper->getEm()->persist($setting);
+        // add "deactivated groups" setting set to 0
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('0');
+        $this->helper->getEm()->persist($setting1);
         $this->helper->getEm()->flush();
 
         $this->assertFalse($this->service->groupsDeactivated($player));

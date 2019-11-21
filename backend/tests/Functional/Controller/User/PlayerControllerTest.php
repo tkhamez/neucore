@@ -1114,7 +1114,11 @@ class PlayerControllerTest extends WebTestCase
 
         // activate feature
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('234');
         $this->h->getEm()->persist($setting);
+        $this->h->getEm()->persist($setting2);
+        $this->h->getEm()->persist($setting3);
         $this->h->getEm()->flush();
 
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
@@ -1185,7 +1189,11 @@ class PlayerControllerTest extends WebTestCase
 
         // activate feature
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('234');
         $this->h->getEm()->persist($setting);
+        $this->h->getEm()->persist($setting2);
+        $this->h->getEm()->persist($setting3);
         $this->h->getEm()->flush();
 
         $response1 = $this->runApp('GET', '/api/user/player/' . $this->player->getId() . '/groups-disabled');

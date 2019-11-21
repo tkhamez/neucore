@@ -284,14 +284,36 @@ class Account
      */
     public function groupsDeactivated(Player $player, bool $ignoreDelay = false): bool
     {
+        // managed account?
         if ($player->getStatus() === Player::STATUS_MANAGED) {
             return false;
         }
 
+        // enabled?
         $requireToken = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN]
         );
+        if (! $requireToken || $requireToken->getValue() === '0') {
+            return false;
+        }
 
+        // get configured alliances and corporations
+        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
+        $allianceVar = $sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES);
+        $corporationVar = $sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS);
+        if ($allianceVar === null || $corporationVar === null) {
+            // Alliance and/or Corporation settings variable not found
+            return false;
+        }
+        $alliances = explode(',', $allianceVar->getValue());
+        $corporations = explode(',', $corporationVar->getValue());
+
+        // check if player account has at least one character in one of the configured alliances or corporations
+        if (! $player->hasCharacterInAllianceOrCorporation($alliances, $corporations)) {
+            return false;
+        }
+
+        // get delay
         if ($ignoreDelay) {
             $hours = 0;
         } else {
@@ -301,9 +323,7 @@ class Account
             $hours = $delay !== null ? (int) $delay->getValue() : 0;
         }
 
-        if ($requireToken && $requireToken->getValue() === '1' &&
-            $player->hasCharacterWithInvalidTokenOlderThan($hours)
-        ) {
+        if ($player->hasCharacterWithInvalidTokenOlderThan($hours)) {
             return true;
         }
 

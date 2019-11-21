@@ -61,6 +61,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $alliances = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('1010');
+        $corps = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('');
         $alliance = (new Alliance())->setId(1010)->setName('alli')->setTicker('A');
         $corp = (new Corporation())->setId(2020)->setName('corp')->setTicker('C')->setAlliance($alliance);
         $player = (new Player())->setName('play');
@@ -68,6 +69,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->em->persist($deactivateAccounts);
         $this->em->persist($active);
         $this->em->persist($alliances);
+        $this->em->persist($corps);
         $this->em->persist($alliance);
         $this->em->persist($corp);
         $this->em->persist($player);
@@ -89,6 +91,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $alliances = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('1010');
+        $corps = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('');
         $token = (new SystemVariable(SystemVariable::MAIL_TOKEN))
             ->setValue('{"id": 90, "access": "abc", "refresh": "", "expires": ""}');
         $subj = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('subj');
@@ -107,6 +110,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->em->persist($deactivateAccounts);
         $this->em->persist($active);
         $this->em->persist($alliances);
+        $this->em->persist($corps);
         $this->em->persist($token);
         $this->em->persist($subj);
         $this->em->persist($body);

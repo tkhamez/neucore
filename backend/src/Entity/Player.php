@@ -412,6 +412,31 @@ class Player implements \JsonSerializable
     }
 
     /**
+     * @param int[] $alliances
+     * @param int[] $corporations
+     * @return bool
+     */
+    public function hasCharacterInAllianceOrCorporation(array $alliances, array $corporations): bool
+    {
+        $isMember = false;
+        foreach ($this->getCharacters() as $character) {
+            if ($character->getCorporation() === null) {
+                continue;
+            }
+            if ((
+                    $character->getCorporation()->getAlliance() !== null &&
+                    in_array($character->getCorporation()->getAlliance()->getId(), $alliances)
+                ) ||
+                in_array($character->getCorporation()->getId(), $corporations)
+            ) {
+                $isMember = true;
+                break;
+            }
+        }
+        return $isMember;
+    }
+
+    /**
      * @param int $hours
      * @return bool
      */
