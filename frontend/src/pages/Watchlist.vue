@@ -38,7 +38,7 @@
         </div>
     </div>
     <table v-cloak v-if="tab === 'red' || tab === 'white'"
-           class="table table-hover table-sm" aria-describedby="Red flagged player accounts">
+           class="table table-hover table-sm" aria-describedby="List of player accounts">
         <thead class="thead-dark">
             <tr>
                 <th scope="col">ID</th>
