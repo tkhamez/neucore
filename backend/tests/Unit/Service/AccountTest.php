@@ -150,7 +150,7 @@ class AccountTest extends TestCase
         $this->assertSame('bcd', $character->getName());
         $this->assertSame('bcd', $character->getPlayer()->getName());
         $this->assertSame([], $character->getPlayer()->getRoles());
-        $this->assertGreaterThanOrEqual(time(), $character->getCreated()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $character->getCreated()->getTimestamp());
     }
 
     public function testMoveCharacterToNewPlayer()

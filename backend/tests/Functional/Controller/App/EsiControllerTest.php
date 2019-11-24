@@ -249,7 +249,7 @@ class EsiControllerTest extends WebTestCase
 
         $esiErrorVar = $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
         $esiErrorValues = \json_decode($esiErrorVar->getValue());
-        $this->assertGreaterThanOrEqual(time(), $esiErrorValues->updated);
+        $this->assertLessThanOrEqual(time(), $esiErrorValues->updated);
         $this->assertSame(100, $esiErrorValues->remain);
         $this->assertSame(60, $esiErrorValues->reset);
     }
