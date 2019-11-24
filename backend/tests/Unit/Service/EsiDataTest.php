@@ -111,6 +111,10 @@ class EsiDataTest extends TestCase
                 "name": "char name",
                 "corporation_id": 20
             }'),
+            new Response(200, [], '[{
+                "character_id": 10,
+                "corporation_id": 20
+            }]'),
             new Response(404)
         );
 
@@ -128,6 +132,11 @@ class EsiDataTest extends TestCase
                 "name": "char name",
                 "corporation_id": 20
             }'),
+            new Response(200, [], '[{
+                "alliance_id": 30,
+                "character_id": 10,
+                "corporation_id": 20
+            }]'),
             new Response(200, [], '{
                 "name": "corp name",
                 "ticker": "-cn-",
@@ -150,6 +159,11 @@ class EsiDataTest extends TestCase
                 "name": "char name",
                 "corporation_id": 20
             }'),
+            new Response(200, [], '[{
+                "alliance_id": 30,
+                "character_id": 10,
+                "corporation_id": 20
+            }]'),
             new Response(200, [], '{
                 "name": "corp name",
                 "ticker": "-cn-",
@@ -204,10 +218,16 @@ class EsiDataTest extends TestCase
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
-        $this->client->setResponse(new Response(200, [], '{
-            "name": "new corp",
-            "corporation_id": 234
-        }'));
+        $this->client->setResponse(
+            new Response(200, [], '{
+                "name": "new corp",
+                "corporation_id": 234
+            }'),
+            new Response(200, [], '[{
+                "character_id": 10,
+                "corporation_id": 234
+            }]')
+        );
 
         $char = $this->cs->fetchCharacter(123, false);
         $this->assertSame(123, $char->getId());
@@ -230,10 +250,16 @@ class EsiDataTest extends TestCase
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
-        $this->client->setResponse(new Response(200, [], '{
-            "name": "new corp",
-            "corporation_id": 234
-        }'));
+        $this->client->setResponse(
+            new Response(200, [], '{
+                "name": "new corp",
+                "corporation_id": 234
+            }'),
+            new Response(200, [], '[{
+                "character_id": 10,
+                "corporation_id": 234
+            }]')
+        );
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertSame(123, $char->getId());
@@ -246,6 +272,28 @@ class EsiDataTest extends TestCase
         $this->assertSame(234, $charDb->getCorporation()->getId());
         $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2018-03-26 17:24:30', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
+    }
+
+    public function testFetchCharactersAffiliation()
+    {
+        $this->client->setResponse(new Response(200, [], '[{
+            "alliance_id": 11,
+            "character_id": 1001,
+            "corporation_id": 101
+          }, {
+            "character_id": 1002,
+            "corporation_id": 102
+        }]'));
+
+        $actual = $this->cs->fetchCharactersAffiliation([1001, 1002]);
+
+        $this->assertSame(2, count($actual));
+        $this->assertSame(1001, $actual[0]->getCharacterId());
+        $this->assertSame(1002, $actual[1]->getCharacterId());
+        $this->assertSame(101, $actual[0]->getCorporationId());
+        $this->assertSame(102, $actual[1]->getCorporationId());
+        $this->assertSame(11, $actual[0]->getAllianceId());
+        $this->assertSame(null, $actual[1]->getAllianceId());
     }
 
     public function testFetchCorporationInvalidId()
@@ -461,5 +509,18 @@ class EsiDataTest extends TestCase
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $locationDb->getCategory());
         $this->assertSame(109299958, $locationDb->getOwnerId());
         $this->assertSame(30000142, $locationDb->getSystemId());
+    }
+
+    public function testGetCorporationEntity()
+    {
+        $this->testHelper->emptyDb();
+
+        $result = $this->cs->getCorporationEntity(100);
+        $this->assertSame(100, $result->getId());
+
+        $this->em->clear();
+
+        $corp = $this->repoFactory->getCorporationRepository()->find(100);
+        $this->assertInstanceOf(Corporation::class, $corp);
     }
 }

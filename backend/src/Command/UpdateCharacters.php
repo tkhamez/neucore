@@ -115,36 +115,78 @@ class UpdateCharacters extends Command
 
     private function updateChars($characterId = 0)
     {
-        $offset = $this->dbResultLimit * -1;
+        $loopLimit = 400; // reduce memory usage
+        $offset = $loopLimit * -1;
         do {
+            $characters = [];
+            $charIds = [];
             if ($characterId !== 0) {
-                $charIds = [$characterId];
+                if (($character = $this->charRepo->find($characterId)) !== null) {
+                    $characters = [$character];
+                    $charIds = [$characterId];
+                }
             } else {
-                $offset += $this->dbResultLimit;
+                $offset += $loopLimit;
+                $characters = $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $loopLimit, $offset);
                 $charIds = array_map(function (Character $char) {
                     return $char->getId();
-                }, $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
+                }, $characters);
             }
 
-            foreach ($charIds as $charId) {
+            $this->checkErrorLimit();
+
+            $names = [];
+            foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
+                $names[$name->getId()] = $name->getName();
+            }
+
+            $affiliations = [];
+            foreach ($this->esiData->fetchCharactersAffiliation($charIds) as $affiliation) {
+                $affiliations[$affiliation->getCharacterId()] = [
+                    'corporation' => $affiliation->getCorporationId(),
+                    'alliance' => $affiliation->getAllianceId()
+                ];
+            }
+
+            $updateOk = [];
+            foreach ($characters as $idx => $char) {
                 if (! $this->objectManager->isOpen()) {
                     $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->objectManager->clear(); // detaches all objects from Doctrine
-                $this->checkErrorLimit();
 
-                // update name, corp and alliance from ESI
-                $updatedChar = $this->esiData->fetchCharacter($charId);
-                if ($updatedChar === null) {
-                    $this->writeLine('  Character ' . $charId.': ' . self::UPDATE_NOK);
-                } else {
-                    $this->writeLine('  Character ' . $charId.': ' . self::UPDATE_OK);
+                if (! isset($names[$char->getId()]) || ! isset($affiliations[$char->getId()])) {
+                    $this->writeLine('  Character ' . $char->getId().': ' . self::UPDATE_NOK);
+                    continue;
                 }
 
-                usleep($this->sleep * 1000);
+                $char->setName($names[$char->getId()]);
+                if ($char->getMain()) {
+                    $char->getPlayer()->setName($char->getName());
+                }
+
+                $corp = $this->esiData->getCorporationEntity($affiliations[$char->getId()]['corporation']);
+                $char->setCorporation($corp);
+                $corp->addCharacter($char);
+
+                try {
+                    $char->setLastUpdate(new \DateTime());
+                } catch (\Exception $e) {
+                    // ignore
+                }
+
+                $updateOk[] = $char->getId();
+                if ($idx % 4 === 0) {
+                    usleep($this->sleep * 1000); // reduce CPU usage
+                }
             }
-        } while (count($charIds) === $this->dbResultLimit);
+            if (count($updateOk) > 0 && $this->objectManager->flush()) {
+                $this->writeLine('  Characters ' . implode(',', $updateOk).': ' . self::UPDATE_OK);
+            }
+
+            $this->objectManager->clear(); // detaches all objects from Doctrine
+
+        } while (count($charIds) === $loopLimit);
     }
 
     private function updateCorps()

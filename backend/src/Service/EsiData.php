@@ -10,6 +10,7 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
+use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 /**
@@ -116,6 +117,8 @@ class EsiData
      * @param int|null $id
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Character An instance that is attached to the Doctrine entity manager.
+     *
+     * TODO this could be private now
      */
     public function fetchCharacter(?int $id, bool $flush = true)
     {
@@ -132,6 +135,7 @@ class EsiData
         // get data from ESI
         $this->lastErrorCode = null;
         try {
+            // cache = 24 hours
             $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
@@ -152,7 +156,12 @@ class EsiData
         }
 
         // update char with corp entity - does not fetch data from ESI
-        $corpId = (int) $eveChar->getCorporationId();
+        $affiliation = $this->fetchCharactersAffiliation([$id]); // cache = 1 hour
+        if (isset($affiliation[0])) {
+            $corpId = (int) $affiliation[0]->getCorporationId();
+        } else {
+            $corpId = (int) $eveChar->getCorporationId();
+        }
         $corp = $this->getCorporationEntity($corpId);
         $char->setCorporation($corp);
         $corp->addCharacter($char);
@@ -163,6 +172,29 @@ class EsiData
         }
 
         return $char;
+    }
+
+    /**
+     * @param array $ids Valid IDs
+     * @return PostCharactersAffiliation200Ok[]
+     * @see https://esi.evetech.net/ui/#/Character/post_characters_affiliation
+     */
+    public function fetchCharactersAffiliation(array $ids)
+    {
+        $affiliations = [];
+        while (count($ids) > 0) {
+            $checkIds = array_splice($ids, 0, 1000);
+            try {
+                $result = $this->esiApiFactory->getCharacterApi()
+                    ->postCharactersAffiliation($checkIds, $this->datasource);
+                if (is_array($result)) { // should always be the case here
+                    $affiliations = array_merge($affiliations, $result);
+                }
+            } catch (\Exception $e) {
+                $this->log->error($e->getMessage(), ['exception' => $e]);
+            }
+        }
+        return $affiliations;
     }
 
     /**
@@ -341,7 +373,7 @@ class EsiData
         return $location;
     }
 
-    private function getCorporationEntity(int $id): Corporation
+    public function getCorporationEntity(int $id): Corporation
     {
         $corp = $this->repositoryFactory->getCorporationRepository()->find($id);
         if ($corp === null) {

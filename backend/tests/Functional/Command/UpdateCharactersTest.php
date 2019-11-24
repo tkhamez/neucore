@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
@@ -50,7 +53,7 @@ class UpdateCharactersTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(1)->setName('c1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->client->setResponse(new Response(500));
+        $this->client->setResponse(new Response(500), new Response(500));
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
@@ -69,7 +72,10 @@ class UpdateCharactersTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(1)->setName('c1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->client->setResponse(new Response(200, [], '{"name": "char1"}')); // getCharactersCharacterId
+        $this->client->setResponse(
+            new Response(200, [], '[{"id": 1, "name": "c1", "category": "character"}]'), // postUniverseNames
+            new Response(200, [], '[{"character_id": 1, "corporation_id": 0}]') // postCharactersAffiliation
+        );
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
@@ -79,7 +85,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
         $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
-        $this->assertStringEndsWith('  Character 1: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
+        $this->assertStringEndsWith('  Characters 1: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
         $this->assertStringEndsWith('  Corporation 0: ' . UpdateCharacters::UPDATE_NOK, $actual[2]);
         $this->assertStringEndsWith('Finished "update-chars"', $actual[3]);
         $this->assertStringEndsWith('', $actual[4]);
@@ -89,21 +95,19 @@ class UpdateCharactersTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
+        $this->helper->addCharacterMain('char2', 6);
 
         $this->client->setResponse(
-            new Response(200, [], '{
-                "name": "char1",
-                "corporation_id": 101
-            }'),
-            new Response(200, [], '{
-                "name": "corp1",
-                "ticker": "t",
-                "alliance_id": 212
-            }'),
-            new Response(200, [], '{
-                "name": "The Alli.",
-                "ticker": "-A-"
-            }')
+            new Response(200, [], '[
+                {"id": 3, "name": "char1", "category": "character"},
+                {"id": 6, "name": "char2", "category": "character"}
+            ]'), // postUniverseNames
+            new Response(200, [], '[
+                {"character_id": 3, "corporation_id": 101},
+                {"character_id": 6, "corporation_id": 101}
+            ]'), // postCharactersAffiliation
+            new Response(200, [], '{"name": "corp1", "ticker": "t", "alliance_id": 212}'),
+            new Response(200, [], '{"name": "The Alli.", "ticker": "-A-"}')
         );
 
         $output = $this->runConsoleApp('update-chars', ['--sleep' => 0], [
@@ -113,7 +117,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(6, count($actual));
         $this->assertStringEndsWith('Started "update-chars"', $actual[0]);
-        $this->assertStringEndsWith('  Character 3: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
+        $this->assertStringEndsWith('  Characters 3,6: ' . UpdateCharacters::UPDATE_OK, $actual[1]);
         $this->assertStringEndsWith('  Corporation 101: ' . UpdateCharacters::UPDATE_OK, $actual[2]);
         $this->assertStringEndsWith('  Alliance 212: ' . UpdateCharacters::UPDATE_OK, $actual[3]);
         $this->assertStringEndsWith('Finished "update-chars"', $actual[4]);
@@ -125,11 +129,15 @@ class UpdateCharactersTest extends ConsoleTestCase
         $repositoryFactory = new RepositoryFactory($this->em);
 
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
-        $this->assertSame(1, count($actualChars));
+        $this->assertSame(2, count($actualChars));
         $this->assertSame(3, $actualChars[0]->getId());
+        $this->assertSame(6, $actualChars[1]->getId());
         $this->assertNotNull($actualChars[0]->getLastUpdate());
+        $this->assertNotNull($actualChars[1]->getLastUpdate());
         $this->assertSame(101, $actualChars[0]->getCorporation()->getId());
+        $this->assertSame(101, $actualChars[1]->getCorporation()->getId());
         $this->assertSame(212, $actualChars[0]->getCorporation()->getAlliance()->getId());
+        $this->assertSame(212, $actualChars[1]->getCorporation()->getAlliance()->getId());
 
         $actualCorps = $repositoryFactory->getCorporationRepository()->findBy([]);
         $this->assertSame(1, count($actualCorps));

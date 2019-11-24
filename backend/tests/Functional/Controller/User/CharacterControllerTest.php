@@ -147,6 +147,10 @@ class CharacterControllerTest extends WebTestCase
                 "name": "Char 96061222",
                 "corporation_id": '.$this->corpId.'
             }'),
+            new Response(200, [], '[{
+                "character_id": 96061222,
+                "corporation_id": '.$this->corpId.'
+            }]'), // affiliation
             new Response(200, [], '{
                 "name": "The Corp updated.",
                 "ticker": "TICK",
@@ -179,6 +183,10 @@ class CharacterControllerTest extends WebTestCase
                 "name": "Char 96061222",
                 "corporation_id": '.$this->corpId.'
             }'),
+            new Response(200, [], '[{
+                "character_id": 96061222,
+                "corporation_id": '.$this->corpId.'
+            }]'), // affiliation
             new Response(200, [], '{
                 "name": "The Corp updated.",
                 "ticker": "TICK",
@@ -237,6 +245,10 @@ class CharacterControllerTest extends WebTestCase
                 "name": "Char 96061222",
                 "corporation_id": 456
             }'),
+            new Response(200, [], '[{
+                "character_id": 96061222,
+                "corporation_id": '.$this->corpId.'
+            }]'), // affiliation
             new Response(200, [], '{
                 "name": "The Corp.",
                 "ticker": "-TTT-",
