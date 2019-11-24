@@ -2,6 +2,8 @@
 
 ## 1.7.1
 
+24 Nov 2019
+
 - Using `/characters/affiliation/` and `/universe/names/` instead of `/characters/{character_id}/` 
   to update characters (much shorter cache time and faster)
 
