@@ -67,8 +67,7 @@
                             <tbody>
                                 <tr v-for="char in searchResult">
                                     <td>
-                                        <img :src="'https://image.eveonline.com/Character/'
-                                            + char.character_id + '_32.jpg'" alt="character avatar">
+                                        <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
                                         {{ char.character_name }}
                                     </td>
                                     <td>{{ char.player_name }} #{{ char.player_id }}</td>

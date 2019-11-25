@@ -94,8 +94,7 @@
                     <div class="card-columns">
                         <div v-for="char in player.characters" class="card border-secondary bg-light">
                             <div class="card-header">
-                                <img :src="'https://image.eveonline.com/Character/'+char.id+'_32.jpg'"
-                                    alt="Character Portrait">
+                                <img :src="characterPortrait(char.id, 32)" alt="portrait">
                                 {{ char.name }}
                             </div>
                             <div class="card-body">

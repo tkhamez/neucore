@@ -18,8 +18,7 @@ Modal window with all characters of one player.
                 <li v-for="character in selectedPlayer.characters" class="list-group-item">
                     <div class="row">
                         <div class="col-6">
-                            <img :src="'https://image.eveonline.com/Character/' + character.id + '_32.jpg'"
-                                 alt="character">
+                            <img :src="characterPortrait(character.id, 32)" alt="portrait">
                             {{ character.name }}
                             <span v-if="character.main" class="fas fa-star text-warning" title="Main"></span>
                         </div>

@@ -70,8 +70,8 @@
                 </li>
             </ul>
 
-            <img v-if="authChar" :src="'https://image.eveonline.com/Character/' + authChar.id + '_32.jpg'"
-                 class="d-inline-block align-top mr-2" alt="Character Portrait">
+            <img v-if="authChar" :src="characterPortrait(authChar.id, 32)"
+                 class="d-inline-block align-top mr-2" alt="portrait">
             <div v-if="authChar" class="dropdown">
                 <button class="btn btn-primary dropdown-toggle mr-3" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">

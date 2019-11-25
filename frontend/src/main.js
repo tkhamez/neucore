@@ -42,6 +42,11 @@ new Vue({
          */
         player: null,
 
+        /**
+         * System settings from backend
+         */
+        settings: {},
+
         loadingCount: 0,
     },
 
@@ -49,6 +54,7 @@ new Vue({
         return h(App, {
             props: {
                 player: this.player,
+                settings: this.settings,
                 loadingCount: this.loadingCount,
             }
         })

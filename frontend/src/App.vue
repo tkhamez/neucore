@@ -79,6 +79,7 @@ export default {
 
     props: {
         player: Object,
+        settings: Object,
         loadingCount: Number,
     },
 
@@ -117,11 +118,6 @@ export default {
              * The authenticated character
              */
             authChar: null,
-
-            /**
-             * System settings from backend
-             */
-            settings: {},
 
             messageTxt: '',
 
@@ -240,7 +236,7 @@ export default {
                 for (let variable of data) {
                     settings[variable.name] = variable.value;
                 }
-                vm.settings = settings; // watch() will work this way
+                vm.$root.settings = settings; // watch() will work this way
             });
         },
 
