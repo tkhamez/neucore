@@ -93,7 +93,7 @@ There a two account status: standard and managed.
 
 - The status can be changed at any time by a user admin.
 - If the status is changed, all groups are removed.
-- User admins can manually assign groups to "managed" accounts
+- User managers can manually assign groups to "managed" accounts
   (technically, they can use this API endpoint for all players).
 - Automatic group assignment is disabled for managed accounts (but "Required Groups" are still checked, see below).
 - Groups are never deactivated for managed accounts.
