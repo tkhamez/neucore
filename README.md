@@ -264,7 +264,8 @@ This is also where the name "Neucore" comes from.
 - Neucore integration with other apps:
   [EVE-SRP](https://github.com/eve-n0rman/evesrp/tree/feature/braveneucore),
   [phpBB](https://github.com/bravecollective/forum-auth),
-  [Mumble](https://github.com/bravecollective/mumble-sso).
+  [Mumble](https://github.com/bravecollective/mumble-sso),
+  [Slack](https://github.com/bravecollective/slack-signup).
 
 ### Contact
 
