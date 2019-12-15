@@ -92,7 +92,7 @@
                 <div class="col-lg-8">
                     <h2>Characters</h2>
                     <div class="card-columns">
-                        <div v-for="char in player.characters" class="card border-secondary bg-light">
+                        <div v-for="char in player.characters" class="card border-secondary">
                             <div class="card-header">
                                 <img :src="characterPortrait(char.id, 32)" alt="portrait">
                                 {{ char.name }}

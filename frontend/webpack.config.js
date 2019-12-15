@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
             'theme-pulse': './src/themes/pulse.scss',
             'theme-sandstone': './src/themes/sandstone.scss',
             'theme-simplex': './src/themes/simplex.scss',
-            //'theme-sketchy': './src/themes/sketchy.scss', // build error
+            'theme-sketchy': './src/themes/sketchy.scss',
             'theme-slate': './src/themes/slate.scss',
             'theme-solar': './src/themes/solar.scss',
             'theme-spacelab': './src/themes/spacelab.scss',
@@ -102,7 +102,8 @@ module.exports = (env, argv) => {
                         family: "Open Sans",
                         variants: ["300", "400", "700", "300italic", "400italic", "700italic"]
                     },
-                    //{ family: "Neucha|Cabin Sketch" }, // sketchy
+                    { family: "Neucha" }, // sketchy
+                    { family: "Cabin Sketch" }, // sketchy
                     { family: "Source Sans Pro" }, // solar
                     { family: "Ubuntu", variants: ["400", "700"] }, // united
                 ]
