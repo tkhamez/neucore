@@ -14,9 +14,11 @@ use Neucore\Factory\RepositoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
+use Tests\Logger;
 
 class SendInvalidTokenMailTest extends ConsoleTestCase
 {
@@ -29,6 +31,8 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
      * @var EntityManagerInterface
      */
     private $em;
+
+    private $playerId;
 
     /**
      * @var RepositoryFactory
@@ -86,7 +90,64 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
     }
 
+    public function testExecuteRequestException()
+    {
+        $this->setupData();
+
+        $client = new Client([function () {
+            throw new \Exception("'error_label': 'ContactCostNotApproved'", 520);
+        }]);
+        $client->setResponse(new Response());
+        $log = new Logger('Test');
+
+        $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
+            ClientInterface::class => $client,
+            LoggerInterface::class => $log
+        ]);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(4, count($actual));
+        $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
+        $this->assertStringEndsWith(
+            '  Mail could not be sent to 30 because of CSPA charge or blocked sender',
+            $actual[1]
+        );
+        $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
+        $this->assertStringEndsWith('', $actual[3]);
+
+        $this->assertSame(
+            "'error_label': 'ContactCostNotApproved'",
+            $log->getHandler()->getRecords()[0]['message']
+        );
+
+        $this->em->clear();
+        $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
+        $this->assertTrue($player->getDeactivationMailSent());
+    }
+
     public function testExecute()
+    {
+        $this->setupData();
+
+        $this->client->setResponse(new Response(200, [], '373515628'));
+
+        $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
+            ClientInterface::class => $this->client
+        ]);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(4, count($actual));
+        $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
+        $this->assertStringEndsWith('  Mail sent to 30', $actual[1]);
+        $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
+        $this->assertStringEndsWith('', $actual[3]);
+
+        $this->em->clear();
+        $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
+        $this->assertTrue($player->getDeactivationMailSent());
+    }
+
+    private function setupData()
     {
         $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
@@ -127,17 +188,6 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->em->persist($c5);
         $this->em->flush();
 
-        $this->client->setResponse(new Response(200, [], '373515628'));
-
-        $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0], [
-            ClientInterface::class => $this->client
-        ]);
-
-        $actual = explode("\n", $output);
-        $this->assertSame(4, count($actual));
-        $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
-        $this->assertStringEndsWith('  Mail sent to 30', $actual[1]);
-        $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->playerId = $p3->getId();
     }
 }

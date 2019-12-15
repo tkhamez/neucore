@@ -122,9 +122,19 @@ class SendInvalidTokenMail extends Command
                 }
 
                 $errMessage = $this->eveMail->invalidTokenSend($characterId);
-                if ($errMessage === '') { // success
+                if (
+                    $errMessage === '' || // success
+                    strpos($errMessage, 'ContactCostNotApproved') !== false || // CSPA charge > 0
+                    strpos($errMessage, 'ContactOwnerUnreachable') !== false // sender is blocked
+                ) {
                     $this->eveMail->invalidTokenMailSent($playerId, true);
-                    $this->writeLine('  Mail sent to ' . $characterId);
+                    if ($errMessage === '') {
+                        $this->writeLine('  Mail sent to ' . $characterId);
+                    } else {
+                        $this->writeLine(
+                            "  Mail could not be sent to $characterId because of CSPA charge or blocked sender"
+                        );
+                    }
                     usleep($this->sleep * 1000 * 1000);
                 } else {
                     $this->writeLine(' ' . $errMessage, false);

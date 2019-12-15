@@ -73,7 +73,8 @@ class Player implements \JsonSerializable
     private $status = self::STATUS_STANDARD;
 
     /**
-     * Set to true when the "account deactivated" mail was sent.
+     * Set to true when the "account deactivated" mail was sent or has a permanent error
+     * (CSPA charge or blocked sender).
      *
      * Reset to false when all characters on the account
      * have valid tokens.
