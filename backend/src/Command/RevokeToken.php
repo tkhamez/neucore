@@ -46,7 +46,7 @@ class RevokeToken extends Command
             return null;
         }
 
-        $token = $this->tokenService->createAccessTokenFromCharacter($character);
+        $token = $character->createAccessToken();
         if ($token === null) {
             $output->writeln('Character has no token.');
             return null;

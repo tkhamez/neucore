@@ -3,8 +3,9 @@
 ## next
 
 - New: `incoming-characters` endpoint for apps.
-- Add last update date to corporation tracking data.
-- Change: Switch to new EVE image server.
+- Added last update date to corporation tracking data.
+- Removed `scopes` column from the character table because that information is now included in the JSON Web Token.
+- Switched to new EVE image server.
 - Other small stuff.
 
 ## 1.7.1

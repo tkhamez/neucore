@@ -187,6 +187,9 @@ class AccountTest extends TestCase
         $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testUpdateAndStoreCharacterWithPlayer()
     {
         $player = (new Player())->setName('name');
@@ -195,14 +198,14 @@ class AccountTest extends TestCase
         $player->addCharacter($char);
 
         $expires = time() + (60 * 20);
+        $token = Helper::generateToken(['s1', 's2']);
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
             new EveAuthentication(
                 100,
                 'char name changed',
                 'character-owner-hash',
-                new AccessToken(['access_token' => 'a-t', 'refresh_token' => 'r-t', 'expires' => $expires]),
-                ['scope1', 'scope2']
+                new AccessToken(['access_token' => $token[0], 'refresh_token' => 'r-t', 'expires' => $expires])
             )
         );
         $this->assertTrue($result);
@@ -216,11 +219,11 @@ class AccountTest extends TestCase
         $this->assertSame('char name changed', $player->getName());
 
         $this->assertSame('character-owner-hash', $character->getCharacterOwnerHash());
-        $this->assertSame('a-t', $character->getAccessToken());
+        $this->assertSame($token[0], $character->getAccessToken());
         $this->assertSame('r-t', $character->getRefreshToken());
         $this->assertSame($expires, $character->getExpires());
-        $this->assertSame('scope1 scope2', $character->getScopes());
         $this->assertTrue($character->getValidToken());
+        $this->assertSame(['s1', 's2'], $character->getScopesFromToken());
     }
 
     public function testUpdateAndStoreCharacterWithPlayerNoToken()
@@ -234,8 +237,7 @@ class AccountTest extends TestCase
                 100,
                 'name',
                 'character-owner-hash',
-                new AccessToken(['access_token' => 'a-t']),
-                []
+                new AccessToken(['access_token' => 'a-t'])
             )
         );
         $this->assertTrue($result);
@@ -373,8 +375,7 @@ class AccountTest extends TestCase
             ->setId(31)->setName('n31')
             ->setValidToken(false) // it's also the default
             ->setCharacterOwnerHash('hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires)
-            ->setScopes('scope1 scope2');
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);

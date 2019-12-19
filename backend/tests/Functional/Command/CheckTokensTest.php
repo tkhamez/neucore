@@ -200,8 +200,7 @@ class CheckTokensTest extends ConsoleTestCase
     public function testExecuteValidToken()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
-            ->setScopes('scope1 scope2')->setExpires(time() - 60*60);
+            ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)->setExpires(time() - 60*60);
         $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
@@ -240,8 +239,7 @@ class CheckTokensTest extends ConsoleTestCase
         list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
 
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-            ->setAccessToken($token)->setRefreshToken('at3')->setValidToken(false)
-            ->setScopes('scope1 scope2');
+            ->setAccessToken($token)->setRefreshToken('at3')->setValidToken(false);
         $this->helper->addNewPlayerToCharacterAndFlush($c);
 
         $this->client->setResponse(

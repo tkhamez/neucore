@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
@@ -7,7 +9,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Neucore\Entity\Character;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Psr\Log\LoggerInterface;
 
@@ -125,7 +126,7 @@ class OAuthToken
      */
     public function getToken(Character $character): string
     {
-        $existingToken = $this->createAccessTokenFromCharacter($character);
+        $existingToken = $character->createAccessToken();
         if ($existingToken === null) {
             return '';
         }
@@ -146,21 +147,5 @@ class OAuthToken
         }
 
         return $token->getToken();
-    }
-
-    public function createAccessTokenFromCharacter(Character $character): ?AccessTokenInterface
-    {
-        $token = null;
-        try {
-            $token = new AccessToken([
-                'access_token' => $character->getAccessToken(),
-                'refresh_token' => (string) $character->getRefreshToken(),
-                'expires' => $character->getExpires()
-            ]);
-        } catch (\Exception $e) {
-            // don't log this, characters without an "access_token" are okay.
-        }
-
-        return $token;
     }
 }

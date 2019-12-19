@@ -131,16 +131,15 @@ class Account
         } catch (\Exception $e) {
             // ignore
         }
-        if (! empty($token->getRefreshToken())) {
+        $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
+        $char->setAccessToken($token->getToken());
+        $char->setExpires($token->getExpires());
+        $char->setRefreshToken($token->getRefreshToken());
+        if (count($char->getScopesFromToken()) > 0) {
             $char->setValidToken(true);
         } else {
             $char->setValidToken(null);
         }
-        $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
-        $char->setScopes(implode(' ', $eveAuth->getScopes()));
-        $char->setAccessToken($token->getToken());
-        $char->setExpires($token->getExpires());
-        $char->setRefreshToken($token->getRefreshToken());
 
         // update account name
         if ($char->getMain()) {
@@ -182,7 +181,7 @@ class Account
         }
 
         // does the char has a token?
-        $existingToken = $tokenService->createAccessTokenFromCharacter($char);
+        $existingToken = $char->createAccessToken();
         if ($existingToken === null || empty($existingToken->getRefreshToken())) {
             $char->setValidToken(null);
             $this->objectManager->flush();

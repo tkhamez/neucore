@@ -7,6 +7,7 @@ use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Corporation;
 use PHPUnit\Framework\TestCase;
+use Tests\Helper;
 
 class CharacterTest extends TestCase
 {
@@ -163,13 +164,6 @@ class CharacterTest extends TestCase
         $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
     }
 
-    public function testSetGetScopes()
-    {
-        $char = new Character();
-        $char->setScopes('esi.one esi.two');
-        $this->assertSame('esi.one esi.two', $char->getScopes());
-    }
-
     /**
      * @throws \Exception
      */
@@ -215,5 +209,39 @@ class CharacterTest extends TestCase
 
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
+    public function testCreateAccessTokenFromCharacter()
+    {
+        $char = new Character();
+        $char->setRefreshToken('refresh');
+        $char->setAccessToken('access');
+        $char->setExpires(1519933545);
+
+        $token = $char->createAccessToken();
+
+        $this->assertSame('refresh', $token->getRefreshToken());
+        $this->assertSame('access', $token->getToken());
+        $this->assertSame(1519933545, $token->getExpires());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testGetScopesFromToken()
+    {
+        $char = new Character();
+
+        // no token error
+        $this->assertSame([], $char->getScopesFromToken());
+
+        // UnexpectedValueException
+        $char->setAccessToken('access-token');
+        $this->assertSame([], $char->getScopesFromToken());
+
+        // valid token
+        $token = Helper::generateToken(['s1', 's2']);
+        $char->setAccessToken($token[0]);
+        $this->assertSame(['s1', 's2'], $char->getScopesFromToken());
     }
 }

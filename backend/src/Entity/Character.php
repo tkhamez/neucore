@@ -1,8 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Entity;
 
+use Brave\Sso\Basics\JsonWebToken;
 use Doctrine\ORM\Mapping as ORM;
+use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Api;
 use OpenApi\Annotations as OA;
 
@@ -92,14 +97,6 @@ class Character implements \JsonSerializable
      * @var \DateTime|null
      */
     private $validTokenTime;
-
-    /**
-     * OAuth scopes.
-     *
-     * @ORM\Column(type="text", length=65535, nullable=true)
-     * @var string|null
-     */
-    private $scopes;
 
     /**
      * @OA\Property(nullable=true)
@@ -291,18 +288,6 @@ class Character implements \JsonSerializable
         return $this->validTokenTime;
     }
 
-    public function setScopes(string $scopes = null): self
-    {
-        $this->scopes = $scopes;
-
-        return $this;
-    }
-
-    public function getScopes(): ?string
-    {
-        return $this->scopes;
-    }
-
     public function setCreated(\DateTime $created): self
     {
         $this->created = clone $created;
@@ -378,5 +363,36 @@ class Character implements \JsonSerializable
     public function getCorporationMember(): ?CorporationMember
     {
         return $this->corporationMember;
+    }
+
+    public function createAccessToken(): ?AccessTokenInterface
+    {
+        $token = null;
+        try {
+            $token = new AccessToken([
+                'access_token' => $this->accessToken,
+                'refresh_token' => (string) $this->refreshToken,
+                'expires' => $this->expires
+            ]);
+        } catch (\Exception $e) {
+            // characters without an "access_token" are okay.
+        }
+
+        return $token;
+    }
+
+    public function getScopesFromToken()
+    {
+        $token = $this->createAccessToken();
+        if ($token === null) {
+            return [];
+        }
+        try {
+            $jwt = new JsonWebToken($token);
+        } catch (\UnexpectedValueException $e) {
+            return [];
+        }
+
+        return $jwt->getEveAuthentication()->getScopes();
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
@@ -105,7 +107,7 @@ class UserAuthTest extends TestCase
     {
         $token = new AccessToken(['access_token' => 'token']);
         $this->assertFalse($this->service->authenticate(
-            new EveAuthentication(888, 'New User', 'char-owner-hash', $token, [])
+            new EveAuthentication(888, 'New User', 'char-owner-hash', $token)
         ));
         $this->assertSame(
             'UserAuth::authenticate(): Role "'.Role::USER.'" not found.',
@@ -113,6 +115,9 @@ class UserAuthTest extends TestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testAuthenticateNewUser()
     {
         $this->helper->addRoles([Role::USER]);
@@ -120,8 +125,9 @@ class UserAuthTest extends TestCase
 
         $this->assertFalse(isset($_SESSION['character_id']));
 
-        $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(new EveAuthentication(888, 'New User', 'coh', $token, ['scope1', 's2']));
+        $accessToken = Helper::generateToken()[0];
+        $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $result = $this->service->authenticate(new EveAuthentication(888, 'New User', 'coh', $token));
 
         $this->em->clear();
 
@@ -131,17 +137,19 @@ class UserAuthTest extends TestCase
         $this->assertSame(888, $user->getId());
         $this->assertTrue($user->getMain());
         $this->assertSame('coh', $user->getCharacterOwnerHash());
-        $this->assertSame('token', $user->getAccessToken());
+        $this->assertSame($accessToken, $user->getAccessToken());
         $this->assertSame(1525456785, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertTrue($user->getValidToken());
-        $this->assertSame('scope1 s2', $user->getScopes());
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Role::USER], $this->service->getRoles());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
         $this->assertEqualsWithDelta(time(), $user->getLastLogin()->getTimestamp(), 10);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testAuthenticateExistingUser()
     {
         SessionData::setReadOnly(false);
@@ -155,10 +163,9 @@ class UserAuthTest extends TestCase
         $this->assertNull($char->getValidToken());
         $this->assertNull($char->getLastLogin());
 
-        $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(
-            new EveAuthentication(9013, 'Test User Changed Name', '123', $token, ['scope1', 's2'])
-        );
+        $accessToken = Helper::generateToken()[0];
+        $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $result = $this->service->authenticate(new EveAuthentication(9013, 'Test User Changed Name', '123', $token));
 
         $user = $this->service->getUser();
         $this->assertTrue($result);
@@ -166,8 +173,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(9013, $user->getId());
         $this->assertSame('Test User Changed Name', $user->getName());
         $this->assertSame('123', $user->getCharacterOwnerHash());
-        $this->assertSame('token', $user->getAccessToken());
-        $this->assertSame('scope1 s2', $user->getScopes());
+        $this->assertSame($accessToken, $user->getAccessToken());
         $this->assertSame(1525456785, $user->getExpires());
         $this->assertSame('refresh', $user->getRefreshToken());
         $this->assertTrue($char->getValidToken());
@@ -189,9 +195,7 @@ class UserAuthTest extends TestCase
 
         // changed hash 789, was 456
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(
-            new EveAuthentication(9014, 'Test User2', '789', $token, ['scope1', 's2'])
-        );
+        $result = $this->service->authenticate(new EveAuthentication(9014, 'Test User2', '789', $token));
 
         $user = $this->service->getUser();
         $newPlayer = $user->getPlayer();
@@ -219,7 +223,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(1, count($player->getCharacters()));
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785]);
-        $result = $this->service->addAlt(new EveAuthentication(101, 'Alt 1', 'hash', $token, ['scope1', 's2']));
+        $result = $this->service->addAlt(new EveAuthentication(101, 'Alt 1', 'hash', $token));
         $this->assertTrue($result);
 
         $chars = $player->getCharacters();
@@ -230,13 +234,15 @@ class UserAuthTest extends TestCase
         $this->assertSame('Alt 1', $chars[1]->getName());
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame('tk', $chars[1]->getAccessToken());
-        $this->assertSame('scope1 s2', $chars[1]->getScopes());
         $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame(null, $chars[1]->getRefreshToken());
         $this->assertNull($chars[1]->getValidToken());
         $this->assertFalse($chars[1]->getMain());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testAddAltExistingChar()
     {
         $_SESSION['character_id'] = 100;
@@ -245,8 +251,9 @@ class UserAuthTest extends TestCase
         $newPlayerId = $main1->getPlayer()->getId();
         $oldPlayerId = $main2->getPlayer()->getId();
 
-        $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785, 'refresh_token' => 'rf']);
-        $result = $this->service->addAlt(new EveAuthentication(200, 'Main2 renamed', 'hash', $token, ['scope1', 's2']));
+        $accessToken = Helper::generateToken()[0];
+        $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'rf']);
+        $result = $this->service->addAlt(new EveAuthentication(200, 'Main2 renamed', 'hash', $token));
         $this->assertTrue($result);
 
         $chars = $main1->getPlayer()->getCharacters();
@@ -255,8 +262,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($main2, $chars[1]);
         $this->assertSame('Main2 renamed', $chars[1]->getName());
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
-        $this->assertSame('tk', $chars[1]->getAccessToken());
-        $this->assertSame('scope1 s2', $chars[1]->getScopes());
+        $this->assertSame($accessToken, $chars[1]->getAccessToken());
         $this->assertSame(1525456785, $chars[1]->getExpires());
         $this->assertSame('rf', $chars[1]->getRefreshToken());
         $this->assertTrue($chars[1]->getValidToken());
@@ -279,7 +285,7 @@ class UserAuthTest extends TestCase
         $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $token = new AccessToken(['access_token' => 'tk']);
-        $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));
+        $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token));
         $this->assertTrue($result);
 
         $chars = $main->getPlayer()->getCharacters();
