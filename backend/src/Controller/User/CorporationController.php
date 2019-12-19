@@ -449,13 +449,15 @@ class CorporationController extends BaseController
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
 
         if ($this->getUser($this->userAuth)->getPlayer()->hasRole(Role::TRACKING_ADMIN)) {
-            return $this->withJson($corporations);
+            return $this->withJson(array_map(function (Corporation $corporation) {
+                return $corporation->jsonSerialize(true);
+            }, $corporations));
         }
 
         $result = [];
         foreach ($corporations as $corporation) {
             if ($this->checkPermission($corporation)) {
-                $result[] = $corporation;
+                $result[] = $corporation->jsonSerialize(true);
             }
         }
 

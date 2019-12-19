@@ -2,6 +2,7 @@
 
 namespace Neucore\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Api;
 use Neucore\Traits\EsiRateLimited;
@@ -37,11 +38,17 @@ class UpdateMemberTracking extends Command
      */
     private $esiData;
 
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
     public function __construct(
         RepositoryFactory $repositoryFactory,
         MemberTracking $memberTracking,
         EsiData $esiData,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EntityManagerInterface $em
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -50,6 +57,7 @@ class UpdateMemberTracking extends Command
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
         $this->esiData = $esiData;
+        $this->em = $em;
     }
 
     protected function configure()
@@ -125,6 +133,9 @@ class UpdateMemberTracking extends Command
                 $token = null;
             }
             $this->processData((int) $corporation->getId(), $trackingData, $sleep, $token);
+
+            $corporation->setTrackingLastUpdate(new \DateTime());
+            $this->em->flush();
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .

@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
@@ -7,6 +10,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\SystemVariable;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
@@ -154,5 +158,11 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('  Updated tracking data for 0 members of corporation 2', $actual[6]);
         $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[7]);
         $this->assertStringEndsWith('', $actual[8]);
+
+        $this->em->clear();
+        $corps = (new RepositoryFactory($this->em))->getCorporationRepository()->findAll();
+        $this->assertSame(2, count($corps));
+        $this->assertNotNull($corps[0]->getTrackingLastUpdate());
+        $this->assertNotNull($corps[1]->getTrackingLastUpdate());
     }
 }

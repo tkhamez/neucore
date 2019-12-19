@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Api;
 use OpenApi\Annotations as OA;
 
 /**
@@ -18,7 +21,6 @@ use OpenApi\Annotations as OA;
  */
 class Corporation implements \JsonSerializable
 {
-
     /**
      * EVE corporation ID.
      *
@@ -86,6 +88,15 @@ class Corporation implements \JsonSerializable
     private $groupsTracking;
 
     /**
+     * Last update of corporation member tracking data (API: not included by default).
+     *
+     * @OA\Property(nullable=true)
+     * @ORM\Column(type="datetime", name="tracking_last_update", nullable=true)
+     * @var \DateTime|null
+     */
+    private $trackingLastUpdate;
+
+    /**
      *
      * @ORM\OneToMany(targetEntity="Character", mappedBy="corporation")
      * @ORM\OrderBy({"name" = "ASC"})
@@ -106,15 +117,22 @@ class Corporation implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize()
+    public function jsonSerialize($includeTrackingDate = false)
     {
-        return [
+        $data = [
             'id' => $this->getId(),
             'name' => $this->name,
             'ticker' => $this->ticker,
             'alliance' => $this->alliance,
             // API: groups are not included by default
         ];
+
+        if ($includeTrackingDate) {
+            $data['trackingLastUpdate'] = $this->trackingLastUpdate !== null ?
+                $this->trackingLastUpdate->format(Api::DATE_FORMAT) : null;
+        }
+
+        return $data;
     }
 
     /**
@@ -331,6 +349,18 @@ class Corporation implements \JsonSerializable
             }
         }
         return false;
+    }
+
+    public function setTrackingLastUpdate(\DateTime $trackingLastUpdate): self
+    {
+        $this->trackingLastUpdate = clone $trackingLastUpdate;
+
+        return $this;
+    }
+
+    public function getTrackingLastUpdate(): ?\DateTime
+    {
+        return $this->trackingLastUpdate;
     }
 
     /**

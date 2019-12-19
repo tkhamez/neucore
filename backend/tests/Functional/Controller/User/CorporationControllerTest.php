@@ -602,6 +602,7 @@ class CorporationControllerTest extends WebTestCase
             'name' => 'corp 2',
             'ticker' => 't2',
             'alliance' => null,
+            'trackingLastUpdate' => '2019-12-19T13:44:02Z',
         ]], $this->parseJsonBody($response2));
 
         # admin
@@ -615,6 +616,7 @@ class CorporationControllerTest extends WebTestCase
             'name' => 'corp 2',
             'ticker' => 't2',
             'alliance' => null,
+            'trackingLastUpdate' => '2019-12-19T13:44:02Z',
         ]], $this->parseJsonBody($response3));
     }
 
@@ -676,7 +678,8 @@ class CorporationControllerTest extends WebTestCase
         $this->h->addCharacterMain('User Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
 
         $corp1 = (new Corporation())->setId(111)->setTicker('t1')->setName('corp 1');
-        $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2');
+        $corp2 = (new Corporation())->setId(222)->setTicker('t2')->setName('corp 2')
+            ->setTrackingLastUpdate(new \DateTime('2019-12-19 13:44:02'));
         $corp3 = (new Corporation())->setId(333)->setTicker('t3')->setName('corp 3');
 
         $this->group1 = (new Group())->setName('group 1');

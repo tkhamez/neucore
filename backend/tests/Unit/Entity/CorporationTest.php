@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
@@ -17,6 +20,7 @@ class CorporationTest extends TestCase
         $corp->setId(123);
         $corp->setName('test corp');
         $corp->setTicker('ABC');
+        $corp->setTrackingLastUpdate(new \DateTime('2019-12-19 13:44:02'));
 
         $this->assertSame([
             'id' => 123,
@@ -24,6 +28,15 @@ class CorporationTest extends TestCase
             'ticker' => 'ABC',
             'alliance' => null
         ], json_decode((string) json_encode($corp), true));
+
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test corp',
+            'ticker' => 'ABC',
+            'alliance' => null,
+            'trackingLastUpdate' => '2019-12-19T13:44:02Z',
+        ], $corp->jsonSerialize(true));
     }
 
     public function testSetGetId()
@@ -54,7 +67,7 @@ class CorporationTest extends TestCase
     {
         $dt1 = new \DateTime('2018-04-26 18:59:36');
 
-        $corp = new Alliance();
+        $corp = new Corporation();
         $corp->setLastUpdate($dt1);
         $dt2 = $corp->getLastUpdate();
 
@@ -154,6 +167,18 @@ class CorporationTest extends TestCase
 
         $this->assertTrue($corp->hasGroupTracking($group1->getId()));
         $this->assertFalse($corp->hasGroupTracking($group2->getId()));
+    }
+
+    public function testSetGetTrackingLastUpdate()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:36');
+
+        $corp = new Corporation();
+        $corp->setTrackingLastUpdate($dt1);
+        $dt2 = $corp->getTrackingLastUpdate();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
     }
 
     public function testAddGetRemoveCharacter()

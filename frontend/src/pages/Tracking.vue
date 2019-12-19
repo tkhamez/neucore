@@ -110,7 +110,12 @@
                         </tr>
                     </thead>
                 </table>
-                <p class="small text-muted">* Time is GMT</p>
+                <p class="small text-muted">
+                    Last update:
+                    <span v-if="corporation.trackingLastUpdate">{{ formatDate(corporation.trackingLastUpdate) }}</span>
+                    <br>
+                    * Time is GMT
+                </p>
             </div>
         </div>
 
@@ -133,11 +138,10 @@ export default {
         route: Array,
     },
 
-    data: function() {
+    data () {
         return {
             corporation: "", // empty string to select the first entry in the drop-down
             corporations: [],
-            currentCorporationId: null,
             formOptions: {
                 daysActive: null,
                 daysInactive: null,
@@ -160,7 +164,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted () {
         window.scrollTo(0,0);
 
         configureDataTable(this);
@@ -170,7 +174,7 @@ export default {
     },
 
     watch: {
-        route: function() {
+        route () {
             if (this.route.length < 3) {
                 this.getMembers();
             } else if (this.route.length === 3 && this.route[2] !== '0') {
@@ -179,7 +183,7 @@ export default {
             }
         },
 
-        corporation: function() {
+        corporation () {
             if (this.corporation !== '') {
                 window.location.hash = '#Tracking/' + this.corporation.id;
             } else {
@@ -196,9 +200,9 @@ export default {
     },
 
     methods: {
-        getCorporations: function() {
+        getCorporations () {
             const vm = this;
-            new CorporationApi().trackedCorporations(function(error, data) {
+            new CorporationApi().trackedCorporations((error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
@@ -207,7 +211,7 @@ export default {
             });
         },
 
-        setCorporation: function() {
+        setCorporation () {
             if (! this.route[1]) {
                 return;
             }
@@ -224,7 +228,7 @@ export default {
             vm.getMembers();
         }, 250),
 
-        getMembers: function() {
+        getMembers () {
             this.table.clear();
             this.table.draw();
             if (! this.route[1]) {
@@ -241,7 +245,7 @@ export default {
             };
 
             const vm = this;
-            new CorporationApi().members(corporationId, opts, function(error, data, response) {
+            new CorporationApi().members(corporationId, opts, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 403) {
                         vm.message(error, 'warning', 2000);
@@ -254,11 +258,11 @@ export default {
             });
         },
 
-        showCharacters: function(playerId) {
+        showCharacters (playerId) {
             this.$refs.charactersModal.showCharacters(playerId);
         },
 
-        toggleSearchableColumn: function(index) {
+        toggleSearchableColumn (index) {
             this.columns[index].searchable = ! this.columns[index].searchable;
             this.table.draw();
         },
@@ -267,7 +271,7 @@ export default {
 
 function configureDataTable(vm) {
     $.fn.dataTable.ext.search.push(
-        function(settings, searchData) {
+        (settings, searchData) => {
             const term = $('.dataTables_filter input').val().toLowerCase();
             for (let index = 0; index < vm.columns.length; index++) {
                 if (! vm.columns[index].searchable) {
@@ -286,11 +290,11 @@ function configureDataTable(vm) {
             [10, 25, 50, 100, 200, 500, 1000, 5000, -1],
             [10, 25, 50, 100, 200, 500, 1000, 5000, "All"]
         ],
-        pageLength: 25,
+        pageLength: 10,
         deferRender: true,
         order: [[4, "desc"]],
         columns: [{
-            data: function (row) {
+            data (row) {
                 return '' +
                     '<a href="https://evewho.com/character/' + row.id + '" ' +
                     '   target="_blank" rel="noopener noreferrer" title="Eve Who">' +
@@ -298,7 +302,7 @@ function configureDataTable(vm) {
                     '</a>';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 if (! row.player) {
                     return '';
                 }
@@ -308,43 +312,43 @@ function configureDataTable(vm) {
                     '</a>';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 if (row.character && row.character.validToken) return 'valid';
                 if (row.character && row.character.validToken === false) return 'invalid';
                 if (row.character && row.character.validToken === null) return 'n/a';
                 return '';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 if (row.character && row.character.validTokenTime) {
                     return vm.$root.formatDate(row.character.validTokenTime);
                 }
                 return '';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 return row.logonDate ? vm.$root.formatDate(row.logonDate) : '';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 return row.logoffDate ? vm.$root.formatDate(row.logoffDate) : '';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 if (row.location) {
                     return row.location.name ? row.location.name : row.location.id;
                 }
                 return '';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 if (row.shipType) {
                     return row.shipType.name ? row.shipType.name : row.shipType.id;
                 }
                 return '';
             }
         }, {
-            data: function (row) {
+            data (row) {
                 return row.startDate ? vm.$root.formatDate(row.startDate) : '';
             }
         }]
