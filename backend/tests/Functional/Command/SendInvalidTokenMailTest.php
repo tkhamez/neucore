@@ -115,10 +115,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 
-        $this->assertSame(
-            "'error_label': 'ContactCostNotApproved'",
-            $log->getHandler()->getRecords()[0]['message']
-        );
+        $this->assertSame(0, count($log->getHandler()->getRecords()));
 
         $this->em->clear();
         $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
