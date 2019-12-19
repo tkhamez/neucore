@@ -814,7 +814,7 @@ class PlayerController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The player information (this one includes the removedCharacters property).",
+     *         description="The player (this includes the removedCharacters and incomingCharacters properties).",
      *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
      *     @OA\Response(

@@ -321,6 +321,8 @@ Application API
 - Return all characters of the player account to which the character ID belongs. `/app/v1/characters/{characterId}`
 - Return all characters from the player account. `/app/v1/player-chars/{playerId}`
 - Return all characters that were removed from the player account to which the character ID belongs. `/app/v1/removed-characters/{characterId}`
+- Return all characters that were moved from another account to the player account to which the
+                    ID belongs. `/app/v1/incoming-characters/{characterId}`
 - Return a list of all players that have a character in the corporation. `/app/v1/corp-players/{corporationId}`
 
 #### app-tracking

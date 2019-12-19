@@ -348,6 +348,57 @@ class CharControllerTest extends WebTestCase
         );
     }
 
+    public function testIncomingCharactersV1403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/incoming-characters/123');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setUpDb();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/incoming-characters/123', null, $headers);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testIncomingCharactersV1404()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/incoming-characters/123', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Character not found.', $response->getReasonPhrase());
+    }
+
+    public function testIncomingCharactersV1200()
+    {
+        $this->setUpDb();
+        $player1 = $this->helper->addCharacterMain('p1', 123, [Role::USER])->getPlayer();
+        $player2 = $this->helper->addCharacterMain('p2', 456, [Role::USER])->getPlayer();
+        $movedChar = (new RemovedCharacter())->setCharacterId(101)->setCharacterName('c1')
+            ->setRemovedDate(new \DateTime('2019-04-20 20:41:47'))
+            ->setReason(RemovedCharacter::REASON_MOVED)
+            ->setNewPlayer($player2)->setPlayer($player1);
+        $this->helper->getEm()->persist($player2);
+        $this->helper->getEm()->persist($movedChar);
+        $this->helper->getEm()->flush();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/incoming-characters/456', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([[
+            'player' => ['id' => $player1->getId(), 'name' => 'p1'],
+            'characterId' => 101,
+            'characterName' => 'c1',
+            'removedDate' => '2019-04-20T20:41:47Z',
+            'reason' => RemovedCharacter::REASON_MOVED,
+            'deletedBy' => null,
+            'newPlayerId' => $player2->getId(),
+            'newPlayerName' => 'p2'
+        ]], $this->parseJsonBody($response));
+    }
+
     public function testCorporationPlayersV1403()
     {
         $response1 = $this->runApp('GET', '/api/app/v1/corp-players/1000');

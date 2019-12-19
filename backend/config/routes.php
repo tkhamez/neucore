@@ -43,6 +43,7 @@ return [
     '/api/app/v1/characters/{characterId}'           => ['GET',  CharController::class.'::charactersV1'],
     '/api/app/v1/player-chars/{playerId}'            => ['GET',  CharController::class.'::playerCharactersV1'],
     '/api/app/v1/removed-characters/{characterId}'   => ['GET',  CharController::class.'::removedCharactersV1'],
+    '/api/app/v1/incoming-characters/{characterId}'  => ['GET',  CharController::class.'::incomingCharactersV1'],
     '/api/app/v1/corp-players/{corporationId}'       => ['GET',  CharController::class.'::corporationPlayersV1'],
     '/api/app/v1/corporation/{id}/member-tracking'   => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
     '/api/app/v1/esi[{path:.*}]'                     => [

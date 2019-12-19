@@ -277,6 +277,53 @@ class CharController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
+     *     path="/app/v1/incoming-characters/{characterId}",
+     *     operationId="incomingCharactersV1",
+     *     summary="Return all characters that were moved from another account to the player account to which the
+                    ID belongs.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="All incoming characters from the player account.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/RemovedCharacter"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character (or player) not found."
+     *     )
+     * )
+     */
+    public function incomingCharactersV1(string $characterId): ResponseInterface
+    {
+        $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
+        if ($char === null) {
+            return $this->response->withStatus(404, 'Character not found.');
+        }
+
+        $result = [];
+        foreach ($char->getPlayer()->getIncomingCharacters() as $character) {
+            $result[] = $character;
+        }
+
+        return $this->withJson($result);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
      *     path="/app/v1/corp-players/{corporationId}",
      *     operationId="corporationPlayersV1",
      *     summary="Return a list of all players that have a character in the corporation.",
