@@ -92,7 +92,7 @@ class CorporationMember implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize($forUser = true)
+    public function jsonSerialize(bool $forUser = true): array
     {
         $result = [
             'id' => $this->getId(),

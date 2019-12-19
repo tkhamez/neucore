@@ -62,7 +62,7 @@ class EveMail
         $this->datasource = $config['eve']['datasource'];
     }
 
-    public function storeMailCharacter(EveAuthentication $eveAuth)
+    public function storeMailCharacter(EveAuthentication $eveAuth): bool
     {
         $repo = $this->repositoryFactory->getSystemVariableRepository();
         $char = $repo->find(SystemVariable::MAIL_CHARACTER);

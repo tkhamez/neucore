@@ -37,6 +37,10 @@ class EsiHeaders
         $this->em = $em;
     }
 
+    /**
+     * @param callable $handler
+     * @return \Closure
+     */
     public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, array $options) use ($handler) {
@@ -51,7 +55,7 @@ class EsiHeaders
         };
     }
 
-    private function handleResponseHeaders(string $requestUri, ResponseInterface $response)
+    private function handleResponseHeaders(string $requestUri, ResponseInterface $response): void
     {
         /// update ESI error limit
         if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {

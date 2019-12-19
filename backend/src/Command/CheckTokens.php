@@ -64,7 +64,7 @@ class CheckTokens extends Command
         $this->objectManager = $objectManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('check-tokens')
             ->setDescription(
@@ -91,9 +91,11 @@ class CheckTokens extends Command
         $this->writeLine('Started "check-tokens"', false);
         $this->check($charId);
         $this->writeLine('Finished "check-tokens"', false);
+
+        return 0;
     }
 
-    private function check($characterId = 0)
+    private function check(int $characterId = 0): void
     {
         $dbResultLimit = 1000;
         $offset = $dbResultLimit * -1;

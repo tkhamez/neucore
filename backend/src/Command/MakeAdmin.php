@@ -38,7 +38,7 @@ class MakeAdmin extends Command
         $this->objectManager = $objectManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('make-admin')
             ->setDescription(
@@ -55,7 +55,7 @@ class MakeAdmin extends Command
         $player = $this->playerRepository->find($playerId);
         if ($player === null) {
             $output->writeln('Player with ID "' . $playerId .'" not found');
-            return null;
+            return 0;
         }
 
         $newRoles = [
@@ -79,9 +79,11 @@ class MakeAdmin extends Command
         }
 
         if (! $this->objectManager->flush()) {
-            return null;
+            return 0;
         }
 
         $output->writeln('Added all applicable roles to the player account "' .$player->getName() . '"');
+
+        return 0;
     }
 }

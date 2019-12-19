@@ -9,6 +9,9 @@ namespace Neucore\Middleware\Psr15\Session;
  */
 class SessionData
 {
+    /**
+     * @var bool
+     */
     private static $readOnly = true;
 
     public static function setReadOnly(bool $readOnly): void

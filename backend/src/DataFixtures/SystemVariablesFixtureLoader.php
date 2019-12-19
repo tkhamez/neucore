@@ -13,7 +13,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 /** @noinspection PhpUnused */
 class SystemVariablesFixtureLoader implements FixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $repository = RepositoryFactory::getInstance($manager)->getSystemVariableRepository();
 

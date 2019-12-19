@@ -21,7 +21,7 @@ class DBVerifySSL extends Command
         $this->objectManager = $objectManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('db-verify-ssl')
             ->setDescription('Shows SSL cipher if DB connection is encrypted.');

@@ -30,7 +30,7 @@ class DoctrineFixturesLoad extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine-fixtures-load')

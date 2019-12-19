@@ -146,7 +146,7 @@ class Character implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize($withRelations = true)
+    public function jsonSerialize(bool $withRelations = true): array
     {
         $result = [
             'id' => $this->getId(),
@@ -381,7 +381,7 @@ class Character implements \JsonSerializable
         return $token;
     }
 
-    public function getScopesFromToken()
+    public function getScopesFromToken(): array
     {
         $token = $this->createAccessToken();
         if ($token === null) {

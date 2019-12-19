@@ -117,7 +117,7 @@ class Corporation implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize($includeTrackingDate = false)
+    public function jsonSerialize(bool $includeTrackingDate = false): array
     {
         $data = [
             'id' => $this->getId(),

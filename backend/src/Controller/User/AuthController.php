@@ -126,7 +126,7 @@ class AuthController extends BaseController
      *
      * @noinspection PhpUnused
      */
-    public function loginManaged($prefix = self::STATE_PREFIX_STATUS_MANAGED): ResponseInterface
+    public function loginManaged(string $prefix = self::STATE_PREFIX_STATUS_MANAGED): ResponseInterface
     {
         // check "allow managed login" settings
         $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
@@ -308,7 +308,7 @@ class AuthController extends BaseController
         return $this->response->withHeader('Location', $this->authProvider->buildLoginUrl($state))->withStatus(302);
     }
 
-    private function getLoginScopes($state): array
+    private function getLoginScopes(string $state): array
     {
         $prefix = substr($state, 0, 2);
         if (in_array($prefix, [self::STATE_PREFIX_STATUS_MANAGED, self::STATE_PREFIX_STATUS_MANAGED_ALT])) {

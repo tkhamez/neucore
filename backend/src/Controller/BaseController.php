@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller;
 
@@ -68,9 +70,10 @@ abstract class BaseController
 
     /**
      * @param mixed $data
+     * @param int|null $status
      * @return ResponseInterface
      */
-    protected function withJson($data, $status = null): ResponseInterface
+    protected function withJson($data, ?int $status = null): ResponseInterface
     {
         $this->response->getBody()->write((string) \json_encode($data));
         if (isset($status)) {

@@ -123,7 +123,7 @@ class AppAuth implements RoleProviderInterface
     /**
      * upgrade hash if needed
      */
-    private function upgradeHash(string $secret)
+    private function upgradeHash(string $secret): void
     {
         if (password_needs_rehash($this->app->getSecret(), PASSWORD_BCRYPT)) {
             $hash = password_hash($secret, PASSWORD_BCRYPT);

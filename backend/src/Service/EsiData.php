@@ -333,7 +333,7 @@ class EsiData
     /**
      * Fetch structure info from ESI and create/update DB entry on success.
      */
-    public function fetchStructure(int $id, string $accessToken, $flush = true): ?EsiLocation
+    public function fetchStructure(int $id, string $accessToken, bool $flush = true): ?EsiLocation
     {
         if ($accessToken === '') {
             return null;

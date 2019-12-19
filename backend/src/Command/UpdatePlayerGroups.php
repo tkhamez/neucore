@@ -47,7 +47,7 @@ class UpdatePlayerGroups extends Command
         $this->objectManager = $objectManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('update-player-groups')
             ->setDescription('Assigns groups to players based on corporation configuration.')
@@ -102,5 +102,7 @@ class UpdatePlayerGroups extends Command
         } while (count($playerIds) === $dbResultLimit);
 
         $this->writeLine('Finished "update-player-groups"', false);
+
+        return 0;
     }
 }

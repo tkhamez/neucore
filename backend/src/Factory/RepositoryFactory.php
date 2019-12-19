@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Factory;
 
@@ -34,10 +36,19 @@ use Neucore\Repository\WatchlistRepository;
 
 class RepositoryFactory
 {
+    /**
+     * @var RepositoryFactory
+     */
     private static $instance;
 
+    /**
+     * @var ObjectManager
+     */
     private $objectManager;
 
+    /**
+     * @var array
+     */
     private $factories = [];
 
     public static function getInstance(ObjectManager $objectManager): self
@@ -124,6 +135,11 @@ class RepositoryFactory
         return $this->getRepository(WatchlistRepository::class, Watchlist::class);
     }
 
+    /**
+     * @param string $repositoryClass
+     * @param string $entityClass
+     * @return mixed
+     */
     private function getRepository(string $repositoryClass, string $entityClass)
     {
         if (! isset($this->factories[$repositoryClass])) {

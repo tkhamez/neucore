@@ -80,8 +80,8 @@
             "openapi src --output ../web/application-api-3.yml --exclude src/Controller/User"
         ],
         "phan": "phan --color",
-        "phpstan:src": "phpstan analyse src --level 7 --ansi",
-        "phpstan:tests": "phpstan analyse tests --level 6 --ansi",
+        "phpstan:src": "phpstan analyse src --level 8 --ansi",
+        "phpstan:tests": "phpstan analyse tests --level 5 --ansi",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --coverage-html var/phpunit",
         "security-checker": "security-checker security:check",

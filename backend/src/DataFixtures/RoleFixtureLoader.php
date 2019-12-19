@@ -9,7 +9,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class RoleFixtureLoader implements FixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $roleRepository = RepositoryFactory::getInstance($manager)->getRoleRepository();
 

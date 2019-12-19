@@ -121,7 +121,7 @@ class RemovedCharacter implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'player' => $this->player->jsonSerialize(true),

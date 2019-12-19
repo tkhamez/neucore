@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -149,6 +151,12 @@ class EsiController extends BaseController
         return $this->prepareResponse($body, $response);
     }
 
+    /**
+     * @param mixed $body
+     * @param ResponseInterface|null $response
+     * @param int $code
+     * @return ResponseInterface
+     */
     private function prepareResponse($body, ResponseInterface $response = null, $code = 200): ResponseInterface
     {
         return $this->withJson([

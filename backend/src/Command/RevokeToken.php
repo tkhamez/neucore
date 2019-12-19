@@ -30,7 +30,7 @@ class RevokeToken extends Command
         $this->tokenService = $tokenService;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('revoke-token')
             ->setDescription('Revoke a refresh token.')
@@ -43,13 +43,13 @@ class RevokeToken extends Command
         $character = $this->charRepo->find($id);
         if ($character === null) {
             $output->writeln('Character not found.');
-            return null;
+            return 0;
         }
 
         $token = $character->createAccessToken();
         if ($token === null) {
             $output->writeln('Character has no token.');
-            return null;
+            return 0;
         }
 
         if ($this->tokenService->revokeRefreshToken($token)) {
@@ -57,5 +57,7 @@ class RevokeToken extends Command
         } else {
             $output->writeln('Error, check log.');
         }
+
+        return 0;
     }
 }

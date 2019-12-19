@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -36,6 +38,9 @@ class PlayerController extends BaseController
      */
     private $userAuth;
 
+    /**
+     * @var array
+     */
     private $availableRoles = [
         Role::APP_ADMIN,
         Role::APP_MANAGER,
@@ -51,6 +56,9 @@ class PlayerController extends BaseController
         Role::WATCHLIST_ADMIN,
     ];
 
+    /**
+     * @var array
+     */
     private $availableStatus = [
         Player::STATUS_STANDARD,
         Player::STATUS_MANAGED,

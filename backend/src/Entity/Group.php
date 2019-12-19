@@ -124,9 +124,9 @@ class Group implements \JsonSerializable
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
+     * @see \JsonSerializable::jsonSerialize(): array
      */
-    public function jsonSerialize($includeRequiredGroups = false)
+    public function jsonSerialize(bool $includeRequiredGroups = false): array
     {
         return [
             'id' => $this->id,

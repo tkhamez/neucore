@@ -81,7 +81,7 @@ class UpdateCharacters extends Command
         $this->objectManager = $objectManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('update-chars')
             ->setDescription('Updates all characters, corporations and alliances from ESI.')
@@ -111,9 +111,11 @@ class UpdateCharacters extends Command
         }
 
         $this->writeLine('Finished "update-chars"', false);
+
+        return 0;
     }
 
-    private function updateChars($characterId = 0)
+    private function updateChars(int $characterId = 0): void
     {
         $loopLimit = 400; // reduce memory usage
         $offset = $loopLimit * -1;
@@ -185,11 +187,10 @@ class UpdateCharacters extends Command
             }
 
             $this->objectManager->clear(); // detaches all objects from Doctrine
-
         } while (count($charIds) === $loopLimit);
     }
 
-    private function updateCorps()
+    private function updateCorps(): void
     {
         $offset = $this->dbResultLimit * -1;
         do {
@@ -218,7 +219,7 @@ class UpdateCharacters extends Command
         } while (count($corpIds) === $this->dbResultLimit);
     }
 
-    private function updateAlliances()
+    private function updateAlliances(): void
     {
         $alliIds = array_map(function (Alliance $alli) {
             return $alli->getId();

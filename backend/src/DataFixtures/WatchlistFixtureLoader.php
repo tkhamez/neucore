@@ -12,7 +12,7 @@ use Neucore\Factory\RepositoryFactory;
 /** @noinspection PhpUnused */
 class WatchlistFixtureLoader implements FixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $repository = RepositoryFactory::getInstance($manager)->getWatchlistRepository();
 

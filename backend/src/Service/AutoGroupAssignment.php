@@ -204,7 +204,7 @@ class AutoGroupAssignment
         return true;
     }
 
-    private function loadMapping()
+    private function loadMapping(): void
     {
         if ($this->autoGroups !== null) {
             return;

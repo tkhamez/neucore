@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore;
 
@@ -35,7 +37,7 @@ use Slim\Psr7\Factory\ResponseFactory;
 
 class Container
 {
-    public static function getDefinitions()
+    public static function getDefinitions(): array
     {
         return [
 

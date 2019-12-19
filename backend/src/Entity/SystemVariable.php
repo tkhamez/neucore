@@ -264,7 +264,7 @@ class SystemVariable implements \JsonSerializable
      */
     private $scope = self::SCOPE_PUBLIC;
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'name' => $this->name,

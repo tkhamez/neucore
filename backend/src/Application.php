@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore;
 
@@ -178,7 +180,7 @@ class Application
         return $this->config;
     }
 
-    public function runWebApp()
+    public function runWebApp(): void
     {
         $this->runEnv = self::RUN_WEB;
         try {
@@ -210,7 +212,7 @@ class Application
         return $app;
     }
 
-    public function runConsoleApp()
+    public function runConsoleApp(): void
     {
         $this->runEnv = self::RUN_CONSOLE;
         try {
@@ -406,7 +408,7 @@ class Application
         $console->add($this->container->get(RevokeToken::class));
     }
 
-    private function logException(\Throwable $e)
+    private function logException(\Throwable $e): void
     {
         $log = null;
         if ($this->container instanceof ContainerInterface) {

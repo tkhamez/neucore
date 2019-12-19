@@ -19,6 +19,10 @@ class ObjectManager extends EntityManagerDecorator
         $this->log = $log;
     }
 
+    /**
+     * @param mixed|null $entity
+     * @return bool
+     */
     public function flush($entity = null): bool
     {
         try {

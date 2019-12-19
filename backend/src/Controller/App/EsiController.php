@@ -164,7 +164,7 @@ class EsiController extends BaseController
      *     )
      * )
      */
-    public function esiV1(ServerRequestInterface $request, $path = null): ResponseInterface
+    public function esiV1(ServerRequestInterface $request, ?string $path = null): ResponseInterface
     {
         return $this->esiRequest($request, 'GET', $path);
     }
@@ -258,13 +258,16 @@ class EsiController extends BaseController
      *     )
      * )
      */
-    public function esiPostV1(ServerRequestInterface $request, $path = null): ResponseInterface
+    public function esiPostV1(ServerRequestInterface $request, ?string $path = null): ResponseInterface
     {
         return $this->esiRequest($request, 'POST', $path);
     }
 
-    private function esiRequest(ServerRequestInterface $request, string $method, $path = null): ResponseInterface
-    {
+    private function esiRequest(
+        ServerRequestInterface $request,
+        string $method,
+        ?string $path = null
+    ): ResponseInterface {
         $this->app = $this->appAuth->getApp($request);
 
         // check error limit
@@ -318,7 +321,7 @@ class EsiController extends BaseController
         return $this->buildResponse($esiResponse);
     }
 
-    private function errorLimitReached()
+    private function errorLimitReached(): bool
     {
         $var = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
         if ($var === null) {
@@ -330,7 +333,7 @@ class EsiController extends BaseController
             return false;
         }
 
-        if ($values->updated + $values->reset < time()) {
+        if ((int) $values->updated + $values->reset < time()) {
             return false;
         }
 
@@ -341,7 +344,7 @@ class EsiController extends BaseController
         return false;
     }
 
-    private function getEsiPathAndQueryParams(ServerRequestInterface $request, $path): array
+    private function getEsiPathAndQueryParams(ServerRequestInterface $request, ?string $path): array
     {
         $esiParams = [];
 
@@ -361,7 +364,7 @@ class EsiController extends BaseController
         return [$esiPath, $esiParams];
     }
 
-    private function isPublicPath($esiPath): bool
+    private function isPublicPath(string $esiPath): bool
     {
         $path = substr($esiPath, (int) strpos($esiPath, '/', 1));
 

@@ -93,7 +93,7 @@ class CorporationMemberRepository extends EntityRepository
     /**
      * Reset filter variables.
      */
-    public function resetCriteria()
+    public function resetCriteria(): self
     {
         $this->setInactive(null);
         $this->setActive(null);

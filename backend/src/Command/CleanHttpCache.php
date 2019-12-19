@@ -31,7 +31,7 @@ class CleanHttpCache extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('clean-http-cache')
             ->setDescription('Deletes expired entries from the Guzzle cache.');
@@ -44,7 +44,7 @@ class CleanHttpCache extends Command
      * @see \Kevinrob\GuzzleCache\CacheEntry::getTTL()
      * @see \Kevinrob\GuzzleCache\CacheMiddleware::__invoke
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->executeLogOutput($input, $output);
 
@@ -87,5 +87,7 @@ class CleanHttpCache extends Command
         }
 
         $this->writeLine('Guzzle cache cleaned.', false);
+
+        return 0;
     }
 }

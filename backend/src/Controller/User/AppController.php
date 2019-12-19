@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -42,6 +44,9 @@ class AppController extends BaseController
      */
     private $role;
 
+    /**
+     * @var array
+     */
     private $availableRoles = [
         Role::APP_GROUPS,
         Role::APP_CHARS,
@@ -744,7 +749,7 @@ class AppController extends BaseController
         return true;
     }
 
-    private function findApp($id): bool
+    private function findApp(string $id): bool
     {
         $application = $this->repositoryFactory->getAppRepository()->find((int) $id);
         if (! $application) {
@@ -755,7 +760,7 @@ class AppController extends BaseController
         return true;
     }
 
-    private function sanitize($name): string
+    private function sanitize(string $name): string
     {
         return str_replace(["\r", "\n"], ' ', trim($name));
     }

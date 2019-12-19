@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Factory;
 
@@ -13,6 +15,9 @@ use Swagger\Client\Eve\Configuration;
 
 class EsiApiFactory
 {
+    /**
+     * @var array
+     */
     private $instances = [];
 
     /**
@@ -20,6 +25,9 @@ class EsiApiFactory
      */
     private $client;
 
+    /**
+     * @var Config
+     */
     private $config;
 
     public function __construct(ClientInterface $client, Config $config)
@@ -65,6 +73,11 @@ class EsiApiFactory
         return $this->getInstance(UniverseApi::class, $accessToken);
     }
 
+    /**
+     * @param string $class
+     * @param string $token
+     * @return mixed
+     */
     private function getInstance(string $class, string $token = '')
     {
         $key = $class.$token;

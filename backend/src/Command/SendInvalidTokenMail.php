@@ -55,7 +55,7 @@ class SendInvalidTokenMail extends Command
         $this->objectManager = $objectManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('send-invalid-token-mail')
             ->setDescription('Sends "invalid ESI token" EVE mail notification.')
@@ -79,9 +79,11 @@ class SendInvalidTokenMail extends Command
         $this->send();
 
         $this->writeLine('Finished "send-invalid-token-mail"', false);
+
+        return 0;
     }
 
-    private function send()
+    private function send(): void
     {
         $notActiveReason = $this->eveMail->invalidTokenIsActive();
         if ($notActiveReason !== '') {

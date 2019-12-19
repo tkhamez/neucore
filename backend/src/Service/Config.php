@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Neucore\Service;
 
 /**
@@ -16,22 +19,39 @@ class Config implements \ArrayAccess
         $this->config = $config;
     }
 
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->config);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed|null
+     */
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->replaceEnvVars($this->config[$offset]) : null;
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws \BadMethodCallException
+     */
+    public function offsetSet($offset, $value): void
     {
         throw new \BadMethodCallException('Read only.');
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     * @throws \BadMethodCallException
+     */
+    public function offsetUnset($offset): void
     {
         throw new \BadMethodCallException('Read only.');
     }
@@ -49,7 +69,7 @@ class Config implements \ArrayAccess
             return $value;
         }
 
-        if (preg_match('/\${([A-Z0-9_]+)}/', $value, $matches)) {
+        if (preg_match('/\${([A-Z0-9_]+)}/', (string) $value, $matches)) {
             $value = str_replace('${' . $matches[1] . '}', $this->getEnv($matches[1]), $value);
         }
 

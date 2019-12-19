@@ -577,7 +577,7 @@ class WatchlistController extends BaseController
     /**
      * Checks if logged in user is member of a group that may see this watchlist.
      */
-    private function checkPermission(int $id, UserAuth $userAuth, $adminFunction = false): bool
+    private function checkPermission(int $id, UserAuth $userAuth, bool $adminFunction = false): bool
     {
         $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {

@@ -21,7 +21,7 @@ class ClearCache extends Command
         $this->config = $config;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('clear-cache')
@@ -40,7 +40,7 @@ class ClearCache extends Command
         return 0;
     }
 
-    private function deleteDirectoryContent(string $directory)
+    private function deleteDirectoryContent(string $directory): string
     {
         $dir = realpath($directory);
         if (! $dir) {

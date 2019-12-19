@@ -32,7 +32,7 @@ trait EsiRateLimited
             return;
         }
 
-        if ($data->updated + $data->reset < time()) {
+        if ((int) $data->updated + $data->reset < time()) {
             return;
         }
 

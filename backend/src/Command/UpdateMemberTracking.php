@@ -60,7 +60,7 @@ class UpdateMemberTracking extends Command
         $this->em = $em;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('update-member-tracking')
             ->setDescription(
@@ -148,6 +148,8 @@ class UpdateMemberTracking extends Command
         }
 
         $this->writeLine('Finished "update-member-tracking"', false);
+
+        return 0;
     }
 
     /**
