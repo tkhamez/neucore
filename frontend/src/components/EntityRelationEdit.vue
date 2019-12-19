@@ -93,10 +93,23 @@ Select and table to add and remove objects from other objects.
             </thead>
             <tbody>
                 <tr v-for="row in tableContent">
-                    <td v-if="contentType === 'managers' || contentType === 'groups'">{{ row.id }}</td>
-                    <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.id }}</td>
+                    <td v-if="
+                            contentType === 'managers' || contentType === 'groups' ||
+                            contentType === 'corporations' || contentType === 'alliances'">
+                        {{ row.id }}
+                    </td>
                     <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
-                    <td>{{ row.name }}</td>
+                    <td>
+                        <a v-if="contentType === 'corporations'" :href="'https://evewho.com/corporation/' + row.id"
+                           target="_blank" rel="noopener noreferrer">
+                            {{ row.name }}
+                        </a>
+                        <a v-else-if="contentType === 'alliances'" :href="'https://evewho.com/alliance/' + row.id"
+                           target="_blank" rel="noopener noreferrer">
+                            {{ row.name }}
+                        </a>
+                        <span v-else>{{ row.name }}</span>
+                    </td>
                     <td v-if="contentType === 'managers'">
                         <span :class="{ 'text-danger': hasRequiredRole(row) === 'no' }">
                             {{ hasRequiredRole(row) }}
@@ -108,10 +121,11 @@ Select and table to add and remove objects from other objects.
                         </button>
                     </td>
                     <td v-if="contentType === 'corporations'">
-                        <span v-if="row.alliance">
+                        <a v-if="row.alliance" :href="'https://evewho.com/alliance/' + row.alliance.id"
+                           target="_blank" rel="noopener noreferrer">
                             [{{ row.alliance.ticker }}]
                             {{ row.alliance.name }}
-                        </span>
+                        </a>
                     </td>
                     <td v-if="
                             (type === 'Group' || type === 'App') &&

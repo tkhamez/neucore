@@ -30,7 +30,11 @@
             <span v-if="tab === 'red'">
                 List of player accounts that have characters in one of the configured alliances or corporations
                 and additionally have other characters in another player (not NPC) corporation and have not
-                been manually excluded.
+                been manually excluded.<br>
+                <span class="text-muted small">
+                    Alliances: {{ nameList(alliances) }}<br>
+                    Corporations: {{ nameList(corporations) }}
+                </span>
             </span>
             <span v-if="tab === 'white'">
                 Player accounts that have been manually excluded from the "Red Flags" list.
@@ -65,21 +69,16 @@
     </table>
 
     <div v-cloak v-if="tab === 'settings'" class="card">
-        <div class="card-header">Access</div>
+        <div class="card-header">Groups whose members are allowed to view the lists</div>
         <div class="card-body">
-            <p>Select groups whose members are allowed to view the lists.</p>
             <admin ref="admin" :contentType="'groups'" :type="'Watchlist'" :typeId="id"></admin>
         </div>
 
-        <div class="card-header">Alliances</div>
+        <div class="card-header">Alliances and Corporations whose members will be added to the list</div>
         <div class="card-body">
-            <p>Select alliances whose members will be added to the list.</p>
+            Alliances
             <admin ref="admin" :contentType="'alliances'" :type="'Watchlist'" :typeId="id"></admin>
-        </div>
-
-        <div class="card-header">Corporations</div>
-        <div class="card-body">
-            <p>Select corporations whose members will be added to the list.</p>
+            Corporations
             <admin ref="admin" :contentType="'corporations'" :type="'Watchlist'" :typeId="id"></admin>
         </div>
     </div>
@@ -108,6 +107,8 @@ export default {
             id: 1,
             tab: 'red',
             list: [],
+            alliances: [],
+            corporations: [],
         }
     },
 
@@ -145,6 +146,16 @@ export default {
                 loadList(vm);
             });
         },
+
+        /**
+         * @param {array} entities
+         * @returns {string}
+         */
+        nameList (entities) {
+            return entities.map((entity) => {
+                return entity.name;
+            }).join(', ');
+        },
     },
 }
 
@@ -161,6 +172,9 @@ function setTab(vm) {
 }
 
 function loadList(vm, method) {
+    const api = new WatchlistApi();
+
+    // load table data
     if (vm.tab === 'red') {
         method = 'watchlistPlayers';
     } else if (vm.tab === 'white') {
@@ -169,13 +183,28 @@ function loadList(vm, method) {
         return;
     }
     vm.list = [];
-    const api = new WatchlistApi();
     api[method].apply(api, [vm.id, (error, data) => {
-        if (error) {
-            return;
+        if (! error) {
+            vm.list = data;
         }
-        vm.list = data;
     }]);
+
+    // load alliance and corporation config
+    if (vm.tab === 'red') {
+        vm.alliances = [];
+        api.watchlistAllianceList(vm.id, (error, data) => {
+            if (! error) {
+                vm.alliances = data;
+            }
+        });
+
+        vm.corporations = [];
+        api.watchlistCorporationList(vm.id, (error, data) => {
+            if (! error) {
+                vm.corporations = data;
+            }
+        });
+    }
 }
 </script>
 

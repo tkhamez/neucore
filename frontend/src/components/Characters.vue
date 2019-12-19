@@ -38,6 +38,7 @@ Modal window with all characters of one player.
                         <span class="col-10" v-if="character.corporation">
                             [{{ character.corporation.ticker }}]
                             {{ character.corporation.name }}
+                            <span v-if="character.corporation.id < 2000000" class="badge badge-info">NPC</span>
                         </span>
                     </div>
                     <div class="small row">
