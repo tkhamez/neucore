@@ -176,6 +176,8 @@ class EveMail
     }
 
     /**
+     * Send the "invalid token" mail.
+     *
      * @param int $recipient EVE character ID
      * @return string Error message or empty string on success
      */
@@ -281,8 +283,7 @@ class EveMail
                 ->getMailApi($token)
                 ->postCharactersCharacterIdMail($senderId, $mail, $this->datasource);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]); // message includes the status code
-            return $e->getMessage();
+            return $e->getMessage(); // message includes the status code
         }
 
         return '';
