@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+- New: `incoming-characters` endpoint for apps.
+- Add last update date to corporation tracking data.
+- Change: Switch to new EVE image server.
+- Other small stuff.
+
 ## 1.7.1
 
 24 Nov 2019
