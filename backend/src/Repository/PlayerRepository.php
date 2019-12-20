@@ -138,10 +138,10 @@ class PlayerRepository extends EntityRepository
      * and do not belong to one of the provided players.
      *
      * @param array $corporationIds Player accounts with characters in these corporations
-     * @param array $playerIds Exclude these players
+     * @param Player[] $players Exclude these players
      * @return Player[]
      */
-    public function findInCorporationsWithExcludes(array $corporationIds, array $playerIds)
+    public function findInCorporationsWithExcludes(array $corporationIds, array $players)
     {
         if (count($corporationIds) === 0) {
             return [];
@@ -153,9 +153,9 @@ class PlayerRepository extends EntityRepository
         $qb->andWhere($qb->expr()->in('c.corporation', ':corporationIds'))
             ->setParameter('corporationIds', $corporationIds);
 
-        if (count($playerIds) > 0) {
+        if (count($players) > 0) {
             $qb->andWhere($qb->expr()->notIn('p.id', ':playerIds'))
-                ->setParameter('playerIds', $playerIds);
+                ->setParameter('playerIds', $players);
         }
 
         $qb->orderBy('p.name');
@@ -164,14 +164,15 @@ class PlayerRepository extends EntityRepository
     }
 
     /**
-     * Return all players who have characters that are not in NPC corporations
-     * and do not belong to one of the provided players.
+     * Return all players who have characters that are not in NPC corporations,
+     * not in a corporation from the provided list
+     * and are not one of the provided players.
      *
      * @param array $corporationIds Exclude these corporations
-     * @param array $playerIds Exclude these players
+     * @param Player[] $players Exclude these players
      * @return Player[]
      */
-    public function findNotInNpcCorporationsWithExcludes(array $corporationIds, array $playerIds)
+    public function findNotInNpcCorporationsWithExcludes(array $corporationIds, array $players)
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c');
@@ -184,9 +185,9 @@ class PlayerRepository extends EntityRepository
                 ->setParameter('corporationIds', $corporationIds);
         }
 
-        if (count($playerIds) > 0) {
+        if (count($players) > 0) {
             $qb->andWhere($qb->expr()->notIn('p.id', ':playerIds'))
-                ->setParameter('playerIds', $playerIds);
+                ->setParameter('playerIds', $players);
         }
 
         $qb->orderBy('p.name');

@@ -253,11 +253,16 @@ Player API
 
 Watchlist API
 - List of player accounts that have characters in one of the configured alliances or corporations
-                    and additionally have other characters in another player (not NPC) corporation and have not
-                    been manually excluded. `/user/watchlist/{id}/players`
+                    and additionally have other characters in another player (not NPC) corporation that is not
+                    whitelisted and have not been manually excluded. `/user/watchlist/{id}/players`
+- Accounts from the watchlist with members in one of the blacklisted alliances or corporations. `/user/watchlist/{id}/players-blacklist`
 - List of exempt players. `/user/watchlist/{id}/exemption/list`
 - List of corporations for this list. `/user/watchlist/{id}/corporation/list`
 - List of alliances for this list. `/user/watchlist/{id}/alliance/list`
+- List of corporations for the blacklist. `/user/watchlist/{id}/blacklist-corporation/list`
+- List of alliances for the blacklist. `/user/watchlist/{id}/blacklist-alliance/list`
+- List of corporations for the corporation whitelist. `/user/watchlist/{id}/whitelist-corporation/list`
+- List of alliances for the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/list`
 
 #### watchlist-admin
 
@@ -287,6 +292,18 @@ Watchlist API
 - List of groups with access to this list. `/user/watchlist/{id}/group/list`
 - Add access group to the list. `/user/watchlist/{id}/group/add/{group}`
 - Remove access group from the list. `/user/watchlist/{id}/group/remove/{group}`
+- List of corporations for the blacklist. `/user/watchlist/{id}/blacklist-corporation/list`
+- Add corporation to the blacklist. `/user/watchlist/{id}/blacklist-corporation/add/{corporation}`
+- Remove corporation from the blacklist. `/user/watchlist/{id}/blacklist-corporation/remove/{corporation}`
+- List of alliances for the blacklist. `/user/watchlist/{id}/blacklist-alliance/list`
+- Add alliance to the blacklist. `/user/watchlist/{id}/blacklist-alliance/add/{alliance}`
+- Remove alliance from the blacklist. `/user/watchlist/{id}/blacklist-alliance/remove/{alliance}`
+- List of corporations for the corporation whitelist. `/user/watchlist/{id}/whitelist-corporation/list`
+- Add corporation to the corporation whitelist. `/user/watchlist/{id}/whitelist-corporation/add/{corporation}`
+- Remove corporation from the corporation whitelist. `/user/watchlist/{id}/whitelist-corporation/remove/{corporation}`
+- List of alliances for the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/list`
+- Add alliance to the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/add/{alliance}`
+- Remove alliance from the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/remove/{alliance}`
 
 ### Application API
 

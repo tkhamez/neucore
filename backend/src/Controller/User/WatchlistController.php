@@ -10,26 +10,46 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
+use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use Neucore\Service\Watchlist;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * @OA\Tag(
- *     name="Watchlist"
+ *     name="Watchlist",
+ *     description="View and edit watchlists."
  * )
  */
 class WatchlistController extends BaseController
 {
+    /**
+     * @var Watchlist
+     */
+    private $watchlist;
+
+    public function __construct(
+        ResponseInterface $response,
+        ObjectManager $objectManager,
+        RepositoryFactory $repositoryFactory,
+        Watchlist $watchlist
+    ) {
+        parent::__construct($response, $objectManager, $repositoryFactory);
+
+        $this->watchlist = $watchlist;
+    }
+
     /**
      * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/players",
      *     operationId="watchlistPlayers",
      *     summary="List of player accounts that have characters in one of the configured alliances or corporations
-                    and additionally have other characters in another player (not NPC) corporation and have not
-                    been manually excluded.",
+                    and additionally have other characters in another player (not NPC) corporation that is not
+                    whitelisted and have not been manually excluded.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -57,39 +77,43 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        $allianceIds = array_map(function (Alliance $alliance) {
-            return $alliance->getId();
-        }, $this->getList((int) $id, 'alliance'));
+        return $this->withJson($this->watchlist->getRedFlagList((int) $id));
+    }
 
-        $corporationIds1 = array_map(function (Corporation $corporation) {
-            return $corporation->getId();
-        }, $this->repositoryFactory->getCorporationRepository()->getAllFromAlliances($allianceIds));
-        $corporationIds2 = array_map(function (Corporation $corporation) {
-            return $corporation->getId();
-        }, $this->getList((int) $id, 'corporation'));
-        $corporationIds = array_unique(array_merge($corporationIds1, $corporationIds2));
-
-        $exemptPlayers = array_map(function (array $player) {
-            return $player['id'];
-        }, $this->getList((int) $id, 'exemption'));
-
-        $playerRepository = $this->repositoryFactory->getPlayerRepository();
-
-        $players1 = $playerRepository->findInCorporationsWithExcludes($corporationIds, $exemptPlayers);
-        $players2 = $playerRepository->findNotInNpcCorporationsWithExcludes($corporationIds, $exemptPlayers);
-
-        $player2Ids = array_map(function (Player $player) {
-            return $player->getId();
-        }, $players2);
-
-        $result = [];
-        foreach ($players1 as $player1) {
-            if (in_array($player1->getId(), $player2Ids)) {
-                $result[] = $player1->jsonSerialize(true);
-            }
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/{id}/players-blacklist",
+     *     operationId="watchlistPlayersBlacklist",
+     *     summary="Accounts from the watchlist with members in one of the blacklisted alliances or corporations.",
+     *     description="Needs role: watchlist",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of players.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function playersBlacklist(string $id, UserAuth $userAuth): ResponseInterface
+    {
+        if (! $this->checkPermission((int) $id, $userAuth)) {
+            return $this->response->withStatus(403);
         }
 
-        return $this->withJson($result);
+        return $this->withJson($this->watchlist->getBlacklist((int) $id));
     }
 
     /**
@@ -98,7 +122,7 @@ class WatchlistController extends BaseController
      *     path="/user/watchlist/{id}/exemption/list",
      *     operationId="watchlistExemptionList",
      *     summary="List of exempt players.",
-     *     description="Needs role: watchlist",
+     *     description="Needs role: watchlist, watchlist-admin",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -121,11 +145,11 @@ class WatchlistController extends BaseController
      */
     public function exemptionList(string $id, UserAuth $userAuth): ResponseInterface
     {
-        if (! $this->checkPermission((int) $id, $userAuth)) {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->getList((int) $id, 'exemption'));
+        return $this->withJson($this->watchlist->getList((int) $id, 'exemption'));
     }
 
     /**
@@ -218,7 +242,7 @@ class WatchlistController extends BaseController
      *     path="/user/watchlist/{id}/corporation/list",
      *     operationId="watchlistCorporationList",
      *     summary="List of corporations for this list.",
-     *     description="Needs role: watchlist",
+     *     description="Needs role: watchlist, watchlist-admin",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -245,7 +269,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->getList((int) $id, 'corporation'));
+        return $this->withJson($this->watchlist->getList((int) $id, 'corporation'));
     }
 
     /**
@@ -338,7 +362,7 @@ class WatchlistController extends BaseController
      *     path="/user/watchlist/{id}/alliance/list",
      *     operationId="watchlistAllianceList",
      *     summary="List of alliances for this list.",
-     *     description="Needs role: watchlist",
+     *     description="Needs role: watchlist, watchlist-admin",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -365,7 +389,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->getList((int) $id, 'alliance'));
+        return $this->withJson($this->watchlist->getList((int) $id, 'alliance'));
     }
 
     /**
@@ -481,7 +505,7 @@ class WatchlistController extends BaseController
      */
     public function groupList(string $id): ResponseInterface
     {
-        return $this->withJson($this->getList((int) $id, 'group'));
+        return $this->withJson($this->watchlist->getList((int) $id, 'group'));
     }
 
     /**
@@ -575,6 +599,486 @@ class WatchlistController extends BaseController
     }
 
     /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/{id}/blacklist-corporation/list",
+     *     operationId="watchlistBlacklistCorporationList",
+     *     summary="List of corporations for the blacklist.",
+     *     description="Needs role: watchlist, watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of corporation.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function blacklistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
+    {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
+            return $this->response->withStatus(403);
+        }
+
+        return $this->withJson($this->watchlist->getList((int) $id, 'blacklistCorporations'));
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/blacklist-corporation/add/{corporation}",
+     *     operationId="watchlistBlacklistCorporationAdd",
+     *     summary="Add corporation to the blacklist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
+     *         in="path",
+     *         required=true,
+     *         description="Corporation ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Corporation added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function blacklistCorporationAdd(string $id, string $corporation): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'add', 'blacklistCorporation', (int) $corporation);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/blacklist-corporation/remove/{corporation}",
+     *     operationId="watchlistBlacklistCorporationRemove",
+     *     summary="Remove corporation from the blacklist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
+     *         in="path",
+     *         required=true,
+     *         description="Corporation ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Corporation removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function blacklistCorporationRemove(string $id, string $corporation): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'blacklistCorporation', (int) $corporation);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/{id}/blacklist-alliance/list",
+     *     operationId="watchlistBlacklistAllianceList",
+     *     summary="List of alliances for the blacklist.",
+     *     description="Needs role: watchlist, watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of alliances.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function blacklistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
+    {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
+            return $this->response->withStatus(403);
+        }
+
+        return $this->withJson($this->watchlist->getList((int) $id, 'blacklistAlliance'));
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/blacklist-alliance/add/{alliance}",
+     *     operationId="watchlistBlacklistAllianceAdd",
+     *     summary="Add alliance to the blacklist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alliance",
+     *         in="path",
+     *         required=true,
+     *         description="Alliance ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Alliance added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function blacklistAllianceAdd(string $id, string $alliance): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'add', 'blacklistAlliance', (int) $alliance);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/blacklist-alliance/remove/{alliance}",
+     *     operationId="watchlistBlacklistAllianceRemove",
+     *     summary="Remove alliance from the blacklist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alliance",
+     *         in="path",
+     *         required=true,
+     *         description="Alliance ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Alliance removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function blacklistAllianceRemove(string $id, string $alliance): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'blacklistAlliance', (int) $alliance);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/{id}/whitelist-corporation/list",
+     *     operationId="watchlistWhitelistCorporationList",
+     *     summary="List of corporations for the corporation whitelist.",
+     *     description="Needs role: watchlist, watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of corporation.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function whitelistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
+    {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
+            return $this->response->withStatus(403);
+        }
+
+        return $this->withJson($this->watchlist->getList((int) $id, 'whitelistCorporation'));
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/whitelist-corporation/add/{corporation}",
+     *     operationId="watchlistWhitelistCorporationAdd",
+     *     summary="Add corporation to the corporation whitelist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
+     *         in="path",
+     *         required=true,
+     *         description="Corporation ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Corporation added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function whitelistCorporationAdd(string $id, string $corporation): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'add', 'whitelistCorporation', (int) $corporation);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/whitelist-corporation/remove/{corporation}",
+     *     operationId="watchlistWhitelistCorporationRemove",
+     *     summary="Remove corporation from the corporation whitelist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
+     *         in="path",
+     *         required=true,
+     *         description="Corporation ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Corporation removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function whitelistCorporationRemove(string $id, string $corporation): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'whitelistCorporation', (int) $corporation);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/{id}/whitelist-alliance/list",
+     *     operationId="watchlistWhitelistAllianceList",
+     *     summary="List of alliances for the alliance whitelist.",
+     *     description="Needs role: watchlist, watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of alliances.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Alliance"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function whitelistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
+    {
+        if (! $this->checkPermission((int) $id, $userAuth, true)) {
+            return $this->response->withStatus(403);
+        }
+
+        return $this->withJson($this->watchlist->getList((int) $id, 'whitelistAlliance'));
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/whitelist-alliance/add/{alliance}",
+     *     operationId="watchlistWhitelistAllianceAdd",
+     *     summary="Add alliance to the alliance whitelist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alliance",
+     *         in="path",
+     *         required=true,
+     *         description="Alliance ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Alliance added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function whitelistAllianceAdd(string $id, string $alliance): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'add', 'whitelistAlliance', (int) $alliance);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/whitelist-alliance/remove/{alliance}",
+     *     operationId="watchlistWhitelistAllianceRemove",
+     *     summary="Remove alliance from the alliance whitelist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Watchlist ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="alliance",
+     *         in="path",
+     *         required=true,
+     *         description="Alliance ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Alliance removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="List or Player not found."
+     *     )
+     * )
+     */
+    public function whitelistAllianceRemove(string $id, string $alliance): ResponseInterface
+    {
+        return $this->addOrRemoveEntity((int) $id, 'remove', 'whitelistAlliance', (int) $alliance);
+    }
+
+    /**
      * Checks if logged in user is member of a group that may see this watchlist.
      */
     private function checkPermission(int $id, UserAuth $userAuth, bool $adminFunction = false): bool
@@ -600,38 +1104,14 @@ class WatchlistController extends BaseController
         return false;
     }
 
-    private function getList(int $id, string $type): array
-    {
-        $data = [];
-        $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
-
-        if ($watchlist === null) {
-            return $data;
-        }
-
-        if ($type === 'group') {
-            $data = $watchlist->getGroups();
-        } elseif ($type === 'alliance') {
-            $data = $watchlist->getAlliances();
-        } elseif ($type === 'corporation') {
-            $data = $watchlist->getCorporations();
-        } elseif ($type === 'exemption') {
-            $data = array_map(function (Player $player) {
-                return $player->jsonSerialize(true);
-            }, $watchlist->getExemptions());
-        }
-
-        return $data;
-    }
-
     private function addOrRemoveEntity(int $id, string $action, string $type, int $entityId): ResponseInterface
     {
         $entity = null;
         if ($type === 'player') {
             $entity = $this->repositoryFactory->getPlayerRepository()->find($entityId);
-        } elseif ($type === 'corporation') {
+        } elseif (in_array($type, ['corporation', 'blacklistCorporation', 'whitelistCorporation'])) {
             $entity = $this->repositoryFactory->getCorporationRepository()->find($entityId);
-        } elseif ($type === 'alliance') {
+        } elseif (in_array($type, ['alliance', 'blacklistAlliance', 'whitelistAlliance'])) {
             $entity = $this->repositoryFactory->getAllianceRepository()->find($entityId);
         } elseif ($type === 'group') {
             $entity = $this->repositoryFactory->getGroupRepository()->find($entityId);
@@ -646,22 +1126,38 @@ class WatchlistController extends BaseController
         if ($action === 'add') {
             if ($entity instanceof Player) {
                 $watchlist->addExemption($entity);
-            } elseif ($entity instanceof Corporation) {
+            } elseif ($entity instanceof Corporation && $type === 'corporation') {
                 $watchlist->addCorporation($entity);
-            } elseif ($entity instanceof Alliance) {
+            } elseif ($entity instanceof Alliance && $type === 'alliance') {
                 $watchlist->addAlliance($entity);
             } elseif ($entity instanceof Group) {
                 $watchlist->addGroup($entity);
+            } elseif ($entity instanceof Corporation && $type === 'blacklistCorporation') {
+                $watchlist->addBlacklistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === 'blacklistAlliance') {
+                $watchlist->addBlacklistAlliance($entity);
+            } elseif ($entity instanceof Corporation && $type === 'whitelistCorporation') {
+                $watchlist->addWhitelistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === 'whitelistAlliance') {
+                $watchlist->addWhitelistAlliance($entity);
             }
         } elseif ($action === 'remove') {
             if ($entity instanceof Player) {
                 $watchlist->removeExemption($entity);
-            } elseif ($entity instanceof Corporation) {
+            } elseif ($entity instanceof Corporation && $type === 'corporation') {
                 $watchlist->removeCorporation($entity);
-            } elseif ($entity instanceof Alliance) {
+            } elseif ($entity instanceof Alliance && $type === 'alliance') {
                 $watchlist->removeAlliance($entity);
             } elseif ($entity instanceof Group) {
                 $watchlist->removeGroup($entity);
+            } elseif ($entity instanceof Corporation && $type === 'blacklistCorporation') {
+                $watchlist->removeBlacklistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === 'blacklistAlliance') {
+                $watchlist->removeBlacklistAlliance($entity);
+            } elseif ($entity instanceof Corporation && $type === 'whitelistCorporation') {
+                $watchlist->removeWhitelistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === 'whitelistAlliance') {
+                $watchlist->removeWhitelistAlliance($entity);
             }
         }
 

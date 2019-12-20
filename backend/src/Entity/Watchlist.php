@@ -32,6 +32,7 @@ class Watchlist
      * Player accounts that are white listed.
      *
      * @ORM\ManyToMany(targetEntity="Player")
+     * @ORM\JoinTable(name="watchlist_exemption")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
@@ -66,6 +67,48 @@ class Watchlist
     private $groups;
 
     /**
+     * Accounts that are on the list and have members in one of these corporations
+     * are moved to the blacklist.
+     *
+     * @ORM\ManyToMany(targetEntity="Corporation")
+     * @ORM\JoinTable(name="watchlist_blacklist_corporation")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $blacklistCorporations;
+
+    /**
+     * Same as $blacklistCorporations but for alliances.
+     *
+     * @ORM\ManyToMany(targetEntity="Alliance")
+     * @ORM\JoinTable(name="watchlist_blacklist_alliance")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $blacklistAlliances;
+
+    /**
+     * Corporations that should be treated like NPC corporations, for example personal alt corps.
+     * Accounts will not be added to the list is they have a character in one of these.
+     *
+     * @ORM\ManyToMany(targetEntity="Corporation")
+     * @ORM\JoinTable(name="watchlist_whitelist_corporation")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $whitelistCorporations;
+
+    /**
+     * Same as $whitelistCorporations but for alliances.
+     *
+     * @ORM\ManyToMany(targetEntity="Alliance")
+     * @ORM\JoinTable(name="watchlist_whitelist_alliance")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $whitelistAlliances;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -74,6 +117,10 @@ class Watchlist
         $this->corporations = new ArrayCollection();
         $this->alliances = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->blacklistCorporations = new ArrayCollection();
+        $this->blacklistAlliances = new ArrayCollection();
+        $this->whitelistCorporations = new ArrayCollection();
+        $this->whitelistAlliances = new ArrayCollection();
     }
 
     public function setId(int $id): Watchlist
@@ -201,5 +248,120 @@ class Watchlist
     public function getGroups(): array
     {
         return $this->groups->toArray();
+    }
+
+    public function addBlacklistCorporation(Corporation $blacklistCorporation): self
+    {
+        foreach ($this->getBlacklistCorporations() as $entity) {
+            if ($entity->getId() === $blacklistCorporation->getId()) {
+                return $this;
+            }
+        }
+
+        $this->blacklistCorporations[] = $blacklistCorporation;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeBlacklistCorporation(Corporation $blacklistCorporation): bool
+    {
+        return $this->blacklistCorporations->removeElement($blacklistCorporation);
+    }
+
+    /**
+     * @return Corporation[]
+     */
+    public function getBlacklistCorporations(): array
+    {
+        return $this->blacklistCorporations->toArray();
+    }
+
+    public function addBlacklistAlliance(Alliance $blacklistAlliance): self
+    {
+        foreach ($this->getBlacklistAlliances() as $entity) {
+            if ($entity->getId() === $blacklistAlliance->getId()) {
+                return $this;
+            }
+        }
+        $this->blacklistAlliances[] = $blacklistAlliance;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeBlacklistAlliance(Alliance $blacklistAlliance): bool
+    {
+        return $this->blacklistAlliances->removeElement($blacklistAlliance);
+    }
+
+    /**
+     * @return Alliance[]
+     */
+    public function getBlacklistAlliances(): array
+    {
+        return $this->blacklistAlliances->toArray();
+    }
+
+    public function addWhitelistCorporation(Corporation $whitelistCorporation): self
+    {
+        foreach ($this->getWhitelistCorporations() as $entity) {
+            if ($entity->getId() === $whitelistCorporation->getId()) {
+                return $this;
+            }
+        }
+
+        $this->whitelistCorporations[] = $whitelistCorporation;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeWhitelistCorporation(Corporation $whitelistCorporation): bool
+    {
+        return $this->whitelistCorporations->removeElement($whitelistCorporation);
+    }
+
+    /**
+     * @return Corporation[]
+     */
+    public function getWhitelistCorporations(): array
+    {
+        return $this->whitelistCorporations->toArray();
+    }
+
+    public function addWhitelistAlliance(Alliance $whitelistAlliance): self
+    {
+        foreach ($this->getWhitelistAlliances() as $entity) {
+            if ($entity->getId() === $whitelistAlliance->getId()) {
+                return $this;
+            }
+        }
+
+        $this->whitelistAlliances[] = $whitelistAlliance;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeWhitelistAlliance(Alliance $whitelistAlliance): bool
+    {
+        return $this->whitelistAlliances->removeElement($whitelistAlliance);
+    }
+
+    /**
+     * @return Alliance[]
+     */
+    public function getWhitelistAlliances(): array
+    {
+        return $this->whitelistAlliances->toArray();
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
@@ -28,6 +30,11 @@ class PlayerRepositoryTest extends TestCase
      * @var Player
      */
     private static $player4;
+
+    /**
+     * @var Player
+     */
+    private static $player6;
 
     /**
      * @var PlayerRepository
@@ -87,14 +94,12 @@ class PlayerRepositoryTest extends TestCase
 
         $player5 = (new Player())->setName('p5');
 
-        $char6 = $helper->addCharacterMain('c6', 6);
-        $char6->setCorporation($corp4)->setValidToken(true);
+        self::$player6 = $helper->addCharacterMain('c6', 6)->getPlayer();
+        self::$player6->getCharacters()[0]->setCorporation($corp4)->setValidToken(true);
 
         $player1->setStatus(Player::STATUS_MANAGED);
         $player3->setStatus(Player::STATUS_MANAGED);
         self::$player4->setStatus(Player::STATUS_MANAGED);
-
-        // corps/chars for findInCorporationsWithExcludes test
 
         $em->persist($player3);
         $em->persist($player5);
@@ -190,8 +195,8 @@ class PlayerRepositoryTest extends TestCase
         // player 6 is in corp 1000500
 
         $actual = $this->repo->findInCorporationsWithExcludes(
-            [98000101, 98000102, 98000103],
-            [self::$player4]
+            [98000101, 98000102, 98000103, 1000500],
+            [self::$player4, self::$player6]
         );
 
         $this->assertSame(2, count($actual));

@@ -2,10 +2,13 @@
 
 ## next
 
+- New: Watchlist, Blacklist added.
+- New: Watchlist, Whitelist for corporations and alliances added.
 - New: `incoming-characters` endpoint for apps.
 - Added last update date to corporation tracking data.
-- Removed `scopes` column from the character table because that information is now included in the JSON Web Token.
-- Switched to new EVE image server.
+- Removed `scopes` column from the character table because that information is now (SSOv2) included in the JSON
+  Web Token.
+- Switched to the new EVE image server.
 - Other small stuff.
 
 ## 1.7.1

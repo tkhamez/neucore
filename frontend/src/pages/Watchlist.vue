@@ -16,6 +16,10 @@
                :href="'#Watchlist/'+id+'/red'">Red Flags</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
+            <a class="nav-link" :class="{ 'active': tab === 'black' }"
+               :href="'#Watchlist/'+id+'/black'">Blacklist</a>
+        </li>
+        <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'white' }"
                :href="'#Watchlist/'+id+'/white'">Whitelist</a>
         </li>
@@ -25,61 +29,127 @@
         </li>
     </ul>
 
-    <div v-cloak v-if="tab === 'red' || tab === 'white'" class="card">
+    <div v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'" class="card">
         <div class="card-body">
             <span v-if="tab === 'red'">
                 List of player accounts that have characters in one of the configured alliances or corporations
-                and additionally have other characters in another player (not NPC) corporation and have not
-                been manually excluded.<br>
+                and additionally other characters in another player (non-NPC) corporations (that are not on the
+                whitelist) and have not been manually excluded.<br>
                 <span class="text-muted small">
                     Alliances: {{ nameList(alliances) }}<br>
                     Corporations: {{ nameList(corporations) }}
                 </span>
             </span>
+            <span v-if="tab === 'black'">
+                Player accounts from the "Red Flags" list are moved here if they have characters in one of the
+                "black listed" alliances or corporations.<br>
+                <span class="text-muted small">
+                    Alliances: {{ nameList(blacklistAlliances) }}<br>
+                    Corporations: {{ nameList(blacklistCorporations) }}
+                </span>
+            </span>
             <span v-if="tab === 'white'">
-                Player accounts that have been manually excluded from the "Red Flags" list.
+                Player accounts that were manually excluded from the "Red Flags" list.<br>
+                Alliances and corporations that were manually put on the white list.
             </span>
         </div>
     </div>
-    <table v-cloak v-if="tab === 'red' || tab === 'white'"
-           class="table table-hover table-sm" aria-describedby="List of player accounts">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th v-if="hasRole('watchlist-admin')" scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="player in list">
-                <td>{{ player.id }}</td>
-                <td><a href="#" v-on:click.prevent="showCharacters(player.id)">{{ player.name }}</a></td>
-                <td v-if="hasRole('watchlist-admin')">
-                    <button v-if="tab === 'red'" class="btn btn-primary btn-sm"
-                            v-on:click="addToWhitelist(player.id)">
-                        Add to Whitelist
-                    </button>
-                    <button v-if="tab === 'white'" class="btn btn-primary btn-sm"
-                            v-on:click="removeFromWhitelist(player.id)">
-                        Remove from Whitelist
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div class="row" v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'">
+        <div :class="{'col-lg-6': tab === 'white', 'col-12': tab !== 'white' }">
+            <h5 class="mt-4">Players</h5>
+            <table class="table table-hover table-sm" aria-describedby="List of player accounts">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th v-if="hasRole('watchlist-admin')" scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="player in listContent.Players">
+                        <td>{{ player.id }}</td>
+                        <td><a href="#" v-on:click.prevent="showCharacters(player.id)">{{ player.name }}</a></td>
+                        <td v-if="hasRole('watchlist-admin')">
+                            <button v-if="tab === 'red' || tab === 'black'" class="btn btn-primary btn-sm"
+                                    v-on:click="addToWhitelist(player.id)">
+                                Add to Whitelist
+                            </button>
+                            <button v-if="tab === 'white'" class="btn btn-primary btn-sm"
+                                    v-on:click="removeFromWhitelist('Players', player.id)">Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div v-cloak v-if="tab === 'white'" class="col-lg-6">
+            <div v-for="listName in ['Alliances', 'Corporations']">
+                <h5 class="mt-4">{{listName}}</h5>
+                <table class="table table-hover table-sm" aria-describedby="List of alliances or corporations">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Ticker</th>
+                            <th scope="col">Name</th>
+                            <th scope="col" v-if="listName === 'Corporations'">Alliance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="entity in listContent[listName]">
+                            <td>{{ entity.ticker }}</td>
+                            <td>
+                                <a v-if="listName === 'Alliances'"
+                                   :href="'https://evewho.com/alliance/' + entity.id"
+                                   target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
+                                <a v-if="listName === 'Corporations'"
+                                   :href="'https://evewho.com/corporation/' + entity.id"
+                                   target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
+                            </td>
+                            <td v-if="listName === 'Corporations'">
+                                <span v-if="entity.alliance">
+                                    [{{ entity.alliance.ticker }}]
+                                    {{ entity.alliance.name }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <div v-cloak v-if="tab === 'settings'" class="card">
-        <div class="card-header">Groups whose members are allowed to view the lists</div>
+        <div class="card-header">
+            <strong>Access</strong>: Groups whose members are allowed to view the lists.
+        </div>
         <div class="card-body">
             <admin ref="admin" :contentType="'groups'" :type="'Watchlist'" :typeId="id"></admin>
         </div>
 
-        <div class="card-header">Alliances and Corporations whose members will be added to the list</div>
+        <div class="card-header">
+            <strong>Red Flags</strong>: Alliances and corporations whose members are included in the list if they
+            also have characters in other corporations.
+        </div>
         <div class="card-body">
-            Alliances
             <admin ref="admin" :contentType="'alliances'" :type="'Watchlist'" :typeId="id"></admin>
-            Corporations
             <admin ref="admin" :contentType="'corporations'" :type="'Watchlist'" :typeId="id"></admin>
+        </div>
+
+        <div class="card-header">
+            <strong>Blacklist</strong>: Accounts from the Red Flags list are moved to the blacklist
+            if they have a character in one of these alliances or corporations.
+        </div>
+        <div class="card-body">
+            <admin ref="admin" :contentType="'alliances'" :type="'WatchlistBlacklist'" :typeId="id"></admin>
+            <admin ref="admin" :contentType="'corporations'" :type="'WatchlistBlacklist'" :typeId="id"></admin>
+        </div>
+
+        <div class="card-header">
+            <strong>Whitelist</strong>: Alliances and corporations that should be treated like NPC corporations
+            (usually <strong>P</strong>ersonal <strong>A</strong>lt <strong>C</strong>orp<strong>s</strong>).
+        </div>
+        <div class="card-body">
+            <admin ref="admin" :contentType="'alliances'" :type="'WatchlistWhitelist'" :typeId="id"></admin>
+            <admin ref="admin" :contentType="'corporations'" :type="'WatchlistWhitelist'" :typeId="id"></admin>
         </div>
     </div>
 
@@ -106,9 +176,16 @@ export default {
         return {
             id: 1,
             tab: 'red',
-            list: [],
+            listNames: [''],
+            listContent: {
+                Players: [],
+                Alliances: [],
+                Corporations: [],
+            },
             alliances: [],
             corporations: [],
+            blacklistAlliances: [],
+            blacklistCorporations: [],
         }
     },
 
@@ -140,11 +217,26 @@ export default {
             });
         },
 
-        removeFromWhitelist: function(playerId) {
+         /**
+         * @param {string} type Players, Alliances or Corporations
+         * @param {number} id
+         */
+        removeFromWhitelist: function(type, id) {
             const vm = this;
-            new WatchlistApi().watchlistExemptionRemove(this.id, playerId, () => {
+            const api = new WatchlistApi();
+            let method;
+            if (type === 'Players') {
+                method = 'watchlistExemptionRemove';
+            } else if (type === 'Alliances') {
+                 method = 'watchlistWhitelistAllianceRemove';
+             } else if (type === 'Corporations') {
+                 method = 'watchlistWhitelistCorporationRemove';
+             } else {
+                return;
+            }
+            api[method].apply(api, [this.id, id, () => {
                 loadList(vm);
-            });
+            }]);
         },
 
         /**
@@ -160,7 +252,7 @@ export default {
 }
 
 function setTab(vm) {
-    const tabs = ['red', 'white', 'settings'];
+    const tabs = ['red', 'black', 'white', 'settings'];
     if (vm.route[1]) {
         vm.id = parseInt(vm.route[1], 10);
     }
@@ -169,25 +261,50 @@ function setTab(vm) {
     } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-admin')) {
         vm.tab = 'settings';
     }
+    if (vm.tab === 'white') {
+        vm.listNames = ['Players', 'Corporations'];
+    } else {
+        vm.listNames = ['Players'];
+    }
 }
 
-function loadList(vm, method) {
+function loadList(vm) {
     const api = new WatchlistApi();
+
+    vm.listContent.Players = [];
+    vm.listContent.Alliances = [];
+    vm.listContent.Corporations = [];
 
     // load table data
     if (vm.tab === 'red') {
-        method = 'watchlistPlayers';
+        api.watchlistPlayers(vm.id, (error, data) => {
+            if (! error) {
+                vm.listContent.Players = data;
+            }
+        });
     } else if (vm.tab === 'white') {
-        method = 'watchlistExemptionList';
-    } else {
-        return;
+        api.watchlistExemptionList(vm.id, (error, data) => {
+            if (! error) {
+                vm.listContent.Players = data;
+            }
+        });
+        api.watchlistWhitelistAllianceList(vm.id, (error, data) => {
+            if (! error) {
+                vm.listContent.Alliances = data;
+            }
+        });
+        api.watchlistWhitelistCorporationList(vm.id, (error, data) => {
+            if (! error) {
+                vm.listContent.Corporations = data;
+            }
+        });
+    } else if (vm.tab === 'black') {
+        api.watchlistPlayersBlacklist(vm.id, (error, data) => {
+            if (! error) {
+                vm.listContent.Players = data;
+            }
+        });
     }
-    vm.list = [];
-    api[method].apply(api, [vm.id, (error, data) => {
-        if (! error) {
-            vm.list = data;
-        }
-    }]);
 
     // load alliance and corporation config
     if (vm.tab === 'red') {
@@ -202,6 +319,23 @@ function loadList(vm, method) {
         api.watchlistCorporationList(vm.id, (error, data) => {
             if (! error) {
                 vm.corporations = data;
+            }
+        });
+    }
+
+    // load blacklist alliance and corporation config
+    if (vm.tab === 'black') {
+        vm.blacklistAlliances = [];
+        api.watchlistBlacklistAllianceList(vm.id, (error, data) => {
+            if (! error) {
+                vm.blacklistAlliances = data;
+            }
+        });
+
+        vm.blacklistCorporations = [];
+        api.watchlistBlacklistCorporationList(vm.id, (error, data) => {
+            if (! error) {
+                vm.blacklistCorporations = data;
             }
         });
     }

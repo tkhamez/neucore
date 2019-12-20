@@ -90,11 +90,16 @@ return [
     '/api/user/settings/system/list'  => [Role::ANONYMOUS, Role::USER],
     '/api/user/settings/system'       => [Role::SETTINGS],
 
-    '/api/user/watchlist/{id}/players'          => [Role::WATCHLIST],
-    '/api/user/watchlist/{id}/exemption/list'   => [Role::WATCHLIST],
-    '/api/user/watchlist/{id}/corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist/{id}/alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist'                       => [Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/players'                    => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/players-blacklist'          => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/exemption/list'             => [Role::WATCHLIST],
+    '/api/user/watchlist/{id}/corporation/list'           => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/alliance/list'              => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/blacklist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/blacklist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/whitelist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/whitelist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN],
 
     '/api/user' => [Role::USER],
 ];

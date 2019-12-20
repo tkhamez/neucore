@@ -133,25 +133,14 @@ Select and table to add and remove objects from other objects.
                         <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">Show groups</button>
                     </td>
                     <td>
-                        <button v-if="contentType === 'managers'"
-                                class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveManagerToGroupOrApp(row.id, 'remove')">
-                            Remove manager
-                        </button>
-                        <button v-if="contentType === 'corporations' || contentType === 'alliances'"
-                                class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveCorporationOrAllianceToEntity(row.id, 'remove')">
-                            <span v-if="contentType === 'corporations'">Remove corporation</span>
-                            <span v-if="contentType === 'alliances'">Remove alliance</span>
-                        </button>
-                        <button v-if="contentType === 'groups' || contentType === 'roles'"
-                                class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveEntityToEntity(
-                                    row.id,
-                                    contentType === 'groups' ? 'Group' : 'Role',
-                                    'remove'
-                                )">
-                            Remove {{ contentType === 'groups' ? 'group' : 'role '}}
+                        <button class="btn btn-danger btn-sm"
+                                v-on:click="addOrRemoveEntityToEntity(row.id, 'remove')">
+                            Remove
+                            <span v-if="contentType === 'corporations'">corporation</span>
+                            <span v-if="contentType === 'alliances'">alliance</span>
+                            <span v-if="contentType === 'managers'">manager</span>
+                            <span v-if="contentType === 'groups'">group</span>
+                            <span v-if="contentType === 'roles'">role</span>
                         </button>
                     </td>
                 </tr>
@@ -240,17 +229,7 @@ export default {
             if (this.newObject === "") {
                 return;
             }
-            if (this.contentType === 'managers') {
-                this.addOrRemoveManagerToGroupOrApp(this.newObject.id, 'add');
-            } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
-                this.addOrRemoveCorporationOrAllianceToEntity(this.newObject.id, 'add');
-            } else if (this.contentType === 'groups' || this.contentType === 'roles') {
-                this.addOrRemoveEntityToEntity(
-                    this.newObject.id,
-                    this.contentType === 'groups' ? 'Group' : 'Role',
-                    'add'
-                );
-            }
+            this.addOrRemoveEntityToEntity(this.newObject.id, 'add');
             this.newObject = "";
         },
 
@@ -348,7 +327,11 @@ export default {
                 api = new PlayerApi();
             } else if (this.type === 'Corporation') {
                 api = new CorporationApi();
-            } else if (this.type === 'Watchlist') {
+            } else if (
+                this.type === 'Watchlist' ||
+                this.type === 'WatchlistBlacklist' ||
+                this.type === 'WatchlistWhitelist'
+            ) {
                 api = new WatchlistApi();
             }
             if ((this.type === 'Group' || this.type === 'App') && this.contentType === 'managers') {
@@ -371,6 +354,16 @@ export default {
                 method = 'watchlistAllianceList';
             } else if (this.type === 'Watchlist' && this.contentType === 'corporations') {
                 method = 'watchlistCorporationList';
+            } else if (
+                (this.type === 'WatchlistBlacklist' || this.type === 'WatchlistWhitelist') &&
+                this.contentType === 'alliances'
+            ) {
+                method = lowerCaseFirst(this.type) + 'AllianceList';
+            } else if (
+                (this.type === 'WatchlistBlacklist' || this.type === 'WatchlistWhitelist') &&
+                this.contentType === 'corporations'
+            ) {
+                method = lowerCaseFirst(this.type) + 'CorporationList';
             }
             if (! api || ! method) {
                 return;
@@ -400,7 +393,10 @@ export default {
                 }  else {
                     vm.tableContent = data;
                 }
-                if ((vm.type === 'Player' && data.id === vm.player.id) || vm.type === 'Watchlist') {
+                if (
+                    (vm.type === 'Player' && data.id === vm.player.id) ||
+                    (vm.type === 'Watchlist' && vm.contentType === 'groups')
+                ) {
                     vm.$root.$emit('playerChange');
                 }
             }]);
@@ -472,51 +468,30 @@ export default {
             }, 10);
         },
 
-        addOrRemoveManagerToGroupOrApp: function(playerId, action) {
+        /**
+         * @param {number} id ID of the entity to be added or removed
+         * @param {string} action "add" or "remove"
+         */
+        addOrRemoveEntityToEntity: function(id, action) {
             const vm = this;
-
-            let api;
-            let method;
-            if (this.type === 'Group') {
-                api = new GroupApi();
-            } else if (this.type === 'App') {
-                api = new AppApi();
-            }
-            if (action === 'add') {
-                method = 'addManager';
-            } else if (action === 'remove') {
-                method = 'removeManager';
-            }
-            if (! api || ! method) {
-                return;
-            }
-
-            this.callApi(api, method, this.typeId, playerId, function() {
-                if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange');
-                }
-                vm.getTableContent();
-            });
-        },
-
-        addOrRemoveCorporationOrAllianceToEntity: function(id, action) {
-            const vm = this;
-
             let api;
             let method;
             let param1;
             let param2;
-            if (this.type === 'Watchlist') {
-                api = new WatchlistApi();
-                if (this.contentType === 'corporations') {
-                    method = 'watchlistCorporation' + upperCaseFirst(action);
-                } else if (this.contentType === 'alliances') {
-                    method = 'watchlistAlliance' + upperCaseFirst(action);
-                }
-
+            if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
+                api = new AppApi();
+                method = action + (this.contentType === 'groups' ? 'Group' : 'Role'); // add/remove + Group/Role
                 param1 = this.typeId;
                 param2 = id;
-            } else if (this.type === 'Group') {
+            } else if (this.type === 'Player') {
+                api = new GroupApi();
+                method = action + 'Member';
+                param1 = id;
+                param2 = this.typeId;
+            } else if (
+                this.type === 'Group' &&
+                (this.contentType === 'corporations' || this.contentType === 'alliances')
+            ) {
                 if (this.contentType === 'corporations') {
                     api = new CorporationApi();
                 } else if (this.contentType === 'alliances') {
@@ -525,41 +500,18 @@ export default {
                 method = action + this.type; // addGroup, removeGroup
                 param1 = id;
                 param2 = this.typeId;
-            }
-            if (! api || ! method) {
-                return;
-            }
-
-            this.callApi(api, method, param1, param2, function() {
-                vm.getTableContent();
-                vm.getWithGroups();
-            });
-        },
-
-        /**
-         * @param {number} id ID of the entity to be added or removed
-         * @param {string} type of the entity to be added or removed: "Group" or "Role" atm.
-         * @param {string} action "add" or "remove"
-         */
-        addOrRemoveEntityToEntity: function(id, type, action) {
-            const vm = this;
-            let api;
-            let method;
-            let param1;
-            let param2;
-            if (this.type === 'App') {
-                api = new AppApi();
-                method = action + type; // add/remove + Group/Role
-                param1 = this.typeId;
-                param2 = id;
-            } else if (this.type === 'Player') {
-                api = new GroupApi();
-                method = action + 'Member';
-                param1 = id;
-                param2 = this.typeId;
-            } else if (this.type === 'Group') {
+            } else if (this.type === 'Group' && this.contentType === 'groups') {
                 api = new GroupApi();
                 method = action + 'RequiredGroup';
+                param1 = this.typeId;
+                param2 = id;
+            } else if (this.contentType === 'managers') {
+                if (this.type === 'Group') {
+                    api = new GroupApi();
+                } else if (this.type === 'App') {
+                    api = new AppApi();
+                }
+                method = action + 'Manager'; // add/removeManager
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Corporation') {
@@ -567,9 +519,21 @@ export default {
                 method = action + 'GroupTracking';
                 param1 = this.typeId;
                 param2 = id;
-            } else if (this.type === 'Watchlist') {
+            } else if (
+                this.type === 'Watchlist' ||
+                this.type === 'WatchlistBlacklist' ||
+                this.type === 'WatchlistWhitelist'
+            ) {
                 api = new WatchlistApi();
-                method = 'watchlist' + type + upperCaseFirst(action);
+                const suffix = this.type === 'WatchlistBlacklist' ? 'Blacklist' :
+                    (this.type === 'WatchlistWhitelist' ? 'Whitelist' : '');
+                let type;
+                if (this.contentType === 'groups') { // Watchlist only
+                    type = 'Group';
+                } else {
+                    type = this.contentType === 'alliances' ? 'Alliance' : 'Corporation';
+                }
+                method = 'watchlist' + suffix + type + upperCaseFirst(action);
                 param1 = this.typeId;
                 param2 = id;
             }
@@ -617,6 +581,10 @@ export default {
 
 function upperCaseFirst(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function lowerCaseFirst(string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
 </script>
