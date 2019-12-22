@@ -103,7 +103,6 @@ class Watchlist
 
         $result = [];
         foreach ($playersFromBlacklistCorporations as $playerFromBlacklistCorporations) {
-            error_log((string) $playerFromBlacklistCorporations->getId());
             if (in_array($playerFromBlacklistCorporations->getId(), $playersRedListIds)) {
                 $result[] = $playerFromBlacklistCorporations->jsonSerialize(true);
             }
