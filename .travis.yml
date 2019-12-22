@@ -8,7 +8,8 @@ git:
 php:
   - "7.2"
   - "7.3"
-  - 7.4snapshot
+  - "7.4"
+  - nightly
 
 addons:
   sonarcloud:
@@ -31,11 +32,12 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-    - php: 7.4snapshot
+    - php: nightly
   exclude:
     - php: "7.2"
     - php: "7.3"
-    - php: 7.4snapshot
+    - php: "7.4"
+    - php: nightly
   include:
     - php: "7.2"
       env: NODE_VERSION="10.13.0" DB=mysql:5.7
@@ -51,11 +53,11 @@ matrix:
       env: NODE_VERSION="10.16.3" DB=mariadb:10.3
       addons:
         mariadb: "10.3"
-    - php: "7.3"
+    - php: "7.4"
       env: NODE_VERSION="12.12.0" DB=mariadb:10.4
       addons:
         mariadb: "10.4"
-    - php: 7.4snapshot
+    - php: nightly
       env: NODE_VERSION="12.12.0" DB=mariadb:10.4
       addons:
         mariadb: "10.4"
