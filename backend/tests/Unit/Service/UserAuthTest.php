@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use GuzzleHttp\Psr7\Response;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
+use Neucore\Service\Config;
+use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use Neucore\Middleware\Psr15\Session\SessionData;
@@ -16,6 +21,7 @@ use Brave\Sso\Basics\EveAuthentication;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
+use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
 
@@ -46,6 +52,11 @@ class UserAuthTest extends TestCase
      */
     private $removedCharRepo;
 
+    /**
+     * @var Client
+     */
+    private $client;
+
     protected function setUp(): void
     {
         $this->helper = new Helper();
@@ -60,7 +71,18 @@ class UserAuthTest extends TestCase
         $repoFactory = new RepositoryFactory($this->em);
 
         $objManager = new ObjectManager($this->em, $this->log);
-        $characterService = new Account($this->log, $objManager, $repoFactory);
+
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $this->client = new Client();
+        $esi = new EsiData(
+            $this->log,
+            new EsiApiFactory($this->client, $config),
+            $objManager,
+            $repoFactory,
+            $config
+        );
+
+        $characterService = new Account($this->log, $objManager, $repoFactory, $esi);
         $this->service = new UserAuth(
             new SessionData(),
             $characterService,
@@ -125,8 +147,16 @@ class UserAuthTest extends TestCase
 
         $this->assertFalse(isset($_SESSION['character_id']));
 
+        $this->client->setResponse(
+            new Response(200, [], '{"name": "New User", "corporation_id": 102}'), // getCharactersCharacterId
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+        );
+
         $accessToken = Helper::generateToken()[0];
-        $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $token = new AccessToken(
+            ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']
+        );
         $result = $this->service->authenticate(new EveAuthentication(888, 'New User', 'coh', $token));
 
         $this->em->clear();
@@ -153,7 +183,10 @@ class UserAuthTest extends TestCase
     public function testAuthenticateExistingUser()
     {
         SessionData::setReadOnly(false);
+        $corp = (new Corporation())->setId(101);
+        $this->em->persist($corp);
         $char = $this->helper->addCharacterMain('Test User', 9013, [Role::USER, Role::GROUP_MANAGER]);
+        $char->setCorporation($corp);
         $player = $char->getPlayer();
 
         $this->assertSame('123', $char->getCharacterOwnerHash());
@@ -164,7 +197,9 @@ class UserAuthTest extends TestCase
         $this->assertNull($char->getLastLogin());
 
         $accessToken = Helper::generateToken()[0];
-        $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']);
+        $token = new AccessToken(
+            ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']
+        );
         $result = $this->service->authenticate(new EveAuthentication(9013, 'Test User Changed Name', '123', $token));
 
         $user = $this->service->getUser();
@@ -185,9 +220,12 @@ class UserAuthTest extends TestCase
     public function testAuthenticateNewOwner()
     {
         SessionData::setReadOnly(false);
+        $corp = (new Corporation())->setId(101);
+        $this->em->persist($corp);
         $char1 = $this->helper->addCharacterMain('Test User1', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $player = $char1->getPlayer();
         $char2 = $this->helper->addCharacterToPlayer('Test User2', 9014, $player);
+        $char2->setCorporation($corp);
 
         $this->assertSame(9014, $char2->getId());
         $this->assertSame('456', $char2->getCharacterOwnerHash());
@@ -222,6 +260,12 @@ class UserAuthTest extends TestCase
 
         $this->assertSame(1, count($player->getCharacters()));
 
+        $this->client->setResponse(
+            new Response(200, [], '{"name": "Alt 1", "corporation_id": 102}'), // getCharactersCharacterId
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+        );
+
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785]);
         $result = $this->service->addAlt(new EveAuthentication(101, 'Alt 1', 'hash', $token));
         $this->assertTrue($result);
@@ -246,8 +290,11 @@ class UserAuthTest extends TestCase
     public function testAddAltExistingChar()
     {
         $_SESSION['character_id'] = 100;
+        $corp = (new Corporation())->setId(101);
+        $this->em->persist($corp);
         $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
         $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
+        $main2->setCorporation($corp);
         $newPlayerId = $main1->getPlayer()->getId();
         $oldPlayerId = $main2->getPlayer()->getId();
 
@@ -283,6 +330,9 @@ class UserAuthTest extends TestCase
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+        $corp = (new Corporation())->setId(101);
+        $this->em->persist($corp);
+        $main->setCorporation($corp);
 
         $token = new AccessToken(['access_token' => 'tk']);
         $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token));

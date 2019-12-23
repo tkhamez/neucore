@@ -10,14 +10,18 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Factory\EsiApiFactory;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\AutoGroupAssignment;
+use Neucore\Service\Config;
+use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use PHPUnit\Framework\TestCase;
+use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\WriteErrorListener;
@@ -96,7 +100,18 @@ class AutoGroupAssignmentTest extends TestCase
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
         $objectManager = new ObjectManager($this->em, $this->log);
-        $account = new Account($this->log, $objectManager, $repositoryFactory);
+
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $repoFactory = new RepositoryFactory($this->em);
+        $esi = new EsiData(
+            $this->log,
+            new EsiApiFactory(new Client(), $config),
+            $objectManager,
+            $repoFactory,
+            $config
+        );
+
+        $account = new Account($this->log, $objectManager, $repositoryFactory, $esi);
         
         $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $this->log, $account);
 

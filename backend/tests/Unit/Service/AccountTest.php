@@ -14,6 +14,7 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
+use Neucore\Factory\EsiApiFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
@@ -22,6 +23,7 @@ use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
 use Neucore\Service\Config;
+use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
@@ -134,11 +136,22 @@ class AccountTest extends TestCase
 
         $this->client = new Client();
         $this->token = new OAuthToken(new OAuthProvider($this->client), $om, $this->log, $this->client, new Config([]));
-        $this->service = new Account($this->log, $om, new RepositoryFactory($em));
-        $this->charRepo = (new RepositoryFactory($em))->getCharacterRepository();
-        $this->playerRepo = (new RepositoryFactory($em))->getPlayerRepository();
-        $this->removedCharRepo = (new RepositoryFactory($em))->getRemovedCharacterRepository();
-        $this->corpMemberRepo = (new RepositoryFactory($em))->getCorporationMemberRepository();
+
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $repoFactory = new RepositoryFactory($em);
+        $esi = new EsiData(
+            $this->log,
+            new EsiApiFactory($this->client, $config),
+            $om,
+            $repoFactory,
+            $config
+        );
+
+        $this->service = new Account($this->log, $om, new RepositoryFactory($em), $esi);
+        $this->charRepo = $repoFactory->getCharacterRepository();
+        $this->playerRepo = $repoFactory->getPlayerRepository();
+        $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
+        $this->corpMemberRepo = $repoFactory->getCorporationMemberRepository();
     }
 
     public function testCreateNewPlayerWithMain()
@@ -197,13 +210,19 @@ class AccountTest extends TestCase
         $char->setPlayer($player);
         $player->addCharacter($char);
 
+        $this->client->setResponse(
+            new Response(200, [], '{"name": "char name changed", "corporation_id": 102}'), // getCharactersCharacterId
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
+        );
+
         $expires = time() + (60 * 20);
         $token = Helper::generateToken(['s1', 's2']);
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
             new EveAuthentication(
                 100,
-                'char name changed',
+                'will be updated because corporation is missing',
                 'character-owner-hash',
                 new AccessToken(['access_token' => $token[0], 'refresh_token' => 'r-t', 'expires' => $expires])
             )
@@ -224,18 +243,22 @@ class AccountTest extends TestCase
         $this->assertSame($expires, $character->getExpires());
         $this->assertTrue($character->getValidToken());
         $this->assertSame(['s1', 's2'], $character->getScopesFromToken());
+        $this->assertSame(102, $character->getCorporation()->getId());
+        $this->assertSame('name corp', $character->getCorporation()->getName());
     }
 
     public function testUpdateAndStoreCharacterWithPlayerNoToken()
     {
+        $corp = (new Corporation())->setId(1);
+        $this->helper->getEm()->persist($corp);
         $player = (new Player())->setName('p-name');
-        $char = (new Character())->setName('c-name')->setId(12)->setPlayer($player);
+        $char = (new Character())->setName('c-name')->setId(12)->setPlayer($player)->setCorporation($corp);
 
         $result = $this->service->updateAndStoreCharacterWithPlayer(
             $char,
             new EveAuthentication(
                 100,
-                'name',
+                'char name changed',
                 'character-owner-hash',
                 new AccessToken(['access_token' => 'a-t'])
             )
@@ -245,6 +268,7 @@ class AccountTest extends TestCase
         $this->helper->getEm()->clear();
 
         $character = $this->charRepo->find(12);
+        $this->assertSame('char name changed', $character->getName());
         $this->assertNull($character->getRefreshToken());
         $this->assertNull($character->getValidToken());
     }

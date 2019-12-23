@@ -9,6 +9,7 @@
 - Removed `scopes` column from the character table because that information is now (SSOv2) included in the JSON
   Web Token.
 - Switched to the new EVE image server.
+- Fix: sometimes newly added characters were not updated, so their corporation was missing.
 - Other small stuff.
 
 ## 1.7.1

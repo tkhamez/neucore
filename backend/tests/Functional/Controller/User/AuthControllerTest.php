@@ -218,7 +218,10 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
         );
 
         $response = $this->runApp(
@@ -291,7 +294,10 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"name": "char name", "corporation_id": 102}'), // getCharactersCharacterId()
+            new Response(200, [], '[]'), // postCharactersAffiliation())
+            new Response(200, [], '{"name": "name corp", "ticker": "-TC-"}') // getCorporationsCorporationId()
         );
 
         $response = $this->runApp(

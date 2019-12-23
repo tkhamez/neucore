@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
@@ -57,14 +59,21 @@ class Account
      */
     private $objectManager;
 
+    /**
+     * @var EsiData
+     */
+    private $esiData;
+
     public function __construct(
         LoggerInterface $log,
         ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory
+        RepositoryFactory $repositoryFactory,
+        EsiData $esiData
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
+        $this->esiData = $esiData;
     }
 
     /**
@@ -150,7 +159,14 @@ class Account
         $this->objectManager->persist($char->getPlayer());
         $this->objectManager->persist($char);
 
-        return $this->objectManager->flush();
+        $success = $this->objectManager->flush();
+
+        // update character if corporation is missing - the client side triggered update fails too often.
+        if ($char->getCorporation() === null) {
+            $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId());
+        }
+
+        return $success;
     }
 
     /**

@@ -29,7 +29,7 @@ class UserAuth implements RoleProviderInterface
     /**
      * @var Account
      */
-    private $characterService;
+    private $accountService;
 
     /**
      * @var RepositoryFactory
@@ -53,7 +53,7 @@ class UserAuth implements RoleProviderInterface
         LoggerInterface $log
     ) {
         $this->session = $session;
-        $this->characterService = $charService;
+        $this->accountService = $charService;
         $this->repositoryFactory = $repositoryFactory;
         $this->log = $log;
     }
@@ -114,14 +114,14 @@ class UserAuth implements RoleProviderInterface
                 return false;
             }
             if ($char === null) {
-                $char = $this->characterService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
+                $char = $this->accountService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
             } else {
-                $char = $this->characterService->moveCharacterToNewAccount($char);
+                $char = $this->accountService->moveCharacterToNewAccount($char);
             }
             $char->getPlayer()->addRole($userRole[0]);
         }
 
-        $success = $this->characterService->updateAndStoreCharacterWithPlayer($char, $eveAuth);
+        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth);
 
         if (! $success) {
             return false;
@@ -157,7 +157,7 @@ class UserAuth implements RoleProviderInterface
         if ($alt !== null) {
             $oldPlayer = $alt->getPlayer();
             if ($oldPlayer->getId() !== $player->getId()) {
-                $this->characterService->removeCharacterFromPlayer($alt, $player);
+                $this->accountService->removeCharacterFromPlayer($alt, $player);
                 // the current player will be added below to $alt
             }
         } else {
@@ -177,7 +177,7 @@ class UserAuth implements RoleProviderInterface
             $alt->setMain(false);
         }
 
-        return $this->characterService->updateAndStoreCharacterWithPlayer($alt, $eveAuth);
+        return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth);
     }
 
     /**

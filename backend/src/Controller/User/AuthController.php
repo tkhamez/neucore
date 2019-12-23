@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -203,10 +205,10 @@ class AuthController extends BaseController
                 $state,
                 $this->getQueryParam($request, 'code', '')
             );
-        } catch (\UnexpectedValueException $uve) {
+        } catch (\Exception $e) {
             $this->session->set('auth_result', [
                 'success' => false,
-                'message' => $uve->getMessage(),
+                'message' => $e->getMessage(),
             ]);
             return $this->response->withHeader('Location', (string)$redirectUrl)->withStatus(302);
         }
