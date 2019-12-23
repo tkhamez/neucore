@@ -75,3 +75,33 @@ body.neucore {
         background-color: #444;
     }
 }
+
+/**
+ * The edit icons for the group and app admin navigation.
+ */
+.list-item-wrap {
+    position: relative;
+
+    a {
+        z-index: 1;
+        &.active {
+            padding-right: 5rem;
+        }
+    }
+
+    .group-actions {
+        display: none;
+        position: absolute;
+        top: 0.75rem;
+        right: 1rem;
+        z-index: 2;
+        span {
+            cursor: pointer;
+            padding: 4px 4px 5px 4px;
+            border: 1px solid white;
+        }
+    }
+    &.active .group-actions {
+        display: inline;
+    }
+}

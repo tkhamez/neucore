@@ -7,12 +7,12 @@
             <br>
             This is used to get the <a href="#Tracking">Member Tracking</a> data from ESI.
         </p>
-        <table class="table table-hover table-sm">
+        <table class="table table-hover table-sm" aria-describedby="directors">
             <thead>
                 <tr>
-                    <th>Character</th>
-                    <th colspan="2">Corporation</th>
-                    <th colspan="2">Actions</th>
+                    <th scope="col">Character</th>
+                    <th scope="col" colspan="2">Corporation</th>
+                    <th scope="col" colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>

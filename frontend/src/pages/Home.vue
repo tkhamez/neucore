@@ -58,13 +58,13 @@
         <div v-cloak v-if="! authChar" class="jumbotron mt-3">
             <!--suppress HtmlUnknownTag -->
             <title-logo :settings="settings"></title-logo>
-            <p>Click the button below to login through <i>EVE Online SSO</i>.</p>
+            <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
             <a href="/login">
                 <img src="/static/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
             </a>
             <p class="small">
                 <br>
-                Learn more about the security of <i>EVE Online SSO</i> in this
+                Learn more about the security of <em>EVE Online SSO</em> in this
                 <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
                     target="_blank" rel="noopener noreferrer">dev-blog</a> article.
             </p>

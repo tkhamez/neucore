@@ -62,23 +62,24 @@
                        v-on:click="showCreateGroupModal()"></span>
                 </h3>
                 <div class="list-group">
-                    <a v-for="group in groups" class="list-group-item list-group-item-action"
-                        :class="{ active: groupId === group.id }"
-                        :href="'#GroupAdmin/' + group.id + '/' + contentType"
-                    >
-                        {{ group.name }}
-                        <span class="text-muted small">{{ group.visibility }}</span>
-                        <span class="group-actions" v-cloak v-if="groupId === group.id">
-                            <span class="far fa-trash-alt mr-1 delete-group"
-                               @mouseover="mouseover"
-                               @mouseleave="mouseleave"
-                               v-on:click="showDeleteGroupModal(group)" title="delete"></span>
-                            <span class="fas fa-pencil-alt mr-1 edit-group"
-                               @mouseover="mouseover"
-                               @mouseleave="mouseleave"
-                               v-on:click="showEditGroupModal(group)" title="edit"></span>
+                    <span v-for="group in groups" class="list-item-wrap" :class="{ active: groupId === group.id }">
+                        <a class="list-group-item list-group-item-action"
+                           :class="{ active: groupId === group.id }"
+                           :href="'#GroupAdmin/' + group.id + '/' + contentType">
+                            {{ group.name }}
+                            <span class="text-muted small">{{ group.visibility }}</span>
+                        </a>
+                        <span class="group-actions">
+                            <span role="img" aria-label="edit" title="edit"
+                                  class="fas fa-pencil-alt mr-1"
+                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  v-on:click="showEditGroupModal(group)"></span>
+                            <span role="img" aria-label="delete" title="delete"
+                                  class="far fa-trash-alt mr-1"
+                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  v-on:click="showDeleteGroupModal(group)"></span>
                         </span>
-                    </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -322,21 +323,10 @@ export default {
         cursor: pointer;
     }
 
-    .delete-group,
-    .edit-group {
-        float: right;
-        padding: 4px 4px 5px 4px;
-        border: 1px solid white;
-    }
-
     .add-alli-corp {
         position: relative;
         top: 1px;
         margin-left: 12px;
         font-size: 1.1rem;
-    }
-
-    .group-actions {
-        float: right;
     }
 </style>

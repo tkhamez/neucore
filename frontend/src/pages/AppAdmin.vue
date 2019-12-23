@@ -24,22 +24,22 @@
                        v-on:click="showCreateAppModal()"></span>
                 </h3>
                 <div class="list-group">
-                    <span v-for="app in apps">
+                    <span v-for="app in apps" class="list-item-wrap" :class="{ active: appId === app.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: appId === app.id }"
                            :href="'#AppAdmin/' + app.id + '/' + contentType">
                             {{ app.name }}
-                            <i v-cloak v-if="appId === app.id"
-                               class="far fa-trash-alt mr-1 delete-app"
-                               @mouseover="mouseover"
-                               @mouseleave="mouseleave"
-                               v-on:click="showDeleteAppModal(app)" title="delete"></i>
-                            <i v-cloak v-if="appId === app.id"
-                               class="fas fa-pencil-alt mr-1 rename-app"
-                               @mouseover="mouseover"
-                               @mouseleave="mouseleave"
-                               v-on:click="showRenameAppModal(app)" title="rename"></i>
                         </a>
+                        <span class="group-actions">
+                            <span role="img" aria-label="edit" title="edit"
+                                  class="fas fa-pencil-alt mr-1"
+                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  v-on:click="showRenameAppModal(app)"></span>
+                            <span role="img" aria-label="delete" title="delete"
+                                  class="far fa-trash-alt mr-1"
+                                  @mouseover="mouseover"  @mouseleave="mouseleave"
+                                  v-on:click="showDeleteAppModal(app)"></span>
+                        </span>
                     </span>
                 </div>
             </div>
@@ -171,16 +171,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style type="text/scss" scoped>
     .add-app {
         float: right;
         cursor: pointer;
-    }
-
-    .delete-app,
-    .rename-app {
-        float: right;
-        padding: 4px 4px 5px 4px;
-        border: 1px solid white;
     }
 </style>

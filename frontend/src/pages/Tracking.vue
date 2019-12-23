@@ -93,7 +93,7 @@
         </div>
         <div class="row mt-3">
             <div class="col-lg-12">
-                <table class="table table-hover table-sm member-table">
+                <table class="table table-hover table-sm member-table" aria-describedby="Corporation members">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Character</th>

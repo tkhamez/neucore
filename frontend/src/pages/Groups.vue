@@ -30,12 +30,12 @@
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Requestable Groups</h1>
-                <table class="table table-hover table-sm">
+                <table class="table table-hover table-sm" aria-describedby="groups">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>

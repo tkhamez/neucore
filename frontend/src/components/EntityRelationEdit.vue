@@ -75,20 +75,20 @@ Select and table to add and remove objects from other objects.
             </multiselect>
         </div>
 
-        <table v-cloak v-if="typeId" class="table table-hover mb-0">
+        <table v-cloak v-if="typeId" class="table table-hover mb-0" aria-describedby="Elements already added">
             <thead>
                 <tr>
-                    <th v-if="contentType === 'managers' || contentType === 'groups'">ID</th>
-                    <th v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
-                    <th v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
-                    <th>Name</th>
-                    <th v-if="contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
-                    <th v-if="contentType === 'managers'">Characters</th>
-                    <th v-if="contentType === 'corporations'">Alliance</th>
-                    <th v-if="
+                    <th scope="col" v-if="contentType === 'managers' || contentType === 'groups'">ID</th>
+                    <th scope="col" v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
+                    <th scope="col" v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
+                    <th scope="col">Name</th>
+                    <th scope="col" v-if="contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
+                    <th scope="col" v-if="contentType === 'managers'">Characters</th>
+                    <th scope="col" v-if="contentType === 'corporations'">Alliance</th>
+                    <th scope="col" v-if="
                         (type === 'Group' || type === 'App') &&
                         (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
-                    <th></th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>

@@ -56,12 +56,12 @@
                         <hr>
 
                         <h5>Groups</h5>
-                        <table class="table table-hover table-sm">
+                        <table class="table table-hover table-sm" aria-describedby="groups">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>visibility</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">visibility</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -74,10 +74,10 @@
                         </table>
 
                         <h5>Roles</h5>
-                        <table class="table table-hover table-sm">
+                        <table class="table table-hover table-sm" aria-describedby="roles">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Name</th>
+                                    <th scope="col">Name</th>
                                 </tr>
                             </thead>
                             <tbody>

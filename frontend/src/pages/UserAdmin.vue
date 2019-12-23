@@ -209,7 +209,7 @@
 
                     <h4>Characters</h4>
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm">
+                        <table class="table table-hover table-sm" aria-describedby="Characters">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>ID</th>
@@ -284,7 +284,7 @@
                         Groups for this account are disabled (or will be disabled soon)
                         because one or more characters do not have a valid ESI token.
                     </p>
-                    <table class="table table-hover table-sm">
+                    <table class="table table-hover table-sm" aria-describedby="Member of groups">
                         <thead class="thead-dark">
                             <tr>
                                 <th>ID</th>
@@ -302,7 +302,7 @@
                     </table>
 
                     <h4>Group Manager</h4>
-                    <table class="table table-hover table-sm">
+                    <table class="table table-hover table-sm" aria-describedby="Manager of groups">
                         <thead class="thead-dark">
                             <tr>
                                 <th>ID</th>
@@ -320,7 +320,7 @@
                     </table>
 
                     <h4>App Manager</h4>
-                    <table class="table table-hover table-sm">
+                    <table class="table table-hover table-sm" aria-describedby="Manager of apps">
                         <thead class="thead-dark">
                             <tr>
                                 <th>ID</th>
@@ -339,7 +339,8 @@
                         <h4 v-if="idx === 0">Removed Characters</h4>
                         <h4 v-else>Incoming Characters</h4>
                         <div class="table-responsive">
-                            <table class="table table-hover table-sm">
+                            <table class="table table-hover table-sm"
+                                   :aria-describedby="(idx === 0 ? 'Removed' : 'Incoming') + ' Characters'">
                                 <thead class="thead-dark">
                                 <tr>
                                     <th>Character ID</th>

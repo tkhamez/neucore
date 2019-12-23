@@ -56,12 +56,12 @@
                     <character-search v-on:result="searchResult = $event"></character-search>
 
                     <div class="search-result border border-dark" v-if="searchResult.length > 0">
-                        <table class="table table-hover table-sm table-light mb-0">
+                        <table class="table table-hover table-sm table-light mb-0" aria-describedby="search result">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Character</th>
-                                    <th>Account</th>
-                                    <th>Action</th>
+                                    <th scope="col">Character</th>
+                                    <th scope="col">Account</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,13 +85,13 @@
                     </div>
                 </div>
 
-                <table v-cloak v-if="groupId" class="table table-hover mb-0">
+                <table v-cloak v-if="groupId" class="table table-hover mb-0" aria-describedby="members">
                     <thead>
                         <tr>
-                            <th>Player ID</th>
-                            <th>Name</th>
-                            <th></th>
-                            <th></th>
+                            <th scope="col">Player ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,14 +121,15 @@
                         The player no longer has to be a member of the group.
                     </span>
                 </div>
-                <table v-cloak v-if="groupId" class="table table-hover mb-0">
+                <table v-cloak v-if="groupId" class="table table-hover mb-0"
+                       :aria-describedby="status + ' applications'">
                     <thead>
                         <tr>
-                            <th>Player</th>
-                            <th>Created (GMT)</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
+                            <th scope="col">Player</th>
+                            <th scope="col">Created (GMT)</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
