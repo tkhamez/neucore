@@ -55,9 +55,9 @@
                     <!--suppress HtmlUnknownTag -->
                     <character-search v-on:result="searchResult = $event"></character-search>
 
-                    <div class="search-result border border-dark" v-if="searchResult.length > 0">
-                        <table class="table table-hover table-sm table-light mb-0" aria-describedby="search result">
-                            <thead class="thead-dark">
+                    <div class="search-result border" v-if="searchResult.length > 0">
+                        <table class="table table-hover table-sm mb-0" aria-describedby="search result">
+                            <thead>
                                 <tr>
                                     <th scope="col">Character</th>
                                     <th scope="col">Account</th>
