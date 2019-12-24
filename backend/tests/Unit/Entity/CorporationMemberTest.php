@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
@@ -159,5 +161,19 @@ class CorporationMemberTest extends TestCase
         $char = new Character();
         $member->setCharacter($char);
         $this->assertSame($char, $member->getCharacter());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testSetGetMissingCharacterMailSent()
+    {
+        $dt1 = new \DateTime('2018-12-25 19:14:59');
+
+        $member = new CorporationMember();
+        $dt2 = $member->setMissingCharacterMailSent($dt1)->getMissingCharacterMailSent();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-12-25T19:14:59+00:00', $dt2->format(\DateTime::ATOM));
     }
 }

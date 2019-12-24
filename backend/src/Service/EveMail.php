@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
@@ -9,6 +11,7 @@ use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use Neucore\Repository\SystemVariableRepository;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailMail;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailRecipient;
@@ -19,6 +22,11 @@ class EveMail
      * @var RepositoryFactory
      */
     private $repositoryFactory;
+
+    /**
+     * @var SystemVariableRepository
+     */
+    private $sysVarRepo;
 
     /**
      * @var ObjectManager
@@ -60,13 +68,13 @@ class EveMail
         $this->logger = $logger;
 
         $this->datasource = $config['eve']['datasource'];
+        $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
     }
 
     public function storeMailCharacter(EveAuthentication $eveAuth): bool
     {
-        $repo = $this->repositoryFactory->getSystemVariableRepository();
-        $char = $repo->find(SystemVariable::MAIL_CHARACTER);
-        $token = $repo->find(SystemVariable::MAIL_TOKEN);
+        $char = $this->sysVarRepo->find(SystemVariable::MAIL_CHARACTER);
+        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
         if ($char === null || $token === null) {
             return false;
         }
@@ -122,11 +130,9 @@ class EveMail
      */
     public function invalidTokenMaySend(?int $characterId, bool $ignoreAlreadySentAndStatus = false): string
     {
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-
         // get configured alliances and corporations
-        $allianceVar = $sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES);
-        $corporationVar = $sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS);
+        $allianceVar = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES);
+        $corporationVar = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS);
         if ($allianceVar === null || $corporationVar === null) {
             return 'Alliance and/or Corporation settings variable not found.';
         }
@@ -164,10 +170,8 @@ class EveMail
      */
     public function invalidTokenIsActive(): string
     {
-        $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
-
-        // check whether "account deactivated" mail is activated
-        $active = $sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE);
+        // check whether "invalid ESI token" mail is activated
+        $active = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE);
         if ($active === null || $active->getValue() !== '1') {
             return 'Mail is deactivated.';
         }
@@ -183,31 +187,19 @@ class EveMail
      */
     public function invalidTokenSend(int $recipient): string
     {
-        $repo = $this->repositoryFactory->getSystemVariableRepository();
-
-        $token = $repo->find(SystemVariable::MAIL_TOKEN);
-        if ($token === null || $token->getValue() === '') {
-            return 'Missing character that can send mails.';
+        $tokenValues = $this->getToken();
+        if ($tokenValues === null) {
+            return 'Missing character that can send mails or missing token data.';
         }
 
-        $subject = $repo->find(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT);
+        $subject = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT);
         if ($subject === null || trim($subject->getValue()) === '') {
             return 'Missing subject.';
         }
 
-        $body = $repo->find(SystemVariable::MAIL_INVALID_TOKEN_BODY);
+        $body = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_BODY);
         if ($body === null || trim($body->getValue()) === '') {
             return 'Missing body text.';
-        }
-
-        $tokenValues = json_decode($token->getValue(), true);
-        if (! is_array($tokenValues) ||
-            ! isset($tokenValues['id']) ||
-            ! isset($tokenValues['access']) ||
-            ! isset($tokenValues['refresh']) ||
-            ! isset($tokenValues['expires'])
-        ) {
-            return 'Missing token data.';
         }
 
         try {
@@ -244,6 +236,138 @@ class EveMail
             $player->setDeactivationMailSent($sent);
             $this->objectManager->flush();
         }
+    }
+
+    public function missingCharacterIsActive(): string
+    {
+        // check whether "missing character" mail is activated
+        $active = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE);
+        if ($active === null || $active->getValue() !== '1') {
+            return 'Mail is deactivated.';
+        }
+
+        return '';
+    }
+
+    /**
+     * Returns corporations from the configuration those member tracking data were updated within one day.
+     *
+     * @return int[]
+     */
+    public function missingCharacterGetCorporations(): array
+    {
+        $corporations = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_CORPORATIONS);
+
+        if ($corporations === null || $corporations->getValue() === '') {
+            return [];
+        }
+
+        $yesterday = date_create('now - 1 days');
+        if (! $yesterday) {
+            return [];
+        }
+
+        $result = [];
+        $corpRepo = $this->repositoryFactory->getCorporationRepository();
+        foreach (explode(',', $corporations->getValue()) as $corporationId) {
+            $corporation = $corpRepo->find((int) $corporationId);
+            if (
+                $corporation &&
+                $corporation->getTrackingLastUpdate() > $yesterday &&
+                ! in_array($corporation->getId(), $result)
+            ) {
+                $result[] = $corporation->getId();
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Checks if this mail was sent before within the configured days.
+     *
+     * All other checks must already be completed (corporation from configuration,
+     * last update of member tracking, character without account)
+     *
+     * @param int $corporationMemberId EVE character ID
+     * @param bool $ignoreAlreadySent
+     * @return string
+     */
+    public function missingCharacterMaySend(int $corporationMemberId, bool $ignoreAlreadySent = false): string
+    {
+        $daysVar = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_RESEND);
+
+        if (! $daysVar || (int) $daysVar->getValue() <= 0) {
+            return 'Invalid config.';
+        }
+
+        if ($ignoreAlreadySent) {
+            return '';
+        }
+
+        $memberRepo = $this->repositoryFactory->getCorporationMemberRepository();
+        $member = $memberRepo->find($corporationMemberId);
+        if (! $member) {
+            return 'Member not found.';
+        }
+
+        $minDateSent = date_create('now -' . (int) $daysVar->getValue() . ' days');
+        if ($member->getMissingCharacterMailSent() && $member->getMissingCharacterMailSent() > $minDateSent) {
+            return 'Already sent.';
+        }
+
+        return '';
+    }
+
+    public function missingCharacterSend(int $recipient): string
+    {
+        $tokenValues = $this->getToken();
+        if ($tokenValues === null) {
+            return 'Missing character that can send mails or missing token data.';
+        }
+
+        $subject = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT);
+        $body = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_BODY);
+        if (
+            $subject === null || trim($subject->getValue()) === '' ||
+            $body === null || trim($body->getValue()) === ''
+        ) {
+            return 'Missing subject or body text.';
+        }
+
+        try {
+            $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
+                'access_token' => $tokenValues['access'],
+                'refresh_token' => $tokenValues['refresh'],
+                'expires' => (int)$tokenValues['expires']
+            ]));
+        } catch (IdentityProviderException $e) {
+            return 'Invalid token.';
+        }
+
+        return $this->sendMail(
+            $tokenValues['id'],
+            $accessToken->getToken(),
+            $subject->getValue(),
+            $body->getValue(),
+            [$recipient]
+        );
+    }
+
+    /**
+     * Set date to NOW.
+     */
+    public function missingCharacterMailSent(int $corporationMemberId): bool
+    {
+        $member = $this->repositoryFactory->getCorporationMemberRepository()->find($corporationMemberId);
+        if ($member === null) {
+            return false;
+        }
+
+        $member->setMissingCharacterMailSent(date_create());
+        $this->objectManager->flush();
+
+        return true;
     }
 
     /**
@@ -287,5 +411,28 @@ class EveMail
         }
 
         return '';
+    }
+
+    private function getToken(): ?array
+    {
+        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
+        if ($token === null || $token->getValue() === '') {
+            return null;
+        }
+
+        $tokenValues = json_decode($token->getValue(), true);
+
+        if (
+            ! is_array($tokenValues) ||
+            ! isset($tokenValues['id']) ||
+            ! isset($tokenValues['access']) ||
+            ! isset($tokenValues['refresh']) ||
+            ! isset($tokenValues['expires'])
+
+        ) {
+            return null;
+        }
+
+        return $tokenValues;
     }
 }

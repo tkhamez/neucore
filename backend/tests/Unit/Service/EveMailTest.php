@@ -8,6 +8,7 @@ namespace Tests\Unit\Service;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
@@ -314,61 +315,21 @@ class EveMailTest extends TestCase
         $this->assertSame('', $result);
     }
 
-    public function testInvalidTokenSendMissingCharacter()
+    public function testInvalidTokenSendMissingCharacterOrTokenData()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
-        $this->em->persist($varActive);
-        $this->em->flush();
-
         $result = $this->eveMail->invalidTokenSend(123);
-        $this->assertSame('Missing character that can send mails.', $result);
-    }
+        $this->assertSame('Missing character that can send mails or missing token data.', $result);
 
-    public function testInvalidTokenSendMissingSubject()
-    {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
-        $this->em->persist($varActive);
         $this->em->persist($varToken);
         $this->em->flush();
 
         $result = $this->eveMail->invalidTokenSend(123);
-        $this->assertSame('Missing subject.', $result);
-    }
-
-    public function testInvalidTokenSendMissingBody()
-    {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
-        $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
-        $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
-        $this->em->persist($varActive);
-        $this->em->persist($varToken);
-        $this->em->persist($varSubject);
-        $this->em->flush();
-
-        $result = $this->eveMail->invalidTokenSend(123);
-        $this->assertSame('Missing body text.', $result);
-    }
-
-    public function testInvalidTokenSendMissingTokenData()
-    {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
-        $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
-        $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue('b');
-        $varToken = (new SystemVariable(SystemVariable::MAIL_TOKEN))->setValue('{"id": "123"}');
-        $this->em->persist($varActive);
-        $this->em->persist($varSubject);
-        $this->em->persist($varBody);
-        $this->em->persist($varToken);
-        $this->em->flush();
-
-        $result = $this->eveMail->invalidTokenSend(123);
-        $this->assertSame('Missing token data.', $result);
+        $this->assertSame('Missing character that can send mails or missing token data.', $result);
     }
 
     public function testInvalidTokenSendInvalidToken()
     {
-        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
         $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue('b');
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
@@ -378,7 +339,6 @@ class EveMailTest extends TestCase
             'refresh' => 'refresh-token',
             'expires' => 1542546430,
         ]));
-        $this->em->persist($varActive);
         $this->em->persist($varSubject);
         $this->em->persist($varBody);
         $this->em->persist($varToken);
@@ -404,11 +364,9 @@ class EveMailTest extends TestCase
         ]));
         $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('subject 3');
         $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue("body\n\ntext");
-        $varActive = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $this->em->persist($varToken);
         $this->em->persist($varSubject);
         $this->em->persist($varBody);
-        $this->em->persist($varActive);
         $this->em->flush();
 
         $this->client->setResponse(
@@ -449,6 +407,121 @@ class EveMailTest extends TestCase
         $this->assertFalse($player3->getDeactivationMailSent());
     }
 
+    public function testMissingCharacterGetCorporations()
+    {
+        $varCorps = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_CORPORATIONS))->setValue('');
+        $corp1 = (new Corporation())->setId(1)->setTrackingLastUpdate(date_create('now - 1 days - 1 hours'));
+        $corp2 = (new Corporation())->setId(2)->setTrackingLastUpdate(date_create('now - 1 hours'));
+        $this->em->persist($varCorps);
+        $this->em->persist($corp1);
+        $this->em->persist($corp2);
+        $this->em->flush();
+
+        $this->assertSame([], $this->eveMail->missingCharacterGetCorporations());
+
+        $varCorps->setValue('1,2,2');
+        $this->em->flush();
+
+        $this->assertSame([2], $this->eveMail->missingCharacterGetCorporations());
+    }
+
+    public function testMissingCharacterMaySend()
+    {
+        $this->assertSame('Invalid config.', $this->eveMail->missingCharacterMaySend(101));
+
+        $daysVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_RESEND))->setValue('0');
+        $this->em->persist($daysVar);
+        $this->em->flush();
+
+        $this->assertSame('Invalid config.', $this->eveMail->missingCharacterMaySend(101));
+
+        $daysVar->setValue('20');
+        $this->em->flush();
+
+        $this->assertSame('', $this->eveMail->missingCharacterMaySend(101, true));
+
+        $this->assertSame('Member not found.', $this->eveMail->missingCharacterMaySend(101));
+
+        $corp = (new Corporation())->setId(11);
+        $member = (new CorporationMember())->setId(101)->setCorporation($corp)
+            ->setMissingCharacterMailSent(new \DateTime('now -20 days +1 hour'));
+        $this->em->persist($corp);
+        $this->em->persist($member);
+        $this->em->flush();
+
+        $this->assertSame('Already sent.', $this->eveMail->missingCharacterMaySend(101));
+
+        $member->setMissingCharacterMailSent(new \DateTime('now -20 days -1 hour'));
+        $this->em->flush();
+
+        $this->assertSame('', $this->eveMail->missingCharacterMaySend(101));
+    }
+
+    public function testMissingCharacterSend()
+    {
+        $this->assertSame(
+            'Missing character that can send mails or missing token data.',
+            $this->eveMail->missingCharacterSend(101)
+        );
+
+        $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $varToken->setValue((string) \json_encode([
+            'id' => 123,
+            'access' => 'access-token',
+            'refresh' => 'refresh-token',
+            'expires' => 1542546430,
+        ]));
+        $this->em->persist($varToken);
+        $this->em->flush();
+
+        $this->assertSame('Missing subject or body text.', $this->eveMail->missingCharacterSend(101));
+
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT))->setValue('s');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_BODY))->setValue('b');
+        $this->em->persist($varSubject);
+        $this->em->persist($varBody);
+        $this->em->flush();
+
+        $this->client->setResponse(
+            // for getAccessToken() (refresh)
+            new Response(400, [], '{ "error": "invalid_grant" }')
+        );
+
+        $this->assertSame('Invalid token.', $this->eveMail->missingCharacterSend(101));
+
+        $this->client->setResponse(
+            new Response( // for getAccessToken() (refresh)
+                200,
+                [],
+                '{"access_token": "new-token",
+                "refresh_token": "",
+                "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+            ),
+            new Response(200, [], '373515628') // for postCharactersCharacterIdMail()
+        );
+
+        $this->assertSame('', $this->eveMail->missingCharacterSend(101));
+    }
+
+    public function testMissingCharacterMailSent()
+    {
+        $this->assertFalse($this->eveMail->missingCharacterMailSent(101));
+
+        $corp = (new Corporation())->setId(11);
+        $member = (new CorporationMember())->setId(101)->setCorporation($corp);
+        $this->em->persist($corp);
+        $this->em->persist($member);
+        $this->em->flush();
+
+        $this->assertNull($member->getMissingCharacterMailSent());
+        $this->eveMail->missingCharacterMailSent(101);
+
+        $this->assertTrue($this->eveMail->missingCharacterMailSent(101));
+
+        $this->em->clear();
+        $memberDb = $this->repoFactory->getCorporationMemberRepository()->find(101);
+        $this->assertLessThanOrEqual(new \DateTime(), $memberDb->getMissingCharacterMailSent());
+    }
 
     public function testSendMail()
     {

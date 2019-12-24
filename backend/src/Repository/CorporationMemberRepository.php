@@ -243,4 +243,44 @@ class CorporationMemberRepository extends EntityRepository
             ->setParameter('ids', $currentMemberIds);
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Returns members from corporations without an account that logged in during the last x days.
+     *
+     * @param int[] $corporationIds
+     * @param int $loginDays days since last login, minimum = 1
+     * @param int|null $dbResultLimit
+     * @param int $offset
+     * @return CorporationMember[]
+     */
+    public function findByCorporationsWithoutAccountAndActive(
+        array $corporationIds,
+        int $loginDays,
+        $dbResultLimit = null,
+        $offset = 0
+    ): array {
+        if (count($corporationIds) === 0) {
+            return [];
+        }
+        if ($loginDays < 1) {
+            return [];
+        }
+
+        $minLoginDate = date_create('now -'.$loginDays.' days');
+        if (! $minLoginDate) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('m');
+        $qb->where($qb->expr()->in('m.corporation', ':corporationIds'))
+            ->andWhere($qb->expr()->isNull('m.character'))
+            ->setParameter('corporationIds', $corporationIds)
+            ->andWhere('m.logonDate > :minLoginDate')
+            ->setParameter('minLoginDate', $minLoginDate->format('Y-m-d H:i:s'))
+            ->orderBy('m.name')
+            ->setMaxResults($dbResultLimit) // don't use with JOIN
+            ->setFirstResult($offset);
+
+        return $qb->getQuery()->getResult();
+    }
 }

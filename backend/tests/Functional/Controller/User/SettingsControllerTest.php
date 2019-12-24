@@ -273,6 +273,50 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame('Missing subject.', $this->parseJsonBody($response));
     }
 
+    public function testMissingCharacterMail403()
+    {
+        $response = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testMissingCharacterMail200()
+    {
+        $this->setupDb();
+        $this->loginUser(6); // role: SETTINGS
+
+        $response1 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response1));
+
+        $activeVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE))->setValue('1');
+        $this->em->persist($activeVar);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response2 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
+        $this->assertEquals(200, $response2->getStatusCode());
+        $this->assertSame('Invalid config.', $this->parseJsonBody($response2));
+
+        $daysVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_RESEND))->setValue('20');
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT))->setValue('s');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_BODY))->setValue('b');
+        $this->em->persist($daysVar);
+        $this->em->persist($varSubject);
+        $this->em->persist($varBody);
+        $this->em->flush();
+        $this->em->clear();
+        $client = new Client();
+        $client->setResponse(
+            new Response(200, [], '373515628') // for postCharactersCharacterIdMail()
+        );
+
+        $response3 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail', null, null, [
+            ClientInterface::class => $client
+        ]);
+        $this->assertEquals(200, $response3->getStatusCode());
+        $this->assertSame('', $this->parseJsonBody($response3)); // success
+    }
+
     public function testValidateDirector403()
     {
         $this->setupDb();
@@ -325,7 +369,12 @@ class SettingsControllerTest extends WebTestCase
         $var1->setValue("0");
         $var2->setValue("1");
         $var4->setValue("The char");
-        $var5->setValue('{"ID": "123", "TOKEN": "abc"}');
+        $var5->setValue(\json_encode([
+            'id' => 123,
+            'access' => 'access-token',
+            'refresh' => 'refresh-token',
+            'expires' => time() + 10000,
+        ]));
         $var6->setValue('{"character_id": "10", "corporation_id": "101"}');
         $var7->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
         $var8->setValue("0");

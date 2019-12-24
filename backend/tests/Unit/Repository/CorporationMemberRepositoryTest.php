@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
@@ -31,26 +33,34 @@ class CorporationMemberRepositoryTest extends TestCase
         $char1 = (new Character())->setId(1)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
         $char2 = (new Character())->setId(2)->setName('Char 2')->setPlayer($player1)
             ->setValidToken(false)->setValidTokenTime(new \DateTime("now -240 hours"));
+        $char5 = (new Character())->setId(5)->setName('Char 5')->setPlayer($player1)->setValidToken(true);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
         $corp2 = (new Corporation())->setId(2)->setName('Corp 2')->setTicker('C2');
         $member1 = (new CorporationMember())->setId(10)->setName('Member 1')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -112 days +1 hour'))->setCharacter($char1);
+        $member1a = (new CorporationMember())->setId(101)->setName('Member 1a')->setCorporation($corp1)
+            ->setLogonDate(new \DateTime('now -112 days +1 hour'));
         $member2 = (new CorporationMember())->setId(20)->setName('Member 2')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -111 days +1 hour'))->setCharacter($char2);
         $member3 = (new CorporationMember())->setId(30)->setName('Member 3')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -111 days +1 hour'));
+        $member5 = (new CorporationMember())->setId(50)->setName('Member 5')->setCorporation($corp2)
+            ->setLogonDate(new \DateTime('now -110 days +1 hour'))->setCharacter($char5);
 
         self::$em->persist($player1);
         self::$em->persist($char1);
         self::$em->persist($char2);
+        self::$em->persist($char5);
         self::$em->persist($corp1);
         self::$em->persist($corp2);
         self::$em->persist($member1);
+        self::$em->persist($member1a);
         self::$em->persist($member2);
         self::$em->persist($member3);
         self::$em->persist($member4);
+        self::$em->persist($member5);
 
         self::$em->flush();
     }
@@ -68,7 +78,14 @@ class CorporationMemberRepositoryTest extends TestCase
 
         $repository->resetCriteria();
 
-        $this->assertSame(3, count($repository->findMatching(1)));
+        $actual = $repository->findMatching(1);
+
+        $this->assertSame(4, count($repository->findMatching(1)));
+
+        $this->assertSame('Member 3', $actual[0]->getName());
+        $this->assertSame('Member 2', $actual[1]->getName());
+        $this->assertSame('Member 1', $actual[2]->getName());
+        $this->assertSame('Member 1a', $actual[3]->getName());
     }
 
     public function testFindMatchingActive()
@@ -81,12 +98,13 @@ class CorporationMemberRepositoryTest extends TestCase
 
         $this->assertSame(0, count($actual1));
         $this->assertSame(1, count($actual2));
-        $this->assertSame(3, count($actual3));
+        $this->assertSame(4, count($actual3));
 
         $this->assertSame('Member 3', $actual2[0]->getName());
         $this->assertSame('Member 3', $actual3[0]->getName());
         $this->assertSame('Member 2', $actual3[1]->getName());
         $this->assertSame('Member 1', $actual3[2]->getName());
+        $this->assertSame('Member 1a', $actual3[3]->getName());
     }
 
     public function testFindMatchingInactive()
@@ -97,15 +115,17 @@ class CorporationMemberRepositoryTest extends TestCase
         $actual2 = $repository->setInactive(110)->findMatching(1);
         $actual3 = $repository->setInactive(112)->findMatching(1);
 
-        $this->assertSame(3, count($actual1));
-        $this->assertSame(2, count($actual2));
+        $this->assertSame(4, count($actual1));
+        $this->assertSame(3, count($actual2));
         $this->assertSame(0, count($actual3));
 
         $this->assertSame('Member 3', $actual1[0]->getName());
         $this->assertSame('Member 2', $actual1[1]->getName());
         $this->assertSame('Member 1', $actual1[2]->getName());
+        $this->assertSame('Member 1a', $actual1[3]->getName());
         $this->assertSame('Member 2', $actual2[0]->getName());
         $this->assertSame('Member 1', $actual2[1]->getName());
+        $this->assertSame('Member 1a', $actual2[2]->getName());
     }
 
     public function testFindMatchingActiveRange()
@@ -127,13 +147,14 @@ class CorporationMemberRepositoryTest extends TestCase
         $actual2 = $repository->setAccount(false)->findMatching(1);
 
         $this->assertSame(2, count($actual1));
-        $this->assertSame(1, count($actual2));
+        $this->assertSame(2, count($actual2));
 
         $this->assertSame('Member 2', $actual1[0]->getName());
         $this->assertSame('Member 1', $actual1[1]->getName());
         $this->assertSame('Char 2', $actual1[0]->getCharacter()->getName());
         $this->assertSame('Char 1', $actual1[1]->getCharacter()->getName());
         $this->assertSame('Member 3', $actual2[0]->getName());
+        $this->assertSame('Member 1a', $actual2[1]->getName());
     }
 
     public function testFindMatchingWithToken()
@@ -164,6 +185,24 @@ class CorporationMemberRepositoryTest extends TestCase
     {
         $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
         $actual = $repository->removeFormerMembers(1, [10, 30]);
-        $this->assertSame(1, $actual);
+        $this->assertSame(2, $actual); // removed ids: 20, 101
+    }
+
+    public function testFindByCorporationsWithoutAccount()
+    {
+        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+
+        $actual0 = $repository->findByCorporationsWithoutAccountAndActive([1, 2], 111);
+        $this->assertSame(2, count($actual0));
+        $this->assertSame(30, $actual0[0]->getId());
+        $this->assertSame(40, $actual0[1]->getId());
+
+        $actual1 = $repository->findByCorporationsWithoutAccountAndActive([1, 2], 111, 1, 0);
+        $this->assertSame(1, count($actual1));
+        $this->assertSame(30, $actual1[0]->getId());
+
+        $actual2 = $repository->findByCorporationsWithoutAccountAndActive([1, 2], 111, 1, 1);
+        $this->assertSame(1, count($actual2));
+        $this->assertSame(40, $actual2[0]->getId());
     }
 }

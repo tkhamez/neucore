@@ -4,6 +4,7 @@
 
 - New: Watchlist, Blacklist added.
 - New: Watchlist, Whitelist for corporations and alliances added.
+- New: Notification mail for characters from tracked corporations that have not yet been added to Neucore.
 - New: `incoming-characters` endpoint for apps.
 - Added last update date to corporation tracking data.
 - Removed `scopes` column from the character table because that information is now (SSOv2) included in the JSON

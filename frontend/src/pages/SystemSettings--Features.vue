@@ -146,8 +146,8 @@ function readSettings(vm) {
 </script>
 
 <style type="text/scss" scoped>
-.input-delay {
-    display: inline;
-    width: 100px;
-}
+    .input-delay {
+        display: inline;
+        width: 100px;
+    }
 </style>

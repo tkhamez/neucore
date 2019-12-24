@@ -138,6 +138,37 @@ class SystemVariable implements \JsonSerializable
     const MAIL_INVALID_TOKEN_BODY = 'mail_invalid_token_body';
 
     /**
+     * Scope = settings
+     */
+    const MAIL_MISSING_CHARACTER_ACTIVE = 'mail_missing_character_active';
+
+    /**
+     * Corporations with member tracking enabled.
+     *
+     * Scope = settings
+     */
+    const MAIL_MISSING_CHARACTER_CORPORATIONS = 'mail_missing_character_corporations';
+
+    /**
+     * Scope = settings
+     */
+    const MAIL_MISSING_CHARACTER_SUBJECT = 'mail_missing_character_subject';
+
+    /**
+     * Scope = settings
+     */
+    const MAIL_MISSING_CHARACTER_BODY = 'mail_missing_character_body';
+
+    /**
+     * Defines the minimum number of days that must pass before the mail is resent.
+     * Also defines a maximum number of days since the last login, only within these
+     * days the mail will be sent.
+     *
+     * Scope = settings
+     */
+    const MAIL_MISSING_CHARACTER_RESEND = 'mail_missing_character_resend';
+
+    /**
      * Character with director role for member tracking.
      *
      * This is the base name of this variable, the actual variable must have a number suffix
@@ -294,12 +325,16 @@ class SystemVariable implements \JsonSerializable
             case self::ALLOW_LOGIN_MANAGED:
             case self::GROUPS_REQUIRE_VALID_TOKEN:
             case self::MAIL_INVALID_TOKEN_ACTIVE:
+            case self::MAIL_MISSING_CHARACTER_ACTIVE:
                 $this->value = ((bool) $value) ? '1' : '0';
                 break;
             case self::ACCOUNT_DEACTIVATION_DELAY:
+            case self::MAIL_MISSING_CHARACTER_RESEND:
                 $this->value = (string) abs((int) $value);
                 break;
             case self::MAIL_INVALID_TOKEN_ALLIANCES:
+            case self::MAIL_INVALID_TOKEN_CORPORATIONS:
+            case self::MAIL_MISSING_CHARACTER_CORPORATIONS:
                 $allianceIds = [];
                 foreach (explode(',', $value) as $allianceId) {
                     if ((int) $allianceId > 0) {
@@ -309,6 +344,7 @@ class SystemVariable implements \JsonSerializable
                 $this->value = implode(',', $allianceIds);
                 break;
             case self::MAIL_INVALID_TOKEN_BODY:
+            case self::MAIL_MISSING_CHARACTER_BODY:
             case self::CUSTOMIZATION_HOME_MARKDOWN:
                 $this->value = $value;
                 break;

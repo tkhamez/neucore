@@ -89,6 +89,12 @@ class CorporationMember implements \JsonSerializable
     private $character;
 
     /**
+     * @ORM\Column(type="datetime", name="missing_character_mail_sent", nullable=true)
+     * @var \DateTime
+     */
+    private $missingCharacterMailSent;
+
+    /**
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
@@ -305,4 +311,17 @@ class CorporationMember implements \JsonSerializable
     {
         return $this->character;
     }
+
+    public function setMissingCharacterMailSent(\DateTime $missingCharacterMailSent): self
+    {
+        $this->missingCharacterMailSent = clone $missingCharacterMailSent;
+
+        return $this;
+    }
+
+    public function getMissingCharacterMailSent(): ?\DateTime
+    {
+        return $this->missingCharacterMailSent;
+    }
+
 }

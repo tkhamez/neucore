@@ -200,6 +200,41 @@ class SettingsController extends BaseController
 
     /**
      * @noinspection PhpUnused
+     * @OA\Post(
+     *     path="/user/settings/system/send-missing-character-mail",
+     *     operationId="sendMissingCharacterMail",
+     *     summary="Sends a 'missing character' test mail to the logged-in character.",
+     *     description="Needs role: settings",
+     *     tags={"Settings"},
+     *     security={{"Session"={}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="Error message, if available.",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function sendMissingCharacterMail(EveMail $eveMail, UserAuth $userAuth): ResponseInterface
+    {
+        $charId = $this->getUser($userAuth)->getId();
+
+        $result = $eveMail->missingCharacterIsActive();
+        if ($result === '') {
+            $result = $eveMail->missingCharacterMaySend($charId, true);
+        }
+        if ($result === '') {
+            $result = $eveMail->missingCharacterSend((int) $charId);
+        }
+
+        return $this->withJson($result);
+    }
+
+    /**
+     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/settings/system/validate-director/{name}",
      *     operationId="validateDirector",

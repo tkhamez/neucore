@@ -65,7 +65,7 @@ class EsiHeaders
             $entity = $this->systemVariableRepository->find(SystemVariable::ESI_ERROR_LIMIT);
             if (! $entity) {
                 $this->logger->critical(
-                    'EsiHeaders::handleResponseHeaders: system variable' .
+                    'EsiHeaders::handleResponseHeaders: system variable ' .
                     SystemVariable::ESI_ERROR_LIMIT . ' not found.'
                 );
                 return;

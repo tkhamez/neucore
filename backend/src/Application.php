@@ -20,6 +20,7 @@ use Neucore\Command\DoctrineFixturesLoad;
 use Neucore\Command\MakeAdmin;
 use Neucore\Command\RevokeToken;
 use Neucore\Command\SendInvalidTokenMail;
+use Neucore\Command\SendMissingCharacterMail;
 use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
@@ -400,6 +401,7 @@ class Application
         $console->add($this->container->get(CheckTokens::class));
         $console->add($this->container->get(UpdatePlayerGroups::class));
         $console->add($this->container->get(SendInvalidTokenMail::class));
+        $console->add($this->container->get(SendMissingCharacterMail::class));
         $console->add($this->container->get(UpdateMemberTracking::class));
         $console->add($this->container->get(DoctrineFixturesLoad::class));
         $console->add($this->container->get(DBVerifySSL::class));

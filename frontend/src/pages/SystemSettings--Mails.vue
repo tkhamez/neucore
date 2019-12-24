@@ -19,10 +19,8 @@
             This EVE mail is sent when an account contains a character with an invalid or no ESI token.<br>
             Accounts with the "managed" status are excluded from this.
         </p>
-
-        <button class="btn btn-success btn-sm" v-on:click="sendMailInvalidTokenTestMail()">Send test mail</button>
+        <button class="btn btn-success btn-sm" v-on:click="sendInvalidTokenTestMail()">Send test mail</button>
         <small>The mail is sent to the logged-in user.</small>
-
         <div class="custom-control custom-checkbox mb-2 mt-3">
             <input class="custom-control-input" type="checkbox" value="1"
                    id="mail_invalid_token_active" name="mail_invalid_token_active"
@@ -61,11 +59,58 @@
                       id="mailInvalidTokenBody" rows="6"></textarea>
         </div>
     </div>
+
+    <div class="card-header">Missing Character</div>
+    <div class="card-body">
+        <p>This EVE mail is sent to characters that have not been added to an account.</p>
+        <button class="btn btn-success btn-sm" v-on:click="sendMissingCharacterTestMail()">Send test mail</button>
+        <small>The mail is sent to the logged-in user.</small>
+        <div class="custom-control custom-checkbox mb-2 mt-3">
+            <input class="custom-control-input" type="checkbox" value="1"
+                   id="mail_missing_character_active" name="mail_missing_character_active"
+                   :checked="settings.mail_missing_character_active === '1'"
+                   @change="$emit('changeSetting', 'mail_missing_character_active', $event.target.checked ? '1' : '0')">
+            <label class="custom-control-label" for="mail_missing_character_active">Activate mail</label>
+        </div>
+        <label class="mt-2">
+            <input type="text" pattern="[0-9]*" class="form-control input-resend"
+                   v-model="settings.mail_missing_character_resend"
+                   v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_resend', $event.target.value)">
+            The minimum number of days that must pass before the mail is resent. Also a maximum number of days
+            since the last login, only within these days the mail will be sent. Must be greater 0.
+        </label>
+        <div class="form-group">
+            <label class="col-form-label">
+                The mail is sent to characters from one of the following corporations<br>
+            </label>
+            <multiselect v-model="mailMissingCharacterCorporations" :options="trackingCorporations"
+                         label="name" track-by="id" :multiple="true"
+                         :loading="false" :searchable="true"
+                         placeholder="Select corporations">
+            </multiselect>
+            <small class="form-text text-muted">
+                Only corporations with member tracking enabled, see
+                <a href="#SystemSettings/Directors">SystemSettings -> Directors</a>
+            </small>
+        </div>
+        <div class="form-group">
+            <label class="col-form-label" for="mailMissingCharacterSubject">Subject</label>
+            <input id="mailMissingCharacterSubject" type="text" class="form-control"
+                   v-model="settings.mail_missing_character_subject"
+                   v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_subject', $event.target.value)">
+        </div>
+        <div class="form-group">
+            <label for="mailMissingCharacterBody">Message</label>
+            <textarea v-model="settings.mail_missing_character_body" class="form-control"
+                      v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_body', $event.target.value)"
+                      id="mailMissingCharacterBody" rows="6"></textarea>
+        </div>
+    </div>
 </div>
 </template>
 
 <script>
-import { SettingsApi } from 'neucore-js-client';
+    import {CorporationApi, SettingsApi} from 'neucore-js-client';
 
 export default {
     props: {
@@ -78,13 +123,17 @@ export default {
             allAlliancesLoaded: false,
             allCorporations: [],
             allCorporationsLoaded: false,
+            trackingCorporations: [],
+            trackingCorporationsLoaded: false,
             mailInvalidTokenAlliances: null,
             mailInvalidTokenCorporations: null,
+            mailMissingCharacterCorporations: null,
         }
     },
 
     mounted () {
         this.$parent.loadLists();
+        getCorporations(this);
 
         this.$parent.$on('alliancesLoaded', (data) => {
             this.allAlliances = data;
@@ -119,6 +168,14 @@ export default {
             }
             this.$emit('changeSetting', 'mail_invalid_token_corporations', newValue);
         },
+
+        mailMissingCharacterCorporations (newValues, oldValues) {
+            const newValue = this.$parent.buildIdString(newValues, oldValues, this.mailMissingCharacterCorporations);
+            if (newValue === null) {
+                return;
+            }
+            this.$emit('changeSetting', 'mail_missing_character_corporations', newValue);
+        },
     },
 
     methods: {
@@ -127,7 +184,7 @@ export default {
             this.$emit('changeSetting', 'mail_character', '');
         },
 
-        sendMailInvalidTokenTestMail () {
+        sendInvalidTokenTestMail () {
             const vm = this;
             new SettingsApi().sendInvalidTokenMail((error, data) => {
                 if (error) { // 403 usually
@@ -136,30 +193,64 @@ export default {
                 if (data !== '') {
                     vm.$root.message(data, 'error');
                 } else {
-                    vm.$root.message('Mail sent.', 'success');
+                    vm.$root.message('"Invalid ESI Token" Mail sent.', 'success');
+                }
+            });
+        },
+
+        sendMissingCharacterTestMail () {
+            const vm = this;
+            new SettingsApi().sendMissingCharacterMail((error, data) => {
+                if (error) { // 403 usually
+                    return;
+                }
+                if (data !== '') {
+                    vm.$root.message(data, 'error');
+                } else {
+                    vm.$root.message('"Missing Character" Mail sent.', 'success');
                 }
             });
         },
     },
 }
 
+function getCorporations(vm) {
+    new CorporationApi().trackedCorporations((error, data) => {
+        if (! error) {
+            vm.trackingCorporations = data;
+            vm.trackingCorporationsLoaded = true;
+            readSettings(vm);
+        }
+    });
+}
+
 function readSettings(vm) {
-    if (! vm.allAlliancesLoaded || ! vm.allCorporationsLoaded ||
+    if (
+        ! vm.allAlliancesLoaded || ! vm.allCorporationsLoaded || ! vm.trackingCorporationsLoaded ||
         ! vm.settings.hasOwnProperty('account_deactivation_delay')
     ) {
-        return; // wait for alliance and corporation list and settings
+        return; // wait for necessary data
     }
 
     vm.mailInvalidTokenAlliances = [];
     vm.mailInvalidTokenCorporations = [];
+    vm.mailMissingCharacterCorporations = [];
 
     for (const [name, value] of Object.entries(vm.settings)) {
         if (name === 'mail_invalid_token_alliances') {
             vm.mailInvalidTokenAlliances = vm.$parent.buildIdArray(value, vm.allAlliances);
-        }
-        if (name === 'mail_invalid_token_corporations') {
+        } else if (name === 'mail_invalid_token_corporations') {
             vm.mailInvalidTokenCorporations = vm.$parent.buildIdArray(value, vm.allCorporations);
+        } else if (name === 'mail_missing_character_corporations') {
+            vm.mailMissingCharacterCorporations = vm.$parent.buildIdArray(value, vm.trackingCorporations);
         }
     }
 }
 </script>
+
+<style type="text/scss" scoped>
+    .input-resend {
+        display: inline;
+        width: 75px;
+    }
+</style>

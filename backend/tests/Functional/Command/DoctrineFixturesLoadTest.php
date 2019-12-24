@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
@@ -39,7 +41,7 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $vars = $repoFactory->getSystemVariableRepository()->findBy([], ['name' => 'asc']);
 
         $this->assertSame(18, count($roles)); // 17 from seed + 1 from setup
-        $this->assertSame(26, count($vars)); // 25 from seed + 1 from setup
+        $this->assertSame(31, count($vars)); // 30 from seed + 1 from setup
 
         // check that value was not changed
         $this->assertSame(SystemVariable::ALLOW_CHARACTER_DELETION, $vars[3]->getName());

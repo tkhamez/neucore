@@ -85,7 +85,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
-        $this->assertStringEndsWith('  Missing character that can send mails.', $actual[1]);
+        $this->assertStringEndsWith('  Missing character that can send mails or missing token data.', $actual[1]);
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
     }
@@ -146,7 +146,6 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
 
     private function setupData()
     {
-        $deactivateAccounts = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $alliances = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('1010');
         $corps = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('');
@@ -165,7 +164,6 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $c3 = (new Character())->setId(30)->setName('c3')->setPlayer($p3)->setCorporation($corp); // sends mail
         $c4 = (new Character())->setId(40)->setName('c4')->setPlayer($p4)->setCorporation($corp); // already sent
         $c5 = (new Character())->setId(50)->setName('c5')->setPlayer($p5)->setCorporation($corp); // managed account
-        $this->em->persist($deactivateAccounts);
         $this->em->persist($active);
         $this->em->persist($alliances);
         $this->em->persist($corps);
