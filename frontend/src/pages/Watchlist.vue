@@ -67,7 +67,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="player in listContent.Players">
+                    <tr v-for="player in listContent.Player">
                         <td>{{ player.id }}</td>
                         <td><a href="#" v-on:click.prevent="showCharacters(player.id)">{{ player.name }}</a></td>
                         <td v-if="hasRole('watchlist-admin')">
@@ -81,30 +81,31 @@
                     </tr>
                 </tbody>
             </table>
+            <p class="small text-muted">{{ listContent.Player.length }} player account(s)</p>
         </div>
         <div v-cloak v-if="tab === 'white'" class="col-lg-6">
-            <div v-for="listName in ['Alliances', 'Corporations']">
-                <h5 class="mt-4">{{listName}}</h5>
+            <div v-for="listName in ['Alliance', 'Corporation']">
+                <h5 class="mt-4">{{listName}}s</h5>
                 <table class="table table-hover table-sm" aria-describedby="List of alliances or corporations">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Ticker</th>
                             <th scope="col">Name</th>
-                            <th scope="col" v-if="listName === 'Corporations'">Alliance</th>
+                            <th scope="col" v-if="listName === 'Corporation'">Alliance</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="entity in listContent[listName]">
                             <td>{{ entity.ticker }}</td>
                             <td>
-                                <a v-if="listName === 'Alliances'"
+                                <a v-if="listName === 'Alliance'"
                                    :href="'https://evewho.com/alliance/' + entity.id"
                                    target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
-                                <a v-if="listName === 'Corporations'"
+                                <a v-if="listName === 'Corporation'"
                                    :href="'https://evewho.com/corporation/' + entity.id"
                                    target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
                             </td>
-                            <td v-if="listName === 'Corporations'">
+                            <td v-if="listName === 'Corporation'">
                                 <span v-if="entity.alliance">
                                     [{{ entity.alliance.ticker }}]
                                     {{ entity.alliance.name }}
@@ -113,6 +114,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <p class="small text-muted">{{ listContent[listName].length }} {{ listName.toLowerCase() }}(s)</p>
             </div>
         </div>
     </div>
@@ -176,11 +178,10 @@ export default {
         return {
             id: 1,
             tab: 'red',
-            listNames: [''],
             listContent: {
-                Players: [],
-                Alliances: [],
-                Corporations: [],
+                Player: [],
+                Alliance: [],
+                Corporation: [],
             },
             alliances: [],
             corporations: [],
@@ -261,47 +262,42 @@ function setTab(vm) {
     } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-admin')) {
         vm.tab = 'settings';
     }
-    if (vm.tab === 'white') {
-        vm.listNames = ['Players', 'Corporations'];
-    } else {
-        vm.listNames = ['Players'];
-    }
 }
 
 function loadList(vm) {
     const api = new WatchlistApi();
 
-    vm.listContent.Players = [];
-    vm.listContent.Alliances = [];
-    vm.listContent.Corporations = [];
+    vm.listContent.Player = [];
+    vm.listContent.Alliance = [];
+    vm.listContent.Corporation = [];
 
     // load table data
     if (vm.tab === 'red') {
         api.watchlistPlayers(vm.id, (error, data) => {
             if (! error) {
-                vm.listContent.Players = data;
+                vm.listContent.Player = data;
             }
         });
     } else if (vm.tab === 'white') {
         api.watchlistExemptionList(vm.id, (error, data) => {
             if (! error) {
-                vm.listContent.Players = data;
+                vm.listContent.Player = data;
             }
         });
         api.watchlistWhitelistAllianceList(vm.id, (error, data) => {
             if (! error) {
-                vm.listContent.Alliances = data;
+                vm.listContent.Alliance = data;
             }
         });
         api.watchlistWhitelistCorporationList(vm.id, (error, data) => {
             if (! error) {
-                vm.listContent.Corporations = data;
+                vm.listContent.Corporation = data;
             }
         });
     } else if (vm.tab === 'black') {
         api.watchlistPlayersBlacklist(vm.id, (error, data) => {
             if (! error) {
-                vm.listContent.Players = data;
+                vm.listContent.Player = data;
             }
         });
     }
