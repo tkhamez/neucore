@@ -388,6 +388,9 @@ class MemberTracking
     }
 
     /**
+     *
+     * This clears the ObjectManager every 100 members.
+     *
      * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
      * @param array $charNames

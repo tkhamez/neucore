@@ -86,6 +86,7 @@ class UpdateMemberTracking extends Command
         $this->writeLine('Started "update-member-tracking"', false);
 
         $systemVariableRepository = $this->repositoryFactory->getSystemVariableRepository();
+        $corporationRepository = $this->repositoryFactory->getCorporationRepository();
         $processedCorporations = [];
         foreach ($systemVariableRepository->getDirectors() as $characterVariable) {
             $this->checkErrorLimit();
@@ -102,7 +103,7 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            $corporation = $this->repositoryFactory->getCorporationRepository()->find($character->corporation_id);
+            $corporation = $corporationRepository->find($character->corporation_id);
             if ($corporation === null) {
                 $this->writeLine('  Corporation not found for ' . $characterVariable->getName(), false);
                 continue;
@@ -134,8 +135,12 @@ class UpdateMemberTracking extends Command
             }
             $this->processData((int) $corporation->getId(), $trackingData, $sleep, $token);
 
-            $corporation->setTrackingLastUpdate(new \DateTime());
-            $this->em->flush();
+            // set last update date - "processData" may clear the ObjectManager
+            $corporation = $corporationRepository->find($character->corporation_id);
+            if ($corporation !== null) {
+                $corporation->setTrackingLastUpdate(new \DateTime());
+                $this->em->flush();
+            }
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .
