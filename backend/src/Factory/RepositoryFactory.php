@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Factory;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\Character;
@@ -31,7 +32,6 @@ use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Repository\RoleRepository;
 use Neucore\Repository\SystemVariableRepository;
-use Doctrine\Common\Persistence\ObjectManager;
 use Neucore\Repository\WatchlistRepository;
 
 class RepositoryFactory

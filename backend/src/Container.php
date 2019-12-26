@@ -7,10 +7,10 @@ namespace Neucore;
 use Brave\Sso\Basics\AuthenticationProvider;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\FilesystemCache;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
@@ -69,6 +69,9 @@ class Container
                 return EntityManager::create($conf['connection'], $config);
             },
             ObjectManager::class => function (ContainerInterface $c) {
+                return $c->get(EntityManagerInterface::class);
+            },
+            \Doctrine\Common\Persistence\ObjectManager::class => function (ContainerInterface $c) {
                 return $c->get(EntityManagerInterface::class);
             },
 
