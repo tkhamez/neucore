@@ -172,10 +172,10 @@ class Character implements \JsonSerializable
         return $this;
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
-        // cast to int because Doctrine creates string for type bigint
-        return $this->id !== null ? (int) $this->id : null;
+        // cast to int because Doctrine creates string for type bigint, also make sure it's no null
+        return (int) $this->id;
     }
 
     public function setName(string $name): self

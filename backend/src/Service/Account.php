@@ -484,8 +484,7 @@ class Account
         string $reason = null,
         Player $deletedBy = null
     ): void {
-        // should never be true, but that's not obvious here and setCharacterId() below needs an integer
-        if ($character->getId() === null) {
+        if ($character->getId() === 0) { // should never be true, but that's not obvious here
             $this->log->error('Account::createRemovedCharacter(): Missing character ID.');
             return;
         }
@@ -497,7 +496,7 @@ class Account
         $removedCharacter->setDeletedBy($deletedBy);
         $player->addRemovedCharacter($removedCharacter);
 
-        $removedCharacter->setCharacterId((int) $character->getId());
+        $removedCharacter->setCharacterId($character->getId());
         $removedCharacter->setCharacterName($character->getName());
         try {
             $removedCharacter->setRemovedDate(new \DateTime());

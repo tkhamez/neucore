@@ -225,7 +225,7 @@ class AutoGroupAssignment
         $map = [];
 
         foreach ($entities as $entity) {
-            $eId = (int) $entity->getId();
+            $eId = $entity->getId();
             $map[$eId] = [];
             foreach ($entity->getGroups() as $group) {
                 $gId = $group->getId();

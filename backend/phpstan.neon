@@ -8,9 +8,6 @@ parameters:
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
 			path: %currentWorkingDirectory%/src/Middleware/Psr15/Session/SessionData.php
 		-
-			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
-		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
 			path: %currentWorkingDirectory%/src/Service/EsiData.php
 		-
@@ -25,3 +22,18 @@ parameters:
 		-
 			message: '#Offset (.*) does not exist on Neucore\Service\Config|null.#'
 			path: %currentWorkingDirectory%/src/Application.php
+		-
+			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
+			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
+		-
+			message: '#Cannot call method (.*) on (.*)|null.#'
+			path: %currentWorkingDirectory%/tests/*
+		-
+			message: '#Method (.*) has no return typehint specified.#'
+			path: %currentWorkingDirectory%/tests/*
+		-
+			message: '#Property (.*) has no typehint specified.#'
+			path: %currentWorkingDirectory%/tests/*
+		-
+			message: '#Method (.*) has parameter (.*) with no typehint specified.#'
+			path: %currentWorkingDirectory%/tests/*

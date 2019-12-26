@@ -117,8 +117,6 @@ class EsiData
      * @param int|null $id
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Character An instance that is attached to the Doctrine entity manager.
-     *
-     * TODO this could be private now
      */
     public function fetchCharacter(?int $id, bool $flush = true)
     {

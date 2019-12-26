@@ -227,7 +227,7 @@ class SettingsController extends BaseController
             $result = $eveMail->missingCharacterMaySend($charId, true);
         }
         if ($result === '') {
-            $result = $eveMail->missingCharacterSend((int) $charId);
+            $result = $eveMail->missingCharacterSend($charId);
         }
 
         return $this->withJson($result);

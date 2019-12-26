@@ -410,8 +410,8 @@ class EveMailTest extends TestCase
     public function testMissingCharacterGetCorporations()
     {
         $varCorps = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_CORPORATIONS))->setValue('');
-        $corp1 = (new Corporation())->setId(1)->setTrackingLastUpdate(date_create('now - 1 days - 1 hours'));
-        $corp2 = (new Corporation())->setId(2)->setTrackingLastUpdate(date_create('now - 1 hours'));
+        $corp1 = (new Corporation())->setId(1)->setTrackingLastUpdate(new \DateTime('now - 1 days - 1 hours'));
+        $corp2 = (new Corporation())->setId(2)->setTrackingLastUpdate(new \DateTime('now - 1 hours'));
         $this->em->persist($varCorps);
         $this->em->persist($corp1);
         $this->em->persist($corp2);

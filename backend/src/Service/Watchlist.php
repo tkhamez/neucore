@@ -149,13 +149,13 @@ class Watchlist
     private function getCorporationIds(int $watchlistId, string $allianceList, string $corporationList): array
     {
         $allianceIds = array_map(function (Alliance $alliance) {
-            return (int) $alliance->getId();
+            return $alliance->getId();
         }, $this->getList($watchlistId, $allianceList));
         $corporationIds1 = array_map(function (Corporation $corporation) {
             return $corporation->getId();
         }, $this->corporationRepository->getAllFromAlliances($allianceIds));
         $corporationIds2 = array_map(function (Corporation $corporation) {
-            return (int) $corporation->getId();
+            return $corporation->getId();
         }, $this->getList($watchlistId, $corporationList));
 
         return array_unique(array_merge($corporationIds1, $corporationIds2));

@@ -138,10 +138,10 @@ class CorporationMember implements \JsonSerializable
     /**
      * Get id.
      */
-    public function getId(): ?int
+    public function getId(): int
     {
-        // cast to int because Doctrine creates string for type bigint
-        return $this->id !== null ? (int) $this->id : null;
+        // cast to int because Doctrine creates string for type bigint, also make sure it's no null
+        return (int) $this->id;
     }
 
     /**
@@ -323,5 +323,4 @@ class CorporationMember implements \JsonSerializable
     {
         return $this->missingCharacterMailSent;
     }
-
 }

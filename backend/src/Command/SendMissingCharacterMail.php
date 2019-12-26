@@ -111,8 +111,8 @@ class SendMissingCharacterMail extends Command
         $offset = $dbResultLimit * -1;
         do {
             $offset += $dbResultLimit;
-            $memberIds = array_map(function (CorporationMember $player) {
-                return $player->getId();
+            $memberIds = array_map(function (CorporationMember $member) {
+                return $member->getId();
             }, $this->corporationMemberRepository->findByCorporationsWithoutAccountAndActive(
                 $this->eveMail->missingCharacterGetCorporations(),
                 $days,

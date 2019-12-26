@@ -369,7 +369,7 @@ class SettingsControllerTest extends WebTestCase
         $var1->setValue("0");
         $var2->setValue("1");
         $var4->setValue("The char");
-        $var5->setValue(\json_encode([
+        $var5->setValue((string) \json_encode([
             'id' => 123,
             'access' => 'access-token',
             'refresh' => 'refresh-token',

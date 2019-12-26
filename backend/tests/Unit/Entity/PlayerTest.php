@@ -56,13 +56,12 @@ class PlayerTest extends TestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
-                'corporation' => ['id' => null, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
-                    'id' => null, 'name' => 'alli1', 'ticker' => 'DEF'
+                'corporation' => ['id' => 0, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
+                    'id' => 0, 'name' => 'alli1', 'ticker' => 'DEF'
                 ]]
             ], [
                 'id' => 234,
-                'name' =>
-                'eve two',
+                'name' => 'eve two',
                 'main' => false,
                 'created' => null,
                 'lastUpdate' => null,
