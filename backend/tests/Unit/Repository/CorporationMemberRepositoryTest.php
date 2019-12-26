@@ -39,15 +39,15 @@ class CorporationMemberRepositoryTest extends TestCase
         $member1 = (new CorporationMember())->setId(10)->setName('Member 1')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -112 days +1 hour'))->setCharacter($char1);
         $member1a = (new CorporationMember())->setId(101)->setName('Member 1a')->setCorporation($corp1)
-            ->setLogonDate(new \DateTime('now -112 days +1 hour'));
+            ->setLogonDate(new \DateTime('now -112 days +30 minutes'));
         $member2 = (new CorporationMember())->setId(20)->setName('Member 2')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -111 days +1 hour'))->setCharacter($char2);
         $member3 = (new CorporationMember())->setId(30)->setName('Member 3')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
-            ->setLogonDate(new \DateTime('now -111 days +1 hour'));
+            ->setLogonDate(new \DateTime('now -111 days +30 minutes'));
         $member5 = (new CorporationMember())->setId(50)->setName('Member 5')->setCorporation($corp2)
-            ->setLogonDate(new \DateTime('now -110 days +1 hour'))->setCharacter($char5);
+            ->setLogonDate(new \DateTime('now -110 days +30 minutes'))->setCharacter($char5);
 
         self::$em->persist($player1);
         self::$em->persist($char1);
