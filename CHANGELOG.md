@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.8.0
+
+26 Dec 2019
 
 - New: Watchlist, Blacklist added.
 - New: Watchlist, Whitelist for corporations and alliances added.
