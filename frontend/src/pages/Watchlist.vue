@@ -129,7 +129,7 @@
 
         <div class="card-header">
             <strong>Red Flags</strong>: Alliances and corporations whose members are included in the list if they
-            also have characters in other corporations.
+            also have characters in other (not NPC) corporations.
         </div>
         <div class="card-body">
             <admin ref="admin" :contentType="'alliances'" :type="'Watchlist'" :typeId="id"></admin>
