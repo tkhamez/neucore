@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
@@ -369,6 +371,30 @@ class EsiData
         }
 
         return $location;
+    }
+
+    /**
+     *
+     * Needs: esi-corporations.read_corporation_membership.v1
+     *
+     * @param int $id
+     * @return int[] List of character IDs, empty array can also be an ESI error
+     */
+    public function fetchCorporationMembers(int $id, string $accessToken): array
+    {
+        if ($accessToken === '') {
+            return [];
+        }
+
+        try {
+            $members = $this->esiApiFactory->getCorporationApi($accessToken)
+                ->getCorporationsCorporationIdMembers($id, $this->datasource);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $members = [];
+        }
+
+        return $members;
     }
 
     public function getCorporationEntity(int $id): Corporation

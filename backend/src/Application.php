@@ -12,6 +12,7 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\ErrorHandler;
+use Neucore\Command\AutoWhitelist;
 use Neucore\Command\CheckTokens;
 use Neucore\Command\CleanHttpCache;
 use Neucore\Command\ClearCache;
@@ -408,6 +409,7 @@ class Application
         $console->add($this->container->get(ClearCache::class));
         $console->add($this->container->get(CleanHttpCache::class));
         $console->add($this->container->get(RevokeToken::class));
+        $console->add($this->container->get(AutoWhitelist::class));
     }
 
     private function logException(\Throwable $e): void

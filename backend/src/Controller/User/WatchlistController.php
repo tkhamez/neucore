@@ -77,7 +77,11 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getRedFlagList((int) $id));
+        $players = array_map(function (Player $player) {
+            return $player->jsonSerialize(true);
+        }, $this->watchlist->getRedFlagList((int) $id));
+
+        return $this->withJson($players);
     }
 
     /**

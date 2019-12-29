@@ -111,10 +111,16 @@ class WatchlistTest extends TestCase
     public function testGetRedFlagList()
     {
         $actual = self::$watchlistService->getRedFlagList(1);
-        $this->assertSame([[
+        $this->assertSame(1, count($actual));
+        $this->assertSame([
             'id' => self::$char1->getPlayer()->getId(),
             'name' => 'c1a',
-        ]], $actual);
+        ], $actual[0]->jsonSerialize(true));
+    }
+
+    public function testGetRedFlagListWithBlacklistAndWhitelist()
+    {
+        $this->markTestIncomplete('TODO'); # TODO
     }
 
     public function testGetBlacklist()
@@ -139,5 +145,10 @@ class WatchlistTest extends TestCase
         $this->assertSame(1, count(self::$watchlistService->getList(1, 'blacklistAlliance')));
         $this->assertSame(1, count(self::$watchlistService->getList(1, 'whitelistCorporation')));
         $this->assertSame(1, count(self::$watchlistService->getList(1, 'whitelistAlliance')));
+    }
+
+    public function testGetCorporationIds()
+    {
+        $this->markTestIncomplete('TODO'); # TODO
     }
 }

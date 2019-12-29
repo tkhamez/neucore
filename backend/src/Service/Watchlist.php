@@ -36,21 +36,35 @@ class Watchlist
         $this->corporationRepository = $repositoryFactory->getCorporationRepository();
     }
 
-    public function getRedFlagList(int $id, bool $includeBlacklist = false): array
+    /**
+     * @return Player[]
+     */
+    public function getRedFlagList(int $id, bool $includeBlacklist = false, bool $includeWhitelist = false): array
     {
         // get corporation IDs for the red list
         $corporationIds = $this->getCorporationIds($id, 'alliance', 'corporation');
 
         // get corporation IDs for the white list
-        $whitelistCorporationIds = $this->getCorporationIds($id, 'whitelistAlliance', 'whitelistCorporation');
+        if ($includeWhitelist) {
+            $whitelistCorporationIds =  [];
+        } else {
+            $whitelistCorporationIds = $this->getCorporationIds($id, 'whitelistAlliance', 'whitelistCorporation');
+        }
 
-        $exemptPlayers = $this->getList($id, 'exemption');
+        // get whitelisted players
+        if ($includeWhitelist) {
+            $exemptPlayers = [];
+        } else {
+            $exemptPlayers = $this->getList($id, 'exemption');
+        }
 
-        $playersFromCorporations = $this->playerRepository->findInCorporationsWithExcludes(
+        // get players in watched corporations
+        $playersFromWatchedCorporations = $this->playerRepository->findInCorporationsWithExcludes(
             $corporationIds,
             $exemptPlayers
         );
 
+        // get players not on whitelist
         $playersNotInWhitelistCorporations = $this->playerRepository->findNotInNpcCorporationsWithExcludes(
             array_unique(array_merge($corporationIds, $whitelistCorporationIds)),
             $exemptPlayers
@@ -59,6 +73,7 @@ class Watchlist
             return $player->getId();
         }, $playersNotInWhitelistCorporations);
 
+        // get blacklist
         $playersOnBlacklist = [];
         if (! $includeBlacklist) {
             $playersFromBlacklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
@@ -76,12 +91,12 @@ class Watchlist
         // (which includes the corporations to watch, NPC corps and manually whitelisted corporations)
         // and optionally excluding blacklisted accounts
         $result = [];
-        foreach ($playersFromCorporations as $playerFromCorporations) {
+        foreach ($playersFromWatchedCorporations as $playerFromCorporations) {
             if (
                 in_array($playerFromCorporations->getId(), $playersNotOnWhiteList) &&
                 ! in_array($playerFromCorporations->getId(), $playersOnBlacklist)
             ) {
-                $result[] = $playerFromCorporations->jsonSerialize(true);
+                $result[] = $playerFromCorporations;
             }
         }
 
@@ -97,8 +112,8 @@ class Watchlist
             $exemptPlayers
         );
 
-        $playersRedListIds = array_map(function (array $player) {
-            return $player['id'];
+        $playersRedListIds = array_map(function (Player $player) {
+            return $player->getId();
         }, $this->getRedFlagList($id, true));
 
         $result = [];
@@ -146,7 +161,7 @@ class Watchlist
     /**
      * @return int[]
      */
-    private function getCorporationIds(int $watchlistId, string $allianceList, string $corporationList): array
+    public function getCorporationIds(int $watchlistId, string $allianceList, string $corporationList): array
     {
         $allianceIds = array_map(function (Alliance $alliance) {
             return $alliance->getId();
