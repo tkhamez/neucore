@@ -3,6 +3,7 @@
 /.vagrant
 /dist
 /vendor/
+/.phpunit.result.cache
 
 # IDEs
 /.settings
