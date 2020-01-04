@@ -40,7 +40,7 @@ module.exports = (env, argv) => {
         },
         output: {
             path: path.resolve(__dirname, '../web/dist'),
-            filename: devMode ? '[name].[hash].js' : '[name].[chunkhash].js'
+            filename: '[name].[contenthash].js'
         },
         module: {
             rules: [{
@@ -87,7 +87,7 @@ module.exports = (env, argv) => {
                 'process.env.NODE_ENV': JSON.stringify(devMode ? 'development' : 'production')
             }),
             new MiniCssExtractPlugin({
-                filename: devMode ? '[name].[hash].css' : '[name].[chunkhash].css',
+                filename: '[name].[contenthash].css'
             }),
             new VueLoaderPlugin(),
             new GoogleFontsPlugin({
@@ -122,8 +122,8 @@ module.exports = (env, argv) => {
             ]
         },
         devtool: devMode ? 'inline-source-map' : 'source-map',
-        performance: { 
-            hints: devMode ? false : 'warning' 
+        performance: {
+            hints: devMode ? false : 'warning'
         },
     };
     if (! devMode) {
