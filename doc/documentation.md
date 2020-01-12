@@ -15,6 +15,7 @@
 - [Member Tracking](#member-tracking)
 - [Mail Notifications](#mail-notifications)
   * [Invalid ESI Token](#invalid-esi-token)
+  * [Missing Character](#missing-character)
 - [Console Application](#console-application)
 - [Data Structure (Backend)](#data-structure-backend)
 
@@ -33,7 +34,7 @@
 * Manually managed accounts that do not require any ESI scopes.
 * Corporation member tracking.
 * Watchlist with accounts that have characters in other alliances or corporations.
-* Optional EVE mail notification when ESI tokens are invalid.
+* Optional EVE mail notifications for invalid ESI tokens and missing characters.
 * CLI commands for data updates from ESI.
 * An API for applications to query group membership of characters and other data.
 * ESI request for authorized scopes for any character 
@@ -148,11 +149,19 @@ members are added or removed from these groups.
 
 ### Invalid ESI Token
 
-A mail notification can be sent for accounts with characters with an invalid ESI token.
+An EVE mail can be sent for accounts with characters with an invalid ESI token.
 
 This mail will only be sent once and only if one of the characters in the account is a member of an alliance 
 that was previously configured. It will be sent to the main character, if any, or to one of the characters that 
 have an invalid token.
+
+### Missing Character
+
+An EVE mail can be sent to characters that were not added to an account.
+
+This mail will only be sent to members of configured corporations where member tracking must be enabled. It will 
+only be sent if the character has logged in within a configurable number of days and will be sent again after the 
+same number of days.
 
 ## Console Application
 

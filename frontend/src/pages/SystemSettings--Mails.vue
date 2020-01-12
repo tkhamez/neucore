@@ -76,8 +76,9 @@
             <input type="text" pattern="[0-9]*" class="form-control input-resend"
                    v-model="settings.mail_missing_character_resend"
                    v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_resend', $event.target.value)">
-            The minimum number of days that must pass before the mail is resent. Also a maximum number of days
-            since the last login, only within these days the mail will be sent. Must be greater 0.
+            The mail will only be sent if the character has logged in within these number of days.
+            Also the minimum number of days that must pass before the mail is resent.
+            Must be greater 0.
         </label>
         <div class="form-group">
             <label class="col-form-label">

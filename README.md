@@ -39,6 +39,7 @@ Objectives:
 - Management of groups for players.
 - An API for applications to read these groups (and more).
 - Access to [ESI](http://esi.evetech.net) data of all members.
+- Member tracking and watch lists.
 - Login via EVE SSO.
 
 For more information, see the `doc` directory, including [**Documentation**](doc/documentation.md), 
