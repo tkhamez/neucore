@@ -141,6 +141,10 @@
             if they have a character in one of these alliances or corporations.
         </div>
         <div class="card-body">
+            <p class="small text-muted">
+                You can add missing alliances and corporations on the <a href="#GroupAdmin">Group Administration</a>
+                page.
+            </p>
             <admin ref="admin" :contentType="'alliances'" :type="'WatchlistBlacklist'" :typeId="id"></admin>
             <admin ref="admin" :contentType="'corporations'" :type="'WatchlistBlacklist'" :typeId="id"></admin>
         </div>
