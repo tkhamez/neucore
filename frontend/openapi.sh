@@ -8,7 +8,7 @@ VERSION=4.1.3
 FILENAME=openapi-generator-cli-${VERSION}.jar
 
 if [[ ! -f ${DIR}/${FILENAME} ]]; then
-    wget http://central.maven.org/maven2/org/openapitools/openapi-generator-cli/${VERSION}/${FILENAME} \
+    wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/${VERSION}/${FILENAME} \
         -O ${DIR}/${FILENAME}
 fi
 
