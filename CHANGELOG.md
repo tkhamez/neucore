@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Change: Trim character search input.
+
 ## 1.8.0
 
 26 Dec 2019

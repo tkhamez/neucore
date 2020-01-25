@@ -125,7 +125,7 @@ class CharacterController extends BaseController
      */
     public function findBy(string $name): ResponseInterface
     {
-        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name);
+        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch(trim($name));
 
         $retVal = [];
         foreach ($result as $char) {
