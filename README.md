@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tkhamez/neucore.svg?branch=master)](https://travis-ci.org/tkhamez/neucore)
+[![Build Status](https://travis-ci.com/tkhamez/neucore.svg?branch=master)](https://travis-ci.com/tkhamez/neucore)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
 
 # Neucore
