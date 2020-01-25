@@ -3,6 +3,7 @@
 ## next
 
 - Change: Trim character search input.
+- Other small stuff.
 
 ## 1.8.0
 

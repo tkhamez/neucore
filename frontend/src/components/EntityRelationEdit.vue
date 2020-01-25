@@ -393,12 +393,6 @@ export default {
                 }  else {
                     vm.tableContent = data;
                 }
-                if (
-                    (vm.type === 'Player' && data.id === vm.player.id) ||
-                    (vm.type === 'Watchlist' && vm.contentType === 'groups')
-                ) {
-                    vm.$root.$emit('playerChange');
-                }
             }]);
         },
 
@@ -542,6 +536,18 @@ export default {
             }
 
             this.callApi(api, method, param1, param2, function() {
+                if (
+                    (vm.type === 'Player' && vm.typeId === vm.player.id) ||
+                    (vm.type === 'Watchlist' && vm.contentType === 'groups') ||
+                    (
+                        (vm.type === 'Group' || vm.type === 'App') &&
+                        vm.contentType === 'managers' &&
+                        id === vm.player.id
+                    )
+                ) {
+                    vm.$root.$emit('playerChange');
+                }
+
                 vm.getTableContent();
             });
         },
