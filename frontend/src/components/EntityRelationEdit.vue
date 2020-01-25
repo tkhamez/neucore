@@ -85,6 +85,7 @@ Select and table to add and remove objects from other objects.
                     <th scope="col" v-if="contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
                     <th scope="col" v-if="contentType === 'managers'">Characters</th>
                     <th scope="col" v-if="contentType === 'corporations'">Alliance</th>
+                    <th scope="col" v-if="contentType === 'corporations' && type === 'WatchlistWhitelist'">auto *</th>
                     <th scope="col" v-if="
                         (type === 'Group' || type === 'App') &&
                         (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
@@ -126,6 +127,9 @@ Select and table to add and remove objects from other objects.
                             [{{ row.alliance.ticker }}]
                             {{ row.alliance.name }}
                         </a>
+                    </td>
+                    <td v-if="contentType === 'corporations' && type === 'WatchlistWhitelist'">
+                        {{ row.autoWhitelist }}
                     </td>
                     <td v-if="
                             (type === 'Group' || type === 'App') &&

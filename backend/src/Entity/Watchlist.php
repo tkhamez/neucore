@@ -325,6 +325,7 @@ class Watchlist
      */
     public function removeWhitelistCorporation(Corporation $whitelistCorporation): bool
     {
+        $whitelistCorporation->setAutoWhitelist(false);
         return $this->whitelistCorporations->removeElement($whitelistCorporation);
     }
 

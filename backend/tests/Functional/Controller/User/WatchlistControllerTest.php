@@ -793,6 +793,7 @@ class WatchlistControllerTest extends WebTestCase
             'name' => null,
             'ticker' => null,
             'alliance' => null,
+            'autoWhitelist' => false,
         ]], $this->parseJsonBody($response));
     }
 

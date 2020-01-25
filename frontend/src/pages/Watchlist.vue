@@ -92,6 +92,7 @@
                             <th scope="col">Ticker</th>
                             <th scope="col">Name</th>
                             <th scope="col" v-if="listName === 'Corporation'">Alliance</th>
+                            <th scope="col" v-if="listName === 'Corporation'">auto *</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,10 +112,17 @@
                                     {{ entity.alliance.name }}
                                 </span>
                             </td>
+                            <td v-if="listName === 'Corporation'">{{ entity.autoWhitelist }}</td>
                         </tr>
                     </tbody>
                 </table>
-                <p class="small text-muted">{{ listContent[listName].length }} {{ listName.toLowerCase() }}(s)</p>
+                <p class="small text-muted">
+                    {{ listContent[listName].length }} {{ listName.toLowerCase() }}(s)
+                    <span v-if="listName === 'Corporation'">
+                        <br>
+                        * Corporations are automatically added if all their members belong to the same account.
+                    </span>
+                </p>
             </div>
         </div>
     </div>
@@ -156,6 +164,10 @@
         <div class="card-body">
             <admin ref="admin" :contentType="'alliances'" :type="'WatchlistWhitelist'" :typeId="id"></admin>
             <admin ref="admin" :contentType="'corporations'" :type="'WatchlistWhitelist'" :typeId="id"></admin>
+            <p class="small text-muted">
+                * Corporations are automatically added (and removed accordingly) if all their members belong to
+                the same account.
+            </p>
         </div>
     </div>
 

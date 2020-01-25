@@ -6,6 +6,7 @@ namespace Neucore\Service;
 
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CorporationRepository;
@@ -105,11 +106,9 @@ class Watchlist
 
     public function getBlacklist(int $id): array
     {
-        $exemptPlayers = $this->getList($id, 'exemption');
-
         $playersFromBlacklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
             $this->getCorporationIds($id, 'blacklistAlliance', 'blacklistCorporations'),
-            $exemptPlayers
+            $this->getList($id, 'exemption')
         );
 
         $playersRedListIds = array_map(function (Player $player) {
@@ -126,6 +125,11 @@ class Watchlist
         return $result;
     }
 
+    /**
+     * @param int $id
+     * @param string $type
+     * @return Group[]|Alliance[]|Corporation[]|Player[]
+     */
     public function getList(int $id, string $type): array
     {
         $data = [];
@@ -142,9 +146,7 @@ class Watchlist
         } elseif ($type === 'corporation') {
             $data = $watchlist->getCorporations();
         } elseif ($type === 'exemption') {
-            $data = array_map(function (Player $player) {
-                return $player->jsonSerialize(true);
-            }, $watchlist->getExemptions());
+            $data = $watchlist->getExemptions();
         } elseif ($type === 'blacklistCorporations') {
             $data = $watchlist->getBlacklistCorporations();
         } elseif ($type === 'blacklistAlliance') {

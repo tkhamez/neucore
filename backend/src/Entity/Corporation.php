@@ -112,12 +112,21 @@ class Corporation implements \JsonSerializable
     private $members;
 
     /**
+     * True if this corporation was automatically placed on the whitelist of a watchlist (API: not included by default).
+     *
+     * @OA\Property(type="boolean")
+     * @ORM\Column(type="boolean", name="auto_whitelist", nullable=false, options={"default" : 0})
+     * @var bool
+     */
+    private $autoWhitelist = false;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize(bool $includeTrackingDate = false): array
+    public function jsonSerialize(bool $includeTrackingDate = false, bool $includeAutoWhitelist = false): array
     {
         $data = [
             'id' => $this->getId(),
@@ -130,6 +139,10 @@ class Corporation implements \JsonSerializable
         if ($includeTrackingDate) {
             $data['trackingLastUpdate'] = $this->trackingLastUpdate !== null ?
                 $this->trackingLastUpdate->format(Api::DATE_FORMAT) : null;
+        }
+
+        if ($includeAutoWhitelist) {
+            $data['autoWhitelist'] = $this->autoWhitelist;
         }
 
         return $data;
@@ -433,5 +446,17 @@ class Corporation implements \JsonSerializable
     public function getMembers()
     {
         return $this->members->toArray();
+    }
+
+    public function setAutoWhitelist(bool $autoWhitelist): self
+    {
+        $this->autoWhitelist = $autoWhitelist;
+
+        return $this;
+    }
+
+    public function getAutoWhitelist(): bool
+    {
+        return $this->autoWhitelist;
     }
 }

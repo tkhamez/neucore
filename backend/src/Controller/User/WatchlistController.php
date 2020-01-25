@@ -153,7 +153,11 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'exemption'));
+        $data = array_map(function (Player $player) {
+            return $player->jsonSerialize(true);
+        }, $this->watchlist->getList((int) $id, 'exemption'));
+
+        return $this->withJson($data);
     }
 
     /**
@@ -875,7 +879,11 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'whitelistCorporation'));
+        $data = array_map(function (Corporation $corporation) {
+            return $corporation->jsonSerialize(false, true);
+        }, $this->watchlist->getList((int) $id, 'whitelistCorporation'));
+
+        return $this->withJson($data);
     }
 
     /**

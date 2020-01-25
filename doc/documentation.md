@@ -13,6 +13,7 @@
   * [Group Deactivation](#group-deactivation)
   * [Required Groups](#required-groups)
 - [Member Tracking](#member-tracking)
+- [Watchlist](#watchlist)
 - [Mail Notifications](#mail-notifications)
   * [Invalid ESI Token](#invalid-esi-token)
   * [Missing Character](#missing-character)
@@ -144,6 +145,12 @@ members are allowed to see the data of that corporation.
 
 The "tracking" role is automatically added to or removed from the player when this configuration is changed or 
 members are added or removed from these groups.
+
+## Watchlist
+
+Corporations can be automatically added to the whitelist (and removed accordingly) if all their members 
+are on the same account using the `auto-whitelist` command. This only works if at least one character in
+that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope.
 
 ## Mail Notifications
 

@@ -8,6 +8,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
+use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Watchlist;
 use PHPUnit\Framework\TestCase;
@@ -145,6 +146,15 @@ class WatchlistTest extends TestCase
         $this->assertSame(1, count(self::$watchlistService->getList(1, 'blacklistAlliance')));
         $this->assertSame(1, count(self::$watchlistService->getList(1, 'whitelistCorporation')));
         $this->assertSame(1, count(self::$watchlistService->getList(1, 'whitelistAlliance')));
+
+        $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, 'group')[0]);
+        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, 'alliance')[0]);
+        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, 'corporation')[0]);
+        $this->assertInstanceOf(Player::class, self::$watchlistService->getList(1, 'exemption')[0]);
+        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, 'blacklistCorporations')[0]);
+        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, 'blacklistAlliance')[0]);
+        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, 'whitelistCorporation')[0]);
+        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, 'whitelistAlliance')[0]);
     }
 
     public function testGetCorporationIds()

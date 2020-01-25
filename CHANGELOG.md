@@ -2,6 +2,7 @@
 
 ## next
 
+- New: Watchlist, auto corporation whitelist.
 - Change: Trim character search input.
 - Other small stuff.
 

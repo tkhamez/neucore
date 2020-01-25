@@ -57,8 +57,8 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 - Visit https://developers.eveonline.com or https://developers.testeveonline.com
 - Create a new application (e.g.: Neucore DEV)
 - Connection Type: "Authentication & API Access", add the required scopes. Scopes for the backend
-  are configured with the environment variable BRAVECORE_EVE_SCOPES. To use all features the scopes must 
-  include `esi-corporations.read_corporation_membership.v1`.
+  are configured with the environment variable BRAVECORE_EVE_SCOPES. To use the "auto-whitelist"
+  feature for the Watchlist, the scopes must include `esi-corporations.read_corporation_membership.v1`.
 - Set the callback to https://your.domain/login-callback
 
 ### App Setup

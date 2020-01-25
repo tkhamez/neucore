@@ -25,6 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AutoWhitelist extends Command
 {
     use LogOutput;
+
     use EsiRateLimited;
 
     /**
@@ -61,6 +62,22 @@ class AutoWhitelist extends Command
      * @var CorporationRepository
      */
     private $corporationRepository;
+
+    /**
+     * @var int
+     */
+    private $numCorporations = 0;
+
+    /**
+     * @var int
+     */
+    private $numCorporationsChecked = 0;
+
+    /**
+     * @var int
+     */
+    private $numCorporationsWhitelisted = 0;
+
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -120,6 +137,12 @@ class AutoWhitelist extends Command
 
         $whitelist = $this->getWhitelist($accountsData);
 
+        $this->writeLine(
+            "  Corporations to check: {$this->numCorporations}, checked: {$this->numCorporationsChecked}, ".
+                "whitelisted: {$this->numCorporationsWhitelisted}",
+            false
+        );
+
         $watchlist = $this->watchlistRepository->find($id); // read again because of "clear" above
         $this->saveWhitelist($watchlist, $whitelist);
 
@@ -137,6 +160,7 @@ class AutoWhitelist extends Command
     private function getAccountData(array $players, array $watchedCorporationIds)
     {
         $accountsData = [];
+        $corporations = [];
         foreach ($players as $player) {
             $playerId = $player->getId();
             $accountsData[$playerId] = [];
@@ -152,11 +176,15 @@ class AutoWhitelist extends Command
                     continue;
                 }
 
+                // collect corporations and check if they are already on another account
+                if (isset($corporations[$corporationId]) && $corporations[$corporationId] !== $player->getId()) {
+                    // no need to check corporation if it has members from several accounts
+                    continue;
+                }
+                $corporations[$corporationId] = $player->getId();
+
                 if (! isset($accountsData[$playerId][$corporationId])) {
-                    $accountsData[$playerId][$corporationId] = [
-                        'ids' => [],
-                        'token' => null,
-                    ];
+                    $accountsData[$playerId][$corporationId] = ['ids' => [], 'token' => null];
                 }
                 $accountsData[$playerId][$corporationId]['ids'][] = $character->getId();
                 if (
@@ -185,6 +213,7 @@ class AutoWhitelist extends Command
     {
         $whitelist = [];
         foreach ($accountsData as $corporations) {
+            $this->numCorporations ++;
             foreach ($corporations as $corporationId => $characters) {
                 if ($characters['token'] === null) {
                     continue;
@@ -200,11 +229,14 @@ class AutoWhitelist extends Command
 
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
 
-                if (
-                    count($members) > 0 && // <0 is probably an error
-                    count(array_diff($members, $characters['ids'])) === 0 // all members are on this account
-                ) {
-                    $whitelist[] = $corporationId;
+                if (count($members) > 0) { // <1 would be an ESI error
+                    $this->numCorporationsChecked ++;
+
+                    if (count(array_diff($members, $characters['ids'])) === 0) {
+                        // all members are on this account
+                        $whitelist[] = $corporationId;
+                        $this->numCorporationsWhitelisted ++;
+                    }
                 }
 
                 usleep($this->sleep * 1000);
@@ -216,20 +248,24 @@ class AutoWhitelist extends Command
 
     private function saveWhitelist(\Neucore\Entity\Watchlist $watchlist, array $whitelist)
     {
-        # TODO flag corp as auto added and remove those before adding the new list?
+        foreach ($watchlist->getWhitelistCorporations() as $corporationRemove) {
+            if ($corporationRemove->getAutoWhitelist()) {
+                $watchlist->removeWhitelistCorporation($corporationRemove);
+            }
+        }
 
         foreach ($whitelist as $corporationId) {
             $corporation = $this->corporationRepository->find($corporationId);
             if ($corporation) {
-
+                $corporation->setAutoWhitelist(true);
                 $watchlist->addWhitelistCorporation($corporation);
             }
         }
 
         if ($this->objectManager->flush()) {
-            $this->writeLine('Success.', false);
+            $this->writeLine('  List saved successfully.', false);
         } else {
-            $this->writeLine('Error.', false);
+            $this->writeLine('  Failed to save list.', false);
         }
     }
 }
