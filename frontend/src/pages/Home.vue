@@ -74,7 +74,13 @@
                 <!--suppress HtmlUnknownTag -->
                 <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
-                <p><a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a></p>
+                <p>
+                    <a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                    <span v-if="player && player.status === 'managed'">
+                        <br>
+                        <a href="/login-managed-alt">Login without scopes</a>
+                    </span>
+                </p>
             </div>
         </div>
 
@@ -216,14 +222,12 @@ export default {
             return '<span class="emoji">' + token[idx].content + '</span>';
         };
 
-        this.checkManaged();
         this.checkDeactivated();
         this.markdownHtml = md.render(this.settings.customization_home_markdown);
     },
 
     watch: {
         authChar: function() { // for primary login and logout
-            this.checkManaged();
             this.checkDeactivated();
         },
 
@@ -231,7 +235,6 @@ export default {
             if (! this.player) {
                 return;
             }
-            this.checkManaged();
             this.checkDeactivated();
         },
     },
@@ -250,12 +253,6 @@ export default {
                 }
                 vm.deactivated = data;
             });
-        },
-
-        checkManaged: function() {
-            if (this.player && this.player.status === 'managed') {
-                this.loginAltUrl = '/login-managed-alt';
-            }
         },
 
         makeMain: function(characterId) {
