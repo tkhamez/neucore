@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Interfaces\RouteInterface;
+use Slim\Routing\RouteContext;
 
 /**
  * A non-blocking (read-only) Session.
@@ -52,13 +53,13 @@ class NonBlockingSession implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // check if session should be started
-        if (! $this->shouldStartSession($request->getAttribute('route'))) {
+        if (! $this->shouldStartSession(RouteContext::fromRequest($request)->getRoute())) {
             return $handler->handle($request);
         }
 
         $this->start();
 
-        $readOnly = $this->isReadOnly($request->getAttribute('route'));
+        $readOnly = $this->isReadOnly(RouteContext::fromRequest($request)->getRoute());
 
         SessionData::setReadOnly($readOnly);
 

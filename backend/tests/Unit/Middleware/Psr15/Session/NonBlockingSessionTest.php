@@ -8,6 +8,9 @@ use Neucore\Middleware\Psr15\Session\NonBlockingSession;
 use Neucore\Middleware\Psr15\Session\SessionData;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\RouteInterface;
+use Slim\Interfaces\RouteParserInterface;
+use Slim\Routing\RouteContext;
+use Slim\Routing\RoutingResults;
 use Tests\RequestFactory;
 use Tests\RequestHandler;
 
@@ -24,7 +27,7 @@ class NonBlockingSessionTest extends TestCase
             'route_include_pattern' => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
-        $this->invokeMiddleware('/no-sess', $conf, true);
+        $this->invokeMiddleware($conf, '/no-sess');
 
         $this->assertFalse(isset($_SESSION));
     }
@@ -34,14 +37,14 @@ class NonBlockingSessionTest extends TestCase
         $conf = [
             'route_include_pattern' => ['/sess'],
         ];
-        $this->invokeMiddleware('/sess/readonly', $conf, false);
+        $this->invokeMiddleware($conf); #  '/sess/readonly'
 
         $this->assertFalse(isset($_SESSION));
     }
 
     public function testStartsWithoutRouteAndWithoutPattern()
     {
-        $this->invokeMiddleware('/sess/readonly', [], false);
+        $this->invokeMiddleware([]); # '/sess/readonly'
 
         $this->assertTrue(isset($_SESSION));
     }
@@ -52,7 +55,7 @@ class NonBlockingSessionTest extends TestCase
             'route_include_pattern' => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
-        $this->invokeMiddleware('/sess', $conf, true);
+        $this->invokeMiddleware($conf, '/sess');
 
         $this->assertTrue(isset($_SESSION));
         $this->assertTrue(SessionData::isReadOnly());
@@ -64,7 +67,7 @@ class NonBlockingSessionTest extends TestCase
             'route_include_pattern' => ['/sess'],
             'route_blocking_pattern' => ['/sess/set', '/sess/delete'],
         ];
-        $this->invokeMiddleware('/sess/set', $conf, true);
+        $this->invokeMiddleware($conf, '/sess/set');
 
         $this->assertTrue(isset($_SESSION));
         $this->assertFalse(SessionData::isReadOnly());
@@ -76,25 +79,29 @@ class NonBlockingSessionTest extends TestCase
             'route_include_pattern' => ['/sess'],
             'route_blocking_pattern' => ['/sess', '/sess/delete'],
         ];
-        $this->invokeMiddleware('/sess/set', $conf, true);
+        $this->invokeMiddleware($conf, '/sess/set');
 
         $this->assertTrue(isset($_SESSION));
         $this->assertFalse(SessionData::isReadOnly());
     }
 
-    private function invokeMiddleware($path, $conf, $addRoute)
+    private function invokeMiddleware($conf, $path = null)
     {
+        $routeParser = $this->createMock(RouteParserInterface::class);
+        $routingResults = $this->createMock(RoutingResults::class);
         $route = $this->createMock(RouteInterface::class);
-        /* @phan-suppress-next-line PhanAccessMethodInternal */
-        $route->method('getPattern')->willReturn($path);
 
-        $req = RequestFactory::createRequest();
-        if ($addRoute) {
-            $req = $req->withAttribute('route', $route);
+        $request = RequestFactory::createRequest();
+        $request = $request->withAttribute(RouteContext::ROUTE_PARSER, $routeParser);
+        $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
+
+        if ($path) {
+            $route->method('getPattern')->willReturn($path);
+            $request = $request->withAttribute(RouteContext::ROUTE, $route);
         }
 
         $nbs = new NonBlockingSession($conf);
 
-        return $nbs->process($req, new RequestHandler());
+        return $nbs->process($request, new RequestHandler());
     }
 }
