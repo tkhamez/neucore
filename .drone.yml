@@ -41,8 +41,6 @@ steps:
       - cd ..
       - npm install
       - npm run build:prod
-      - cd ../web
-      - npm install
 
   - name: code-analysis
     image: aosapps/drone-sonar-plugin:1.0

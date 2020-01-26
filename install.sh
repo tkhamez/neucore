@@ -31,7 +31,3 @@ if [[ $1 = prod ]]; then
 else
     npm run build
 fi
-
-# install Swagger UI
-cd ../web || exit
-npm install

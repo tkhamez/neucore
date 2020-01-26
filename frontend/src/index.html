@@ -8,11 +8,14 @@
     
         <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
             const file = htmlWebpackPlugin.files.css[i];
+            if (file.match(/^dist\/vendors~api\./)) {
+                continue;
+            }
             if (file.match(/^dist\/theme-/)) {
                 %><link href="/<%= file %>" rel="alternate stylesheet" disabled title="theme"><%
             } else {
-                %><link href="/<%= file %>" rel="stylesheet">
-            <%  }
+                %><link href="/<%= file %>" rel="stylesheet"><%
+            }
         } %>
     
         <script src="/api/user/settings/system/theme"></script>
@@ -50,7 +53,9 @@
         </script>
         <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
             const file = htmlWebpackPlugin.files.js[i];
-            if (! file.match(/^dist\/theme-/)) { %><script type="text/javascript" src="/<%= file %>"></script><% }
+            if (! file.match(/^dist\/theme-/) && ! file.match(/^dist\/(vendors~)?api\./)) {
+                %><script type="text/javascript" src="/<%= file %>"></script><%
+            }
         } %>
     </body>
 </html>

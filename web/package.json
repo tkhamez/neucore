@@ -1,8 +1,0 @@
-{
-    "name": "tkhamez-neucore-api",
-    "private": true,
-    "license": "MIT",
-    "dependencies": {
-        "swagger-ui-dist": "^3.22.2"
-    }
-}

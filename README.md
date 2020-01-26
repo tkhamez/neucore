@@ -185,9 +185,6 @@ docker-compose run node npm run build --prefix /app/frontend/neucore-js-client
 $ docker-compose run node npm install
 $ docker-compose run node npm run build
 
-# Install Swagger UI
-$ docker-compose run node npm install --prefix /app/web
-
 # Update the database schema and seed data
 $ docker-compose run php-cli vendor/bin/doctrine-migrations migrations:migrate --no-interaction
 $ docker-compose run php-cli bin/console doctrine-fixtures-load

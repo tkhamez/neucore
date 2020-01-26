@@ -28,9 +28,6 @@ cd ..
 npm install
 npm run build:prod
 
-cd ../web || exit
-npm install
-
 cd ../.. || exit
 mkdir neucore
 mv build/backend neucore/backend

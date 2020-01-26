@@ -37,6 +37,7 @@ module.exports = (env, argv) => {
             'theme-united': './src/themes/united.scss',
             'theme-yeti': './src/themes/yeti.scss',
             'main': './src/main.js',
+            'api': './src/swagger-ui.js',
         },
         output: {
             path: path.resolve(__dirname, '../web/dist'),
@@ -76,6 +77,11 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: 'src/index.html',
                 filename: '../index.html',
+                inject: false,
+            }),
+            new HtmlWebpackPlugin({
+                template: 'src/api.html',
+                filename: '../api.html',
                 inject: false,
             }),
             new CleanWebpackPlugin({

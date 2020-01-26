@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
+        const file = htmlWebpackPlugin.files.css[i];
+        if (file.match(/^dist\/vendors~api\./)) {
+            %><link href="/<%= file %>" rel="stylesheet"><%
+        }
+    } %>
+    <style>
+        body {
+            background: #ccc;
+        }
+        .swagger-ui .scheme-container,
+        .swagger-ui .opblock .opblock-section-header {
+            background: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
+        const file = htmlWebpackPlugin.files.js[i];
+        if (file.match(/^dist\/(((vendors~)?api)|(runtime))[~.]/)) {
+            %><script type="text/javascript" src="/<%= file %>"></script><%
+        }
+    } %>
+</body>
+</html>
