@@ -100,7 +100,7 @@
                 <div class="card-body">
                     <select class="form-control" id="roleList"
                             v-model="activeRole" @change="getPlayerByRole(activeRole)">
-                        <option value=""> ... select a role</option>
+                        <option value="">select a role</option>
                         <option v-for="role in availableRoles">{{ role }}</option>
                     </select>
                 </div>
@@ -119,7 +119,7 @@
                 <div class="card-body">
                     <select class="form-control" id="accountList"
                             v-model="activeList" @change="getPlayers(activeList)">
-                        <option value=""> ... select a list</option>
+                        <option value="">select a list</option>
                         <option value="withCharacters">with characters</option>
                         <option value="withoutCharacters">without characters</option>
                         <option value="invalidToken">invalid token</option>

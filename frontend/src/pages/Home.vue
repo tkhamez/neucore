@@ -120,18 +120,19 @@
                                 <span v-if="char.main" class="small text-warning align-middle">
                                     <span class="fas fa-star"></span> Main
                                 </span>
-                                <a v-if="! char.main" class="badge badge-primary ml-1" href="#"
+                                <a v-if="! char.main" class="badge badge-primary" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
-                                <a class="badge badge-primary ml-1" href="#"
+                                <a class="badge badge-primary" href="#"
                                    v-on:click.prevent="update(char.id)">Update ESI data</a>
                                 <a v-if="authChar && authChar.id !== char.id
                                         && settings.allow_character_deletion === '1'"
-                                   class="badge badge-danger ml-1" href="#"
-                                   v-on:click="askDeleteChar(char.id, char.name)">Delete</a>
+                                   class="badge badge-danger"
+                                   v-on:click.prevent="askDeleteChar(char.id, char.name)"
+                                   href="#"><i class="fas fa-trash-alt"></i></a>
                                 <br>
-                                <span v-if="char.validToken" class="badge badge-success ml-1">Valid ESI token</span>
+                                <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
                                 <span v-if="char.validToken === null"
-                                      class="badge badge-warning ml-1">No ESI token</span>
+                                      class="badge badge-warning">No ESI token</span>
                                 <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
@@ -161,7 +162,7 @@
                     <div v-if="player.roles.length > 1" class="card border-secondary mb-3" >
                         <h3 class="card-header">Roles</h3>
                         <ul class="list-group list-group-flush">
-                            <li v-for="role in player.roles" class="list-group-item">
+                            <li v-if="role !== 'user'" v-for="role in player.roles" class="list-group-item">
                                 {{ role }}
                             </li>
                         </ul>

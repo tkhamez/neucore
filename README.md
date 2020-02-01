@@ -20,15 +20,15 @@ of an alliance.
       - [Git](#git)
     + [Cron Job](#cron-job)
   * [First login and Customization](#first-login-and-customization)
+- [Other Installation Methods](#other-installation-methods)
   * [Using Vagrant](#using-vagrant)
   * [Using Docker](#using-docker)
   * [Deploy on Heroku](#deploy-on-heroku)
   * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
-- [Final notes](#final-notes)
+- [Final Notes](#final-notes)
   * [Origin](#origin)
   * [Related Software](#related-software)
   * [Contact](#contact)
-  * [TOC](#toc)
 
 <!-- tocstop -->
 
@@ -141,6 +141,8 @@ Read the backend documentation on how to [make yourself an admin](backend/README
 then you can navigate to "Admin" -> "Settings" and change texts, links and images that are specific to your 
 installation.
 
+## Other Installation Methods
+
 ### Using Vagrant
 
 Only tested with Vagrant 2 + libvirt.
@@ -244,7 +246,7 @@ heroku buildpacks:add heroku/php
 See also [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) 
 for an example of how to deploy the pre-build releases.
 
-## Final notes
+## Final Notes
 
 ### Origin
 
@@ -270,16 +272,3 @@ This is also where the name "Neucore" comes from.
 
 If you have any questions or feedback, you can contact Tian Khamez on [Tweetfleet Slack](https://tweetfleet.slack.com)
 (get invites [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
-
-### TOC
-
-Just a quick reminder to myself of how to generate the tables of contents:
-
-```
-npm install -g markdown-toc
-markdown-toc README.md -i
-markdown-toc doc/documentation.md -i
-markdown-toc doc/API.md -i
-markdown-toc backend/README.md -i
-markdown-toc frontend/README.md -i
-```
