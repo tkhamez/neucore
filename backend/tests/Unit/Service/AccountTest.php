@@ -304,14 +304,16 @@ class AccountTest extends TestCase
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_NA, $result);
 
-        $this->assertNull($char->getValidToken()); // no token = NULL
+        $this->helper->getEm()->clear();
+        $charLoaded = $this->charRepo->find(100);
+        $this->assertNull($charLoaded->getValidToken()); // no token = NULL
     }
 
     public function testCheckCharacterInvalidToken()
     {
         $char = (new Character())
             ->setId(31)->setName('n31')
-            ->setValidToken(false) // it's also the default
+            ->setValidToken(true)
             ->setCharacterOwnerHash('hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires(time() - 1000);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
@@ -323,6 +325,12 @@ class AccountTest extends TestCase
 
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
+
+        $this->helper->getEm()->clear();
+        $charLoaded = $this->charRepo->find(31);
+        $this->assertSame('', $charLoaded->getRefreshToken());
+        $this->assertSame('', $charLoaded->getAccessToken());
+        $this->assertFalse($charLoaded->getValidToken());
     }
 
     public function testCheckCharacterRequestError()
@@ -338,13 +346,14 @@ class AccountTest extends TestCase
         $expires = time() - 1000;
         $char = (new Character())
             ->setId(31)->setName('n31')
-            ->setValidToken(false) // it's also the default
+            ->setValidToken(true)
             ->setCharacterOwnerHash('hash')
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_PARSE_ERROR, $result);
+        $this->assertTrue($char->getValidToken()); // not changed!
     }
 
     /**

@@ -72,6 +72,11 @@ class Character implements \JsonSerializable
     private $expires;
 
     /**
+     * The OAuth refresh token.
+     *
+     * Null if there was never a token, e. g. EVE SSOv1 without scopes or a char that was added by an admin.
+     * Empty string if the token became invalid.
+     *
      * @ORM\Column(type="text", length=65535, name="refresh_token", nullable=true)
      * @var string|null
      */

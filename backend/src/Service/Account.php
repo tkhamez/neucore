@@ -196,18 +196,26 @@ class Account
             return self::CHECK_CHAR_DELETED;
         }
 
-        // does the char has a token?
-        $existingToken = $char->createAccessToken();
-        if ($existingToken === null || empty($existingToken->getRefreshToken())) {
+        // does the char have a token?
+        if ($char->getRefreshToken() === null) {
+            // Only true for SSOv1 without scopes or if the character was added by an admin.
             $char->setValidToken(null);
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NA;
         }
 
         // validate token
-        try {
-            $token = $tokenService->refreshAccessToken($existingToken);
-        } catch (IdentityProviderException $e) {
+        $token = null;
+        if (($existingToken = $char->createAccessToken()) !== null) {
+            try {
+                $token = $tokenService->refreshAccessToken($existingToken);
+            } catch (IdentityProviderException $e) {
+                // do nothing
+            }
+        }
+        if ($token === null) {
+            $char->setAccessToken('');
+            $char->setRefreshToken('');
             $char->setValidToken(false);
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NOK;
