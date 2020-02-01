@@ -1,15 +1,24 @@
 
-import 'swagger-ui/dist/swagger-ui.css';
-import SwaggerUI from 'swagger-ui'
+import 'swagger-ui-dist/swagger-ui.css';
+import SwaggerUIBundle from 'swagger-ui-dist/swagger-ui-bundle.js'
+import SwaggerUIStandalonePreset from 'swagger-ui-dist/swagger-ui-standalone-preset.js'
 
-const ui = SwaggerUI({
-    url: location.protocol + "//" + location.hostname + ':' + location.port + "/openapi-3.yaml",
+const baseUrl = location.protocol + "//" + location.hostname + ':' + location.port + "/";
+const ui = SwaggerUIBundle({
+    urls: [
+        { url: baseUrl + "application-api-3.yml", name: "Application API" },
+        { url: baseUrl + "frontend-api-3.yml", name: "Frontend API" },
+        { url: baseUrl + "openapi-3.yaml", name: "Complete API" },
+    ],
     dom_id: '#swagger-ui',
     deepLinking: true,
-    docExpansion: 'none',
+    docExpansion: 'list',
+    defaultModelsExpandDepth: 0,
     presets: [
-        SwaggerUI.presets.apis,
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset,
     ],
+    layout: 'StandaloneLayout',
 });
 
 ui.getConfigs().requestInterceptor = function(e) {

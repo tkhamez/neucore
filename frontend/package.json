@@ -24,7 +24,7 @@
         "markdown-it-sup": "^1.0.0",
         "neucore-js-client": "file:neucore-js-client",
         "popper.js": "^1.16.1",
-        "swagger-ui": "^3.25.0",
+        "swagger-ui-dist": "^3.25.0",
         "vue": "^2.6.11",
         "vue-multiselect": "^2.1.6"
     },
