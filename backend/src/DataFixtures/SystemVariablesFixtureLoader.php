@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Neucore\DataFixtures;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 
 /** @noinspection PhpUnused */
 class SystemVariablesFixtureLoader implements FixtureInterface

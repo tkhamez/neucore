@@ -71,9 +71,6 @@ class Container
             ObjectManager::class => function (ContainerInterface $c) {
                 return $c->get(EntityManagerInterface::class);
             },
-            \Doctrine\Common\Persistence\ObjectManager::class => function (ContainerInterface $c) {
-                return $c->get(EntityManagerInterface::class);
-            },
 
             // EVE OAuth
             GenericProvider::class => function (ContainerInterface $c) {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Neucore\DataFixtures;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 
 /** @noinspection PhpUnused */
 class RoleFixtureLoader implements FixtureInterface
