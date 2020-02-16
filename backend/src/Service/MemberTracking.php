@@ -255,6 +255,8 @@ class MemberTracking
     /**
      * Resolves ESI IDs to names and creates/updates database entries.
      *
+     * This flushes and clears the ObjectManager every 100 IDs.
+     *
      * @param array $typeIds
      * @param array $systemIds
      * @param array $stationIds
@@ -328,6 +330,9 @@ class MemberTracking
     }
 
     /**
+     *
+     * This flushes and clears the ObjectManager every 20 members.
+     *
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $memberData
      * @param ResourceOwnerAccessTokenInterface|null $directorToken Director char access token as primary token to
      *        resolve structure IDs to names.
@@ -388,8 +393,9 @@ class MemberTracking
     }
 
     /**
+     * Stores the member data for one corporation.
      *
-     * This clears the ObjectManager every 100 members.
+     * This flushes and clears the ObjectManager every 100 members.
      *
      * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
