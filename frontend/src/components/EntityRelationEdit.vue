@@ -547,7 +547,8 @@ export default {
                         (vm.type === 'Group' || vm.type === 'App') &&
                         vm.contentType === 'managers' &&
                         id === vm.player.id
-                    )
+                    ) ||
+                    (vm.type === 'Corporation' && vm.contentType === 'groups') // Tracking Admin
                 ) {
                     vm.$root.$emit('playerChange');
                 }
