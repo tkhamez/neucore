@@ -10,7 +10,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * CORS headers.
  *
- * Checks HTTP_ORIGIN request header and if it matches one of the allow
+ * Checks the HTTP_ORIGIN request header and, if it matches one of the allowed
  * origins, adds Access-Control-Allow-* headers to the response.
  */
 class Cors implements MiddlewareInterface
