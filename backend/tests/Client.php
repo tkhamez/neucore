@@ -18,17 +18,20 @@ class Client extends \GuzzleHttp\Client
     /**
      * @var array
      */
-    private $middleware;
+    private $middleware = [];
 
-    public function __construct(array $middleware = [])
+    public function setMiddleware(callable ...$middleware): self
     {
-        parent::__construct();
         $this->middleware = $middleware;
+
+        return $this;
     }
 
-    public function setResponse(ResponseInterface ...$responses): void
+    public function setResponse(ResponseInterface ...$responses): self
     {
         $this->responses = $responses;
+
+        return $this;
     }
 
     public function send(RequestInterface $request, array $options = []): ResponseInterface

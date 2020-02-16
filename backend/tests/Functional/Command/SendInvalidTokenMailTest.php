@@ -94,9 +94,10 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
     {
         $this->setupData();
 
-        $client = new Client([function () {
+        $client = new Client();
+        $client->setMiddleware(function () {
             throw new \Exception("'error_label': 'ContactCostNotApproved'", 520);
-        }]);
+        });
         $client->setResponse(new Response());
         $log = new Logger('Test');
 

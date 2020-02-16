@@ -224,10 +224,8 @@ class EsiControllerTest extends WebTestCase
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         // create client with middleware
-        $httpClient = new Client([
-            new EsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getEm())
-        ]);
-
+        $httpClient = new Client();
+        $httpClient->setMiddleware(new EsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getEm()));
         $httpClient->setResponse(new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
