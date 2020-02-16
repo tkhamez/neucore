@@ -511,9 +511,26 @@ class EsiDataTest extends TestCase
         $this->assertSame(30000142, $locationDb->getSystemId());
     }
 
+    public function testFetchCorporationMembersNoToken()
+    {
+        $this->assertSame([], $this->cs->fetchCorporationMembers(100200300, ''));
+    }
+
+    public function testFetchCorporationMembersEsiError()
+    {
+        $this->client->setMiddleware(function () {
+            throw new \Exception("", 520);
+        });
+        $this->client->setResponse(new Response(200, [], '[100, 200]'));
+
+        $this->assertSame([], $this->cs->fetchCorporationMembers(100200300, 'access-token'));
+    }
+
     public function testFetchCorporationMembers()
     {
-        $this->markTestIncomplete('TODO'); # TODO
+        $this->client->setResponse(new Response(200, [], '[100, 200]'));
+
+        $this->assertSame([100, 200], $this->cs->fetchCorporationMembers(100200300, 'access-token'));
     }
 
     public function testGetCorporationEntity()

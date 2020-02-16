@@ -41,6 +41,16 @@ class WatchlistTest extends TestCase
      */
     private static $char4;
 
+    /**
+     * @var Corporation
+     */
+    private static $corp1a;
+
+    /**
+     * @var Corporation
+     */
+    private static $corp1b;
+
     public static function setUpBeforeClass(): void
     {
         $helper = new Helper();
@@ -56,8 +66,9 @@ class WatchlistTest extends TestCase
         $alliance2 = (new Alliance())->setId(12)->setName('a2'); // white list
         $alliance3 = (new Alliance())->setId(13)->setName('a3'); // black list
 
-        $corp1a = (new Corporation())->setId(1011)->setName('c1a')->setAlliance($alliance1); // watched via alliance
-        $corp1b = (new Corporation())->setId(1012)->setName('c1b'); // watched
+        self::$corp1a = (new Corporation())->setId(1011)->setName('c1a')
+            ->setAlliance($alliance1); // watched via alliance
+        self::$corp1b = (new Corporation())->setId(1012)->setName('c1b'); // watched
         $corp2a = (new Corporation())->setId(1021)->setName('c2a')->setAlliance($alliance2); // white list via alliance
         $corp2b = (new Corporation())->setId(1022)->setName('c2b'); // white listed
         $corp3a = (new Corporation())->setId(1031)->setName('c3a')->setAlliance($alliance3); // black list via alliance
@@ -65,7 +76,7 @@ class WatchlistTest extends TestCase
         $corp4 = (new Corporation())->setId(2000000 + 1040)->setName('c4'); // other corp, not NPC
 
         $watchlist->addAlliance($alliance1);
-        $watchlist->addCorporation($corp1b);
+        $watchlist->addCorporation(self::$corp1b);
         $watchlist->addWhitelistAlliance($alliance2);
         $watchlist->addBlacklistAlliance($alliance3);
         $watchlist->addWhitelistCorporation($corp2b);
@@ -76,8 +87,8 @@ class WatchlistTest extends TestCase
         $helper->getEm()->persist($alliance1);
         $helper->getEm()->persist($alliance2);
         $helper->getEm()->persist($alliance3);
-        $helper->getEm()->persist($corp1a);
-        $helper->getEm()->persist($corp1b);
+        $helper->getEm()->persist(self::$corp1a);
+        $helper->getEm()->persist(self::$corp1b);
         $helper->getEm()->persist($corp2a);
         $helper->getEm()->persist($corp2b);
         $helper->getEm()->persist($corp3a);
@@ -85,10 +96,10 @@ class WatchlistTest extends TestCase
         $helper->getEm()->persist($corp4);
         $helper->getEm()->flush();
 
-        self::$char1 = $helper->addCharacterMain('c1a', 10011)->setCorporation($corp1a); // watched via alliance
-        self::$char2 = $helper->addCharacterMain('c2a', 10021)->setCorporation($corp1b); // watched
-        self::$char3 = $helper->addCharacterMain('c3a', 10031)->setCorporation($corp1b); // watched
-        self::$char4 = $helper->addCharacterMain('c4a', 10041)->setCorporation($corp1a); // watched via alliance
+        self::$char1 = $helper->addCharacterMain('c1a', 10011)->setCorporation(self::$corp1a); // watched via alliance
+        self::$char2 = $helper->addCharacterMain('c2a', 10021)->setCorporation(self::$corp1b); // watched
+        self::$char3 = $helper->addCharacterMain('c3a', 10031)->setCorporation(self::$corp1b); // watched
+        self::$char4 = $helper->addCharacterMain('c4a', 10041)->setCorporation(self::$corp1a); // watched via alliance
 
         $helper->addCharacterToPlayer('c1b', 10012, self::$char1->getPlayer())->setCorporation($corp4); // other corp
         $helper->addCharacterToPlayer('c2b', 10022, self::$char2->getPlayer())->setCorporation($corp4); // other corp
@@ -121,7 +132,12 @@ class WatchlistTest extends TestCase
 
     public function testGetRedFlagListWithBlacklistAndWhitelist()
     {
-        $this->markTestIncomplete('TODO'); # TODO
+        $actual = self::$watchlistService->getRedFlagList(1, true, true);
+        $this->assertSame(4, count($actual));
+        $this->assertSame('c1a', $actual[0]->getName());
+        $this->assertSame('c2a', $actual[1]->getName());
+        $this->assertSame('c3a', $actual[2]->getName());
+        $this->assertSame('c4a', $actual[3]->getName());
     }
 
     public function testGetBlacklist()
@@ -159,6 +175,8 @@ class WatchlistTest extends TestCase
 
     public function testGetCorporationIds()
     {
-        $this->markTestIncomplete('TODO'); # TODO
+        $actual = self::$watchlistService->getCorporationIds(1, 'alliance', 'corporation');
+
+        $this->assertSame([self::$corp1a->getId(), self::$corp1b->getId()], $actual);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Neucore\Api;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
@@ -128,8 +129,8 @@ class AutoWhitelist extends Command
             return 0;
         }
 
-        $players = $this->watchlist->getRedFlagList(1, true, true);
-        $watchedCorporationIds = $this->watchlist->getCorporationIds(1, 'alliance', 'corporation');
+        $players = $this->watchlist->getRedFlagList($id, true, true); // include blacklist and whitelist
+        $watchedCorporationIds = $this->watchlist->getCorporationIds($id, 'alliance', 'corporation');
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
 
@@ -190,7 +191,7 @@ class AutoWhitelist extends Command
                 if (
                     $accountsData[$playerId][$corporationId]['token'] === null &&
                     $character->getValidToken() &&
-                    in_array('esi-corporations.read_corporation_membership.v1', $character->getScopesFromToken())
+                    in_array(Api::SCOPE_MEMBERSHIP, $character->getScopesFromToken())
                 ) {
                     $accountsData[$playerId][$corporationId]['token'] = $character->createAccessToken();
                 }

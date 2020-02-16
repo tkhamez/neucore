@@ -27,4 +27,6 @@ class Api
     const SCOPE_TRACKING = 'esi-corporations.track_members.v1';
 
     const SCOPE_STRUCTURES = 'esi-universe.read_structures.v1';
+
+    const SCOPE_MEMBERSHIP = 'esi-corporations.read_corporation_membership.v1';
 }

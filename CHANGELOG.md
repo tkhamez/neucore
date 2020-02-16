@@ -2,9 +2,9 @@
 
 ## next
 
-- New: Watchlist, auto corporation whitelist.
+- New: Watchlist, automatic whitelisting for corporations.
 - Change: Trim character search input.
-- Integrated Swagger UI installation with frontend.
+- Integrated Swagger UI build/installation with frontend.
 - Other small stuff.
 
 ## 1.8.0
