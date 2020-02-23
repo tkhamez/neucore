@@ -1,9 +1,5 @@
 <template>
 <div class="container-fluid">
-
-    <!--suppress HtmlUnknownTag -->
-    <characters ref="charactersModal"></characters>
-
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
             <h1>Group Management</h1>
@@ -72,8 +68,6 @@
                                     </td>
                                     <td>{{ char.player_name }} #{{ char.player_id }}</td>
                                     <td>
-                                        <button class="btn btn-info btn-sm"
-                                                @click="showCharacters(char.player_id)">Show characters</button>
                                         <button v-if="! isMember(char.player_id)" class="btn btn-success btn-sm"
                                                 @click="addPlayer(char.player_id)">Add to group</button>
                                         <button v-if="isMember(char.player_id)" class="btn btn-danger btn-sm"
@@ -91,18 +85,12 @@
                             <th scope="col">Player ID</th>
                             <th scope="col">Name</th>
                             <th scope="col"></th>
-                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="member in groupMembers">
                             <td>{{ member.id }}</td>
                             <td>{{ member.name }}</td>
-                            <td>
-                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
-                                    Show characters
-                                </button>
-                            </td>
                             <td>
                                 <button class="btn btn-danger btn-sm" v-on:click="removePlayer(member.id)">
                                     Remove from group
@@ -129,18 +117,12 @@
                             <th scope="col">Created (GMT)</th>
                             <th scope="col"></th>
                             <th scope="col"></th>
-                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="application in groupApplications" v-if=" application.status === status">
                             <td>{{ application.player.name + ' #' + application.player.id }}</td>
                             <td>{{ formatDate(application.created) }}</td>
-                            <td>
-                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(application.player.id)">
-                                    Show characters
-                                </button>
-                            </td>
                             <td>
                                 <button v-if="application.status === 'pending' || application.status === 'denied'"
                                         class="btn btn-success btn-sm"
@@ -168,12 +150,10 @@
 <script>
 import { GroupApi } from 'neucore-js-client';
 import Characters      from '../components/Characters.vue';
-import CharacterSearch from '../components/CharacterSearch.vue';
 
 export default {
     components: {
         Characters,
-        CharacterSearch,
     },
 
     props: {
@@ -266,10 +246,6 @@ export default {
                 }
                 vm.requiredGroups = data;
             });
-        },
-
-        showCharacters: function(memberId) {
-            this.$refs.charactersModal.showCharacters(memberId);
         },
 
         addPlayer: function(playerId) {
