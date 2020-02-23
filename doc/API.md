@@ -212,6 +212,9 @@ Allows a player to change the system settings.
 Alliance API
 - List all alliances. `/user/alliance/all`
 
+Corporation API
+- List all corporations. `/user/corporation/all`
+
 Settings API
 - Change a system settings variable. `/user/settings/system/change/{name}`
 - Sends a 'invalid ESI token' test mail to the logged-in character. `/user/settings/system/send-invalid-token-mail`
@@ -268,9 +271,11 @@ Allows a player to edit watchlist exemptions and settings.
 
 Alliance API
 - List all alliances. `/user/alliance/all`
+- Add an EVE alliance to the database. `/user/alliance/add/{id}`
 
 Corporation API
 - List all corporations. `/user/corporation/all`
+- Add an EVE corporation to the database. `/user/corporation/add/{id}`
 
 Group API
 - List all groups. `/user/group/all`

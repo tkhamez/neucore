@@ -57,13 +57,13 @@
 
     <watchlistLists :id="id" :tab="tab"></watchlistLists>
 
-    <watchlistSettings v-cloak v-if="tab === 'settings'" :id="id"></watchlistSettings>
+    <watchlistSettings v-cloak v-if="tab === 'settings'" :id="id" :settings="settings"></watchlistSettings>
 
 </div>
 </template>
 
 <script>
-import WatchlistLists from './Watchlist--Lists.vue';
+import WatchlistLists    from './Watchlist--Lists.vue';
 import WatchlistSettings from './Watchlist--Settings.vue';
 import Characters        from '../components/Characters.vue';
 import CharacterSearch   from '../components/CharacterSearch.vue';
@@ -79,6 +79,7 @@ export default {
     props: {
         route: Array,
         player: Object,
+        settings: Object,
     },
 
     data: function() {

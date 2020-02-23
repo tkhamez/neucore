@@ -30,8 +30,9 @@ return [
 
     '/api/app'                                     => [Role::APP],
 
-    '/api/user/alliance/all' => [Role::GROUP_ADMIN, Role::SETTINGS, Role::WATCHLIST_ADMIN],
-    '/api/user/alliance'     => [Role::GROUP_ADMIN],
+    '/api/user/alliance/all'      => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN, Role::SETTINGS],
+    '/api/user/alliance/add/{id}' => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN],
+    '/api/user/alliance'          => [Role::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
     '/api/user/app/{id}/show'          => [Role::APP_MANAGER, Role::APP_ADMIN],
@@ -48,7 +49,8 @@ return [
     '/api/user/corporation/{id}/get-groups-tracking'   => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/add-group-tracking'    => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/remove-group-tracking' => [Role::TRACKING_ADMIN],
-    '/api/user/corporation/all'                        => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN],
+    '/api/user/corporation/all'                        => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN, Role::SETTINGS],
+    '/api/user/corporation/add/{id}'                   => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN],
     '/api/user/corporation'                            => [Role::GROUP_ADMIN],
 
     '/api/user/esi/request' => [Role::ESI],
