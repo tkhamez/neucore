@@ -880,12 +880,39 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function characters(string $id): ResponseInterface
+    public function characters(string $id,  UserAuth $userAuth): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
             return $this->response->withStatus(404);
+        }
+
+        // Check special tracking permission:
+        // The logged in user must be a member of a "tracking" group of a corporation where the player has a character.
+        $userAccount = $this->getUser($userAuth)->getPlayer();
+        $roles = $userAccount->getRoleNames();
+        $neededRolesExceptTracking = array_intersect(
+            $roles,
+            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::WATCHLIST]
+        );
+        if (in_array(Role::TRACKING, $roles) && count($neededRolesExceptTracking) === 0) {
+            $requiredGroups = [];
+            foreach ($player->getCharacters() as $character) {
+                if ($character->getCorporation()) {
+                    foreach ($character->getCorporation()->getGroupsTracking() as $group) {
+                        $requiredGroups[] = $group->getId();
+                    }
+                }
+            }
+            $userGroupIds = $userAccount->getGroupIds();
+            if (
+                count($userGroupIds) === 0 ||
+                count($requiredGroups) === 0 ||
+                ! array_intersect($requiredGroups, $userGroupIds) === 0
+            ) {
+                return $this->response->withStatus(403);
+            }
         }
 
         return $this->withJson([

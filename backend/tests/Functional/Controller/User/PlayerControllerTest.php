@@ -38,18 +38,23 @@ class PlayerControllerTest extends WebTestCase
      */
     private $em;
 
-    private $playerId;
+    private $player1Id;
 
-    private $player3Id;
+    private $player4Id;
 
     private $managerId;
 
     private $emptyAccId;
 
     /**
+     * @var Corporation
+     */
+    private $corp;
+
+    /**
      * @var Player
      */
-    private $player;
+    private $player3;
 
     /**
      * @var Group
@@ -193,7 +198,7 @@ class PlayerControllerTest extends WebTestCase
         $groupApps = $this->groupAppRepo->findBy([]);
         $this->assertSame(1, count($groupApps));
         $this->assertSame($this->group->getId(), $groupApps[0]->getGroup()->getId());
-        $this->assertSame($this->player->getId(), $groupApps[0]->getPlayer()->getId());
+        $this->assertSame($this->player3->getId(), $groupApps[0]->getPlayer()->getId());
         $this->assertLessThanOrEqual(time(), $groupApps[0]->getCreated()->getTimestamp());
     }
 
@@ -219,7 +224,7 @@ class PlayerControllerTest extends WebTestCase
 
         $ga = new GroupApplication();
         $ga->setGroup($this->group);
-        $ga->setPlayer($this->player);
+        $ga->setPlayer($this->player3);
         $this->em->persist($ga);
         $this->em->flush();
 
@@ -244,7 +249,7 @@ class PlayerControllerTest extends WebTestCase
 
         $ga = new GroupApplication();
         $ga->setGroup($this->group);
-        $ga->setPlayer($this->player);
+        $ga->setPlayer($this->player3);
         $this->em->persist($ga);
         $this->em->flush();
 
@@ -252,7 +257,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([[
             'id' => $ga->getId(),
-            'player' => ['id' => $this->player->getId(), 'name' => 'Admin'],
+            'player' => ['id' => $this->player3->getId(), 'name' => 'Admin'],
             'group' => ['id' => $this->group->getId(), 'name' => 'test-pub', 'visibility' => Group::VISIBILITY_PUBLIC],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => null,
@@ -279,14 +284,14 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $this->player->addGroup($this->group);
+        $this->player3->addGroup($this->group);
         $this->em->flush();
 
         $response = $this->runApp('PUT', '/api/user/player/leave-group/' . $this->group->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
-        $p = $this->playerRepo->find($this->player->getId());
+        $p = $this->playerRepo->find($this->player3->getId());
         $this->assertSame(0, count($p->getGroups()));
     }
 
@@ -310,13 +315,13 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $charsBefore = $this->playerRepo->find($this->player->getId())->getCharacters();
+        $charsBefore = $this->playerRepo->find($this->player3->getId())->getCharacters();
         $this->assertSame(12, $charsBefore[0]->getId());
         $this->assertSame(13, $charsBefore[1]->getId());
         $this->assertTrue($charsBefore[0]->getMain());
         $this->assertFalse($charsBefore[1]->getMain());
         $this->assertSame('Alt', $charsBefore[1]->getName());
-        $this->assertSame('Admin', $this->player->getName());
+        $this->assertSame('Admin', $this->player3->getName());
 
         $response = $this->runApp('PUT', '/api/user/player/set-main/13');
         $this->assertEquals(200, $response->getStatusCode());
@@ -336,7 +341,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $playerAfter = $this->playerRepo->find($this->player->getId());
+        $playerAfter = $this->playerRepo->find($this->player3->getId());
         $charsAfter = $playerAfter->getCharacters();
         $this->assertSame(12, $charsAfter[0]->getId());
         $this->assertSame(13, $charsAfter[1]->getId());
@@ -409,10 +414,10 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            ['id' => $this->player->getId(), 'name' => 'Admin'],
+            ['id' => $this->player3->getId(), 'name' => 'Admin'],
             ['id' => $this->managerId, 'name' => 'Manager'],
-            ['id' => $this->playerId, 'name' => 'User'],
-            ['id' => $this->player3Id, 'name' => 'User3'],
+            ['id' => $this->player1Id, 'name' => 'User'],
+            ['id' => $this->player4Id, 'name' => 'User3'],
         ], $this->parseJsonBody($response));
     }
 
@@ -462,7 +467,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            ['id' => $this->player->getId(), 'name' => 'Admin'],
+            ['id' => $this->player3->getId(), 'name' => 'Admin'],
         ], $this->parseJsonBody($response));
     }
 
@@ -488,7 +493,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->managerId, 'name' => 'Manager'],
-            ['id' => $this->playerId, 'name' => 'User'],
+            ['id' => $this->player1Id, 'name' => 'User'],
         ], $this->parseJsonBody($response));
     }
 
@@ -621,19 +626,19 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(200, $response5->getStatusCode());
 
         $this->assertSame([
-            ['id' => $this->player->getId(), 'name' => 'Admin']
+            ['id' => $this->player3->getId(), 'name' => 'Admin']
         ], $this->parseJsonBody($response1));
         $this->assertSame([
             ['id' => $this->managerId, 'name' => 'Manager']
         ], $this->parseJsonBody($response2));
         $this->assertSame([
-            ['id' => $this->player->getId(), 'name' => 'Admin']
+            ['id' => $this->player3->getId(), 'name' => 'Admin']
         ], $this->parseJsonBody($response3));
         $this->assertSame([
             ['id' => $this->managerId, 'name' => 'Manager']
         ], $this->parseJsonBody($response4));
         $this->assertSame([
-            ['id' => $this->player->getId(), 'name' => 'Admin']
+            ['id' => $this->player3->getId(), 'name' => 'Admin']
         ], $this->parseJsonBody($response5));
     }
 
@@ -691,10 +696,10 @@ class PlayerControllerTest extends WebTestCase
 
         $response1 = $this->runApp('PUT', '/api/user/player/101/add-role/r');
         $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Role::APP_MANAGER);
-        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/role');
+        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player3->getId().'/add-role/role');
 
         // app is a valid role, but not for users
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/add-role/'.Role::APP);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player3->getId().'/add-role/'.Role::APP);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -707,14 +712,14 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Role::APP_MANAGER);
-        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player->getId()).'/add-role/'.Role::APP_MANAGER);
+        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player3->getId()).'/add-role/'.Role::APP_MANAGER);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player3->getId()).'/add-role/'.Role::APP_MANAGER);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
         $this->em->clear();
 
-        $player = $this->playerRepo->find($this->player->getId());
+        $player = $this->playerRepo->find($this->player3->getId());
         $this->assertSame(
             [Role::APP_ADMIN, Role::APP_MANAGER, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
@@ -740,10 +745,10 @@ class PlayerControllerTest extends WebTestCase
 
         $response1 = $this->runApp('PUT', '/api/user/player/101/remove-role/a');
         $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Role::APP_MANAGER);
-        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/a');
+        $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player3->getId().'/remove-role/a');
 
         // user is a valid role, but may not be removed
-        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::USER);
+        $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player3->getId().'/remove-role/'.Role::USER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
@@ -761,7 +766,7 @@ class PlayerControllerTest extends WebTestCase
 
         $res = $this->runApp(
             'PUT',
-            '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN,
+            '/api/user/player/'.$this->player3->getId().'/remove-role/'.Role::APP_ADMIN,
             null,
             null,
             [
@@ -777,14 +782,14 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $r1 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN);
-        $r2 = $this->runApp('PUT', '/api/user/player/'.$this->player->getId().'/remove-role/'.Role::APP_ADMIN);
+        $r1 = $this->runApp('PUT', '/api/user/player/'.$this->player3->getId().'/remove-role/'.Role::APP_ADMIN);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.$this->player3->getId().'/remove-role/'.Role::APP_ADMIN);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
         $this->em->clear();
 
-        $player = $this->playerRepo->find($this->player->getId());
+        $player = $this->playerRepo->find($this->player3->getId());
         $this->assertSame(
             [Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
@@ -808,7 +813,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/show');
+        $response = $this->runApp('GET', '/api/user/player/'.($this->player3->getId() + 5).'/show');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -817,11 +822,11 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/show');
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/show');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            'id' => $this->player->getId(),
+            'id' => $this->player3->getId(),
             'name' => 'Admin',
             'status' => Player::STATUS_STANDARD,
             'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
@@ -864,7 +869,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(10); // not a group-admin or app-admin
 
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/characters');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -873,7 +878,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/characters');
+        $response = $this->runApp('GET', '/api/user/player/'.($this->player3->getId() + 5).'/characters');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -882,11 +887,11 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/characters');
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
-            'id' => $this->player->getId(),
+            'id' => $this->player3->getId(),
             'name' => 'Admin',
             'characters' => [
                 [
@@ -915,6 +920,27 @@ class PlayerControllerTest extends WebTestCase
                 ],
             ],
         ], $this->parseJsonBody($response));
+    }
+
+    public function testCharacters_Tracking_403()
+    {
+        $this->setupDb();
+        $this->loginUser(11);
+
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/characters');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCharacters_Tracking_200()
+    {
+        $this->setupDb();
+        $this->loginUser(11);
+
+        $this->corp->addGroupTracking($this->group);
+        $this->em->flush();
+
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/characters');
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testDeleteCharacter404()
@@ -979,7 +1005,7 @@ class PlayerControllerTest extends WebTestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 9]);
         $this->assertSame(9, $removedChar->getCharacterId());
-        $this->assertSame($this->playerId, $removedChar->getPlayer()->getId());
+        $this->assertSame($this->player1Id, $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChar->getReason());
     }
@@ -1014,7 +1040,7 @@ class PlayerControllerTest extends WebTestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 13]);
         $this->assertSame(13, $removedChar->getCharacterId());
-        $this->assertSame($this->player->getId(), $removedChar->getPlayer()->getId());
+        $this->assertSame($this->player3->getId(), $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChar->getReason());
     }
@@ -1069,8 +1095,8 @@ class PlayerControllerTest extends WebTestCase
         $this->assertNull($this->charRepo->find(10));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 10]));
         $this->assertSame(
-            'An admin (player ID: ' . $this->player->getId() . ') ' .
-                'deleted character "User" [10] from player "User" [' . $this->playerId . ']',
+            'An admin (player ID: ' . $this->player3->getId() . ') ' .
+                'deleted character "User" [10] from player "User" [' . $this->player1Id . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -1102,10 +1128,10 @@ class PlayerControllerTest extends WebTestCase
 
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 10]);
         $this->assertSame(10, $removedChar->getCharacterId());
-        $this->assertSame($this->playerId, $removedChar->getPlayer()->getId());
+        $this->assertSame($this->player1Id, $removedChar->getPlayer()->getId());
         $this->assertNull($removedChar->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
-        $this->assertSame($this->player->getId(), $removedChar->getDeletedBy()->getId());
+        $this->assertSame($this->player3->getId(), $removedChar->getDeletedBy()->getId());
     }
 
     public function testDeleteCharacter204_Admin_InvalidReason()
@@ -1163,7 +1189,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $this->player->setStatus(Player::STATUS_MANAGED);
+        $this->player3->setStatus(Player::STATUS_MANAGED);
 
         // activate feature
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
@@ -1209,7 +1235,7 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12); // user-admin
 
-        $response = $this->runApp('GET', '/api/user/player/' . ($this->player3Id + 99) . '/groups-disabled');
+        $response = $this->runApp('GET', '/api/user/player/' . ($this->player4Id + 99) . '/groups-disabled');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -1227,11 +1253,11 @@ class PlayerControllerTest extends WebTestCase
         $this->h->getEm()->persist($setting3);
         $this->h->getEm()->flush();
 
-        $response1 = $this->runApp('GET', '/api/user/player/' . $this->player->getId() . '/groups-disabled');
+        $response1 = $this->runApp('GET', '/api/user/player/' . $this->player3->getId() . '/groups-disabled');
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertTrue($this->parseJsonBody($response1));
 
-        $response2 = $this->runApp('GET', '/api/user/player/' . $this->player3Id . '/groups-disabled');
+        $response2 = $this->runApp('GET', '/api/user/player/' . $this->player4Id . '/groups-disabled');
         $this->assertEquals(200, $response2->getStatusCode());
         $this->assertFalse($this->parseJsonBody($response2));
     }
@@ -1246,7 +1272,8 @@ class PlayerControllerTest extends WebTestCase
             Role::APP_MANAGER,
             Role::GROUP_ADMIN,
             Role::GROUP_MANAGER,
-            Role::USER_ADMIN
+            Role::USER_ADMIN,
+            Role::TRACKING,
         ]);
 
         $gs = $this->h->addGroups(['test-pub', 'test-private']);
@@ -1255,40 +1282,40 @@ class PlayerControllerTest extends WebTestCase
         $this->gPrivateId = $gs[1]->getId();
 
         $player1 = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer();
-        $this->playerId = $player1->getId();
+        $this->player1Id = $player1->getId();
         $this->h->addCharacterToPlayer('Alt1', 9, $player1);
 
-        $player = $this->h->addCharacterMain(
+        $player2 = $this->h->addCharacterMain(
             'Manager',
             11,
-            [Role::USER, Role::APP_MANAGER, Role::GROUP_MANAGER]
+            [Role::USER, Role::APP_MANAGER, Role::GROUP_MANAGER, Role::TRACKING]
         )->getPlayer();
-        $this->managerId = $player->getId();
-        $player->setStatus(Player::STATUS_MANAGED);
-        $player->addGroup($gs[0]);
+        $this->managerId = $player2->getId();
+        $player2->setStatus(Player::STATUS_MANAGED);
+        $player2->addGroup($gs[0]);
 
         $alli = (new Alliance())->setId(123)->setName('aaa')->setTicker('a-a');
-        $corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
+        $this->corp = (new Corporation())->setId(234)->setName('ccc')->setTicker('c-c')->setAlliance($alli);
 
-        $char = $this->h->addCharacterMain(
+        $char3a = $this->h->addCharacterMain(
             'Admin',
             12,
             [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]
         );
-        $char->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
-        $char->setCorporation($corp);
-        $this->player = $char->getPlayer();
+        $char3a->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
+        $char3a->setCorporation($this->corp);
+        $this->player3 = $char3a->getPlayer();
 
         $emptyAcc = (new Player())->setName('empty account');
 
-        $this->h->getEm()->persist($corp);
+        $this->h->getEm()->persist($this->corp);
         $this->h->getEm()->persist($alli);
         $this->h->getEm()->persist($emptyAcc);
 
-        $char2 = $this->h->addCharacterToPlayer('Alt', 13, $this->player);
-        $char2->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
+        $char3b = $this->h->addCharacterToPlayer('Alt', 13, $this->player3);
+        $char3b->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
 
-        $this->player3Id = $this->h->addCharacterMain('User3', 14, [Role::USER])
+        $this->player4Id = $this->h->addCharacterMain('User3', 14, [Role::USER])
             ->setValidToken(true)->getPlayer()->getId();
 
         $this->h->getEm()->flush();
