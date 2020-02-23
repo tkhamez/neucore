@@ -278,9 +278,6 @@ Corporation API
 Group API
 - List all groups. `/user/group/all`
 
-Player API
-- Show player with characters. `/user/player/{id}/characters`
-
 Watchlist API
 - Add player to exemption list. `/user/watchlist/{id}/exemption/add/{player}`
 - Remove player from exemption list. `/user/watchlist/{id}/exemption/remove/{player}`
