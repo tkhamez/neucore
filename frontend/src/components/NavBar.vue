@@ -58,7 +58,7 @@
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['tracking', 'watchlist', 'esi'])"
+                <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-admin', 'esi'])"
                     class="nav-item dropdown" :class="{ active: memberDataPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,7 +68,7 @@
                         <a v-if="hasRole('tracking')"
                            class="dropdown-item" :class="{ active: page === 'Tracking' }"
                            href="#Tracking">Tracking</a>
-                        <a v-if="hasRole('watchlist')"
+                        <a v-if="hasAnyRole(['watchlist', 'watchlist-admin'])"
                            class="dropdown-item" :class="{ active: page === 'Watchlist' }"
                            href="#Watchlist">Watchlist</a>
                         <a v-if="hasRole('esi')"
