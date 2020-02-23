@@ -39,7 +39,7 @@
                 <li v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings'])"
                     class="nav-item dropdown" :class="{ active: adminPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>
                     <div class="dropdown-menu">
                         <a v-if="hasRole('group-admin')"
                             class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
@@ -58,15 +58,23 @@
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-if="hasRole('tracking')" class="nav-item" :class="{ active: page === 'Tracking' }">
-                    <a class="nav-link" href="#Tracking">Tracking</a>
-                </li>
-                <li v-if="hasAnyRole(['watchlist', 'watchlist-admin'])"
-                    class="nav-item" :class="{ active: page === 'Watchlist' }">
-                    <a class="nav-link" href="#Watchlist">Watchlist</a>
-                </li>
-                <li v-if="hasRole('esi')" class="nav-item" :class="{ active: page === 'Esi' }">
-                    <a class="nav-link" href="#Esi">ESI</a>
+                <li v-if="hasAnyRole(['tracking', 'watchlist', 'esi'])"
+                    class="nav-item dropdown" :class="{ active: memberDataPages.indexOf(page) !== -1 }">
+                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Member Data
+                    </a>
+                    <div class="dropdown-menu">
+                        <a v-if="hasRole('tracking')"
+                           class="dropdown-item" :class="{ active: page === 'Tracking' }"
+                           href="#Tracking">Tracking</a>
+                        <a v-if="hasRole('watchlist')"
+                           class="dropdown-item" :class="{ active: page === 'Watchlist' }"
+                           href="#Watchlist">Watchlist</a>
+                        <a v-if="hasRole('esi')"
+                           class="dropdown-item" :class="{ active: page === 'Esi' }"
+                           href="#Esi">ESI</a>
+                    </div>
                 </li>
             </ul>
 
@@ -106,6 +114,7 @@ export default {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: ['GroupAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
+            memberDataPages: ['Tracking', 'Watchlist', 'Esi'],
             selectedTheme: '',
         }
     },
