@@ -862,7 +862,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters403()
     {
         $this->setupDb();
-        $this->loginUser(10); // not a group-manager, group-admin or app-admin
+        $this->loginUser(10); // not a group-admin or app-admin
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
         $this->assertEquals(403, $response->getStatusCode());
@@ -871,7 +871,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters404()
     {
         $this->setupDb();
-        $this->loginUser(11);
+        $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/'.($this->player->getId() + 5).'/characters');
         $this->assertEquals(404, $response->getStatusCode());
@@ -880,7 +880,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters200()
     {
         $this->setupDb();
-        $this->loginUser(11);
+        $this->loginUser(12);
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player->getId().'/characters');
         $this->assertEquals(200, $response->getStatusCode());
