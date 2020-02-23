@@ -964,15 +964,15 @@ class PlayerController extends BaseController
 
         // check for a valid reason if an admin deletes the character,
         // otherwise check if character belongs to the logged in player account.
-        if ($admin && in_array($reason, [
+        if ($admin && ! in_array($reason, [
             RemovedCharacter::REASON_DELETED_MANUALLY,
             RemovedCharacter::REASON_DELETED_OWNER_CHANGED,
             RemovedCharacter::REASON_DELETED_BY_ADMIN,
         ])) {
-            // okay
-        } elseif ($this->getUser($this->userAuth)->getPlayer()->hasCharacter((int) $char->getId())) {
+            return $this->response->withStatus(403);
+        } elseif (! $admin && $this->getUser($this->userAuth)->getPlayer()->hasCharacter((int) $char->getId())) {
             $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
-        } else {
+        } elseif (! $admin) {
             return $this->response->withStatus(403);
         }
 

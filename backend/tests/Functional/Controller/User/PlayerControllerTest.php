@@ -967,9 +967,44 @@ class PlayerControllerTest extends WebTestCase
     public function testDeleteCharacter204()
     {
         $this->setupDb();
+        $this->loginUser(10);
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/9');
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $deleted = $this->charRepo->find(9);
+        $this->assertNull($deleted);
+
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 9]);
+        $this->assertSame(9, $removedChar->getCharacterId());
+        $this->assertSame($this->playerId, $removedChar->getPlayer()->getId());
+        $this->assertNull($removedChar->getNewPlayer());
+        $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChar->getReason());
+    }
+
+    public function testDeleteCharacter204_Admin_NoReason_OwnCharacter_Deactivated()
+    {
+        $this->setupDb();
         $this->loginUser(12);
 
-        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13?admin-reason=invalid');
+        // deactivate deletion feature
+        $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
+        $setting->setValue('0');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testDeleteCharacter204_Admin_NoReason_OwnCharacter()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
         $this->assertEquals(204, $response->getStatusCode());
 
         $this->em->clear();
@@ -984,7 +1019,31 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChar->getReason());
     }
 
-    public function testDeleteCharacter204AdminNoRecord()
+    public function testDeleteCharacter204_Admin_WithReason_OwnCharacter()
+    {
+        $this->setupDb();
+        $this->loginUser(12); // a user-admin
+
+        // deactivate deletion feature
+        $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
+        $setting->setValue('0');
+        $this->h->getEm()->persist($setting);
+        $this->h->getEm()->flush();
+
+        $response = $this->runApp(
+            'DELETE',
+            '/api/user/player/delete-character/13?admin-reason=' . RemovedCharacter::REASON_DELETED_OWNER_CHANGED
+        );
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+
+        $this->assertNull($this->charRepo->find(13));
+        $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 13]);
+        $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
+    }
+
+    public function testDeleteCharacter204_Admin_WithoutRecord()
     {
         $this->setupDb();
         $this->loginUser(12); // a user-admin
@@ -1016,7 +1075,7 @@ class PlayerControllerTest extends WebTestCase
         );
     }
 
-    public function testDeleteCharacter204AdminWithRecord()
+    public function testDeleteCharacter204_Admin_WithRecord()
     {
         $this->setupDb();
         $this->loginUser(12); // a user-admin
@@ -1049,7 +1108,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame($this->player->getId(), $removedChar->getDeletedBy()->getId());
     }
 
-    public function testDeleteCharacter204AdminInvalidReason()
+    public function testDeleteCharacter204_Admin_InvalidReason()
     {
         $this->setupDb();
         $this->loginUser(12); // a user-admin
@@ -1064,8 +1123,6 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp(
             'DELETE',
             '/api/user/player/delete-character/10?admin-reason=' . RemovedCharacter::REASON_DELETED_BIOMASSED,
-            null,
-            null,
             [LoggerInterface::class => $this->log]
         );
         $this->assertEquals(403, $response->getStatusCode());
@@ -1073,32 +1130,6 @@ class PlayerControllerTest extends WebTestCase
         $this->em->clear();
 
         $this->assertNotNull($this->charRepo->find(10));
-    }
-
-    public function testDeleteCharacter204AdminOwnCharacter()
-    {
-        $this->setupDb();
-        $this->loginUser(12); // a user-admin
-
-        // char 10 is on a different player account
-        $response = $this->runApp(
-            'DELETE',
-            '/api/user/player/delete-character/13?admin-reason=' . RemovedCharacter::REASON_DELETED_BY_ADMIN,
-            null,
-            null,
-            [LoggerInterface::class => $this->log]
-        );
-        $this->assertEquals(204, $response->getStatusCode());
-
-        $this->em->clear();
-
-        $this->assertNull($this->charRepo->find(13));
-        $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 13]));
-        $this->assertSame(
-            'An admin (player ID: ' . $this->player->getId() . ') ' .
-                'deleted character "Alt" [13] from player "Admin" [' . $this->player->getId() . ']',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
     }
 
     public function testGroupsDisabled403()
@@ -1223,7 +1254,9 @@ class PlayerControllerTest extends WebTestCase
         $this->group = $gs[0];
         $this->gPrivateId = $gs[1]->getId();
 
-        $this->playerId = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer()->getId();
+        $player1 = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer();
+        $this->playerId = $player1->getId();
+        $this->h->addCharacterToPlayer('Alt1', 9, $player1);
 
         $player = $this->h->addCharacterMain(
             'Manager',
