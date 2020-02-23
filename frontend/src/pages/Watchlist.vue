@@ -84,7 +84,7 @@ export default {
     data: function() {
         return {
             id: 1,
-            tab: 'red',
+            tab: '',
             searchResult: [],
         }
     },
@@ -119,6 +119,8 @@ function setTab(vm) {
         vm.tab = vm.route[2];
     } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-admin')) {
         vm.tab = 'settings';
+    } else {
+        vm.tab = 'red';
     }
 }
 </script>
