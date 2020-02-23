@@ -2,7 +2,11 @@
 
 ## next
 
-- New: Watchlist, automatic whitelisting for corporations.
+- New: Automatic inclusion of corporations in the whitelist for the watchlist.
+- New: Added character search with list of all characters on a player account to the watchlist page.
+- Change: Group managers can no longer see a list of all characters on a player account.
+- Change: Access to the list of all characters on a player account for the "tracking" role is now limited to 
+  accounts that have a character in a corresponding corporation.
 - Change: Trim character search input.
 - Integrated Swagger UI build/installation with frontend.
 - Other small stuff.
