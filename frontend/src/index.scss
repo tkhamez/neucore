@@ -44,6 +44,31 @@ body.neucore {
 }
 
 /**
+ * class for the body background color
+ */
+body .bg-body {
+    background-color: #fff;
+}
+body.cyborg .bg-body {
+    background-color: #060606;
+}
+body.darkly .bg-body {
+    background-color: #222;
+}
+body.slate .bg-body {
+    background-color: #272B30;
+}
+body.simplex .bg-body {
+    background-color: #FCFCFC;
+}
+body.solar .bg-body {
+    background-color: #002B36;
+}
+body.superhero .bg-body {
+    background-color: #2B3E50;
+}
+
+/**
  * Change form control background color for dark themes
  * (solar and superhero already have different colors)
  */

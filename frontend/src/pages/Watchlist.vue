@@ -5,8 +5,34 @@
     <characters ref="charactersModal"></characters>
 
     <div class="row mb-3 mt-3">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <h1>Watchlist</h1>
+        </div>
+        <div class="col-lg-6 text-right">
+            <character-search v-on:result="searchResult = $event"></character-search>
+            <div class="search-result border text-left bg-body" v-if="searchResult.length > 0">
+                <table class="table table-hover table-sm mb-0" aria-describedby="search result">
+                    <thead>
+                        <tr>
+                            <th scope="col">Character</th>
+                            <th scope="col">Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="char in searchResult">
+                            <td>
+                                <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
+                                {{ char.character_name }}
+                            </td>
+                            <td>
+                                <a href="#" @click.prevent="showCharacters(char.player_id)">
+                                    {{ char.player_name }} #{{ char.player_id }}
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -133,14 +159,16 @@
 </template>
 
 <script>
-import { WatchlistApi } from 'neucore-js-client';
+import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistSettings from './Watchlist-Settings.vue';
-import Characters from '../components/Characters.vue';
+import Characters        from '../components/Characters.vue';
+import CharacterSearch   from '../components/CharacterSearch.vue';
 
 export default {
     components: {
-        Characters,
         WatchlistSettings,
+        Characters,
+        CharacterSearch,
     },
 
     props: {
@@ -157,6 +185,7 @@ export default {
                 Alliance: [],
                 Corporation: [],
             },
+            searchResult: [],
             alliances: [],
             corporations: [],
             blacklistAlliances: [],
@@ -312,6 +341,15 @@ function loadList(vm) {
 }
 </script>
 
-<style scoped>
-
+<style type="text/css" scoped>
+    @media (min-width: 992px) {
+        .search-result {
+            position: absolute;
+            background-color: white;
+            z-index: 10;
+            height: calc(100vh - 140px);
+            width: calc(100% - 30px);
+            overflow: auto;
+        }
+    }
 </style>
