@@ -305,7 +305,7 @@ class Application
     {
         $containerBuilder = new ContainerBuilder();
 
-        if ($this->env === self::ENV_PROD) {
+        if ($this->env === self::ENV_PROD && $this->config !== null) {
             $containerBuilder->enableCompilation($this->config['di']['cache_dir']);
             if (SourceCache::isSupported()) {
                 $containerBuilder->enableDefinitionCache();

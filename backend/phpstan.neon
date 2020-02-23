@@ -14,14 +14,11 @@ parameters:
 			message: '#Call to an undefined method Swagger(.*)::(getName)?(getCorporationId)?\(\)#'
 			path: %currentWorkingDirectory%/src/Service/MemberTracking.php
 		-
-			message: '#MemberTracking::fetchData() should return array<(.*)GetCorporationsCorporationIdMembertracking200Ok>|null but returns(.*)GetCorporationsCorporationIdMembertracking200Ok#'
-			path: %currentWorkingDirectory%/src/Service/MemberTracking.php
+			message: '#(.*)Watchlist::getExemptionList\(\) should return(.*)but returns(.*)#'
+			path: %currentWorkingDirectory%/src/Service/Watchlist.php
 		-
 			message: '#(.*)Controller\BaseController::getUser()(.*)but returns Neucore\Entity\Character|null.#'
 			path: %currentWorkingDirectory%/src/Controller/BaseController.php
-		-
-			message: '#Offset (.*) does not exist on Neucore\Service\Config|null.#'
-			path: %currentWorkingDirectory%/src/Application.php
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
 			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php

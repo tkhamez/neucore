@@ -56,7 +56,7 @@ class Watchlist
         if ($includeWhitelist) {
             $exemptPlayers = [];
         } else {
-            $exemptPlayers = $this->getList($id, 'exemption');
+            $exemptPlayers = $this->getExemptionList($id);
         }
 
         // get players in watched corporations
@@ -108,7 +108,7 @@ class Watchlist
     {
         $playersFromBlacklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
             $this->getCorporationIds($id, 'blacklistAlliance', 'blacklistCorporations'),
-            $this->getList($id, 'exemption')
+            $this->getExemptionList($id)
         );
 
         $playersRedListIds = array_map(function (Player $player) {
@@ -176,5 +176,14 @@ class Watchlist
         }, $this->getList($watchlistId, $corporationList));
 
         return array_unique(array_merge($corporationIds1, $corporationIds2));
+    }
+
+    /**
+     * @param int $id
+     * @return Player[]
+     */
+    private function getExemptionList(int $id): array
+    {
+        return $this->getList($id, 'exemption');
     }
 }

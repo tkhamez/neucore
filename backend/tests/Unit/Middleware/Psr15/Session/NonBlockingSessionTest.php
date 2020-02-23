@@ -96,6 +96,7 @@ class NonBlockingSessionTest extends TestCase
         $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
 
         if ($path) {
+            /* @phan-suppress-next-line PhanAccessMethodInternal */
             $route->method('getPattern')->willReturn($path);
             $request = $request->withAttribute(RouteContext::ROUTE, $route);
         }

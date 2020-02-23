@@ -394,7 +394,7 @@ class EsiData
             $members = [];
         }
 
-        return $members;
+        return is_array($members) ? $members : [];
     }
 
     public function getCorporationEntity(int $id): Corporation

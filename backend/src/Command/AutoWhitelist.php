@@ -145,6 +145,10 @@ class AutoWhitelist extends Command
         );
 
         $watchlist = $this->watchlistRepository->find($id); // read again because of "clear" above
+        if ($watchlist === null) {
+            $this->writeLine('Watchlist not found.', false);
+            return 0;
+        }
         $this->saveWhitelist($watchlist, $whitelist);
 
         $this->writeLine('auto-whitelist end.', false);
@@ -166,7 +170,7 @@ class AutoWhitelist extends Command
             $playerId = $player->getId();
             $accountsData[$playerId] = [];
             foreach ($player->getCharacters() as $character) {
-                if (! $character->getCorporation()) {
+                if ($character->getCorporation() === null) {
                     continue;
                 }
 
@@ -247,7 +251,7 @@ class AutoWhitelist extends Command
         return $whitelist;
     }
 
-    private function saveWhitelist(\Neucore\Entity\Watchlist $watchlist, array $whitelist)
+    private function saveWhitelist(\Neucore\Entity\Watchlist $watchlist, array $whitelist): void
     {
         foreach ($watchlist->getWhitelistCorporations() as $corporationRemove) {
             if ($corporationRemove->getAutoWhitelist()) {

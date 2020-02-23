@@ -240,7 +240,7 @@ class MemberTracking
             return null;
         }
 
-        return $memberTracking;
+        return is_array($memberTracking) ? $memberTracking : null;
     }
 
     public function fetchCharacterNames(array $charIds): array

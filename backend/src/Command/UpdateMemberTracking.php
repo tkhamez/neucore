@@ -97,6 +97,7 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
+            /* @phan-suppress-next-line PhanPossiblyUndeclaredVariable */
             if (in_array($character->corporation_id, $processedCorporations) || // don't process the same corp twice
                 $corpId > 0 && $corpId !== $character->corporation_id
             ) {
@@ -135,12 +136,15 @@ class UpdateMemberTracking extends Command
             }
             $this->processData((int) $corporation->getId(), $trackingData, $sleep, $token);
 
-            // set last update date - "processData" may clear the ObjectManager
+            // set last update date - get corp again because "processData" may clear the ObjectManager
             $corporation = $corporationRepository->find($character->corporation_id);
-            if ($corporation !== null) {
-                $corporation->setTrackingLastUpdate(new \DateTime());
-                $this->em->flush();
+            if ($corporation === null) {
+                $this->writeLine('  Corporation not found for ' . $characterVariable->getName(), false);
+                continue;
             }
+
+            $corporation->setTrackingLastUpdate(new \DateTime());
+            $this->em->flush();
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .

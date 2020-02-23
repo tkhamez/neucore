@@ -936,8 +936,11 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function deleteCharacter(string $id, ServerRequestInterface $request, Account $characterService): ResponseInterface
-    {
+    public function deleteCharacter(
+        string $id,
+        ServerRequestInterface $request,
+        Account $characterService
+    ): ResponseInterface {
         $reason = $this->getQueryParam($request, 'admin-reason', '');
         $admin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::USER_ADMIN) && $reason !== '';
 
