@@ -165,9 +165,6 @@ Group API
 - Remove player from a group. `/user/group/{id}/remove-member/{pid}`
 - List all members of a group. `/user/group/{id}/members`
 
-Player API
-- Show player with characters. `/user/player/{id}/characters`
-
 #### app-admin
 
 Allows a player to create apps and add and remove managers and roles.

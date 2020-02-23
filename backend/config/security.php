@@ -77,8 +77,7 @@ return [
     '/api/user/player/app-managers'          => [Role::APP_ADMIN],
     '/api/user/player/group-managers'        => [Role::GROUP_ADMIN],
     '/api/user/player/{id}/characters'       => [
-                                                    Role::APP_ADMIN, Role::GROUP_ADMIN,
-                                                    Role::USER_MANAGER, Role::GROUP_MANAGER,
+                                                    Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER,
                                                     Role::WATCHLIST, Role::TRACKING,
                                                 ],
     '/api/user/player/with-status/{name}'    => [Role::USER_ADMIN, Role::USER_MANAGER],
