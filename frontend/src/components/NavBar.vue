@@ -67,7 +67,7 @@
                     <div class="dropdown-menu">
                         <a v-if="hasRole('tracking')"
                            class="dropdown-item" :class="{ active: page === 'Tracking' }"
-                           href="#Tracking">Tracking</a>
+                           href="#Tracking">Member Tracking</a>
                         <a v-if="hasAnyRole(['watchlist', 'watchlist-admin'])"
                            class="dropdown-item" :class="{ active: page === 'Watchlist' }"
                            href="#Watchlist">Watchlist</a>

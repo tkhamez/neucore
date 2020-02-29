@@ -21,7 +21,7 @@
             </span>
             <span v-if="tab === 'white'">
                 Player accounts that were manually excluded from the "Red Flags" list.<br>
-                Alliances and corporations that were manually put on the white list.
+                Alliances and corporations that were put on the white list.
             </span>
         </div>
     </div>

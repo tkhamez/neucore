@@ -2,10 +2,8 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with OpenAPI, it is available at `https://[domain]/openapi-3.yaml`.
-
-There is also an OpenAPI definition file available that contains only the API for applications at
-[https://[domain]/application-api-3.yml](https://neucore.herokuapp.com/application-api-3.yml).
+The API is documented with OpenAPI, it is available at 
+[https://[domain]/api.html](https://neucore.herokuapp.com/api.html).
 
 ## Roles Overview
 
