@@ -84,8 +84,12 @@ class WebTestCase extends TestCase
     /**
      * @return mixed
      */
-    protected function parseJsonBody(ResponseInterface $response, $assoc = true)
+    protected function parseJsonBody(?ResponseInterface $response, $assoc = true)
     {
+        if (! $response) {
+            return '';
+        }
+
         $json = $response->getBody()->__toString();
 
         return json_decode($json, $assoc);

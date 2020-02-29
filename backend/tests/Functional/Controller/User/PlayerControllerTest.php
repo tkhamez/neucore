@@ -925,7 +925,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters_Tracking_403()
     {
         $this->setupDb();
-        $this->loginUser(11);
+        $this->loginUser(11); // tracking role but missing group
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/characters');
         $this->assertEquals(403, $response->getStatusCode());

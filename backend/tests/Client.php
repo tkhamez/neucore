@@ -37,6 +37,10 @@ class Client extends \GuzzleHttp\Client
     public function send(RequestInterface $request, array $options = []): ResponseInterface
     {
         $response = array_shift($this->responses);
+        if (! $response) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            throw new \Exception('Missing Response');
+        }
         $this->callMiddleware($request, $response);
         return $response;
     }
@@ -44,6 +48,10 @@ class Client extends \GuzzleHttp\Client
     public function request($method, $uri = '', array $options = []): ResponseInterface
     {
         $response = array_shift($this->responses);
+        if (! $response) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            throw new \Exception('Missing Response');
+        }
         $this->callMiddleware(new Request($method, $uri), $response);
         return $response;
     }

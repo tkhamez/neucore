@@ -23,7 +23,7 @@ parameters:
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
 			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
 		-
-			message: '#Cannot call method (.*) on (.*)|null.#'
+			message: '#Cannot call method (.*) on (.*)null.#'
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Method (.*) has no return typehint specified.#'

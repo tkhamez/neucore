@@ -38,6 +38,9 @@ class Helper
      */
     private static $em;
 
+    /**
+     * @var int
+     */
     private static $roleSequence = 0;
 
     private $entities = [

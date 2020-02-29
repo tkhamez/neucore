@@ -880,7 +880,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function characters(string $id,  UserAuth $userAuth): ResponseInterface
+    public function characters(string $id, UserAuth $userAuth): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -899,7 +899,7 @@ class PlayerController extends BaseController
         if (in_array(Role::TRACKING, $roles) && count($neededRolesExceptTracking) === 0) {
             $requiredGroups = [];
             foreach ($player->getCharacters() as $character) {
-                if ($character->getCorporation()) {
+                if ($character->getCorporation() !== null) {
                     foreach ($character->getCorporation()->getGroupsTracking() as $group) {
                         $requiredGroups[] = $group->getId();
                     }
@@ -908,8 +908,7 @@ class PlayerController extends BaseController
             $userGroupIds = $userAccount->getGroupIds();
             if (
                 count($userGroupIds) === 0 ||
-                count($requiredGroups) === 0 ||
-                ! array_intersect($requiredGroups, $userGroupIds) === 0
+                count(array_intersect($requiredGroups, $userGroupIds)) === 0
             ) {
                 return $this->response->withStatus(403);
             }
