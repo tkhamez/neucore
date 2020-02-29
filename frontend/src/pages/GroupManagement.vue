@@ -150,10 +150,12 @@
 <script>
 import { GroupApi } from 'neucore-js-client';
 import Characters      from '../components/Characters.vue';
+import CharacterSearch from '../components/CharacterSearch.vue';
 
 export default {
     components: {
         Characters,
+        CharacterSearch,
     },
 
     props: {
