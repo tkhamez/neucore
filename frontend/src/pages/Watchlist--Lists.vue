@@ -1,5 +1,7 @@
 <template>
 <div>
+    <characters ref="charactersModal"></characters>
+
     <div v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'" class="card">
         <div class="card-body">
             <span v-if="tab === 'red'">
