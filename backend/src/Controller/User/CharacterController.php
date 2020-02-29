@@ -109,8 +109,8 @@ class CharacterController extends BaseController
      *         name="name",
      *         in="path",
      *         required=true,
-     *         description="Name of the character.",
-     *         @OA\Schema(type="string")
+     *         description="Name of the character (min. 3 characters).",
+     *         @OA\Schema(type="string", minLength=3)
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -125,9 +125,13 @@ class CharacterController extends BaseController
      */
     public function findBy(string $name): ResponseInterface
     {
-        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch(trim($name));
+        $name = trim($name);
+        if (mb_strlen($name) < 3) {
+            return $this->withJson([]);
+        }
 
         $retVal = [];
+        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name);
         foreach ($result as $char) {
             $retVal[] = [
                 'character_id' => $char->getId(),

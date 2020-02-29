@@ -35,23 +35,25 @@ export default {
 
             if (this.searchTerm === '') {
                 this.$emit('result', []);
-            } else if (this.searchTerm.length >= 3) {
-                this.doFindCharacter(this);
+            } else {
+                findCharacter(this);
             }
         },
-
-        doFindCharacter: _.debounce((vm) => {
-            new CharacterApi().findBy(vm.searchTerm, function(error, data) {
-                if (error) {
-                    vm.$emit('result', []);
-                    return;
-                }
-                vm.$emit('result', data);
-            });
-        }, 250),
-
     },
 }
+
+const findCharacter = _.debounce((vm) => {
+    if (vm.searchTerm.length < 3) {
+        return;
+    }
+    new CharacterApi().findBy(vm.searchTerm, function(error, data) {
+        if (error) {
+            vm.$emit('result', []);
+            return;
+        }
+        vm.$emit('result', data);
+    });
+}, 250);
 </script>
 
 <style scoped>
