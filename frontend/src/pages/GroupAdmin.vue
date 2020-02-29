@@ -97,7 +97,7 @@
 import $ from 'jquery';
 import { GroupApi } from 'neucore-js-client';
 
-import AddEntity from '../components/AddEntity.vue';
+import AddEntity from '../components/EntityAdd.vue';
 import Edit      from '../components/GroupAppEdit.vue';
 import Admin     from '../components/EntityRelationEdit.vue';
 

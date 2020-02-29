@@ -25,8 +25,14 @@
         </div>
         <div class="card-body">
             <p class="small text-muted">
-                Add missing <strong><a href="#" @click.prevent="showAddEntityModal('Alliance')">alliances</a></strong>
-                or <strong><a href="#" @click.prevent="showAddEntityModal('Corporation')">corporations</a></strong>.
+                Add missing
+                <a href="#" @click.prevent="showAddEntityModal('Alliance')">
+                    <span class="far fa-plus-square"></span> alliances
+                </a>
+                or
+                <a href="#" @click.prevent="showAddEntityModal('Corporation')">
+                    <span class="far fa-plus-square"></span> corporations
+                </a>
             </p>
             <admin ref="adminAlliance" :contentType="'alliances'" :type="'WatchlistBlacklist'" :typeId="id"></admin>
             <admin ref="adminCorp" :contentType="'corporations'" :type="'WatchlistBlacklist'" :typeId="id"></admin>
@@ -49,7 +55,7 @@
 </template>
 
 <script>
-import AddEntity from '../components/AddEntity.vue';
+import AddEntity from '../components/EntityAdd.vue';
 import Admin     from '../components/EntityRelationEdit.vue';
 
 export default {

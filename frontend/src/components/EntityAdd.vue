@@ -34,7 +34,9 @@ Modal window to add alliances or corporations to the database.
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" v-on:click="addAlliCorp()">Add</button>
+                    <button type="submit" class="btn btn-primary"
+                            :disabled="searchError"
+                            v-on:click="addAlliCorp()">Add</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -60,6 +62,7 @@ export default {
             searchResults: [],
             searchSelected: null,
             searchStrict: false,
+            searchError: false,
         }
     },
 
@@ -120,13 +123,14 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
         return;
     }
 
-    const url =  vm.settings.esiHost + '/latest/search/?categories=' + category +
+    const url =  vm.settings.esiHost + 'serser/latest/search/?categories=' + category +
         '&datasource=' + vm.settings.esiDataSource +
         '&search=' + encodeURIComponent(query) + '&strict=' + vm.searchStrict;
 
     vm.searchIsLoading = true;
     vm.searchResults = [];
-    $.get(url).always(response1 => {
+    vm.searchError = false;
+    $.get(url).done(response1 => {
         if (typeof response1[category] !== typeof []) {
             vm.searchIsLoading = false;
             return;
@@ -144,6 +148,10 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
                 vm.searchResults.push(result);
             }
         });
+    }).fail(err => {
+        vm.searchIsLoading = false;
+        vm.searchError = true;
+        vm.searchResults.push({ name: 'Error, please try again later.'});
     });
 }, 250);
 
