@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.9.0
+
+29 Feb 2020
 
 - New: Automatic inclusion of corporations in the whitelist for the watchlist.
 - New: Added character search with list of all characters on a player account to the watchlist page.
