@@ -818,10 +818,10 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(2, count($group->getPlayers()));
     }
 
-    public function testAddMember204AsAdmin()
+    public function testAddMember204AsManager()
     {
         $this->setupDb();
-        $this->loginUser(9); // user-manager
+        $this->loginUser(9);  // only user-manager, not an admin
 
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/add-member/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());
@@ -890,10 +890,10 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(0, count($group->getPlayers()));
     }
 
-    public function testRemoveMember204AsAdmin()
+    public function testRemoveMember204AsManager()
     {
         $this->setupDb();
-        $this->loginUser(9); // user-manager
+        $this->loginUser(9); // only user-manager, not an admin
 
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-member/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());

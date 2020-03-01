@@ -991,13 +991,13 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManagerOrAdmin
+        bool $onlyIfManager
     ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
+        if ($onlyIfManager && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
             return $this->response->withStatus(403);
         }
 
@@ -1016,13 +1016,13 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManagerOrAdmin
+        bool $onlyIfManager
     ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
 
-        if ($onlyIfManagerOrAdmin && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
+        if ($onlyIfManager && ! $this->checkManager($this->group) && ! $this->isUserManager()) {
             return $this->response->withStatus(403);
         }
 
