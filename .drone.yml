@@ -10,7 +10,7 @@ steps:
       - composer openapi
 
   - name: backend-test
-    image: php:7.3
+    image: php:7.4
     environment:
       BRAVECORE_APP_ENV: prod
       BRAVECORE_DATABASE_URL: mysql://root:@database/test
@@ -67,6 +67,8 @@ steps:
       - rm -r dist/neucore/backend/tests
       - rm -r dist/neucore/backend/var/cache/di
       - rm -r dist/neucore/backend/var/cache/http
+      - chmod 0775 dist/neucore/backend/var/cache
+      - chmod 0775 dist/neucore/backend/var/logs
       - mv doc dist/neucore/doc
       - rm -r dist/neucore/doc/screenshots
       - mv web dist/neucore/web
