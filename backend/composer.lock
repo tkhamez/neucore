@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b59c7804ddbf190af7ef40f03347a8d",
+    "content-hash": "ff34678ded5ab2e8ef866444f21d5691",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -3783,16 +3783,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "3.2.0",
+            "version": "3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "d5b1f583d5dc796efdadc76568a39009c66a447a"
+                "reference": "33f09b791931c0be0195659c93aa663a52f52117"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/d5b1f583d5dc796efdadc76568a39009c66a447a",
-                "reference": "d5b1f583d5dc796efdadc76568a39009c66a447a",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/33f09b791931c0be0195659c93aa663a52f52117",
+                "reference": "33f09b791931c0be0195659c93aa663a52f52117",
                 "shasum": ""
             },
             "require": {
@@ -3834,7 +3834,7 @@
                 "rest",
                 "sdk"
             ],
-            "time": "2019-12-12T19:37:42+00:00"
+            "time": "2020-03-04T18:50:33+00:00"
         },
         {
             "name": "web-token/jwt-core",
