@@ -123,7 +123,7 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
         return;
     }
 
-    const url =  vm.settings.esiHost + 'serser/latest/search/?categories=' + category +
+    const url =  vm.settings.esiHost + '/latest/search/?categories=' + category +
         '&datasource=' + vm.settings.esiDataSource +
         '&search=' + encodeURIComponent(query) + '&strict=' + vm.searchStrict;
 
