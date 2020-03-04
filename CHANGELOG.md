@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.9.1
+
+4 Mar 2020
+
+- Updated ESI client
+- Fixed alliance/corporation search
+
 ## 1.9.0
 
 29 Feb 2020
