@@ -7,15 +7,15 @@ git:
 
 php:
   - "7.2"
-  - "7.3"
-  - "7.4"
-  - nightly
+  #- "7.3"
+  #- "7.4"
+  #- nightly
 
 addons:
   sonarcloud:
     organization: "tkhamez-github"
     token:
-      secure: "oHFdB27/6RBWXkhyh9Mzt3BRgRSIDnkijLzhOC5TPNpIeXTiqsS+Nw8wJPHSnTvxE0Ck2iBzdNDSqfHgmC6gbKb2XWp3z6qM6xTHPzuQEHqqoVTReIPyK2/6nHrHoYTMkzoQ3U2pGBF8xVvkRly34FR2HBLiYbgIcIYKW0095nWAvITUC/L9YD5pLeIuMsEKjY64417XIyrSWhBru2iqgJDmeluAOp4gb7uAzKbVob+aF9d/VH1+MYGmWhcsccgOWKDPCBLmYbkLs2SFUBObOdU3kjzGzVXc3/+/fC4IrvZxSG2mbHG+bJOjpK5kPh1GUu9DLD41IZDCTColjxI8Kt7OUPxT8yZ42hq0ZtzmWlM5HExEp7bp6dyG9ZC19BuGLxetmzB14d28XJylovt5N+BAzbQNJndWIXcDXPvTIfXGC7eYhOS0BxAJSuCsoxTQR8A22FcUUnA3M3parmzijltkYJPmCIAGp9Qjou5oOeeIqKMpMxcOwst/HrjYTpB74ADLSsbrKOo3ivBHddsXUKjLJby0fIf9j7CtebcgqwyFR2Gm/68amdaqmiiT1Z9/lvsl+bI3/bR+wyhoWioBoTusrUU0/kYjWK3FsL+om7axDzX2hk2WXMXN8l1pNQPha3EcyDX/gatQNilQZfPi4L5mVA+gCsviGALmHxRL/FQ="
+      secure: "BcQunnP8ZpSK5IXzb1g9QCjSfF4fSaA25UwxEGcLlCwc6wa212bWAfdbmslN1xP31xaS3/VT8r9myiWPbRKw27y2k9mXj64oV/5EsRds34UjDOqwQCJnuMoc0miYkEF36zy1eQEf115LgsmQmUaN9bNYh2Y2Q2M+LbqFM8f1kuzaZXetYRKhKNlN2QYF529BYsGvX2asjlu91D8e1psnrcZ/qxDpf8MSjGU2ODXY/HLGVhLOasuXy1fjEDuFPb80TD1n9cOp1Tuf/zLc3dTjtLKNGeqnhVhzXhV7C6cLe2TYis3NKkCxVTPEg/+7OOUXP8sEy+xsA7PZ1Sc7d54qhZ0d2/K8eIzz05mX0fwMl14Nxi6L9WnYsRFwoFKQrKspiAhtsLcwCbDQhXWkgQZJKgyqK9qh61WgKRtTjG6rbZtyGpAu1ZxXbt/BEKXQEFflAc1MC1U6sFpdw2CyHA05WKuHN2W+rsqk0d0mIghQIpGXgjfdDgQLcdbXLFYln7cL3qK6ai4cctQbRWvbfmbxBCM1oBAa1gM674r9S89dXCuh1abSAaQIW2fpiUNrxt70ZqZxaNlb0iU4hTdgbVoob/bi5v3/hc8TWEhZ4xHmaJQ7k1sXxjDjeQlR0A0tZ5Xa0/3Xi4HIhGfeketooIVvGIiHaoS/wKJYv94mAwtdfQo="
 
 env:
   global:
@@ -23,44 +23,48 @@ env:
     - BRAVECORE_DATABASE_URL=mysql://neu:core@localhost/neucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://neu:core@localhost/neucore
   matrix:
-    - NODE_VERSION="10.13.0" DB=mysql:5.7
-    - NODE_VERSION="10.13.0" DB=mysql:8.0
+    #- NODE_VERSION="10.13.0" DB=mysql:5.7
+    #- NODE_VERSION="10.13.0" DB=mysql:8.0
     - NODE_VERSION="10.16.3" DB=mariadb:10.2
-    - NODE_VERSION="10.16.3" DB=mariadb:10.3
-    - NODE_VERSION="12.12.0" DB=mariadb:10.4
+    #- NODE_VERSION="10.16.3" DB=mariadb:10.3
+    #- NODE_VERSION="12.12.0" DB=mariadb:10.4
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
   exclude:
-    - php: "7.2"
-    - php: "7.3"
-    - php: "7.4"
-    - php: nightly
+    #- php: "7.2"
+    #- php: "7.3"
+    #- php: "7.4"
+    #- php: nightly
   include:
+    #- php: "7.2"
+    #  env: NODE_VERSION="10.13.0" DB=mysql:5.7
+    #  services:
+    #    - mysql
+    #- php: "7.2"
+    #  env: NODE_VERSION="10.13.0" DB=mysql:8.0
     - php: "7.2"
-      env: NODE_VERSION="10.13.0" DB=mysql:5.7
-      services:
-        - mysql
-    - php: "7.2"
-      env: NODE_VERSION="10.13.0" DB=mysql:8.0
-    - php: "7.3"
       env: NODE_VERSION="10.16.3" DB=mariadb:10.2
       addons:
         mariadb: "10.2"
-    - php: "7.3"
-      env: NODE_VERSION="10.16.3" DB=mariadb:10.3
-      addons:
-        mariadb: "10.3"
-    - php: "7.4"
-      env: NODE_VERSION="12.12.0" DB=mariadb:10.4
-      addons:
-        mariadb: "10.4"
-    - php: nightly
-      env: NODE_VERSION="12.12.0" DB=mariadb:10.4
-      addons:
-        mariadb: "10.4"
+    #- php: "7.3"
+    #  env: NODE_VERSION="10.16.3" DB=mariadb:10.2
+    #  addons:
+    #    mariadb: "10.2"
+    #- php: "7.3"
+    #  env: NODE_VERSION="10.16.3" DB=mariadb:10.3
+    #  addons:
+    #    mariadb: "10.3"
+    #- php: "7.4"
+    #  env: NODE_VERSION="12.12.0" DB=mariadb:10.4
+    #  addons:
+    #    mariadb: "10.4"
+    #- php: nightly
+    #  env: NODE_VERSION="12.12.0" DB=mariadb:10.4
+    #  addons:
+    #    mariadb: "10.4"
 
 before_install:
   - if [[ "$DB" == "mysql:8.0" ]]; then wget https://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb; fi
@@ -84,7 +88,7 @@ install:
 
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
-  - if [[ $(phpenv version-name) == "7.2" ]] && [[ "$DB" == "mysql:8.0" ]] && [[ $TRAVIS_REPO_SLUG == "tkhamez/neucore" ]]; then sonar-scanner; fi
+  #- if [[ $(phpenv version-name) == "7.2" ]] && [[ "$DB" == "mysql:8.0" ]] && [[ $TRAVIS_REPO_SLUG == "tkhamez/neucore" ]]; then sonar-scanner; fi
 
 before_deploy:
   - ./dist.sh $TRAVIS_TAG
@@ -92,7 +96,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: jqugUTZGE34rV35AD/a3M3QqYwv5P9msVDRPtnlG1EVrSM+GkpXJBSJykWVnurmtCaV+3DaPcmDkW/TSpHUukKyodMlddWMz1tC0a5rk8/i+AEWSdosOQ4OjH1q3tB8X7uUGtdIkLwcKtkUCxL13clcVgG+Y12uoov7B3vOKubfx3zuHytRXnumK0awp1iZhxXL7gwIiBDm8iem9vAt3Qn28MMXGayoQ2BJJlJga/r+OBaVhyDNIIFcl465Bk2H246dkd/z9QAH1YFvMJYTjkA4S+BT+HH5jPZVkWCM53UDRYlKGlCyNxkEEZhjSo96ffJzQsfidWqEzNDb/hRFB7Lez0YF27OnH32VPVv0Giy9TDJqfHkTcf7xJoWwO1Akdzeo5ogPLUIMdfiP+fkf2S5/hCecgJIHrvQ7j7YntDEmBWVb+tNxlV198pU80NfdURS9s9ALPDd1qLM6/TsIUHg7MeAVdEnKiF/QeeY0D9rLBaLoje2iP6LZrKqZL+FR/QiaecrYZ0TwrHSLAUc2rFyglW6/AgTUQyjT50Zuju9IytpPkfx+1bnPMNnDmKjISSrrCpw7DmLmnc2BoclQ9H1+vq3y0KnhYHYcdt12gk4Gq+4Bm9OMYvUWwEIQCGssifUzSKyD4nNgcWVCYF7OsfUlz9eLS/99LYKBeljwRK94=
+    secure: "pZwRqHKddvjzD8GtO+wUh26RTzjpQOZzS3Fmi4JH7dIz+dijxFjZxkOgsRdL2yszvaS00PIkC9Rd4SnEmG1DNtVq2OHCXq1XZzs4Ms36bWUn7dMNDNPD9XtqFy3o/GZ4TIqFoXeXKj9nToPcNT5l2W3bK5kEzsl0xS0qm5GyLgCZBG8SBnuyM3GQk49J0rfmmGhTPULPBsA9t+GieykduBUhV7DG+4PmfqTR828Np6K8wW+21Q42Ac6g7UC8oLGenk8SYvH/Z45hc5CLOBVU6HxtnmbEMGKfRuO4sWvcyOImivPpwNaSD77XPePg7QhOKWIS/aaicVnijhh8WB4B7zg8QbQI1xMwfRGdhSJ2tRWiWK/hdNBgOFcn8JG4zPb8aTIJ6UqKtiJ2EXT1KnFq96Cux6mxNs5fQOBs8v1lV65WEFpFhqNRcUJ7m5KV/rHdopCcX1b7IYzw5qaZdYuXAY6D7yTATnKvPzYRHap8brnby27k2liUZjzBQNdBk9Zs7OWDnXvEyZL7sNjRxMPvBKrWlxDV6OQH8iZ3hASl4+Cy5sRqSSS8YnLv2ldBFtrjMbIe55DTsGjYTN+pxPp0o6UI44zfW5p98hRO2H+euiT6seazHo19ebtiUemzZLGkB/rqP4rCMm99NTBST3EC2GIjAczmk30b0dawtL2S7ow="
   file_glob: true
   file: dist/*
   skip_cleanup: true
