@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.2
+
+8 Mar 2020
+
+- Fixed character modal on Watchlist page
+
 ## 1.9.1
 
 4 Mar 2020
