@@ -201,7 +201,7 @@
                     </div>
                     <p class="text-muted small" v-if="playerEdit.status === 'managed'">
                         Groups of this player can manually be changed on the
-                        <a :href="'#PlayerGroupManagement/' + playerEdit.id">Player Groups Admin</a>
+                        <a :href="'#PlayerGroupManagement/' + playerEdit.id">Player Groups Management</a>
                         page.
                     </p>
 
