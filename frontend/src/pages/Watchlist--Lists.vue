@@ -1,7 +1,5 @@
 <template>
 <div>
-    <characters ref="charactersModal"></characters>
-
     <div v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'" class="card">
         <div class="card-body">
             <span v-if="tab === 'red'">
@@ -146,7 +144,7 @@ export default {
 
     methods: {
         showCharacters: function(playerId) {
-            this.$refs.charactersModal.showCharacters(playerId);
+            this.$parent.$refs.charactersModal.showCharacters(playerId);
         },
 
         addToWhitelist: function(playerId) {
