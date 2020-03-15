@@ -7,9 +7,9 @@ git:
 
 php:
   - "7.2"
-  #- "7.3"
-  #- "7.4"
-  #- nightly
+  - "7.3"
+  - "7.4"
+  - nightly
 
 addons:
   sonarcloud:
@@ -17,62 +17,54 @@ addons:
     token:
       secure: "LN/qvsQK7T3uA4LDIignXniLgwzLTKEPmzMr4R4rb2t2LWEww4J4OlI2Rs3jfZf1EoMGQ8CFbob/6OCFWaLWwQhiHRSlQvXcBeZSWBfrtsmweb3Yn+PsW6MsX/qEEKq0lxmyHWAkv2q/XhJyAGksM5JRsgnZKqcJbq6R54oyUPvQJHNsZaGJaW4Co9CvpkOdD3DBy5/5a83NHkpfnQEVa5LMvotg2Uw9hY2iup/GyL4pmF0LNGozyf7etyho7Dsr7O5Ay8q6SZdMU5HIGAYU/UpMX9fTX+IISfq8/cO6T/NR9hnsx5ihxYc5TZIjEqsq9e3l/IA9K/qBqgZaAznb6A4/70NbpqD7ML+S7DJLl9G0FhzZx81zr8UuH3LK4WA33wnDQBT6LaSCM+Hz6TTh3c3WKwuX/WvMjabs7LMhmHD34AxD9pg7nWJpb+5xyBZdfZ/vjWbzWsrgYBb51wGfTEfZNnVHvAKoXlSL3GhvTdJp9f8D5VYoFqSWPiHkXrmepHnnx2MyRgyySLQXNDtAdF8FM3PkoqFcEzy8nYLBnwmyZIofpAAtiPX7I78BfY3gZvdXzTvMGBjZjkvTdtqRhB5HRenESiCBAbjsxlYS06Tyi5JeGWXn94nYi07SAbyIAQI1n8m2gZRoC6xNJMQTNgqYNNTW4KfXm5JiR5DvKqM="
 
+services:
+  - mysql
+
 env:
   global:
     - BRAVECORE_APP_ENV=dev
     - BRAVECORE_DATABASE_URL=mysql://neu:core@localhost/neucore
     - BRAVECORE_TEST_DATABASE_URL=mysql://neu:core@localhost/neucore
   matrix:
-    #- NODE_VERSION="10.13.0" DB=mysql:5.7
-    #- NODE_VERSION="10.13.0" DB=mysql:8.0
-    - NODE_VERSION="10.16.3" DB=mariadb:10.2
-    #- NODE_VERSION="10.16.3" DB=mariadb:10.3
-    #- NODE_VERSION="12.12.0" DB=mariadb:10.4
+    - NODE_VERSION="10.13.0" DB=mysql:5.7
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
   exclude:
-    #- php: "7.2"
-    #- php: "7.3"
-    #- php: "7.4"
-    #- php: nightly
+    - php: "7.3"
+      env: NODE_VERSION="10.13.0" DB=mysql:5.7
+    - php: "7.4"
+      env: NODE_VERSION="10.13.0" DB=mysql:5.7
   include:
-    #- php: "7.2"
-    #  env: NODE_VERSION="10.13.0" DB=mysql:5.7
-    #  services:
-    #    - mysql
-    #- php: "7.2"
-    #  env: NODE_VERSION="10.13.0" DB=mysql:8.0
     - php: "7.2"
-      env: NODE_VERSION="10.16.3" DB=mariadb:10.2
+      env:
+        - NODE_VERSION="10.13.0" DB=mysql:8.0
+      before_install:
+        - wget https://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb
+        - sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb
+        - sudo apt-get update -q
+        - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+        - sudo systemctl restart mysql
+        - sudo mysql_upgrade
+    - php: "7.3"
+      env:
+        - NODE_VERSION="10.16.3" DB=mariadb:10.2
       addons:
         mariadb: "10.2"
-    #- php: "7.3"
-    #  env: NODE_VERSION="10.16.3" DB=mariadb:10.2
-    #  addons:
-    #    mariadb: "10.2"
-    #- php: "7.3"
-    #  env: NODE_VERSION="10.16.3" DB=mariadb:10.3
-    #  addons:
-    #    mariadb: "10.3"
-    #- php: "7.4"
-    #  env: NODE_VERSION="12.12.0" DB=mariadb:10.4
-    #  addons:
-    #    mariadb: "10.4"
-    #- php: nightly
-    #  env: NODE_VERSION="12.12.0" DB=mariadb:10.4
-    #  addons:
-    #    mariadb: "10.4"
+    - php: "7.3"
+      env:
+        - NODE_VERSION="10.16.3" DB=mariadb:10.3
+      addons:
+        mariadb: "10.3"
+    - php: "7.4"
+      env:
+        - NODE_VERSION="12.12.0" DB=mariadb:10.4
+      addons:
+        mariadb: "10.4"
 
-before_install:
-  - if [[ "$DB" == "mysql:8.0" ]]; then wget https://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb; fi
-  - if [[ "$DB" == "mysql:8.0" ]]; then sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb; fi
-  - if [[ "$DB" == "mysql:8.0" ]]; then sudo apt-get update -q; fi
-  - if [[ "$DB" == "mysql:8.0" ]]; then sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server; fi
-  - if [[ "$DB" == "mysql:8.0" ]]; then sudo systemctl restart mysql; fi
-  - if [[ "$DB" == "mysql:8.0" ]]; then sudo mysql_upgrade; fi
+install:
   - mysql --version
   - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS neucore;'
   - if [[ "$DB" == "mysql:8.0" ]]; then mysql -e "CREATE USER 'neu'@'localhost' IDENTIFIED WITH mysql_native_password BY 'core';"; fi
@@ -82,13 +74,11 @@ before_install:
   - nvm install $NODE_VERSION
   - node -v
   - npm -v
-
-install:
   - ./install.sh
 
 script:
   - backend/vendor/bin/phpunit -c backend/phpunit.xml
-  #- if [[ $(phpenv version-name) == "7.2" ]] && [[ "$DB" == "mariadb:10.2" ]] && [[ $TRAVIS_REPO_SLUG == "tkhamez/neucore" ]]; then sonar-scanner; fi
+  - if [[ $(phpenv version-name) == "7.2" ]] && [[ "$DB" == "mysql:5.7" ]] && [[ $TRAVIS_REPO_SLUG == "tkhamez/neucore" ]]; then sonar-scanner; fi
 
 before_deploy:
   - ./dist.sh $TRAVIS_TAG
