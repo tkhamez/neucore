@@ -212,16 +212,16 @@
                         <table class="table table-hover table-sm" aria-describedby="Characters">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Corporation</th>
-                                    <th>Alliance</th>
-                                    <th>Main</th>
-                                    <th>Created*</th>
-                                    <th>Token status</th>
-                                    <th>Token status changed*</th>
-                                    <th>Last updated*</th>
-                                    <th></th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Corporation</th>
+                                    <th scope="col">Alliance</th>
+                                    <th scope="col">Main</th>
+                                    <th scope="col">Created*</th>
+                                    <th scope="col">Token status</th>
+                                    <th scope="col">Token status changed*</th>
+                                    <th scope="col">Last updated*</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -287,9 +287,9 @@
                     <table class="table table-hover table-sm" aria-describedby="Member of groups">
                         <thead class="thead-dark">
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Visibility</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Visibility</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -305,9 +305,9 @@
                     <table class="table table-hover table-sm" aria-describedby="Manager of groups">
                         <thead class="thead-dark">
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Visibility</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Visibility</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -323,8 +323,8 @@
                     <table class="table table-hover table-sm" aria-describedby="Manager of apps">
                         <thead class="thead-dark">
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -343,14 +343,14 @@
                                    :aria-describedby="(idx === 0 ? 'Removed' : 'Incoming') + ' Characters'">
                                 <thead class="thead-dark">
                                 <tr>
-                                    <th>Character ID</th>
-                                    <th>Character Name</th>
-                                    <th v-if="idx === 0">Date removed (GMT)</th>
-                                    <th v-else>Date added (GMT)</th>
-                                    <th v-if="idx === 0">Reason</th>
-                                    <th v-if="idx === 0">New Player</th>
-                                    <th v-else>Old Player</th>
-                                    <th v-if="idx === 0">Deleted by</th>
+                                    <th scope="col">Character ID</th>
+                                    <th scope="col">Character Name</th>
+                                    <th scope="col" v-if="idx === 0">Date removed (GMT)</th>
+                                    <th scope="col" v-else>Date added (GMT)</th>
+                                    <th scope="col" v-if="idx === 0">Reason</th>
+                                    <th scope="col" v-if="idx === 0">New Player</th>
+                                    <th scope="col" v-else>Old Player</th>
+                                    <th scope="col" v-if="idx === 0">Deleted by</th>
                                 </tr>
                                 </thead>
                                 <tbody>
