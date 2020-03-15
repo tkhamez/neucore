@@ -332,6 +332,7 @@ class MemberTracking
     /**
      *
      * This flushes and clears the ObjectManager every 20 members.
+     * This function also waits if the ESI error limit becomes too high.
      *
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $memberData
      * @param ResourceOwnerAccessTokenInterface|null $directorToken Director char access token as primary token to
