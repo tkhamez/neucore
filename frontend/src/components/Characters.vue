@@ -20,7 +20,7 @@ Modal window with all characters of one player.
                         <div class="col-6">
                             <img :src="characterPortrait(character.id, 32)" alt="portrait">
                             {{ character.name }}
-                            <span v-if="character.main" class="fas fa-star text-warning" title="Main"></span>
+                            <span v-if="character.main" role="img" class="fas fa-star text-warning" title="Main"></span>
                         </div>
                         <div class="col-6 text-right">
                             <span v-if="character.validToken" class="badge badge-success ml-1">Valid token</span>

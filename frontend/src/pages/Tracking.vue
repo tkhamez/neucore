@@ -76,7 +76,7 @@
                     <span class="small">Search in:</span>
                     <button title="Columns" class="btn btn-secondary btn-sm dropdown-toggle"
                             type="button" data-toggle="dropdown" aria-label="Columns" aria-expanded="false">
-                        <i class="fa fa-th-list"></i>
+                        <span role="img" class="fa fa-th-list"></span>
                         <span class="caret"></span>
                     </button>
                     <div class="dropdown-menu" v-on:click.stop="">

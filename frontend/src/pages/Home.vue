@@ -118,7 +118,7 @@
                             </div>
                             <div class="card-footer">
                                 <span v-if="char.main" class="small text-warning align-middle">
-                                    <span class="fas fa-star"></span> Main
+                                    <span role="img" class="fas fa-star"></span> Main
                                 </span>
                                 <a v-if="! char.main" class="badge badge-primary" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
@@ -128,7 +128,7 @@
                                         && settings.allow_character_deletion === '1'"
                                    class="badge badge-danger"
                                    v-on:click.prevent="askDeleteChar(char.id, char.name)"
-                                   href="#"><i class="fas fa-trash-alt"></i></a>
+                                   href="#"><span role="img" class="fas fa-trash-alt"></span></a>
                                 <br>
                                 <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
                                 <span v-if="char.validToken === null"

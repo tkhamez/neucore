@@ -146,7 +146,7 @@
                     </span>
                     <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
                           v-on:click="updateCharacters"
-                          class="fas fa-sync update-char"
+                          role="img" class="fas fa-sync update-char"
                           title="update characters"></span>
                 </h3>
 
@@ -175,7 +175,7 @@
                         <button type="button" class="btn btn-danger mr-5"
                                 :disabled="role === 'user-admin' && playerEdit.id === player.id"
                                 v-on:click="removeRole(role)">
-                            <span class="fas fa-minus-circle"></span>
+                            <span role="img" class="fas fa-minus-circle"></span>
                             remove
                         </button>
                         {{ role }}
