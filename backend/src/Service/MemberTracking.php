@@ -7,7 +7,7 @@ use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
-use Neucore\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Brave\Sso\Basics\EveAuthentication;
@@ -330,67 +330,47 @@ class MemberTracking
     }
 
     /**
+     * Creat or update a structure from member tracking data.
      *
-     * This flushes and clears the ObjectManager every 20 members.
-     * This function also waits if the ESI error limit becomes too high.
+     *  This method does not flush the entity manager.
      *
-     * @param GetCorporationsCorporationIdMembertracking200Ok[] $memberData
+     * @param GetCorporationsCorporationIdMembertracking200Ok $memberData
      * @param ResourceOwnerAccessTokenInterface|null $directorToken Director char access token as primary token to
      *        resolve structure IDs to names.
-     * @param int $sleep
      */
-    public function updateStructures(
-        array $memberData,
-        ResourceOwnerAccessTokenInterface $directorToken = null,
-        int $sleep = 0
+    public function updateStructure(
+        GetCorporationsCorporationIdMembertracking200Ok $memberData,
+        ResourceOwnerAccessTokenInterface $directorToken = null
     ): void {
-        // create/update db entries
-        foreach ($memberData as $num => $member) {
-            if (! $this->objectManager->isOpen()) {
-                $this->log->critical('UpdateCharacters: cannot continue without an open entity manager.');
-                break;
-            }
-            $this->checkErrorLimit();
+        $structureId = (int) $memberData->getLocationId();
 
-            $structureId = (int) $member->getLocationId();
-
-            // fetch ESI data, try director token first, then character's token if available
-            $location = null;
-            if ($directorToken) {
-                try {
-                    $directorAccessToken = $this->oauthToken->refreshAccessToken($directorToken)->getToken();
-                } catch (IdentityProviderException $e) {
-                    $directorAccessToken = '';
-                }
-                $location = $this->esiData->fetchStructure($structureId, $directorAccessToken, false);
+        // fetch ESI data, try director token first, then character's token if available
+        $location = null;
+        if ($directorToken) {
+            try {
+                $directorAccessToken = $this->oauthToken->refreshAccessToken($directorToken)->getToken();
+            } catch (IdentityProviderException $e) {
+                $directorAccessToken = '';
             }
-            if ($location === null) {
-                $character = $this->repositoryFactory->getCharacterRepository()->find($member->getCharacterId());
-                if ($character !== null) {
-                    $characterAccessToken = $this->oauthToken->getToken($character);
-                    $location = $this->esiData->fetchStructure($structureId, $characterAccessToken, false);
-                }
+            $location = $this->esiData->fetchStructure($structureId, $directorAccessToken, false);
+        }
+        if ($location === null) {
+            $character = $this->repositoryFactory->getCharacterRepository()->find($memberData->getCharacterId());
+            if ($character !== null) {
+                $characterAccessToken = $this->oauthToken->getToken($character);
+                $location = $this->esiData->fetchStructure($structureId, $characterAccessToken, false);
             }
-
-            // if ESI failed, create location db entry with ID only
-            if ($location === null) {
-                if ($this->repositoryFactory->getEsiLocationRepository()->find($structureId) === null) {
-                    $location = new EsiLocation();
-                    $location->setId($structureId);
-                    $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
-                    $this->objectManager->persist($location);
-                }
-            }
-
-            if ($num > 0 && $num % 20 === 0) {
-                $this->objectManager->flush();
-                $this->objectManager->clear();
-            }
-
-            usleep($sleep * 1000);
         }
 
-        $this->objectManager->flush();
+        // if ESI failed, create location db entry with ID only
+        if ($location === null) {
+            if ($this->repositoryFactory->getEsiLocationRepository()->find($structureId) === null) {
+                $location = new EsiLocation();
+                $location->setId($structureId);
+                $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+                $this->objectManager->persist($location);
+            }
+        }
     }
 
     /**

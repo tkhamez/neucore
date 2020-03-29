@@ -1,6 +1,8 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Neucore\Traits;
+declare(strict_types=1);
+
+namespace Neucore\Command\Traits;
 
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\SystemVariableRepository;

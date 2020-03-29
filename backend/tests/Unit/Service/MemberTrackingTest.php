@@ -360,7 +360,8 @@ class MemberTrackingTest extends TestCase
             }') // structure
         );
 
-        $this->memberTracking->updateStructures([$data], new AccessToken(['access_token' => 'at']));
+        $this->memberTracking->updateStructure($data, new AccessToken(['access_token' => 'at']));
+        $this->em->flush();
 
         $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);
         $this->assertSame(1, count($resultLocations));

@@ -8,7 +8,7 @@ use Neucore\Entity\CorporationMember;
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\SystemVariableRepository;
-use Neucore\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EveMail;

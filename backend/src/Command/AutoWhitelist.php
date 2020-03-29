@@ -15,7 +15,7 @@ use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Watchlist;
-use Neucore\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiRateLimited;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

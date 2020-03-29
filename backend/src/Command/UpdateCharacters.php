@@ -2,7 +2,7 @@
 
 namespace Neucore\Command;
 
-use Neucore\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;

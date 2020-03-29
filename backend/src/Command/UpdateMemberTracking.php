@@ -1,11 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Api;
-use Neucore\Traits\EsiRateLimited;
+use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
@@ -39,16 +41,26 @@ class UpdateMemberTracking extends Command
     private $esiData;
 
     /**
-     * @var EntityManagerInterface
+     * @var LoggerInterface
      */
-    private $em;
+    private $logger;
+
+    /**
+     * @var ObjectManager
+     */
+    private $objectManager;
+
+    /**
+     * @var int milliseconds
+     */
+    private $sleep;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
         MemberTracking $memberTracking,
         EsiData $esiData,
         LoggerInterface $logger,
-        EntityManagerInterface $em
+        ObjectManager $objectManager
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -57,7 +69,8 @@ class UpdateMemberTracking extends Command
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
         $this->esiData = $esiData;
-        $this->em = $em;
+        $this->logger = $logger;
+        $this->objectManager = $objectManager;
     }
 
     protected function configure(): void
@@ -80,7 +93,7 @@ class UpdateMemberTracking extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $corpId = intval($input->getArgument('corporation'));
-        $sleep = intval($input->getOption('sleep'));
+        $this->sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
 
         $this->writeLine('Started "update-member-tracking"', false);
@@ -134,7 +147,7 @@ class UpdateMemberTracking extends Command
             if (! isset($tokenData['scopes']) || ! in_array(Api::SCOPE_STRUCTURES, $tokenData['scopes'])) {
                 $token = null;
             }
-            $this->processData((int) $corporation->getId(), $trackingData, $sleep, $token);
+            $this->processData((int) $corporation->getId(), $trackingData, $token);
 
             // set last update date - get corp again because "processData" may clear the ObjectManager
             $corporation = $corporationRepository->find($character->corporation_id);
@@ -144,7 +157,7 @@ class UpdateMemberTracking extends Command
             }
 
             $corporation->setTrackingLastUpdate(new \DateTime());
-            $this->em->flush();
+            $this->objectManager->flush();
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .
@@ -153,7 +166,7 @@ class UpdateMemberTracking extends Command
 
             $processedCorporations[] = $corporation->getId();
 
-            usleep($sleep * 1000);
+            usleep($this->sleep * 1000);
         }
 
         $this->writeLine('Finished "update-member-tracking"', false);
@@ -164,13 +177,11 @@ class UpdateMemberTracking extends Command
     /**
      * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
-     * @param int $sleep milliseconds
      * @param ResourceOwnerAccessTokenInterface|null $token Used to resolve structure IDs to names if available
      */
     private function processData(
         int $corporationId,
         array $trackingData,
-        $sleep,
         ResourceOwnerAccessTokenInterface $token = null
     ): void {
         if (count($trackingData) === 0) {
@@ -204,14 +215,40 @@ class UpdateMemberTracking extends Command
         // delete members that left
         $this->repositoryFactory->getCorporationMemberRepository()->removeFormerMembers($corporationId, $charIds);
 
-        $this->memberTracking->updateNames($typeIds, $systemIds, $stationIds, $sleep);
+        $this->memberTracking->updateNames($typeIds, $systemIds, $stationIds, $this->sleep);
         $this->writeLine('  Updated ship/system/station names');
 
-        $this->memberTracking->updateStructures($structures, $token, $sleep);
+        $this->updateStructures($structures, $token);
         $this->writeLine('  Updated structure names');
 
         $charNames = $this->memberTracking->fetchCharacterNames($charIds);
 
-        $this->memberTracking->storeMemberData($corporationId, $trackingData, $charNames, $sleep);
+        $this->memberTracking->storeMemberData($corporationId, $trackingData, $charNames, $this->sleep);
+    }
+
+    /**
+     * @param GetCorporationsCorporationIdMembertracking200Ok[] $structures
+     * @param $token
+     */
+    private function updateStructures($structures, $token)
+    {
+        foreach ($structures as $num => $memberData) {
+            if (! $this->objectManager->isOpen()) {
+                $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
+                break;
+            }
+            $this->checkErrorLimit();
+
+            $this->memberTracking->updateStructure($memberData, $token);
+
+            if ($num > 0 && $num % 20 === 0) {
+                $this->objectManager->flush();
+                $this->objectManager->clear();
+            }
+
+            usleep($this->sleep * 1000);
+        }
+
+        $this->objectManager->flush();
     }
 }
