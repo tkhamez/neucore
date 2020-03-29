@@ -5,13 +5,13 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
@@ -28,9 +28,9 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
     private $client;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     private $playerId;
 
@@ -43,9 +43,9 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->em = $helper->getEm();
+        $this->om = $helper->getObjectManager();
         $this->client = new Client();
-        $this->repoFactory = new RepositoryFactory($this->em);
+        $this->repoFactory = new RepositoryFactory($this->om);
     }
 
     public function testExecuteNotActive()
@@ -70,15 +70,15 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $corp = (new Corporation())->setId(2020)->setName('corp')->setTicker('C')->setAlliance($alliance);
         $player = (new Player())->setName('play');
         $char = (new Character())->setId(30)->setName('c3')->setPlayer($player)->setCorporation($corp);
-        $this->em->persist($deactivateAccounts);
-        $this->em->persist($active);
-        $this->em->persist($alliances);
-        $this->em->persist($corps);
-        $this->em->persist($alliance);
-        $this->em->persist($corp);
-        $this->em->persist($player);
-        $this->em->persist($char);
-        $this->em->flush();
+        $this->om->persist($deactivateAccounts);
+        $this->om->persist($active);
+        $this->om->persist($alliances);
+        $this->om->persist($corps);
+        $this->om->persist($alliance);
+        $this->om->persist($corp);
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->flush();
 
         $output = $this->runConsoleApp('send-invalid-token-mail', ['--sleep' => 0]);
 
@@ -118,7 +118,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
 
         $this->assertSame(0, count($log->getHandler()->getRecords()));
 
-        $this->em->clear();
+        $this->om->clear();
         $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
         $this->assertTrue($player->getDeactivationMailSent());
     }
@@ -140,7 +140,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 
-        $this->em->clear();
+        $this->om->clear();
         $player = $this->repoFactory->getPlayerRepository()->find($this->playerId);
         $this->assertTrue($player->getDeactivationMailSent());
     }
@@ -165,24 +165,24 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $c3 = (new Character())->setId(30)->setName('c3')->setPlayer($p3)->setCorporation($corp); // sends mail
         $c4 = (new Character())->setId(40)->setName('c4')->setPlayer($p4)->setCorporation($corp); // already sent
         $c5 = (new Character())->setId(50)->setName('c5')->setPlayer($p5)->setCorporation($corp); // managed account
-        $this->em->persist($active);
-        $this->em->persist($alliances);
-        $this->em->persist($corps);
-        $this->em->persist($token);
-        $this->em->persist($subj);
-        $this->em->persist($body);
-        $this->em->persist($alliance);
-        $this->em->persist($corp);
-        $this->em->persist($p1);
-        $this->em->persist($p2);
-        $this->em->persist($p3);
-        $this->em->persist($p4);
-        $this->em->persist($p5);
-        $this->em->persist($c2);
-        $this->em->persist($c3);
-        $this->em->persist($c4);
-        $this->em->persist($c5);
-        $this->em->flush();
+        $this->om->persist($active);
+        $this->om->persist($alliances);
+        $this->om->persist($corps);
+        $this->om->persist($token);
+        $this->om->persist($subj);
+        $this->om->persist($body);
+        $this->om->persist($alliance);
+        $this->om->persist($corp);
+        $this->om->persist($p1);
+        $this->om->persist($p2);
+        $this->om->persist($p3);
+        $this->om->persist($p4);
+        $this->om->persist($p5);
+        $this->om->persist($c2);
+        $this->om->persist($c3);
+        $this->om->persist($c4);
+        $this->om->persist($c5);
+        $this->om->flush();
 
         $this->playerId = $p3->getId();
     }

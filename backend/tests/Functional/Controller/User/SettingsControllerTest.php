@@ -6,13 +6,13 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\Events;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
@@ -31,9 +31,9 @@ class SettingsControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var SystemVariableRepository
@@ -47,8 +47,8 @@ class SettingsControllerTest extends WebTestCase
         $this->helper = new Helper();
         $this->helper->emptyDb();
 
-        $this->em = $this->helper->getEm();
-        $this->systemVariableRepository = (new RepositoryFactory($this->em))->getSystemVariableRepository();
+        $this->om = $this->helper->getObjectManager();
+        $this->systemVariableRepository = (new RepositoryFactory($this->om))->getSystemVariableRepository();
     }
 
     public function testSystemList200Anonymous()
@@ -158,7 +158,7 @@ class SettingsControllerTest extends WebTestCase
             '/api/user/settings/system/change/'.SystemVariable::ALLOW_CHARACTER_DELETION,
             ['value' => '1'],
             null,
-            [EntityManagerInterface::class => $em, LoggerInterface::class => $log]
+            [ObjectManager::class => $em, LoggerInterface::class => $log]
         );
         $this->assertEquals(500, $response->getStatusCode());
     }
@@ -181,7 +181,7 @@ class SettingsControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->em->clear();
+        $this->om->clear();
         $changed = $this->systemVariableRepository->find(SystemVariable::ALLOW_CHARACTER_DELETION);
         $this->assertSame("1", $changed->getValue());
     }
@@ -198,7 +198,7 @@ class SettingsControllerTest extends WebTestCase
         );
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $changed1 = $this->systemVariableRepository->find(SystemVariable::MAIL_CHARACTER);
         $changed2 = $this->systemVariableRepository->find(SystemVariable::MAIL_TOKEN);
@@ -218,7 +218,7 @@ class SettingsControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $actual = $this->systemVariableRepository->find(SystemVariable::DIRECTOR_CHAR . 1);
         $this->assertNull($actual);
@@ -244,7 +244,7 @@ class SettingsControllerTest extends WebTestCase
     public function testSendInvalidTokenMail200MissingSettings()
     {
         $var = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
-        $this->em->persist($var);
+        $this->om->persist($var);
 
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -260,9 +260,9 @@ class SettingsControllerTest extends WebTestCase
         $var1 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $var2 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('123,456');
         $var3 = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS))->setValue('');
-        $this->em->persist($var1);
-        $this->em->persist($var2);
-        $this->em->persist($var3);
+        $this->om->persist($var1);
+        $this->om->persist($var2);
+        $this->om->persist($var3);
 
         $this->setupDb();
         $this->loginUser(6); // role: SETTINGS
@@ -289,9 +289,9 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame('Mail is deactivated.', $this->parseJsonBody($response1));
 
         $activeVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE))->setValue('1');
-        $this->em->persist($activeVar);
-        $this->em->flush();
-        $this->em->clear();
+        $this->om->persist($activeVar);
+        $this->om->flush();
+        $this->om->clear();
 
         $response2 = $this->runApp('POST', '/api/user/settings/system/send-missing-character-mail');
         $this->assertEquals(200, $response2->getStatusCode());
@@ -300,11 +300,11 @@ class SettingsControllerTest extends WebTestCase
         $daysVar = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_RESEND))->setValue('20');
         $varSubject = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT))->setValue('s');
         $varBody = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_BODY))->setValue('b');
-        $this->em->persist($daysVar);
-        $this->em->persist($varSubject);
-        $this->em->persist($varBody);
-        $this->em->flush();
-        $this->em->clear();
+        $this->om->persist($daysVar);
+        $this->om->persist($varSubject);
+        $this->om->persist($varBody);
+        $this->om->flush();
+        $this->om->clear();
         $client = new Client();
         $client->setResponse(
             new Response(200, [], '373515628') // for postCharactersCharacterIdMail()
@@ -386,16 +386,16 @@ class SettingsControllerTest extends WebTestCase
         $var7->setScope(SystemVariable::SCOPE_BACKEND);
         $var8->setScope(SystemVariable::SCOPE_SETTINGS);
 
-        $this->em->persist($var1);
-        $this->em->persist($var2);
-        $this->em->persist($var4);
-        $this->em->persist($var5);
-        $this->em->persist($var6);
-        $this->em->persist($var7);
-        $this->em->persist($var8);
-        $this->em->persist($alli);
-        $this->em->persist($corp);
+        $this->om->persist($var1);
+        $this->om->persist($var2);
+        $this->om->persist($var4);
+        $this->om->persist($var5);
+        $this->om->persist($var6);
+        $this->om->persist($var7);
+        $this->om->persist($var8);
+        $this->om->persist($alli);
+        $this->om->persist($corp);
 
-        $this->em->flush();
+        $this->om->flush();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -18,7 +19,6 @@ use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
@@ -34,9 +34,9 @@ class PlayerControllerTest extends WebTestCase
     private $h;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     private $player1Id;
 
@@ -93,9 +93,9 @@ class PlayerControllerTest extends WebTestCase
         $_SESSION = null;
 
         $this->h = new Helper();
-        $this->em = $this->h->getEm();
+        $this->om = $this->h->getObjectManager();
 
-        $rf = new RepositoryFactory($this->em);
+        $rf = new RepositoryFactory($this->om);
         $this->playerRepo = $rf->getPlayerRepository();
         $this->charRepo = $rf->getCharacterRepository();
         $this->removedCharRepo = $rf->getRemovedCharacterRepository();
@@ -123,9 +123,9 @@ class PlayerControllerTest extends WebTestCase
         $alli = (new Alliance())->setId(123)->setName('alli1')->setTicker('ATT');
         $corp = (new Corporation())->setId(456)->setName('corp1')->setTicker('MT')->setAlliance($alli);
         $char->setCorporation($corp);
-        $this->h->getEm()->persist($alli);
-        $this->h->getEm()->persist($corp);
-        $this->h->getEm()->flush();
+        $this->om->persist($alli);
+        $this->om->persist($corp);
+        $this->om->flush();
         $this->loginUser(123456);
 
         $response = $this->runApp('GET', '/api/user/player/show');
@@ -188,13 +188,13 @@ class PlayerControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/player/add-application/'. $this->group->getId());
         $this->assertEquals(204, $response1->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         // updates application
         $response2 = $this->runApp('PUT', '/api/user/player/add-application/'. $this->group->getId());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
         $groupApps = $this->groupAppRepo->findBy([]);
         $this->assertSame(1, count($groupApps));
         $this->assertSame($this->group->getId(), $groupApps[0]->getGroup()->getId());
@@ -225,13 +225,13 @@ class PlayerControllerTest extends WebTestCase
         $ga = new GroupApplication();
         $ga->setGroup($this->group);
         $ga->setPlayer($this->player3);
-        $this->em->persist($ga);
-        $this->em->flush();
+        $this->om->persist($ga);
+        $this->om->flush();
 
         $response = $this->runApp('PUT', '/api/user/player/remove-application/' . $this->group->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
         $groupApps = $this->groupAppRepo->findBy([]);
         $this->assertSame(0, count($groupApps));
     }
@@ -250,8 +250,8 @@ class PlayerControllerTest extends WebTestCase
         $ga = new GroupApplication();
         $ga->setGroup($this->group);
         $ga->setPlayer($this->player3);
-        $this->em->persist($ga);
-        $this->em->flush();
+        $this->om->persist($ga);
+        $this->om->flush();
 
         $response = $this->runApp('GET', '/api/user/player/show-applications');
         $this->assertEquals(200, $response->getStatusCode());
@@ -285,12 +285,12 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(12);
 
         $this->player3->addGroup($this->group);
-        $this->em->flush();
+        $this->om->flush();
 
         $response = $this->runApp('PUT', '/api/user/player/leave-group/' . $this->group->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
         $p = $this->playerRepo->find($this->player3->getId());
         $this->assertSame(0, count($p->getGroups()));
     }
@@ -339,7 +339,7 @@ class PlayerControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->em->clear();
+        $this->om->clear();
 
         $playerAfter = $this->playerRepo->find($this->player3->getId());
         $charsAfter = $playerAfter->getCharacters();
@@ -387,7 +387,7 @@ class PlayerControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/'.Player::STATUS_STANDARD);
 
         $this->assertEquals(204, $response1->getStatusCode());
-        $this->em->clear();
+        $this->om->clear();
         $player2 = $this->playerRepo->find($this->managerId);
         $this->assertSame(Player::STATUS_STANDARD, $player2->getStatus());
         $this->assertSame(0, count($player2->getGroups()));
@@ -717,7 +717,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $player = $this->playerRepo->find($this->player3->getId());
         $this->assertSame(
@@ -770,7 +770,7 @@ class PlayerControllerTest extends WebTestCase
             null,
             null,
             [
-                EntityManagerInterface::class => $em,
+                ObjectManager::class => $em,
                 LoggerInterface::class => $this->log
             ]
         );
@@ -787,7 +787,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $player = $this->playerRepo->find($this->player3->getId());
         $this->assertSame(
@@ -937,7 +937,7 @@ class PlayerControllerTest extends WebTestCase
         $this->loginUser(11);
 
         $this->corp->addGroupTracking($this->group);
-        $this->em->flush();
+        $this->om->flush();
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player3->getId().'/characters');
         $this->assertEquals(200, $response->getStatusCode());
@@ -970,8 +970,8 @@ class PlayerControllerTest extends WebTestCase
         // deactivate deletion feature
         $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         $this->loginUser(12);
 
@@ -998,7 +998,7 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp('DELETE', '/api/user/player/delete-character/9');
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $deleted = $this->charRepo->find(9);
         $this->assertNull($deleted);
@@ -1018,8 +1018,8 @@ class PlayerControllerTest extends WebTestCase
         // deactivate deletion feature
         $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
         $this->assertEquals(403, $response->getStatusCode());
@@ -1033,7 +1033,7 @@ class PlayerControllerTest extends WebTestCase
         $response = $this->runApp('DELETE', '/api/user/player/delete-character/13');
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $deleted = $this->charRepo->find(13);
         $this->assertNull($deleted);
@@ -1053,8 +1053,8 @@ class PlayerControllerTest extends WebTestCase
         // deactivate deletion feature
         $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         $response = $this->runApp(
             'DELETE',
@@ -1062,7 +1062,7 @@ class PlayerControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $this->assertNull($this->charRepo->find(13));
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 13]);
@@ -1077,8 +1077,8 @@ class PlayerControllerTest extends WebTestCase
         // deactivate deletion feature
         $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         // char 10 is on a different player account
         $response = $this->runApp(
@@ -1090,7 +1090,7 @@ class PlayerControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $this->assertNull($this->charRepo->find(10));
         $this->assertNull($this->removedCharRepo->findOneBy(['characterId' => 10]));
@@ -1109,8 +1109,8 @@ class PlayerControllerTest extends WebTestCase
         // deactivate deletion feature
         $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         // char 10 is on a different player account
         $response = $this->runApp(
@@ -1122,7 +1122,7 @@ class PlayerControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $this->assertNull($this->charRepo->find(10));
 
@@ -1142,8 +1142,8 @@ class PlayerControllerTest extends WebTestCase
         // deactivate deletion feature
         $setting = new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION);
         $setting->setValue('0');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         // char 10 is on a different player account
         $response = $this->runApp(
@@ -1153,7 +1153,7 @@ class PlayerControllerTest extends WebTestCase
         );
         $this->assertEquals(403, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $this->assertNotNull($this->charRepo->find(10));
     }
@@ -1173,10 +1173,10 @@ class PlayerControllerTest extends WebTestCase
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('234');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->persist($setting2);
-        $this->h->getEm()->persist($setting3);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
         $this->assertEquals(200, $response->getStatusCode());
@@ -1193,8 +1193,8 @@ class PlayerControllerTest extends WebTestCase
 
         // activate feature
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
         $this->assertEquals(200, $response->getStatusCode());
@@ -1209,8 +1209,8 @@ class PlayerControllerTest extends WebTestCase
 
         // activate feature
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->flush();
 
         $response = $this->runApp('GET', '/api/user/player/groups-disabled');
         $this->assertEquals(200, $response->getStatusCode());
@@ -1248,10 +1248,10 @@ class PlayerControllerTest extends WebTestCase
         $setting = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('234');
-        $this->h->getEm()->persist($setting);
-        $this->h->getEm()->persist($setting2);
-        $this->h->getEm()->persist($setting3);
-        $this->h->getEm()->flush();
+        $this->om->persist($setting);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $response1 = $this->runApp('GET', '/api/user/player/' . $this->player3->getId() . '/groups-disabled');
         $this->assertEquals(200, $response1->getStatusCode());
@@ -1308,9 +1308,9 @@ class PlayerControllerTest extends WebTestCase
 
         $emptyAcc = (new Player())->setName('empty account');
 
-        $this->h->getEm()->persist($this->corp);
-        $this->h->getEm()->persist($alli);
-        $this->h->getEm()->persist($emptyAcc);
+        $this->om->persist($this->corp);
+        $this->om->persist($alli);
+        $this->om->persist($emptyAcc);
 
         $char3b = $this->h->addCharacterToPlayer('Alt', 13, $this->player3);
         $char3b->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
@@ -1318,7 +1318,7 @@ class PlayerControllerTest extends WebTestCase
         $this->player4Id = $this->h->addCharacterMain('User3', 14, [Role::USER])
             ->setValidToken(true)->getPlayer()->getId();
 
-        $this->h->getEm()->flush();
+        $this->om->flush();
         $this->emptyAccId = $emptyAcc->getId();
     }
 }

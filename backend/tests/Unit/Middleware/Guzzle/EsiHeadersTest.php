@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Middleware\Guzzle;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Entity\SystemVariable;
@@ -15,9 +15,9 @@ use Tests\Logger;
 class EsiHeadersTest extends TestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var RepositoryFactory
@@ -30,7 +30,7 @@ class EsiHeadersTest extends TestCase
     private $logger;
 
     /**
-     * @var \Neucore\Middleware\Guzzle\EsiHeaders
+     * @var EsiHeaders
      */
     private $obj;
 
@@ -38,18 +38,18 @@ class EsiHeadersTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->em = $helper->getEm();
+        $this->om = $helper->getObjectManager();
 
-        $this->repositoryFactory = new RepositoryFactory($this->em);
+        $this->repositoryFactory = new RepositoryFactory($this->om);
         $this->logger = new Logger('test');
-        $this->obj = new EsiHeaders($this->logger, $this->repositoryFactory, $this->em);
+        $this->obj = new EsiHeaders($this->logger, $this->repositoryFactory, $this->om);
     }
 
     public function testInvokeErrorLimit()
     {
         $var = (new SystemVariable(SystemVariable::ESI_ERROR_LIMIT))->setScope(SystemVariable::SCOPE_BACKEND);
-        $this->em->persist($var);
-        $this->em->flush();
+        $this->om->persist($var);
+        $this->om->flush();
 
         $response = new Response(
             200,

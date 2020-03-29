@@ -18,13 +18,13 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
 
         $helper = new Helper();
         $helper->emptyDb();
-        $em = $helper->getEm();
+        $om = $helper->getObjectManager();
 
-        $em->persist((new Role(8))->setName(Role::ESI));
-        $em->persist((new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION))->setValue('1'));
-        $em->persist((new SystemVariable(SystemVariable::DIRECTOR_CHAR . '1'))
+        $om->persist((new Role(8))->setName(Role::ESI));
+        $om->persist((new SystemVariable(SystemVariable::ALLOW_CHARACTER_DELETION))->setValue('1'));
+        $om->persist((new SystemVariable(SystemVariable::DIRECTOR_CHAR . '1'))
             ->setScope(SystemVariable::SCOPE_SETTINGS));
-        $em->flush();
+        $om->flush();
 
         // run
 
@@ -36,7 +36,7 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $this->assertSame('loading Neucore\DataFixtures\WatchlistFixtureLoader', $output[2]);
         $this->assertSame('', $output[3]);
 
-        $repoFactory = new RepositoryFactory($em);
+        $repoFactory = new RepositoryFactory($om);
         $roles = $repoFactory->getRoleRepository()->findBy([]);
         $vars = $repoFactory->getSystemVariableRepository()->findBy([], ['name' => 'asc']);
 

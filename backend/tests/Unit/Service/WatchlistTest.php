@@ -82,19 +82,19 @@ class WatchlistTest extends TestCase
         $watchlist->addWhitelistCorporation($corp2b);
         $watchlist->addBlacklistCorporation($corp3b);
 
-        $helper->getEm()->persist($watchlist);
-        $helper->getEm()->persist($group);
-        $helper->getEm()->persist($alliance1);
-        $helper->getEm()->persist($alliance2);
-        $helper->getEm()->persist($alliance3);
-        $helper->getEm()->persist(self::$corp1a);
-        $helper->getEm()->persist(self::$corp1b);
-        $helper->getEm()->persist($corp2a);
-        $helper->getEm()->persist($corp2b);
-        $helper->getEm()->persist($corp3a);
-        $helper->getEm()->persist($corp3b);
-        $helper->getEm()->persist($corp4);
-        $helper->getEm()->flush();
+        $helper->getObjectManager()->persist($watchlist);
+        $helper->getObjectManager()->persist($group);
+        $helper->getObjectManager()->persist($alliance1);
+        $helper->getObjectManager()->persist($alliance2);
+        $helper->getObjectManager()->persist($alliance3);
+        $helper->getObjectManager()->persist(self::$corp1a);
+        $helper->getObjectManager()->persist(self::$corp1b);
+        $helper->getObjectManager()->persist($corp2a);
+        $helper->getObjectManager()->persist($corp2b);
+        $helper->getObjectManager()->persist($corp3a);
+        $helper->getObjectManager()->persist($corp3b);
+        $helper->getObjectManager()->persist($corp4);
+        $helper->getObjectManager()->flush();
 
         self::$char1 = $helper->addCharacterMain('c1a', 10011)->setCorporation(self::$corp1a); // watched via alliance
         self::$char2 = $helper->addCharacterMain('c2a', 10021)->setCorporation(self::$corp1b); // watched
@@ -115,7 +115,7 @@ class WatchlistTest extends TestCase
             ->setCorporation($corp2a); // white listed corp, but also on black listed corp
         $watchlist->addExemption(self::$char4->getPlayer()); // whitelist player
 
-        $helper->getEm()->flush();
+        $helper->getObjectManager()->flush();
 
         self::$watchlistService = new Watchlist(new RepositoryFactory($helper->getEm()));
     }

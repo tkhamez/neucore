@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Factory;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\Character;
@@ -30,7 +31,6 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Repository\RoleRepository;
 use Neucore\Repository\SystemVariableRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Repository\WatchlistRepository;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -38,9 +38,9 @@ use Tests\Helper;
 class RepositoryFactoryTest extends TestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var RepositoryFactory
@@ -49,13 +49,13 @@ class RepositoryFactoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->em = (new Helper())->getEm();
-        $this->factory = new RepositoryFactory($this->em);
+        $this->om = (new Helper())->getObjectManager();
+        $this->factory = new RepositoryFactory($this->om);
     }
 
     public function testGetInstance()
     {
-        $this->assertInstanceOf(RepositoryFactory::class, RepositoryFactory::getInstance($this->em));
+        $this->assertInstanceOf(RepositoryFactory::class, RepositoryFactory::getInstance($this->om));
     }
 
     public function testGetAllianceRepository()

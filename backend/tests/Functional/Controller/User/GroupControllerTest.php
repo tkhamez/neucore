@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -15,7 +16,6 @@ use Neucore\Repository\GroupRepository;
 use Neucore\Entity\Player;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
@@ -32,9 +32,9 @@ class GroupControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var GroupRepository
@@ -68,8 +68,8 @@ class GroupControllerTest extends WebTestCase
         $_SESSION = null;
 
         $this->helper = new Helper();
-        $this->em = $this->helper->getEm();
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->om = $this->helper->getObjectManager();
+        $repositoryFactory = new RepositoryFactory($this->om);
         $this->gr = $repositoryFactory->getGroupRepository();
         $this->pr = $repositoryFactory->getPlayerRepository();
         $this->groupAppRepo = $repositoryFactory->getGroupApplicationRepository();
@@ -292,7 +292,7 @@ class GroupControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->em->clear();
+        $this->om->clear();
 
         $changed = $this->gr->find($this->gid);
         $this->assertSame(Group::VISIBILITY_PUBLIC, $changed->getVisibility());
@@ -327,7 +327,7 @@ class GroupControllerTest extends WebTestCase
         $response = $this->runApp('DELETE', '/api/user/group/'.$this->gid.'/delete');
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $deleted = $this->gr->find($this->gid);
         $this->assertNull($deleted);
@@ -508,7 +508,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $group = $this->gr->find($this->gid);
         $actual = $group->getRequiredGroups();
@@ -549,7 +549,7 @@ class GroupControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . $this->gidReq);
         $this->assertEquals(204, $response1->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $group = $this->gr->find($this->gid);
         $this->assertSame(0, count($group->getRequiredGroups()));
@@ -586,15 +586,15 @@ class GroupControllerTest extends WebTestCase
 
         $player = new Player();
         $player->setName('Manager');
-        $this->em->persist($player);
-        $this->em->flush();
+        $this->om->persist($player);
+        $this->om->flush();
 
         $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.$this->pid);
         $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-manager/'.$player->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $actual = [];
         $group = $this->gr->find($this->gid);
@@ -635,7 +635,7 @@ class GroupControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-manager/'.$this->pid);
         $this->assertEquals(204, $response->getStatusCode());
 
-        $player = (new RepositoryFactory($this->em))->getPlayerRepository()->find($this->pid);
+        $player = (new RepositoryFactory($this->om))->getPlayerRepository()->find($this->pid);
         $actual = [];
         foreach ($player->getManagerGroups() as $mg) {
             $actual[] = $mg->getId();
@@ -721,7 +721,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
         $this->assertSame(1, count($appsAfter));
@@ -765,7 +765,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
         $this->assertSame(1, count($appsAfter));
@@ -812,7 +812,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(204, $response2->getStatusCode());
         $this->assertEquals(204, $response3->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $group = $this->gr->find($this->gid);
         $this->assertSame(2, count($group->getPlayers()));
@@ -866,7 +866,7 @@ class GroupControllerTest extends WebTestCase
         $log->pushHandler(new TestHandler());
 
         $res = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/remove-member/'.$this->pid2, null, null, [
-            EntityManagerInterface::class => $em,
+            ObjectManager::class => $em,
             LoggerInterface::class => $log
         ]);
         $this->assertEquals(500, $res->getStatusCode());
@@ -884,7 +884,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(204, $response2->getStatusCode());
         $this->assertEquals(204, $response3->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
 
         $group = $this->gr->find($this->gid);
         $this->assertSame(0, count($group->getPlayers()));
@@ -972,19 +972,19 @@ class GroupControllerTest extends WebTestCase
         $groupApp = new GroupApplication();
         $groupApp->setPlayer($user->getPlayer());
         $groupApp->setGroup($g[1]);
-        $this->em->persist($groupApp);
+        $this->om->persist($groupApp);
 
         // corps and alliances
         $alli = (new Alliance())->setId(10)->setTicker('a1')->setName('alli 1');
         $corp = (new Corporation())->setId(200)->setTicker('c2')->setName('corp 2')->setAlliance($alli);
         $alli->addGroup($g[0]);
         $corp->addGroup($g[0]);
-        $this->em->persist($alli);
-        $this->em->persist($corp);
+        $this->om->persist($alli);
+        $this->om->persist($corp);
 
         $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST]);
 
-        $this->em->flush();
+        $this->om->flush();
 
         $this->groupAppID = $groupApp->getId();
     }

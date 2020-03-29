@@ -168,8 +168,8 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(204, $response->getStatusCode());
 
         // check that char was deleted
-        $this->helper->getEm()->clear();
-        $char = (new RepositoryFactory($this->helper->getEm()))->getCharacterRepository()->find(96061222);
+        $this->helper->getObjectManager()->clear();
+        $char = (new RepositoryFactory($this->helper->getObjectManager()))->getCharacterRepository()->find(96061222);
         $this->assertNull($char);
     }
 
@@ -225,8 +225,9 @@ class CharacterControllerTest extends WebTestCase
         $this->assertSame($expected, $actual);
 
         // check group
-        $this->helper->getEm()->clear();
-        $player = (new RepositoryFactory($this->helper->getEm()))->getPlayerRepository()->find($this->playerId);
+        $this->helper->getObjectManager()->clear();
+        $player = (new RepositoryFactory($this->helper->getObjectManager()))
+            ->getPlayerRepository()->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
         // check char, corp
@@ -283,7 +284,7 @@ class CharacterControllerTest extends WebTestCase
         $corp = (new Corporation())->setId($this->corpId)->setName($this->corpName)->setTicker($this->corpTicker);
         $corp->addGroup($groups[0]);
 
-        $this->helper->getEm()->persist($corp);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($corp);
+        $this->helper->getObjectManager()->flush();
     }
 }

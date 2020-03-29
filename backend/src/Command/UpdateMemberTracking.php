@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Api;
 use Neucore\Command\Traits\EsiRateLimited;
@@ -46,9 +46,9 @@ class UpdateMemberTracking extends Command
     private $logger;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var int milliseconds
@@ -60,7 +60,7 @@ class UpdateMemberTracking extends Command
         MemberTracking $memberTracking,
         EsiData $esiData,
         LoggerInterface $logger,
-        ObjectManager $objectManager
+        EntityManagerInterface $entityManager
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -70,7 +70,7 @@ class UpdateMemberTracking extends Command
         $this->memberTracking = $memberTracking;
         $this->esiData = $esiData;
         $this->logger = $logger;
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -157,7 +157,7 @@ class UpdateMemberTracking extends Command
             }
 
             $corporation->setTrackingLastUpdate(new \DateTime());
-            $this->objectManager->flush();
+            $this->entityManager->flush();
 
             $this->writeLine(
                 '  Updated tracking data for ' . count($trackingData) .
@@ -228,12 +228,12 @@ class UpdateMemberTracking extends Command
 
     /**
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $structures
-     * @param $token
+     * @param ResourceOwnerAccessTokenInterface|null $token
      */
-    private function updateStructures($structures, $token)
+    private function updateStructures($structures, $token): void
     {
         foreach ($structures as $num => $memberData) {
-            if (! $this->objectManager->isOpen()) {
+            if (! $this->entityManager->isOpen()) {
                 $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                 break;
             }
@@ -242,13 +242,13 @@ class UpdateMemberTracking extends Command
             $this->memberTracking->updateStructure($memberData, $token);
 
             if ($num > 0 && $num % 20 === 0) {
-                $this->objectManager->flush();
-                $this->objectManager->clear();
+                $this->entityManager->flush();
+                $this->entityManager->clear();
             }
 
             usleep($this->sleep * 1000);
         }
 
-        $this->objectManager->flush();
+        $this->entityManager->flush();
     }
 }

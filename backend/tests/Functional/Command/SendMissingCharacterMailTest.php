@@ -5,13 +5,13 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
@@ -28,9 +28,9 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
     private $client;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var RepositoryFactory
@@ -41,9 +41,9 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->em = $helper->getEm();
+        $this->om = $helper->getObjectManager();
         $this->client = new Client();
-        $this->repoFactory = new RepositoryFactory($this->em);
+        $this->repoFactory = new RepositoryFactory($this->om);
     }
 
     public function testExecuteNotActive()
@@ -61,8 +61,8 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
     public function testExecuteInvalidConfig()
     {
         $active = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE))->setValue('1');
-        $this->em->persist($active);
-        $this->em->flush();
+        $this->om->persist($active);
+        $this->om->flush();
 
         $output = $this->runConsoleApp('send-missing-character-mail', ['--sleep' => 0]);
 
@@ -116,7 +116,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
 
         $this->assertSame(0, count($log->getHandler()->getRecords()));
 
-        $this->em->clear();
+        $this->om->clear();
         $member4 = $this->repoFactory->getCorporationMemberRepository()->find(104);
         $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSent());
     }
@@ -138,7 +138,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 
-        $this->em->clear();
+        $this->om->clear();
         $member4 = $this->repoFactory->getCorporationMemberRepository()->find(104);
         $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSent());
     }
@@ -173,25 +173,25 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $member6 = (new CorporationMember())->setId(106)->setCorporation($corp3)
             ->setLogonDate(new \DateTime()); // corp not updated
 
-        $this->em->persist($token);
-        $this->em->persist($active);
-        $this->em->persist($days);
-        $this->em->persist($corps);
+        $this->om->persist($token);
+        $this->om->persist($active);
+        $this->om->persist($days);
+        $this->om->persist($corps);
         if (isset($subj)) {
-            $this->em->persist($subj);
+            $this->om->persist($subj);
         }
-        $this->em->persist($body);
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->persist($corp3);
-        $this->em->persist($player1);
-        $this->em->persist($char1);
-        $this->em->persist($member1);
-        $this->em->persist($member2);
-        $this->em->persist($member3);
-        $this->em->persist($member4);
-        $this->em->persist($member5);
-        $this->em->persist($member6);
-        $this->em->flush();
+        $this->om->persist($body);
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->persist($corp3);
+        $this->om->persist($player1);
+        $this->om->persist($char1);
+        $this->om->persist($member1);
+        $this->om->persist($member2);
+        $this->om->persist($member3);
+        $this->om->persist($member4);
+        $this->om->persist($member5);
+        $this->om->persist($member6);
+        $this->om->flush();
     }
 }

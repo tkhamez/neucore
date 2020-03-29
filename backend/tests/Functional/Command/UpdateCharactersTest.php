@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Command\UpdateCharacters;
 use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
@@ -25,9 +25,9 @@ class UpdateCharactersTest extends ConsoleTestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Logger
@@ -43,7 +43,7 @@ class UpdateCharactersTest extends ConsoleTestCase
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        $this->em = $this->helper->getEm();
+        $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
         $this->client = new Client();
@@ -124,9 +124,9 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[5]);
 
         // read result
-        $this->em->clear();
+        $this->om->clear();
 
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $repositoryFactory = new RepositoryFactory($this->om);
 
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(2, count($actualChars));

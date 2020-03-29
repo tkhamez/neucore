@@ -4,29 +4,31 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Doctrine\Common\Persistence\ObjectManagerDecorator;
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-class ObjectManager extends ObjectManagerDecorator
+class EntityManager extends EntityManagerDecorator
 {
     /**
      * @var LoggerInterface
      */
     private $log;
 
-    public function __construct(\Doctrine\Persistence\ObjectManager $wrapped, LoggerInterface $log)
+    public function __construct(EntityManagerInterface $wrapped, LoggerInterface $log)
     {
-        $this->wrapped = $wrapped;
+        parent::__construct($wrapped);
         $this->log = $log;
     }
 
     /**
+     * @param mixed|null $entity
      * @return bool
      */
-    public function flush(): bool
+    public function flush($entity = null): bool
     {
         try {
-            parent::flush();
+            parent::flush($entity);
         } catch (\Exception $e) {
             $this->log->critical($e->getMessage(), ['exception' => $e]);
             return false;

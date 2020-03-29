@@ -2,6 +2,7 @@
 
 namespace Neucore\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Character;
@@ -9,7 +10,6 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\Account;
 use Neucore\Service\OAuthToken;
-use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,9 +38,9 @@ class CheckTokens extends Command
     private $tokenService;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var int
@@ -51,7 +51,7 @@ class CheckTokens extends Command
         RepositoryFactory $repositoryFactory,
         Account $charService,
         OAuthToken $tokenService,
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ) {
         parent::__construct();
@@ -61,7 +61,7 @@ class CheckTokens extends Command
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->charService = $charService;
         $this->tokenService = $tokenService;
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -110,11 +110,11 @@ class CheckTokens extends Command
             }
 
             foreach ($charIds as $charId) {
-                if (! $this->objectManager->isOpen()) {
+                if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('CheckTokens: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->objectManager->clear(); // detaches all objects from Doctrine
+                $this->entityManager->clear(); // detaches all objects from Doctrine
                 $this->checkErrorLimit();
 
                 $char = $this->charRepo->find($charId);

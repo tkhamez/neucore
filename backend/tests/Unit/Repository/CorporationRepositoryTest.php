@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -15,9 +18,9 @@ use Tests\Helper;
 class CorporationRepositoryTest extends TestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var CorporationRepository
@@ -28,8 +31,8 @@ class CorporationRepositoryTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->em = $helper->getEm();
-        $this->repository = (new RepositoryFactory($this->em))->getCorporationRepository();
+        $this->om = $helper->getObjectManager();
+        $this->repository = (new RepositoryFactory($this->om))->getCorporationRepository();
     }
 
     public function testGetAllWithGroups()
@@ -42,12 +45,12 @@ class CorporationRepositoryTest extends TestCase
         $corp2->addGroup($group1);
         $corp2->addGroup($group2);
         $corp3->addGroup($group1);
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->persist($corp3);
-        $this->em->persist($group1);
-        $this->em->persist($group2);
-        $this->em->flush();
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->persist($corp3);
+        $this->om->persist($group1);
+        $this->om->persist($group2);
+        $this->om->flush();
 
         $actual = $this->repository->getAllWithGroups();
         $this->assertSame(2, count($actual));
@@ -61,11 +64,11 @@ class CorporationRepositoryTest extends TestCase
         $corp2 = (new Corporation())->setId(11)->setTicker('t2')->setName('corp 2');
         $member1 = (new CorporationMember())->setId(100)->setName('member 1')->setCorporation($corp1);
         $member2 = (new CorporationMember())->setId(101)->setName('member 2')->setCorporation($corp1);
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->persist($member1);
-        $this->em->persist($member2);
-        $this->em->flush();
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->persist($member1);
+        $this->om->persist($member2);
+        $this->om->flush();
 
         $actual = $this->repository->getAllWithMemberTrackingData();
         $this->assertSame(1, count($actual));
@@ -85,16 +88,16 @@ class CorporationRepositoryTest extends TestCase
         $corp1b->setAlliance($alli1);
         $corp2->setAlliance($alli2);
         $corp3->setAlliance($alli3);
-        $this->em->persist($alli1);
-        $this->em->persist($alli2);
-        $this->em->persist($alli3);
-        $this->em->persist($corp1a);
-        $this->em->persist($corp1b);
-        $this->em->persist($corp2);
-        $this->em->persist($corp3);
-        $this->em->flush();
+        $this->om->persist($alli1);
+        $this->om->persist($alli2);
+        $this->om->persist($alli3);
+        $this->om->persist($corp1a);
+        $this->om->persist($corp1b);
+        $this->om->persist($corp2);
+        $this->om->persist($corp3);
+        $this->om->flush();
 
-        $this->em->clear();
+        $this->om->clear();
 
         $actual = $this->repository->getAllFromAlliances([11, 12]);
         $this->assertSame(3, count($actual));

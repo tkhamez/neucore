@@ -1,12 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
 use Neucore\Repository\AppRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
-use Neucore\Service\ObjectManager;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\RequestFactory;
@@ -25,12 +25,11 @@ class AppAuthTest extends TestCase
 
     protected function setUp(): void
     {
-        $log = new Logger('test');
-        $em = (new Helper())->getEm();
-        $repositoryFactory = new RepositoryFactory($em);
+        $helper = new Helper();
+        $repositoryFactory = new RepositoryFactory($helper->getObjectManager());
         $this->repo = $repositoryFactory->getAppRepository();
 
-        $this->service = new AppAuth($repositoryFactory, new ObjectManager($em, $log));
+        $this->service = new AppAuth($repositoryFactory, $helper->getObjectManager());
     }
 
     public function testGetRolesNoAuth()
@@ -108,7 +107,7 @@ class AppAuthTest extends TestCase
         $this->assertStringStartsWith('$1$', $oldHash);
 
         $this->service->getApp($this->getRequest($header));
-        $h->getEm()->clear();
+        $h->getObjectManager()->clear();
 
         $newHash = $this->repo->find($appId)->getSecret();
         $this->assertStringStartsNotWith('$1$', $newHash);

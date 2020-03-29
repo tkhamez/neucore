@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\Events;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
@@ -14,7 +15,6 @@ use Neucore\Entity\Corporation;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
@@ -33,9 +33,9 @@ class CorporationControllerTest extends WebTestCase
     private $h;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Group
@@ -71,9 +71,9 @@ class CorporationControllerTest extends WebTestCase
         $_SESSION = null;
 
         $this->h = new Helper();
-        $this->em = $this->h->getEm();
+        $this->om = $this->h->getObjectManager();
 
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $repositoryFactory = new RepositoryFactory($this->om);
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
 
@@ -256,7 +256,7 @@ class CorporationControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->em->clear();
+        $this->om->clear();
 
         // check db
         $corp = $this->corpRepo->find(456123);
@@ -299,7 +299,7 @@ class CorporationControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->em->clear();
+        $this->om->clear();
 
         // check that corp and alliance were created in db
         $corp = $this->corpRepo->find(456123);
@@ -405,7 +405,7 @@ class CorporationControllerTest extends WebTestCase
             null,
             null,
             [
-                EntityManagerInterface::class => $em,
+                ObjectManager::class => $em,
                 LoggerInterface::class => $this->log
             ]
         );
@@ -506,7 +506,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
         $corp = $this->corpRepo->find(222);
         $this->assertSame(2, count($corp->getGroupsTracking()));
         $this->assertSame($this->group1->getId(), $corp->getGroupsTracking()[0]->getId());
@@ -561,7 +561,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->em->clear();
+        $this->om->clear();
         $corp = $this->corpRepo->find(222);
         $this->assertSame([], $corp->getGroupsTracking());
     }
@@ -593,7 +593,7 @@ class CorporationControllerTest extends WebTestCase
         # add user to group
 
         $this->player7->addGroup($this->group1);
-        $this->em->flush();
+        $this->om->flush();
 
         $response2 = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
         $this->assertEquals(200, $response2->getStatusCode());
@@ -651,7 +651,7 @@ class CorporationControllerTest extends WebTestCase
         # add user to group
 
         $this->player7->addGroup($this->group1);
-        $this->em->flush();
+        $this->om->flush();
 
         $response2 = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
         $this->assertEquals(200, $response2->getStatusCode());
@@ -693,14 +693,14 @@ class CorporationControllerTest extends WebTestCase
         $corp2->addGroup($group2);
         $corp2->addGroupTracking($this->group1);
 
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->persist($corp3);
-        $this->em->persist($this->group1);
-        $this->em->persist($group2);
-        $this->em->persist($member);
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->persist($corp3);
+        $this->om->persist($this->group1);
+        $this->om->persist($group2);
+        $this->om->persist($member);
 
-        $this->em->flush();
+        $this->om->flush();
 
         $this->gid2 = $group2->getId();
     }

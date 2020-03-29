@@ -23,7 +23,7 @@ class ApplicationControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testShowV1403()
@@ -36,9 +36,9 @@ class ApplicationControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $group = (new Group())->setName('g1');
-        $this->helper->getEm()->persist($group);
+        $this->helper->getObjectManager()->persist($group);
         $app = $this->helper->addApp('Test App', 'boring-test-secret', [Role::APP])->addGroup($group);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':boring-test-secret')];
         $response = $this->runApp('GET', '/api/app/v1/show', null, $headers);

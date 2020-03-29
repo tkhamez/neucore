@@ -2,10 +2,10 @@
 
 namespace Neucore\Middleware\Guzzle;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -23,18 +23,18 @@ class EsiHeaders
     private $systemVariableRepository;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $objectManager;
 
     public function __construct(
         LoggerInterface $logger,
         RepositoryFactory $repositoryFactory,
-        EntityManagerInterface $em
+        ObjectManager $objectManager
     ) {
         $this->logger = $logger;
         $this->systemVariableRepository = $repositoryFactory->getSystemVariableRepository();
-        $this->em = $em;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -75,8 +75,8 @@ class EsiHeaders
                 'remain' => $remain,
                 'reset' => $reset,
             ]));
-            $this->em->persist($entity);
-            $this->em->flush();
+            $this->objectManager->persist($entity);
+            $this->objectManager->flush();
         }
 
         // log deprecated warnings

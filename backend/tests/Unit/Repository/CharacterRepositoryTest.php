@@ -15,7 +15,7 @@ class CharacterRepositoryTest extends TestCase
 
         $h = new Helper();
         $h->emptyDb();
-        $em = $h->getEm();
+        $om = $h->getObjectManager();
 
         $char1 = (new Character())->setId(10)->setName('CHAR Two');
         $char2 = (new Character())->setId(20)->setName('char one');
@@ -27,7 +27,7 @@ class CharacterRepositoryTest extends TestCase
 
         // test
 
-        $r = (new RepositoryFactory($em))->getCharacterRepository();
+        $r = (new RepositoryFactory($om))->getCharacterRepository();
 
         $actual = $r->findByNamePartialMatch('har');
         $this->assertSame(2, count($actual));

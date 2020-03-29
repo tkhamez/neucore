@@ -2,12 +2,12 @@
 
 namespace Neucore\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Service\AutoGroupAssignment;
-use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,14 +29,14 @@ class UpdatePlayerGroups extends Command
     private $autoGroup;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $objectManager;
+    private $entityManager;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
         AutoGroupAssignment $autoGroup,
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ) {
         parent::__construct();
@@ -44,7 +44,7 @@ class UpdatePlayerGroups extends Command
 
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
         $this->autoGroup = $autoGroup;
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -81,16 +81,16 @@ class UpdatePlayerGroups extends Command
                 $offset
             ));
 
-            $this->objectManager->clear(); // detaches all objects from Doctrine
+            $this->entityManager->clear(); // detaches all objects from Doctrine
 
             foreach ($playerIds as $playerId) {
-                if (! $this->objectManager->isOpen()) {
+                if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('UpdatePlayerGroups: cannot continue without an open entity manager.');
                     break;
                 }
                 $success1 = $this->autoGroup->assign($playerId);
                 $success2 = $this->autoGroup->checkRequiredGroups($playerId);
-                $this->objectManager->clear();
+                $this->entityManager->clear();
                 if (! $success1 || ! $success2) {
                     $this->writeLine('  Error updating ' . $playerId);
                 } else {

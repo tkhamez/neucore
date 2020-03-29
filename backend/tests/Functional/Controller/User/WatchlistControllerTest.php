@@ -80,7 +80,7 @@ class WatchlistControllerTest extends WebTestCase
     {
         $_SESSION = null;
         $this->helper = new Helper();
-        $this->repositoryFactory = new RepositoryFactory($this->helper->getEm());
+        $this->repositoryFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testPlayers403()
@@ -206,7 +206,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getExemptions()));
     }
@@ -242,7 +242,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/exemption/remove/'.$this->player1->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getExemptions()));
     }
@@ -307,7 +307,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getCorporations()));
     }
@@ -343,7 +343,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/corporation/remove/'.$this->corporation1->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getCorporations()));
     }
@@ -407,7 +407,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getAlliances()));
     }
@@ -443,7 +443,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/alliance/remove/'.$this->alliance1->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getAlliances()));
     }
@@ -512,7 +512,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getGroups()));
     }
@@ -548,7 +548,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/group/remove/'.$this->group1->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getGroups()));
     }
@@ -622,7 +622,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getBlacklistCorporations()));
     }
@@ -664,7 +664,7 @@ class WatchlistControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getBlacklistCorporations()));
     }
@@ -728,7 +728,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getBlacklistAlliances()));
     }
@@ -764,7 +764,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/blacklist-alliance/remove/'.$this->alliance2->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getBlacklistAlliances()));
     }
@@ -839,7 +839,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getWhitelistCorporations()));
     }
@@ -881,7 +881,7 @@ class WatchlistControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getWhitelistCorporations()));
     }
@@ -945,7 +945,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(2, count($result->getWhitelistAlliances()));
     }
@@ -981,7 +981,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/whitelist-alliance/remove/'.$this->alliance1->getId());
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->clear();
         $result = $this->repositoryFactory->getWatchlistRepository()->find(1);
         $this->assertSame(0, count($result->getWhitelistAlliances()));
     }
@@ -1026,15 +1026,15 @@ class WatchlistControllerTest extends WebTestCase
         $watchlist->addWhitelistCorporation($this->corporation1);
         $watchlist->addWhitelistAlliance($this->alliance1);
 
-        $this->helper->getEm()->persist($watchlist);
-        $this->helper->getEm()->persist($this->corporation1);
-        $this->helper->getEm()->persist($this->corporation2);
-        $this->helper->getEm()->persist($this->corporation3);
-        $this->helper->getEm()->persist($this->alliance1);
-        $this->helper->getEm()->persist($this->alliance2);
-        $this->helper->getEm()->persist($this->group1);
-        $this->helper->getEm()->persist($this->group2);
+        $this->helper->getObjectManager()->persist($watchlist);
+        $this->helper->getObjectManager()->persist($this->corporation1);
+        $this->helper->getObjectManager()->persist($this->corporation2);
+        $this->helper->getObjectManager()->persist($this->corporation3);
+        $this->helper->getObjectManager()->persist($this->alliance1);
+        $this->helper->getObjectManager()->persist($this->alliance2);
+        $this->helper->getObjectManager()->persist($this->group1);
+        $this->helper->getObjectManager()->persist($this->group2);
 
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->flush();
     }
 }

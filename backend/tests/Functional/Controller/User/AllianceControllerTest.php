@@ -1,13 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\Events;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Logger;
@@ -27,9 +30,9 @@ class AllianceControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     private $alliId1;
 
@@ -56,9 +59,9 @@ class AllianceControllerTest extends WebTestCase
         $_SESSION = null;
 
         $this->helper = new Helper();
-        $this->em = $this->helper->getEm();
+        $this->om = $this->helper->getObjectManager();
 
-        $this->alliRepo = (new RepositoryFactory($this->em))->getAllianceRepository();
+        $this->alliRepo = (new RepositoryFactory($this->om))->getAllianceRepository();
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
@@ -238,7 +241,7 @@ class AllianceControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->em->clear();
+        $this->om->clear();
 
         // check that alliance was created in db
         $alli = $this->alliRepo->find(123456);
@@ -325,7 +328,7 @@ class AllianceControllerTest extends WebTestCase
             null,
             null,
             [
-                EntityManagerInterface::class => $em,
+                ObjectManager::class => $em,
                 LoggerInterface::class => $this->log
             ]
         );
@@ -361,13 +364,13 @@ class AllianceControllerTest extends WebTestCase
         $alli2->addGroup($group1);
         $alli2->addGroup($group2);
 
-        $this->em->persist($alli1);
-        $this->em->persist($alli2);
-        $this->em->persist($alli3);
-        $this->em->persist($group1);
-        $this->em->persist($group2);
+        $this->om->persist($alli1);
+        $this->om->persist($alli2);
+        $this->om->persist($alli3);
+        $this->om->persist($group1);
+        $this->om->persist($group2);
 
-        $this->em->flush();
+        $this->om->flush();
 
         $this->alliId1 = $alli1->getId();
         $this->alliId2 = $alli2->getId();

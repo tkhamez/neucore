@@ -9,7 +9,6 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
@@ -28,9 +27,9 @@ class OAuthTokenTest extends TestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var \Doctrine\Persistence\ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Logger
@@ -58,7 +57,7 @@ class OAuthTokenTest extends TestCase
         $this->helper->emptyDb();
         $this->helper->addRoles([Role::USER]);
 
-        $this->em = $this->helper->getEm();
+        $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
 
@@ -73,7 +72,7 @@ class OAuthTokenTest extends TestCase
 
         $this->es = new OAuthToken(
             $oauth,
-            new ObjectManager($this->em, $this->log),
+            new ObjectManager($this->om, $this->log),
             $this->log,
             $this->client,
             $config
@@ -248,8 +247,8 @@ class OAuthTokenTest extends TestCase
         $this->assertGreaterThan(1519933900, $char->getExpires());
         $this->assertSame('gEy...fM0', $char->getRefreshToken());
 
-        $this->em->clear();
-        $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
+        $this->om->clear();
+        $charFromDB = (new RepositoryFactory($this->om))->getCharacterRepository()->find(123);
         $this->assertSame('new-token', $charFromDB->getAccessToken());
 
         $this->assertSame(0, count($this->log->getHandler()->getRecords()));

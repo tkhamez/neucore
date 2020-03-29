@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
@@ -26,7 +29,7 @@ class CorporationControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testMemberTrackingV1403()
@@ -58,13 +61,13 @@ class CorporationControllerTest extends WebTestCase
             ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char);
         $member3 = (new CorporationMember())->setId(112)->setName('m3')->setCorporation($corp)
             ->setLogonDate(new \DateTime('now -15 days'));
-        $this->helper->getEm()->persist($player);
-        $this->helper->getEm()->persist($char);
-        $this->helper->getEm()->persist($corp);
-        $this->helper->getEm()->persist($member1);
-        $this->helper->getEm()->persist($member2);
-        $this->helper->getEm()->persist($member3);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($player);
+        $this->helper->getObjectManager()->persist($char);
+        $this->helper->getObjectManager()->persist($corp);
+        $this->helper->getObjectManager()->persist($member1);
+        $this->helper->getObjectManager()->persist($member2);
+        $this->helper->getObjectManager()->persist($member3);
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 

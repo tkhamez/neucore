@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Command;
 
@@ -11,8 +13,8 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationRepository;
+use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
-use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -50,9 +52,9 @@ class UpdateCharacters extends Command
     private $esiData;
 
     /**
-     * @var ObjectManager
+     * @var EntityManager
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var int
@@ -67,7 +69,7 @@ class UpdateCharacters extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
-        ObjectManager $objectManager,
+        EntityManager $entityManager,
         LoggerInterface $logger
     ) {
         parent::__construct();
@@ -78,7 +80,7 @@ class UpdateCharacters extends Command
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
         $this->esiData = $esiData;
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -152,7 +154,7 @@ class UpdateCharacters extends Command
 
             $updateOk = [];
             foreach ($characters as $idx => $char) {
-                if (! $this->objectManager->isOpen()) {
+                if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                     break;
                 }
@@ -182,11 +184,11 @@ class UpdateCharacters extends Command
                     usleep($this->sleep * 1000); // reduce CPU usage
                 }
             }
-            if (count($updateOk) > 0 && $this->objectManager->flush()) {
+            if (count($updateOk) > 0 && $this->entityManager->flush()) {
                 $this->writeLine('  Characters ' . implode(',', $updateOk).': ' . self::UPDATE_OK);
             }
 
-            $this->objectManager->clear(); // detaches all objects from Doctrine
+            $this->entityManager->clear(); // detaches all objects from Doctrine
         } while (count($charIds) === $loopLimit);
     }
 
@@ -200,11 +202,11 @@ class UpdateCharacters extends Command
             }, $this->corpRepo->findBy([], ['lastUpdate' => 'ASC'], $this->dbResultLimit, $offset));
 
             foreach ($corpIds as $corpId) {
-                if (! $this->objectManager->isOpen()) {
+                if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->objectManager->clear();
+                $this->entityManager->clear();
                 $this->checkErrorLimit();
 
                 $updatedCorp = $this->esiData->fetchCorporation($corpId);
@@ -226,11 +228,11 @@ class UpdateCharacters extends Command
         }, $this->alliRepo->findBy([], ['lastUpdate' => 'ASC']));
 
         foreach ($alliIds as $alliId) {
-            if (! $this->objectManager->isOpen()) {
+            if (! $this->entityManager->isOpen()) {
                 $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                 break;
             }
-            $this->objectManager->clear();
+            $this->entityManager->clear();
             $this->checkErrorLimit();
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);

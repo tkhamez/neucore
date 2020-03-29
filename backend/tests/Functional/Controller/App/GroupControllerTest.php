@@ -40,7 +40,7 @@ class GroupControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testGroupsV1403()
@@ -118,10 +118,10 @@ class GroupControllerTest extends WebTestCase
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('100');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('500');
-        $this->helper->getEm()->persist($setting1);
-        $this->helper->getEm()->persist($setting2);
-        $this->helper->getEm()->persist($setting3);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($setting1);
+        $this->helper->getObjectManager()->persist($setting2);
+        $this->helper->getObjectManager()->persist($setting3);
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/789', null, $headers);
@@ -136,8 +136,8 @@ class GroupControllerTest extends WebTestCase
 
         // activate "deactivated groups"
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $this->helper->getEm()->persist($setting1);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($setting1);
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/groups/780', null, $headers);
@@ -211,10 +211,10 @@ class GroupControllerTest extends WebTestCase
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('100');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('500');
-        $this->helper->getEm()->persist($setting1);
-        $this->helper->getEm()->persist($setting2);
-        $this->helper->getEm()->persist($setting3);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($setting1);
+        $this->helper->getObjectManager()->persist($setting2);
+        $this->helper->getObjectManager()->persist($setting3);
+        $this->helper->getObjectManager()->flush();
 
         $headers = [
             'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
@@ -587,10 +587,10 @@ class GroupControllerTest extends WebTestCase
         $corp2->addGroup($groups[0]);
         $corp2->addGroup($groups[1]);
 
-        $this->helper->getEm()->persist($alli);
-        $this->helper->getEm()->persist($alli2);
-        $this->helper->getEm()->persist($corp);
-        $this->helper->getEm()->persist($corp2);
+        $this->helper->getObjectManager()->persist($alli);
+        $this->helper->getObjectManager()->persist($alli2);
+        $this->helper->getObjectManager()->persist($corp);
+        $this->helper->getObjectManager()->persist($corp2);
 
         $char3 = $this->helper->addCharacterMain('C3', 789); // no roles
         $char3->setValidToken(false)->setCorporation($corp);
@@ -606,7 +606,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->helper->addCharacterMain('C4', 1010, [Role::USER]); // no groups
 
-        $this->helper->getEm()->flush();
-        $this->helper->getEm()->clear();
+        $this->helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->clear();
     }
 }

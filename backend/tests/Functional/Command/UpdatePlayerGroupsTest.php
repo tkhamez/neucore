@@ -19,7 +19,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         // setup
         $h = new Helper();
         $h->emptyDb();
-        $em = $h->getEm();
+        $om = $h->getObjectManager();
 
         $group = (new Group())->setName('g');
         $p1 = (new Player())->setName('p1');
@@ -30,20 +30,20 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
             ->setCharacterOwnerHash('h')->setAccessToken('t')
             ->setPlayer($p1)->setCorporation($corp);
 
-        $em->persist($group);
-        $em->persist($p1);
-        $em->persist($p2);
-        $em->persist($p3);
-        $em->persist($corp);
-        $em->persist($char);
-        $em->flush();
+        $om->persist($group);
+        $om->persist($p1);
+        $om->persist($p2);
+        $om->persist($p3);
+        $om->persist($corp);
+        $om->persist($char);
+        $om->flush();
 
         // run
         $output = $this->runConsoleApp('update-player-groups', ['--sleep' => 0], [
             LoggerInterface::class => new Logger('test')
         ]);
 
-        $em->clear();
+        $om->clear();
 
         $actual = explode("\n", $output);
         $this->assertSame(5, count($actual));
@@ -54,7 +54,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[4]);
 
         # read result
-        $actual = (new RepositoryFactory($em))->getPlayerRepository()->findBy([]);
+        $actual = (new RepositoryFactory($om))->getPlayerRepository()->findBy([]);
         $this->assertSame($p1->getId(), $actual[0]->getId());
         $this->assertSame($p2->getId(), $actual[1]->getId());
         $this->assertNotNull($actual[0]->getLastUpdate());

@@ -39,9 +39,9 @@ class MemberTracking
     private $repositoryFactory;
 
     /**
-     * @var ObjectManager
+     * @var EntityManager
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var EsiData
@@ -62,7 +62,7 @@ class MemberTracking
         LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
         RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager,
+        EntityManager $entityManager,
         EsiData $esiData,
         OAuthToken $oauthToken,
         Config $config
@@ -72,7 +72,7 @@ class MemberTracking
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
         $this->repositoryFactory = $repositoryFactory;
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
 
@@ -114,12 +114,12 @@ class MemberTracking
         $token = $this->repositoryFactory->getSystemVariableRepository()
             ->find(SystemVariable::DIRECTOR_TOKEN . $number);
 
-        $this->objectManager->remove($character);
+        $this->entityManager->remove($character);
         if ($token) {
-            $this->objectManager->remove($token);
+            $this->entityManager->remove($token);
         }
 
-        return $this->objectManager->flush();
+        return $this->entityManager->flush();
     }
 
     /**
@@ -156,7 +156,7 @@ class MemberTracking
 
         $variable->setValue((string) \json_encode($data));
 
-        return $this->objectManager->flush();
+        return $this->entityManager->flush();
     }
 
     /**
@@ -298,7 +298,7 @@ class MemberTracking
                         $entity = new EsiLocation();
                     }
                     $entity->setId($id);
-                    $this->objectManager->persist($entity);
+                    $this->entityManager->persist($entity);
                 }
                 if ($entity instanceof EsiLocation) {
                     try {
@@ -318,15 +318,15 @@ class MemberTracking
 
                 $num ++;
                 if ($num % 100 === 0) {
-                    $this->objectManager->flush();
-                    $this->objectManager->clear();
+                    $this->entityManager->flush();
+                    $this->entityManager->clear();
                 }
 
                 usleep($sleep * 1000);
             }
         }
 
-        $this->objectManager->flush();
+        $this->entityManager->flush();
     }
 
     /**
@@ -368,7 +368,7 @@ class MemberTracking
                 $location = new EsiLocation();
                 $location->setId($structureId);
                 $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
-                $this->objectManager->persist($location);
+                $this->entityManager->persist($location);
             }
         }
     }
@@ -387,7 +387,7 @@ class MemberTracking
     {
         $corporation = null;
         foreach ($trackingData as $num => $data) {
-            if (! $this->objectManager->isOpen()) {
+            if (! $this->entityManager->isOpen()) {
                 $this->log->critical('MemberTracking::processData: cannot continue without an open entity manager.');
                 break;
             }
@@ -431,17 +431,17 @@ class MemberTracking
             }
             $corpMember->setCorporation($corporation);
 
-            $this->objectManager->persist($corpMember);
+            $this->entityManager->persist($corpMember);
             if ($num > 0 && $num % 100 === 0) {
-                $this->objectManager->flush();
-                $this->objectManager->clear(); // clear to free memory
+                $this->entityManager->flush();
+                $this->entityManager->clear(); // clear to free memory
                 $corporation = null; // not usable anymore after clear()
             }
 
             usleep($sleep * 1000);
         }
 
-        $this->objectManager->flush();
+        $this->entityManager->flush();
     }
 
     private function storeDirector(EveAuthentication $eveAuth, Corporation $corporation): bool
@@ -474,11 +474,11 @@ class MemberTracking
         } else {
             $directorChar = new SystemVariable(SystemVariable::DIRECTOR_CHAR . $directorNumber);
             $directorChar->setScope(SystemVariable::SCOPE_SETTINGS);
-            $this->objectManager->persist($directorChar);
+            $this->entityManager->persist($directorChar);
         }
         if ($directorToken === null) {
             $directorToken = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . $directorNumber);
-            $this->objectManager->persist($directorToken);
+            $this->entityManager->persist($directorToken);
         }
         $directorChar->setValue((string) json_encode([
             'character_id' => $authCharacterId,
@@ -495,6 +495,6 @@ class MemberTracking
             'scopes' => $eveAuth->getScopes(),
         ]));
 
-        return $this->objectManager->flush();
+        return $this->entityManager->flush();
     }
 }

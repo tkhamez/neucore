@@ -2,7 +2,7 @@
 
 namespace Neucore\Command;
 
-use Neucore\Service\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\DBALException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,14 +11,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DBVerifySSL extends Command
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $objectManager;
+    private $entityManager;
 
-    public function __construct(ObjectManager $objectManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         parent::__construct();
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -30,7 +30,7 @@ class DBVerifySSL extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $result = $this->objectManager->getConnection()->query("SHOW SESSION STATUS LIKE 'Ssl_cipher'")->fetchAll();
+            $result = $this->entityManager->getConnection()->query("SHOW SESSION STATUS LIKE 'Ssl_cipher'")->fetchAll();
         } catch (DBALException $e) {
             $output->writeln($e->getMessage());
             return 1;

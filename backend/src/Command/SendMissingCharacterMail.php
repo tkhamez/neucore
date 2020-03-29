@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\CorporationMemberRepository;
@@ -12,7 +13,6 @@ use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EveMail;
-use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,9 +40,9 @@ class SendMissingCharacterMail extends Command
     private $sysVarRepository;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var int
@@ -52,7 +52,7 @@ class SendMissingCharacterMail extends Command
     public function __construct(
         EveMail $eveMail,
         RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ) {
         parent::__construct();
@@ -62,7 +62,7 @@ class SendMissingCharacterMail extends Command
         $this->eveMail = $eveMail;
         $this->corporationMemberRepository = $repositoryFactory->getCorporationMemberRepository();
         $this->sysVarRepository = $repositoryFactory->getSystemVariableRepository();
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -119,10 +119,10 @@ class SendMissingCharacterMail extends Command
                 $dbResultLimit,
                 $offset
             ));
-            $this->objectManager->clear(); // detaches all objects from Doctrine
+            $this->entityManager->clear(); // detaches all objects from Doctrine
 
             foreach ($memberIds as $memberId) {
-                if (! $this->objectManager->isOpen()) {
+                if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }

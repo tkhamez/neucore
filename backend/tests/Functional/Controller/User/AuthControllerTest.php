@@ -62,8 +62,8 @@ class AuthControllerTest extends WebTestCase
         $helper->emptyDb();
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
         $setting->setValue('1');
-        $helper->getEm()->persist($setting);
-        $helper->getEm()->flush();
+        $helper->getObjectManager()->persist($setting);
+        $helper->getObjectManager()->flush();
 
         $response = $this->runApp('GET', '/login-managed');
 
@@ -94,8 +94,8 @@ class AuthControllerTest extends WebTestCase
         $helper->emptyDb();
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
         $setting->setValue('1');
-        $helper->getEm()->persist($setting);
-        $helper->getEm()->flush();
+        $helper->getObjectManager()->persist($setting);
+        $helper->getObjectManager()->flush();
 
         $response = $this->runApp('GET', '/login-managed-alt');
 
@@ -326,9 +326,9 @@ class AuthControllerTest extends WebTestCase
 
         $var1 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var2 = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $h->getEm()->persist($var1);
-        $h->getEm()->persist($var2);
-        $h->getEm()->flush();
+        $h->getObjectManager()->persist($var1);
+        $h->getObjectManager()->persist($var2);
+        $h->getObjectManager()->flush();
 
         $h->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
@@ -368,9 +368,9 @@ class AuthControllerTest extends WebTestCase
 
         $var1 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var2 = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $h->getEm()->persist($var1);
-        $h->getEm()->persist($var2);
-        $h->getEm()->flush();
+        $h->getObjectManager()->persist($var1);
+        $h->getObjectManager()->persist($var2);
+        $h->getObjectManager()->flush();
 
         $h->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
         $this->loginUser(123456);

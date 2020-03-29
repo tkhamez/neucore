@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
@@ -16,8 +19,8 @@ class AllianceRepositoryTest extends TestCase
 
         $h = new Helper();
         $h->emptyDb();
-        $em = $h->getEm();
-        $r = (new RepositoryFactory($em))->getAllianceRepository();
+        $om = $h->getObjectManager();
+        $r = (new RepositoryFactory($om))->getAllianceRepository();
 
         $alli1 = (new Alliance())->setId(111)->setTicker('a1')->setName('alli 1');
         $alli2 = (new Alliance())->setId(222)->setTicker('a2')->setName('alli 2');
@@ -30,13 +33,13 @@ class AllianceRepositoryTest extends TestCase
         $alli2->addGroup($group2);
         $alli3->addGroup($group1);
 
-        $em->persist($alli1);
-        $em->persist($alli2);
-        $em->persist($alli3);
-        $em->persist($group1);
-        $em->persist($group2);
+        $om->persist($alli1);
+        $om->persist($alli2);
+        $om->persist($alli3);
+        $om->persist($group1);
+        $om->persist($group2);
 
-        $em->flush();
+        $om->flush();
 
         // test
 

@@ -18,7 +18,6 @@ use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use Neucore\Middleware\Psr15\Session\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
-use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
@@ -33,9 +32,9 @@ class UserAuthTest extends TestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var \Doctrine\Persistence\ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Logger
@@ -66,11 +65,11 @@ class UserAuthTest extends TestCase
         $_SESSION = []; // "start" session for SessionData object and reset data
 
         $this->log = new Logger('test');
-        $this->em = $this->helper->getEm();
+        $this->om = $this->helper->getObjectManager();
 
-        $repoFactory = new RepositoryFactory($this->em);
+        $repoFactory = new RepositoryFactory($this->om);
 
-        $objManager = new ObjectManager($this->em, $this->log);
+        $objManager = new ObjectManager($this->om, $this->log);
 
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $this->client = new Client();
@@ -159,7 +158,7 @@ class UserAuthTest extends TestCase
         );
         $result = $this->service->authenticate(new EveAuthentication(888, 'New User', 'coh', $token));
 
-        $this->em->clear();
+        $this->om->clear();
 
         $user = $this->service->getUser();
         $this->assertTrue($result);
@@ -184,7 +183,7 @@ class UserAuthTest extends TestCase
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
-        $this->em->persist($corp);
+        $this->om->persist($corp);
         $char = $this->helper->addCharacterMain('Test User', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $char->setCorporation($corp);
         $player = $char->getPlayer();
@@ -221,7 +220,7 @@ class UserAuthTest extends TestCase
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
-        $this->em->persist($corp);
+        $this->om->persist($corp);
         $char1 = $this->helper->addCharacterMain('Test User1', 9013, [Role::USER, Role::GROUP_MANAGER]);
         $player = $char1->getPlayer();
         $char2 = $this->helper->addCharacterToPlayer('Test User2', 9014, $player);
@@ -291,7 +290,7 @@ class UserAuthTest extends TestCase
     {
         $_SESSION['character_id'] = 100;
         $corp = (new Corporation())->setId(101);
-        $this->em->persist($corp);
+        $this->om->persist($corp);
         $main1 = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
         $main2 = $this->helper->addCharacterMain('Main2', 200, [Role::USER]);
         $main2->setCorporation($corp);
@@ -331,7 +330,7 @@ class UserAuthTest extends TestCase
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
         $corp = (new Corporation())->setId(101);
-        $this->em->persist($corp);
+        $this->om->persist($corp);
         $main->setCorporation($corp);
 
         $token = new AccessToken(['access_token' => 'tk']);

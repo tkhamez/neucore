@@ -21,7 +21,7 @@ class AppAuth implements RoleProviderInterface
     private $repositoryFactory;
 
     /**
-     * @var ObjectManager
+     * @var \Doctrine\Persistence\ObjectManager
      */
     private $objectManager;
 
@@ -30,7 +30,7 @@ class AppAuth implements RoleProviderInterface
      */
     private $app;
 
-    public function __construct(RepositoryFactory $repositoryFactory, ObjectManager $objectManager)
+    public function __construct(RepositoryFactory $repositoryFactory, \Doctrine\Persistence\ObjectManager $objectManager)
     {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;

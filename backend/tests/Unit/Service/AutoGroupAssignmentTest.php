@@ -18,7 +18,6 @@ use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
@@ -35,9 +34,9 @@ class AutoGroupAssignmentTest extends TestCase
     private $th;
 
     /**
-     * @var EntityManagerInterface
+     * @var \Doctrine\Persistence\ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var PlayerRepository
@@ -92,17 +91,17 @@ class AutoGroupAssignmentTest extends TestCase
     protected function setUp(): void
     {
         $this->th = new Helper();
-        $this->em = $this->th->getEm();
+        $this->om = $this->th->getObjectManager();
 
         $this->log = new Logger('Test');
 
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $repositoryFactory = new RepositoryFactory($this->om);
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $objectManager = new ObjectManager($this->em, $this->log);
+        $objectManager = new ObjectManager($this->om, $this->log);
 
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $repoFactory = new RepositoryFactory($this->em);
+        $repoFactory = new RepositoryFactory($this->om);
         $esi = new EsiData(
             $this->log,
             new EsiApiFactory(new Client(), $config),
@@ -143,7 +142,7 @@ class AutoGroupAssignmentTest extends TestCase
     public function testAssign()
     {
         $this->setUpData();
-        $this->em->clear();
+        $this->om->clear();
 
         // Player belongs to corps 1 and 2 with groups 1, 2, 3 and 7
         // Group 4 belongs to another corp
@@ -157,7 +156,7 @@ class AutoGroupAssignmentTest extends TestCase
         $success = $this->aga->assign($this->playerId);
 
         $this->assertTrue($success);
-        $this->em->clear();
+        $this->om->clear();
 
         $playerDb = $this->playerRepo->find($this->playerId);
         $groupIds = $playerDb->getGroupIds();
@@ -195,7 +194,7 @@ class AutoGroupAssignmentTest extends TestCase
         $playerBefore->addGroup($this->group1);
         $playerBefore->addGroup($this->group2);
         $playerBefore->addGroup($this->group3);
-        $this->em->flush();
+        $this->om->flush();
         $this->assertSame(
             [
                 $this->group4->getId(),
@@ -215,7 +214,7 @@ class AutoGroupAssignmentTest extends TestCase
         $success = $this->aga->checkRequiredGroups($this->playerId);
         $this->assertTrue($success);
 
-        $this->em->clear();
+        $this->om->clear();
         $playerAfter = $this->playerRepo->find($this->playerId);
         $this->assertSame(
             [
@@ -258,26 +257,26 @@ class AutoGroupAssignmentTest extends TestCase
         $group5->addRequiredGroup($group6);
         $group2->addRequiredGroup($group3);
 
-        $this->em->persist($group1);
-        $this->em->persist($group2);
-        $this->em->persist($group3);
-        $this->em->persist($group4);
-        $this->em->persist($group5);
-        $this->em->persist($group6);
-        $this->em->persist($group7);
-        $this->em->persist($alliance);
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->persist($corp3);
-        $this->em->persist($char1);
-        $this->em->persist($char2);
-        $this->em->persist($char3);
-        $this->em->persist($char4);
-        $this->em->persist($player);
-        $this->em->persist((new Role(10))->setName(Role::TRACKING));
-        $this->em->persist((new Role(17))->setName(Role::WATCHLIST));
-        $this->em->persist($playerManaged);
-        $this->em->flush();
+        $this->om->persist($group1);
+        $this->om->persist($group2);
+        $this->om->persist($group3);
+        $this->om->persist($group4);
+        $this->om->persist($group5);
+        $this->om->persist($group6);
+        $this->om->persist($group7);
+        $this->om->persist($alliance);
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->persist($corp3);
+        $this->om->persist($char1);
+        $this->om->persist($char2);
+        $this->om->persist($char3);
+        $this->om->persist($char4);
+        $this->om->persist($player);
+        $this->om->persist((new Role(10))->setName(Role::TRACKING));
+        $this->om->persist((new Role(17))->setName(Role::WATCHLIST));
+        $this->om->persist($playerManaged);
+        $this->om->flush();
 
         $this->playerId = $player->getId();
         $this->playerManagedId = $playerManaged->getId();

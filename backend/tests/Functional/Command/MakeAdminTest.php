@@ -2,9 +2,9 @@
 
 namespace Tests\Functional\Command;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
@@ -15,9 +15,9 @@ use Tests\WriteErrorListener;
 class MakeAdminTest extends ConsoleTestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private static $em;
+    private static $om;
 
     private static $playerId;
 
@@ -43,13 +43,13 @@ class MakeAdminTest extends ConsoleTestCase
         ]);
         self::$playerId = $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN])->getPlayer()->getId();
 
-        self::$em = $h->getEm();
+        self::$om = $h->getObjectManager();
     }
 
     public function testExecute()
     {
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId]);
-        self::$em->clear();
+        self::$om->clear();
 
         $this->assertSame('Added all applicable roles to the player account "Admin"'."\n", $output);
 
@@ -68,7 +68,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::WATCHLIST,
             Role::WATCHLIST_ADMIN,
         ];
-        $actual = (new RepositoryFactory(self::$em))
+        $actual = (new RepositoryFactory(self::$om))
             ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();
         $this->assertSame($expected, $actual);
     }
@@ -88,7 +88,7 @@ class MakeAdminTest extends ConsoleTestCase
         $log = new Logger('Test');
 
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId], [
-            EntityManagerInterface::class => $em,
+            ObjectManager::class => $em,
             LoggerInterface::class => $log
         ]);
 

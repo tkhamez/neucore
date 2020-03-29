@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
@@ -26,9 +26,9 @@ class CheckTokensTest extends ConsoleTestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Logger
@@ -44,7 +44,7 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        $this->em = $this->helper->getEm();
+        $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
         $this->client = new Client();
@@ -82,10 +82,10 @@ class CheckTokensTest extends ConsoleTestCase
         $player = (new Player())->setName('p');
         $corp = (new Corporation())->setId(1000001);
         $char = (new Character())->setId(3)->setName('char1')->setCorporation($corp)->setPlayer($player);
-        $this->em->persist($player);
-        $this->em->persist($corp);
-        $this->em->persist($char);
-        $this->em->flush();
+        $this->om->persist($player);
+        $this->om->persist($corp);
+        $this->om->persist($char);
+        $this->om->flush();
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0]);
 
@@ -97,8 +97,8 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
 
         # read result
-        $this->em->clear();
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->om->clear();
+        $repositoryFactory = new RepositoryFactory($this->om);
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(0, count($actualChars));
         $removedChar = $repositoryFactory->getRemovedCharacterRepository()->findBy([]);
@@ -164,9 +164,9 @@ class CheckTokensTest extends ConsoleTestCase
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
             ->setAccessToken('at3')->setRefreshToken('at3')->setValidToken(false)
             ->setExpires(time() - 60*60)->setPlayer($player);
-        $this->em->persist($player);
-        $this->em->persist($c);
-        $this->em->flush();
+        $this->om->persist($player);
+        $this->om->persist($c);
+        $this->om->flush();
 
         list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
@@ -186,8 +186,8 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
 
         # read result
-        $this->em->clear();
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $this->om->clear();
+        $repositoryFactory = new RepositoryFactory($this->om);
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(0, count($actualChars));
         $removedChar = $repositoryFactory->getRemovedCharacterRepository()->findBy([]);
@@ -221,9 +221,9 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[3]);
 
         # read result
-        $this->em->clear();
+        $this->om->clear();
 
-        $repositoryFactory = new RepositoryFactory($this->em);
+        $repositoryFactory = new RepositoryFactory($this->om);
 
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(1, count($actualChars));

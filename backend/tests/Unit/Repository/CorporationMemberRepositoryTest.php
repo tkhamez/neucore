@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -16,9 +16,9 @@ use Tests\Helper;
 class CorporationMemberRepositoryTest extends TestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private static $em;
+    private static $om;
 
     /**
      * @throws \Exception
@@ -27,7 +27,7 @@ class CorporationMemberRepositoryTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        self::$em = $helper->getEm();
+        self::$om = $helper->getObjectManager();
 
         $player1 = (new Player())->setName('Player 1');
         $char1 = (new Character())->setId(1)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
@@ -49,25 +49,25 @@ class CorporationMemberRepositoryTest extends TestCase
         $member5 = (new CorporationMember())->setId(50)->setName('Member 5')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -110 days +30 minutes'))->setCharacter($char5);
 
-        self::$em->persist($player1);
-        self::$em->persist($char1);
-        self::$em->persist($char2);
-        self::$em->persist($char5);
-        self::$em->persist($corp1);
-        self::$em->persist($corp2);
-        self::$em->persist($member1);
-        self::$em->persist($member1a);
-        self::$em->persist($member2);
-        self::$em->persist($member3);
-        self::$em->persist($member4);
-        self::$em->persist($member5);
+        self::$om->persist($player1);
+        self::$om->persist($char1);
+        self::$om->persist($char2);
+        self::$om->persist($char5);
+        self::$om->persist($corp1);
+        self::$om->persist($corp2);
+        self::$om->persist($member1);
+        self::$om->persist($member1a);
+        self::$om->persist($member2);
+        self::$om->persist($member3);
+        self::$om->persist($member4);
+        self::$om->persist($member5);
 
-        self::$em->flush();
+        self::$om->flush();
     }
 
     public function testResetCriteria()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $repository->setAccount(false);
         $repository->setActive(110);
@@ -90,7 +90,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testFindMatchingActive()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual1 = $repository->setActive(109)->findMatching(1);
         $actual2 = $repository->setActive(110)->findMatching(1);
@@ -109,7 +109,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testFindMatchingInactive()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual1 = $repository->setInactive(109)->findMatching(1);
         $actual2 = $repository->setInactive(110)->findMatching(1);
@@ -130,7 +130,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testFindMatchingActiveRange()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual = $repository->setInactive(110)->setActive(111)->findMatching(1);
 
@@ -141,7 +141,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testFindMatchingWithOutAccount()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual1 = $repository->setAccount(true)->findMatching(1);
         $actual2 = $repository->setAccount(false)->findMatching(1);
@@ -159,7 +159,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testFindMatchingWithToken()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual1 = $repository->setValidToken(true)->findMatching(1);
         $actual2 = $repository->setValidToken(false)->findMatching(1);
@@ -173,7 +173,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testFindMatchingTokenChanged()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual = $repository->setTokenChanged(9)->findMatching(1);
 
@@ -183,14 +183,14 @@ class CorporationMemberRepositoryTest extends TestCase
 
     public function testRemoveFormerMembers()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
         $actual = $repository->removeFormerMembers(1, [10, 30]);
         $this->assertSame(2, $actual); // removed ids: 20, 101
     }
 
     public function testFindByCorporationsWithoutAccount()
     {
-        $repository = (new RepositoryFactory(self::$em))->getCorporationMemberRepository();
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual0 = $repository->findByCorporationsWithoutAccountAndActive([1, 2], 111);
         $this->assertSame(2, count($actual0));

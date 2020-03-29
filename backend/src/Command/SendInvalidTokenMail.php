@@ -2,13 +2,13 @@
 
 namespace Neucore\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Service\EveMail;
-use Neucore\Service\ObjectManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,9 +31,9 @@ class SendInvalidTokenMail extends Command
     private $playerRepository;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $objectManager;
+    private $entityManager;
 
     /**
      * @var int
@@ -43,7 +43,7 @@ class SendInvalidTokenMail extends Command
     public function __construct(
         EveMail $eveMail,
         RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager,
+        EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ) {
         parent::__construct();
@@ -52,7 +52,7 @@ class SendInvalidTokenMail extends Command
 
         $this->eveMail = $eveMail;
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
-        $this->objectManager = $objectManager;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure(): void
@@ -103,10 +103,10 @@ class SendInvalidTokenMail extends Command
                 $dbResultLimit,
                 $offset
             ));
-            $this->objectManager->clear(); // detaches all objects from Doctrine
+            $this->entityManager->clear(); // detaches all objects from Doctrine
 
             foreach ($playerIds as $playerId) {
-                if (! $this->objectManager->isOpen()) {
+                if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }

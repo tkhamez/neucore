@@ -29,7 +29,7 @@ class CharControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testMainV1403()
@@ -81,7 +81,7 @@ class CharControllerTest extends WebTestCase
         $this->setUpDb();
         $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $char->setMain(false);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/main/123', null, $headers);
@@ -315,10 +315,10 @@ class CharControllerTest extends WebTestCase
             ->setReason(RemovedCharacter::REASON_MOVED)->setNewPlayer($player2);
         $removedChar1->setPlayer($player1);
         $removedChar2->setPlayer($player1);
-        $this->helper->getEm()->persist($player2);
-        $this->helper->getEm()->persist($removedChar1);
-        $this->helper->getEm()->persist($removedChar2);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($player2);
+        $this->helper->getObjectManager()->persist($removedChar1);
+        $this->helper->getObjectManager()->persist($removedChar2);
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
@@ -379,9 +379,9 @@ class CharControllerTest extends WebTestCase
             ->setRemovedDate(new \DateTime('2019-04-20 20:41:47'))
             ->setReason(RemovedCharacter::REASON_MOVED)
             ->setNewPlayer($player2)->setPlayer($player1);
-        $this->helper->getEm()->persist($player2);
-        $this->helper->getEm()->persist($movedChar);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($player2);
+        $this->helper->getObjectManager()->persist($movedChar);
+        $this->helper->getObjectManager()->flush();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/incoming-characters/456', null, $headers);
@@ -426,7 +426,7 @@ class CharControllerTest extends WebTestCase
         $this->setUpDb();
         $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $corp = (new Corporation())->setId(1000)->setName('Corp one');
-        $this->helper->getEm()->persist($corp);
+        $this->helper->getObjectManager()->persist($corp);
         $char->setCorporation($corp);
         $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
 

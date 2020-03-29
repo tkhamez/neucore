@@ -11,12 +11,12 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
+use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Brave\Sso\Basics\EveAuthentication;
-use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
@@ -36,9 +36,9 @@ class MemberTrackingTest extends TestCase
     private $helper;
 
     /**
-     * @var EntityManagerInterface
+     * @var \Doctrine\Persistence\ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Logger|LoggerInterface
@@ -64,18 +64,18 @@ class MemberTrackingTest extends TestCase
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        $this->em = $this->helper->getEm();
+        $this->om = $this->helper->getObjectManager();
         $this->logger = new Logger('test');
         $this->client = new Client();
-        $objectManager = new ObjectManager($this->em, $this->logger);
-        $this->repositoryFactory = new RepositoryFactory($this->em);
+        $objectManager = new ObjectManager($this->om, $this->logger);
+        $this->repositoryFactory = new RepositoryFactory($this->om);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $esiApiFactory = new EsiApiFactory($this->client, $config);
         $this->memberTracking = new MemberTracking(
             $this->logger,
             $esiApiFactory,
             $this->repositoryFactory,
-            $objectManager,
+            new EntityManager($this->helper->getEm(), $this->logger),
             new EsiData($this->logger, $esiApiFactory, $objectManager, $this->repositoryFactory, $config),
             new OAuthToken(
                 new OAuthProvider($this->client),
@@ -123,9 +123,9 @@ class MemberTrackingTest extends TestCase
     {
         $char = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
         $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->em->persist($char);
-        $this->em->persist($token);
-        $this->em->flush();
+        $this->om->persist($char);
+        $this->om->persist($token);
+        $this->om->flush();
         $this->client->setResponse(
             new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
             new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
@@ -164,9 +164,9 @@ class MemberTrackingTest extends TestCase
             'corporation_ticker' => '-10-',
         ]));
         $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->em->persist($char);
-        $this->em->persist($token);
-        $this->em->flush();
+        $this->om->persist($char);
+        $this->om->persist($token);
+        $this->om->flush();
         $this->client->setResponse(
             new Response(200, [], '{"corporation_id": 11}'), // getCharactersCharacterId
             new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
@@ -198,9 +198,9 @@ class MemberTrackingTest extends TestCase
     {
         $char = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
         $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->em->persist($char);
-        $this->em->persist($token);
-        $this->em->flush();
+        $this->om->persist($char);
+        $this->om->persist($token);
+        $this->om->flush();
 
         $this->memberTracking->removeDirector($char);
 
@@ -218,8 +218,8 @@ class MemberTrackingTest extends TestCase
             "corporation_name": "corp name",
             "corporation_ticker": "-CT-"
         }');
-        $this->em->persist($char);
-        $this->em->flush();
+        $this->om->persist($char);
+        $this->om->flush();
 
         $this->client->setResponse(
             new Response(200, [], '{"name": "name char", "corporation_id": 102}'), // getCharactersCharacterId()
@@ -246,9 +246,9 @@ class MemberTrackingTest extends TestCase
         $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"character_id": 100}');
         $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
             ->setValue('{"access": "at", "refresh": "rt", "expires": 1568471332}');
-        $this->em->persist($char);
-        $this->em->persist($token);
-        $this->em->flush();
+        $this->om->persist($char);
+        $this->om->persist($token);
+        $this->om->flush();
 
         $this->assertSame([
             'access' => 'at',
@@ -361,7 +361,7 @@ class MemberTrackingTest extends TestCase
         );
 
         $this->memberTracking->updateStructure($data, new AccessToken(['access_token' => 'at']));
-        $this->em->flush();
+        $this->om->flush();
 
         $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);
         $this->assertSame(1, count($resultLocations));
@@ -397,12 +397,12 @@ class MemberTrackingTest extends TestCase
         $location1 = (new EsiLocation())->setId(60008494)->setCategory(EsiLocation::CATEGORY_STATION);
         $location2 = (new EsiLocation())->setId(1023100200300)->setCategory(EsiLocation::CATEGORY_STRUCTURE);
         $location3 = (new EsiLocation())->setId(30000142)->setCategory(EsiLocation::CATEGORY_STATION);
-        $this->em->persist($corp);
-        $this->em->persist($member);
-        $this->em->persist($type);
-        $this->em->persist($location1);
-        $this->em->persist($location2);
-        $this->em->persist($location3);
+        $this->om->persist($corp);
+        $this->om->persist($member);
+        $this->om->persist($type);
+        $this->om->persist($location1);
+        $this->om->persist($location2);
+        $this->om->persist($location3);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         $data = [
@@ -427,7 +427,7 @@ class MemberTrackingTest extends TestCase
 
         $this->memberTracking->storeMemberData((int) $corp->getId(), $data, $names);
 
-        $this->em->clear();
+        $this->om->clear();
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
         $this->assertSame(3, count($result));
 

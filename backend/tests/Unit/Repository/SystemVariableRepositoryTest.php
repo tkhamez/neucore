@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Repository;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
@@ -12,9 +12,9 @@ use Tests\Helper;
 class SystemVariableRepositoryTest extends TestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var SystemVariableRepository
@@ -25,8 +25,8 @@ class SystemVariableRepositoryTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->em = $helper->getEm();
-        $this->repository = (new RepositoryFactory($this->em))->getSystemVariableRepository();
+        $this->om = $helper->getObjectManager();
+        $this->repository = (new RepositoryFactory($this->om))->getSystemVariableRepository();
     }
 
     public function testGetDirectors()
@@ -34,10 +34,10 @@ class SystemVariableRepositoryTest extends TestCase
         $var1 = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
         $var2 = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 2);
         $var3 = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
-        $this->em->persist($var1);
-        $this->em->persist($var2);
-        $this->em->persist($var3);
-        $this->em->flush();
+        $this->om->persist($var1);
+        $this->om->persist($var2);
+        $this->om->persist($var3);
+        $this->om->flush();
 
         $actual = $this->repository->getDirectors();
         $this->assertSame(2, count($actual));

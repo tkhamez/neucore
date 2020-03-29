@@ -45,24 +45,24 @@ class PlayerRepositoryTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $em = $helper->getEm();
+        $om = $helper->getObjectManager();
 
         self::$group1 = (new Group())->setName('g1');
         self::$group2 = (new Group())->setName('g2');
-        $em->persist(self::$group1);
-        $em->persist(self::$group2);
+        $om->persist(self::$group1);
+        $om->persist(self::$group2);
 
         $roleTracking = (new Role(10))->setName(Role::TRACKING);
-        $em->persist($roleTracking);
+        $om->persist($roleTracking);
 
         $corp1 = (new Corporation())->setId(98000101)->setName('corp1');
         $corp2 = (new Corporation())->setId(98000102)->setName('corp2');
         $corp3 = (new Corporation())->setId(98000103)->setName('corp3');
         $corp4 = (new Corporation())->setId(1000500)->setName('corp4'); // NPC corp
-        $em->persist($corp1);
-        $em->persist($corp2);
-        $em->persist($corp3);
-        $em->persist($corp4);
+        $om->persist($corp1);
+        $om->persist($corp2);
+        $om->persist($corp3);
+        $om->persist($corp4);
 
         $player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
         $player1->getCharacters()[0]->setValidToken(true);
@@ -75,8 +75,8 @@ class PlayerRepositoryTest extends TestCase
         $char1c->setCorporation($corp4);
         $player1->addCharacter($char1b);
         $player1->addCharacter($char1c);
-        $em->persist($char1b);
-        $em->persist($char1c);
+        $om->persist($char1b);
+        $om->persist($char1c);
 
         $player2 = $helper->addCharacterMain('c2', 2)->getPlayer();
         $player2->addGroup(self::$group2);
@@ -101,16 +101,15 @@ class PlayerRepositoryTest extends TestCase
         $player3->setStatus(Player::STATUS_MANAGED);
         self::$player4->setStatus(Player::STATUS_MANAGED);
 
-        $em->persist($player3);
-        $em->persist($player5);
+        $om->persist($player3);
+        $om->persist($player5);
 
-        $em->flush();
+        $om->flush();
     }
 
     protected function setup(): void
     {
-        $em = (new Helper())->getEm();
-        $this->repo = (new RepositoryFactory($em))->getPlayerRepository();
+        $this->repo = (new RepositoryFactory((new Helper())->getObjectManager()))->getPlayerRepository();
     }
 
     public function testFindWithCharacters()

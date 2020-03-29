@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Api;
@@ -18,9 +18,9 @@ use Tests\Helper;
 class AutoWhitelistTest extends ConsoleTestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @throws \Exception
@@ -30,15 +30,15 @@ class AutoWhitelistTest extends ConsoleTestCase
         $helper = new Helper();
         $helper->emptyDb();
 
-        $this->em = $helper->getEm();
+        $this->om = $helper->getObjectManager();
 
         $corp1 = (new Corporation())->setId(2000101)->setName('corp1'); // watched
         $corp2 = (new Corporation())->setId(2000102)->setName('corp2'); // PAC
         $corp3 = (new Corporation())->setId(2000103)->setName('corp3'); // other corp
         $corp3->setAutoWhitelist(true); // was whitelisted before
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->persist($corp3);
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->persist($corp3);
 
         $char1a = $helper->addCharacterMain('char1a', 1011)->setCorporation($corp1);
         $helper->addCharacterToPlayer('char1b', 1012, $char1a->getPlayer())->setCorporation($corp2)
@@ -52,9 +52,9 @@ class AutoWhitelistTest extends ConsoleTestCase
 
         $watchlist = new Watchlist();
         $watchlist->setId(2)->setName('test')->addCorporation($corp1)->addWhitelistCorporation($corp3);
-        $this->em->persist($watchlist);
+        $this->om->persist($watchlist);
 
-        $this->em->flush();
+        $this->om->flush();
     }
 
     /**
@@ -79,11 +79,11 @@ class AutoWhitelistTest extends ConsoleTestCase
         $this->assertStringContainsString('auto-whitelist end.', $log[3]);
         $this->assertStringContainsString('', $log[4]);
 
-        $this->em->clear();
+        $this->om->clear();
 
-        $list = (new RepositoryFactory($this->em))->getWatchlistRepository()->find(2);
-        $corp2 = (new RepositoryFactory($this->em))->getCorporationRepository()->find(2000102);
-        $corp3 = (new RepositoryFactory($this->em))->getCorporationRepository()->find(2000103);
+        $list = (new RepositoryFactory($this->om))->getWatchlistRepository()->find(2);
+        $corp2 = (new RepositoryFactory($this->om))->getCorporationRepository()->find(2000102);
+        $corp3 = (new RepositoryFactory($this->om))->getCorporationRepository()->find(2000103);
 
         $this->assertSame(1, count($list->getWhitelistCorporations()));
         $this->assertSame(2000102, $list->getWhitelistCorporations()[0]->getId());

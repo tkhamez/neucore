@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\SystemVariable;
 use GuzzleHttp\ClientInterface;
@@ -20,9 +20,9 @@ use Tests\Logger;
 class UpdateMemberTrackingTest extends ConsoleTestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $em;
+    private $om;
 
     /**
      * @var Client
@@ -33,15 +33,15 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->em = $helper->getEm();
+        $this->om = $helper->getObjectManager();
         $this->client = new Client();
     }
 
     public function testExecuteErrorChar()
     {
         $director = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1));
-        $this->em->persist($director);
-        $this->em->flush();
+        $this->om->persist($director);
+        $this->om->flush();
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0]);
 
@@ -56,8 +56,8 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
     public function testExecuteErrorCorp()
     {
         $director = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"corporation_id": 1}');
-        $this->em->persist($director);
-        $this->em->flush();
+        $this->om->persist($director);
+        $this->om->flush();
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0]);
 
@@ -73,9 +73,9 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
     {
         $director = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"corporation_id": 1}');
         $corp = (new Corporation())->setId(1);
-        $this->em->persist($director);
-        $this->em->persist($corp);
-        $this->em->flush();
+        $this->om->persist($director);
+        $this->om->persist($corp);
+        $this->om->flush();
 
         $output = $this->runConsoleApp('update-member-tracking', ['--sleep' => 0]);
 
@@ -94,10 +94,10 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $corp = (new Corporation())->setId(1);
         $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
             ->setValue('{"access": "at", "refresh": "rt", "expires": '. (time() + 60*20).'}');
-        $this->em->persist($director);
-        $this->em->persist($corp);
-        $this->em->persist($token);
-        $this->em->flush();
+        $this->om->persist($director);
+        $this->om->persist($corp);
+        $this->om->persist($token);
+        $this->om->flush();
 
         $this->client->setResponse(new Response(500));
 
@@ -127,13 +127,13 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
             ->setValue('{"access": "at", "refresh": "rt", "expires": '. (time() + 60*20).'}');
         $corp1 = (new Corporation())->setId(1);
         $corp2 = (new Corporation())->setId(2);
-        $this->em->persist($director1);
-        $this->em->persist($director2);
-        $this->em->persist($token1);
-        $this->em->persist($token2);
-        $this->em->persist($corp1);
-        $this->em->persist($corp2);
-        $this->em->flush();
+        $this->om->persist($director1);
+        $this->om->persist($director2);
+        $this->om->persist($token1);
+        $this->om->persist($token2);
+        $this->om->persist($corp1);
+        $this->om->persist($corp2);
+        $this->om->flush();
 
         $this->client->setResponse(
             new Response(200, [], '[{"character_id": 100}]'), // corporations/1/membertracking/
@@ -159,8 +159,8 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('Finished "update-member-tracking"', $actual[7]);
         $this->assertStringEndsWith('', $actual[8]);
 
-        $this->em->clear();
-        $corps = (new RepositoryFactory($this->em))->getCorporationRepository()->findAll();
+        $this->om->clear();
+        $corps = (new RepositoryFactory($this->om))->getCorporationRepository()->findAll();
         $this->assertSame(2, count($corps));
         $this->assertNotNull($corps[0]->getTrackingLastUpdate());
         $this->assertNotNull($corps[1]->getTrackingLastUpdate());

@@ -1,7 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests;
 
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\Persistence\ObjectManager;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
@@ -24,12 +33,6 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\Session\SessionData;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\DBAL\DBALException;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
 
 class Helper
 {
@@ -102,6 +105,11 @@ class Helper
         SessionData::setReadOnly(true);
     }
 
+    public function getObjectManager(bool $discrete = false): ObjectManager
+    {
+        return $this->getEm($discrete);
+    }
+
     public function getEm(bool $discrete = false): EntityManagerInterface
     {
         if (self::$em === null || $discrete) {
@@ -167,8 +175,8 @@ class Helper
      */
     public function addRoles(array $roles): array
     {
-        $em = $this->getEm();
-        $rr = (new RepositoryFactory($em))->getRoleRepository();
+        $om = $this->getObjectManager();
+        $rr = (new RepositoryFactory($om))->getRoleRepository();
 
         $roleEntities = [];
         foreach ($roles as $roleName) {
@@ -177,11 +185,11 @@ class Helper
                 self::$roleSequence ++;
                 $role = new Role(self::$roleSequence);
                 $role->setName($roleName);
-                $em->persist($role);
+                $om->persist($role);
             }
             $roleEntities[] = $role;
         }
-        $em->flush();
+        $om->flush();
 
         return $roleEntities;
     }
@@ -192,8 +200,8 @@ class Helper
      */
     public function addGroups(array $groups): array
     {
-        $em = $this->getEm();
-        $gr = (new RepositoryFactory($em))->getGroupRepository();
+        $om = $this->getObjectManager();
+        $gr = (new RepositoryFactory($om))->getGroupRepository();
 
         $groupEntities = [];
         foreach ($groups as $groupName) {
@@ -201,18 +209,18 @@ class Helper
             if ($group === null) {
                 $group = new Group();
                 $group->setName($groupName);
-                $em->persist($group);
+                $om->persist($group);
             }
             $groupEntities[] = $group;
         }
-        $em->flush();
+        $om->flush();
 
         return $groupEntities;
     }
 
     public function addCharacterMain(string $name, int $charId, array $roles = [], array $groups = []): Character
     {
-        $em = $this->getEm();
+        $om = $this->getObjectManager();
 
         $player = new Player();
         $player->setName($name);
@@ -237,9 +245,9 @@ class Helper
             $player->addGroup($group);
         }
 
-        $em->persist($player);
-        $em->persist($char);
-        $em->flush();
+        $om->persist($player);
+        $om->persist($char);
+        $om->flush();
 
         return $char;
     }
@@ -255,8 +263,8 @@ class Helper
         $alt->setPlayer($player);
         $player->addCharacter($alt);
 
-        $this->getEm()->persist($alt);
-        $this->getEm()->flush();
+        $this->getObjectManager()->persist($alt);
+        $this->getObjectManager()->flush();
 
         return $alt;
     }
@@ -265,9 +273,9 @@ class Helper
     {
         $player = (new Player())->setName('Player');
         $character->setPlayer($player);
-        $this->getEm()->persist($player);
-        $this->getEm()->persist($character);
-        $this->getEm()->flush();
+        $this->getObjectManager()->persist($player);
+        $this->getObjectManager()->persist($character);
+        $this->getObjectManager()->flush();
     }
 
     public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_BCRYPT): App
@@ -277,13 +285,13 @@ class Helper
         $app = new App();
         $app->setName($name);
         $app->setSecret((string) $hash);
-        $this->getEm()->persist($app);
+        $this->getObjectManager()->persist($app);
 
         foreach ($this->addRoles($roles) as $role) {
             $app->addRole($role);
         }
 
-        $this->getEm()->flush();
+        $this->getObjectManager()->flush();
 
         return $app;
     }

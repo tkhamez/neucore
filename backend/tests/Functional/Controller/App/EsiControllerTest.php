@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection DuplicatedCode */
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
@@ -34,7 +37,7 @@ class EsiControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getEm());
+        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
         $this->logger = new Logger('test');
     }
 
@@ -110,8 +113,8 @@ class EsiControllerTest extends WebTestCase
         // add sys var
         $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
         $errVar->setValue((string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86]));
-        $this->helper->getEm()->persist($errVar);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($errVar);
+        $this->helper->getObjectManager()->flush();
 
         $response = $this->runApp(
             'GET',
@@ -138,8 +141,8 @@ class EsiControllerTest extends WebTestCase
         // add sys var
         $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
         $errVar->setValue((string) \json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86]));
-        $this->helper->getEm()->persist($errVar);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($errVar);
+        $this->helper->getObjectManager()->flush();
 
         $response = $this->runApp(
             'GET',
@@ -159,8 +162,8 @@ class EsiControllerTest extends WebTestCase
         // add sys var
         $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
         $errVar->setValue((string) \json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86]));
-        $this->helper->getEm()->persist($errVar);
-        $this->helper->getEm()->flush();
+        $this->helper->getObjectManager()->persist($errVar);
+        $this->helper->getObjectManager()->flush();
 
         $response = $this->runApp(
             'GET',
@@ -219,13 +222,13 @@ class EsiControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
         $var = (new SystemVariable(SystemVariable::ESI_ERROR_LIMIT))->setScope(SystemVariable::SCOPE_BACKEND);
-        $this->helper->getEm()->persist($var);
+        $this->helper->getObjectManager()->persist($var);
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         // create client with middleware
         $httpClient = new Client();
-        $httpClient->setMiddleware(new EsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getEm()));
+        $httpClient->setMiddleware(new EsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getObjectManager()));
         $httpClient->setResponse(new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
