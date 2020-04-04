@@ -2,10 +2,8 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with OpenAPI, it is available at `https://[domain]/openapi-3.yaml`.
-
-There is also an OpenAPI definition file available that contains only the API for applications at
-[https://[domain]/application-api-3.yml](https://neucore.herokuapp.com/application-api-3.yml).
+The API is documented with OpenAPI, it is available at
+[https://[domain]/api.html](https://neucore.herokuapp.com/api.html).
 
 ## Roles Overview
 
@@ -95,9 +93,15 @@ This role is assigned automatically based on group membership.
 
 {watchlist}
 
+#### watchlist-manager
+
+Allows a player to edit exemptions and settings of a watch list to which they have access.
+
+{watchlist-manager}
+
 #### watchlist-admin
 
-Allows a player to edit watchlist exemptions and settings.
+Allows a player to edit watchlist access.
 
 {watchlist-admin}
 

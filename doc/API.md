@@ -2,7 +2,7 @@
 
 All API endpoints from the backend are protected by roles.
 
-The API is documented with OpenAPI, it is available at 
+The API is documented with OpenAPI, it is available at
 [https://[domain]/api.html](https://neucore.herokuapp.com/api.html).
 
 ## Roles Overview
@@ -23,6 +23,7 @@ The API is documented with OpenAPI, it is available at
   * [tracking](#tracking)
   * [tracking-admin](#tracking-admin)
   * [watchlist](#watchlist)
+  * [watchlist-manager](#watchlist-manager)
   * [watchlist-admin](#watchlist-admin)
 - [Application API](#application-api)
   * [app](#app)
@@ -263,7 +264,7 @@ Watchlist API
 - List of corporations for the corporation whitelist. `/user/watchlist/{id}/whitelist-corporation/list`
 - List of alliances for the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/list`
 
-#### watchlist-admin
+#### watchlist-manager
 
 Allows a player to edit watchlist exemptions and settings.
 
@@ -275,10 +276,8 @@ Corporation API
 - List all corporations. `/user/corporation/all`
 - Add an EVE corporation to the database. `/user/corporation/add/{id}`
 
-Group API
-- List all groups. `/user/group/all`
-
 Watchlist API
+- List of exempt players. `/user/watchlist/{id}/exemption/list`
 - Add player to exemption list. `/user/watchlist/{id}/exemption/add/{player}`
 - Remove player from exemption list. `/user/watchlist/{id}/exemption/remove/{player}`
 - List of corporations for this list. `/user/watchlist/{id}/corporation/list`
@@ -287,9 +286,6 @@ Watchlist API
 - List of alliances for this list. `/user/watchlist/{id}/alliance/list`
 - Add alliance to the list. `/user/watchlist/{id}/alliance/add/{alliance}`
 - Remove alliance from the list. `/user/watchlist/{id}/alliance/remove/{alliance}`
-- List of groups with access to this list. `/user/watchlist/{id}/group/list`
-- Add access group to the list. `/user/watchlist/{id}/group/add/{group}`
-- Remove access group from the list. `/user/watchlist/{id}/group/remove/{group}`
 - List of corporations for the blacklist. `/user/watchlist/{id}/blacklist-corporation/list`
 - Add corporation to the blacklist. `/user/watchlist/{id}/blacklist-corporation/add/{corporation}`
 - Remove corporation from the blacklist. `/user/watchlist/{id}/blacklist-corporation/remove/{corporation}`
@@ -302,6 +298,18 @@ Watchlist API
 - List of alliances for the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/list`
 - Add alliance to the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/add/{alliance}`
 - Remove alliance from the alliance whitelist. `/user/watchlist/{id}/whitelist-alliance/remove/{alliance}`
+
+#### watchlist-admin
+
+Allows a player to edit watchlist access.
+
+Group API
+- List all groups. `/user/group/all`
+
+Watchlist API
+- List of groups with access to this list. `/user/watchlist/{id}/group/list`
+- Add access group to the list. `/user/watchlist/{id}/group/add/{group}`
+- Remove access group from the list. `/user/watchlist/{id}/group/remove/{group}`
 
 ### Application API
 

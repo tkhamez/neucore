@@ -67,6 +67,9 @@ Select and table to add and remove objects from other objects.
             <p v-if="type === 'Corporation' && contentType === 'groups'">
                 Members of these groups can view the tracking data of the selected corporation.
             </p>
+            <p v-if="type === 'Watchlist' && contentType === 'groups'">
+                Groups whose members are allowed to view the lists.
+            </p>
             <multiselect v-model="newObject" :options="currentSelectContent"
                          v-bind:placeholder="placeholder"
                          label="name" track-by="id"

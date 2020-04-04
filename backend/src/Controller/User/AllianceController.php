@@ -91,7 +91,7 @@ class AllianceController extends BaseController
      *     path="/user/alliance/add/{id}",
      *     operationId="add",
      *     summary="Add an EVE alliance to the database.",
-     *     description="Needs role: group-admin, watchlist-admin
+     *     description="Needs role: group-admin, watchlist-manager
      *                  This makes an ESI request and adds the alliance only if it exists",
      *     tags={"Alliance"},
      *     security={{"Session"={}}},

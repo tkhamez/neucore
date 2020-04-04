@@ -154,7 +154,12 @@ class Role implements \JsonSerializable
     const WATCHLIST = 'watchlist';
 
     /**
-     * Allows a player to edit watchlist exemptions and settings.
+     * Allows a player to edit exemptions and settings of a watch list to which they have access.
+     */
+    const WATCHLIST_MANAGER = 'watchlist-manager';
+
+    /**
+     * Allows a player to edit watchlist access.
      *
      * @var string
      */

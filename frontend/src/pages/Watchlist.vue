@@ -49,7 +49,7 @@
             <a class="nav-link" :class="{ 'active': tab === 'white' }"
                :href="'#Watchlist/'+id+'/white'">Whitelist</a>
         </li>
-        <li v-if="hasRole('watchlist-admin')" class="nav-item">
+        <li v-if="hasRole('watchlist-manager')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'settings' }"
                :href="'#Watchlist/'+id+'/settings'">Settings</a>
         </li>
@@ -118,7 +118,7 @@ function setTab(vm) {
     }
     if (vm.route[2] && tabs.indexOf(vm.route[2]) !== -1) {
         vm.tab = vm.route[2];
-    } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-admin')) {
+    } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-manager')) {
         vm.tab = 'settings';
     } else {
         vm.tab = 'red';

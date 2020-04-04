@@ -56,6 +56,7 @@ import Esi from './pages/Esi.vue';
 import SystemSettings from './pages/SystemSettings.vue';
 import Tracking from './pages/Tracking.vue';
 import Watchlist from './pages/Watchlist.vue';
+import WatchlistAdmin from './pages/WatchlistAdmin.vue';
 
 export default {
     name: 'app',
@@ -75,6 +76,7 @@ export default {
         Esi,
         Tracking,
         Watchlist,
+        WatchlistAdmin,
     },
 
     props: {
@@ -107,6 +109,7 @@ export default {
                 'SystemSettings',
                 'Tracking',
                 'Watchlist',
+                'WatchlistAdmin',
             ],
 
             /**

@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+- Change: Added role watchlist-manager with permissions to edit the configuration, 
+  edit access is now restricted to watchlist-admin.
+- Some refactoring
+
 ## 1.9.2
 
 8 Mar 2020

@@ -30,8 +30,8 @@ return [
 
     '/api/app'                                     => [Role::APP],
 
-    '/api/user/alliance/all'      => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN, Role::SETTINGS],
-    '/api/user/alliance/add/{id}' => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN],
+    '/api/user/alliance/all'      => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/alliance/add/{id}' => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
     '/api/user/alliance'          => [Role::GROUP_ADMIN],
 
     '/api/user/app/{id}/change-secret' => [Role::APP_MANAGER],
@@ -49,8 +49,8 @@ return [
     '/api/user/corporation/{id}/get-groups-tracking'   => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/add-group-tracking'    => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/remove-group-tracking' => [Role::TRACKING_ADMIN],
-    '/api/user/corporation/all'                        => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN, Role::SETTINGS],
-    '/api/user/corporation/add/{id}'                   => [Role::GROUP_ADMIN, Role::WATCHLIST_ADMIN],
+    '/api/user/corporation/all'                        => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
+    '/api/user/corporation/add/{id}'                   => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],
     '/api/user/corporation'                            => [Role::GROUP_ADMIN],
 
     '/api/user/esi/request' => [Role::ESI],
@@ -92,14 +92,21 @@ return [
 
     '/api/user/watchlist/{id}/players'                    => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/players-blacklist'          => [Role::WATCHLIST],
-    '/api/user/watchlist/{id}/exemption/list'             => [Role::WATCHLIST],
-    '/api/user/watchlist/{id}/corporation/list'           => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist/{id}/alliance/list'              => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist/{id}/blacklist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist/{id}/blacklist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist/{id}/whitelist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist/{id}/whitelist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_ADMIN],
-    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN],
+    '/api/user/watchlist/{id}/exemption/list'             => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/corporation/list'           => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/alliance/list'              => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/blacklist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/blacklist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/whitelist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/whitelist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/{id}/exemption/'                 => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist/{id}/corporation/'               => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist/{id}/alliance/'                  => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist/{id}/blacklist-corporation/'     => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist/{id}/blacklist-alliance/'        => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist/{id}/whitelist-corporation/'     => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist/{id}/whitelist-alliance/'        => [Role::WATCHLIST_MANAGER], # add,remove
+    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # group/list,add,remove
 
     '/api/user' => [Role::USER],
 ];

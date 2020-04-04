@@ -53,12 +53,15 @@
                         <a v-if="hasRole('tracking-admin')"
                            class="dropdown-item" :class="{ active: page === 'TrackingAdmin' }"
                            href="#TrackingAdmin">Tracking</a>
+                        <a v-if="hasRole('watchlist-admin')"
+                           class="dropdown-item" :class="{ active: page === 'WatchlistAdmin' }"
+                           href="#WatchlistAdmin">Watchlist</a>
                         <a v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-admin', 'esi'])"
+                <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi'])"
                     class="nav-item dropdown" :class="{ active: memberDataPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,7 +71,7 @@
                         <a v-if="hasRole('tracking')"
                            class="dropdown-item" :class="{ active: page === 'Tracking' }"
                            href="#Tracking">Member Tracking</a>
-                        <a v-if="hasAnyRole(['watchlist', 'watchlist-admin'])"
+                        <a v-if="hasAnyRole(['watchlist', 'watchlist-manager'])"
                            class="dropdown-item" :class="{ active: page === 'Watchlist' }"
                            href="#Watchlist">Watchlist</a>
                         <a v-if="hasRole('esi')"

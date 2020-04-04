@@ -34,14 +34,14 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Name</th>
-                        <th v-if="hasRole('watchlist-admin')" scope="col">Action</th>
+                        <th v-if="hasRole('watchlist-manager')" scope="col">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="player in listContent.Player">
                         <td>{{ player.id }}</td>
                         <td><a href="#" v-on:click.prevent="showCharacters(player.id)">{{ player.name }}</a></td>
-                        <td v-if="hasRole('watchlist-admin')">
+                        <td v-if="hasRole('watchlist-manager')">
                             <button v-if="tab === 'red' || tab === 'black'" class="btn btn-primary btn-sm"
                                     v-on:click="addToWhitelist(player.id)">
                                 Add to Whitelist

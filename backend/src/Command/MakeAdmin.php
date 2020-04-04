@@ -70,6 +70,7 @@ class MakeAdmin extends Command
             Role::TRACKING,
             Role::TRACKING_ADMIN,
             Role::WATCHLIST,
+            Role::WATCHLIST_MANAGER,
             Role::WATCHLIST_ADMIN,
         ];
         foreach ($this->roleRepository->findBy(['name' => $newRoles]) as $newRole) {

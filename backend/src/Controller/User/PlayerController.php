@@ -53,6 +53,7 @@ class PlayerController extends BaseController
         Role::TRACKING,
         Role::TRACKING_ADMIN,
         Role::WATCHLIST,
+        Role::WATCHLIST_MANAGER,
         Role::WATCHLIST_ADMIN,
     ];
 

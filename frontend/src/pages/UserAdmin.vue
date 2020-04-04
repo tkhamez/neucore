@@ -442,6 +442,7 @@ export default {
                 'tracking',
                 'tracking-admin',
                 'watchlist',
+                'watchlist-manager',
                 'watchlist-admin',
             ],
             newRole: '',

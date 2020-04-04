@@ -120,7 +120,7 @@ class CorporationController extends BaseController
      *     path="/user/corporation/add/{id}",
      *     operationId="add",
      *     summary="Add an EVE corporation to the database.",
-     *     description="Needs role: group-admin, watchlist-admin
+     *     description="Needs role: group-admin, watchlist-manager
      *                  This makes an ESI request and adds the corporation only if it exists.
      *                  Also adds the corresponding alliance, if there is one.",
      *     tags={"Corporation"},

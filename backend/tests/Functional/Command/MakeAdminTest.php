@@ -40,6 +40,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::TRACKING_ADMIN,
             Role::WATCHLIST,
             Role::WATCHLIST_ADMIN,
+            Role::WATCHLIST_MANAGER,
         ]);
         self::$playerId = $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN])->getPlayer()->getId();
 
@@ -67,6 +68,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::USER_MANAGER,
             Role::WATCHLIST,
             Role::WATCHLIST_ADMIN,
+            Role::WATCHLIST_MANAGER,
         ];
         $actual = (new RepositoryFactory(self::$om))
             ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();

@@ -4,13 +4,6 @@
 
     <div class="card">
         <div class="card-header">
-            <strong>Access</strong>: Groups whose members are allowed to view the lists.
-        </div>
-        <div class="card-body">
-            <admin :contentType="'groups'" :type="'Watchlist'" :typeId="id"></admin>
-        </div>
-
-        <div class="card-header">
             <strong>Red Flags</strong>: Alliances and corporations whose members are included in the list if they
             also have characters in other (not NPC) corporations.
         </div>
