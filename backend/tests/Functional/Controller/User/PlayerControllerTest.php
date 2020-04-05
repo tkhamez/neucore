@@ -357,7 +357,7 @@ class PlayerControllerTest extends WebTestCase
         $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/'.Player::STATUS_MANAGED);
         $this->assertEquals(403, $response1->getStatusCode());
 
-        $this->loginUser(11); // not a user-admin
+        $this->loginUser(12); // user-admin etc., not a user-manager
 
         $response2 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/'.Player::STATUS_MANAGED);
         $this->assertEquals(403, $response2->getStatusCode());
@@ -366,7 +366,7 @@ class PlayerControllerTest extends WebTestCase
     public function testSetStatus400()
     {
         $this->setupDb();
-        $this->loginUser(12); // has role user-admin
+        $this->loginUser(14); // has role user-manager
 
         $response1 = $this->runApp('PUT', '/api/user/player/'.$this->managerId.'/set-status/invalid');
         $this->assertEquals(400, $response1->getStatusCode());
@@ -378,7 +378,7 @@ class PlayerControllerTest extends WebTestCase
     public function testSetStatus204()
     {
         $this->setupDb();
-        $this->loginUser(12); // has role user-admin
+        $this->loginUser(14); // has role user-manager
 
         $player = $this->playerRepo->find($this->managerId);
         $this->assertSame(Player::STATUS_MANAGED, $player->getStatus());
@@ -1273,6 +1273,7 @@ class PlayerControllerTest extends WebTestCase
             Role::GROUP_ADMIN,
             Role::GROUP_MANAGER,
             Role::USER_ADMIN,
+            Role::USER_MANAGER,
             Role::TRACKING,
         ]);
 
@@ -1315,7 +1316,7 @@ class PlayerControllerTest extends WebTestCase
         $char3b = $this->h->addCharacterToPlayer('Alt', 13, $this->player3);
         $char3b->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
 
-        $this->player4Id = $this->h->addCharacterMain('User3', 14, [Role::USER])
+        $this->player4Id = $this->h->addCharacterMain('User3', 14, [Role::USER, Role::USER_MANAGER])
             ->setValidToken(true)->getPlayer()->getId();
 
         $this->om->flush();

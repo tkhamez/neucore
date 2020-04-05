@@ -90,7 +90,6 @@ Player API
 - List all players with a character with no token. `/user/player/no-token`
 - Check whether groups for this account are disabled or will be disabled soon. `/user/player/{id}/groups-disabled`
 - Delete a character. `/user/player/delete-character/{id}`
-- Change the player's account status. `/user/player/{id}/set-status/{status}`
 - Add a role to the player. `/user/player/{id}/add-role/{name}`
 - Remove a role from a player. `/user/player/{id}/remove-role/{name}`
 - Show all data from a player. `/user/player/{id}/show`
@@ -101,12 +100,16 @@ Player API
 
 Allows a player to add and remove groups from players with "managed" status.
 
+Character API
+- Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
+
 Group API
 - List all groups. `/user/group/all`
 - Adds a player to a group. `/user/group/{id}/add-member/{pid}`
 - Remove player from a group. `/user/group/{id}/remove-member/{pid}`
 
 Player API
+- Change the player's account status. `/user/player/{id}/set-status/{status}`
 - Show all data from a player. `/user/player/{id}/show`
 - Show player with characters. `/user/player/{id}/characters`
 - Lists all players with characters who have a certain status. `/user/player/with-status/{name}`

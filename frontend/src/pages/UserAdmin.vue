@@ -73,9 +73,7 @@
     <div v-cloak v-if="player" class="row">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">
-                    Characters
-                </h3>
+                <h3 class="card-header">Characters</h3>
                 <div class="card-body">
                     <!--suppress HtmlUnknownTag -->
                     <character-search v-on:result="onSearchResult($event)"></character-search>
@@ -185,24 +183,12 @@
                     <hr>
 
                     <h4>Account Status</h4>
-                    <p class="text-warning">
-                        All groups will be removed from the player account when the status is changed!
-                    </p>
-                    <div class="input-group mb-1">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="userAdminSetStatus">status</label>
-                        </div>
-                        <select class="custom-select" id="userAdminSetStatus"
-                                v-model="playerEdit.status"
-                                v-on:change="setAccountStatus()">
-                            <option value="standard">standard</option>
-                            <option value="managed">manually managed</option>
-                        </select>
-                    </div>
-                    <p class="text-muted small" v-if="playerEdit.status === 'managed'">
-                        Groups of this player can manually be changed on the
-                        <a :href="'#PlayerGroupManagement/' + playerEdit.id">Player Groups Management</a>
-                        page.
+                    <p>
+                        {{ playerEdit.status }}
+                        <span v-if="hasRole('user-manager')" class="text-muted">
+                            (change here:
+                            <a :href="'#PlayerGroupManagement/' + playerEdit.id">Player Groups Management</a>)
+                        </span>
                     </p>
 
                     <hr>
@@ -404,7 +390,6 @@
 <script>
 import $ from 'jquery';
 import { PlayerApi } from 'neucore-js-client';
-
 import CharacterSearch from '../components/CharacterSearch.vue';
 
 export default {
@@ -573,10 +558,6 @@ export default {
 
         removeRole: function(roleName) {
             this.changePlayerAttribute('removeRole', roleName);
-        },
-
-        setAccountStatus: function() {
-            this.changePlayerAttribute('setStatus', this.playerEdit.status);
         },
 
         changePlayerAttribute: function(method, param) {

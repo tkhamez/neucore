@@ -408,7 +408,7 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/set-status/{status}",
      *     operationId="setStatus",
      *     summary="Change the player's account status.",
-     *     description="Needs role: user-admin",
+     *     description="Needs role: user-manager",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(

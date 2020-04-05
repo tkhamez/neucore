@@ -41,7 +41,7 @@ return [
     '/api/user/auth/callback' => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility
     '/api/user/auth/result'   => [Role::ANONYMOUS, Role::USER],
 
-    '/api/user/character/find-by'        => [Role::USER_ADMIN, Role::GROUP_MANAGER],
+    '/api/user/character/find-by'        => [Role::USER_ADMIN, Role::USER_MANAGER, Role::GROUP_MANAGER],
     '/api/user/character/{id}/update'    => [Role::USER, Role::USER_ADMIN],
 
     '/api/user/corporation/tracked-corporations'       => [Role::TRACKING, Role::TRACKING_ADMIN],
@@ -84,6 +84,7 @@ return [
                                                 ],
     '/api/user/player/with-status/{name}'    => [Role::USER_ADMIN, Role::USER_MANAGER],
     '/api/user/player/{id}/show'             => [Role::USER_ADMIN, Role::USER_MANAGER],
+    '/api/user/player/{id}/set-status/'      => [Role::USER_MANAGER],
     '/api/user/player'                       => [Role::USER_ADMIN],
 
     '/api/user/settings/system/theme' => [Role::ANONYMOUS, Role::USER],
