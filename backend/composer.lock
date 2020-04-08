@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff34678ded5ab2e8ef866444f21d5691",
+    "content-hash": "0c3edbd06a974ccf0b8f5256422aabae",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -1517,6 +1517,7 @@
                 "serialize",
                 "tokenizer"
             ],
+            "abandoned": "opis/closure",
             "time": "2018-03-21T22:21:57+00:00"
         },
         {
@@ -3783,16 +3784,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "3.2.2",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "33f09b791931c0be0195659c93aa663a52f52117"
+                "reference": "c42c81c1b604123583d93a61ee95e79bbebc8fd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/33f09b791931c0be0195659c93aa663a52f52117",
-                "reference": "33f09b791931c0be0195659c93aa663a52f52117",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/c42c81c1b604123583d93a61ee95e79bbebc8fd5",
+                "reference": "c42c81c1b604123583d93a61ee95e79bbebc8fd5",
                 "shasum": ""
             },
             "require": {
@@ -3834,7 +3835,7 @@
                 "rest",
                 "sdk"
             ],
-            "time": "2020-03-04T18:50:33+00:00"
+            "time": "2020-04-08T18:40:21+00:00"
         },
         {
             "name": "web-token/jwt-core",
@@ -7005,5 +7006,6 @@
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.2.0"
-    }
+    },
+    "plugin-api-version": "1.1.0"
 }
