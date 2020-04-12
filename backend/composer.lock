@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c3edbd06a974ccf0b8f5256422aabae",
+    "content-hash": "50157d82cf6243420e6ba363033c0978",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -3784,16 +3784,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "3.3.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "c42c81c1b604123583d93a61ee95e79bbebc8fd5"
+                "reference": "f121c387f17d6b0944315c3012d4fd2dbc7b3caa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/c42c81c1b604123583d93a61ee95e79bbebc8fd5",
-                "reference": "c42c81c1b604123583d93a61ee95e79bbebc8fd5",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/f121c387f17d6b0944315c3012d4fd2dbc7b3caa",
+                "reference": "f121c387f17d6b0944315c3012d4fd2dbc7b3caa",
                 "shasum": ""
             },
             "require": {
@@ -3835,7 +3835,7 @@
                 "rest",
                 "sdk"
             ],
-            "time": "2020-04-08T18:40:21+00:00"
+            "time": "2020-04-12T16:08:35+00:00"
         },
         {
             "name": "web-token/jwt-core",
@@ -4582,6 +4582,12 @@
             "keywords": [
                 "Xdebug",
                 "performance"
+            ],
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                }
             ],
             "time": "2020-03-01T12:26:26+00:00"
         },
