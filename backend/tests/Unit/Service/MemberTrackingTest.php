@@ -428,7 +428,7 @@ class MemberTrackingTest extends TestCase
         $this->memberTracking->storeMemberData((int) $corp->getId(), $data, $names);
 
         $this->om->clear();
-        $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([]);
+        $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([], ['id' => 'ASC']);
         $this->assertSame(3, count($result));
 
         $this->assertSame(101, $result[0]->getId());

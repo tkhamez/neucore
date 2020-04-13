@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\CorporationMember;
@@ -28,14 +29,19 @@ use Tests\WriteErrorListener;
 class CorporationControllerTest extends WebTestCase
 {
     /**
+     * @var WriteErrorListener
+     */
+    private static $writeErrorListener;
+
+    /**
      * @var Helper
      */
     private $h;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
     /**
      * @var Group
@@ -66,20 +72,30 @@ class CorporationControllerTest extends WebTestCase
 
     private $log;
 
+    public static function setupBeforeClass(): void
+    {
+        self::$writeErrorListener = new WriteErrorListener();
+    }
+
     protected function setUp(): void
     {
         $_SESSION = null;
 
         $this->h = new Helper();
-        $this->om = $this->h->getObjectManager();
+        $this->em = $this->h->getEm();
 
-        $repositoryFactory = new RepositoryFactory($this->om);
+        $repositoryFactory = new RepositoryFactory($this->em);
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = new Client();
+    }
+
+    public function tearDown(): void
+    {
+        $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testAll403()
@@ -256,7 +272,7 @@ class CorporationControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->om->clear();
+        $this->em->clear();
 
         // check db
         $corp = $this->corpRepo->find(456123);
@@ -299,7 +315,7 @@ class CorporationControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->om->clear();
+        $this->em->clear();
 
         // check that corp and alliance were created in db
         $corp = $this->corpRepo->find(456123);
@@ -396,18 +412,14 @@ class CorporationControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $em = $this->h->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
+        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
         $res = $this->runApp(
             'PUT',
             '/api/user/corporation/111/remove-group/'.$this->group1->getId(),
             null,
             null,
-            [
-                ObjectManager::class => $em,
-                LoggerInterface::class => $this->log
-            ]
+            [ObjectManager::class => $this->em, LoggerInterface::class => $this->log]
         );
         $this->assertEquals(500, $res->getStatusCode());
     }
@@ -506,7 +518,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
         $corp = $this->corpRepo->find(222);
         $this->assertSame(2, count($corp->getGroupsTracking()));
         $this->assertSame($this->group1->getId(), $corp->getGroupsTracking()[0]->getId());
@@ -561,7 +573,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
         $corp = $this->corpRepo->find(222);
         $this->assertSame([], $corp->getGroupsTracking());
     }
@@ -593,7 +605,7 @@ class CorporationControllerTest extends WebTestCase
         # add user to group
 
         $this->player7->addGroup($this->group1);
-        $this->om->flush();
+        $this->em->flush();
 
         $response2 = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
         $this->assertEquals(200, $response2->getStatusCode());
@@ -651,7 +663,7 @@ class CorporationControllerTest extends WebTestCase
         # add user to group
 
         $this->player7->addGroup($this->group1);
-        $this->om->flush();
+        $this->em->flush();
 
         $response2 = $this->runApp('GET', '/api/user/corporation/222/members' . $params);
         $this->assertEquals(200, $response2->getStatusCode());
@@ -693,14 +705,14 @@ class CorporationControllerTest extends WebTestCase
         $corp2->addGroup($group2);
         $corp2->addGroupTracking($this->group1);
 
-        $this->om->persist($corp1);
-        $this->om->persist($corp2);
-        $this->om->persist($corp3);
-        $this->om->persist($this->group1);
-        $this->om->persist($group2);
-        $this->om->persist($member);
+        $this->em->persist($corp1);
+        $this->em->persist($corp2);
+        $this->em->persist($corp3);
+        $this->em->persist($this->group1);
+        $this->em->persist($group2);
+        $this->em->persist($member);
 
-        $this->om->flush();
+        $this->em->flush();
 
         $this->gid2 = $group2->getId();
     }

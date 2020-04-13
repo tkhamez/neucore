@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -24,14 +25,19 @@ use Tests\WriteErrorListener;
 class AppControllerTest extends WebTestCase
 {
     /**
+     * @var WriteErrorListener
+     */
+    private static $writeErrorListener;
+
+    /**
      * @var Helper
      */
     private $helper;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
     /**
      * @var AppRepository
@@ -53,16 +59,26 @@ class AppControllerTest extends WebTestCase
 
     private $pid3;
 
+    public static function setupBeforeClass(): void
+    {
+        self::$writeErrorListener = new WriteErrorListener();
+    }
+
     protected function setUp(): void
     {
         $_SESSION = null;
 
         $this->helper = new Helper();
-        $this->om = $this->helper->getObjectManager();
+        $this->em = $this->helper->getEm();
 
-        $repositoryFactory = new RepositoryFactory($this->om);
+        $repositoryFactory = new RepositoryFactory($this->em);
         $this->appRepo = $repositoryFactory->getAppRepository();
         $this->groupRepo = $repositoryFactory->getGroupRepository();
+    }
+
+    public function tearDown(): void
+    {
+        $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testAll403()
@@ -245,7 +261,7 @@ class AppControllerTest extends WebTestCase
         $response = $this->runApp('DELETE', '/api/user/app/'.$this->aid.'/delete');
         $this->assertEquals(204, $response->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
 
         $deleted = $this->appRepo->find($this->aid);
         $this->assertNull($deleted);
@@ -317,15 +333,15 @@ class AppControllerTest extends WebTestCase
 
         $player = new Player();
         $player->setName('Manager2');
-        $this->om->persist($player);
-        $this->om->flush();
+        $this->em->persist($player);
+        $this->em->flush();
 
         $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.$this->pid3);
         $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-manager/'.$player->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
 
         $actual = [];
         $app = $this->appRepo->find($this->aid);
@@ -366,7 +382,7 @@ class AppControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.$this->pid3);
         $this->assertEquals(204, $response->getStatusCode());
 
-        $player = (new RepositoryFactory($this->om))->getPlayerRepository()->find($this->pid3);
+        $player = (new RepositoryFactory($this->em))->getPlayerRepository()->find($this->pid3);
         $actual = [];
         foreach ($player->getManagerGroups() as $mg) {
             $actual[] = $mg->getId();
@@ -463,16 +479,16 @@ class AppControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $group = new Group();
-        $group->setName('Group1');
-        $this->om->persist($group);
-        $this->om->flush();
+        $group->setName('group-two');
+        $this->em->persist($group);
+        $this->em->flush();
 
         $response1 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.$this->gid);
         $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-group/'.$group->getId());
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
 
         $actual = [];
         $app = $this->appRepo->find($this->aid);
@@ -510,14 +526,13 @@ class AppControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
+        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
         $log = new Logger('Test');
         $log->pushHandler(new TestHandler());
 
         $res = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-group/'.$this->gid, null, null, [
-            ObjectManager::class => $em,
+            ObjectManager::class => $this->em,
             LoggerInterface::class => $log
         ]);
         $this->assertEquals(500, $res->getStatusCode());
@@ -579,7 +594,7 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
 
         $app = $this->appRepo->find($this->aid);
         $this->assertSame(
@@ -628,7 +643,7 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
-        $this->om->clear();
+        $this->em->clear();
 
         $app = $this->appRepo->find($this->aid);
         $this->assertSame(
@@ -697,7 +712,7 @@ class AppControllerTest extends WebTestCase
         if (in_array('tracking', $addRoles)) {
             $a->addRole($roles[1]); // Role::APP_TRACKING
         }
-        $this->om->persist($a);
+        $this->em->persist($a);
 
         $char = $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::APP_ADMIN]);
         $char2 = $this->helper->addCharacterMain('Manager', 9, [Role::USER, Role::APP_MANAGER]);
@@ -709,7 +724,8 @@ class AppControllerTest extends WebTestCase
         $a->addManager($char3->getPlayer());
         $a->addGroup($g[0]);
 
-        $this->om->flush();
+        $this->em->flush();
+        $this->em->clear();
 
         $this->aid = $a->getId();
     }

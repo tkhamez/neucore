@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
@@ -25,14 +26,19 @@ use Tests\WriteErrorListener;
 class AllianceControllerTest extends WebTestCase
 {
     /**
+     * @var WriteErrorListener
+     */
+    private static $writeErrorListener;
+
+    /**
      * @var Helper
      */
     private $helper;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
     private $alliId1;
 
@@ -54,18 +60,28 @@ class AllianceControllerTest extends WebTestCase
 
     private $log;
 
+    public static function setupBeforeClass(): void
+    {
+        self::$writeErrorListener = new WriteErrorListener();
+    }
+
     protected function setUp(): void
     {
         $_SESSION = null;
 
         $this->helper = new Helper();
-        $this->om = $this->helper->getObjectManager();
+        $this->em = $this->helper->getEm();
 
-        $this->alliRepo = (new RepositoryFactory($this->om))->getAllianceRepository();
+        $this->alliRepo = (new RepositoryFactory($this->em))->getAllianceRepository();
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
         $this->client = new Client();
+    }
+
+    public function tearDown(): void
+    {
+        $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testAll403()
@@ -241,7 +257,7 @@ class AllianceControllerTest extends WebTestCase
             $this->parseJsonBody($response)
         );
 
-        $this->om->clear();
+        $this->em->clear();
 
         // check that alliance was created in db
         $alli = $this->alliRepo->find(123456);
@@ -319,18 +335,14 @@ class AllianceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(7);
 
-        $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
+        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
         $res = $this->runApp(
             'PUT',
             '/api/user/alliance/'.$this->alliId1.'/remove-group/'.$this->groupId1,
             null,
             null,
-            [
-                ObjectManager::class => $em,
-                LoggerInterface::class => $this->log
-            ]
+            [ObjectManager::class => $this->em, LoggerInterface::class => $this->log]
         );
         $this->assertEquals(500, $res->getStatusCode());
     }
@@ -364,13 +376,13 @@ class AllianceControllerTest extends WebTestCase
         $alli2->addGroup($group1);
         $alli2->addGroup($group2);
 
-        $this->om->persist($alli1);
-        $this->om->persist($alli2);
-        $this->om->persist($alli3);
-        $this->om->persist($group1);
-        $this->om->persist($group2);
+        $this->em->persist($alli1);
+        $this->em->persist($alli2);
+        $this->em->persist($alli3);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
 
-        $this->om->flush();
+        $this->em->flush();
 
         $this->alliId1 = $alli1->getId();
         $this->alliId2 = $alli2->getId();

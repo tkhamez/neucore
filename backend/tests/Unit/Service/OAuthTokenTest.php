@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
@@ -9,7 +13,6 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
-use Doctrine\ORM\Events;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
@@ -22,14 +25,19 @@ use Tests\WriteErrorListener;
 class OAuthTokenTest extends TestCase
 {
     /**
+     * @var WriteErrorListener
+     */
+    private static $writeErrorListener;
+
+    /**
      * @var Helper
      */
     private $helper;
 
     /**
-     * @var \Doctrine\Persistence\ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
     /**
      * @var Logger
@@ -46,10 +54,10 @@ class OAuthTokenTest extends TestCase
      */
     private $es;
 
-    /**
-     * @var OAuthToken
-     */
-    private $esError;
+    public static function setupBeforeClass(): void
+    {
+        self::$writeErrorListener = new WriteErrorListener();
+    }
 
     protected function setUp(): void
     {
@@ -57,12 +65,11 @@ class OAuthTokenTest extends TestCase
         $this->helper->emptyDb();
         $this->helper->addRoles([Role::USER]);
 
-        $this->om = $this->helper->getObjectManager();
+        $this->em = $this->helper->getEm();
 
         $this->log = new Logger('Test');
 
         $this->client = new Client();
-        $oauth = new OAuthProvider($this->client);
         $config = new Config(['eve' => [
             'datasource' => '',
             'oauth_urls_tq' => ['revoke' => ''],
@@ -71,23 +78,17 @@ class OAuthTokenTest extends TestCase
         ]]);
 
         $this->es = new OAuthToken(
-            $oauth,
-            new ObjectManager($this->om, $this->log),
+            new OAuthProvider($this->client),
+            new ObjectManager($this->em, $this->log),
             $this->log,
             $this->client,
             $config
         );
+    }
 
-        // a second OAuthToken instance with another entity manager that throws an exception on flush.
-        $em = $this->helper->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
-        $this->esError = new OAuthToken(
-            $oauth,
-            new ObjectManager($em, $this->log),
-            $this->log,
-            $this->client,
-            $config
-        );
+    public function tearDown(): void
+    {
+        $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     /**
@@ -247,8 +248,8 @@ class OAuthTokenTest extends TestCase
         $this->assertGreaterThan(1519933900, $char->getExpires());
         $this->assertSame('gEy...fM0', $char->getRefreshToken());
 
-        $this->om->clear();
-        $charFromDB = (new RepositoryFactory($this->om))->getCharacterRepository()->find(123);
+        $this->em->clear();
+        $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
         $this->assertSame('new-token', $charFromDB->getAccessToken());
 
         $this->assertSame(0, count($this->log->getHandler()->getRecords()));
@@ -256,6 +257,8 @@ class OAuthTokenTest extends TestCase
 
     public function testGetTokenNewTokenUpdateDatabaseError()
     {
+        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
+
         $c = new Character();
         $c->setId(123);
         $c->setName('n');
@@ -272,7 +275,7 @@ class OAuthTokenTest extends TestCase
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));
 
-        $token = $this->esError->getToken($c);
+        $token = $this->es->getToken($c);
 
         $this->assertSame('', $token);
     }

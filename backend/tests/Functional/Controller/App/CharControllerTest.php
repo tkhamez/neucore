@@ -319,6 +319,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($removedChar1);
         $this->helper->getObjectManager()->persist($removedChar2);
         $this->helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->clear();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/removed-characters/123', null, $headers);
@@ -382,6 +383,7 @@ class CharControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($player2);
         $this->helper->getObjectManager()->persist($movedChar);
         $this->helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->clear();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
         $response = $this->runApp('GET', '/api/app/v1/incoming-characters/456', null, $headers);

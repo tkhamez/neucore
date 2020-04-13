@@ -5,6 +5,7 @@ namespace Tests\Functional;
 use Neucore\Application;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Tests\Helper;
 use Tests\RequestFactory;
 
 /**
@@ -68,6 +69,9 @@ class WebTestCase extends TestCase
         foreach ($envVars as $envVar) {
             putenv($envVar);
         }
+
+        // for sqlite in-memory db: add connection with database
+        $mocks = (new Helper)->addEm($mocks);
 
         // Process the application
         try {

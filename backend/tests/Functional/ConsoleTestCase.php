@@ -5,6 +5,7 @@ namespace Tests\Functional;
 use Neucore\Application;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Tests\Helper;
 
 /**
  * Runs the application.
@@ -24,6 +25,9 @@ class ConsoleTestCase extends TestCase
         foreach ($envVars as $envVar) {
             putenv($envVar);
         }
+
+        // for sqlite in-memory db: add connection with database
+        $mocks = (new Helper)->addEm($mocks);
 
         try {
             $console = $app->getConsoleApp($mocks);

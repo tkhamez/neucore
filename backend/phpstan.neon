@@ -23,6 +23,9 @@ parameters:
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
 			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
 		-
+			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
+			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
+		-
 			message: '#Cannot call method (.*) on (.*)null.#'
 			path: %currentWorkingDirectory%/tests/*
 		-

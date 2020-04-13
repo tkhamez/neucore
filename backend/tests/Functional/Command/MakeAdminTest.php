@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -15,9 +18,14 @@ use Tests\WriteErrorListener;
 class MakeAdminTest extends ConsoleTestCase
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private static $om;
+    private static $em;
+
+    /**
+     * @var WriteErrorListener
+     */
+    private static $writeErrorListener;
 
     private static $playerId;
 
@@ -44,13 +52,19 @@ class MakeAdminTest extends ConsoleTestCase
         ]);
         self::$playerId = $h->addCharacterMain('Admin', 1234, [Role::USER, Role::APP_ADMIN])->getPlayer()->getId();
 
-        self::$om = $h->getObjectManager();
+        self::$em = $h->getEm();
+        self::$writeErrorListener = new WriteErrorListener();
+    }
+
+    public function tearDown(): void
+    {
+        self::$em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testExecute()
     {
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId]);
-        self::$om->clear();
+        self::$em->clear();
 
         $this->assertSame('Added all applicable roles to the player account "Admin"'."\n", $output);
 
@@ -70,7 +84,7 @@ class MakeAdminTest extends ConsoleTestCase
             Role::WATCHLIST_ADMIN,
             Role::WATCHLIST_MANAGER,
         ];
-        $actual = (new RepositoryFactory(self::$om))
+        $actual = (new RepositoryFactory(self::$em))
             ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();
         $this->assertSame($expected, $actual);
     }
@@ -84,13 +98,12 @@ class MakeAdminTest extends ConsoleTestCase
 
     public function testExecuteException()
     {
-        $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
+        self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
         $log = new Logger('Test');
 
         $output = $this->runConsoleApp('make-admin', ['id' => self::$playerId], [
-            ObjectManager::class => $em,
+            ObjectManager::class => self::$em,
             LoggerInterface::class => $log
         ]);
 

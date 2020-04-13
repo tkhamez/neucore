@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\EsiLocation;
@@ -25,14 +26,19 @@ use Tests\WriteErrorListener;
 class EsiDataTest extends TestCase
 {
     /**
+     * @var WriteErrorListener
+     */
+    private static $writeErrorListener;
+
+    /**
      * @var Helper
      */
     private $testHelper;
 
     /**
-     * @var \Doctrine\Persistence\ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
     /**
      * @var Client
@@ -50,46 +56,39 @@ class EsiDataTest extends TestCase
     private $cs;
 
     /**
-     * @var EsiData
-     */
-    private $csError;
-
-    /**
      * @var Logger
      */
     private $log;
 
+    public static function setupBeforeClass(): void
+    {
+        self::$writeErrorListener = new WriteErrorListener();
+    }
+
     protected function setUp(): void
     {
         $this->testHelper = new Helper();
-        $this->om = $this->testHelper->getObjectManager();
+        $this->em = $this->testHelper->getEm();
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $this->client = new Client();
-        $esiApiFactory = new EsiApiFactory($this->client, $config);
-        $this->repoFactory = new RepositoryFactory($this->om);
+        $this->repoFactory = new RepositoryFactory($this->em);
 
         $this->cs = new EsiData(
             $this->log,
-            $esiApiFactory,
-            new ObjectManager($this->om, $this->log),
+            new EsiApiFactory($this->client, $config),
+            new ObjectManager($this->em, $this->log),
             $this->repoFactory,
             $config
         );
+    }
 
-        // a second EsiData instance with another entity manager that throws an exception on flush.
-        $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
-        $this->csError = new EsiData(
-            $this->log,
-            $esiApiFactory,
-            new ObjectManager($em, $this->log),
-            $this->repoFactory,
-            $config
-        );
+    public function tearDown(): void
+    {
+        $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testFetchCharacterWithCorporationAndAllianceCharInvalid()
@@ -217,7 +216,7 @@ class EsiDataTest extends TestCase
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('newChar', 123, []);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
-        $this->om->flush();
+        $this->em->flush();
 
         $this->client->setResponse(
             new Response(200, [], '{
@@ -236,7 +235,7 @@ class EsiDataTest extends TestCase
         $this->assertSame(234, $char->getCorporation()->getId());
         $this->assertNull($char->getCorporation()->getName());
 
-        $this->om->clear();
+        $this->em->clear();
         $charDb = $this->repoFactory->getCharacterRepository()->find(123);
         $this->assertNull($charDb->getCorporation());
     }
@@ -249,7 +248,7 @@ class EsiDataTest extends TestCase
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('newChar', 123, []);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
-        $this->om->flush();
+        $this->em->flush();
 
         $this->client->setResponse(
             new Response(200, [], '{
@@ -268,7 +267,7 @@ class EsiDataTest extends TestCase
         $this->assertSame(234, $char->getCorporation()->getId());
         $this->assertNull($char->getCorporation()->getName());
 
-        $this->om->clear();
+        $this->em->clear();
         $charDb = $this->repoFactory->getCharacterRepository()->find(123);
         $this->assertSame(234, $charDb->getCorporation()->getId());
         $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
@@ -328,7 +327,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('-HAT-', $corp->getTicker());
         $this->assertNull($corp->getAlliance());
 
-        $this->om->clear();
+        $this->em->clear();
         $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
         $this->assertNull($corpDb->getName());
     }
@@ -359,7 +358,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('UTC', $corp->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2018-07-29 16:30:30', $corp->getLastUpdate()->format('Y-m-d H:i:s'));
 
-        $this->om->clear();
+        $this->em->clear();
         $corpDb = $this->repoFactory->getCorporationRepository()->find(234);
         $this->assertSame(234, $corpDb->getId());
         $this->assertSame(345, $corpDb->getAlliance()->getId());
@@ -370,10 +369,10 @@ class EsiDataTest extends TestCase
         $this->testHelper->emptyDb();
         $alli = (new Alliance())->setId(100)->setName('A')->setTicker('a');
         $corp = (new Corporation())->setId(200)->setName('C')->setTicker('c')->setAlliance($alli);
-        $this->om->persist($alli);
-        $this->om->persist($corp);
-        $this->om->flush();
-        $this->om->clear();
+        $this->em->persist($alli);
+        $this->em->persist($corp);
+        $this->em->flush();
+        $this->em->clear();
 
         $this->client->setResponse(new Response(200, [], '{
             "name": "C",
@@ -383,7 +382,7 @@ class EsiDataTest extends TestCase
 
         $corpResult = $this->cs->fetchCorporation(200);
         $this->assertNull($corpResult->getAlliance());
-        $this->om->clear();
+        $this->em->clear();
 
         // load from DB
         $corporation = $this->repoFactory->getCorporationRepository()->find(200);
@@ -421,7 +420,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('The A.', $alli->getName());
         $this->assertSame('-A-', $alli->getTicker());
 
-        $this->om->clear();
+        $this->em->clear();
         $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
         $this->assertNull($alliDb->getName());
     }
@@ -442,13 +441,15 @@ class EsiDataTest extends TestCase
         $this->assertSame('UTC', $alli->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2018-07-29 16:30:30', $alli->getLastUpdate()->format('Y-m-d H:i:s'));
 
-        $this->om->clear();
+        $this->em->clear();
         $alliDb = $this->repoFactory->getAllianceRepository()->find(345);
         $this->assertSame(345, $alliDb->getId());
     }
 
     public function testFetchAllianceCreateFlushError()
     {
+        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
+
         $this->testHelper->emptyDb();
 
         $this->client->setResponse(new Response(200, [], '{
@@ -456,7 +457,7 @@ class EsiDataTest extends TestCase
             "ticker": "-A-"
         }'));
 
-        $alli = $this->csError->fetchAlliance(345, true);
+        $alli = $this->cs->fetchAlliance(345, true);
         $this->assertNull($alli);
     }
 
@@ -502,7 +503,7 @@ class EsiDataTest extends TestCase
         $this->assertSame(30000142, $location->getSystemId());
         $this->assertGreaterThan('2019-11-18T19:34:14+00:00', $location->getLastUpdate()->format(\DateTime::ATOM));
 
-        $this->om->clear();
+        $this->em->clear();
 
         $locationDb = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
         $this->assertSame(1023100200300, $locationDb->getId());
@@ -541,7 +542,7 @@ class EsiDataTest extends TestCase
         $result = $this->cs->getCorporationEntity(100);
         $this->assertSame(100, $result->getId());
 
-        $this->om->clear();
+        $this->em->clear();
 
         $corp = $this->repoFactory->getCorporationRepository()->find(100);
         $this->assertInstanceOf(Corporation::class, $corp);

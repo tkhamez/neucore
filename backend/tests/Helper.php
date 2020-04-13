@@ -105,14 +105,14 @@ class Helper
         SessionData::setReadOnly(true);
     }
 
-    public function getObjectManager(bool $discrete = false): ObjectManager
+    public function getObjectManager(): ObjectManager
     {
-        return $this->getEm($discrete);
+        return $this->getEm();
     }
 
-    public function getEm(bool $discrete = false): EntityManagerInterface
+    public function getEm(): EntityManagerInterface
     {
-        if (self::$em === null || $discrete) {
+        if (self::$em === null) {
             $conf = (new Application())->loadSettings(true)['doctrine'];
 
             $config = Setup::createAnnotationMetadataConfiguration(
@@ -129,14 +129,33 @@ class Helper
             /** @noinspection PhpUnhandledExceptionInspection */
             $em = EntityManager::create($conf['connection'], $config);
 
-            if ($discrete) {
-                return $em;
-            } else {
-                self::$em = $em;
-            }
+            self::$em = $em;
         }
 
         return self::$em;
+    }
+
+    public function getDbName(): string
+    {
+        try {
+            return $this->getEm()->getConnection()->getDatabasePlatform()->getName();
+        } catch (DBALException $e) {
+            return 'error';
+        }
+    }
+
+    public function addEm(array $mocks): array
+    {
+        if ($this->getDbName() === 'sqlite') {
+            if (! array_key_exists(ObjectManager::class, $mocks)) {
+                $mocks[ObjectManager::class] = (new Helper())->getEm();
+            }
+            if (! array_key_exists(EntityManagerInterface::class, $mocks)) {
+                $mocks[EntityManagerInterface::class] = (new Helper())->getEm();
+            }
+        }
+
+        return $mocks;
     }
 
     /**
@@ -152,11 +171,18 @@ class Helper
         }
 
         $tool = new SchemaTool($em);
-        $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 0;');
-        $tool->updateSchema($classes);
-        $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 1;');
+        if ($this->getDbName() === 'sqlite') {
+            $tool->updateSchema($classes);
+        } else {
+            $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 0;');
+            $tool->updateSchema($classes);
+            $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 1;');
+        }
     }
 
+    /**
+     * @noinspection SqlResolve
+     */
     public function emptyDb(): void
     {
         $em = $this->getEm();
@@ -164,6 +190,20 @@ class Helper
 
         foreach ($this->entities as $entity) {
             $qb->delete($entity)->getQuery()->execute();
+        }
+
+        if ($this->getDbName() === 'sqlite') {
+            // for some reason these relation tables are not empties with SQLite in-memory db
+            try {
+                $em->getConnection()->exec('DELETE FROM watchlist_corporation WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_alliance WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_blacklist_corporation WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_blacklist_alliance WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_whitelist_corporation WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_whitelist_alliance WHERE 1');
+            } catch (DBALException $e) {
+                echo $e->getMessage();
+            }
         }
 
         $em->clear();
