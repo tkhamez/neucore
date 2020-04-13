@@ -251,6 +251,9 @@ Corporation API
 Allows players to view the watchlist if they are also member of an appropriate group.  
 This role is assigned automatically based on group membership.
 
+Character API
+- Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
+
 Player API
 - Show player with characters. `/user/player/{id}/characters`
 

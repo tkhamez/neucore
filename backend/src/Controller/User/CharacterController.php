@@ -101,7 +101,7 @@ class CharacterController extends BaseController
      *     path="/user/character/find-by/{name}",
      *     operationId="findBy",
      *     summary="Return a list of characters that matches the name (partial matching).",
-     *     description="Needs role: user-admin, user-manager, group-manager",
+     *     description="Needs role: user-admin, user-manager, group-manager, watchlist",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
