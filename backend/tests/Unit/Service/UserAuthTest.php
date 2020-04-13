@@ -12,6 +12,7 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
+use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
@@ -80,8 +81,9 @@ class UserAuthTest extends TestCase
             $repoFactory,
             $config
         );
+        $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $this->log);
 
-        $characterService = new Account($this->log, $objManager, $repoFactory, $esi);
+        $characterService = new Account($this->log, $objManager, $repoFactory, $esi, $autoGroups);
         $this->service = new UserAuth(
             new SessionData(),
             $characterService,

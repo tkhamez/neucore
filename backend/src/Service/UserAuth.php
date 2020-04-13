@@ -106,6 +106,7 @@ class UserAuth implements RoleProviderInterface
         $characterId = (int) $eveAuth->getCharacterId();
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
 
+        $updateAutoGroups = false;
         if ($char === null || $char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
             // first login or changed owner, create account
             $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
@@ -113,6 +114,7 @@ class UserAuth implements RoleProviderInterface
                 $this->log->critical('UserAuth::authenticate(): Role "'.Role::USER.'" not found.');
                 return false;
             }
+            $updateAutoGroups = true;
             if ($char === null) {
                 $char = $this->accountService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
             } else {
@@ -121,7 +123,7 @@ class UserAuth implements RoleProviderInterface
             $char->getPlayer()->addRole($userRole[0]);
         }
 
-        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth);
+        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth, $updateAutoGroups);
 
         if (! $success) {
             return false;
@@ -151,16 +153,13 @@ class UserAuth implements RoleProviderInterface
         $player = $this->user->getPlayer();
 
         // check if the character was already registered,
-        // if so, move it to this player account, otherwise create it
+        // if so, move it to this player account if needed, otherwise create it
         // (there is no need to check for a changed character owner hash here)
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($alt !== null) {
-            $oldPlayer = $alt->getPlayer();
-            if ($oldPlayer->getId() !== $player->getId()) {
-                $this->accountService->removeCharacterFromPlayer($alt, $player);
-                // the current player will be added below to $alt
-            }
-        } else {
+        if ($alt !== null && $alt->getPlayer()->getId() !== $player->getId()) {
+            $this->accountService->moveCharacter($alt, $player);
+            $alt->setMain(false);
+        } elseif ($alt === null) {
             $alt = new Character();
             $alt->setId($characterId);
             try {
@@ -168,16 +167,12 @@ class UserAuth implements RoleProviderInterface
             } catch (\Exception $e) {
                 // ignore
             }
-        }
-
-        // add alt to account if it is not the currently logged in user
-        if ($alt->getId() !== $this->user->getId()) {
             $player->addCharacter($alt);
             $alt->setPlayer($player);
             $alt->setMain(false);
         }
 
-        return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth);
+        return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth, true);
     }
 
     /**

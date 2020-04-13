@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
@@ -90,15 +92,15 @@ class AutoGroupAssignment
      * Only groups belonging to a company or alliance will be removed
      * from a player when he no longer is a member of that corporation
      * or alliance.
+     *
+     * Does not flush the entity manager.
+     *
+     * @param Player $player An object attached to the entity manager
      */
-    public function assign(int $playerId): bool
+    public function assign(Player $player): void
     {
-        $player = $this->playerRepo->find($playerId);
-        if ($player === null) {
-            return false;
-        }
         if ($player->getStatus() === Player::STATUS_MANAGED) {
-            return true;
+            return;
         }
 
         $this->loadMapping();
@@ -158,21 +160,15 @@ class AutoGroupAssignment
         } catch (\Exception $e) {
             // ignore
         }
-
-        if (! $this->objectManager->flush()) {
-            return false;
-        }
-
-        return true;
     }
 
-    public function checkRequiredGroups(int $playerId): bool
+    /**
+     * Removes groups from player if they are not a member of all required groups.
+     *
+     * Does not flush the entity manager
+     */
+    public function checkRequiredGroups(Player $player): void
     {
-        $player = $this->playerRepo->find($playerId);
-        if ($player === null) {
-            return false;
-        }
-
         $lastGroupCount = 0;
         while ($lastGroupCount !== count($player->getGroups())) {
             $groups = $player->getGroups();
@@ -186,11 +182,6 @@ class AutoGroupAssignment
             }
             $lastGroupCount = count($player->getGroups());
         }
-
-        if (! $this->objectManager->flush()) {
-            return false;
-        }
-        return true;
     }
 
     private function loadMapping(): void

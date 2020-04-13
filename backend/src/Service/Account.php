@@ -64,16 +64,23 @@ class Account
      */
     private $esiData;
 
+    /**
+     * @var AutoGroupAssignment
+     */
+    private $autoGroupAssignment;
+
     public function __construct(
         LoggerInterface $log,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        EsiData $esiData
+        EsiData $esiData,
+        AutoGroupAssignment $autoGroupAssignment
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->esiData = $esiData;
+        $this->autoGroupAssignment = $autoGroupAssignment;
     }
 
     /**
@@ -111,11 +118,9 @@ class Account
         $newPlayer = new Player();
         $newPlayer->setName($char->getName());
 
-        $this->removeCharacterFromPlayer($char, $newPlayer);
+        $this->moveCharacter($char, $newPlayer);
 
         $char->setMain(true);
-        $char->setPlayer($newPlayer);
-        $newPlayer->addCharacter($char);
 
         return $char;
     }
@@ -128,10 +133,14 @@ class Account
      *
      * @param Character $char Character with Player object attached.
      * @param EveAuthentication $eveAuth
+     * @param bool $updateAutoGroups Update "auto groups" if the character is new or was moved to another account
      * @return bool
      */
-    public function updateAndStoreCharacterWithPlayer(Character $char, EveAuthentication $eveAuth): bool
-    {
+    public function updateAndStoreCharacterWithPlayer(
+        Character $char,
+        EveAuthentication $eveAuth,
+        bool $updateAutoGroups
+    ): bool {
         // update character
         $token = $eveAuth->getToken();
         $char->setName($eveAuth->getCharacterName());
@@ -161,9 +170,14 @@ class Account
 
         $success = $this->objectManager->flush();
 
-        // update character if corporation is missing - the client side triggered update fails too often.
+        // update character if corporation is missing
         if ($char->getCorporation() === null) {
             $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId());
+        }
+
+        // update groups
+        if ($updateAutoGroups) {
+            $this->updateGroups($char->getPlayer()->getId()); // flushes
         }
 
         return $success;
@@ -264,17 +278,22 @@ class Account
     }
 
     /**
-     * Removes a character from a player account and creates a RemovedCharacter record.
+     * Removes a character from it's current player account,
+     * adds it to the new player and creates a RemovedCharacter record.
      *
-     * **Make sure to add another player to the character!**
-     *
-     * Does not flush the entity manager.
+     * Flushes the entity manager.
      */
-    public function removeCharacterFromPlayer(Character $character, Player $newPlayer): void
+    public function moveCharacter(Character $character, Player $newPlayer): void
     {
         $this->createRemovedCharacter($character, $newPlayer);
 
-        $character->getPlayer()->removeCharacter($character);
+        $oldPlayer = $character->getPlayer();
+
+        $oldPlayer->removeCharacter($character);
+        $character->setPlayer($newPlayer);
+        $newPlayer->addCharacter($character);
+
+        $this->updateGroups($oldPlayer->getId()); // flushes the entity manager
     }
 
     /**
@@ -352,6 +371,24 @@ class Account
         }
 
         return false;
+    }
+
+    /**
+     * Executes the auto group assignment, syncs tracking and watchlist roles and checks required groups.
+     */
+    public function updateGroups(int $playerId): bool
+    {
+        $player = $this->repositoryFactory->getPlayerRepository()->find($playerId);
+        if ($player === null) {
+            return false;
+        }
+
+        $this->autoGroupAssignment->assign($player);
+        $this->syncTrackingRole($player);
+        $this->syncWatchlistRole($player);
+        $this->autoGroupAssignment->checkRequiredGroups($player);
+
+        return $this->objectManager->flush();
     }
 
     /**

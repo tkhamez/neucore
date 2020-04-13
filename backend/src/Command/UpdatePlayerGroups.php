@@ -8,7 +8,6 @@ use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Service\Account;
-use Neucore\Service\AutoGroupAssignment;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,11 +24,6 @@ class UpdatePlayerGroups extends Command
     private $playerRepo;
 
     /**
-     * @var AutoGroupAssignment
-     */
-    private $autoGroup;
-
-    /**
      * @var EntityManagerInterface
      */
     private $entityManager;
@@ -41,7 +35,6 @@ class UpdatePlayerGroups extends Command
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
-        AutoGroupAssignment $autoGroup,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
         Account $account
@@ -50,7 +43,6 @@ class UpdatePlayerGroups extends Command
         $this->logOutput($logger);
 
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
-        $this->autoGroup = $autoGroup;
         $this->entityManager = $entityManager;
         $this->account = $account;
     }
@@ -96,15 +88,9 @@ class UpdatePlayerGroups extends Command
                     $this->logger->critical('UpdatePlayerGroups: cannot continue without an open entity manager.');
                     break;
                 }
-                $success1 = $this->autoGroup->assign($playerId);
-                $player = $this->playerRepo->find($playerId);
-                if ($player) {
-                    $this->account->syncTrackingRole($player); // does not flush
-                    $this->account->syncWatchlistRole($player); // does not flush
-                }
-                $success2 = $this->autoGroup->checkRequiredGroups($playerId); // flushes the entity manager
+                $success = $this->account->updateGroups($playerId);
                 $this->entityManager->clear();
-                if (! $success1 || ! $success2) {
+                if (! $success) {
                     $this->writeLine('  Error updating ' . $playerId);
                 } else {
                     $this->writeLine('  Account ' . $playerId . ' groups updated');

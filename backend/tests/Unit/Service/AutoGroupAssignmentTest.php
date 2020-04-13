@@ -10,20 +10,13 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
-use Neucore\Factory\EsiApiFactory;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\Account;
 use Neucore\Service\AutoGroupAssignment;
-use Neucore\Service\Config;
-use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
-use Doctrine\ORM\Events;
 use PHPUnit\Framework\TestCase;
-use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
-use Tests\WriteErrorListener;
 use Neucore\Entity\Alliance;
 
 class AutoGroupAssignmentTest extends TestCase
@@ -52,11 +45,6 @@ class AutoGroupAssignmentTest extends TestCase
      * @var Logger
      */
     private $log;
-
-    /**
-     * @var AutoGroupAssignment
-     */
-    private $agaError;
 
     private $playerId;
 
@@ -101,29 +89,26 @@ class AutoGroupAssignmentTest extends TestCase
         $objectManager = new ObjectManager($this->om, $this->log);
 
         $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $this->log);
-
-        // a second AutoGroupAssignment instance with another entity manager that throws an exception on flush.
-        $em = (new Helper())->getEm(true);
-        $em->getEventManager()->addEventListener(Events::onFlush, new WriteErrorListener());
-        $this->agaError = new AutoGroupAssignment(
-            new ObjectManager($em, $this->log),
-            $repositoryFactory,
-            $this->log
-        );
-    }
-
-    public function testAssignNotFound()
-    {
-        $success = $this->aga->assign(123);
-        $this->assertFalse($success);
     }
 
     public function testAssignManaged()
     {
         $this->setUpData();
+        $this->om->clear();
 
-        $success = $this->aga->assign($this->playerManagedId);
-        $this->assertTrue($success);
+        $playerBefore = $this->playerRepo->find($this->playerManagedId);
+        if (! $playerBefore) {
+            $this->fail();
+            return;
+        }
+        $this->assertSame([], $playerBefore->getGroupIds());
+
+        $this->aga->assign($playerBefore);
+        $this->om->flush();
+        $this->om->clear();
+
+        $playerDb = $this->playerRepo->find($this->playerManagedId);
+        $this->assertSame(0, count($playerDb->getGroupIds())); // would be 4 if status was STANDARD
     }
 
     public function testAssign()
@@ -138,11 +123,15 @@ class AutoGroupAssignmentTest extends TestCase
         // Group 7 belongs to the player's alliance and corp 2
 
         $playerBefore = $this->playerRepo->find($this->playerId);
+        if (! $playerBefore) {
+            $this->fail();
+            return;
+        }
         $this->assertSame([$this->group4->getId(), $this->group5Id], $playerBefore->getGroupIds());
 
-        $success = $this->aga->assign($this->playerId);
+        $this->aga->assign($playerBefore);
 
-        $this->assertTrue($success);
+        $this->om->flush();
         $this->om->clear();
 
         $playerDb = $this->playerRepo->find($this->playerId);
@@ -167,21 +156,19 @@ class AutoGroupAssignmentTest extends TestCase
         $this->assertStringContainsString('added group g6 ['.$this->group6Id.']', $logs[5]['message']);
     }
 
-    public function testAssignFlushError()
-    {
-        $this->setUpData();
-        $success = $this->agaError->assign($this->playerId);
-        $this->assertFalse($success);
-    }
-
     public function testCheckRequiredGroups()
     {
         $this->setUpData();
         $playerBefore = $this->playerRepo->find($this->playerId);
+        if (! $playerBefore) {
+            $this->fail();
+            return;
+        }
         $playerBefore->addGroup($this->group1);
         $playerBefore->addGroup($this->group2);
         $playerBefore->addGroup($this->group3);
         $this->om->flush();
+
         $this->assertSame(
             [
                 $this->group4->getId(),
@@ -198,10 +185,11 @@ class AutoGroupAssignmentTest extends TestCase
         // group2 depends on group3 -> player has g3
         // group4 has no required groups
 
-        $success = $this->aga->checkRequiredGroups($this->playerId);
-        $this->assertTrue($success);
+        $this->aga->checkRequiredGroups($playerBefore);
 
+        $this->om->flush();
         $this->om->clear();
+
         $playerAfter = $this->playerRepo->find($this->playerId);
         $this->assertSame(
             [

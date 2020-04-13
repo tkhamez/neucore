@@ -5,6 +5,7 @@
 - Change: Added role watchlist-manager with permissions to edit the configuration, 
   edit access is now restricted to watchlist-admin.
 - Change: Moved "set account status" function from the role user-admin to user-manager.
+- The "automatic group assignment" is now performed directly when a character is added or removed from an account.
 - Some refactoring
 
 ## 1.9.2

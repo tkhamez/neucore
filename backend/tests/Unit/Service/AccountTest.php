@@ -22,6 +22,7 @@ use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
+use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
@@ -153,8 +154,9 @@ class AccountTest extends TestCase
             $repoFactory,
             $config
         );
+        $autoGroups = new AutoGroupAssignment($objectManager, $repoFactory, $this->log);
 
-        $this->service = new Account($this->log, $objectManager, $repoFactory, $esi);
+        $this->service = new Account($this->log, $objectManager, $repoFactory, $esi, $autoGroups);
         $this->charRepo = $repoFactory->getCharacterRepository();
         $this->playerRepo = $repoFactory->getPlayerRepository();
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
@@ -179,6 +181,7 @@ class AccountTest extends TestCase
         $char->setId(100);
         $char->setName('char name');
         $player = new Player();
+        $player->setId(5);
         $player->setName($char->getName());
         $player->addCharacter($char);
         $char->setPlayer($player);
@@ -232,7 +235,8 @@ class AccountTest extends TestCase
                 'will be updated because corporation is missing',
                 'character-owner-hash',
                 new AccessToken(['access_token' => $token[0], 'refresh_token' => 'r-t', 'expires' => $expires])
-            )
+            ),
+            false
         );
         $this->assertTrue($result);
 
@@ -268,7 +272,8 @@ class AccountTest extends TestCase
                 'char name changed',
                 'character-owner-hash',
                 new AccessToken(['access_token' => 'a-t'])
-            )
+            ),
+            true
         );
         $this->assertTrue($result);
 
@@ -467,15 +472,17 @@ class AccountTest extends TestCase
     public function testRemoveCharacterFromPlayer()
     {
         $player = (new Player())->setName('player 1');
+        $newPlayer = (new Player())->setName('player 2');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
         $player->addCharacter($char);
         $this->helper->getObjectManager()->persist($player);
+        $this->helper->getObjectManager()->persist($newPlayer);
         $this->helper->getObjectManager()->persist($char);
         $this->helper->getObjectManager()->flush();
 
-        $this->service->removeCharacterFromPlayer($char, $player);
-        $this->helper->getObjectManager()->flush();
+        $this->service->moveCharacter($char, $newPlayer);
 
+        $this->helper->getObjectManager()->flush();
         $this->helper->getObjectManager()->clear();
 
         $this->assertSame(0, count($player->getCharacters()));
@@ -483,7 +490,7 @@ class AccountTest extends TestCase
         $this->assertSame('char', $player->getRemovedCharacters()[0]->getCharacterName());
         $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
         $this->assertEqualsWithDelta(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp(), 10);
-        $this->assertSame($player, $player->getRemovedCharacters()[0]->getNewPlayer());
+        $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_MOVED, $player->getRemovedCharacters()[0]->getReason());
 
         // tests that the new object was persisted.

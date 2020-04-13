@@ -439,7 +439,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function setStatus(string $id, string $status): ResponseInterface
+    public function setStatus(string $id, string $status, Account $account): ResponseInterface
     {
         $validStatus = [
             Player::STATUS_STANDARD,
@@ -456,6 +456,10 @@ class PlayerController extends BaseController
                 $player->removeGroup($group);
             }
             $player->setStatus($status);
+
+            if ($player->getStatus() === Player::STATUS_STANDARD) {
+                $account->updateGroups($player->getId());
+            }
         }
 
         return $this->flushAndReturn(204);

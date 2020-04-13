@@ -5,7 +5,6 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
@@ -183,7 +182,7 @@ class CharacterController extends BaseController
      *     )
      * )
      */
-    public function update(string $id, AutoGroupAssignment $groupAssign, Account $accountService): ResponseInterface
+    public function update(string $id, Account $accountService): ResponseInterface
     {
         // get player account
         $player = $this->getUser($this->userAuth)->getPlayer();
@@ -218,11 +217,7 @@ class CharacterController extends BaseController
         }
 
         if ($updatedChar !== null) {
-            // assign auto groups
-            $groupAssign->assign($updatedChar->getPlayer()->getId());
-            $accountService->syncTrackingRole($updatedChar->getPlayer()); // does not flush
-            $accountService->syncWatchlistRole($updatedChar->getPlayer()); // does not flush
-            $groupAssign->checkRequiredGroups($updatedChar->getPlayer()->getId()); // flushes the entity manager
+            $accountService->updateGroups($updatedChar->getPlayer()->getId()); // flushes the entity manager
 
             return $this->withJson($updatedChar);
         } else {
