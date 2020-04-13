@@ -100,19 +100,7 @@ class AutoGroupAssignmentTest extends TestCase
 
         $objectManager = new ObjectManager($this->om, $this->log);
 
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $repoFactory = new RepositoryFactory($this->om);
-        $esi = new EsiData(
-            $this->log,
-            new EsiApiFactory(new Client(), $config),
-            $objectManager,
-            $repoFactory,
-            $config
-        );
-
-        $account = new Account($this->log, $objectManager, $repositoryFactory, $esi);
-        
-        $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $this->log, $account);
+        $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $this->log);
 
         // a second AutoGroupAssignment instance with another entity manager that throws an exception on flush.
         $em = (new Helper())->getEm(true);
@@ -120,8 +108,7 @@ class AutoGroupAssignmentTest extends TestCase
         $this->agaError = new AutoGroupAssignment(
             new ObjectManager($em, $this->log),
             $repositoryFactory,
-            $this->log,
-            $account
+            $this->log
         );
     }
 

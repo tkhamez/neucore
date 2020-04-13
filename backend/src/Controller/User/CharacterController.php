@@ -220,7 +220,9 @@ class CharacterController extends BaseController
         if ($updatedChar !== null) {
             // assign auto groups
             $groupAssign->assign($updatedChar->getPlayer()->getId());
-            $groupAssign->checkRequiredGroups($updatedChar->getPlayer()->getId());
+            $accountService->syncTrackingRole($updatedChar->getPlayer()); // does not flush
+            $accountService->syncWatchlistRole($updatedChar->getPlayer()); // does not flush
+            $groupAssign->checkRequiredGroups($updatedChar->getPlayer()->getId()); // flushes the entity manager
 
             return $this->withJson($updatedChar);
         } else {

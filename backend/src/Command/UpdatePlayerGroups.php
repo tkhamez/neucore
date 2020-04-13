@@ -7,6 +7,7 @@ use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
+use Neucore\Service\Account;
 use Neucore\Service\AutoGroupAssignment;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -33,11 +34,17 @@ class UpdatePlayerGroups extends Command
      */
     private $entityManager;
 
+    /**
+     * @var Account
+     */
+    private $account;
+
     public function __construct(
         RepositoryFactory $repositoryFactory,
         AutoGroupAssignment $autoGroup,
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Account $account
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -45,6 +52,7 @@ class UpdatePlayerGroups extends Command
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
         $this->autoGroup = $autoGroup;
         $this->entityManager = $entityManager;
+        $this->account = $account;
     }
 
     protected function configure(): void
@@ -89,7 +97,12 @@ class UpdatePlayerGroups extends Command
                     break;
                 }
                 $success1 = $this->autoGroup->assign($playerId);
-                $success2 = $this->autoGroup->checkRequiredGroups($playerId);
+                $player = $this->playerRepo->find($playerId);
+                if ($player) {
+                    $this->account->syncTrackingRole($player); // does not flush
+                    $this->account->syncWatchlistRole($player); // does not flush
+                }
+                $success2 = $this->autoGroup->checkRequiredGroups($playerId); // flushes the entity manager
                 $this->entityManager->clear();
                 if (! $success1 || ! $success2) {
                     $this->writeLine('  Error updating ' . $playerId);
