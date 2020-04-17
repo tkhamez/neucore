@@ -23,6 +23,7 @@ use Neucore\Command\RevokeToken;
 use Neucore\Command\SendInvalidTokenMail;
 use Neucore\Command\SendMissingCharacterMail;
 use Neucore\Command\UpdateCharacters;
+use Neucore\Command\UpdateCorporations;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Middleware\Psr15\Cors;
@@ -399,6 +400,7 @@ class Application
     {
         $console->add($this->container->get(MakeAdmin::class));
         $console->add($this->container->get(UpdateCharacters::class));
+        $console->add($this->container->get(UpdateCorporations::class));
         $console->add($this->container->get(CheckTokens::class));
         $console->add($this->container->get(UpdatePlayerGroups::class));
         $console->add($this->container->get(SendInvalidTokenMail::class));
