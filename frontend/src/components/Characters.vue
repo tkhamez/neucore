@@ -51,6 +51,12 @@ Modal window with all characters of one player.
                 </li>
             </ul>
             <div class="modal-footer">
+                <button v-cloak
+                        v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'watchlist', 'tracking'])"
+                        type="button" class="btn btn-info" v-on:click="updateCharacters">
+                    <span role="img" class="fas fa-sync" title="Update from ESI"></span>
+                    Update from ESI
+                </button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -80,6 +86,16 @@ export default {
                 window.setTimeout(function() {
                     $('#playerModal').modal('show');
                 }, 10);
+            });
+        },
+
+        updateCharacters: function() {
+            const vm = this;
+            if (! vm.selectedPlayer) {
+                return;
+            }
+            vm.updatePlayer(vm.selectedPlayer, function () {
+                vm.showCharacters(vm.selectedPlayer.id);
             });
         },
     }

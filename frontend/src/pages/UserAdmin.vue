@@ -582,24 +582,7 @@ export default {
             if (! this.playerEdit) {
                 return;
             }
-            const vm = this;
-            const characters = [...this.playerEdit.characters];
-
-            function updateCharacter() {
-                if (characters.length > 0) {
-                    const id = characters[0].id;
-                    characters.splice(0, 1);
-                    vm.updateCharacter(id, function() {
-                        updateCharacter();
-                    });
-                } else {
-                    vm.getPlayer();
-                    if (vm.playerEdit.id === vm.player.id) {
-                        vm.$root.$emit('playerChange');
-                    }
-                }
-            }
-            updateCharacter();
+            this.updatePlayer(this.playerEdit, this.getPlayer);
         },
 
         askDeleteChar(characterId, characterName) {

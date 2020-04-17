@@ -122,6 +122,35 @@ Vue.mixin({
         },
 
         /**
+         * Updates all characters of the player.
+         *
+         * @param {object} player
+         * @param {function} [callback]
+         */
+        updatePlayer: function(player, callback) {
+            const vm = this;
+            const characters = [...player.characters];
+
+            function updateCharacter() {
+                if (characters.length > 0) {
+                    const id = characters[0].id;
+                    characters.splice(0, 1);
+                    vm.updateCharacter(id, function() {
+                        updateCharacter();
+                    });
+                } else {
+                    if (typeof callback === typeof Function) {
+                        callback();
+                    }
+                    if (player.id === vm.$root.player.id) {
+                        vm.$root.$emit('playerChange');
+                    }
+                }
+            }
+            updateCharacter();
+        },
+
+        /**
          * @param {int} characterId
          * @param {string|null} [adminReason]
          * @param {function} [callback]

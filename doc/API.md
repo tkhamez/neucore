@@ -81,7 +81,6 @@ Allows a player to add and remove roles from players.
 
 Character API
 - Return a list of characters that matches the name (partial matching). `/user/character/find-by/{name}`
-- Update a character with data from ESI. `/user/character/{id}/update`
 
 Player API
 - List all players with characters. `/user/player/with-characters`
