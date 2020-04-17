@@ -73,10 +73,10 @@ class AutoWhitelistTest extends ConsoleTestCase
 
         $log = explode("\n", $output);
         $this->assertSame(5, count($log));
-        $this->assertStringContainsString('auto-whitelist start.', $log[0]);
+        $this->assertStringContainsString('Started "auto-whitelist"', $log[0]);
         $this->assertStringContainsString('  Corporations to check: 1, checked: 1, whitelisted: 1', $log[1]);
         $this->assertStringContainsString('  List saved successfully.', $log[2]);
-        $this->assertStringContainsString('auto-whitelist end.', $log[3]);
+        $this->assertStringContainsString('Finished "auto-whitelist"', $log[3]);
         $this->assertStringContainsString('', $log[4]);
 
         $this->om->clear();

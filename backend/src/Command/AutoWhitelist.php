@@ -121,7 +121,7 @@ class AutoWhitelist extends Command
         $id = intval($input->getArgument('id'));
         $this->executeLogOutput($input, $output);
 
-        $this->writeLine('auto-whitelist start.', false);
+        $this->writeLine('Started "auto-whitelist"', false);
 
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
@@ -151,7 +151,7 @@ class AutoWhitelist extends Command
         }
         $this->saveWhitelist($watchlist, $whitelist);
 
-        $this->writeLine('auto-whitelist end.', false);
+        $this->writeLine('Finished "auto-whitelist"', false);
         return 0;
     }
 
