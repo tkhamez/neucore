@@ -10,6 +10,7 @@
   removed from an account.
 - Improvement: Unit tests can now also be run with a SQLite in-memory database.
 - Fix: Added missing permission to role "watchlist" to use the character search.
+- Small UI improvements
 - Some refactoring
 
 ## 1.9.2

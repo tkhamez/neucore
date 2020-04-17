@@ -7,16 +7,16 @@
                 and additionally other characters in another player (non-NPC) corporations (that are not on the
                 whitelist) and have not been manually excluded.<br>
                 <span class="text-muted small">
-                    Alliances: {{ nameList(alliances) }}<br>
-                    Corporations: {{ nameList(corporations) }}
+                    <strong>Alliances</strong>: {{ nameList(alliances) }}<br>
+                    <strong>Corporations</strong>: {{ nameList(corporations) }}
                 </span>
             </span>
             <span v-if="tab === 'black'">
                 Player accounts from the "Red Flags" list are moved here if they have characters in one of the
                 "black listed" alliances or corporations.<br>
                 <span class="text-muted small">
-                    Alliances: {{ nameList(blacklistAlliances) }}<br>
-                    Corporations: {{ nameList(blacklistCorporations) }}
+                    <strong>Alliances</strong>: {{ nameList(blacklistAlliances) }}<br>
+                    <strong>Corporations</strong>: {{ nameList(blacklistCorporations) }}
                 </span>
             </span>
             <span v-if="tab === 'white'">
