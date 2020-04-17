@@ -145,6 +145,7 @@ Group API
 - Remove required group from a group. `/user/group/{id}/remove-required/{groupId}`
 - Assign a player as manager to a group. `/user/group/{id}/add-manager/{pid}`
 - Remove a manager (player) from a group. `/user/group/{id}/remove-manager/{pid}`
+- List all members of a group. `/user/group/{id}/members`
 
 Player API
 - List all players with the role group-manger. `/user/player/group-managers`

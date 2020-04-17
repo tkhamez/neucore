@@ -5,6 +5,7 @@
 - **BC break** The `update-chars` command no longer updates corporations and alliances, instead there is a new command
   `update-corporations`.
 - New: Added "Update from ESI" button to the character modal.
+- New: Added members tab to groups for group admins.
 - Change: Added role watchlist-manager with permissions to edit the configuration, 
   edit access is now restricted to watchlist-admin.
 - Change: Moved "set account status" function from the role user-admin to user-manager.

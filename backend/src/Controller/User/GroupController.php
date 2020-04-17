@@ -906,7 +906,7 @@ class GroupController extends BaseController
      *     path="/user/group/{id}/members",
      *     operationId="members",
      *     summary="List all members of a group.",
-     *     description="Needs role: group-manager",
+     *     description="Needs role: group-admin, group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -933,7 +933,10 @@ class GroupController extends BaseController
      */
     public function members(string $id): ResponseInterface
     {
-        return $this->getPlayersFromGroup($id, 'members', true);
+        $user = $this->getUser($this->userAuth)->getPlayer();
+        $onlyIfManager = $user->hasRole(Role::GROUP_ADMIN) ? false : true;
+
+        return $this->getPlayersFromGroup($id, 'members', $onlyIfManager);
     }
 
     /**

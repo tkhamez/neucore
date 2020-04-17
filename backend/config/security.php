@@ -65,7 +65,7 @@ return [
     '/api/user/group/deny-application/{id}'   => [Role::GROUP_MANAGER],
     '/api/user/group/{id}/add-member'         => [Role::GROUP_MANAGER, Role::USER_MANAGER],
     '/api/user/group/{id}/remove-member'      => [Role::GROUP_MANAGER, Role::USER_MANAGER],
-    '/api/user/group/{id}/members'            => [Role::GROUP_MANAGER],
+    '/api/user/group/{id}/members'            => [Role::GROUP_ADMIN, Role::GROUP_MANAGER],
     '/api/user/group/{id}/required-groups'    => [Role::GROUP_MANAGER, Role::GROUP_ADMIN],
     '/api/user/group'                         => [Role::GROUP_ADMIN],
 

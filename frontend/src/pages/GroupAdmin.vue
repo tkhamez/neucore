@@ -1,11 +1,12 @@
 <template>
 <div class="container-fluid">
 
-    <!--suppress HtmlUnknownTag -->
     <edit :type="'Group'" ref="editModal"
           v-on:created="groupCreated($event)"
           v-on:deleted="groupDeleted()"
           v-on:itemChange="groupChanged()"></edit>
+
+    <characters ref="charactersModal"></characters>
 
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addAlliCorpSuccess()"></add-entity>
 
@@ -81,12 +82,40 @@
                        :class="{ 'active': contentType === 'groups' }"
                        :href="'#GroupAdmin/' + groupId + '/groups'">Groups</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'members' }"
+                       :href="'#GroupAdmin/' + groupId + '/members'">Members</a>
+                </li>
             </ul>
 
             <!--suppress HtmlUnknownTag -->
-            <admin v-cloak v-if="groupId" ref="admin"
+            <admin v-cloak v-if="groupId && contentType !== 'members'" ref="admin"
                    :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
                    :type="'Group'"></admin>
+
+            <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3">
+                <table class="table table-hover mb-0" aria-describedby="Members">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Characters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="member in members">
+                            <td>{{ member.id }}</td>
+                            <td>{{ member.name }}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
+                                    Show characters
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>
@@ -95,17 +124,18 @@
 
 <script>
 import $ from 'jquery';
-import { GroupApi } from 'neucore-js-client';
-
-import AddEntity from '../components/EntityAdd.vue';
-import Edit      from '../components/GroupAppEdit.vue';
-import Admin     from '../components/EntityRelationEdit.vue';
+import {GroupApi} from 'neucore-js-client';
+import AddEntity  from '../components/EntityAdd.vue';
+import Edit       from '../components/GroupAppEdit.vue';
+import Admin      from '../components/EntityRelationEdit.vue';
+import Characters from '../components/Characters.vue';
 
 export default {
     components: {
         AddEntity,
         Edit,
         Admin,
+        Characters,
     },
 
     props: {
@@ -119,6 +149,7 @@ export default {
             groups: [],
             groupId: null, // current group
             contentType: '',
+            members: [],
         }
     },
 
@@ -126,11 +157,17 @@ export default {
         window.scrollTo(0,0);
         this.getGroups();
         this.setGroupIdAndContentType();
+        if (this.contentType === 'members') {
+            fetchMembers(this);
+        }
     },
 
     watch: {
         route: function() {
             this.setGroupIdAndContentType();
+            if (this.contentType === 'members') {
+                fetchMembers(this);
+            }
         },
     },
 
@@ -198,7 +235,21 @@ export default {
                 this.contentType = this.route[2] ? this.route[2] : 'managers';
             }
         },
+
+        showCharacters: function(playerId) {
+            this.$refs.charactersModal.showCharacters(playerId);
+        },
     },
+}
+
+function fetchMembers(vm) {
+    new GroupApi().members(vm.groupId, function(error, data) {
+        if (error) {
+            return;
+        }
+        console.log(data);
+        vm.members = data;
+    });
 }
 </script>
 
