@@ -134,7 +134,7 @@ class AutoWhitelist extends Command
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
 
-        $this->objectManager->clear(); // free memory TODO needed?
+        $this->objectManager->clear(); // reduces memory usage a little bit
 
         $whitelist = $this->getWhitelist($accountsData);
 
