@@ -56,7 +56,7 @@ class UpdatePlayerGroups extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                50
+                10
             );
         $this->configureLogOutput($this);
     }
@@ -83,19 +83,21 @@ class UpdatePlayerGroups extends Command
 
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
-            foreach ($playerIds as $playerId) {
+            foreach ($playerIds as $i => $playerId) {
                 if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('UpdatePlayerGroups: cannot continue without an open entity manager.');
                     break;
                 }
                 $success = $this->account->updateGroups($playerId);
-                $this->entityManager->clear();
                 if (! $success) {
                     $this->writeLine('  Error updating ' . $playerId);
                 } else {
                     $this->writeLine('  Account ' . $playerId . ' groups updated');
                 }
 
+                if ($i % 100 === 0) { // reduce memory usage
+                    $this->entityManager->clear();
+                }
                 usleep($sleep * 1000);
             }
         } while (count($playerIds) === $dbResultLimit);
