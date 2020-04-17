@@ -292,8 +292,7 @@ class Application
         $errorMiddleware->setDefaultErrorHandler(new Slim\ErrorHandler(
             $app->getCallableResolver(),
             $app->getResponseFactory(),
-            $this->container->get(LoggerInterface::class),
-            $this->env
+            $this->container->get(LoggerInterface::class)
         ));
     }
 

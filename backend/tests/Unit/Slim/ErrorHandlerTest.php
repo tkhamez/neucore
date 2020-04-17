@@ -19,7 +19,7 @@ class ErrorHandlerTest extends TestCase
         $handler = new TestHandler();
         $logger->pushHandler($handler);
 
-        $error = new ErrorHandler(new CallableResolver(), new ResponseFactory(), $logger, Application::ENV_DEV);
+        $error = new ErrorHandler(new CallableResolver(), new ResponseFactory(), $logger);
         $exception = new \ErrorException('msg');
 
         $error->__invoke(RequestFactory::createRequest(), $exception, true, true, true);
