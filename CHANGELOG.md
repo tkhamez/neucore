@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.10.0
+
+18 Apr 2020
 
 - **BC break** The `update-chars` command no longer updates corporations and alliances, instead there is a new command
   `update-corporations`.
