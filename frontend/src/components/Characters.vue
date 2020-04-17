@@ -66,7 +66,8 @@ Modal window with all characters of one player.
 
 <script>
 import $ from 'jquery';
-import { PlayerApi } from 'neucore-js-client';
+import {PlayerApi} from 'neucore-js-client';
+import Character from '../classes/Character.js';
 
 export default {
     data: function() {
@@ -94,7 +95,7 @@ export default {
             if (! vm.selectedPlayer) {
                 return;
             }
-            vm.updatePlayer(vm.selectedPlayer, function () {
+            (new Character(vm)).updatePlayer(vm.selectedPlayer, function () {
                 vm.showCharacters(vm.selectedPlayer.id);
             });
         },

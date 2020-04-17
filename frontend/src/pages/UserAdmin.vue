@@ -389,8 +389,9 @@
 
 <script>
 import $ from 'jquery';
-import { PlayerApi } from 'neucore-js-client';
+import {PlayerApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
+import Character from "../classes/Character";
 
 export default {
     components: {
@@ -582,7 +583,7 @@ export default {
             if (! this.playerEdit) {
                 return;
             }
-            this.updatePlayer(this.playerEdit, this.getPlayer);
+            (new Character(this)).updatePlayer(this.playerEdit, this.getPlayer);
         },
 
         askDeleteChar(characterId, characterName) {
@@ -596,10 +597,11 @@ export default {
 
         deleteChar() {
             const vm = this;
-            this.deleteCharacter(this.charToDelete.id, this.deleteReason, function() {
+            const character = (new Character(vm));
+            character.deleteCharacter(this.charToDelete.id, this.deleteReason, function() {
                 vm.getPlayer();
                 if (vm.playerEdit.id === vm.player.id) {
-                    vm.updateCharacter(vm.authChar.id, function() {
+                    character.updateCharacter(vm.authChar.id, function() {
                         vm.$root.$emit('playerChange');
                     });
                 }

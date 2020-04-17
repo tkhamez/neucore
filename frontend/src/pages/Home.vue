@@ -175,7 +175,7 @@
 
 <script>
 import $ from 'jquery';
-import { PlayerApi } from 'neucore-js-client';
+import {PlayerApi} from 'neucore-js-client';
 import TitleLogo from './Home--title-logo.vue';
 import markdownIt from 'markdown-it';
 import mdEmoji from 'markdown-it-emoji/light';
@@ -185,6 +185,7 @@ import mdIns from 'markdown-it-ins';
 import mdAbbr from 'markdown-it-abbr';
 import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
+import Character from "../classes/Character";
 
 export default {
     components: {
@@ -268,7 +269,7 @@ export default {
 
         update: function(characterId) {
             const vm = this;
-            this.updateCharacter(characterId, function() {
+            (new Character(this)).updateCharacter(characterId, function() {
                 vm.$root.$emit('playerChange');
             });
         },
@@ -283,7 +284,7 @@ export default {
 
         deleteChar() {
             const vm = this;
-            this.deleteCharacter(this.charToDelete.id, null, function() {
+            (new Character(vm)).deleteCharacter(this.charToDelete.id, null, function() {
                 vm.update(vm.authChar.id);
             });
             $('#deleteCharModal').modal('hide');
