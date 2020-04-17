@@ -555,6 +555,9 @@ export default {
                 ) {
                     vm.$root.$emit('playerChange');
                 }
+                if (vm.type === 'Group' && (vm.contentType === 'corporations' || vm.contentType === 'alliances')) {
+                    vm.getWithGroups();
+                }
 
                 vm.getTableContent();
             });
