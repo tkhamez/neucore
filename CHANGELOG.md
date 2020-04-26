@@ -2,7 +2,7 @@
 
 ## 1.10.1
 
-dd mm yyyy
+26 Apr 2020
 
 - Fixed a bug where a character was not correctly moved to a new account.
 
