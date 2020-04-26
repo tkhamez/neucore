@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
 use Brave\Sso\Basics\EveAuthentication;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\Session\SessionData;
 use Psr\Http\Message\ServerRequestInterface;
@@ -182,7 +185,7 @@ class UserAuth implements RoleProviderInterface
     {
         try {
             $userId = $this->session->get('character_id');
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             // session could not be started, e. g. for 404 errors.
             return;
         }

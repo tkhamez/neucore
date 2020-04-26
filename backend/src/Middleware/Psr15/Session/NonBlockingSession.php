@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Middleware\Psr15\Session;
 
@@ -22,6 +24,14 @@ use Slim\Routing\RouteContext;
  */
 class NonBlockingSession implements MiddlewareInterface
 {
+    const OPTION_ROUTE_INCLUDE_PATTERN  = 'route_include_pattern';
+
+    const OPTION_ROUTE_BLOCKING_PATTERN  = 'route_blocking_pattern';
+
+    const OPTION_SECURE  = 'secure';
+
+    const OPTION_NAME  = 'name';
+
     /**
      * @var array
      */
@@ -74,14 +84,14 @@ class NonBlockingSession implements MiddlewareInterface
     {
         $start = false;
 
-        if (isset($this->options['route_include_pattern']) &&
-            is_array($this->options['route_include_pattern'])
+        if (isset($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN]) &&
+            is_array($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN])
         ) {
             if ($route === null) {
                 return false;
             }
             $routePattern = $route->getPattern();
-            foreach ($this->options['route_include_pattern'] as $includePattern) {
+            foreach ($this->options[self::OPTION_ROUTE_INCLUDE_PATTERN] as $includePattern) {
                 if (strpos($routePattern, $includePattern) === 0) {
                     $start = true;
                     break;
@@ -100,15 +110,18 @@ class NonBlockingSession implements MiddlewareInterface
     private function start()
     {
         if (PHP_SAPI !== 'cli') {
-            if (isset($this->options['name'])) {
-                session_name($this->options['name']);
+            if (isset($this->options[self::OPTION_NAME])) {
+                session_name($this->options[self::OPTION_NAME]);
             }
 
             session_start([
                 'cookie_lifetime' => 0,
                 'cookie_path' => '/',
                 'cookie_domain' => '',
-                'cookie_secure' => isset($this->options['secure']) ? (bool) $this->options['secure'] : true,
+                'cookie_secure' =>
+                    isset($this->options[self::OPTION_SECURE]) ?
+                    (bool) $this->options[self::OPTION_SECURE] :
+                    true,
                 'cookie_httponly' => true,
             ]);
 
@@ -128,10 +141,10 @@ class NonBlockingSession implements MiddlewareInterface
         }
 
         $readOnly = true;
-        if (isset($this->options['route_blocking_pattern']) &&
-            is_array($this->options['route_blocking_pattern'])
+        if (isset($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN]) &&
+            is_array($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN])
         ) {
-            foreach ($this->options['route_blocking_pattern'] as $blockingPattern) {
+            foreach ($this->options[self::OPTION_ROUTE_BLOCKING_PATTERN] as $blockingPattern) {
                 if (strpos($routePattern, $blockingPattern) === 0) {
                     $readOnly = false;
                     break;

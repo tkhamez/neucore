@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Brave\Sso\Basics\EveAuthentication;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
-use Brave\Sso\Basics\EveAuthentication;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Repository\SystemVariableRepository;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailMail;
@@ -82,10 +82,10 @@ class EveMail
         $char->setValue($eveAuth->getCharacterName());
 
         $token->setValue((string) json_encode([
-            'id' => (int) $eveAuth->getCharacterId(),
-            'access' => $eveAuth->getToken()->getToken(),
-            'refresh' => $eveAuth->getToken()->getRefreshToken(),
-            'expires' => $eveAuth->getToken()->getExpires(),
+            SystemVariable::TOKEN_ID => (int) $eveAuth->getCharacterId(),
+            SystemVariable::TOKEN_ACCESS => $eveAuth->getToken()->getToken(),
+            SystemVariable::TOKEN_REFRESH => $eveAuth->getToken()->getRefreshToken(),
+            SystemVariable::TOKEN_EXPIRES => $eveAuth->getToken()->getExpires(),
         ]));
 
         return $this->objectManager->flush();
@@ -204,16 +204,16 @@ class EveMail
 
         try {
             $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
-                'access_token' => $tokenValues['access'],
-                'refresh_token' => $tokenValues['refresh'],
-                'expires' => (int)$tokenValues['expires']
+                OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
+                OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
+                OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES]
             ]));
         } catch (IdentityProviderException $e) {
             return 'Invalid token.';
         }
 
         return $this->sendMail(
-            $tokenValues['id'],
+            $tokenValues[SystemVariable::TOKEN_ID],
             $accessToken->getToken(),
             $subject->getValue(),
             $body->getValue(),
@@ -338,16 +338,16 @@ class EveMail
 
         try {
             $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
-                'access_token' => $tokenValues['access'],
-                'refresh_token' => $tokenValues['refresh'],
-                'expires' => (int)$tokenValues['expires']
+                OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
+                OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
+                OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES]
             ]));
         } catch (IdentityProviderException $e) {
             return 'Invalid token.';
         }
 
         return $this->sendMail(
-            $tokenValues['id'],
+            $tokenValues[SystemVariable::TOKEN_ID],
             $accessToken->getToken(),
             $subject->getValue(),
             $body->getValue(),
@@ -425,10 +425,10 @@ class EveMail
 
         if (
             ! is_array($tokenValues) ||
-            ! isset($tokenValues['id']) ||
-            ! isset($tokenValues['access']) ||
-            ! isset($tokenValues['refresh']) ||
-            ! isset($tokenValues['expires'])
+            ! isset($tokenValues[SystemVariable::TOKEN_ID]) ||
+            ! isset($tokenValues[SystemVariable::TOKEN_ACCESS]) ||
+            ! isset($tokenValues[SystemVariable::TOKEN_REFRESH]) ||
+            ! isset($tokenValues[SystemVariable::TOKEN_EXPIRES])
 
         ) {
             return null;

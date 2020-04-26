@@ -221,7 +221,7 @@ export default {
             .use(mdAttrs) // for classes, like .text-warning, .bg-primary
         ;
         md.renderer.rules.emoji = function(token, idx) {
-            return '<span class="emoji">' + token[idx].content + '</span>';
+            return `<span class="emoji">${token[idx].content}</span>`;
         };
 
         this.checkDeactivated();

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Command;
 
@@ -49,7 +51,7 @@ class ClearCache extends Command
 
         $directory = new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS);
         $iterator = new \RecursiveIteratorIterator($directory, \RecursiveIteratorIterator::CHILD_FIRST);
-        foreach ($iterator as $file) { /* @var $file \SplFileInfo*/
+        foreach ($iterator as $file) { /* @var $file \SplFileInfo */
             if ($file->isDir()) {
                 rmdir($file->getRealPath());
             } else {

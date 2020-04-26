@@ -147,7 +147,7 @@ export default {
                 return;
             }
             this.selectedTheme = name;
-            const $enable = $("head link[href*='dist/theme-" + this.selectedTheme.toLowerCase() + "']");
+            const $enable = $(`head link[href*='dist/theme-${this.selectedTheme.toLowerCase()}']`);
             if ($enable.attr('rel') === 'stylesheet') {
                 return;
             }

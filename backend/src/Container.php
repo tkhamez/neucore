@@ -54,16 +54,13 @@ class Container
                 /** @noinspection PhpDeprecationInspection */
                 /* @phan-suppress-next-line PhanDeprecatedFunction */
                 AnnotationRegistry::registerLoader('class_exists');
-                if ((string) $conf['driver_options']['mysql_ssl_ca'] !== '' &&
-                    (
-                        ! $conf['driver_options']['mysql_verify_server_cert'] ||
-                        is_file($conf['driver_options']['mysql_ssl_ca'])
-                    )
-                ) {
+                $options = $conf['driver_options'];
+                $caFile = (string) $options['mysql_ssl_ca'];
+                $verify = (bool) $options['mysql_verify_server_cert'];
+                if ($caFile !== '' && (! $verify || is_file($caFile))) {
                     $conf['connection']['driverOptions'] = [
-                        \PDO::MYSQL_ATTR_SSL_CA => $conf['driver_options']['mysql_ssl_ca'],
-                        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT =>
-                            (bool) $conf['driver_options']['mysql_verify_server_cert'],
+                        \PDO::MYSQL_ATTR_SSL_CA => $caFile,
+                        \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                     ];
                 }
                 return EntityManager::create($conf['connection'], $config);
@@ -95,18 +92,22 @@ class Container
 
             // Monolog
             LoggerInterface::class => function (ContainerInterface $c) {
-                $path = $c->get(Config::class)['monolog']['path'];
-                $rotation = $c->get(Config::class)['monolog']['rotation'];
+                $config = $c->get(Config::class)['monolog'];
+                $path = $config['path'];
+                $rotation = $config['rotation'];
                 if (strpos($path, 'php://') === false) {
                     if (! is_writable($path)) {
                         throw new \Exception('The log directory "' . $path . '" must be writable by the web server.');
                     }
-                    $path .= '/app-' . (PHP_SAPI === 'cli' ? 'cli-' : '') .
-                        ($rotation === 'daily' ? date('Ymd') : (
-                            $rotation === 'monthly' ? date('Ym') : date('o\wW')
-                        )) . '.log';
+                    $date = date('o\wW'); // weekly rotation
+                    if ($rotation === 'daily') {
+                        $date = date('Ymd');
+                    } elseif ($rotation === 'monthly') {
+                        $date = date('Ym');
+                    }
+                    $path .= '/app-' . (PHP_SAPI === 'cli' ? 'cli-' : '') . $date . '.log';
                 }
-                $format = $c->get(Config::class)['monolog']['format'];
+                $format = $config['format'];
                 if ($format === 'fluentd') {
                     $formatter = new FluentdFormatter();
                 } elseif ($format === 'gelf') {

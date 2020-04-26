@@ -158,13 +158,7 @@ Select and table to add and remove objects from other objects.
 
 <script>
 import $ from 'jquery';
-import { AllianceApi } from 'neucore-js-client';
-import { AppApi } from 'neucore-js-client';
-import { CorporationApi } from 'neucore-js-client';
-import { GroupApi } from 'neucore-js-client';
-import { PlayerApi } from 'neucore-js-client';
-import { WatchlistApi } from 'neucore-js-client';
-
+import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, WatchlistApi} from 'neucore-js-client';
 import Characters from '../components/Characters.vue';
 
 export default {
@@ -267,12 +261,12 @@ export default {
         customLabel: function(option) {
             let label = option.name;
             if (this.contentType === 'managers') {
-                label += ' #' + option.id
+                label += ` #${option.id}`
             } else if (this.contentType === 'corporations' || this.contentType === 'alliances') {
-                label += ' [' + option.ticker + ']';
+                label += ` [${option.ticker}]`;
             }
             if (this.contentType === 'corporations' && option.alliance) {
-                label += ' - ' + option.alliance.name +  ' [' + option.alliance.ticker + ']';
+                label += ` - ${option.alliance.name} [${option.alliance.ticker}]`;
             }
             return label
         },
@@ -365,12 +359,12 @@ export default {
                 (this.type === 'WatchlistBlacklist' || this.type === 'WatchlistWhitelist') &&
                 this.contentType === 'alliances'
             ) {
-                method = lowerCaseFirst(this.type) + 'AllianceList';
+                method = `${lowerCaseFirst(this.type)}AllianceList`;
             } else if (
                 (this.type === 'WatchlistBlacklist' || this.type === 'WatchlistWhitelist') &&
                 this.contentType === 'corporations'
             ) {
-                method = lowerCaseFirst(this.type) + 'CorporationList';
+                method = `${lowerCaseFirst(this.type)}CorporationList`;
             }
             if (! api || ! method) {
                 return;
@@ -388,7 +382,7 @@ export default {
                 } else if (vm.type === 'App' && vm.contentType === 'roles') {
                     // transform string to object and remove "app" role
                     const roles = [];
-                    for (let role of data.roles) {
+                    for (const role of data.roles) {
                         if (role !== 'app') {
                             roles.push({ id: role, name: role });
                         }
@@ -458,7 +452,7 @@ export default {
 
         showGroups: function(corpOrAllianceId) {
             this.showGroupsEntity = null;
-            for (let entity of this.withGroups) {
+            for (const entity of this.withGroups) {
                 if (entity.id === corpOrAllianceId) {
                     this.showGroupsEntity = entity;
                     break;
@@ -486,7 +480,7 @@ export default {
                 param2 = id;
             } else if (this.type === 'Player') {
                 api = new GroupApi();
-                method = action + 'Member';
+                method = `${action}Member`;
                 param1 = id;
                 param2 = this.typeId;
             } else if (
@@ -503,7 +497,7 @@ export default {
                 param2 = this.typeId;
             } else if (this.type === 'Group' && this.contentType === 'groups') {
                 api = new GroupApi();
-                method = action + 'RequiredGroup';
+                method = `${action}RequiredGroup`;
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.contentType === 'managers') {
@@ -512,12 +506,12 @@ export default {
                 } else if (this.type === 'App') {
                     api = new AppApi();
                 }
-                method = action + 'Manager'; // add/removeManager
+                method = `${action}Manager`; // add/removeManager
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Corporation') {
                 api = new CorporationApi();
-                method = action + 'GroupTracking';
+                method = `${action}GroupTracking`;
                 param1 = this.typeId;
                 param2 = id;
             } else if (
@@ -526,15 +520,19 @@ export default {
                 this.type === 'WatchlistWhitelist'
             ) {
                 api = new WatchlistApi();
-                const suffix = this.type === 'WatchlistBlacklist' ? 'Blacklist' :
-                    (this.type === 'WatchlistWhitelist' ? 'Whitelist' : '');
+                let suffix = '';
+                if (this.type === 'WatchlistBlacklist') {
+                    suffix = 'Blacklist';
+                } else if (this.type === 'WatchlistWhitelist') {
+                    suffix = 'Whitelist';
+                }
                 let type;
                 if (this.contentType === 'groups') { // Watchlist only
                     type = 'Group';
                 } else {
                     type = this.contentType === 'alliances' ? 'Alliance' : 'Corporation';
                 }
-                method = 'watchlist' + suffix + type + upperCaseFirst(action);
+                method = `watchlist${suffix}${type}${upperCaseFirst(action)}`;
                 param1 = this.typeId;
                 param2 = id;
             }
@@ -605,7 +603,3 @@ function lowerCaseFirst(string) {
 }
 
 </script>
-
-<style scoped>
-
-</style>

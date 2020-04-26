@@ -111,7 +111,7 @@
 </template>
 
 <script>
-    import {CorporationApi, SettingsApi} from 'neucore-js-client';
+import {CorporationApi, SettingsApi} from 'neucore-js-client';
 
 export default {
     props: {

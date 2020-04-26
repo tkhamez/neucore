@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Entity;
 
@@ -268,6 +270,16 @@ class SystemVariable implements \JsonSerializable
      * Scope = public
      */
     const CUSTOMIZATION_FOOTER_TEXT = 'customization_footer_text';
+
+    const TOKEN_ID = 'id';
+
+    const TOKEN_ACCESS = 'access';
+
+    const TOKEN_REFRESH = 'refresh';
+
+    const TOKEN_EXPIRES = 'expires';
+
+    const TOKEN_SCOPES = 'scopes';
 
     /**
      * Variable name.

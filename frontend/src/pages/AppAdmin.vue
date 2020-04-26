@@ -64,8 +64,8 @@
             </ul>
 
             <!--suppress HtmlUnknownTag -->
-            <admin v-cloak v-if="appId" ref="admin" 
-                   :player="player" :contentType="contentType" :typeId="appId" :settings="settings" 
+            <admin v-cloak v-if="appId" ref="admin"
+                   :player="player" :contentType="contentType" :typeId="appId" :settings="settings"
                    :type="'App'"></admin>
 
         </div>
@@ -75,7 +75,7 @@
 
 <script>
 import $ from 'jquery';
-import { AppApi } from 'neucore-js-client';
+import {AppApi} from 'neucore-js-client';
 
 import Edit  from '../components/GroupAppEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
@@ -126,7 +126,7 @@ export default {
         },
 
         appCreated: function(newAppId) {
-            window.location.hash = '#AppAdmin/' + newAppId;
+            window.location.hash = `#AppAdmin/${newAppId}`;
             this.getApps();
         },
 

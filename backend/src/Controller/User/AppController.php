@@ -453,8 +453,8 @@ class AppController extends BaseController
         }
 
         // check if logged in user is manager of this app or has the role app-admin
-        $player = $this->getUser($uas)->getPlayer();
-        if (! $player->hasRole(Role::APP_ADMIN) && ! $app->isManager($player)) {
+        $authedPlayer = $this->getUser($uas)->getPlayer();
+        if (! $authedPlayer->hasRole(Role::APP_ADMIN) && ! $app->isManager($authedPlayer)) {
             return $this->response->withStatus(403);
         }
 
@@ -716,46 +716,46 @@ class AppController extends BaseController
         return $this->flushAndReturn(200, $secret);
     }
 
-    private function findAppAndPlayer(string $id, string $player): bool
+    private function findAppAndPlayer(string $id, string $playerId): bool
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $player);
-        if (! $this->findApp($id) || $player === null) {
+        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        if (! $this->findApp($id) || $playerEntity === null) {
             return false;
         }
-        $this->player = $player;
+        $this->player = $playerEntity;
 
         return true;
     }
 
-    private function findAppAndGroup(string $id, string $gid): bool
+    private function findAppAndGroup(string $appId, string $groupId): bool
     {
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $gid);
-        if (! $this->findApp($id) || $group === null) {
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        if (! $this->findApp($appId) || $groupEntity === null) {
             return false;
         }
-        $this->group = $group;
+        $this->group = $groupEntity;
 
         return true;
     }
 
     private function findAppAndRole(string $id, string $name): bool
     {
-        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
-        if (! $this->findApp($id) || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
+        $roleEntity = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
+        if (! $this->findApp($id) || ! $roleEntity || ! in_array($roleEntity->getName(), $this->availableRoles)) {
             return false;
         }
-        $this->role = $role;
+        $this->role = $roleEntity;
 
         return true;
     }
 
     private function findApp(string $id): bool
     {
-        $application = $this->repositoryFactory->getAppRepository()->find((int) $id);
-        if (! $application) {
+        $applicationEntity = $this->repositoryFactory->getAppRepository()->find((int) $id);
+        if (! $applicationEntity) {
             return false;
         }
-        $this->application = $application;
+        $this->application = $applicationEntity;
 
         return true;
     }

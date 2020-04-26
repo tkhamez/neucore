@@ -185,7 +185,7 @@ export default {
         },
 
         groupCreated: function(newGroupId) {
-            window.location.hash = '#GroupAdmin/' + newGroupId;
+            window.location.hash = `#GroupAdmin/${newGroupId}`;
             this.getGroups();
         },
 
@@ -247,7 +247,6 @@ function fetchMembers(vm) {
         if (error) {
             return;
         }
-        console.log(data);
         vm.members = data;
     });
 }

@@ -4,6 +4,6 @@
     "require": {
         "bravecollective/neucore-api": "^1.0",
         "eveseat/eseye": "^1.0",
-        "tkhamez/swagger-eve-php": "^3.0"
+        "tkhamez/swagger-eve-php": "^4.0"
     }
 }

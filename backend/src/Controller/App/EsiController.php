@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\App;
 
@@ -7,6 +9,7 @@ use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
@@ -23,6 +26,8 @@ use Psr\Log\LoggerInterface;
 class EsiController extends BaseController
 {
     const ERROR_MESSAGE_PREFIX = 'App\EsiController->esiV1()';
+
+    const PARAM_DATASOURCE = 'datasource';
 
     /**
      * @var LoggerInterface
@@ -296,7 +301,7 @@ class EsiController extends BaseController
             return $this->response->withStatus(400, 'Public ESI routes are not allowed.');
         }
 
-        $characterId = $this->getQueryParam($request, 'datasource', '');
+        $characterId = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
         if (empty($characterId)) {
             return $this->response->withStatus(
                 400,
@@ -355,7 +360,7 @@ class EsiController extends BaseController
             // for URLs like /api/app/v1/esi/v3/characters/96061222/assets/?datasource=96061222&page=1
             $esiPath = $path;
             foreach ($request->getQueryParams() as $key => $value) {
-                if ($key !== 'datasource') {
+                if ($key !== self::PARAM_DATASOURCE) {
                     $esiParams[] = $key . '=' . $value;
                 }
             }
@@ -387,8 +392,10 @@ class EsiController extends BaseController
         string $method,
         string $body = null
     ): ResponseInterface {
-        $url = $this->config['eve']['esi_host'] . $esiPath.
-            (strpos($esiPath, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'] .
+        $config = $this->config['eve'];
+        $url = $config['esi_host'] . $esiPath.
+            (strpos($esiPath, '?') ? '&' : '?') .
+            self::PARAM_DATASOURCE . '=' . $config['datasource'] .
             (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
         $options = [
             'headers' => ['Authorization' => 'Bearer ' . $token],
@@ -418,7 +425,7 @@ class EsiController extends BaseController
         $body = null;
         try {
             $body = $esiResponse->getBody()->getContents();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $e->getMessage());
         }
         if ($body !== null) {

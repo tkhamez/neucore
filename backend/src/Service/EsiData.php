@@ -10,6 +10,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiLocation;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
@@ -139,7 +140,7 @@ class EsiData
             $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
 
@@ -191,7 +192,7 @@ class EsiData
                     $affiliations = array_merge($affiliations, $result);
                 }
             } catch (\Exception $e) {
-                $this->log->error($e->getMessage(), ['exception' => $e]);
+                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             }
         }
         return $affiliations;
@@ -223,7 +224,7 @@ class EsiData
             $eveCorp = $this->esiApiFactory->getCorporationApi()->getCorporationsCorporationId($id, $this->datasource);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
 
@@ -282,7 +283,7 @@ class EsiData
             $eveAlli = $this->esiApiFactory->getAllianceApi()->getAlliancesAllianceId($id, $this->datasource);
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
 
@@ -324,7 +325,7 @@ class EsiData
                     $names = array_merge($names, $result);
                 }
             } catch (\Exception $e) {
-                $this->log->error($e->getMessage(), ['exception' => $e]);
+                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             }
         }
         return $names;
@@ -346,7 +347,7 @@ class EsiData
             if (in_array($e->getCode(), [401, 403])) {
                 $this->log->info("EsiData::fetchStructure: ". $e->getCode() . " Unauthorized/Forbidden: $id");
             } else {
-                $this->log->error($e->getMessage(), ['exception' => $e]);
+                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             }
             return null;
         }
@@ -390,7 +391,7 @@ class EsiData
             $members = $this->esiApiFactory->getCorporationApi($accessToken)
                 ->getCorporationsCorporationIdMembers($id, $this->datasource);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $members = [];
         }
 

@@ -1,19 +1,22 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Brave\Sso\Basics\EveAuthentication;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
+use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
 use Neucore\Entity\SystemVariable;
-use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
-use Brave\Sso\Basics\EveAuthentication;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
+use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
@@ -22,6 +25,16 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 class MemberTracking
 {
     use EsiRateLimited;
+
+    const VALUE_CHARACTER_ID = 'character_id';
+
+    const VALUE_CHARACTER_NAME = 'character_name';
+
+    const VALUE_CORPORATION_ID = 'corporation_id';
+
+    const VALUE_CORPORATION_NAME = 'corporation_name';
+
+    const VALUE_CORPORATION_TICKER = 'corporation_ticker';
 
     /**
      * @var LoggerInterface
@@ -89,7 +102,7 @@ class MemberTracking
             $char = $this->esiApiFactory->getCharacterApi()
                 ->getCharactersCharacterId((int) $eveAuth->getCharacterId(), $this->datasource);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
 
@@ -132,15 +145,15 @@ class MemberTracking
             return false;
         }
         $data = \json_decode($variable->getValue(), true);
-        if (! isset($data['character_id'])) {
+        if (! isset($data[self::VALUE_CHARACTER_ID])) {
             return false;
         }
 
         try {
             $char = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId($data['character_id'], $this->datasource);
+                ->getCharactersCharacterId($data[self::VALUE_CHARACTER_ID], $this->datasource);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
 
@@ -149,10 +162,10 @@ class MemberTracking
             return false;
         }
 
-        $data['character_name'] = $char->getName();
-        $data['corporation_id'] = $corporation->getId();
-        $data['corporation_name'] = $corporation->getName();
-        $data['corporation_ticker'] = $corporation->getTicker();
+        $data[self::VALUE_CHARACTER_NAME] = $char->getName();
+        $data[self::VALUE_CORPORATION_ID] = $corporation->getId();
+        $data[self::VALUE_CORPORATION_NAME] = $corporation->getName();
+        $data[self::VALUE_CORPORATION_TICKER] = $corporation->getTicker();
 
         $variable->setValue((string) \json_encode($data));
 
@@ -173,11 +186,11 @@ class MemberTracking
 
         $characterData = \json_decode($characterVar ? $characterVar->getValue() : '', true);
         $tokenData = \json_decode($tokenVar ? $tokenVar->getValue() : '', true);
-        if (! isset($characterData['character_id']) || ! isset($tokenData['access'])) {
+        if (! isset($characterData[self::VALUE_CHARACTER_ID]) || ! isset($tokenData[SystemVariable::TOKEN_ACCESS])) {
             return null;
         }
 
-        $tokenData['character_id'] = $characterData['character_id'];
+        $tokenData[self::VALUE_CHARACTER_ID] = $characterData[self::VALUE_CHARACTER_ID];
 
         return $tokenData;
     }
@@ -191,19 +204,19 @@ class MemberTracking
     {
         try {
             $token = $this->oauthToken->refreshAccessToken(new AccessToken([
-                'access_token' => $tokenData['access'],
-                'refresh_token' => $tokenData['refresh'],
-                'expires' => (int) $tokenData['expires'],
+                OAuthToken::OPTION_ACCESS_TOKEN => $tokenData[SystemVariable::TOKEN_ACCESS],
+                OAuthToken::OPTION_REFRESH_TOKEN => $tokenData[SystemVariable::TOKEN_REFRESH],
+                OAuthToken::OPTION_EXPIRES => (int) $tokenData[SystemVariable::TOKEN_EXPIRES],
             ]));
         } catch (IdentityProviderException $e) {
             return null;
         }
 
         return new AccessToken([
-            'access_token' => $token->getToken(),
-            'refresh_token' => $token->getRefreshToken(),
-            'expires' => $token->getExpires(),
-            'resource_owner_id' => $tokenData['character_id'],
+            OAuthToken::OPTION_ACCESS_TOKEN => $token->getToken(),
+            OAuthToken::OPTION_REFRESH_TOKEN => $token->getRefreshToken(),
+            OAuthToken::OPTION_EXPIRES => $token->getExpires(),
+            OAuthToken::OPTION_RESOURCE_OWNER_ID => $tokenData[self::VALUE_CHARACTER_ID],
         ]);
     }
 
@@ -213,7 +226,7 @@ class MemberTracking
         try {
             $roles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->datasource);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
 
@@ -236,7 +249,7 @@ class MemberTracking
         try {
             $memberTracking = $corpApi->getCorporationsCorporationIdMembertracking($corporationId, $this->datasource);
         } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
 
@@ -363,13 +376,11 @@ class MemberTracking
         }
 
         // if ESI failed, create location db entry with ID only
-        if ($location === null) {
-            if ($this->repositoryFactory->getEsiLocationRepository()->find($structureId) === null) {
-                $location = new EsiLocation();
-                $location->setId($structureId);
-                $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
-                $this->entityManager->persist($location);
-            }
+        if ($location === null && $this->repositoryFactory->getEsiLocationRepository()->find($structureId) === null) {
+            $location = new EsiLocation();
+            $location->setId($structureId);
+            $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+            $this->entityManager->persist($location);
         }
     }
 
@@ -455,8 +466,8 @@ class MemberTracking
             $number = (int) explode('_', $existingDirector->getName())[2];
             $maxNumber = max($maxNumber, $number);
             $value = \json_decode($existingDirector->getValue(), true);
-            if ($value && isset($value['character_id'])) {
-                $existingDirectors[$value['character_id']] = [
+            if ($value && isset($value[self::VALUE_CHARACTER_ID])) {
+                $existingDirectors[$value[self::VALUE_CHARACTER_ID]] = [
                     'system_variable' => $existingDirector,
                     'number' => $number
                 ];
@@ -481,18 +492,18 @@ class MemberTracking
             $this->entityManager->persist($directorToken);
         }
         $directorChar->setValue((string) json_encode([
-            'character_id' => $authCharacterId,
-            'character_name' => $eveAuth->getCharacterName(),
-            'corporation_id' => $corporation->getId(),
-            'corporation_name' => $corporation->getName(),
-            'corporation_ticker' => $corporation->getTicker()
+            self::VALUE_CHARACTER_ID => $authCharacterId,
+            self::VALUE_CHARACTER_NAME => $eveAuth->getCharacterName(),
+            self::VALUE_CORPORATION_ID => $corporation->getId(),
+            self::VALUE_CORPORATION_NAME => $corporation->getName(),
+            self::VALUE_CORPORATION_TICKER => $corporation->getTicker()
         ]));
         $directorToken->setScope(SystemVariable::SCOPE_BACKEND);
         $directorToken->setValue((string) json_encode([
-            'access' => $eveAuth->getToken()->getToken(),
-            'refresh' => $eveAuth->getToken()->getRefreshToken(),
-            'expires' => $eveAuth->getToken()->getExpires(),
-            'scopes' => $eveAuth->getScopes(),
+            SystemVariable::TOKEN_ACCESS => $eveAuth->getToken()->getToken(),
+            SystemVariable::TOKEN_REFRESH => $eveAuth->getToken()->getRefreshToken(),
+            SystemVariable::TOKEN_EXPIRES => $eveAuth->getToken()->getExpires(),
+            SystemVariable::TOKEN_SCOPES => $eveAuth->getScopes(),
         ]));
 
         return $this->entityManager->flush();

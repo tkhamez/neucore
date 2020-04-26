@@ -1,5 +1,7 @@
 #!/usr/bin/env php
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 $swagger = file_get_contents('https://esi.evetech.net/latest/swagger.json');
 $def = json_decode($swagger);

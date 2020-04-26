@@ -35,13 +35,8 @@
 </template>
 
 <script>
-import { ApiClient } from 'neucore-js-client';
-import { AuthApi } from 'neucore-js-client';
-import { CharacterApi } from 'neucore-js-client';
-import { PlayerApi } from 'neucore-js-client';
-import { SettingsApi } from 'neucore-js-client';
+import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
-
 import NavBar from './components/NavBar.vue';
 import Home from './pages/Home.vue';
 import Groups from './pages/Groups.vue';
@@ -131,9 +126,7 @@ export default {
     created: function() {
         // configure neucore-js-client
         ApiClient.instance.basePath =
-            window.location.protocol + "//" +
-            window.location.hostname + ':' +
-            window.location.port + '/api';
+            `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api`;
         ApiClient.instance.plugins = [superAgentPlugin(this)];
 
         // initial route
@@ -176,7 +169,7 @@ export default {
     methods: {
         showMessage: function(text, type, timeout) {
             this.messageTxt = text;
-            this.messageType = 'alert-' + type;
+            this.messageType = `alert-${type}`;
             if (timeout) {
                 const vm = this;
                 window.setTimeout(function() {
@@ -236,7 +229,7 @@ export default {
                     return;
                 }
                 const settings = {};
-                for (let variable of data) {
+                for (const variable of data) {
                     settings[variable.name] = variable.value;
                 }
                 vm.$root.settings = settings; // watch() will work this way

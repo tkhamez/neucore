@@ -40,9 +40,7 @@
 
 <script>
 import _ from 'lodash';
-import { AllianceApi } from 'neucore-js-client';
-import { CorporationApi } from 'neucore-js-client';
-import { SettingsApi } from 'neucore-js-client';
+import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
 import Customization from './SystemSettings--Customization.vue';
 import Directors from './SystemSettings--Directors.vue';
 import Features from './SystemSettings--Features.vue';
@@ -143,9 +141,8 @@ export default {
         buildIdArray (value, list) {
             const result = [];
             for (let id of value.split(',')) {
-                id = parseInt(id);
-                for (let item of list) {
-                    if (item.id === id) {
+                for (const item of list) {
+                    if (item.id === parseInt(id)) {
                         result.push(item);
                         break;
                     }

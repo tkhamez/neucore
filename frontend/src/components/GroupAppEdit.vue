@@ -97,8 +97,7 @@ Modal windows to create, delete and edit groups and apps
 
 <script>
 import $ from 'jquery';
-import { AppApi } from 'neucore-js-client';
-import { GroupApi } from 'neucore-js-client';
+import {AppApi, GroupApi} from 'neucore-js-client';
 
 export default {
     props: {
@@ -159,14 +158,14 @@ export default {
 
             api['create'].apply(api, [this.newName, function(error, data, response) {
                 if (response.status === 409) {
-                    vm.message('A '+ vm.type +' with this name already exists.', 'error');
+                    vm.message(`A ${vm.type} with this name already exists.`, 'error');
                 } else if (response.status === 400) {
-                    vm.message('Invalid '+ vm.type +' name.', 'error');
+                    vm.message(`Invalid ${vm.type} name.`, 'error');
                 } else if (error) {
-                    vm.message('Error creating ' + vm.type, 'error');
+                    vm.message(`Error creating ${vm.type}`, 'error');
                 } else {
                     $('#createModal').modal('hide');
-                    vm.message(vm.type + ' created.', 'success');
+                    vm.message(`${vm.type} created.`, 'success');
                     vm.$emit('created', data.id);
                 }
             }]);
@@ -185,10 +184,10 @@ export default {
 
             api['callDelete'].apply(api, [this.item.id, function(error) {
                 if (error) {
-                    vm.message('Error deleting ' + vm.type, 'error');
+                    vm.message(`Error deleting ${vm.type}`, 'error');
                 } else {
                     $('#deleteModal').modal('hide');
-                    vm.message(vm.type + ' deleted.', 'success');
+                    vm.message(`${vm.type} deleted.`, 'success');
                     vm.$emit('deleted');
                 }
             }]);
@@ -207,13 +206,13 @@ export default {
 
             api['rename'].apply(api, [this.item.id, this.item.name, function(error, data, response) {
                 if (response.status === 409) {
-                    vm.message('A '+ vm.type +' with this name already exists.', 'error');
+                    vm.message(`A ${vm.type} with this name already exists.`, 'error');
                 } else if (response.status === 400) {
-                    vm.message('Invalid '+ vm.type +' name.', 'error');
+                    vm.message(`Invalid ${vm.type} name.`, 'error');
                 } else if (error) {
-                    vm.message('Error creating ' + vm.type, 'error');
+                    vm.message(`Error creating ${vm.type}`, 'error');
                 } else {
-                    vm.message(vm.type + ' renamed.', 'success');
+                    vm.message(`${vm.type} renamed.`, 'success');
                     vm.$emit('itemChange');
                     vm.$root.$emit('playerChange');
                 }
@@ -235,7 +234,3 @@ export default {
     },
 }
 </script>
-
-<style scoped>
-
-</style>

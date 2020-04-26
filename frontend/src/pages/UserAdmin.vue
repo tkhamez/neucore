@@ -475,7 +475,7 @@ export default {
             if (! this.playerEdit) {
                 return false;
             }
-            for (let char of this.playerEdit.characters) {
+            for (const char of this.playerEdit.characters) {
                 if (char.id === charId) {
                     return true;
                 }
@@ -484,7 +484,7 @@ export default {
         },
 
         loadPlayer: function(playerId) {
-            window.location.hash = '#UserAdmin/' + playerId;
+            window.location.hash = `#UserAdmin/${playerId}`;
         },
 
         onSearchResult: function(result) {

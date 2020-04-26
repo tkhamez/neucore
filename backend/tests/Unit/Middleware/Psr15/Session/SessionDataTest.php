@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Middleware\Psr15\Session;
 
+use Neucore\Exception\RuntimeException;
 use Neucore\Middleware\Psr15\Session\SessionData;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
@@ -28,7 +31,7 @@ class SessionDataTest extends TestCase
 
     public function testGetThrowsExceptionWithoutSession()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Session not started.');
 
         $sd = new SessionData();
@@ -37,7 +40,7 @@ class SessionDataTest extends TestCase
 
     public function testSetThrowsExceptionForReadOnlyOrNotStartedSession()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Session is read-only or not started.');
 
         $sd = new SessionData();
@@ -46,7 +49,7 @@ class SessionDataTest extends TestCase
 
     public function testDeleteThrowsExceptionForReadOnlySession()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Session is read-only.');
 
         $sd = new SessionData();
@@ -55,7 +58,7 @@ class SessionDataTest extends TestCase
 
     public function testClearThrowsExceptionForReadOnlySession()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Session is read-only.');
 
         $sd = new SessionData();

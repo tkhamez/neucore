@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Slim;
 
+use Neucore\Log\Context;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 
@@ -28,7 +29,7 @@ class ErrorHandler extends \Slim\Handlers\ErrorHandler
 
         $context = [];
         if ($logErrorDetails) {
-            $context['exception'] = $this->exception;
+            $context[Context::EXCEPTION] = $this->exception;
         }
 
         $this->logger->error($this->exception->getMessage() . $additionalMessage, $context);

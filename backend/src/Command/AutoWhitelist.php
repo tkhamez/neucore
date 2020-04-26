@@ -26,13 +26,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AutoWhitelist extends Command
 {
     use LogOutput;
-
     use EsiRateLimited;
+
+    const KEY_TOKEN = 'token';
+
+    const KEY_IDS = 'ids';
 
     /**
      * @var Watchlist
      */
-    private $watchlist;
+    private $watchlistService;
 
     /**
      * @var EsiData
@@ -92,7 +95,7 @@ class AutoWhitelist extends Command
         $this->logOutput($logger);
         $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
 
-        $this->watchlist = $watchlist;
+        $this->watchlistService = $watchlist;
         $this->esiData = $esiData;
         $this->objectManager = $objectManager;
         $this->tokenService = $tokenService;
@@ -129,8 +132,8 @@ class AutoWhitelist extends Command
             return 0;
         }
 
-        $players = $this->watchlist->getRedFlagList($id, true, true); // include blacklist and whitelist
-        $watchedCorporationIds = $this->watchlist->getCorporationIds($id, 'alliance', 'corporation');
+        $players = $this->watchlistService->getRedFlagList($id, true, true); // include blacklist and whitelist
+        $watchedCorporationIds = $this->watchlistService->getCorporationIds($id, 'alliance', 'corporation');
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
 
@@ -189,15 +192,15 @@ class AutoWhitelist extends Command
                 $corporations[$corporationId] = $player->getId();
 
                 if (! isset($accountsData[$playerId][$corporationId])) {
-                    $accountsData[$playerId][$corporationId] = ['ids' => [], 'token' => null];
+                    $accountsData[$playerId][$corporationId] = [self::KEY_IDS => [], self::KEY_TOKEN => null];
                 }
-                $accountsData[$playerId][$corporationId]['ids'][] = $character->getId();
+                $accountsData[$playerId][$corporationId][self::KEY_IDS][] = $character->getId();
                 if (
-                    $accountsData[$playerId][$corporationId]['token'] === null &&
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] === null &&
                     $character->getValidToken() &&
                     in_array(Api::SCOPE_MEMBERSHIP, $character->getScopesFromToken())
                 ) {
-                    $accountsData[$playerId][$corporationId]['token'] = $character->createAccessToken();
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] = $character->createAccessToken();
                 }
             }
             if (count($accountsData[$playerId]) === 0) {
@@ -220,14 +223,14 @@ class AutoWhitelist extends Command
         foreach ($accountsData as $corporations) {
             $this->numCorporations ++;
             foreach ($corporations as $corporationId => $characters) {
-                if ($characters['token'] === null) {
+                if ($characters[self::KEY_TOKEN] === null) {
                     continue;
                 }
 
                 $this->checkErrorLimit();
 
                 try {
-                    $token = $this->tokenService->refreshAccessToken($characters['token']);
+                    $token = $this->tokenService->refreshAccessToken($characters[self::KEY_TOKEN]);
                 } catch (IdentityProviderException $e) {
                     continue;
                 }
@@ -237,7 +240,7 @@ class AutoWhitelist extends Command
                 if (count($members) > 0) { // <1 would be an ESI error
                     $this->numCorporationsChecked ++;
 
-                    if (count(array_diff($members, $characters['ids'])) === 0) {
+                    if (count(array_diff($members, $characters[self::KEY_IDS])) === 0) {
                         // all members are on this account
                         $whitelist[] = $corporationId;
                         $this->numCorporationsWhitelisted ++;

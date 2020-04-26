@@ -18,7 +18,7 @@ Input element to search for characters
 
 <script>
 import _  from 'lodash';
-import { CharacterApi } from 'neucore-js-client';
+import {CharacterApi} from 'neucore-js-client';
 
 export default {
     data: function() {
@@ -55,7 +55,3 @@ const findCharacter = _.debounce((vm) => {
     });
 }, 250);
 </script>
-
-<style scoped>
-
-</style>

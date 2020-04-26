@@ -28,6 +28,10 @@ use Psr\Log\LoggerInterface;
  */
 class PlayerController extends BaseController
 {
+    const COLUMN_PLAYER = 'player';
+
+    const COLUMN_GROUP = 'group';
+
     /**
      * @var LoggerInterface
      */
@@ -221,8 +225,8 @@ class PlayerController extends BaseController
 
         // update existing or create new application
         $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
-            'player' => $player->getId(),
-            'group' => $group->getId()
+            self::COLUMN_PLAYER => $player->getId(),
+            self::COLUMN_GROUP => $group->getId()
         ]);
         if (! $groupApplication) {
             $groupApplication = new GroupApplication();
@@ -268,8 +272,10 @@ class PlayerController extends BaseController
      */
     public function removeApplication(string $gid): ResponseInterface
     {
-        $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $this->getUser($this->userAuth)->getPlayer()->getId(), 'group' => (int) $gid]);
+        $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()->findBy([
+            self::COLUMN_PLAYER => $this->getUser($this->userAuth)->getPlayer()->getId(),
+            self::COLUMN_GROUP => (int) $gid
+        ]);
 
         if (count($groupApplications) === 0) {
             return $this->response->withStatus(404);
@@ -304,8 +310,9 @@ class PlayerController extends BaseController
      */
     public function showApplications(): ResponseInterface
     {
-        $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()
-            ->findBy(['player' => $this->getUser($this->userAuth)->getPlayer()->getId()]);
+        $groupApplications = $this->repositoryFactory->getGroupApplicationRepository()->findBy([
+            self::COLUMN_PLAYER => $this->getUser($this->userAuth)->getPlayer()->getId()
+        ]);
 
         return $this->withJson($groupApplications);
     }

@@ -10,6 +10,7 @@ use Neucore\Entity\Character;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -17,6 +18,14 @@ use Psr\Log\LoggerInterface;
  */
 class OAuthToken
 {
+    const OPTION_ACCESS_TOKEN = 'access_token';
+
+    const OPTION_REFRESH_TOKEN = 'refresh_token';
+
+    const OPTION_EXPIRES = 'expires';
+
+    const OPTION_RESOURCE_OWNER_ID = 'resource_owner_id';
+
     /**
      * @var GenericProvider
      */
@@ -68,15 +77,15 @@ class OAuthToken
         $newToken = null;
         if ($existingToken->getExpires() && $existingToken->hasExpired()) {
             try {
-                $newToken = $this->oauth->getAccessToken('refresh_token', [
-                    'refresh_token' => (string) $existingToken->getRefreshToken()
+                $newToken = $this->oauth->getAccessToken(self::OPTION_REFRESH_TOKEN, [
+                    self::OPTION_REFRESH_TOKEN => (string) $existingToken->getRefreshToken()
                 ]);
             } catch (\Exception $e) {
                 if ($e instanceof IdentityProviderException && $e->getMessage() === 'invalid_grant') {
                     // invalid_grant = e. g. invalid or revoked refresh token
                     throw $e;
                 } else {
-                    $this->log->error($e->getMessage(), ['exception' => $e]);
+                    $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
                 }
             }
         }
@@ -99,11 +108,11 @@ class OAuthToken
                 'auth' => [$conf['client_id'], $conf['secret_key'], 'basic'],
                 'json' => [
                     'token'           => $existingToken->getRefreshToken(),
-                    'token_type_hint' => 'refresh_token'
+                    'token_type_hint' => self::OPTION_REFRESH_TOKEN
                 ],
             ]);
         } catch (GuzzleException $e) {
-            $this->log->error($e->getMessage(), ['exception' => $e]);
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
 

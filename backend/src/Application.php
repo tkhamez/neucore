@@ -26,6 +26,8 @@ use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateCorporations;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
+use Neucore\Exception\RuntimeException;
+use Neucore\Log\Context;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\Session\NonBlockingSession;
@@ -125,7 +127,7 @@ class Application
      *
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
      * @param bool $forceDevMode Only used in unit tests.
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @return Config
      */
     public function loadSettings(bool $unitTest = false, $forceDevMode = false): Config
@@ -144,7 +146,7 @@ class Application
         }
 
         if (getenv('BRAVECORE_APP_ENV') === false) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'BRAVECORE_APP_ENV environment variable is not defined. '.
                 'You need to define environment variables for configuration '.
                 'or load variables from a .env file (see .env.dist file).'
@@ -370,13 +372,13 @@ class Application
         /** @noinspection PhpIncludeInspection */
         $routes = include self::ROOT_DIR . '/config/routes.php';
 
-        foreach ($routes as $pattern => $conf) {
-            if (isset($conf[0])) { // e. g. ['GET', 'method']
-                $config = [$conf[0] => $conf[1]];
+        foreach ($routes as $pattern => $configuration) {
+            if (isset($configuration[0])) { // e. g. ['GET', 'method']
+                $routeConfig = [$configuration[0] => $configuration[1]];
             } else { // e. g. ['GET' => 'method', 'POST' => 'method']
-                $config = $conf;
+                $routeConfig = $configuration;
             }
-            foreach ($config as $method => $callable) {
+            foreach ($routeConfig as $method => $callable) {
                 if ($method === 'GET') {
                     $app->get($pattern, $callable);
                 } elseif ($method === 'POST') {
@@ -424,7 +426,7 @@ class Application
             }
         }
         if ($log) {
-            $log->error($e->getMessage(), ['exception' => $e]);
+            $log->error($e->getMessage(), [Context::EXCEPTION => $e]);
         } else {
             error_log((string) $e);
         }

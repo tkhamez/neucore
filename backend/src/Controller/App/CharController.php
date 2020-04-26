@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\App;
 
@@ -9,6 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class CharController extends BaseController
 {
+    const ERROR_CHARACTER_NOT_FOUND = 'Character not found.';
+
     /**
      * @OA\Get(
      *     path="/app/v1/main/{cid}",
@@ -99,7 +103,7 @@ class CharController extends BaseController
         $this->response = $this->mainV1($cid);
 
         if ($this->response->getStatusCode() === 404) {
-            $this->response = $this->response->withStatus(404, 'Character not found.');
+            $this->response = $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
         return $this->response;
@@ -140,7 +144,7 @@ class CharController extends BaseController
     {
         $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($character === null) {
-            return $this->response->withStatus(404, 'Character not found.');
+            return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
         return $this->withJson($character->getPlayer()->jsonSerialize(true));
@@ -181,7 +185,7 @@ class CharController extends BaseController
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
-            return $this->response->withStatus(404, 'Character not found.');
+            return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
         return $this->withJson($char->getPlayer()->getCharacters());
@@ -263,7 +267,7 @@ class CharController extends BaseController
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
-            return $this->response->withStatus(404, 'Character not found.');
+            return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
         $result = [];
@@ -310,7 +314,7 @@ class CharController extends BaseController
     {
         $char = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
         if ($char === null) {
-            return $this->response->withStatus(404, 'Character not found.');
+            return $this->response->withStatus(404, self::ERROR_CHARACTER_NOT_FOUND);
         }
 
         $result = [];

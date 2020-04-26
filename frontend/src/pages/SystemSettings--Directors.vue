@@ -69,10 +69,10 @@ export default {
 
         // login URL for director chars
         let port = '';
-        if (location.port !== "" && location.port !== 80 && location.port !== 443) {
-            port = ':' + location.port;
+        if (location.port !== "" && `${location.port}` !== '80' && `${location.port}` !== '443') {
+            port = `:${location.port}`;
         }
-        this.loginUrlDirector = location.protocol + "//" + location.hostname + port + "/login-director"
+        this.loginUrlDirector = `${location.protocol}//${location.hostname}${port}/login-director`
     },
 
     watch: {

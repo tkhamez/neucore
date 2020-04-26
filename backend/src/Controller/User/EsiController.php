@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Exception\RuntimeException;
 use Neucore\Service\Config;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\OAuthToken;
@@ -115,7 +116,7 @@ class EsiController extends BaseController
             [
                 $character->getId(),
                 $corp ? $corp->getId() : '',
-                $corp ? ($corp->getAlliance() !== null ? $corp->getAlliance()->getId() : '') : ''
+                $corp && $corp->getAlliance() !== null ? $corp->getAlliance()->getId() : ''
             ],
             $route
         );
@@ -138,7 +139,7 @@ class EsiController extends BaseController
         $json = null;
         try {
             $json = $response->getBody()->getContents();
-        } catch (\RuntimeException $re) {
+        } catch (RuntimeException $re) {
             return $this->prepareResponse($re->getMessage(), $response, 400);
         }
         $body = null;
@@ -173,13 +174,16 @@ class EsiController extends BaseController
 
         $remain = 'X-Esi-Error-Limit-Remain';
         $reset = 'X-Esi-Error-Limit-Reset';
+        $expires = 'Expires';
+        $pages = 'X-Pages';
+        $warning = 'warning';
 
         return [
-            'Expires' => $response->hasHeader('Expires') ? $response->getHeader('Expires')[0] : null,
+            $expires => $response->hasHeader($expires) ? $response->getHeader($expires)[0] : null,
             $remain => $response->hasHeader($remain) ? $response->getHeader($remain)[0] : null,
             $reset => $response->hasHeader($reset) ? $response->getHeader($reset)[0] : null,
-            'X-Pages' => $response->hasHeader('X-Pages') ? $response->getHeader('X-Pages')[0] : null,
-            'warning' => $response->hasHeader('warning') ? $response->getHeader('warning')[0] : null,
+            $pages => $response->hasHeader($pages) ? $response->getHeader($pages)[0] : null,
+            $warning => $response->hasHeader($warning) ? $response->getHeader($warning)[0] : null,
         ];
     }
 }

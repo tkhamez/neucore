@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -23,6 +25,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SettingsController extends BaseController
 {
+    const COLUMN_NAME = 'name';
+
+    const COLUMN_VALUE = 'value';
+
     /**
      * @var array
      */
@@ -63,14 +69,14 @@ class SettingsController extends BaseController
             $scopes = [SystemVariable::SCOPE_PUBLIC];
         }
 
-        $result = $repository->findBy(['scope' => $scopes], ['name' => 'ASC']);
+        $result = $repository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
         $result = array_merge($result, [
             [
-                'name' => 'esiDataSource',
-                'value' => $config['eve']['datasource']
+                self::COLUMN_NAME => 'esiDataSource',
+                self::COLUMN_VALUE => $config['eve']['datasource']
             ], [
-                'name' => 'esiHost',
-                'value' => $config['eve']['esi_host']
+                self::COLUMN_NAME => 'esiHost',
+                self::COLUMN_VALUE => $config['eve']['esi_host']
             ]
         ]);
 
@@ -149,7 +155,7 @@ class SettingsController extends BaseController
                 $variable = null;
             }
         } else {
-            $variable->setValue((string) $this->getBodyParam($request, 'value'));
+            $variable->setValue((string) $this->getBodyParam($request, self::COLUMN_VALUE));
         }
 
         if (! $this->objectManager->flush()) {

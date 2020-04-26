@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { AppApi } from 'neucore-js-client';
+import {AppApi} from 'neucore-js-client';
 
 export default {
     props: {
@@ -145,7 +145,7 @@ export default {
          */
         isManagerOf(appId) {
             let isManager = false;
-            for (let app of this.player.managerApps) {
+            for (const app of this.player.managerApps) {
                 if (app.id === appId) {
                     isManager = true;
                 }

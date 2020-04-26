@@ -72,8 +72,7 @@
 
 <script>
 import $ from 'jquery';
-import { GroupApi } from 'neucore-js-client';
-import { PlayerApi } from 'neucore-js-client';
+import {GroupApi, PlayerApi} from 'neucore-js-client';
 
 export default {
     props: {
@@ -164,6 +163,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-</style>

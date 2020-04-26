@@ -32,10 +32,10 @@
                                  placeholder="Select route"></multiselect>
                     <input class="form-control" v-model="esiRoute" placeholder="route" id="esiRoute">
                     <small class="form-text text-muted">
-                        Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically 
-                        replaced with the corresponding IDs of the selected character, other placeholders 
+                        Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically
+                        replaced with the corresponding IDs of the selected character, other placeholders
                         must be replaced manually.<br>
-                        If the result contains an "X-Pages" header, you can request the other pages by 
+                        If the result contains an "X-Pages" header, you can request the other pages by
                         adding "?page=2" etc. to the route.
                     </small>
                 </div>
@@ -54,8 +54,7 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
-import { ESIApi } from 'neucore-js-client';
-import { CharacterApi } from 'neucore-js-client';
+import {ESIApi, CharacterApi} from 'neucore-js-client';
 
 export default {
     data: function() {
@@ -129,7 +128,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-
-</style>

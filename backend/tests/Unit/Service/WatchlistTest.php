@@ -154,23 +154,35 @@ class WatchlistTest extends TestCase
 
     public function testGetList()
     {
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'group')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'alliance')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'corporation')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'exemption')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'blacklistCorporations')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'blacklistAlliance')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'whitelistCorporation')));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, 'whitelistAlliance')));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::GROUP)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::ALLIANCE)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::CORPORATION)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::EXEMPTION)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::BLACKLIST_CORPORATION)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::BLACKLIST_ALLIANCE)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::WHITELIST_CORPORATION)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::WHITELIST_ALLIANCE)));
 
-        $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, 'group')[0]);
-        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, 'alliance')[0]);
-        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, 'corporation')[0]);
-        $this->assertInstanceOf(Player::class, self::$watchlistService->getList(1, 'exemption')[0]);
-        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, 'blacklistCorporations')[0]);
-        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, 'blacklistAlliance')[0]);
-        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, 'whitelistCorporation')[0]);
-        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, 'whitelistAlliance')[0]);
+        $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, Watchlist::GROUP)[0]);
+        $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, Watchlist::ALLIANCE)[0]);
+        $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, Watchlist::CORPORATION)[0]);
+        $this->assertInstanceOf(Player::class, self::$watchlistService->getList(1, Watchlist::EXEMPTION)[0]);
+        $this->assertInstanceOf(
+            Corporation::class,
+            self::$watchlistService->getList(1, Watchlist::BLACKLIST_CORPORATION)[0]
+        );
+        $this->assertInstanceOf(
+            Alliance::class,
+            self::$watchlistService->getList(1, Watchlist::BLACKLIST_ALLIANCE)[0]
+        );
+        $this->assertInstanceOf(
+            Corporation::class,
+            self::$watchlistService->getList(1, Watchlist::WHITELIST_CORPORATION)[0]
+        );
+        $this->assertInstanceOf(
+            Alliance::class,
+            self::$watchlistService->getList(1, Watchlist::WHITELIST_ALLIANCE)[0]
+        );
     }
 
     public function testGetCorporationIds()

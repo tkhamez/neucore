@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Command;
 
@@ -75,9 +77,7 @@ class SendInvalidTokenMail extends Command
         $this->executeLogOutput($input, $output);
 
         $this->writeLine('Started "send-invalid-token-mail"', false);
-
         $this->send();
-
         $this->writeLine('Finished "send-invalid-token-mail"', false);
 
         return 0;

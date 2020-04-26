@@ -1,6 +1,4 @@
 
-import { CharacterApi } from 'neucore-js-client';
-import { PlayerApi } from 'neucore-js-client';
 import Vue from 'vue';
 
 Vue.mixin({
@@ -73,7 +71,7 @@ Vue.mixin({
         },
 
         hasAnyRole: function(names) {
-            for (let name of names) {
+            for (const name of names) {
                 if (this.hasRole(name)) {
                     return true;
                 }
@@ -97,7 +95,7 @@ Vue.mixin({
                 // there are no character images on Sisi at the moment.
                 return '/static/portrait_32.jpg';
             }
-            return 'https://images.evetech.net/characters/' + id + '/portrait?size=' + size + '&tenant=tranquility';
+            return `https://images.evetech.net/characters/${id}/portrait?size=${size}&tenant=tranquility`;
         }
     }
 });

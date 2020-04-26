@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -31,7 +33,7 @@ class CorporationController extends BaseController
     /**
      * @var Account
      */
-    private $account;
+    private $accountService;
 
     /**
      * @var Corporation
@@ -53,7 +55,7 @@ class CorporationController extends BaseController
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->userAuth = $userAuth;
-        $this->account = $account;
+        $this->accountService = $account;
     }
 
     /**
@@ -369,7 +371,7 @@ class CorporationController extends BaseController
 
         if (! $this->corp->hasGroupTracking($this->group->getId())) {
             $this->corp->addGroupTracking($this->group);
-            $this->account->syncTrackingRole(null, $this->corp);
+            $this->accountService->syncTrackingRole(null, $this->corp);
         }
 
         return $this->flushAndReturn(204);
@@ -419,7 +421,7 @@ class CorporationController extends BaseController
         }
 
         $this->corp->removeGroupTracking($this->group);
-        $this->account->syncTrackingRole(null, $this->corp);
+        $this->accountService->syncTrackingRole(null, $this->corp);
 
         return $this->flushAndReturn(204);
     }
@@ -547,15 +549,15 @@ class CorporationController extends BaseController
 
     private function findCorpAndGroup(string $corpId, string $groupId): bool
     {
-        $corp = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $corpEntity = $this->repositoryFactory->getCorporationRepository()->find((int) $corpId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
-        if ($corp === null || $group === null) {
+        if ($corpEntity === null || $groupEntity === null) {
             return false;
         }
 
-        $this->corp = $corp;
-        $this->group = $group;
+        $this->corp = $corpEntity;
+        $this->group = $groupEntity;
 
         return true;
     }

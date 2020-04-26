@@ -47,8 +47,7 @@ Modal window to add alliances or corporations to the database.
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
-import { AllianceApi } from 'neucore-js-client';
-import { CorporationApi } from 'neucore-js-client';
+import {AllianceApi, CorporationApi} from 'neucore-js-client';
 
 export default {
     props: {
@@ -98,14 +97,14 @@ export default {
 
             api['add'].apply(api, [this.searchSelected.id, function(error, data, response) {
                 if (response.statusCode === 409) {
-                    vm.message(vm.addType + ' already exists.', 'warning');
+                    vm.message(`${vm.addType} already exist.`, 'warning');
                 } else if (response.statusCode === 404) {
-                    vm.message(vm.addType + ' not found.', 'error');
+                    vm.message(`${vm.addType} not found.`, 'error');
                 } else if (error) {
-                    vm.message('Error adding ' + vm.addType, 'error');
+                    vm.message(`Error adding ${vm.addType}.`, 'error');
                 } else {
                     $('#addAlliCorpModal').modal('hide');
-                    vm.message(vm.addType + ' "['+ data.ticker +'] '+ data.name +'" added.', 'success');
+                    vm.message(`${vm.addType} "[${data.ticker}] ${data.name}" added.`, 'success');
                     vm.$emit('success');
                 }
             }]);
@@ -123,9 +122,9 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
         return;
     }
 
-    const url =  vm.settings.esiHost + '/latest/search/?categories=' + category +
-        '&datasource=' + vm.settings.esiDataSource +
-        '&search=' + encodeURIComponent(query) + '&strict=' + vm.searchStrict;
+    const url = `${vm.settings.esiHost}/latest/search/?categories=${category}` +
+        `&datasource=${vm.settings.esiDataSource}` +
+        `&search=${encodeURIComponent(query)}&strict=${vm.searchStrict}`;
 
     vm.searchIsLoading = true;
     vm.searchResults = [];
@@ -136,7 +135,7 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
             return;
         }
         $.post(
-            vm.settings.esiHost + '/latest/universe/names/?datasource=' + vm.settings.esiDataSource,
+            vm.settings.esiHost + `/latest/universe/names/?datasource=${vm.settings.esiDataSource}`,
             JSON.stringify(response1[category])
         ).always(response2 => {
             vm.searchIsLoading = false;
@@ -144,11 +143,11 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
                 return;
             }
             vm.searchResults = []; // reset again because of parallel request
-            for (let result of response2) {
+            for (const result of response2) {
                 vm.searchResults.push(result);
             }
         });
-    }).fail(err => {
+    }).fail(() => {
         vm.searchIsLoading = false;
         vm.searchError = true;
         vm.searchResults.push({ name: 'Error, please try again later.'});
@@ -156,6 +155,3 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
 }, 250);
 
 </script>
-
-<style scoped>
-</style>

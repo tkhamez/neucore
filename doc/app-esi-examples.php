@@ -1,4 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection PhpFullyQualifiedNameUsageInspection */
+/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+
+declare(strict_types=1);
 
 include __DIR__ . '/vendor/autoload.php';
 
@@ -17,7 +22,7 @@ include __DIR__ . '/vendor/autoload.php';
  *    https://neucore.tld/api/app/v1/esi?esi-path-query=%2Fv3%2Fcharacters%2F96061222%2Fassets%2F%3Fpage%3D1&datasource=96061222
  *
  * Both use the "datasource" parameter to tell Neucore from which character the ESI token should be used for the
- * request. (The ESI datasource (tranquility or singularity) is decided by the Neucore configuration.)
+ * request. The ESI datasource (tranquility) is decided by the Neucore configuration.
  *
  * See doc/documentation.md -> "Authentication of applications" for details about the token.
  */

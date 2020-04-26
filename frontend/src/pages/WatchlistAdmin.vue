@@ -82,7 +82,3 @@ function getWatchlists(vm) {
     vm.watchlists = [{id: 1, name: 'auto-red-flags'}];
 }
 </script>
-
-<style scoped>
-
-</style>

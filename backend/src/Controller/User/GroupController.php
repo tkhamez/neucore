@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -23,6 +25,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class GroupController extends BaseController
 {
+    const ERROR_GROUP_NOT_FOUND = 'Group not found.';
+
+    const TYPE_MANAGERS = 'managers';
+
+    const TYPE_MEMBERS = 'members';
+
     /**
      * @var UserAuth
      */
@@ -166,12 +174,12 @@ class GroupController extends BaseController
             return $this->response->withStatus(409);
         }
 
-        $group = new Group();
-        $group->setName($name);
+        $newGroup = new Group();
+        $newGroup->setName($name);
 
-        $this->objectManager->persist($group);
+        $this->objectManager->persist($newGroup);
 
-        return $this->flushAndReturn(201, $group);
+        return $this->flushAndReturn(201, $newGroup);
     }
 
     /**
@@ -375,7 +383,7 @@ class GroupController extends BaseController
      */
     public function managers(string $id): ResponseInterface
     {
-        return $this->getPlayersFromGroup($id, 'managers', false);
+        return $this->getPlayersFromGroup($id, self::TYPE_MANAGERS, false);
     }
 
     /**
@@ -489,12 +497,11 @@ class GroupController extends BaseController
      */
     public function requiredGroups(string $id): ResponseInterface
     {
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
-        if (! $group) {
-            return $this->response->withStatus(404, 'Group not found.');
+        if (! $this->findGroup($id)) {
+            return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
         }
 
-        return $this->withJson($group->getRequiredGroups());
+        return $this->withJson($this->group->getRequiredGroups());
     }
 
     /**
@@ -536,25 +543,23 @@ class GroupController extends BaseController
      */
     public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
-
-        if (! $group || ! $requiredGroup) {
+        if (! $this->findGroup($id) || ! $requiredGroup) {
             return $this->response->withStatus(404, 'Group(s) not found.');
         }
 
         $hasGroup = false;
-        foreach ($group->getRequiredGroups() as $existingGroup) {
+        foreach ($this->group->getRequiredGroups() as $existingGroup) {
             if ($existingGroup->getId() === (int) $groupId) {
                 $hasGroup = true;
                 break;
             }
         }
         if (! $hasGroup) {
-            $group->addRequiredGroup($requiredGroup);
+            $this->group->addRequiredGroup($requiredGroup);
         }
 
-        return $this->flushAndReturn(204, $group);
+        return $this->flushAndReturn(204, $this->group);
     }
 
     /**
@@ -596,26 +601,24 @@ class GroupController extends BaseController
      */
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
-
-        if (! $group) {
-            return $this->response->withStatus(404, 'Group not found.');
+        if (! $this->findGroup($id)) {
+            return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
         }
 
         $removed = false;
-        foreach ($group->getRequiredGroups() as $requiredGroup) {
+        foreach ($this->group->getRequiredGroups() as $requiredGroup) {
             if ($requiredGroup->getId() === (int) $groupId) {
-                $group->removeRequiredGroup($requiredGroup);
+                $this->group->removeRequiredGroup($requiredGroup);
                 $removed = true;
                 break;
             }
         }
 
         if (! $removed) {
-            return $this->response->withStatus(404, 'Group not found.');
+            return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
         }
 
-        return $this->flushAndReturn(204, $group);
+        return $this->flushAndReturn(204, $this->group);
     }
 
     /**
@@ -699,7 +702,7 @@ class GroupController extends BaseController
      */
     public function removeManager(string $id, string $pid): ResponseInterface
     {
-        return $this->removePlayerFrom($id, $pid, 'managers', false);
+        return $this->removePlayerFrom($id, $pid, self::TYPE_MANAGERS, false);
     }
 
     /**
@@ -898,7 +901,7 @@ class GroupController extends BaseController
      */
     public function removeMember(string $id, string $pid): ResponseInterface
     {
-        return $this->removePlayerFrom($id, $pid, 'members', true);
+        return $this->removePlayerFrom($id, $pid, self::TYPE_MEMBERS, true);
     }
 
     /**
@@ -934,9 +937,9 @@ class GroupController extends BaseController
     public function members(string $id): ResponseInterface
     {
         $user = $this->getUser($this->userAuth)->getPlayer();
-        $onlyIfManager = $user->hasRole(Role::GROUP_ADMIN) ? false : true;
+        $onlyIfManager = ! $user->hasRole(Role::GROUP_ADMIN);
 
-        return $this->getPlayersFromGroup($id, 'members', $onlyIfManager);
+        return $this->getPlayersFromGroup($id, self::TYPE_MEMBERS, $onlyIfManager);
     }
 
     /**
@@ -948,13 +951,13 @@ class GroupController extends BaseController
      */
     private function otherGroupExists(string $name, int $id = null): bool
     {
-        $group = $this->repositoryFactory->getGroupRepository()->findOneBy(['name' => $name]);
+        $otherGroup = $this->repositoryFactory->getGroupRepository()->findOneBy(['name' => $name]);
 
-        if ($group === null) {
+        if ($otherGroup === null) {
             return false;
         }
 
-        if ($group->getId() === $id) {
+        if ($otherGroup->getId() === $id) {
             return false;
         }
 
@@ -972,16 +975,16 @@ class GroupController extends BaseController
         }
 
         $players = [];
-        if ($type === 'managers') {
+        if ($type === self::TYPE_MANAGERS) {
             $players = $this->group->getManagers();
-        } elseif ($type === 'members') {
+        } elseif ($type === self::TYPE_MEMBERS) {
             $players = $this->group->getPlayers();
         }
 
         $ret = [];
         foreach ($players as $player) {
             $result = $player->jsonSerialize(true);
-            if ($type === 'managers') {
+            if ($type === self::TYPE_MANAGERS) {
                 $result['roles'] = $player->getRoles();
             }
             $ret[] = $result;
@@ -1029,9 +1032,9 @@ class GroupController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        if ($type === 'managers') {
+        if ($type === self::TYPE_MANAGERS) {
             $this->group->removeManager($this->player);
-        } elseif ($type === 'members') {
+        } elseif ($type === self::TYPE_MEMBERS) {
             $this->player->removeGroup($this->group);
             $this->account->syncTrackingRole($this->player);
             $this->account->syncWatchlistRole($this->player);
@@ -1073,22 +1076,22 @@ class GroupController extends BaseController
 
     private function findGroup(string $id): bool
     {
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $id);
-        if ($group === null) {
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $id);
+        if ($groupEntity === null) {
             return false;
         }
-        $this->group = $group;
+        $this->group = $groupEntity;
 
         return true;
     }
 
     private function findGroupAndPlayer(string $groupId, string $playerId): bool
     {
-        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
-        if (! $this->findGroup($groupId) || $player === null) {
+        $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        if (! $this->findGroup($groupId) || $playerEntity === null) {
             return false;
         }
-        $this->player = $player;
+        $this->player = $playerEntity;
 
         return true;
     }

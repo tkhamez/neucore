@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\App;
 
@@ -29,6 +31,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class GroupController extends BaseController
 {
+    const KEY_GROUPS = 'groups';
+
+    const TYPE_CORPORATION = 'Corporation';
+
+    const TYPE_ALLIANCE = 'Alliance';
+
     /**
      * @var AppAuth
      */
@@ -92,7 +100,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        return $this->withJson($result['groups']);
+        return $this->withJson($result[self::KEY_GROUPS]);
     }
 
     /**
@@ -209,7 +217,7 @@ class GroupController extends BaseController
      */
     public function corpGroupsV1(string $cid, ServerRequestInterface $request): ResponseInterface
     {
-        return $this->corpOrAllianceGroups($cid, 'Corporation', $request);
+        return $this->corpOrAllianceGroups($cid, self::TYPE_CORPORATION, $request);
     }
 
     /**
@@ -290,7 +298,7 @@ class GroupController extends BaseController
      */
     public function corpGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->groupsBulkFor('Corporation', $request);
+        return $this->groupsBulkFor(self::TYPE_CORPORATION, $request);
     }
 
     /**
@@ -326,7 +334,7 @@ class GroupController extends BaseController
      */
     public function allianceGroupsV1(string $aid, ServerRequestInterface $request): ResponseInterface
     {
-        return $this->corpOrAllianceGroups($aid, 'Alliance', $request);
+        return $this->corpOrAllianceGroups($aid, self::TYPE_ALLIANCE, $request);
     }
 
     /**
@@ -407,7 +415,7 @@ class GroupController extends BaseController
      */
     public function allianceGroupsBulkV1(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->groupsBulkFor('Alliance', $request);
+        return $this->groupsBulkFor(self::TYPE_ALLIANCE, $request);
     }
 
     /**
@@ -463,20 +471,20 @@ class GroupController extends BaseController
         $characterResult = $this->getGroupsForPlayer($characterId, $appGroups);
         if ($characterResult !== null) {
             // could be an empty result
-            return $this->withJson($characterResult['groups']);
+            return $this->withJson($characterResult[self::KEY_GROUPS]);
         }
 
         $fallbackGroups = [];
 
-        $corporationResult = $this->getGroupsFor('Corporation', $corporationId, $appGroups);
+        $corporationResult = $this->getGroupsFor(self::TYPE_CORPORATION, $corporationId, $appGroups);
         if ($corporationResult !== null) {
-            $fallbackGroups = $corporationResult['groups'];
+            $fallbackGroups = $corporationResult[self::KEY_GROUPS];
         }
 
-        $allianceResult = $this->getGroupsFor('Alliance', $allianceId, $appGroups);
+        $allianceResult = $this->getGroupsFor(self::TYPE_ALLIANCE, $allianceId, $appGroups);
         if ($allianceResult !== null) {
             // add groups that are not already in the result set
-            foreach ($allianceResult['groups'] as $allianceGroup) {
+            foreach ($allianceResult[self::KEY_GROUPS] as $allianceGroup) {
                 $addGroup = true;
                 foreach ($fallbackGroups as $fallbackGroup) {
                     if ($allianceGroup['id'] === $fallbackGroup['id']) {
@@ -501,7 +509,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        return $this->withJson($result['groups']);
+        return $this->withJson($result[self::KEY_GROUPS]);
     }
 
     /**
@@ -572,7 +580,7 @@ class GroupController extends BaseController
                 'name' => $char->getName(),
                 'corporation' => $char->getCorporation(),
             ],
-            'groups' => []
+            self::KEY_GROUPS => []
         ];
 
         if ($this->accountService->groupsDeactivated($char->getPlayer())) {
@@ -582,7 +590,7 @@ class GroupController extends BaseController
         foreach ($appGroups as $appGroup) {
             foreach ($char->getPlayer()->getGroups() as $playerGroup) {
                 if ($appGroup->getId() === $playerGroup->getId()) {
-                    $result['groups'][] = $playerGroup;
+                    $result[self::KEY_GROUPS][] = $playerGroup;
                 }
             }
         }
@@ -606,7 +614,7 @@ class GroupController extends BaseController
      */
     private function getGroupsFor(string $entityName, int $entityId, array $appGroups): ?array
     {
-        $repository = $entityName === 'Corporation' ?
+        $repository = $entityName === self::TYPE_CORPORATION ?
             $this->repositoryFactory->getCorporationRepository() :
             $this->repositoryFactory->getAllianceRepository();
 
@@ -619,12 +627,12 @@ class GroupController extends BaseController
         if (array_key_exists('alliance', $result)) {
             unset($result['alliance']);
         }
-        $result['groups'] = [];
+        $result[self::KEY_GROUPS] = [];
 
         foreach ($appGroups as $appGroup) {
             foreach ($entity->getGroups() as $corpGroup) {
                 if ($appGroup->getId() === $corpGroup->getId()) {
-                    $result['groups'][] = $corpGroup->jsonSerialize();
+                    $result[self::KEY_GROUPS][] = $corpGroup->jsonSerialize();
                 }
             }
         }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Service;
 
@@ -94,9 +96,9 @@ class AppAuth implements RoleProviderInterface
         $appId = $tokenParts[0];
         $secret = $tokenParts[1];
 
-        $app = $this->repositoryFactory->getAppRepository()->find($appId);
-        if ($app !== null && password_verify($secret, $app->getSecret())) {
-            $this->app = $app;
+        $appEntity = $this->repositoryFactory->getAppRepository()->find($appId);
+        if ($appEntity !== null && password_verify($secret, $appEntity->getSecret())) {
+            $this->app = $appEntity;
             $this->upgradeHash($secret);
         }
     }

@@ -15,6 +15,22 @@ use Neucore\Repository\WatchlistRepository;
 
 class Watchlist
 {
+    const GROUP = 'group';
+
+    const ALLIANCE = 'alliance';
+
+    const CORPORATION = 'corporation';
+
+    const EXEMPTION = 'exemption';
+
+    const BLACKLIST_CORPORATION = 'blacklistCorporation';
+
+    const BLACKLIST_ALLIANCE = 'blacklistAlliance';
+
+    const WHITELIST_CORPORATION = 'whitelistCorporation';
+
+    const WHITELIST_ALLIANCE = 'whitelistAlliance';
+
     /**
      * @var PlayerRepository
      */
@@ -43,13 +59,17 @@ class Watchlist
     public function getRedFlagList(int $id, bool $includeBlacklist = false, bool $includeWhitelist = false): array
     {
         // get corporation IDs for the red list
-        $corporationIds = $this->getCorporationIds($id, 'alliance', 'corporation');
+        $corporationIds = $this->getCorporationIds($id, self::ALLIANCE, self::CORPORATION);
 
         // get corporation IDs for the white list
         if ($includeWhitelist) {
             $whitelistCorporationIds =  [];
         } else {
-            $whitelistCorporationIds = $this->getCorporationIds($id, 'whitelistAlliance', 'whitelistCorporation');
+            $whitelistCorporationIds = $this->getCorporationIds(
+                $id,
+                self::WHITELIST_ALLIANCE,
+                self::WHITELIST_CORPORATION
+            );
         }
 
         // get whitelisted players
@@ -78,7 +98,7 @@ class Watchlist
         $playersOnBlacklist = [];
         if (! $includeBlacklist) {
             $playersFromBlacklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
-                $this->getCorporationIds($id, 'blacklistAlliance', 'blacklistCorporations'),
+                $this->getCorporationIds($id, self::BLACKLIST_ALLIANCE, self::BLACKLIST_CORPORATION),
                 $exemptPlayers
             );
             $playersOnBlacklist = array_map(function (Player $player) {
@@ -107,7 +127,7 @@ class Watchlist
     public function getBlacklist(int $id): array
     {
         $playersFromBlacklistCorporations = $this->playerRepository->findInCorporationsWithExcludes(
-            $this->getCorporationIds($id, 'blacklistAlliance', 'blacklistCorporations'),
+            $this->getCorporationIds($id, self::BLACKLIST_ALLIANCE, self::BLACKLIST_CORPORATION),
             $this->getExemptionList($id)
         );
 
@@ -139,21 +159,21 @@ class Watchlist
             return $data;
         }
 
-        if ($type === 'group') {
+        if ($type === self::GROUP) {
             $data = $watchlist->getGroups();
-        } elseif ($type === 'alliance') {
+        } elseif ($type === self::ALLIANCE) {
             $data = $watchlist->getAlliances();
-        } elseif ($type === 'corporation') {
+        } elseif ($type === self::CORPORATION) {
             $data = $watchlist->getCorporations();
-        } elseif ($type === 'exemption') {
+        } elseif ($type === self::EXEMPTION) {
             $data = $watchlist->getExemptions();
-        } elseif ($type === 'blacklistCorporations') {
+        } elseif ($type === self::BLACKLIST_CORPORATION) {
             $data = $watchlist->getBlacklistCorporations();
-        } elseif ($type === 'blacklistAlliance') {
+        } elseif ($type === self::BLACKLIST_ALLIANCE) {
             $data = $watchlist->getBlacklistAlliances();
-        } elseif ($type === 'whitelistCorporation') {
+        } elseif ($type === self::WHITELIST_CORPORATION) {
             $data = $watchlist->getWhitelistCorporations();
-        } elseif ($type === 'whitelistAlliance') {
+        } elseif ($type === self::WHITELIST_ALLIANCE) {
             $data = $watchlist->getWhitelistAlliances();
         }
 
@@ -184,6 +204,6 @@ class Watchlist
      */
     private function getExemptionList(int $id): array
     {
-        return $this->getList($id, 'exemption');
+        return $this->getList($id, self::EXEMPTION);
     }
 }

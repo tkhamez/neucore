@@ -25,10 +25,14 @@ use Psr\Http\Message\ResponseInterface;
  */
 class WatchlistController extends BaseController
 {
+    const ACTION_ADD = 'add';
+
+    const ACTION_REMOVE = 'remove';
+
     /**
      * @var Watchlist
      */
-    private $watchlist;
+    private $watchlistService;
 
     public function __construct(
         ResponseInterface $response,
@@ -38,7 +42,7 @@ class WatchlistController extends BaseController
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
-        $this->watchlist = $watchlist;
+        $this->watchlistService = $watchlist;
     }
 
     /**
@@ -78,7 +82,7 @@ class WatchlistController extends BaseController
 
         $players = array_map(function (Player $player) {
             return $player->jsonSerialize(true);
-        }, $this->watchlist->getRedFlagList((int) $id));
+        }, $this->watchlistService->getRedFlagList((int) $id));
 
         return $this->withJson($players);
     }
@@ -116,7 +120,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getBlacklist((int) $id));
+        return $this->withJson($this->watchlistService->getBlacklist((int) $id));
     }
 
     /**
@@ -154,7 +158,7 @@ class WatchlistController extends BaseController
 
         $data = array_map(function (Player $player) {
             return $player->jsonSerialize(true);
-        }, $this->watchlist->getList((int) $id, 'exemption'));
+        }, $this->watchlistService->getList((int) $id, 'exemption'));
 
         return $this->withJson($data);
     }
@@ -202,7 +206,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'player', (int) $player);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::EXEMPTION, (int) $player);
     }
 
     /**
@@ -248,7 +252,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'player', (int) $player);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::EXEMPTION, (int) $player);
     }
 
     /**
@@ -284,7 +288,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'corporation'));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::CORPORATION));
     }
 
     /**
@@ -330,7 +334,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'corporation', (int) $corporation);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::CORPORATION, (int) $corporation);
     }
 
     /**
@@ -376,7 +380,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'corporation', (int) $corporation);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::CORPORATION, (int) $corporation);
     }
 
     /**
@@ -412,7 +416,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'alliance'));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::ALLIANCE));
     }
 
     /**
@@ -458,7 +462,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'alliance', (int) $alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::ALLIANCE, (int) $alliance);
     }
 
     /**
@@ -504,7 +508,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'alliance', (int) $alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::ALLIANCE, (int) $alliance);
     }
 
     /**
@@ -536,7 +540,7 @@ class WatchlistController extends BaseController
      */
     public function groupList(string $id): ResponseInterface
     {
-        return $this->withJson($this->watchlist->getList((int) $id, 'group'));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::GROUP));
     }
 
     /**
@@ -574,7 +578,7 @@ class WatchlistController extends BaseController
      */
     public function groupAdd(string $id, string $group, Account $account): ResponseInterface
     {
-        $response = $this->addOrRemoveEntity((int) $id, 'add', 'group', (int) $group);
+        $response = $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::GROUP, (int) $group);
 
         if ($response->getStatusCode() === 204) {
             $account->syncWatchlistRole();
@@ -619,7 +623,7 @@ class WatchlistController extends BaseController
      */
     public function groupRemove(string $id, string $group, Account $account): ResponseInterface
     {
-        $response = $this->addOrRemoveEntity((int) $id, 'remove', 'group', (int) $group);
+        $response = $this->addOrRemoveEntity((int) $id, self::ACTION_REMOVE, Watchlist::GROUP, (int) $group);
 
         if ($response->getStatusCode() === 204) {
             $account->syncWatchlistRole();
@@ -662,7 +666,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'blacklistCorporations'));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::BLACKLIST_CORPORATION));
     }
 
     /**
@@ -708,7 +712,13 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'blacklistCorporation', (int) $corporation);
+        return $this->addOrRemoveEntity(
+            (int)
+            $id,
+            self::ACTION_ADD,
+            Watchlist::BLACKLIST_CORPORATION,
+            (int) $corporation
+        );
     }
 
     /**
@@ -754,7 +764,12 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'blacklistCorporation', (int) $corporation);
+        return $this->addOrRemoveEntity(
+            (int) $id,
+            self::ACTION_REMOVE,
+            Watchlist::BLACKLIST_CORPORATION,
+            (int) $corporation
+        );
     }
 
     /**
@@ -790,7 +805,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'blacklistAlliance'));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::BLACKLIST_ALLIANCE));
     }
 
     /**
@@ -836,7 +851,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'blacklistAlliance', (int) $alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::BLACKLIST_ALLIANCE, (int) $alliance);
     }
 
     /**
@@ -882,7 +897,12 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'blacklistAlliance', (int) $alliance);
+        return $this->addOrRemoveEntity(
+            (int) $id,
+            self::ACTION_REMOVE,
+            Watchlist::BLACKLIST_ALLIANCE,
+            (int) $alliance
+        );
     }
 
     /**
@@ -920,7 +940,7 @@ class WatchlistController extends BaseController
 
         $data = array_map(function (Corporation $corporation) {
             return $corporation->jsonSerialize(false, true);
-        }, $this->watchlist->getList((int) $id, 'whitelistCorporation'));
+        }, $this->watchlistService->getList((int) $id, Watchlist::WHITELIST_CORPORATION));
 
         return $this->withJson($data);
     }
@@ -968,7 +988,12 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'whitelistCorporation', (int) $corporation);
+        return $this->addOrRemoveEntity(
+            (int) $id,
+            self::ACTION_ADD,
+            Watchlist::WHITELIST_CORPORATION,
+            (int) $corporation
+        );
     }
 
     /**
@@ -1014,7 +1039,12 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'whitelistCorporation', (int) $corporation);
+        return $this->addOrRemoveEntity(
+            (int) $id,
+            self::ACTION_REMOVE,
+            Watchlist::WHITELIST_CORPORATION,
+            (int) $corporation
+        );
     }
 
     /**
@@ -1050,7 +1080,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlist->getList((int) $id, 'whitelistAlliance'));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::WHITELIST_ALLIANCE));
     }
 
     /**
@@ -1096,7 +1126,7 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'add', 'whitelistAlliance', (int) $alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::WHITELIST_ALLIANCE, (int) $alliance);
     }
 
     /**
@@ -1142,7 +1172,12 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, 'remove', 'whitelistAlliance', (int) $alliance);
+        return $this->addOrRemoveEntity(
+            (int) $id,
+            self::ACTION_REMOVE,
+            Watchlist::WHITELIST_ALLIANCE,
+            (int) $alliance
+        );
     }
 
     /**
@@ -1168,13 +1203,19 @@ class WatchlistController extends BaseController
     private function addOrRemoveEntity(int $id, string $action, string $type, int $entityId): ResponseInterface
     {
         $entity = null;
-        if ($type === 'player') {
+        if ($type === Watchlist::EXEMPTION) {
             $entity = $this->repositoryFactory->getPlayerRepository()->find($entityId);
-        } elseif (in_array($type, ['corporation', 'blacklistCorporation', 'whitelistCorporation'])) {
+        } elseif (in_array(
+            $type,
+            [Watchlist::CORPORATION, Watchlist::BLACKLIST_CORPORATION, Watchlist::WHITELIST_CORPORATION]
+        )) {
             $entity = $this->repositoryFactory->getCorporationRepository()->find($entityId);
-        } elseif (in_array($type, ['alliance', 'blacklistAlliance', 'whitelistAlliance'])) {
+        } elseif (in_array(
+            $type,
+            [Watchlist::ALLIANCE, Watchlist::BLACKLIST_ALLIANCE, Watchlist::WHITELIST_ALLIANCE]
+        )) {
             $entity = $this->repositoryFactory->getAllianceRepository()->find($entityId);
-        } elseif ($type === 'group') {
+        } elseif ($type === Watchlist::GROUP) {
             $entity = $this->repositoryFactory->getGroupRepository()->find($entityId);
         }
 
@@ -1184,40 +1225,40 @@ class WatchlistController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($action === 'add') {
+        if ($action === self::ACTION_ADD) {
             if ($entity instanceof Player) {
                 $watchlist->addExemption($entity);
-            } elseif ($entity instanceof Corporation && $type === 'corporation') {
+            } elseif ($entity instanceof Corporation && $type === Watchlist::CORPORATION) {
                 $watchlist->addCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === 'alliance') {
+            } elseif ($entity instanceof Alliance && $type === Watchlist::ALLIANCE) {
                 $watchlist->addAlliance($entity);
             } elseif ($entity instanceof Group) {
                 $watchlist->addGroup($entity);
-            } elseif ($entity instanceof Corporation && $type === 'blacklistCorporation') {
+            } elseif ($entity instanceof Corporation && $type === Watchlist::BLACKLIST_CORPORATION) {
                 $watchlist->addBlacklistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === 'blacklistAlliance') {
+            } elseif ($entity instanceof Alliance && $type === Watchlist::BLACKLIST_ALLIANCE) {
                 $watchlist->addBlacklistAlliance($entity);
-            } elseif ($entity instanceof Corporation && $type === 'whitelistCorporation') {
+            } elseif ($entity instanceof Corporation && $type === Watchlist::WHITELIST_CORPORATION) {
                 $watchlist->addWhitelistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === 'whitelistAlliance') {
+            } elseif ($entity instanceof Alliance && $type === Watchlist::WHITELIST_ALLIANCE) {
                 $watchlist->addWhitelistAlliance($entity);
             }
-        } elseif ($action === 'remove') {
+        } elseif ($action === self::ACTION_REMOVE) {
             if ($entity instanceof Player) {
                 $watchlist->removeExemption($entity);
-            } elseif ($entity instanceof Corporation && $type === 'corporation') {
+            } elseif ($entity instanceof Corporation && $type === Watchlist::CORPORATION) {
                 $watchlist->removeCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === 'alliance') {
+            } elseif ($entity instanceof Alliance && $type === Watchlist::ALLIANCE) {
                 $watchlist->removeAlliance($entity);
             } elseif ($entity instanceof Group) {
                 $watchlist->removeGroup($entity);
-            } elseif ($entity instanceof Corporation && $type === 'blacklistCorporation') {
+            } elseif ($entity instanceof Corporation && $type === Watchlist::BLACKLIST_CORPORATION) {
                 $watchlist->removeBlacklistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === 'blacklistAlliance') {
+            } elseif ($entity instanceof Alliance && $type === Watchlist::BLACKLIST_ALLIANCE) {
                 $watchlist->removeBlacklistAlliance($entity);
-            } elseif ($entity instanceof Corporation && $type === 'whitelistCorporation') {
+            } elseif ($entity instanceof Corporation && $type === Watchlist::WHITELIST_CORPORATION) {
                 $watchlist->removeWhitelistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === 'whitelistAlliance') {
+            } elseif ($entity instanceof Alliance && $type === Watchlist::WHITELIST_ALLIANCE) {
                 $watchlist->removeWhitelistAlliance($entity);
             }
         }

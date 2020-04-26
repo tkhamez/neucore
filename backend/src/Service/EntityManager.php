@@ -6,6 +6,7 @@ namespace Neucore\Service;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
+use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 
 class EntityManager extends EntityManagerDecorator
@@ -30,7 +31,7 @@ class EntityManager extends EntityManagerDecorator
         try {
             parent::flush($entity);
         } catch (\Exception $e) {
-            $this->log->critical($e->getMessage(), ['exception' => $e]);
+            $this->log->critical($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
 

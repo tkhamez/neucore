@@ -1,13 +1,9 @@
 
 import "core-js";
 
-// bootstrap JS (css is included via theme* entry point) and required jquery + popper
+// bootstrap JS (css is included via theme* entry point) and required jquery, no popper.js
 import $ from 'jquery';
-//import 'popper.js';
 import 'bootstrap';
-//$(function() {
-//    $('[data-toggle="popover"]').popover();
-//});
 
 // data tables
 import 'datatables.net';

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  *  Test settings, overwrites values from settings.php (and settings_dev.php if running in dev mode).

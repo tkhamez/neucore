@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Repository;
 
@@ -15,6 +17,8 @@ use Neucore\Entity\Player;
  */
 class CorporationMemberRepository extends EntityRepository
 {
+    const DATE_FORMAT = 'Y-m-d H:i:s';
+
     /**
      * @var int|null
      */
@@ -143,17 +147,12 @@ class CorporationMemberRepository extends EntityRepository
             ->where('m.corporation = :corporation_id')->setParameter('corporation_id', $corporationId)
             ->orderBy('m.logonDate', 'DESC');
 
-        if ($this->active > 0) {
-            if ($activeDate = date_create('now -'.$this->active.' days')) {
-                $qb->andWhere('m.logonDate >= :active')
-                    ->setParameter('active', $activeDate->format('Y-m-d H:i:s'));
-            }
+        if ($this->active > 0 && ($activeDate = date_create('now -'.$this->active.' days'))) {
+            $qb->andWhere('m.logonDate >= :active')->setParameter('active', $activeDate->format(self::DATE_FORMAT));
         }
-        if ($this->inactive > 0) {
-            if ($inactiveDate = date_create('now -'.$this->inactive.' days')) {
-                $qb->andWhere('m.logonDate < :inactive')
-                    ->setParameter('inactive', $inactiveDate->format('Y-m-d H:i:s'));
-            }
+        if ($this->inactive > 0 && ($inactiveDate = date_create('now -'.$this->inactive.' days'))) {
+            $qb->andWhere('m.logonDate < :inactive')
+                ->setParameter('inactive', $inactiveDate->format(self::DATE_FORMAT));
         }
         if ($this->account) {
             $qb->andWhere($qb->expr()->isNotNull('m.character'));
@@ -168,11 +167,9 @@ class CorporationMemberRepository extends EntityRepository
         } elseif ($this->validToken === false) {
             $qb->andWhere($qb->expr()->eq('c.validToken', 0));
         }
-        if ($this->tokenChanged > 0) {
-            if ($tokenChangedDate = date_create('now -'.$this->tokenChanged.' days')) {
-                $qb->andWhere('c.validTokenTime < :tokenChanged')
-                    ->setParameter('tokenChanged', $tokenChangedDate->format('Y-m-d H:i:s'));
-            }
+        if ($this->tokenChanged > 0 && ($tokenChangedDate = date_create('now -'.$this->tokenChanged.' days'))) {
+            $qb->andWhere('c.validTokenTime < :tokenChanged')
+                ->setParameter('tokenChanged', $tokenChangedDate->format(self::DATE_FORMAT));
         }
 
         $result = $qb->getQuery()->getResult();
@@ -276,7 +273,7 @@ class CorporationMemberRepository extends EntityRepository
             ->andWhere($qb->expr()->isNull('m.character'))
             ->setParameter('corporationIds', $corporationIds)
             ->andWhere('m.logonDate > :minLoginDate')
-            ->setParameter('minLoginDate', $minLoginDate->format('Y-m-d H:i:s'))
+            ->setParameter('minLoginDate', $minLoginDate->format(self::DATE_FORMAT))
             ->orderBy('m.name')
             ->setMaxResults($dbResultLimit) // don't use with JOIN
             ->setFirstResult($offset);

@@ -43,11 +43,6 @@ class UpdateCharacters extends Command
      */
     private $sleep;
 
-    /**
-     * @var int
-     */
-    private $dbResultLimit = 1000;
-
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,

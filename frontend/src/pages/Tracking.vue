@@ -125,7 +125,7 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
-import { CorporationApi } from 'neucore-js-client';
+import {CorporationApi} from 'neucore-js-client';
 
 import Characters from '../components/Characters.vue';
 
@@ -179,13 +179,13 @@ export default {
                 this.getMembers();
             } else if (this.route.length === 3 && this.route[2] !== '0') {
                 this.showCharacters(this.route[2]);
-                window.location.hash = '#Tracking/' + this.corporation.id + '/0';
+                window.location.hash = `#Tracking/${this.corporation.id}/0`;
             }
         },
 
         corporation () {
             if (this.corporation !== '') {
-                window.location.hash = '#Tracking/' + this.corporation.id;
+                window.location.hash = `#Tracking/${this.corporation.id}`;
             } else {
                 window.location.hash = '#Tracking';
             }
@@ -216,7 +216,7 @@ export default {
                 return;
             }
             const corporationId = parseInt(this.route[1], 10);
-            for (let corporation of this.corporations) {
+            for (const corporation of this.corporations) {
                 if (corporation.id === corporationId) {
                     this.corporation = corporation;
                     break;
@@ -296,7 +296,7 @@ function configureDataTable(vm) {
         columns: [{
             data (row) {
                 return '' +
-                    '<a href="https://evewho.com/character/' + row.id + '" ' +
+                    `<a href="https://evewho.com/character/${row.id}" ` +
                     '   target="_blank" rel="noopener noreferrer" title="Eve Who">' +
                         (row.name ? row.name : row.id) +
                     '</a>';
@@ -307,15 +307,21 @@ function configureDataTable(vm) {
                     return '';
                 }
                 return '' +
-                    '<a href="#Tracking/' + vm.corporation.id + '/' + row.player.id + '">' +
+                    `<a href="#Tracking/${vm.corporation.id}/${row.player.id}">` +
                         row.player.name + ' #' + row.player.id +
                     '</a>';
             }
         }, {
             data (row) {
-                if (row.character && row.character.validToken) return 'valid';
-                if (row.character && row.character.validToken === false) return 'invalid';
-                if (row.character && row.character.validToken === null) return 'n/a';
+                if (row.character && row.character.validToken) {
+                    return 'valid';
+                }
+                if (row.character && row.character.validToken === false) {
+                    return 'invalid';
+                }
+                if (row.character && row.character.validToken === null) {
+                    return 'n/a';
+                }
                 return '';
             }
         }, {

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
@@ -138,8 +140,8 @@ class AllianceController extends BaseController
         }
 
         // get alliance
-        $alliance = $service->fetchAlliance($allianceId, false);
-        if ($alliance === null) {
+        $newAlliance = $service->fetchAlliance($allianceId, false);
+        if ($newAlliance === null) {
             $code = $service->getLastErrorCode();
             if ($code === 404 || $code === 400) {
                 return $this->response->withStatus($code);
@@ -148,7 +150,7 @@ class AllianceController extends BaseController
             }
         }
 
-        return $this->flushAndReturn(201, $alliance);
+        return $this->flushAndReturn(201, $newAlliance);
     }
 
     /**
@@ -249,15 +251,15 @@ class AllianceController extends BaseController
 
     private function findAllianceAndGroup(string $allianceId, string $groupId): bool
     {
-        $alliance = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
-        $group = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        $allianceEntity = $this->repositoryFactory->getAllianceRepository()->find((int) $allianceId);
+        $groupEntity = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
 
-        if ($alliance === null || $group === null) {
+        if ($allianceEntity === null || $groupEntity === null) {
             return false;
         }
 
-        $this->alliance = $alliance;
-        $this->group = $group;
+        $this->alliance = $allianceEntity;
+        $this->group = $groupEntity;
 
         return true;
     }

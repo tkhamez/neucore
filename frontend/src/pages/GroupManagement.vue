@@ -220,7 +220,7 @@ export default {
         },
 
         isMember: function(playerId) {
-            for (let member of this.groupMembers) {
+            for (const member of this.groupMembers) {
                 if (member.id === playerId) {
                     return true;
                 }
@@ -256,14 +256,7 @@ export default {
             }
             const vm = this;
             new GroupApi().addMember(this.groupId, playerId, function(error) {
-                if (error) {
-                    return;
-                }
-                if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange'); // changes the player object which triggers getMembers()
-                } else {
-                    vm.getMembers();
-                }
+                addRemoveResult(vm, playerId, error);
             });
         },
 
@@ -273,14 +266,7 @@ export default {
             }
             const vm = this;
             new GroupApi().removeMember(this.groupId, playerId, function(error) {
-                if (error) {
-                    return;
-                }
-                if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange');
-                } else {
-                    vm.getMembers();
-                }
+                addRemoveResult(vm, playerId, error);
             });
         },
 
@@ -301,5 +287,16 @@ export default {
             });
         },
     },
+}
+
+function addRemoveResult(vm, playerId, error) {
+    if (error) {
+        return;
+    }
+    if (playerId === vm.player.id) {
+        vm.$root.$emit('playerChange');
+    } else {
+        vm.getMembers();
+    }
 }
 </script>

@@ -48,6 +48,16 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AuthController extends BaseController
 {
+    const SESS_AUTH_REDIRECT = 'auth_redirect';
+
+    const SESS_AUTH_STATE = 'auth_state';
+
+    const SESS_AUTH_RESULT = 'auth_result';
+
+    const KEY_RESULT_SUCCESS = 'success';
+
+    const KEY_RESULT_MESSAGE = 'message';
+
     /**
      * A prefix for the OAuth state parameter that identifies a login of "managed" accounts.
      *
@@ -191,11 +201,11 @@ class AuthController extends BaseController
         EveMail $mailService,
         MemberTracking $memberTrackingService
     ): ResponseInterface {
-        $redirectUrl = $this->session->get('auth_redirect', '/');
-        $this->session->delete('auth_redirect');
+        $redirectUrl = $this->session->get(self::SESS_AUTH_REDIRECT, '/');
+        $this->session->delete(self::SESS_AUTH_REDIRECT);
 
-        $state = (string) $this->session->get('auth_state');
-        $this->session->delete('auth_state');
+        $state = (string) $this->session->get(self::SESS_AUTH_STATE);
+        $this->session->delete(self::SESS_AUTH_STATE);
 
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
@@ -206,11 +216,11 @@ class AuthController extends BaseController
                 $this->getQueryParam($request, 'code', '')
             );
         } catch (\Exception $e) {
-            $this->session->set('auth_result', [
-                'success' => false,
-                'message' => $e->getMessage(),
+            $this->session->set(self::SESS_AUTH_RESULT, [
+                self::KEY_RESULT_SUCCESS => false,
+                self::KEY_RESULT_MESSAGE => $e->getMessage(),
             ]);
-            return $this->response->withHeader('Location', (string)$redirectUrl)->withStatus(302);
+            return $this->redirect((string) $redirectUrl);
         }
 
         // handle login
@@ -242,12 +252,12 @@ class AuthController extends BaseController
                 $errorMessage = 'Failed to authenticate user.';
         }
 
-        $this->session->set('auth_result', [
-            'success' => $success,
-            'message' => $success ? $successMessage : $errorMessage
+        $this->session->set(self::SESS_AUTH_RESULT, [
+            self::KEY_RESULT_SUCCESS => $success,
+            self::KEY_RESULT_MESSAGE => $success ? $successMessage : $errorMessage
         ]);
 
-        return $this->response->withHeader('Location', (string)$redirectUrl)->withStatus(302);
+        return $this->redirect((string) $redirectUrl);
     }
 
     /**
@@ -265,11 +275,11 @@ class AuthController extends BaseController
      */
     public function result(): ResponseInterface
     {
-        $result = $this->session->get('auth_result');
+        $result = $this->session->get(self::SESS_AUTH_RESULT);
 
         $default = [
-            'success' => false,
-            'message' => 'No login attempt recorded.',
+            self::KEY_RESULT_SUCCESS => false,
+            self::KEY_RESULT_MESSAGE => 'No login attempt recorded.',
         ];
 
         return $this->withJson($result ?: $default);
@@ -302,12 +312,12 @@ class AuthController extends BaseController
 
     private function redirectToLoginUrl(string $state, string $redirect): ResponseInterface
     {
-        $this->session->set('auth_state', $state);
-        $this->session->set('auth_redirect', $redirect);
+        $this->session->set(self::SESS_AUTH_STATE, $state);
+        $this->session->set(self::SESS_AUTH_REDIRECT, $redirect);
 
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
-        return $this->response->withHeader('Location', $this->authProvider->buildLoginUrl($state))->withStatus(302);
+        return $this->redirect($this->authProvider->buildLoginUrl($state));
     }
 
     private function getLoginScopes(string $state): array
@@ -329,5 +339,10 @@ class AuthController extends BaseController
         }
 
         return $scopes;
+    }
+
+    private function redirect(string $path): ResponseInterface
+    {
+        return $this->response->withHeader('Location', $path)->withStatus(302);
     }
 }
