@@ -29,6 +29,7 @@ of an alliance.
   * [Origin](#origin)
   * [Related Software](#related-software)
   * [Contact](#contact)
+  * [Copyright notice](#copyright-notice)
 
 <!-- tocstop -->
 
@@ -275,3 +276,10 @@ This is also where the name "Neucore" comes from.
 
 If you have any questions or feedback, you can contact Tian Khamez on [Tweetfleet Slack](https://tweetfleet.slack.com)
 (get invites [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
+
+### Copyright notice
+
+Neucore is licensed under the [MIT license](LICENSE).
+
+"EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
+[CCP hf](http://www.ccpgames.com/).
