@@ -111,12 +111,13 @@ class Account
     /**
      * Moves character to a new player.
      *
-     * Does not persist them in the database.
+     * Does not flush the entity manager.
      */
     public function moveCharacterToNewAccount(Character $char): Character
     {
         $newPlayer = new Player();
         $newPlayer->setName($char->getName());
+        $this->objectManager->persist($newPlayer);
 
         $this->moveCharacter($char, $newPlayer);
 
@@ -281,7 +282,7 @@ class Account
      * Removes a character from it's current player account,
      * adds it to the new player and creates a RemovedCharacter record.
      *
-     * Flushes the entity manager.
+     * Does not flush the entity manager.
      */
     public function moveCharacter(Character $character, Player $newPlayer): void
     {
@@ -292,8 +293,6 @@ class Account
         $oldPlayer->removeCharacter($character);
         $character->setPlayer($newPlayer);
         $newPlayer->addCharacter($character);
-
-        $this->updateGroups($oldPlayer->getId()); // flushes the entity manager
     }
 
     /**

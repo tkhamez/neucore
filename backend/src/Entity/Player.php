@@ -206,6 +206,11 @@ class Player implements \JsonSerializable
         $this->incomingCharacters = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return "$this->name #$this->id";
+    }
+
     /**
      * Setter for identifier (autoincrement).
      *

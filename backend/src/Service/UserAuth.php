@@ -121,7 +121,10 @@ class UserAuth implements RoleProviderInterface
             if ($char === null) {
                 $char = $this->accountService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
             } else {
+                $oldPlayerId = $char->getPlayer()->getId();
                 $char = $this->accountService->moveCharacterToNewAccount($char);
+                $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
+
             }
             $char->getPlayer()->addRole($userRole[0]);
         }
@@ -160,7 +163,9 @@ class UserAuth implements RoleProviderInterface
         // (there is no need to check for a changed character owner hash here)
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($alt !== null && $alt->getPlayer()->getId() !== $player->getId()) {
+            $oldPlayerId = $alt->getPlayer()->getId();
             $this->accountService->moveCharacter($alt, $player);
+            $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
             $alt->setMain(false);
         } elseif ($alt === null) {
             $alt = new Character();

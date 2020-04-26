@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.1
+
+dd mm yyyy
+
+- Fixed a bug where a character was not correctly moved to a new account.
+
 ## 1.10.0
 
 18 Apr 2020

@@ -79,6 +79,11 @@ class PlayerTest extends TestCase
         $this->assertSame(['id' => null, 'name' => 'test user'], $play->jsonSerialize(true));
     }
 
+    public function testToString()
+    {
+        $this->assertSame('Player Name #100', (new Player())->setId(100)->setName('Player Name')->__toString());
+    }
+
     public function testSetGetId()
     {
         $this->assertNull((new Player())->getId());

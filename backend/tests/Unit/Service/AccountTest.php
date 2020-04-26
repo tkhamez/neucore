@@ -45,6 +45,11 @@ class AccountTest extends TestCase
     private $helper;
 
     /**
+     * @var \Doctrine\Persistence\ObjectManager
+     */
+    private $om;
+
+    /**
      * @var Logger
      */
     private $log;
@@ -128,12 +133,12 @@ class AccountTest extends TestCase
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        $om = $this->helper->getObjectManager();
+        $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
-        $objectManager = new ObjectManager($om, $this->log);
+        $objectManager = new ObjectManager($this->om, $this->log);
 
         $this->client = new Client();
         $this->token = new OAuthToken(
@@ -145,7 +150,7 @@ class AccountTest extends TestCase
         );
 
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $repoFactory = new RepositoryFactory($om);
+        $repoFactory = new RepositoryFactory($this->om);
 
         $esi = new EsiData(
             $this->log,
@@ -177,6 +182,9 @@ class AccountTest extends TestCase
 
     public function testMoveCharacterToNewPlayer()
     {
+        // this also updates groups now
+        (new Helper())->emptyDb();
+
         $char = new Character();
         $char->setId(100);
         $char->setName('char name');
@@ -186,8 +194,13 @@ class AccountTest extends TestCase
         $player->addCharacter($char);
         $char->setPlayer($player);
 
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->flush();
+
         $character = $this->service->moveCharacterToNewAccount($char);
 
+        $this->assertSame(0, count($this->log->getHandler()->getRecords()));
         $newPlayer = $character->getPlayer();
 
         $this->assertSame($char, $character);
@@ -200,12 +213,8 @@ class AccountTest extends TestCase
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
 
         // test relation after persist
-        $this->helper->getObjectManager()->persist($player);
-        $this->helper->getObjectManager()->persist($char);
-        $this->helper->getObjectManager()->persist($character);
-        $this->helper->getObjectManager()->persist($character->getPlayer());
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
         $newPlayerLoaded = $this->playerRepo->find($newPlayer->getId());
         $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
@@ -240,7 +249,7 @@ class AccountTest extends TestCase
         );
         $this->assertTrue($result);
 
-        $this->helper->getObjectManager()->clear();
+        $this->om->clear();
 
         $character = $this->charRepo->find(12);
 
@@ -261,7 +270,7 @@ class AccountTest extends TestCase
     public function testUpdateAndStoreCharacterWithPlayerNoToken()
     {
         $corp = (new Corporation())->setId(1);
-        $this->helper->getObjectManager()->persist($corp);
+        $this->om->persist($corp);
         $player = (new Player())->setName('p-name');
         $char = (new Character())->setName('c-name')->setId(12)->setPlayer($player)->setCorporation($corp);
 
@@ -277,7 +286,7 @@ class AccountTest extends TestCase
         );
         $this->assertTrue($result);
 
-        $this->helper->getObjectManager()->clear();
+        $this->om->clear();
 
         $character = $this->charRepo->find(12);
         $this->assertSame('char name changed', $character->getName());
@@ -287,7 +296,7 @@ class AccountTest extends TestCase
 
     public function testCheckTokenUpdateCharacterDeletesBiomassedChar()
     {
-        $om = $this->helper->getObjectManager();
+        $om = $this->om;
         $corp = (new Corporation())->setId(1000001); // Doomheim
         $player = (new Player())->setName('p');
         $char = (new Character())->setId(31)->setName('n31')->setCorporation($corp)->setPlayer($player);
@@ -316,7 +325,7 @@ class AccountTest extends TestCase
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_NA, $result);
 
-        $this->helper->getObjectManager()->clear();
+        $this->om->clear();
         $charLoaded = $this->charRepo->find(100);
         $this->assertNull($charLoaded->getValidToken()); // no token = NULL
     }
@@ -338,7 +347,7 @@ class AccountTest extends TestCase
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
 
-        $this->helper->getObjectManager()->clear();
+        $this->om->clear();
         $charLoaded = $this->charRepo->find(31);
         $this->assertSame('', $charLoaded->getRefreshToken());
         $this->assertSame('', $charLoaded->getAccessToken());
@@ -390,7 +399,7 @@ class AccountTest extends TestCase
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
 
-        $this->helper->getObjectManager()->clear();
+        $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character->getValidToken());
         $this->assertSame('at', $character->getAccessToken()); // not updated
@@ -426,7 +435,7 @@ class AccountTest extends TestCase
         $result = $this->service->checkCharacter($char, $this->token);
         $this->assertSame(Account::CHECK_TOKEN_OK, $result);
 
-        $this->helper->getObjectManager()->clear();
+        $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertTrue($character->getValidToken());
         $this->assertSame($token, $character->getAccessToken()); // updated
@@ -445,7 +454,7 @@ class AccountTest extends TestCase
             new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
-        $om = $this->helper->getObjectManager();
+        $om = $this->om;
         $expires = time() - 1000;
         $player = (new Player())->setName('p');
         $char = (new Character())
@@ -475,15 +484,15 @@ class AccountTest extends TestCase
         $newPlayer = (new Player())->setName('player 2');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
         $player->addCharacter($char);
-        $this->helper->getObjectManager()->persist($player);
-        $this->helper->getObjectManager()->persist($newPlayer);
-        $this->helper->getObjectManager()->persist($char);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($player);
+        $this->om->persist($newPlayer);
+        $this->om->persist($char);
+        $this->om->flush();
 
         $this->service->moveCharacter($char, $newPlayer);
 
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
 
         $this->assertSame(0, count($player->getCharacters()));
         $this->assertSame(10, $player->getRemovedCharacters()[0]->getCharacterId());
@@ -505,14 +514,14 @@ class AccountTest extends TestCase
         $corp = (new Corporation())->setId(1)->setName('c');
         $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
         $player->addCharacter($char);
-        $this->helper->getObjectManager()->persist($player);
-        $this->helper->getObjectManager()->persist($char);
-        $this->helper->getObjectManager()->persist($corp);
-        $this->helper->getObjectManager()->persist($member);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->persist($corp);
+        $this->om->persist($member);
+        $this->om->flush();
 
         $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY, $player);
-        $this->helper->getObjectManager()->flush();
+        $this->om->flush();
 
         $this->assertSame(0, count($player->getCharacters()));
         $this->assertSame(0, count($this->charRepo->findAll()));
@@ -540,14 +549,14 @@ class AccountTest extends TestCase
         $corp = (new Corporation())->setId(1)->setName('c');
         $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
         $player->addCharacter($char);
-        $this->helper->getObjectManager()->persist($player);
-        $this->helper->getObjectManager()->persist($char);
-        $this->helper->getObjectManager()->persist($corp);
-        $this->helper->getObjectManager()->persist($member);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->persist($corp);
+        $this->om->persist($member);
+        $this->om->flush();
 
         $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BY_ADMIN);
-        $this->helper->getObjectManager()->flush();
+        $this->om->flush();
 
         $corpMember = $this->corpMemberRepo->findBy([]);
         $this->assertSame(1, count($corpMember));
@@ -569,10 +578,10 @@ class AccountTest extends TestCase
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
@@ -590,10 +599,10 @@ class AccountTest extends TestCase
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(12);
         $corporation = (new Corporation())->setId(102);
@@ -611,10 +620,10 @@ class AccountTest extends TestCase
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
@@ -632,10 +641,10 @@ class AccountTest extends TestCase
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
@@ -656,11 +665,11 @@ class AccountTest extends TestCase
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
         $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->persist($setting4);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->persist($setting4);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
@@ -680,11 +689,11 @@ class AccountTest extends TestCase
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
         $setting4 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_DELAY))->setValue('24');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->persist($setting4);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->persist($setting4);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
@@ -702,9 +711,9 @@ class AccountTest extends TestCase
     {
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $this->helper->getObjectManager()->persist($setting2);
-        $this->helper->getObjectManager()->persist($setting3);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+        $this->om->flush();
 
         $alliance = (new Alliance())->setId(11);
         $corporation = (new Corporation())->setId(101);
@@ -719,8 +728,8 @@ class AccountTest extends TestCase
 
         // add "deactivated groups" setting set to 0
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('0');
-        $this->helper->getObjectManager()->persist($setting1);
-        $this->helper->getObjectManager()->flush();
+        $this->om->persist($setting1);
+        $this->om->flush();
 
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
@@ -755,7 +764,7 @@ class AccountTest extends TestCase
         $this->setUpTrackingData();
 
         $this->service->syncTrackingRole(new Player);
-        $this->helper->getObjectManager()->flush();
+        $this->om->flush();
 
         $players = $this->playerRepo->findBy([]);
         $this->assertSame(2, count($players));
@@ -774,8 +783,8 @@ class AccountTest extends TestCase
         
         $this->service->syncTrackingRole($this->player1);
         $this->service->syncTrackingRole($this->player2);
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
 
         $players = $this->playerRepo->findBy([]);
         $this->assertFalse($players[0]->hasRole(Role::TRACKING));
@@ -791,8 +800,8 @@ class AccountTest extends TestCase
 
         $this->service->syncTrackingRole(null, $this->corp1);
         $this->service->syncTrackingRole(null, $this->corp2);
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
 
         $players = $this->playerRepo->findBy([]);
         $this->assertFalse($players[0]->hasRole(Role::TRACKING));
@@ -814,7 +823,7 @@ class AccountTest extends TestCase
         $this->setUpWatchlistData();
 
         $this->service->syncWatchlistRole(new Player);
-        $this->helper->getObjectManager()->flush();
+        $this->om->flush();
 
         $players = $this->playerRepo->findBy([]);
         $this->assertSame(2, count($players));
@@ -833,8 +842,8 @@ class AccountTest extends TestCase
 
         $this->service->syncWatchlistRole($this->player1);
         $this->service->syncWatchlistRole($this->player2);
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
 
         $players = $this->playerRepo->findBy([]);
         $this->assertFalse($players[0]->hasRole(Role::WATCHLIST));
@@ -847,12 +856,12 @@ class AccountTest extends TestCase
 
         $this->watchlist1->removeGroup($this->group1);
         $this->watchlist2->addGroup($this->group2);
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
 
         $this->service->syncWatchlistRole();
-        $this->helper->getObjectManager()->flush();
-        $this->helper->getObjectManager()->clear();
+        $this->om->flush();
+        $this->om->clear();
 
         $players = $this->playerRepo->findBy([]);
         $this->assertFalse($players[0]->hasRole(Role::WATCHLIST));
@@ -861,7 +870,7 @@ class AccountTest extends TestCase
 
     private function setUpTrackingData()
     {
-        $om = $this->helper->getObjectManager();
+        $om = $this->om;
         
         $role = (new Role(10))->setName(Role::TRACKING);
         $this->corp1 = (new Corporation())->setId(11)->setTicker('t1')->setName('corp 1');
@@ -890,7 +899,7 @@ class AccountTest extends TestCase
 
     private function setUpWatchlistData()
     {
-        $om = $this->helper->getObjectManager();
+        $om = $this->om;
 
         $role = (new Role(10))->setName(Role::WATCHLIST);
         $this->watchlist1 = (new Watchlist())->setId(11)->setName('wl 1');
