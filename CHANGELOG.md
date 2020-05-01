@@ -2,7 +2,7 @@
 
 ## 1.11.0
 
-1 Mai 2020
+1 May 2020
 
 - Increased sleep time of the `update-player-groups` command to reduce CPU usage.
 - Added POST requests to the ESI endpoint (GUI, not apps).
