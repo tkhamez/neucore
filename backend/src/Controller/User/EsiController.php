@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
+use GuzzleHttp\HandlerStack;
 use Neucore\Controller\BaseController;
 use Neucore\Exception\RuntimeException;
 use Neucore\Service\Config;
@@ -78,6 +79,12 @@ class EsiController extends BaseController
      *         description="The ESI route.",
      *         @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(
+     *         name="debug",
+     *         in="query",
+     *         description="Show all headers, do not use cache",
+     *         @OA\Schema(type="string", enum={"true", "false"})
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="The result from ESI or an error message.",
@@ -98,6 +105,7 @@ class EsiController extends BaseController
     {
         $charId = $this->getQueryParam($request, 'character', '');
         $route = $this->getQueryParam($request, 'route', '');
+        $debug = $this->getQueryParam($request, 'debug') === 'true';
 
         // validate input
         if ($route === '' || $charId === '') {
@@ -123,6 +131,12 @@ class EsiController extends BaseController
         $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'];
 
         // make request
+        if ($debug) {
+            $stack = $this->httpClient->getConfig('handler');
+            if ($stack instanceof HandlerStack) {
+                $stack->remove('cache');
+            }
+        }
         $token = $this->tokenService->getToken($character);
         $response = null;
         try {
@@ -130,9 +144,9 @@ class EsiController extends BaseController
                 'headers' => ['Authorization' => 'Bearer ' . $token]
             ]);
         } catch (ClientException $ce) {
-            return $this->prepareResponse($ce->getMessage(), $ce->getResponse(), 400);
+            return $this->prepareResponse($ce->getMessage(), $debug, $ce->getResponse(), 400);
         } catch (GuzzleException $ge) {
-            return $this->prepareResponse($ge->getMessage(), null, 400);
+            return $this->prepareResponse($ge->getMessage(), $debug, null, 400);
         }
 
         // get body from response
@@ -140,50 +154,67 @@ class EsiController extends BaseController
         try {
             $json = $response->getBody()->getContents();
         } catch (RuntimeException $re) {
-            return $this->prepareResponse($re->getMessage(), $response, 400);
+            return $this->prepareResponse($re->getMessage(), $debug, $response, 400);
         }
         $body = null;
         try {
             $body = \GuzzleHttp\json_decode($json);
         } catch (\InvalidArgumentException $iae) {
-            return $this->prepareResponse($iae->getMessage(), $response, 400);
+            return $this->prepareResponse($iae->getMessage(), $debug, $response, 400);
         }
 
-        return $this->prepareResponse($body, $response);
+        return $this->prepareResponse($body, $debug, $response);
     }
 
     /**
      * @param mixed $body
+     * @param bool $debug
      * @param ResponseInterface|null $response
      * @param int $code
      * @return ResponseInterface
      */
-    private function prepareResponse($body, ResponseInterface $response = null, $code = 200): ResponseInterface
-    {
+    private function prepareResponse(
+        $body,
+        bool $debug,
+        ResponseInterface $response = null,
+        $code = 200
+    ): ResponseInterface {
         return $this->withJson([
-            'headers' => $this->extractHeaders($response),
+            'headers' => $this->extractHeaders($debug, $response),
             'body' => $body,
         ], $code);
     }
 
-    private function extractHeaders(ResponseInterface $response = null): ?array
+    private function extractHeaders(bool $debug, ResponseInterface $response = null): ?array
     {
         if ($response === null) {
             return null;
         }
 
-        $remain = 'X-Esi-Error-Limit-Remain';
-        $reset = 'X-Esi-Error-Limit-Reset';
-        $expires = 'Expires';
-        $pages = 'X-Pages';
-        $warning = 'warning';
+        $result = [];
 
-        return [
-            $expires => $response->hasHeader($expires) ? $response->getHeader($expires)[0] : null,
-            $remain => $response->hasHeader($remain) ? $response->getHeader($remain)[0] : null,
-            $reset => $response->hasHeader($reset) ? $response->getHeader($reset)[0] : null,
-            $pages => $response->hasHeader($pages) ? $response->getHeader($pages)[0] : null,
-            $warning => $response->hasHeader($warning) ? $response->getHeader($warning)[0] : null,
-        ];
+        if ($debug) {
+            foreach ($response->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    $result[] = [$name, $value];
+                }
+            }
+        } else {
+            $headers = [
+                'Expires',
+                'X-Esi-Error-Limit-Remain',
+                'X-Esi-Error-Limit-Reset',
+                'X-Pages',
+                'warning',
+                'Warning',
+            ];
+            foreach ($headers as $header) {
+                if ($response->hasHeader($header)) {
+                    $result[] = [$header, $response->getHeader($header)[0]];
+                }
+            }
+        }
+
+        return $result;
     }
 }

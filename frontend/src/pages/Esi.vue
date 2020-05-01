@@ -39,10 +39,29 @@
                         adding "?page=2" etc. to the route.
                     </small>
                 </div>
-                <button type="submit" class="btn btn-primary" v-on:click="request()">Submit</button>
 
-                <div class="alert alert-secondary mt-3">
-                    <pre>{{ headers }}</pre>
+                <div class="form-group">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox"
+                                   :checked="debug === true" v-model="debug">
+                            Debug (show all headers, no cache)
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary"
+                        :class="{ disabled: selectedCharacter === '' || esiRoute === '' }"
+                        :disabled="selectedCharacter === '' || esiRoute === ''"
+                        v-on:click="request()">Submit</button>
+
+                <div v-if="status" class="alert alert-secondary mt-3">
+                    Status: <code>{{ status }}</code><br>
+                    <br>
+                    Headers:<br>
+                    <code v-for="header in headers">{{ header[0] + ': ' + header[1] }}<br></code>
+                    <br>
+                    Body:<br>
                     <pre>{{ body }}</pre>
                 </div>
             </div>
@@ -59,7 +78,8 @@ import {ESIApi, CharacterApi} from 'neucore-js-client';
 export default {
     data: function() {
         return {
-            headers: '',
+            status: null,
+            headers: [],
             body: '',
             charSearchIsLoading: false,
             charSearchResult: [],
@@ -67,6 +87,7 @@ export default {
             paths: [],
             selectedPath: '',
             esiRoute: '',
+            debug: false,
         }
     },
 
@@ -107,19 +128,21 @@ export default {
         }, 250),
 
         request: function() {
-            if (! this.selectedCharacter) {
+            if (! this.selectedCharacter || ! this.esiRoute) {
                 return;
             }
             const vm = this;
             new ESIApi().request({
                 character: this.selectedCharacter.character_id,
-                route: this.esiRoute
+                route: this.esiRoute,
+                debug: this.debug ? 'true' : 'false',
             }, function(error, data, response) {
                 let result;
+                vm.status = response.statusCode;
                 try {
                     result = JSON.parse(response.text);
                     vm.body = result.body || result;
-                    vm.headers = result.headers || '';
+                    vm.headers = result.headers || [];
                 } catch(e) {
                     vm.body = response.text;
                 }
@@ -128,3 +151,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    button:disabled {
+        cursor: not-allowed;
+    }
+</style>
