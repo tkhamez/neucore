@@ -20,7 +20,7 @@ foreach ($roles->getConstants() as $role) {
         $routeDef = getApiForRoute($route, $apiDef['paths']);
         if ($routeDef !== null) {
             $apiGroups[$routeDef['group']][] = [
-                $route[0],
+                $route[1] . ' ' . $route[0],
                 $routeDef['desc']
             ];
         }
@@ -66,7 +66,13 @@ function getRoutesForRole(string $role, array $routes, array $securityDef): arra
             }
             if (in_array($role, $roles) && ! in_array($pattern, $skip)) {
                 $apiPath = substr($pattern, strlen('/api'));
-                $result[] = [$apiPath, $conf[0]];
+                if (isset($conf[0])) {
+                    $result[] = [$apiPath, $conf[0]];
+                } else {
+                    foreach ($conf as $method => $path) {
+                        $result[] = [$apiPath, $method];
+                    }
+                }
             }
             break;
         }
