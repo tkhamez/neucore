@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Increased sleep time of the `update-player-groups` command to reduce CPU usage
+
 ## 1.10.1
 
 26 Apr 2020

@@ -58,7 +58,7 @@ class UpdatePlayerGroups extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                10
+                30
             );
         $this->configureLogOutput($this);
     }
