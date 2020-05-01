@@ -74,11 +74,9 @@ class EsiControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'headers' => [
-                'X-Esi-Error-Limit-Remain' => '100',
-                'X-Esi-Error-Limit-Reset' => '60',
-                'X-Pages' => null,
-                'warning' => null,
-                'Expires' => 'Sat, 02 Mar 2019 12:26:53 GMT',
+                ['Expires', 'Sat, 02 Mar 2019 12:26:53 GMT'],
+                ['X-Esi-Error-Limit-Remain', '100'],
+                ['X-Esi-Error-Limit-Reset', '60'],
             ],
             'body' => ['key' => 'value']
         ], $this->parseJsonBody($response));
