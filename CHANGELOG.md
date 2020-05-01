@@ -3,8 +3,9 @@
 ## next
 
 - Increased sleep time of the `update-player-groups` command to reduce CPU usage.
+- Added POST requests to the ESI endpoint.
+- Implemented a debug option for ESI queries.
 - Moved the PHP error log to `BRAVECORE_LOG_PATH`.
-- Implemented a "debug" option for ESI queries.
 
 ## 1.10.1
 

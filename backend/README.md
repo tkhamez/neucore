@@ -59,12 +59,6 @@ This list can be regenerated with:
 bin/esi-paths-public.php
 ```
 
-The UI for ESI requests requires a list of all ESI HTTP GET routes. This list can be regenerated with:
-
-```
-bin/esi-paths-http-get.php
-```
-
 ## Install
 
 See also main [**README**](../README.md#server-requirements) for prerequisites.

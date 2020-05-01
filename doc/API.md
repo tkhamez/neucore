@@ -206,6 +206,7 @@ Allows a player to make an ESI request on behalf of a character from the databas
 
 ESI API
 - ESI request. `GET /user/esi/request`
+- Same as GET /user/esi/request, but for POST requests. `POST /user/esi/request`
 
 #### settings
 

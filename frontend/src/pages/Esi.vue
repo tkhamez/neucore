@@ -6,8 +6,9 @@
                 <h1>ESI</h1>
 
                 <div class="form-group">
-                    <label>EVE Character</label>
+                    <label for="selectedCharacter">EVE Character</label>
                     <multiselect v-model="selectedCharacter" :options="charSearchResult"
+                                 id="selectedCharacter"
                                  label="character_name" track-by="character_id"
                                  placeholder="Type to search (min. 3 characters)"
                                  :searchable="true"
@@ -26,11 +27,17 @@
                         <a href="https://esi.evetech.net/ui" target="_blank" rel="noopener noreferrer">
                             https://esi.evetech.net/ui
                         </a>,
-                        only GET request are implemented.
+                        only GET and POST request are implemented.
                     </small>
                     <multiselect v-model="selectedPath" :options="paths" :loading="false"
+                                 label="name" track-by="path" id="esiRoute"
                                  placeholder="Select route"></multiselect>
-                    <input class="form-control" v-model="esiRoute" placeholder="route" id="esiRoute">
+                    <br>
+                    <select class="form-control" v-model="httpMethod">
+                        <option>GET</option>
+                        <option>POST</option>
+                    </select>
+                    <input class="form-control" v-model="esiRoute">
                     <small class="form-text text-muted">
                         Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically
                         replaced with the corresponding IDs of the selected character, other placeholders
@@ -38,6 +45,13 @@
                         If the result contains an "X-Pages" header, you can request the other pages by
                         adding "?page=2" etc. to the route.
                     </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="requestBody">
+                        Body (for POST requests)
+                    </label>
+                    <textarea v-model="requestBody" id="requestBody" class="form-control"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -85,8 +99,12 @@ export default {
             charSearchResult: [],
             selectedCharacter: '',
             paths: [],
-            selectedPath: '',
+            pathsGet: [],
+            pathsPost: [],
+            selectedPath: {},
+            httpMethod: '',
             esiRoute: '',
+            requestBody: '',
             debug: false,
         }
     },
@@ -94,16 +112,37 @@ export default {
     mounted: function() {
         window.scrollTo(0,0);
 
-        this.ajaxLoading(true);
-        $.get('/static/esi-paths-http-get.json').then((data) => {
-            this.ajaxLoading(false);
-            this.paths = data;
+        const vm = this;
+        vm.ajaxLoading(true);
+        $.get('/static/esi-paths-http-get.json').then(data => {
+            vm.pathsGet = data;
+            result();
         });
+        $.get('/static/esi-paths-http-post.json').then(data => {
+            vm.pathsPost = data;
+            result();
+        });
+        function result() {
+            if (vm.pathsGet.length > 0 && vm.pathsPost.length > 0) {
+                vm.ajaxLoading(false);
+                for (const path of vm.pathsGet) {
+                    vm.paths.push({ name: 'GET ' + path, path: path});
+                }
+                for (const path of vm.pathsPost) {
+                    vm.paths.push({ name: 'POST ' + path, path: path});
+                }
+            }
+        }
     },
 
     watch: {
         selectedPath: function() {
-            this.esiRoute = this.selectedPath;
+            this.esiRoute = this.selectedPath.path;
+            if (this.selectedPath.name.indexOf('GET') === 0) {
+                this.httpMethod = 'GET';
+            } else if (this.selectedPath.name.indexOf('POST') === 0) {
+                this.httpMethod = 'POST';
+            }
         }
     },
 
@@ -131,12 +170,16 @@ export default {
             if (! this.selectedCharacter || ! this.esiRoute) {
                 return;
             }
+
             const vm = this;
-            new ESIApi().request({
-                character: this.selectedCharacter.character_id,
-                route: this.esiRoute,
-                debug: this.debug ? 'true' : 'false',
-            }, function(error, data, response) {
+
+            const api = new ESIApi();
+            const params = {
+                'character': this.selectedCharacter.character_id,
+                'route': this.esiRoute,
+                'debug': this.debug ? 'true' : 'false',
+            };
+            const callback = function(error, data, response) {
                 let result;
                 vm.status = response.statusCode;
                 try {
@@ -146,7 +189,13 @@ export default {
                 } catch(e) {
                     vm.body = response.text;
                 }
-            });
+            };
+
+            if (this.httpMethod === 'POST') {
+                api.requestPost(vm.requestBody, params, callback);
+            } else {
+                api.request(params, callback);
+            }
         }
     }
 }

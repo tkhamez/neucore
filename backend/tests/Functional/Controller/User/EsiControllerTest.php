@@ -84,6 +84,36 @@ class EsiControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
+    public function testRequestPost200()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(200, [], '{
+            "alliance_id": 99003214,
+            "character_id": 96061222,
+            "corporation_id": 98522659
+        }'));
+
+        $response = $this->runApp(
+            'POST',
+            '/api/user/esi/request?character=6&route=/latest/characters/affiliation/',
+            ['body' => [96061222]],
+            null,
+            [ClientInterface::class => $httpClient]
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([
+            'headers' => [],
+            'body' => [
+                "alliance_id" => 99003214,
+                "character_id" => 96061222,
+                "corporation_id" => 98522659
+          ]
+        ], $this->parseJsonBody($response));
+    }
+
     private function setupDb()
     {
         $helper = new Helper();

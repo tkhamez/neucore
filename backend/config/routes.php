@@ -92,7 +92,10 @@ return [
     '/api/user/corporation/tracked-corporations'                 => ['GET',  CorporationController::class.'::trackedCorporations'],
     '/api/user/corporation/{id}/members'                         => ['GET',  CorporationController::class.'::members'],
 
-    '/api/user/esi/request' => ['GET', EsiController::class.'::request'],
+    '/api/user/esi/request' =>  [
+                                    'GET'  => EsiController::class.'::request',
+                                    'POST' => EsiController::class.'::requestPost'
+                                ],
 
     '/api/user/group/all'                            => ['GET',    GroupController::class.'::all'],
     '/api/user/group/public'                         => ['GET',    GroupController::class.'::public'],

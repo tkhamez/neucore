@@ -10,6 +10,7 @@ The frontend is based on [Vue.js](https://vuejs.org) and
 - [Style Guide](#style-guide)
 - [OpenAPI Client](#openapi-client)
 - [Install](#install)
+- [Console Commands](#console-commands)
 
 <!-- tocstop -->
 
@@ -50,4 +51,14 @@ Rebuild on change:
 
 ```
 npm run watch
+```
+
+## Console Commands
+
+### ESI routes
+
+The UI for ESI requests requires a list of all ESI GET and POST routes. This list can be regenerated with:
+
+```
+bin/esi-paths.js
 ```
