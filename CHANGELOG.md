@@ -2,7 +2,8 @@
 
 ## next
 
-- Increased sleep time of the `update-player-groups` command to reduce CPU usage
+- Increased sleep time of the `update-player-groups` command to reduce CPU usage.
+- Moved the PHP error log to `BRAVECORE_LOG_PATH`.
 
 ## 1.10.1
 

@@ -365,6 +365,11 @@ class Application
         // php settings
         ini_set('display_errors', '0');
         ini_set('log_errors', '0'); // all errors are logged with Monolog
+
+        $path = realpath($this->container->get(Config::class)['monolog']['path']);
+        if ($path !== false && is_writable($path)) {
+            ini_set('error_log', $path . '/error.log');
+        }
     }
 
     private function registerRoutes(App $app): void
