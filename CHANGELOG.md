@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.11.1
+
+2 May 2020
 
 - Reduced CPU usage of tracking role sync.
 - Added `Warning` header to the white list of the app ESI endpoint.
