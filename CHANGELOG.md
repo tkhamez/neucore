@@ -3,6 +3,7 @@
 ## next
 
 - Reduced CPU usage of tracking role sync.
+- Added `Warning` header to the white list of the app ESI endpoint.
 
 ## 1.11.0
 
