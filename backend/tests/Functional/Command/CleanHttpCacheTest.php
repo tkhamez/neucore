@@ -17,7 +17,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
 
     protected function tearDown(): void
     {
-        putenv('BRAVECORE_CACHE_DIR=');
+        putenv('NEUCORE_CACHE_DIR=');
 
         @unlink($this->file1);
         @unlink($this->file2);
@@ -43,7 +43,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
         $this->file2 = $dir . '/http/be/5b6465665d5b315d.doctrinecache.data';
 
         // this test cannot run in prod mode because the CompiledContainer class is missing otherwise
-        $output = $this->runConsoleApp('clean-http-cache', [], [], ['BRAVECORE_CACHE_DIR=' . $dir], true);
+        $output = $this->runConsoleApp('clean-http-cache', [], [], ['NEUCORE_CACHE_DIR=' . $dir], true);
         $actual = explode("\n", $output);
 
         $this->assertStringContainsString('Guzzle cache cleaned.', $actual[0]);

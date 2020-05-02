@@ -12,9 +12,9 @@ steps:
   - name: backend-test
     image: php:7.4
     environment:
-      BRAVECORE_APP_ENV: prod
-      BRAVECORE_DATABASE_URL: mysql://root:@database/test
-      BRAVECORE_TEST_DATABASE_URL: mysql://root:@database/test
+      NEUCORE_APP_ENV: prod
+      NEUCORE_DATABASE_URL: mysql://root:@database/test
+      NEUCORE_TEST_DATABASE_URL: mysql://root:@database/test
     commands:
       - apt-get update -y && apt-get -y install libgmp-dev
       - docker-php-ext-install pdo_mysql
@@ -54,8 +54,8 @@ steps:
   - name: distribution
     image: composer:1
     environment:
-      BRAVECORE_APP_ENV: prod
-      BRAVECORE_DATABASE_URL: mysql://root:@database/test?serverVersion=5.7
+      NEUCORE_APP_ENV: prod
+      NEUCORE_DATABASE_URL: mysql://root:@database/test?serverVersion=5.7
     commands:
       - docker-php-ext-install pdo_mysql
       - cd backend

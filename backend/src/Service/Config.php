@@ -78,9 +78,12 @@ class Config implements \ArrayAccess
 
     private function getEnv(string $name): string
     {
-        $value = (string) getenv($name);
+        $value = getenv($name);
+        if ($value === false) {
+            $value = getenv(str_replace('NEUCORE_', 'BRAVECORE_', $name));
+        }
 
-        if ($value === '' && isset($this->config['env_var_defaults'][$name])) {
+        if ((string) $value === '' && isset($this->config['env_var_defaults'][$name])) {
             $value = $this->config['env_var_defaults'][$name];
         }
 

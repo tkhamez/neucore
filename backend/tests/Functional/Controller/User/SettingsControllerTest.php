@@ -75,7 +75,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
     }
@@ -89,7 +89,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
-            ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
     }
@@ -107,7 +107,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": "10", "corporation_id": "101"}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
-            ['name' => 'esiDataSource', 'value' => getenv('BRAVECORE_EVE_DATASOURCE') ?: 'tranquility'],
+            ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
         ], $this->parseJsonBody($response));
     }

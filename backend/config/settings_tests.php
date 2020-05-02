@@ -12,11 +12,11 @@ return [
     ],
     'doctrine' => [
         'connection' => [
-            'url' => '${BRAVECORE_TEST_DATABASE_URL}'
+            'url' => '${NEUCORE_TEST_DATABASE_URL}'
         ],
         'driver_options' => [
-            'mysql_ssl_ca'             => '${BRAVECORE_TEST_MYSQL_SSL_CA}',
-            'mysql_verify_server_cert' => '${BRAVECORE_TEST_MYSQL_VERIFY_SERVER_CERT}',
+            'mysql_ssl_ca'             => '${NEUCORE_TEST_MYSQL_SSL_CA}',
+            'mysql_verify_server_cert' => '${NEUCORE_TEST_MYSQL_VERIFY_SERVER_CERT}',
         ],
     ],
 ];

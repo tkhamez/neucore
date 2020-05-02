@@ -4,6 +4,7 @@
 
 - Reduced CPU usage of tracking role sync.
 - Added `Warning` header to the white list of the app ESI endpoint.
+- Changed environment variable prefix from `BRAVECORE_` to `NEUCORE_` (with fallback, old names still work).
 
 ## 1.11.0
 

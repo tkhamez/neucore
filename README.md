@@ -58,7 +58,7 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 - Visit https://developers.eveonline.com or https://developers.testeveonline.com
 - Create a new application (e.g.: Neucore DEV)
 - Connection Type: "Authentication & API Access", add the required scopes. Scopes for the backend
-  are configured with the environment variable BRAVECORE_EVE_SCOPES. To use the "auto-whitelist"
+  are configured with the environment variable NEUCORE_EVE_SCOPES. To use the "auto-whitelist"
   feature for the Watchlist, the scopes must include `esi-corporations.read_corporation_membership.v1`.
 - Set the callback to https://your.domain/login-callback
 
@@ -224,7 +224,7 @@ You can deploy the application on a free [Heroku](https://www.heroku.com) accoun
 - Create a new app
 - Add a compatible database, e. g. JawsDB Maria.
 - Add the necessary config vars (see `backend/.env.dist` file) and set the following:
-  - BRAVECORE_LOG_PATH=php://stderr
+  - NEUCORE_LOG_PATH=php://stderr
 - Add build packs in this order:
 
 ```
@@ -244,7 +244,7 @@ heroku buildpacks:add heroku/php
     ```
 - Add a security group for the database that includes the new environment
 - Add a database for Neucore
-- Add environment Variables (BRAVECORE_APP_ENV, BRAVECORE_DATABASE_URL etc.)
+- Add environment Variables (NEUCORE_APP_ENV, NEUCORE_DATABASE_URL etc.)
 - Deploy again: `eb deploy`
 
 See also [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) 

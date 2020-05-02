@@ -120,10 +120,10 @@ class Application
      * Loads settings based on environment.
      *
      * Development or production environment is determined by
-     * the environment variable BRAVECORE_APP_ENV.
+     * the environment variable NEUCORE_APP_ENV.
      *
      * Loads environment variables from a .env file if the environment variable
-     * BRAVECORE_APP_ENV does not exist.
+     * NEUCORE_APP_ENV does not exist.
      *
      * @param bool $unitTest Indicates if the app is running from a functional (integration) test.
      * @param bool $forceDevMode Only used in unit tests.
@@ -145,15 +145,19 @@ class Application
             }
         }
 
-        if (getenv('BRAVECORE_APP_ENV') === false) {
+        $appEnv = getenv('NEUCORE_APP_ENV');
+        if ($appEnv === false) {
+            $appEnv = getenv('BRAVECORE_APP_ENV');
+        }
+        if ($appEnv === false) {
             throw new RuntimeException(
-                'BRAVECORE_APP_ENV environment variable is not defined. '.
+                'NEUCORE_APP_ENV environment variable is not defined. '.
                 'You need to define environment variables for configuration '.
                 'or load variables from a .env file (see .env.dist file).'
             );
         }
 
-        if (getenv('BRAVECORE_APP_ENV') === self::ENV_PROD && ! $forceDevMode) {
+        if ($appEnv === self::ENV_PROD && ! $forceDevMode) {
             $this->env = self::ENV_PROD;
         } else {
             $this->env = self::ENV_DEV;

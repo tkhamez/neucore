@@ -76,7 +76,7 @@ composer compile:prod
 ```
 
 The differences between `dev` and `prod` mode (which is determined by the environment variable 
-`BRAVECORE_APP_ENV`) are:
+`NEUCORE_APP_ENV`) are:
 - Doctrine proxy classes are auto generated in dev mode, the APCu cache is used in prod mode
 - PHP-DI uses compilation and the APCu cache in prod mode
 
