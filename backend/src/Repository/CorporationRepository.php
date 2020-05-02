@@ -37,6 +37,8 @@ class CorporationRepository extends EntityRepository
      */
     public function getAllWithMemberTrackingData()
     {
+        // TODO this is a bad query, joins too much, CPU intensive
+
         return $this->createQueryBuilder('c')
             ->join('c.members', 'm')
             ->andWhere('m.corporation IS NOT NULL')

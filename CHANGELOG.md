@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Reduced CPU usage of tracking role sync.
+
 ## 1.11.0
 
 1 May 2020

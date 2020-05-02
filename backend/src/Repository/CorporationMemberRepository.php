@@ -280,4 +280,18 @@ class CorporationMemberRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function fetchCorporationIds()
+    {
+        $corporations = $this->createQueryBuilder('m')
+            ->leftJoin('m.corporation', 'c')
+            ->select('c.id')
+            ->groupBy('m.corporation')
+            ->getQuery()
+            ->getResult();
+
+        return array_map(function ($corporation) {
+            return $corporation['id'];
+        }, $corporations);
+    }
 }

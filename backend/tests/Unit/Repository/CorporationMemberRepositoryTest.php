@@ -205,4 +205,11 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame(1, count($actual2));
         $this->assertSame(40, $actual2[0]->getId());
     }
+
+    public function testFetchCorporationIds()
+    {
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
+        $ids = $repository->fetchCorporationIds();
+        $this->assertSame([1, 2], $ids);
+    }
 }
