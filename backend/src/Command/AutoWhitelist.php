@@ -112,7 +112,7 @@ class AutoWhitelist extends Command
                 'sleep',
                 's',
                 InputOption::VALUE_OPTIONAL,
-                'Time to sleep in milliseconds after each check',
+                'Time to sleep in milliseconds after each player and check',
                 50
             );
         $this->configureLogOutput($this);
@@ -206,6 +206,9 @@ class AutoWhitelist extends Command
             if (count($accountsData[$playerId]) === 0) {
                 unset($accountsData[$playerId]);
             }
+
+            $this->writeLine("  Collected data from player $playerId.");
+            usleep($this->sleep * 1000);
         }
 
         return $accountsData;
@@ -247,6 +250,7 @@ class AutoWhitelist extends Command
                     }
                 }
 
+                $this->writeLine("  Checked corporation $corporationId.");
                 usleep($this->sleep * 1000);
             }
         }

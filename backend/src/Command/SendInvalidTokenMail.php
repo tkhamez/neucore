@@ -131,10 +131,11 @@ class SendInvalidTokenMail extends Command
                 ) {
                     $this->eveMail->invalidTokenMailSent($playerId, true);
                     if ($errMessage === '') {
-                        $this->writeLine('  Mail sent to ' . $characterId);
+                        $this->writeLine('  Mail sent to ' . $characterId, false);
                     } else {
                         $this->writeLine(
-                            "  Mail could not be sent to $characterId because of CSPA charge or blocked sender"
+                            "  Mail could not be sent to $characterId because of CSPA charge or blocked sender",
+                            false
                         );
                     }
                     usleep($this->sleep * 1000 * 1000);
