@@ -281,7 +281,10 @@ class CorporationMemberRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function fetchCorporationIds()
+    /**
+     * @return int[]
+     */
+    public function fetchCorporationIds(): array
     {
         $corporations = $this->createQueryBuilder('m')
             ->leftJoin('m.corporation', 'c')
@@ -291,7 +294,7 @@ class CorporationMemberRepository extends EntityRepository
             ->getResult();
 
         return array_map(function ($corporation) {
-            return $corporation['id'];
+            return (int) $corporation['id'];
         }, $corporations);
     }
 }
