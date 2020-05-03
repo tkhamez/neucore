@@ -163,100 +163,28 @@ export default {
         window.scrollTo(0,0);
 
         configureDataTable(this);
-
-        this.getCorporations();
-        this.getMembers();
+        getCorporations(this);
     },
 
     watch: {
         route () {
-            if (this.route.length < 3) {
-                this.getMembers();
-            } else if (this.route.length === 3 && this.route[2] !== '0') {
-                this.showCharacters(this.route[2]);
-                window.location.hash = `#Tracking/${this.corporation.id}/0`;
-            }
+            setOptionsFromPath(this);
+            getMembersDelayed(this);
         },
 
         corporation () {
-            if (this.corporation !== '') {
-                window.location.hash = `#Tracking/${this.corporation.id}`;
-            } else {
-                window.location.hash = '#Tracking';
-            }
+            setPathFromOptions(this);
         },
 
         formOptions: {
             handler() {
-                this.getMembersDelayed(this);
+                setPathFromOptions(this);
             },
             deep: true
         }
     },
 
     methods: {
-        getCorporations () {
-            const vm = this;
-            new CorporationApi().trackedCorporations((error, data) => {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.corporations = data;
-                vm.setCorporation(); // select correct value in drop down after page reload
-            });
-        },
-
-        setCorporation () {
-            if (! this.route[1]) {
-                return;
-            }
-            const corporationId = parseInt(this.route[1], 10);
-            for (const corporation of this.corporations) {
-                if (corporation.id === corporationId) {
-                    this.corporation = corporation;
-                    break;
-                }
-            }
-        },
-
-        getMembersDelayed: _.debounce((vm) => {
-            vm.getMembers();
-        }, 250),
-
-        getMembers () {
-            this.table.clear();
-            this.table.draw();
-            if (! this.route[1]) {
-                return;
-            }
-
-            const corporationId = parseInt(this.route[1], 10);
-            const opts = {
-                inactive: this.formOptions.daysInactive,
-                active: this.formOptions.daysActive,
-                account: this.formOptions.account,
-                validToken: this.formOptions.validToken,
-                tokenStatusChanged: this.formOptions.tokenChanged,
-            };
-
-            const vm = this;
-            new CorporationApi().members(corporationId, opts, (error, data, response) => {
-                if (error) {
-                    if (response.statusCode === 403) {
-                        vm.message(error, 'warning', 2000);
-                    }
-                    return;
-                }
-                vm.table.clear(); // it can happen that two of these requests run in parallel
-                vm.table.rows.add(data);
-                vm.table.draw();
-            });
-        },
-
-        showCharacters (playerId) {
-            this.$refs.charactersModal.showCharacters(playerId);
-        },
-
         toggleSearchableColumn (index) {
             this.columns[index].searchable = ! this.columns[index].searchable;
             this.table.draw();
@@ -264,21 +192,100 @@ export default {
     }
 };
 
-function configureDataTable(vm) {
-    $.fn.dataTable.ext.search.push(
-        (settings, searchData) => {
-            const term = $('.dataTables_filter input').val().toLowerCase();
-            for (let index = 0; index < vm.columns.length; index++) {
-                if (! vm.columns[index].searchable) {
-                    continue;
-                }
-                if (searchData[index].toLowerCase().indexOf(term) !== -1) {
-                    return true;
-                }
-            }
-            return false;
+function getCorporations(vm) {
+    new CorporationApi().trackedCorporations((error, data) => {
+        if (error) { // 403 usually
+            return;
         }
-    );
+        vm.corporations = data;
+        setOptionsFromPath(vm); // call after list of corporation was populated
+        getMembers(vm);
+    });
+}
+
+const getMembersDelayed = _.debounce((vm) => {
+    getMembers(vm);
+}, 400);
+
+function getMembers(vm) {
+    vm.table.clear();
+    vm.table.draw();
+    if (! vm.corporation) {
+        return;
+    }
+
+    const opts = {
+        inactive: vm.formOptions.daysInactive,
+        active: vm.formOptions.daysActive,
+        account: vm.formOptions.account,
+        validToken: vm.formOptions.validToken,
+        tokenStatusChanged: vm.formOptions.tokenChanged,
+    };
+    new CorporationApi().members(vm.corporation.id, opts, (error, data, response) => {
+        if (error) {
+            if (response.statusCode === 403) {
+                vm.message(error, 'warning', 2000);
+            }
+            return;
+        }
+        vm.table.clear(); // it can happen that two of these requests run in parallel
+        vm.table.rows.add(data);
+        vm.table.draw();
+    });
+}
+
+function setOptionsFromPath(vm) {
+    if (vm.route[1]) {
+        const corporationId = parseInt(vm.route[1], 10);
+        for (const corporation of vm.corporations) {
+            if (corporation.id === corporationId) {
+                vm.corporation = corporation;
+                break;
+            }
+        }
+    }
+    if (vm.route[2]) {
+        vm.formOptions.daysInactive = vm.route[2];
+    }
+    if (vm.route[3]) {
+        vm.formOptions.daysActive = vm.route[3];
+    }
+    if (vm.route[4]) {
+        vm.formOptions.account = vm.route[4];
+    }
+    if (vm.route[5]) {
+        vm.formOptions.validToken = vm.route[5];
+    }
+    if (vm.route[6]) {
+        vm.formOptions.tokenChanged = vm.route[6];
+    }
+}
+
+function setPathFromOptions(vm) {
+    const params = [
+        vm.corporation !== '' ? vm.corporation.id : '',
+        vm.formOptions.daysInactive,
+        vm.formOptions.daysActive,
+        vm.formOptions.account,
+        vm.formOptions.validToken,
+        vm.formOptions.tokenChanged,
+    ];
+    window.location.hash = `#Tracking/${params.join('/')}`;
+}
+
+function configureDataTable(vm) {
+    $.fn.dataTable.ext.search.push((settings, searchData) => {
+        const term = $('.dataTables_filter input').val().toLowerCase();
+        for (let index = 0; index < vm.columns.length; index++) {
+            if (! vm.columns[index].searchable) {
+                continue;
+            }
+            if (searchData[index].toLowerCase().indexOf(term) !== -1) {
+                return true;
+            }
+        }
+        return false;
+    });
 
     vm.table = $('.member-table').DataTable({
         lengthMenu: [
@@ -290,6 +297,10 @@ function configureDataTable(vm) {
         order: [[4, "desc"]],
         'drawCallback': function() {
             $('[data-toggle="tooltip"]').tooltip();
+            $('a[data-player-id]').on('click', (evt) => {
+                $.Event(evt).preventDefault();
+                vm.$refs.charactersModal.showCharacters(evt.target.dataset.playerId)
+            });
         },
         columns: [{
             data (row) {
@@ -303,7 +314,7 @@ function configureDataTable(vm) {
             data (row) {
                 if (row.player) {
                     return `
-                        <a href="#Tracking/${vm.corporation.id}/${row.player.id}">
+                        <a href="#" data-player-id="${row.player.id}">
                             ${row.player.name} #${row.player.id}
                         </a>`;
                 } else if (row.missingCharacterMailSentDate) {
@@ -379,9 +390,8 @@ function configureDataTable(vm) {
         font-size: 90%;
     }
     @supports (position: sticky) {
-        // position needs !important because "dataTables.bootstrap4.css" sets position to absolute
         .member-table thead th {
-            position: sticky !important;
+            position: sticky;
             top: 80px;
         }
     }

@@ -3,6 +3,7 @@
 ## next
 
 - Member Tracking: Added send result from "missing character" mail.
+- Member Tracking: Added all form settings to URL.
 
 ## 1.11.2
 
