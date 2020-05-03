@@ -1,7 +1,6 @@
 <template>
     <div class="container-fluid">
 
-        <!--suppress HtmlUnknownTag -->
         <characters ref="charactersModal"></characters>
 
         <div class="row mb-3 mt-3">
@@ -99,14 +98,11 @@
                             <th scope="col">Character</th>
                             <th scope="col">Account</th>
                             <th scope="col" title="ESI token status">ESI</th>
-                            <th scope="col" title="ESI token status change date" class="font-weight-normal">
-                                changed*
-                            </th>
-                            <th scope="col">Logon*</th>
-                            <th scope="col">Logoff*</th>
+                            <th scope="col">Logon</th>
+                            <th scope="col">Logoff</th>
                             <th scope="col">Location (System, Structure)</th>
                             <th scope="col">Ship</th>
-                            <th scope="col">Joined*</th>
+                            <th scope="col">Joined</th>
                         </tr>
                     </thead>
                 </table>
@@ -114,7 +110,7 @@
                     Last update:
                     <span v-if="corporation.trackingLastUpdate">{{ formatDate(corporation.trackingLastUpdate) }}</span>
                     <br>
-                    * Time is GMT
+                    All dates and times are in GMT.
                 </p>
             </div>
         </div>
@@ -154,7 +150,6 @@ export default {
                 { name: 'Character', searchable: true },
                 { name: 'Account', searchable: true },
                 { name: 'ESI', searchable: true },
-                { name: 'changed', searchable: true },
                 { name: 'Logon', searchable: true },
                 { name: 'Logoff', searchable: true },
                 { name: 'Location', searchable: true },
@@ -293,43 +288,56 @@ function configureDataTable(vm) {
         pageLength: 10,
         deferRender: true,
         order: [[4, "desc"]],
+        'drawCallback': function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        },
         columns: [{
             data (row) {
-                return '' +
-                    `<a href="https://evewho.com/character/${row.id}" ` +
-                    '   target="_blank" rel="noopener noreferrer" title="Eve Who">' +
-                        (row.name ? row.name : row.id) +
-                    '</a>';
+                return `
+                    <a href="https://evewho.com/character/${row.id}"
+                        target="_blank" rel="noopener noreferrer" title="Eve Who">
+                        ${(row.name ? row.name : row.id)}
+                    </a>`;
             }
         }, {
             data (row) {
-                if (! row.player) {
+                if (row.player) {
+                    return `
+                        <a href="#Tracking/${vm.corporation.id}/${row.player.id}">
+                            ${row.player.name} #${row.player.id}
+                        </a>`;
+                } else if (row.missingCharacterMailSent) {
+                    return `
+                        <div data-toggle="tooltip" data-html="true"
+                              title="Mail sent: ${vm.$root.formatDate(row.missingCharacterMailSent)}">
+                            n/a
+                        </div>`;
+                } else {
                     return '';
                 }
-                return '' +
-                    `<a href="#Tracking/${vm.corporation.id}/${row.player.id}">` +
-                        row.player.name + ' #' + row.player.id +
-                    '</a>';
             }
         }, {
             data (row) {
-                if (row.character && row.character.validToken) {
-                    return 'valid';
+                if (! row.character) {
+                    return '';
                 }
-                if (row.character && row.character.validToken === false) {
-                    return 'invalid';
+                let text = '';
+                if (row.character.validToken) {
+                    text = 'valid';
+                } else if (row.character.validToken === false) {
+                    text = 'invalid';
+                } else {
+                    text = 'n/a';
                 }
-                if (row.character && row.character.validToken === null) {
-                    return 'n/a';
+                if (row.character.validTokenTime) {
+                    return `
+                        <div data-toggle="tooltip" data-html="true"
+                              title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}">
+                            ${text}
+                        </div>`;
+                } else {
+                    return text;
                 }
-                return '';
-            }
-        }, {
-            data (row) {
-                if (row.character && row.character.validTokenTime) {
-                    return vm.$root.formatDate(row.character.validTokenTime);
-                }
-                return '';
             }
         }, {
             data (row) {

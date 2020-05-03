@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Repository;
 
 use Doctrine\Persistence\ObjectManager;
+use Neucore\Api;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiType;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use PHPUnit\Framework\TestCase;
@@ -20,6 +23,8 @@ class CorporationMemberRepositoryTest extends TestCase
      */
     private static $om;
 
+    private static $data;
+
     /**
      * @throws \Exception
      */
@@ -29,10 +34,20 @@ class CorporationMemberRepositoryTest extends TestCase
         $helper->emptyDb();
         self::$om = $helper->getObjectManager();
 
+        self::$data = new \stdClass();
+        self::$data->validtokenTime1 = new \DateTime('now -240 hours');
+        self::$data->loginTime1 = new \DateTime('now -111 days +1 hour');
+        self::$data->logoffTime1 = new \DateTime('now -111 days');
+        self::$data->createdTime1 = new \DateTime("now -30 days");
+        self::$data->updatedTime1 = new \DateTime("now -30 days");
+
+        $location = (new EsiLocation())->setId(5040)->setName('A Station')->setCategory(EsiLocation::CATEGORY_STATION);
+        $ship = (new EsiType())->setId(4030)->setName('A ship');
         $player1 = (new Player())->setName('Player 1');
         $char1 = (new Character())->setId(1)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
         $char2 = (new Character())->setId(2)->setName('Char 2')->setPlayer($player1)
-            ->setValidToken(false)->setValidTokenTime(new \DateTime("now -240 hours"));
+            ->setValidToken(false)->setValidTokenTime(self::$data->validtokenTime1)
+            ->setCreated(self::$data->createdTime1)->setLastUpdate(self::$data->updatedTime1);
         $char5 = (new Character())->setId(5)->setName('Char 5')->setPlayer($player1)->setValidToken(true);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
         $corp2 = (new Corporation())->setId(2)->setName('Corp 2')->setTicker('C2');
@@ -41,7 +56,10 @@ class CorporationMemberRepositoryTest extends TestCase
         $member1a = (new CorporationMember())->setId(101)->setName('Member 1a')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -112 days +30 minutes'));
         $member2 = (new CorporationMember())->setId(20)->setName('Member 2')->setCorporation($corp1)
-            ->setLogonDate(new \DateTime('now -111 days +1 hour'))->setCharacter($char2);
+            ->setCharacter($char2)->setLocation($location)->setShipType($ship)
+            ->setLogonDate(self::$data->loginTime1)->setLogoffDate(self::$data->logoffTime1)
+            ->setStartDate(new \DateTime('2019-05-26 15:51:18'))
+            ->setMissingCharacterMailSent(new \DateTime('2019-05-27 06:45:41'));
         $member3 = (new CorporationMember())->setId(30)->setName('Member 3')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
@@ -49,6 +67,8 @@ class CorporationMemberRepositoryTest extends TestCase
         $member5 = (new CorporationMember())->setId(50)->setName('Member 5')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -110 days +30 minutes'))->setCharacter($char5);
 
+        self::$om->persist($location);
+        self::$om->persist($ship);
         self::$om->persist($player1);
         self::$om->persist($char1);
         self::$om->persist($char2);
@@ -63,6 +83,8 @@ class CorporationMemberRepositoryTest extends TestCase
         self::$om->persist($member5);
 
         self::$om->flush();
+
+        self::$data->playerId1 = $player1->getId();
     }
 
     public function testResetCriteria()
@@ -134,9 +156,36 @@ class CorporationMemberRepositoryTest extends TestCase
 
         $actual = $repository->setInactive(110)->setActive(111)->findMatching(1);
 
-        $this->assertSame(1, count($actual));
-
-        $this->assertSame('Member 2', $actual[0]->getName());
+        $this->assertSame([[
+            'id' => 20,
+            'name' => 'Member 2',
+            'location' => [
+                'id' => 5040,
+                'name' => 'A Station',
+                'category' => EsiLocation::CATEGORY_STATION,
+            ],
+            'logoffDate' => date_format(self::$data->logoffTime1, Api::DATE_FORMAT),
+            'logonDate' => date_format(self::$data->loginTime1, Api::DATE_FORMAT),
+            'shipType' => [
+                'id' => 4030,
+                'name' => 'A ship',
+            ],
+            'startDate' => '2019-05-26T15:51:18Z',
+            'missingCharacterMailSent' => '2019-05-27T06:45:41Z',
+            'character' => [
+                'id' => 2,
+                'name' => 'Char 2',
+                'main' => false,
+                'created' => date_format(self::$data->createdTime1, Api::DATE_FORMAT),
+                'lastUpdate' => date_format(self::$data->updatedTime1, Api::DATE_FORMAT),
+                'validToken' => false,
+                'validTokenTime' => date_format(self::$data->validtokenTime1, Api::DATE_FORMAT),
+            ],
+            'player' => [
+                'id' => self::$data->playerId1,
+                'name' => 'Player 1',
+            ],
+        ]], json_decode(json_encode($actual), true));
     }
 
     public function testFindMatchingWithOutAccount()

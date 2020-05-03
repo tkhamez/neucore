@@ -91,6 +91,7 @@ class CorporationMember implements \JsonSerializable
     private $character;
 
     /**
+     * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="missing_character_mail_sent", nullable=true)
      * @var \DateTime
      */
@@ -110,6 +111,8 @@ class CorporationMember implements \JsonSerializable
             'logonDate' => $this->getLogonDate() !== null ? $this->getLogonDate()->format(Api::DATE_FORMAT) : null,
             'shipType' => $this->shipType,
             'startDate' => $this->getStartDate() !== null ? $this->getStartDate()->format(Api::DATE_FORMAT) : null,
+            'missingCharacterMailSent' => $this->getMissingCharacterMailSent() !== null ?
+                $this->getMissingCharacterMailSent()->format(Api::DATE_FORMAT) : null,
         ];
 
         if ($forUser) {

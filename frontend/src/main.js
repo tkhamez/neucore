@@ -1,8 +1,9 @@
 
 import "core-js";
 
-// bootstrap JS (css is included via theme* entry point) and required jquery, no popper.js
+// bootstrap JS (css is included via theme* entry point) with required jquery and popper.js
 import $ from 'jquery';
+import 'popper.js'; // initialization needs o be done after the component was rendered
 import 'bootstrap';
 
 // data tables

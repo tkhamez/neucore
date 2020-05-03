@@ -130,6 +130,7 @@ class CorporationMemberRepository extends EntityRepository
                 'm.logoffDate',
                 'm.logonDate',
                 'm.startDate',
+                'm.missingCharacterMailSent',
                 'l.id AS locationId',
                 'l.name AS locationName',
                 'l.category AS locationCategory',
@@ -138,6 +139,7 @@ class CorporationMemberRepository extends EntityRepository
                 'c.id AS characterId',
                 'c.name AS characterName',
                 'c.main',
+                'c.created',
                 'c.lastUpdate',
                 'c.validToken',
                 'c.validTokenTime',
@@ -188,6 +190,9 @@ class CorporationMemberRepository extends EntityRepository
             if ($r['startDate']) {
                 $member->setStartDate($r['startDate']);
             }
+            if ($r['missingCharacterMailSent']) {
+                $member->setMissingCharacterMailSent($r['missingCharacterMailSent']);
+            }
 
             if ($r['locationId']) {
                 $location = (new EsiLocation())
@@ -212,6 +217,9 @@ class CorporationMemberRepository extends EntityRepository
                     ->setValidToken($r['validToken'] !== null ? (bool) $r['validToken'] : null);
                 if ($r['lastUpdate']) {
                     $character->setLastUpdate($r['lastUpdate']);
+                }
+                if ($r['created']) {
+                    $character->setCreated($r['created']);
                 }
                 if ($r['validTokenTime']) {
                     $character->setValidTokenTime($r['validTokenTime']);

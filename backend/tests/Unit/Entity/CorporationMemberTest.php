@@ -31,6 +31,7 @@ class CorporationMemberTest extends TestCase
             'logonDate' => null,
             'shipType' => null,
             'startDate' => null,
+            'missingCharacterMailSent' => null,
             'character' => null,
             'player' => null,
         ], json_decode((string) json_encode($member), true));
@@ -55,6 +56,7 @@ class CorporationMemberTest extends TestCase
             'logonDate' => '2018-12-25T19:14:58Z',
             'shipType' => ['id' => 345, 'name' => null],
             'startDate' => '2018-12-25T19:14:58Z',
+            'missingCharacterMailSent' => null,
             'character' => [
                 'id' => 123,
                 'name' => 'test char',
