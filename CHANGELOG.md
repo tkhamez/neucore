@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.11.3
+
+3 May 2020
 
 - Member Tracking: Added send result from "missing character" mail.
 - Member Tracking: Added all form settings to URL.
