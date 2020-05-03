@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
+use Neucore\Api;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -118,7 +119,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
 
         $this->om->clear();
         $member4 = $this->repoFactory->getCorporationMemberRepository()->find(104);
-        $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSent());
+        $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSentDate());
     }
 
     public function testExecute()
@@ -140,7 +141,8 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
 
         $this->om->clear();
         $member4 = $this->repoFactory->getCorporationMemberRepository()->find(104);
-        $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSent());
+        $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSentDate());
+        $this->assertLessThanOrEqual(Api::MAIL_OK, $member4->getMissingCharacterMailSentResult());
     }
 
     private function setupData($invalidConfig = false)
@@ -160,14 +162,14 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $corp3 = (new Corporation())->setId(2030)->setName('corp3')->setTicker('C3'); // not updated
         $player1 = (new Player())->setName('p1');
         $char1 = (new Character())->setId(102)->setCorporation($corp1)->setPlayer($player1);
-        $member1 = (new CorporationMember())->setId(101)->setCorporation($corp1)
-            ->setLogonDate(new \DateTime())->setMissingCharacterMailSent(new \DateTime()); // already sent
+        $member1 = (new CorporationMember())->setId(101)->setCorporation($corp1)->setLogonDate(new \DateTime())
+            ->setMissingCharacterMailSentDate(new \DateTime()); // already sent
         $member2 = (new CorporationMember())->setId(102)->setCorporation($corp1)
             ->setLogonDate(new \DateTime())->setCharacter($char1); // has account
         $member3 = (new CorporationMember())->setId(103)->setCorporation($corp2)
             ->setLogonDate(new \DateTime()); // not in correct corp
-        $member4 = (new CorporationMember())->setId(104)->setCorporation($corp1)
-            ->setLogonDate(new \DateTime())->setMissingCharacterMailSent(new \DateTime('now -200 days')); // sends mail
+        $member4 = (new CorporationMember())->setId(104)->setCorporation($corp1)->setLogonDate(new \DateTime())
+            ->setMissingCharacterMailSentDate(new \DateTime('now -200 days')); // will send mail
         $member5 = (new CorporationMember())->setId(105)->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -200 days')); // inactive
         $member6 = (new CorporationMember())->setId(106)->setCorporation($corp3)

@@ -313,7 +313,7 @@ class EveMail
         }
 
         $minDateSent = date_create('now -' . (int) $daysVar->getValue() . ' days');
-        if ($member->getMissingCharacterMailSent() && $member->getMissingCharacterMailSent() > $minDateSent) {
+        if ($member->getMissingCharacterMailSentDate() && $member->getMissingCharacterMailSentDate() > $minDateSent) {
             return 'Already sent.';
         }
 
@@ -358,14 +358,15 @@ class EveMail
     /**
      * Set date to NOW.
      */
-    public function missingCharacterMailSent(int $corporationMemberId): bool
+    public function missingCharacterMailSent(int $corporationMemberId, string $result): bool
     {
         $member = $this->repositoryFactory->getCorporationMemberRepository()->find($corporationMemberId);
         if ($member === null) {
             return false;
         }
 
-        $member->setMissingCharacterMailSent(new \DateTime());
+        $member->setMissingCharacterMailSentDate(new \DateTime());
+        $member->setMissingCharacterMailSentResult($result);
         $this->objectManager->flush();
 
         return true;

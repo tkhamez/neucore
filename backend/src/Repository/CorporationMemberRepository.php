@@ -130,7 +130,8 @@ class CorporationMemberRepository extends EntityRepository
                 'm.logoffDate',
                 'm.logonDate',
                 'm.startDate',
-                'm.missingCharacterMailSent',
+                'm.missingCharacterMailSentDate',
+                'm.missingCharacterMailSentResult',
                 'l.id AS locationId',
                 'l.name AS locationName',
                 'l.category AS locationCategory',
@@ -190,8 +191,9 @@ class CorporationMemberRepository extends EntityRepository
             if ($r['startDate']) {
                 $member->setStartDate($r['startDate']);
             }
-            if ($r['missingCharacterMailSent']) {
-                $member->setMissingCharacterMailSent($r['missingCharacterMailSent']);
+            if ($r['missingCharacterMailSentDate']) {
+                $member->setMissingCharacterMailSentDate($r['missingCharacterMailSentDate']);
+                $member->setMissingCharacterMailSentResult($r['missingCharacterMailSentResult']);
             }
 
             if ($r['locationId']) {

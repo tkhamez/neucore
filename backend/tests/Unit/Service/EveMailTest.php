@@ -443,14 +443,14 @@ class EveMailTest extends TestCase
 
         $corp = (new Corporation())->setId(11);
         $member = (new CorporationMember())->setId(101)->setCorporation($corp)
-            ->setMissingCharacterMailSent(new \DateTime('now -20 days +1 hour'));
+            ->setMissingCharacterMailSentDate(new \DateTime('now -20 days +1 hour'));
         $this->om->persist($corp);
         $this->om->persist($member);
         $this->om->flush();
 
         $this->assertSame('Already sent.', $this->eveMail->missingCharacterMaySend(101));
 
-        $member->setMissingCharacterMailSent(new \DateTime('now -20 days -1 hour'));
+        $member->setMissingCharacterMailSentDate(new \DateTime('now -20 days -1 hour'));
         $this->om->flush();
 
         $this->assertSame('', $this->eveMail->missingCharacterMaySend(101));
@@ -504,7 +504,7 @@ class EveMailTest extends TestCase
 
     public function testMissingCharacterMailSent()
     {
-        $this->assertFalse($this->eveMail->missingCharacterMailSent(101));
+        $this->assertFalse($this->eveMail->missingCharacterMailSent(101, 'result'));
 
         $corp = (new Corporation())->setId(11);
         $member = (new CorporationMember())->setId(101)->setCorporation($corp);
@@ -512,14 +512,14 @@ class EveMailTest extends TestCase
         $this->om->persist($member);
         $this->om->flush();
 
-        $this->assertNull($member->getMissingCharacterMailSent());
-        $this->eveMail->missingCharacterMailSent(101);
+        $this->assertNull($member->getMissingCharacterMailSentDate());
 
-        $this->assertTrue($this->eveMail->missingCharacterMailSent(101));
+        $this->assertTrue($this->eveMail->missingCharacterMailSent(101, 'result'));
 
         $this->om->clear();
         $memberDb = $this->repoFactory->getCorporationMemberRepository()->find(101);
-        $this->assertLessThanOrEqual(new \DateTime(), $memberDb->getMissingCharacterMailSent());
+        $this->assertLessThanOrEqual(new \DateTime(), $memberDb->getMissingCharacterMailSentDate());
+        $this->assertLessThanOrEqual('result', $memberDb->getMissingCharacterMailSentResult());
     }
 
     public function testSendMail()

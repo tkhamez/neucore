@@ -92,10 +92,17 @@ class CorporationMember implements \JsonSerializable
 
     /**
      * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="missing_character_mail_sent", nullable=true)
-     * @var \DateTime
+     * @ORM\Column(type="datetime", name="missing_character_mail_sent_date", nullable=true)
+     * @var \DateTime|null
      */
-    private $missingCharacterMailSent;
+    private $missingCharacterMailSentDate;
+
+    /**
+     * @OA\Property(nullable=true)
+     * @ORM\Column(type="string", length=255, name="missing_character_mail_sent_result", nullable=true)
+     * @var string|null
+     */
+    private $missingCharacterMailSentResult;
 
     /**
      * {@inheritDoc}
@@ -111,8 +118,9 @@ class CorporationMember implements \JsonSerializable
             'logonDate' => $this->getLogonDate() !== null ? $this->getLogonDate()->format(Api::DATE_FORMAT) : null,
             'shipType' => $this->shipType,
             'startDate' => $this->getStartDate() !== null ? $this->getStartDate()->format(Api::DATE_FORMAT) : null,
-            'missingCharacterMailSent' => $this->getMissingCharacterMailSent() !== null ?
-                $this->getMissingCharacterMailSent()->format(Api::DATE_FORMAT) : null,
+            'missingCharacterMailSentDate' => $this->getMissingCharacterMailSentDate() !== null ?
+                $this->getMissingCharacterMailSentDate()->format(Api::DATE_FORMAT) : null,
+            'missingCharacterMailSentResult' => $this->missingCharacterMailSentResult,
         ];
 
         if ($forUser) {
@@ -317,15 +325,27 @@ class CorporationMember implements \JsonSerializable
         return $this->character;
     }
 
-    public function setMissingCharacterMailSent(\DateTime $missingCharacterMailSent): self
+    public function setMissingCharacterMailSentDate(\DateTime $date): self
     {
-        $this->missingCharacterMailSent = clone $missingCharacterMailSent;
+        $this->missingCharacterMailSentDate = clone $date;
 
         return $this;
     }
 
-    public function getMissingCharacterMailSent(): ?\DateTime
+    public function getMissingCharacterMailSentDate(): ?\DateTime
     {
-        return $this->missingCharacterMailSent;
+        return $this->missingCharacterMailSentDate;
+    }
+
+    public function setMissingCharacterMailSentResult(?string $result): self
+    {
+        $this->missingCharacterMailSentResult = $result;
+
+        return $this;
+    }
+
+    public function getMissingCharacterMailSentResult(): ?string
+    {
+        return $this->missingCharacterMailSentResult;
     }
 }

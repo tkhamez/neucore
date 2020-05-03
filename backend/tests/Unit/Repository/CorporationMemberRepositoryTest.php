@@ -59,7 +59,8 @@ class CorporationMemberRepositoryTest extends TestCase
             ->setCharacter($char2)->setLocation($location)->setShipType($ship)
             ->setLogonDate(self::$data->loginTime1)->setLogoffDate(self::$data->logoffTime1)
             ->setStartDate(new \DateTime('2019-05-26 15:51:18'))
-            ->setMissingCharacterMailSent(new \DateTime('2019-05-27 06:45:41'));
+            ->setMissingCharacterMailSentDate(new \DateTime('2019-05-27 06:45:41'))
+            ->setMissingCharacterMailSentResult(Api::MAIL_OK);
         $member3 = (new CorporationMember())->setId(30)->setName('Member 3')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
@@ -171,7 +172,8 @@ class CorporationMemberRepositoryTest extends TestCase
                 'name' => 'A ship',
             ],
             'startDate' => '2019-05-26T15:51:18Z',
-            'missingCharacterMailSent' => '2019-05-27T06:45:41Z',
+            'missingCharacterMailSentDate' => '2019-05-27T06:45:41Z',
+            'missingCharacterMailSentResult' => Api::MAIL_OK,
             'character' => [
                 'id' => 2,
                 'name' => 'Char 2',

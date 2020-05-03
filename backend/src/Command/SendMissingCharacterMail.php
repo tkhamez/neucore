@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Neucore\Api;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\SystemVariable;
 use Neucore\Repository\CorporationMemberRepository;
@@ -133,14 +134,18 @@ class SendMissingCharacterMail extends Command
                     continue;
                 }
 
-                $errMessage = $this->eveMail->missingCharacterSend($memberId);
-                if (
-                    $errMessage === '' || // success
-                    strpos($errMessage, 'ContactCostNotApproved') !== false || // CSPA charge > 0
-                    strpos($errMessage, 'ContactOwnerUnreachable') !== false // sender is blocked
-                ) {
-                    $this->eveMail->missingCharacterMailSent($memberId);
-                    if ($errMessage === '') {
+                $errorMessage = $this->eveMail->missingCharacterSend($memberId);
+                $result = null;
+                if ($errorMessage == '') { // success
+                    $result = Api::MAIL_OK;
+                } elseif (strpos($errorMessage, 'ContactCostNotApproved') !== false) {
+                    $result = Api::MAIL_ERROR_CSPA;
+                } elseif (strpos($errorMessage, 'ContactOwnerUnreachable') !== false) {
+                    $result = Api::MAIL_ERROR_BLOCKED;
+                }
+                if ($result !== null) {
+                    $this->eveMail->missingCharacterMailSent($memberId, $result);
+                    if ($errorMessage === '') {
                         $this->writeLine('  Mail sent to ' . $memberId, false);
                     } else {
                         $this->writeLine(
@@ -150,7 +155,7 @@ class SendMissingCharacterMail extends Command
                     }
                     usleep($this->sleep * 1000 * 1000);
                 } else {
-                    $this->writeLine(' ' . $errMessage, false);
+                    $this->writeLine(' ' . $errorMessage, false);
                 }
             }
         } while (count($memberIds) === $dbResultLimit);

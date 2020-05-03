@@ -1,11 +1,15 @@
 # Changelog
 
+## next
+
+- Member Tracking: Added send result from "missing character" mail.
+
 ## 1.11.2
 
 3 May 2020
 
-Member Tracking: removed "changed" column, added tooltips with ESI token change date and 
-"missing character" mail sending date.
+- Member Tracking: removed "changed" column, added tooltips with ESI token change date and 
+  "missing character" mail sending date.
 
 ## 1.11.1
 
@@ -124,7 +128,7 @@ Member Tracking: removed "changed" column, added tooltips with ESI token change 
 
 21 Oct 2019
 
-Fix: Endpoints POST `/api/app/v1/groups`, POST `/api/app/v1/corp-groups` and POST `/api/app/v1/alliance-groups`.
+- Fix: Endpoints POST `/api/app/v1/groups`, POST `/api/app/v1/corp-groups` and POST `/api/app/v1/alliance-groups`.
 
 ## 1.5.0
 
@@ -210,7 +214,7 @@ Fix: Endpoints POST `/api/app/v1/groups`, POST `/api/app/v1/corp-groups` and POS
 
 22 Jun 2019
 
-Fix "Core does not detect a character transfer" [#23][i23]
+- Fix "Core does not detect a character transfer" [#23][i23]
 
 [i23]: https://github.com/tkhamez/neucore/issues/23
 
@@ -332,15 +336,14 @@ Other things:
 
 24 Aug 2018
 
-User interface completed.
-
-Fully functional frontend for all API endpoints except for group membership requests.
+- User interface completed.
+- Fully functional frontend for all API endpoints except for group membership requests.
 
 ## 0.3.0
 
 8 Jul 2018
 
-UI for Group Management
+- UI for Group Management
 
 ## 0.2.0
 
@@ -355,4 +358,4 @@ UI for Group Management
 
 6 May 2018
 
-First release.
+- First release.

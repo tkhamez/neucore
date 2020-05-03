@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
+use Neucore\Api;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -31,7 +32,8 @@ class CorporationMemberTest extends TestCase
             'logonDate' => null,
             'shipType' => null,
             'startDate' => null,
-            'missingCharacterMailSent' => null,
+            'missingCharacterMailSentDate' => null,
+            'missingCharacterMailSentResult' => null,
             'character' => null,
             'player' => null,
         ], json_decode((string) json_encode($member), true));
@@ -56,7 +58,8 @@ class CorporationMemberTest extends TestCase
             'logonDate' => '2018-12-25T19:14:58Z',
             'shipType' => ['id' => 345, 'name' => null],
             'startDate' => '2018-12-25T19:14:58Z',
-            'missingCharacterMailSent' => null,
+            'missingCharacterMailSentDate' => null,
+            'missingCharacterMailSentResult' => null,
             'character' => [
                 'id' => 123,
                 'name' => 'test char',
@@ -168,14 +171,26 @@ class CorporationMemberTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testSetGetMissingCharacterMailSent()
+    public function testSetGetMissingCharacterMailSentDate()
     {
         $dt1 = new \DateTime('2018-12-25 19:14:59');
 
         $member = new CorporationMember();
-        $dt2 = $member->setMissingCharacterMailSent($dt1)->getMissingCharacterMailSent();
+        $dt2 = $member->setMissingCharacterMailSentDate($dt1)->getMissingCharacterMailSentDate();
 
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2018-12-25T19:14:59+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
+    public function testSetGetMissingCharacterMailSentResult()
+    {
+        $member = new CorporationMember();
+
+        $result = $member->setMissingCharacterMailSentResult(Api::MAIL_OK);
+        $this->assertSame($member, $result);
+        $this->assertSame(Api::MAIL_OK, $member->getMissingCharacterMailSentResult());
+
+        $member->setMissingCharacterMailSentResult(null);
+        $this->assertNull($member->getMissingCharacterMailSentResult());
     }
 }

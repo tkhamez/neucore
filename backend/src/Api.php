@@ -23,12 +23,12 @@ class Api
     const DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     const SCOPE_MAIL = 'esi-mail.send_mail.v1';
-
     const SCOPE_ROLES = 'esi-characters.read_corporation_roles.v1';
-
     const SCOPE_TRACKING = 'esi-corporations.track_members.v1';
-
     const SCOPE_STRUCTURES = 'esi-universe.read_structures.v1';
-
     const SCOPE_MEMBERSHIP = 'esi-corporations.read_corporation_membership.v1';
+
+    const MAIL_OK = 'OK';
+    const MAIL_ERROR_BLOCKED = 'Blocked';
+    const MAIL_ERROR_CSPA = 'CSPA charge > 0'; // CSPA = CONCORD Spam Protection Act
 }
