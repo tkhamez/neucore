@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.11.2
+
+3 May 2020
 
 Member Tracking: removed "changed" column, added tooltips with ESI token change date and 
 "missing character" mail sending date.
