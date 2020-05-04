@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.11.5
+
+4 May 2020
 
 - Member Tracking: Added "mail count" filter.
 
