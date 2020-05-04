@@ -60,7 +60,7 @@ class CorporationMemberRepositoryTest extends TestCase
             ->setLogonDate(self::$values->loginTime1)->setLogoffDate(self::$values->logoffTime1)
             ->setStartDate(new \DateTime('2019-05-26 15:51:18'))
             ->setMissingCharacterMailSentDate(new \DateTime('2019-05-27 06:45:41'))
-            ->setMissingCharacterMailSentResult(Api::MAIL_OK)->setMissingCharacterMailSentNumber(1);
+            ->setMissingCharacterMailSentResult(Api::MAIL_OK)->setMissingCharacterMailSentNumber(2);
         $member3 = (new CorporationMember())->setId(30)->setName('Member 3')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
@@ -97,6 +97,7 @@ class CorporationMemberRepositoryTest extends TestCase
         $repository->setInactive(110);
         $repository->setValidToken(false);
         $repository->setTokenChanged(100);
+        $repository->setMailCount(2);
         $this->assertSame(0, count($repository->findMatching(1)));
 
         $repository->resetCriteria();
@@ -174,7 +175,7 @@ class CorporationMemberRepositoryTest extends TestCase
             'startDate' => '2019-05-26T15:51:18Z',
             'missingCharacterMailSentDate' => '2019-05-27T06:45:41Z',
             'missingCharacterMailSentResult' => Api::MAIL_OK,
-            'missingCharacterMailSentNumber' => 1,
+            'missingCharacterMailSentNumber' => 2,
             'character' => [
                 'id' => 2,
                 'name' => 'Char 2',
@@ -228,6 +229,16 @@ class CorporationMemberRepositoryTest extends TestCase
         $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
 
         $actual = $repository->setTokenChanged(9)->findMatching(1);
+
+        $this->assertSame(1, count($actual));
+        $this->assertSame('Char 2', $actual[0]->getCharacter()->getName());
+    }
+
+    public function testFindMatchingMailCount()
+    {
+        $repository = (new RepositoryFactory(self::$om))->getCorporationMemberRepository();
+
+        $actual = $repository->setMailCount(2)->findMatching(1);
 
         $this->assertSame(1, count($actual));
         $this->assertSame('Char 2', $actual[0]->getCharacter()->getName());

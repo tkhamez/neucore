@@ -45,6 +45,11 @@ class CorporationMemberRepository extends EntityRepository
     private $tokenChanged;
 
     /**
+     * @var int|null
+     */
+    private $mailCount;
+
+    /**
      * Limit to members who were active in the last x days.
      */
     public function setActive(?int $days): self
@@ -95,6 +100,16 @@ class CorporationMemberRepository extends EntityRepository
     }
 
     /**
+     * Limit to characters whose "missing player" mail count is greater than or equal to x.
+     */
+    public function setMailCount(?int $count): self
+    {
+        $this->mailCount = $count;
+
+        return $this;
+    }
+
+    /**
      * Reset filter variables.
      */
     public function resetCriteria(): self
@@ -104,6 +119,7 @@ class CorporationMemberRepository extends EntityRepository
         $this->setAccount(null);
         $this->setValidToken(null);
         $this->setTokenChanged(null);
+        $this->setMailCount(null);
 
         return $this;
     }
@@ -174,6 +190,9 @@ class CorporationMemberRepository extends EntityRepository
         if ($this->tokenChanged > 0 && ($tokenChangedDate = date_create('now -'.$this->tokenChanged.' days'))) {
             $qb->andWhere('c.validTokenTime < :tokenChanged')
                 ->setParameter('tokenChanged', $tokenChangedDate->format(self::DATE_FORMAT));
+        }
+        if ($this->mailCount) {
+            $qb->andWhere($qb->expr()->gte('m.missingCharacterMailSentNumber', $this->mailCount));
         }
 
         $result = $qb->getQuery()->getResult();

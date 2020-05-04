@@ -67,6 +67,13 @@
                     Limit to characters whose ESI <strong>token status</strong> has not changed for x days
                 </label>
             </div>
+            <div class="col-sm-12 col-md-6">
+                <label class="small">
+                    <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
+                           v-model="formOptions.mailCount">
+                    Limit to characters whose <strong>mail count</strong> is greater than or equal to x.
+                </label>
+            </div>
         </div>
 
         <div class="row mt-3">
@@ -144,6 +151,7 @@ export default {
                 account: null,
                 validToken: null,
                 tokenChanged: null,
+                mailCount: null,
             },
             table: null,
             columns: [
@@ -220,6 +228,7 @@ function getMembers(vm) {
         account: vm.formOptions.account,
         validToken: vm.formOptions.validToken,
         tokenStatusChanged: vm.formOptions.tokenChanged,
+        mailCount: vm.formOptions.mailCount,
     };
     new CorporationApi().members(vm.corporation.id, opts, (error, data, response) => {
         if (error) {
@@ -259,6 +268,9 @@ function setOptionsFromPath(vm) {
     if (vm.route[6]) {
         vm.formOptions.tokenChanged = vm.route[6];
     }
+    if (vm.route[7]) {
+        vm.formOptions.mailCount = vm.route[7];
+    }
 }
 
 function setPathFromOptions(vm) {
@@ -269,6 +281,7 @@ function setPathFromOptions(vm) {
         vm.formOptions.account,
         vm.formOptions.validToken,
         vm.formOptions.tokenChanged,
+        vm.formOptions.mailCount,
     ];
     window.location.hash = `#Tracking/${params.join('/')}`;
 }

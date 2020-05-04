@@ -511,6 +511,12 @@ class CorporationController extends BaseController
      *         description="Limit to characters whose ESI token status has not changed for x days.",
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\Parameter(
+     *         name="mail-count",
+     *         in="query",
+     *         description="Limit to characters whose 'missing player' mail count is greater than or equal to x.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of corporation members.",
@@ -534,6 +540,7 @@ class CorporationController extends BaseController
         $account = $this->getQueryParam($request, 'account');
         $validToken = $this->getQueryParam($request, 'valid-token');
         $tokenStatusChanged = $this->getQueryParam($request, 'token-status-changed');
+        $mailCount = $this->getQueryParam($request, 'mail-count');
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
@@ -542,6 +549,7 @@ class CorporationController extends BaseController
             ->setAccount($account === 'true' ? true : ($account === 'false' ? false : null))
             ->setValidToken($validToken === 'true' ? true : ($validToken === 'false' ? false : null))
             ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
+            ->setMailCount((int) $mailCount)
             ->findMatching((int) $id);
 
         return $this->withJson($members);

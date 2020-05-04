@@ -110,7 +110,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
         $this->assertStringEndsWith(
-            '  Mail could not be sent to 30 because of CSPA charge or blocked sender',
+            '  Invalid token mail could not be sent to 30 because of CSPA charge or blocked sender',
             $actual[1]
         );
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);

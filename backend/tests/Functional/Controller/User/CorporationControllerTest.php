@@ -651,7 +651,7 @@ class CorporationControllerTest extends WebTestCase
     public function testMembers200()
     {
         $this->setupDb();
-        $params = '?inactive=7&active=12&account=true&valid-token=false&token-status-changed=1';
+        $params = '?inactive=7&active=12&account=true&valid-token=false&token-status-changed=1&mail-count=1';
 
         # role tracking but missing group
 
@@ -698,7 +698,7 @@ class CorporationControllerTest extends WebTestCase
         $group2 = (new Group())->setName('group 2');
 
         $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2)
-            ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char);
+            ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char)->setMissingCharacterMailSentNumber(2);
 
         $corp1->addGroup($this->group1);
         $corp2->addGroup($this->group1);

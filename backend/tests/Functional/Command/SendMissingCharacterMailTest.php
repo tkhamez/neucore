@@ -109,7 +109,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "send-missing-character-mail"', $actual[0]);
         $this->assertStringEndsWith(
-            '  Mail could not be sent to 104 because of CSPA charge or blocked sender',
+            '  Missing character mail could not be sent to 104 because of CSPA charge or blocked sender',
             $actual[1]
         );
         $this->assertStringEndsWith('Finished "send-missing-character-mail"', $actual[2]);
