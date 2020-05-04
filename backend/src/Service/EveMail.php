@@ -367,6 +367,7 @@ class EveMail
 
         $member->setMissingCharacterMailSentDate(new \DateTime());
         $member->setMissingCharacterMailSentResult($result);
+        $member->setMissingCharacterMailSentNumber($member->getMissingCharacterMailSentNumber() + 1);
         $this->objectManager->flush();
 
         return true;

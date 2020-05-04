@@ -417,6 +417,9 @@ class MemberTracking
                 $corpMember = new CorporationMember();
                 $corpMember->setId($id);
             }
+            if ($character !== null) {
+                $corpMember->setMissingCharacterMailSentNumber(0); // reset count
+            }
             $corpMember->setCharacter($character);
             $corpMember->setName($charNames[$id] ?? null);
             if ($data->getLocationId() !== null) {

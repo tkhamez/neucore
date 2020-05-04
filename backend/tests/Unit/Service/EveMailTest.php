@@ -48,11 +48,6 @@ class EveMailTest extends TestCase
      */
     private $client;
 
-    /**
-     * @var Logger
-     */
-    private $logger;
-
     protected function setUp(): void
     {
         $helper = new Helper();
@@ -62,21 +57,21 @@ class EveMailTest extends TestCase
         $this->repoFactory = new RepositoryFactory($this->om);
         $this->client = new Client();
 
-        $this->logger = new Logger('test');
-        $objManager = new ObjectManager($this->om, $this->logger);
+        $logger = new Logger('test');
+        $objManager = new ObjectManager($this->om, $logger);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
 
         $esiFactory = new EsiApiFactory($this->client, $config);
 
         $oauth = new OAuthProvider($this->client);
-        $oauthToken = new OAuthToken($oauth, $objManager, $this->logger, $this->client, $config);
+        $oauthToken = new OAuthToken($oauth, $objManager, $logger, $this->client, $config);
 
         $this->eveMail = new EveMail(
             $this->repoFactory,
             $objManager,
             $oauthToken,
             $esiFactory,
-            $this->logger,
+            $logger,
             $config
         );
     }
@@ -519,7 +514,8 @@ class EveMailTest extends TestCase
         $this->om->clear();
         $memberDb = $this->repoFactory->getCorporationMemberRepository()->find(101);
         $this->assertLessThanOrEqual(new \DateTime(), $memberDb->getMissingCharacterMailSentDate());
-        $this->assertLessThanOrEqual('result', $memberDb->getMissingCharacterMailSentResult());
+        $this->assertSame('result', $memberDb->getMissingCharacterMailSentResult());
+        $this->assertSame(1, $memberDb->getMissingCharacterMailSentNumber());
     }
 
     public function testSendMail()

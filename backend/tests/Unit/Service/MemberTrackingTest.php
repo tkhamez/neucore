@@ -23,7 +23,6 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Tests\Client;
 use Tests\Helper;
@@ -41,11 +40,6 @@ class MemberTrackingTest extends TestCase
      * @var \Doctrine\Persistence\ObjectManager
      */
     private $om;
-
-    /**
-     * @var Logger|LoggerInterface
-     */
-    private $logger;
 
     /**
      * @var Client
@@ -67,22 +61,22 @@ class MemberTrackingTest extends TestCase
         $this->helper = new Helper();
         $this->helper->emptyDb();
         $this->om = $this->helper->getObjectManager();
-        $this->logger = new Logger('test');
+        $logger = new Logger('test');
         $this->client = new Client();
-        $objectManager = new ObjectManager($this->om, $this->logger);
+        $objectManager = new ObjectManager($this->om, $logger);
         $this->repositoryFactory = new RepositoryFactory($this->om);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $esiApiFactory = new EsiApiFactory($this->client, $config);
         $this->memberTracking = new MemberTracking(
-            $this->logger,
+            $logger,
             $esiApiFactory,
             $this->repositoryFactory,
-            new EntityManager($this->helper->getEm(), $this->logger),
-            new EsiData($this->logger, $esiApiFactory, $objectManager, $this->repositoryFactory, $config),
+            new EntityManager($this->helper->getEm(), $logger),
+            new EsiData($logger, $esiApiFactory, $objectManager, $this->repositoryFactory, $config),
             new OAuthToken(
                 new OAuthProvider($this->client),
                 $objectManager,
-                $this->logger,
+                $logger,
                 $this->client,
                 $config
             ),
@@ -394,7 +388,8 @@ class MemberTrackingTest extends TestCase
     {
         $corp = (new Corporation())->setId(10)->setName('corp')->setTicker('C');
         $char = (new Character())->setId(102)->setName('char 2')->setAccessToken('at');
-        $member = (new CorporationMember())->setId(102)->setName('char 2')->setCharacter($char)->setCorporation($corp);
+        $member = (new CorporationMember())->setId(102)->setName('char 2')->setCorporation($corp)
+            ->setMissingCharacterMailSentNumber(1);
         $type = (new EsiType())->setId(670);
         $location1 = (new EsiLocation())->setId(60008494)->setCategory(EsiLocation::CATEGORY_STATION);
         $location2 = (new EsiLocation())->setId(1023100200300)->setCategory(EsiLocation::CATEGORY_STRUCTURE);
@@ -444,6 +439,7 @@ class MemberTrackingTest extends TestCase
 
         $this->assertSame(102, $result[1]->getId());
         $this->assertSame('char 2', $result[1]->getName());
+        $this->assertSame(0, $result[1]->getMissingCharacterMailSentNumber());
         $this->assertSame(102, $result[1]->getCharacter()->getId());
         $this->assertSame(1023100200300, $result[1]->getLocation()->getId());
 

@@ -34,6 +34,7 @@ class CorporationMemberTest extends TestCase
             'startDate' => null,
             'missingCharacterMailSentDate' => null,
             'missingCharacterMailSentResult' => null,
+            'missingCharacterMailSentNumber' => 0,
             'character' => null,
             'player' => null,
         ], json_decode((string) json_encode($member), true));
@@ -60,6 +61,7 @@ class CorporationMemberTest extends TestCase
             'startDate' => '2018-12-25T19:14:58Z',
             'missingCharacterMailSentDate' => null,
             'missingCharacterMailSentResult' => null,
+            'missingCharacterMailSentNumber' => 0,
             'character' => [
                 'id' => 123,
                 'name' => 'test char',
@@ -192,5 +194,16 @@ class CorporationMemberTest extends TestCase
 
         $member->setMissingCharacterMailSentResult(null);
         $this->assertNull($member->getMissingCharacterMailSentResult());
+    }
+
+    public function testSetGetMissingCharacterMailSentNumber()
+    {
+        $member = new CorporationMember();
+
+        $this->assertSame(0, $member->getMissingCharacterMailSentNumber());
+
+        $result = $member->setMissingCharacterMailSentNumber(2);
+        $this->assertSame($member, $result);
+        $this->assertSame(2, $member->getMissingCharacterMailSentNumber());
     }
 }

@@ -132,6 +132,7 @@ class CorporationMemberRepository extends EntityRepository
                 'm.startDate',
                 'm.missingCharacterMailSentDate',
                 'm.missingCharacterMailSentResult',
+                'm.missingCharacterMailSentNumber',
                 'l.id AS locationId',
                 'l.name AS locationName',
                 'l.category AS locationCategory',
@@ -193,8 +194,9 @@ class CorporationMemberRepository extends EntityRepository
             }
             if ($r['missingCharacterMailSentDate']) {
                 $member->setMissingCharacterMailSentDate($r['missingCharacterMailSentDate']);
-                $member->setMissingCharacterMailSentResult($r['missingCharacterMailSentResult']);
             }
+            $member->setMissingCharacterMailSentResult($r['missingCharacterMailSentResult']);
+            $member->setMissingCharacterMailSentNumber($r['missingCharacterMailSentNumber']);
 
             if ($r['locationId']) {
                 $location = (new EsiLocation())

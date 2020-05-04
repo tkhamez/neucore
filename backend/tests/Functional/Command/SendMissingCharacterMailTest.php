@@ -142,7 +142,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->om->clear();
         $member4 = $this->repoFactory->getCorporationMemberRepository()->find(104);
         $this->assertLessThanOrEqual(new \DateTime(), $member4->getMissingCharacterMailSentDate());
-        $this->assertLessThanOrEqual(Api::MAIL_OK, $member4->getMissingCharacterMailSentResult());
+        $this->assertSame(Api::MAIL_OK, $member4->getMissingCharacterMailSentResult());
     }
 
     private function setupData($invalidConfig = false)

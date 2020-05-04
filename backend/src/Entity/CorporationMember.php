@@ -91,6 +91,8 @@ class CorporationMember implements \JsonSerializable
     private $character;
 
     /**
+     * Date and time of the last sent mail.
+     *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="missing_character_mail_sent_date", nullable=true)
      * @var \DateTime|null
@@ -98,11 +100,22 @@ class CorporationMember implements \JsonSerializable
     private $missingCharacterMailSentDate;
 
     /**
+     * Result of the last sent mail (OK, Blocked, CSPA charge > 0)
+     *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=255, name="missing_character_mail_sent_result", nullable=true)
      * @var string|null
      */
     private $missingCharacterMailSentResult;
+
+    /**
+     * Number of mails sent, is reset when the character is added.
+     *
+     * @OA\Property()
+     * @ORM\Column(type="integer")
+     * @var integer
+     */
+    private $missingCharacterMailSentNumber = 0;
 
     /**
      * {@inheritDoc}
@@ -121,6 +134,7 @@ class CorporationMember implements \JsonSerializable
             'missingCharacterMailSentDate' => $this->getMissingCharacterMailSentDate() !== null ?
                 $this->getMissingCharacterMailSentDate()->format(Api::DATE_FORMAT) : null,
             'missingCharacterMailSentResult' => $this->missingCharacterMailSentResult,
+            'missingCharacterMailSentNumber' => $this->missingCharacterMailSentNumber,
         ];
 
         if ($forUser) {
@@ -347,5 +361,17 @@ class CorporationMember implements \JsonSerializable
     public function getMissingCharacterMailSentResult(): ?string
     {
         return $this->missingCharacterMailSentResult;
+    }
+
+    public function setMissingCharacterMailSentNumber(int $number): self
+    {
+        $this->missingCharacterMailSentNumber = $number;
+
+        return $this;
+    }
+
+    public function getMissingCharacterMailSentNumber(): int
+    {
+        return $this->missingCharacterMailSentNumber;
     }
 }

@@ -141,6 +141,7 @@ class EsiController extends BaseController
         if ($debug) {
             $stack = $this->httpClient->getConfig('handler');
             if ($stack instanceof HandlerStack) {
+                /* @phan-suppress-next-line PhanUndeclaredFunctionInCallable */
                 $stack->remove('cache');
             }
         }

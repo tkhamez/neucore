@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Member Tracking: Added number of sent mails.
+
 ## 1.11.3
 
 3 May 2020

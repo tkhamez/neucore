@@ -23,7 +23,7 @@ class CorporationMemberRepositoryTest extends TestCase
      */
     private static $om;
 
-    private static $data;
+    private static $values;
 
     /**
      * @throws \Exception
@@ -34,20 +34,20 @@ class CorporationMemberRepositoryTest extends TestCase
         $helper->emptyDb();
         self::$om = $helper->getObjectManager();
 
-        self::$data = new \stdClass();
-        self::$data->validtokenTime1 = new \DateTime('now -240 hours');
-        self::$data->loginTime1 = new \DateTime('now -111 days +1 hour');
-        self::$data->logoffTime1 = new \DateTime('now -111 days');
-        self::$data->createdTime1 = new \DateTime("now -30 days");
-        self::$data->updatedTime1 = new \DateTime("now -30 days");
+        self::$values = new \stdClass();
+        self::$values->validtokenTime1 = new \DateTime('now -240 hours');
+        self::$values->loginTime1 = new \DateTime('now -111 days +1 hour');
+        self::$values->logoffTime1 = new \DateTime('now -111 days');
+        self::$values->createdTime1 = new \DateTime("now -30 days");
+        self::$values->updatedTime1 = new \DateTime("now -30 days");
 
         $location = (new EsiLocation())->setId(5040)->setName('A Station')->setCategory(EsiLocation::CATEGORY_STATION);
         $ship = (new EsiType())->setId(4030)->setName('A ship');
         $player1 = (new Player())->setName('Player 1');
         $char1 = (new Character())->setId(1)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
         $char2 = (new Character())->setId(2)->setName('Char 2')->setPlayer($player1)
-            ->setValidToken(false)->setValidTokenTime(self::$data->validtokenTime1)
-            ->setCreated(self::$data->createdTime1)->setLastUpdate(self::$data->updatedTime1);
+            ->setValidToken(false)->setValidTokenTime(self::$values->validtokenTime1)
+            ->setCreated(self::$values->createdTime1)->setLastUpdate(self::$values->updatedTime1);
         $char5 = (new Character())->setId(5)->setName('Char 5')->setPlayer($player1)->setValidToken(true);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
         $corp2 = (new Corporation())->setId(2)->setName('Corp 2')->setTicker('C2');
@@ -57,10 +57,10 @@ class CorporationMemberRepositoryTest extends TestCase
             ->setLogonDate(new \DateTime('now -112 days +30 minutes'));
         $member2 = (new CorporationMember())->setId(20)->setName('Member 2')->setCorporation($corp1)
             ->setCharacter($char2)->setLocation($location)->setShipType($ship)
-            ->setLogonDate(self::$data->loginTime1)->setLogoffDate(self::$data->logoffTime1)
+            ->setLogonDate(self::$values->loginTime1)->setLogoffDate(self::$values->logoffTime1)
             ->setStartDate(new \DateTime('2019-05-26 15:51:18'))
             ->setMissingCharacterMailSentDate(new \DateTime('2019-05-27 06:45:41'))
-            ->setMissingCharacterMailSentResult(Api::MAIL_OK);
+            ->setMissingCharacterMailSentResult(Api::MAIL_OK)->setMissingCharacterMailSentNumber(1);
         $member3 = (new CorporationMember())->setId(30)->setName('Member 3')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
@@ -85,7 +85,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
         self::$om->flush();
 
-        self::$data->playerId1 = $player1->getId();
+        self::$values->playerId1 = $player1->getId();
     }
 
     public function testResetCriteria()
@@ -165,8 +165,8 @@ class CorporationMemberRepositoryTest extends TestCase
                 'name' => 'A Station',
                 'category' => EsiLocation::CATEGORY_STATION,
             ],
-            'logoffDate' => date_format(self::$data->logoffTime1, Api::DATE_FORMAT),
-            'logonDate' => date_format(self::$data->loginTime1, Api::DATE_FORMAT),
+            'logoffDate' => date_format(self::$values->logoffTime1, Api::DATE_FORMAT),
+            'logonDate' => date_format(self::$values->loginTime1, Api::DATE_FORMAT),
             'shipType' => [
                 'id' => 4030,
                 'name' => 'A ship',
@@ -174,20 +174,21 @@ class CorporationMemberRepositoryTest extends TestCase
             'startDate' => '2019-05-26T15:51:18Z',
             'missingCharacterMailSentDate' => '2019-05-27T06:45:41Z',
             'missingCharacterMailSentResult' => Api::MAIL_OK,
+            'missingCharacterMailSentNumber' => 1,
             'character' => [
                 'id' => 2,
                 'name' => 'Char 2',
                 'main' => false,
-                'created' => date_format(self::$data->createdTime1, Api::DATE_FORMAT),
-                'lastUpdate' => date_format(self::$data->updatedTime1, Api::DATE_FORMAT),
+                'created' => date_format(self::$values->createdTime1, Api::DATE_FORMAT),
+                'lastUpdate' => date_format(self::$values->updatedTime1, Api::DATE_FORMAT),
                 'validToken' => false,
-                'validTokenTime' => date_format(self::$data->validtokenTime1, Api::DATE_FORMAT),
+                'validTokenTime' => date_format(self::$values->validtokenTime1, Api::DATE_FORMAT),
             ],
             'player' => [
-                'id' => self::$data->playerId1,
+                'id' => self::$values->playerId1,
                 'name' => 'Player 1',
             ],
-        ]], json_decode(json_encode($actual), true));
+        ]], json_decode((string)json_encode($actual), true));
     }
 
     public function testFindMatchingWithOutAccount()

@@ -317,10 +317,11 @@ function configureDataTable(vm) {
                         <a href="#" data-player-id="${row.player.id}">
                             ${row.player.name} #${row.player.id}
                         </a>`;
-                } else if (row.missingCharacterMailSentDate) {
+                } else if (row.missingCharacterMailSentNumber > 0) {
                     return `
                         <div data-toggle="tooltip" data-html="true" title="
-                            Mail sent: ${vm.$root.formatDate(row.missingCharacterMailSentDate)},<br>
+                            Number mails sent: ${row.missingCharacterMailSentNumber}<br>
+                            Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
                             Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
                         ">n/a</div>`;
                 } else {
