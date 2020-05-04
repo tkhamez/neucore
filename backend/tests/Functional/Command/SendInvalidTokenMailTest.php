@@ -136,7 +136,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $actual = explode("\n", $output);
         $this->assertSame(4, count($actual));
         $this->assertStringEndsWith('Started "send-invalid-token-mail"', $actual[0]);
-        $this->assertStringEndsWith('  Mail sent to 30', $actual[1]);
+        $this->assertStringEndsWith('  Invalid token mail sent to 30', $actual[1]);
         $this->assertStringEndsWith('Finished "send-invalid-token-mail"', $actual[2]);
         $this->assertStringEndsWith('', $actual[3]);
 

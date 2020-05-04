@@ -112,7 +112,7 @@ class CorporationMember implements \JsonSerializable
      * Number of mails sent, is reset when the character is added.
      *
      * @OA\Property()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="missing_character_mail_sent_number")
      * @var integer
      */
     private $missingCharacterMailSentNumber = 0;

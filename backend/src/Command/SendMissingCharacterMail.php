@@ -146,10 +146,11 @@ class SendMissingCharacterMail extends Command
                 if ($result !== null) {
                     $this->eveMail->missingCharacterMailSent($memberId, $result);
                     if ($errorMessage === '') {
-                        $this->writeLine('  Mail sent to ' . $memberId, false);
+                        $this->writeLine('  Missing character mail sent to ' . $memberId, false);
                     } else {
                         $this->writeLine(
-                            "  Mail could not be sent to $memberId because of CSPA charge or blocked sender",
+                            "  Missing character mail could not be sent to $memberId " .
+                                "because of CSPA charge or blocked sender",
                             false
                         );
                     }
