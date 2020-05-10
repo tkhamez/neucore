@@ -41,7 +41,7 @@ class DoctrineFixturesLoadTest extends ConsoleTestCase
         $vars = $repoFactory->getSystemVariableRepository()->findBy([], ['name' => 'asc']);
 
         $this->assertSame(19, count($roles)); // 18 from seed + 1 from setup
-        $this->assertSame(31, count($vars)); // 30 from seed + 1 from setup
+        $this->assertSame(30, count($vars)); // 29 from seed + 1 from setup
 
         // check that value was not changed
         $this->assertSame(SystemVariable::ALLOW_CHARACTER_DELETION, $vars[3]->getName());

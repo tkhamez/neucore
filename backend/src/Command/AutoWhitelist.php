@@ -16,6 +16,7 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Watchlist;
 use Neucore\Command\Traits\EsiRateLimited;
+use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -89,11 +90,12 @@ class AutoWhitelist extends Command
         Watchlist $watchlist,
         EsiData $esiData,
         ObjectManager $objectManager,
-        OAuthToken $tokenService
+        OAuthToken $tokenService,
+        StorageInterface $storage
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+        $this->esiRateLimited($storage);
 
         $this->watchlistService = $watchlist;
         $this->esiData = $esiData;

@@ -26,7 +26,6 @@ class SystemVariablesFixtureLoader implements FixtureInterface
             SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS   => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::ALLOW_CHARACTER_DELETION            => ['0', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::ALLOW_LOGIN_MANAGED                 => ['0', SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::ESI_ERROR_LIMIT                     => ['',  SystemVariable::SCOPE_BACKEND],
             SystemVariable::MAIL_INVALID_TOKEN_ACTIVE           => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES        => ['',  SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS     => ['',  SystemVariable::SCOPE_SETTINGS],
@@ -82,7 +81,10 @@ class SystemVariablesFixtureLoader implements FixtureInterface
             $var->setScope($data[1]);
         }
 
-        $varsRemove = ['show_preview_banner']; // removed in version > 0.8.0
+        $varsRemove = [
+            'show_preview_banner', // removed in version > 0.8.0
+            'esi_error_limit', // removed in version > 1.11.5
+        ];
         foreach ($varsRemove as $nameRemove) {
             $varRemove = $repository->find($nameRemove);
             if ($varRemove !== null) {

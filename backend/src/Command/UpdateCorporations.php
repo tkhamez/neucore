@@ -13,6 +13,7 @@ use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
+use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -63,11 +64,12 @@ class UpdateCorporations extends Command
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
         EntityManager $entityManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        StorageInterface $storage
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+        $this->esiRateLimited($storage);
 
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();

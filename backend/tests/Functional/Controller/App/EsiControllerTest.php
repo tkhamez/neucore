@@ -6,11 +6,14 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\App;
 
 use Neucore\Entity\Role;
-use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Service\ObjectManager;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\Variables;
+use Neucore\Storage\SystemVariableStorage;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Logger;
@@ -25,20 +28,25 @@ class EsiControllerTest extends WebTestCase
     private $helper;
 
     /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
-
-    /**
      * @var Logger
      */
     private $logger;
 
+    /**
+     * @var SystemVariableStorage
+     */
+    private $storage;
+
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
+        $this->helper->emptyDb();
+        $om = $this->helper->getObjectManager();
         $this->logger = new Logger('test');
+
+        $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $this->logger));
+        #apcu_clear_cache();
+        #$this->storage = new \Neucore\Storage\ApcuStorage();
     }
 
     public function testEsiV1403()
@@ -46,7 +54,6 @@ class EsiControllerTest extends WebTestCase
         $response1 = $this->runApp('GET', '/api/app/v1/esi');
         $this->assertEquals(403, $response1->getStatusCode());
 
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
@@ -56,7 +63,6 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1400()
     {
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
@@ -88,7 +94,6 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1400PublicRoute()
     {
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
@@ -107,21 +112,20 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1429()
     {
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
-        // add sys var
-        $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-        $errVar->setValue((string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86]));
-        $this->helper->getObjectManager()->persist($errVar);
-        $this->helper->getObjectManager()->flush();
+        // add var
+        $this->storage->set(
+            Variables::ESI_ERROR_LIMIT,
+            (string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86])
+        );
 
         $response = $this->runApp(
             'GET',
             '/api/app/v1/esi',
             [],
             ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
-            [LoggerInterface::class => $this->logger]
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
         );
 
         $this->assertSame(429, $response->getStatusCode());
@@ -135,20 +139,20 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1429NotReached()
     {
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
-        // add sys var
-        $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-        $errVar->setValue((string) \json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86]));
-        $this->helper->getObjectManager()->persist($errVar);
-        $this->helper->getObjectManager()->flush();
+        // add var
+        $this->storage->set(
+            Variables::ESI_ERROR_LIMIT,
+            (string) \json_encode(['updated' => time(), 'remain' => 21, 'reset' => 86])
+        );
 
         $response = $this->runApp(
             'GET',
             '/api/app/v1/esi',
             [],
-            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [StorageInterface::class => $this->storage]
         );
 
         $this->assertNotSame(429, $response->getStatusCode());
@@ -156,20 +160,20 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1429ReachedAndReset()
     {
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
-        // add sys var
-        $errVar = new SystemVariable(SystemVariable::ESI_ERROR_LIMIT);
-        $errVar->setValue((string) \json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86]));
-        $this->helper->getObjectManager()->persist($errVar);
-        $this->helper->getObjectManager()->flush();
+        // add var
+        $this->storage->set(
+            Variables::ESI_ERROR_LIMIT,
+            (string) \json_encode(['updated' => time() - 87, 'remain' => 20, 'reset' => 86])
+        );
 
         $response = $this->runApp(
             'GET',
             '/api/app/v1/esi',
             [],
-            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [StorageInterface::class => $this->storage]
         );
 
         $this->assertNotSame(429, $response->getStatusCode());
@@ -177,7 +181,6 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1200()
     {
-        $this->helper->emptyDb();
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
@@ -220,15 +223,14 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1200Middleware()
     {
-        $this->helper->emptyDb();
-        $var = (new SystemVariable(SystemVariable::ESI_ERROR_LIMIT))->setScope(SystemVariable::SCOPE_BACKEND);
-        $this->helper->getObjectManager()->persist($var);
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         // create client with middleware
         $httpClient = new Client();
-        $httpClient->setMiddleware(new EsiHeaders(new Logger('test'), $this->repoFactory, $this->helper->getObjectManager()));
+        $httpClient->setMiddleware(
+            new EsiHeaders(new Logger('test'), $this->storage)
+        );
         $httpClient->setResponse(new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
@@ -239,7 +241,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=123',
             [],
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
-            [ClientInterface::class => $httpClient]
+            [ClientInterface::class => $httpClient, StorageInterface::class => $this->storage]
         );
 
         $this->assertSame(200, $response->getStatusCode());
@@ -248,8 +250,8 @@ class EsiControllerTest extends WebTestCase
             'X-Esi-Error-Limit-Reset' => ['60'],
         ], $response->getHeaders());
 
-        $esiErrorVar = $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
-        $esiErrorValues = \json_decode($esiErrorVar->getValue());
+        $esiErrorVar = $this->storage->get(Variables::ESI_ERROR_LIMIT);
+        $esiErrorValues = \json_decode((string) $esiErrorVar);
         $this->assertLessThanOrEqual(time(), $esiErrorValues->updated);
         $this->assertSame(100, $esiErrorValues->remain);
         $this->assertSame(60, $esiErrorValues->reset);
@@ -257,7 +259,6 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiV1200PathAsParameter()
     {
-        $this->helper->emptyDb();
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
@@ -280,7 +281,6 @@ class EsiControllerTest extends WebTestCase
         $response1 = $this->runApp('POST', '/api/app/v1/esi');
         $this->assertEquals(403, $response1->getStatusCode());
 
-        $this->helper->emptyDb();
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
@@ -290,7 +290,6 @@ class EsiControllerTest extends WebTestCase
 
     public function testEsiPostV1200()
     {
-        $this->helper->emptyDb();
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 

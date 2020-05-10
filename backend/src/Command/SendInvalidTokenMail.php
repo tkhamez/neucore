@@ -11,6 +11,7 @@ use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Service\EveMail;
+use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,11 +47,12 @@ class SendInvalidTokenMail extends Command
         EveMail $eveMail,
         RepositoryFactory $repositoryFactory,
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        StorageInterface $storage
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+        $this->esiRateLimited($storage);
 
         $this->eveMail = $eveMail;
         $this->playerRepository = $repositoryFactory->getPlayerRepository();

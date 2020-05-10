@@ -8,13 +8,14 @@ use GuzzleHttp\Psr7\Response;
 use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
-use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\Variables;
 use OpenApi\Annotations as OA;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -28,6 +29,11 @@ class EsiController extends BaseController
     const ERROR_MESSAGE_PREFIX = 'App\EsiController->esiV1()';
 
     const PARAM_DATASOURCE = 'datasource';
+
+    /**
+     * @var StorageInterface
+     */
+    private $storage;
 
     /**
      * @var LoggerInterface
@@ -63,6 +69,7 @@ class EsiController extends BaseController
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
+        StorageInterface $storage,
         LoggerInterface $log,
         OAuthToken $tokenService,
         Config $config,
@@ -71,6 +78,7 @@ class EsiController extends BaseController
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         
+        $this->storage = $storage;
         $this->log = $log;
         $this->tokenService = $tokenService;
         $this->config = $config;
@@ -328,12 +336,12 @@ class EsiController extends BaseController
 
     private function errorLimitReached(): bool
     {
-        $var = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
+        $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
         if ($var === null) {
             return false;
         }
 
-        $values = \json_decode($var->getValue());
+        $values = \json_decode($var);
         if (! $values instanceof \stdClass) {
             return false;
         }

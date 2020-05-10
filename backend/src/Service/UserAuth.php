@@ -124,7 +124,6 @@ class UserAuth implements RoleProviderInterface
                 $oldPlayerId = $char->getPlayer()->getId();
                 $char = $this->accountService->moveCharacterToNewAccount($char);
                 $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
-
             }
             $char->getPlayer()->addRole($userRole[0]);
         }

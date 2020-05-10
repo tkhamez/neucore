@@ -11,6 +11,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
+use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,11 +48,12 @@ class UpdateCharacters extends Command
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
         EntityManager $entityManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        StorageInterface $storage
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+        $this->esiRateLimited($storage);
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->esiData = $esiData;

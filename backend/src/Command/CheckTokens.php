@@ -12,6 +12,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\Account;
 use Neucore\Service\OAuthToken;
+use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -54,11 +55,12 @@ class CheckTokens extends Command
         Account $charService,
         OAuthToken $tokenService,
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        StorageInterface $storage
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+        $this->esiRateLimited($storage);
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->charService = $charService;

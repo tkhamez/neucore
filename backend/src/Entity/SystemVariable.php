@@ -10,6 +10,10 @@ use OpenApi\Annotations as OA;
 /**
  * A system settings variable.
  *
+ * This is also used as a storage for Storage\Variables with the prefix "__storage__" if APCu is not available.
+ *
+ * @see \Neucore\Storage\Variables
+ *
  * @OA\Schema(
  *     required={"name", "value"}
  * )
@@ -186,13 +190,6 @@ class SystemVariable implements \JsonSerializable
      * Scope = backend
      */
     const DIRECTOR_TOKEN = 'director_token_';
-
-    /**
-     * Time, remain and reset from X-Esi-Error-Limit-* HTTP headers.
-     *
-     * Scope = backend
-     */
-    const ESI_ERROR_LIMIT = 'esi_error_limit';
 
     /**
      * The default theme.

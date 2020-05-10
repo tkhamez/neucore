@@ -12,6 +12,7 @@ use Neucore\Command\Traits\LogOutput;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
+use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Symfony\Component\Console\Command\Command;
@@ -60,11 +61,12 @@ class UpdateMemberTracking extends Command
         MemberTracking $memberTracking,
         EsiData $esiData,
         LoggerInterface $logger,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        StorageInterface $storage
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
+        $this->esiRateLimited($storage);
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;

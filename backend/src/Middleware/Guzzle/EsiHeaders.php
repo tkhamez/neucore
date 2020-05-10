@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Middleware\Guzzle;
 
-use Doctrine\Persistence\ObjectManager;
-use Neucore\Entity\SystemVariable;
-use Neucore\Factory\RepositoryFactory;
-use Neucore\Repository\SystemVariableRepository;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\Variables;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -20,23 +18,14 @@ class EsiHeaders
     private $logger;
 
     /**
-     * @var SystemVariableRepository
+     * @var StorageInterface
      */
-    private $systemVariableRepository;
+    private $storage;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
-    public function __construct(
-        LoggerInterface $logger,
-        RepositoryFactory $repositoryFactory,
-        ObjectManager $objectManager
-    ) {
+    public function __construct(LoggerInterface $logger, StorageInterface $storage)
+    {
         $this->logger = $logger;
-        $this->systemVariableRepository = $repositoryFactory->getSystemVariableRepository();
-        $this->objectManager = $objectManager;
+        $this->storage = $storage;
     }
 
     /**
@@ -63,22 +52,11 @@ class EsiHeaders
         if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {
             $remain = (int) $response->getHeader('X-Esi-Error-Limit-Remain')[0];
             $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
-
-            $entity = $this->systemVariableRepository->find(SystemVariable::ESI_ERROR_LIMIT);
-            if (! $entity) {
-                $this->logger->critical(
-                    'EsiHeaders::handleResponseHeaders: system variable ' .
-                    SystemVariable::ESI_ERROR_LIMIT . ' not found.'
-                );
-                return;
-            }
-            $entity->setValue((string) \json_encode([
+            $this->storage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode([
                 'updated' => time(),
                 'remain' => $remain,
                 'reset' => $reset,
             ]));
-            $this->objectManager->persist($entity);
-            $this->objectManager->flush();
         }
 
         // log deprecated warnings

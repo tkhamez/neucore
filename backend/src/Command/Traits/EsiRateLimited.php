@@ -4,19 +4,35 @@ declare(strict_types=1);
 
 namespace Neucore\Command\Traits;
 
-use Neucore\Entity\SystemVariable;
-use Neucore\Repository\SystemVariableRepository;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\Variables;
 
 trait EsiRateLimited
 {
     /**
-     * @var SystemVariableRepository
+     * @var StorageInterface
      */
-    protected $systemVariableRepository;
+    private $storage;
 
-    protected function esiRateLimited(SystemVariableRepository $sysVarRepository): void
+    /**
+     * @var bool
+     */
+    private $simulate;
+
+    /**
+     * @var null|int
+     */
+    private $sleepInSeconds;
+
+    protected function esiRateLimited(StorageInterface $storage, bool $simulate = false): void
     {
-        $this->systemVariableRepository = $sysVarRepository;
+        $this->storage = $storage;
+        $this->simulate = $simulate;
+    }
+
+    protected function getSleepInSeconds(): ?int
+    {
+        return $this->sleepInSeconds;
     }
 
     /**
@@ -24,12 +40,12 @@ trait EsiRateLimited
      */
     protected function checkErrorLimit(): void
     {
-        $var = $this->systemVariableRepository->find(SystemVariable::ESI_ERROR_LIMIT);
+        $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
         if ($var === null) {
             return;
         }
 
-        $data = \json_decode($var->getValue());
+        $data = \json_decode($var);
         if (! $data instanceof \stdClass) {
             return;
         }
@@ -40,7 +56,11 @@ trait EsiRateLimited
 
         if ($data->remain < 10) {
             $sleep = min(60, $data->reset + time() - $data->updated);
-            sleep($sleep);
+            if ($this->simulate) {
+                $this->sleepInSeconds =  $sleep;
+            } else {
+                sleep($sleep);
+            }
         }
     }
 }

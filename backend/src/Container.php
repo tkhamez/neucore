@@ -25,10 +25,14 @@ use Monolog\Formatter\LogglyFormatter;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\Config;
+use Neucore\Storage\ApcuStorage;
+use Neucore\Storage\StorageInterface;
+use Neucore\Storage\SystemVariableStorage;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -173,6 +177,25 @@ class Container
             ResponseFactoryInterface::class => function () {
                 return new ResponseFactory();
             },
+
+            // Storage
+            StorageInterface::class => function (ContainerInterface $c) {
+                if (
+                    function_exists('apcu_store') &&
+                    (
+                        (php_sapi_name() === 'cli' && ini_get('apc.enable_cli') === '1') ||
+                        (php_sapi_name() !== 'cli' && ini_get('apc.enabled') === '1')
+                    )
+                ) {
+                    $storage = new ApcuStorage();
+                } else {
+                    $storage = new SystemVariableStorage(
+                        $c->get(RepositoryFactory::class),
+                        $c->get(Service\ObjectManager::class)
+                    );
+                }
+                return $storage;
+            }
         ];
     }
 }

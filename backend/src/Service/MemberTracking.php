@@ -8,7 +8,6 @@ use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
-use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
@@ -24,8 +23,6 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
-    use EsiRateLimited;
-
     const VALUE_CHARACTER_ID = 'character_id';
 
     const VALUE_CHARACTER_NAME = 'character_name';
@@ -80,8 +77,6 @@ class MemberTracking
         OAuthToken $oauthToken,
         Config $config
     ) {
-        $this->esiRateLimited($repositoryFactory->getSystemVariableRepository());
-
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
         $this->repositoryFactory = $repositoryFactory;

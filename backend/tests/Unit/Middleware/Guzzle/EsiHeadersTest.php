@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Middleware\Guzzle;
 
-use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiHeaders;
+use Neucore\Service\ObjectManager;
+use Neucore\Storage\Variables;
+use Neucore\Storage\SystemVariableStorage;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
@@ -17,19 +18,14 @@ use Tests\Logger;
 class EsiHeadersTest extends TestCase
 {
     /**
-     * @var ObjectManager
-     */
-    private $om;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
-
-    /**
      * @var Logger
      */
     private $logger;
+
+    /**
+     * @var SystemVariableStorage
+     */
+    private $storage;
 
     /**
      * @var EsiHeaders
@@ -40,19 +36,19 @@ class EsiHeadersTest extends TestCase
     {
         $helper = new Helper();
         $helper->emptyDb();
-        $this->om = $helper->getObjectManager();
+        $om = $helper->getObjectManager();
 
-        $this->repositoryFactory = new RepositoryFactory($this->om);
         $this->logger = new Logger('test');
-        $this->obj = new EsiHeaders($this->logger, $this->repositoryFactory, $this->om);
+
+        $this->storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $this->logger));
+        #apcu_clear_cache();
+        #$this->storage = new \Neucore\Storage\ApcuStorage();
+
+        $this->obj = new EsiHeaders($this->logger, $this->storage);
     }
 
     public function testInvokeErrorLimit()
     {
-        $var = (new SystemVariable(SystemVariable::ESI_ERROR_LIMIT))->setScope(SystemVariable::SCOPE_BACKEND);
-        $this->om->persist($var);
-        $this->om->flush();
-
         $response = new Response(
             200,
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
@@ -61,8 +57,8 @@ class EsiHeadersTest extends TestCase
         $function = $this->obj->__invoke($this->getHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
-        $var = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::ESI_ERROR_LIMIT);
-        $val = \json_decode($var->getValue());
+        $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
+        $val = \json_decode((string) $var);
 
         $this->assertSame(100, $val->remain);
         $this->assertSame(60, $val->reset);
