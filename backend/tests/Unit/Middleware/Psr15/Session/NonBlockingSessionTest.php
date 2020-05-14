@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Middleware\Psr15\Session;
 
-use Neucore\Middleware\Psr15\Session\NonBlockingSession;
-use Neucore\Middleware\Psr15\Session\SessionData;
+use Neucore\Slim\SessionMiddleware;
+use Neucore\Service\SessionData;
 use PHPUnit\Framework\TestCase;
 use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouteParserInterface;
@@ -101,7 +101,7 @@ class NonBlockingSessionTest extends TestCase
             $request = $request->withAttribute(RouteContext::ROUTE, $route);
         }
 
-        $nbs = new NonBlockingSession($conf);
+        $nbs = new SessionMiddleware($conf);
 
         return $nbs->process($request, new RequestHandler());
     }

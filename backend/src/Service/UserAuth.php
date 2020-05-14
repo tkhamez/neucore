@@ -9,7 +9,6 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Psr15\Session\SessionData;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Tkhamez\Slim\RoleAuth\RoleProviderInterface;

@@ -30,7 +30,7 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Log\Context;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
-use Neucore\Middleware\Psr15\Session\NonBlockingSession;
+use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
@@ -274,8 +274,8 @@ class Application
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
-        $app->add(new NonBlockingSession([
-            'name' => 'NCSESS',
+        $app->add(new SessionMiddleware([
+            'name' => 'neucore',
             'secure' => $this->container->get(Config::class)['session']['secure'],
             'route_include_pattern' => ['/api/user', '/login'],
             'route_blocking_pattern' => ['/api/user/auth', '/login'],

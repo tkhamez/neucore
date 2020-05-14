@@ -10,7 +10,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Psr15\Session\SessionData;
+use Neucore\Service\SessionData;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
@@ -305,7 +305,7 @@ class AuthController extends BaseController
      */
     public function logout(): ResponseInterface
     {
-        $this->session->clear();
+        $this->session->destroy();
 
         return $this->response->withStatus(204);
     }

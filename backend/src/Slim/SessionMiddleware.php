@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Middleware\Psr15\Session;
+namespace Neucore\Slim;
 
+use Neucore\Service\SessionData;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -12,9 +13,8 @@ use Slim\Interfaces\RouteInterface;
 use Slim\Routing\RouteContext;
 
 /**
- * A non-blocking (read-only) Session.
- *
- * This starts the session, reads the session data and immediately closes the session again.
+ * Starts the session, reads the session data and immediately closes the session again
+ * (ready only session).
  *
  * After this middleware was executed, the class SessionData can be used to access
  * the session data (any object of that class, even if it was created before the session was started).
@@ -22,7 +22,7 @@ use Slim\Routing\RouteContext;
  * Can optionally be writable (blocking) for certain routes, so session will not be closed for these.
  * Can optionally be restricted to certain routes, so session will not be started for any other route.
  */
-class NonBlockingSession implements MiddlewareInterface
+class SessionMiddleware implements MiddlewareInterface
 {
     const OPTION_ROUTE_INCLUDE_PATTERN  = 'route_include_pattern';
 
@@ -62,19 +62,17 @@ class NonBlockingSession implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // check if session should be started
-        if (! $this->shouldStartSession(RouteContext::fromRequest($request)->getRoute())) {
+        $route = RouteContext::fromRequest($request)->getRoute();
+
+        if (! $this->shouldStartSession($route)) {
             return $handler->handle($request);
         }
 
         $this->start();
-
-        $readOnly = $this->isReadOnly(RouteContext::fromRequest($request)->getRoute());
-
+        $readOnly = $this->isReadOnly($route);
         SessionData::setReadOnly($readOnly);
-
         if ($readOnly) {
-            $this->close();
+            session_write_close();
         }
 
         return $handler->handle($request);
@@ -153,13 +151,5 @@ class NonBlockingSession implements MiddlewareInterface
         }
 
         return $readOnly;
-    }
-
-    /**
-     * @return void
-     */
-    private function close()
-    {
-        session_write_close();
     }
 }

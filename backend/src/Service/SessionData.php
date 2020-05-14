@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Middleware\Psr15\Session;
+namespace Neucore\Service;
 
 use Neucore\Exception\RuntimeException;
 
@@ -90,12 +90,12 @@ class SessionData
     }
 
     /**
-     * Clear all session variables, regenerate current session ID
-     * and delete the old associated session file.
+     * Clear all session variables, remove the cookie
+     * and delete the session data from the backend storage.
      *
      * @throws RuntimeException If session is read-only
      */
-    public function clear(): self
+    public function destroy(): self
     {
         if (self::$readOnly) {
             throw new RuntimeException('Session is read-only.');

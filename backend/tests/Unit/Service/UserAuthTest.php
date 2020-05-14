@@ -17,7 +17,7 @@ use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
-use Neucore\Middleware\Psr15\Session\SessionData;
+use Neucore\Service\SessionData;
 use Brave\Sso\Basics\EveAuthentication;
 use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Middleware\Psr15\Session;
 
 use Neucore\Exception\RuntimeException;
-use Neucore\Middleware\Psr15\Session\SessionData;
+use Neucore\Service\SessionData;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 
@@ -56,13 +56,13 @@ class SessionDataTest extends TestCase
         $sd->delete('k');
     }
 
-    public function testClearThrowsExceptionForReadOnlySession()
+    public function testDestroyThrowsExceptionForReadOnlySession()
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Session is read-only.');
 
         $sd = new SessionData();
-        $sd->clear();
+        $sd->destroy();
     }
 
     public function testSetReadOnlyGetReadOnly()
@@ -97,7 +97,7 @@ class SessionDataTest extends TestCase
         $this->assertSame($sd, $ret2);
     }
 
-    public function testGetAllClear()
+    public function testGetAllDestroy()
     {
         $_SESSION = []; // "start" session
         $sd = new SessionData();
@@ -108,7 +108,7 @@ class SessionDataTest extends TestCase
 
         $this->assertSame(['k' => 'v', 'k2' => 'v2'], $sd->getAll());
 
-        $ret = $sd->clear();
+        $ret = $sd->destroy();
         $this->assertSame([], $sd->getAll());
         $this->assertSame($sd, $ret);
     }

@@ -32,7 +32,7 @@ use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Middleware\Psr15\Session\SessionData;
+use Neucore\Service\SessionData;
 
 class Helper
 {

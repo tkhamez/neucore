@@ -9,7 +9,7 @@ use Neucore\Api;
 use Neucore\Controller\User\AuthController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
-use Neucore\Middleware\Psr15\Session\SessionData;
+use Neucore\Service\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Monolog\Handler\TestHandler;
