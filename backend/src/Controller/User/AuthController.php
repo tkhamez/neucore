@@ -25,7 +25,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * @OA\SecurityScheme(
  *     securityScheme="Session",
  *     type="apiKey",
- *     name="BCSESS",
+ *     name="neucore",
  *     in="cookie"
  * )
  *
