@@ -9,19 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class RandomTest extends TestCase
 {
-    public function testBytes()
-    {
-        $bytes = Random::bytes(16);
-        $this->assertSame(16, strlen($bytes));
-    }
-
-    public function testInt()
-    {
-        $int = Random::int(0, 40);
-        $this->assertGreaterThanOrEqual(0, $int);
-        $this->assertLessThanOrEqual(40, $int);
-    }
-
+    /**
+     * @throws \Exception
+     */
     public function testString()
     {
         $string = Random::chars(12);
@@ -29,6 +19,9 @@ class RandomTest extends TestCase
         $this->assertSame(1, preg_match('/^[0-9a-zA-Z]+$/', $string));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testHex()
     {
         $hex1 = Random::hex(32);

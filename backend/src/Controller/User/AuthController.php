@@ -130,13 +130,11 @@ class AuthController extends BaseController
      */
     public function login(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(Random::chars(12), '/#login');
+        return $this->redirectToLoginUrl('', '/#login');
     }
 
     /**
      * Login for "managed" accounts, redirects to EVE SSO login.
-     *
-     * @noinspection PhpUnused
      */
     public function loginManaged(string $prefix = self::STATE_PREFIX_STATUS_MANAGED): ResponseInterface
     {
@@ -149,7 +147,7 @@ class AuthController extends BaseController
             return $this->response->withStatus(403, 'Forbidden');
         }
 
-        return $this->redirectToLoginUrl($prefix . Random::chars(12), '/#login');
+        return $this->redirectToLoginUrl($prefix, '/#login');
     }
 
     /**
@@ -169,7 +167,7 @@ class AuthController extends BaseController
      */
     public function loginAlt(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_ALT . Random::chars(12), '/#login-alt');
+        return $this->redirectToLoginUrl(self::STATE_PREFIX_ALT, '/#login-alt');
     }
 
     /**
@@ -179,7 +177,7 @@ class AuthController extends BaseController
      */
     public function loginMail(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_MAIL . Random::chars(12), '/#login-mail');
+        return $this->redirectToLoginUrl(self::STATE_PREFIX_MAIL, '/#login-mail');
     }
 
     /**
@@ -189,7 +187,7 @@ class AuthController extends BaseController
      */
     public function loginDirector(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_DIRECTOR . Random::chars(12), '/#login-director');
+        return $this->redirectToLoginUrl(self::STATE_PREFIX_DIRECTOR, '/#login-director');
     }
 
     /**
@@ -310,8 +308,16 @@ class AuthController extends BaseController
         return $this->response->withStatus(204);
     }
 
-    private function redirectToLoginUrl(string $state, string $redirect): ResponseInterface
+    private function redirectToLoginUrl(string $prefix, string $redirect): ResponseInterface
     {
+        try {
+            $randomString = Random::chars(12);
+        } catch (\Exception $e) {
+            $this->response->getBody()->write('Error.');
+            return $this->response->withStatus(500);
+        }
+        $state = $prefix . $randomString;
+
         $this->session->set(self::SESS_AUTH_STATE, $state);
         $this->session->set(self::SESS_AUTH_REDIRECT, $redirect);
 
