@@ -6,7 +6,7 @@ namespace Neucore\Service;
 
 class Random
 {
-        /**
+    /**
      * Generates a random string.
      *
      * @throws \Exception
