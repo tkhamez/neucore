@@ -67,7 +67,16 @@ class Container
                         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                     ];
                 }
-                return EntityManager::create($conf['connection'], $config);
+                $em = EntityManager::create($conf['connection'], $config);
+                /*$logger = new class() extends \Doctrine\DBAL\Logging\DebugStack {
+                    public function startQuery($sql, ?array $params = null, ?array $types = null)
+                    {
+                        error_log($sql);
+                        #error_log(print_r($params, true));
+                    }
+                };
+                $em->getConnection()->getConfiguration()->setSQLLogger($logger);*/
+                return $em;
             },
             ObjectManager::class => function (ContainerInterface $c) {
                 return $c->get(EntityManagerInterface::class);
