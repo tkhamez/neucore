@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Middleware\Psr15\Session;
+namespace Tests\Unit\Slim;
 
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\SessionData;
@@ -14,7 +14,7 @@ use Slim\Routing\RoutingResults;
 use Tests\RequestFactory;
 use Tests\RequestHandler;
 
-class NonBlockingSessionTest extends TestCase
+class SessionMiddlewareTest extends TestCase
 {
     protected function setUp(): void
     {

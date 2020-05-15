@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Middleware\Psr15\Session;
+namespace Tests\Unit\Service;
 
 use Neucore\Exception\RuntimeException;
 use Neucore\Service\SessionData;
