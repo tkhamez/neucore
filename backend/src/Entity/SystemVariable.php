@@ -268,6 +268,21 @@ class SystemVariable implements \JsonSerializable
      */
     const CUSTOMIZATION_FOOTER_TEXT = 'customization_footer_text';
 
+    /**
+     * Scope = settings
+     */
+    const API_RATE_LIMIT_MAX_REQUESTS = 'api_rate_limit_max_requests';
+
+    /**
+     * Scope = settings
+     */
+    const API_RATE_LIMIT_RESET_TIME = 'api_rate_limit_reset_time';
+
+    /**
+     * Scope = settings
+     */
+    const API_RATE_LIMIT_ACTIVE = 'api_rate_limit_active';
+
     const TOKEN_ID = 'id';
 
     const TOKEN_ACCESS = 'access';
@@ -335,10 +350,13 @@ class SystemVariable implements \JsonSerializable
             case self::GROUPS_REQUIRE_VALID_TOKEN:
             case self::MAIL_INVALID_TOKEN_ACTIVE:
             case self::MAIL_MISSING_CHARACTER_ACTIVE:
+            case self::API_RATE_LIMIT_ACTIVE:
                 $this->value = ((bool) $value) ? '1' : '0';
                 break;
             case self::ACCOUNT_DEACTIVATION_DELAY:
             case self::MAIL_MISSING_CHARACTER_RESEND:
+            case self::API_RATE_LIMIT_RESET_TIME:
+            case self::API_RATE_LIMIT_MAX_REQUESTS:
                 $this->value = (string) abs((int) $value);
                 break;
             case self::MAIL_INVALID_TOKEN_ALLIANCES:

@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 
 class EsiController extends BaseController
 {
-    const ERROR_MESSAGE_PREFIX = 'App\EsiController->esiV1()';
+    const ERROR_MESSAGE_PREFIX = 'App\EsiController: ';
 
     const PARAM_DATASOURCE = 'datasource';
 
@@ -94,7 +94,7 @@ class EsiController extends BaseController
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi<br>
      *         Public ESI routes are not allowed.<br>
-     *         The following headers from ESI are passed through to the response:
+     *         The following headers from ESI are passed through to the response if they exist:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>
      *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
@@ -122,7 +122,8 @@ class EsiController extends BaseController
                             Please note that the JSON schema type can be an object, array or number etc.,
                             unfortunately there is no way to document this.",
      *         @OA\JsonContent(type="string"),
-     *         @OA\Header(header="Expires",
+     *         @OA\Header(
+     *             header="Expires",
      *             description="RFC7231 formatted datetime string",
      *             @OA\Schema(type="integer")
      *         )
@@ -130,7 +131,8 @@ class EsiController extends BaseController
      *     @OA\Response(
      *         response="304",
      *         description="Not modified",
-     *         @OA\Header(header="Expires",
+     *         @OA\Header(
+     *             header="Expires",
      *             description="RFC7231 formatted datetime string",
      *             @OA\Schema(type="integer")
      *         )
@@ -157,7 +159,8 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).",
+     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)
+                            or API rate limit exceeded.",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
@@ -187,7 +190,7 @@ class EsiController extends BaseController
      * @OA\Post(
      *     path="/app/v1/esi",
      *     operationId="esiPostV1",
-     *     summary="Same as GET ​/app​/v1​/esi, but for POST requests.",
+     *     summary="Same as GET​/app/v1/esi, but for POST requests.",
      *     tags={"Application"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
@@ -216,7 +219,8 @@ class EsiController extends BaseController
      *         response="200",
      *         description="Same as GET ​/app​/v1​/esi, see there for details.",
      *         @OA\JsonContent(type="string"),
-     *         @OA\Header(header="Expires",
+     *         @OA\Header(
+     *             header="Expires",
      *             description="RFC7231 formatted datetime string",
      *             @OA\Schema(type="integer")
      *         )
@@ -224,7 +228,8 @@ class EsiController extends BaseController
      *     @OA\Response(
      *         response="304",
      *         description="Not modified",
-     *         @OA\Header(header="Expires",
+     *         @OA\Header(
+     *             header="Expires",
      *             description="RFC7231 formatted datetime string",
      *             @OA\Schema(type="integer")
      *         )
@@ -251,7 +256,8 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).",
+     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)
+                            or API rate limit exceeded.",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
@@ -285,8 +291,8 @@ class EsiController extends BaseController
 
         // check error limit
         if ($this->errorLimitReached()) {
-            $this->log->error(
-                self::ERROR_MESSAGE_PREFIX . ': ' . $this->appString().
+            $this->log->warning(
+                self::ERROR_MESSAGE_PREFIX . $this->appString().
                 ' exceeded the maximum permissible ESI error limit'
             );
             return $this->response->withStatus(429, 'Maximum permissible ESI error limit reached.');
@@ -414,10 +420,10 @@ class EsiController extends BaseController
         try {
             $esiResponse = $this->httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $re->getMessage());
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $re->getMessage());
             $esiResponse = $re->getResponse(); // may still be null
         } catch (GuzzleException $ge) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $ge->getMessage());
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $ge->getMessage());
             $esiResponse = new Response(
                 500, // status
                 [], // header
@@ -434,7 +440,7 @@ class EsiController extends BaseController
         try {
             $body = $esiResponse->getBody()->getContents();
         } catch (RuntimeException $e) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . ': (' . $this->appString() . ') ' . $e->getMessage());
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $e->getMessage());
         }
         if ($body !== null) {
             $this->response->getBody()->write($body);

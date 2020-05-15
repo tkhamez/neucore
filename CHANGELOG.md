@@ -2,6 +2,7 @@
 
 ## next
 
+- Added rate limiting middleware for the application API.
 - APCu storage added for variables that do not need to be stored permanently.
 
 ## 1.11.5

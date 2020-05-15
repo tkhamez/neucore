@@ -38,7 +38,7 @@
                             See also
                             <a v-cloak target="_blank" rel="noopener noreferrer"
                                :href="settings.customization_github +
-                                    '/blob/master/doc/documentation.md#authentication-of-applications'">
+                                    '/blob/master/doc/documentation.md#authentication'">
                                 Authentication of applications</a>.
                         </p>
                         <p>

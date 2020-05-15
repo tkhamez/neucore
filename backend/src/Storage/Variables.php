@@ -17,4 +17,6 @@ class Variables
      * Time, remain and reset from X-Esi-Error-Limit-* HTTP headers.
      */
     const ESI_ERROR_LIMIT = 'esi_error_limit';
+
+    const API_RATE_LIMIT = 'api_rate_limit';
 }

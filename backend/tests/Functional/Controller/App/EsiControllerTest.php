@@ -131,7 +131,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(429, $response->getStatusCode());
         $this->assertSame('Maximum permissible ESI error limit reached.', $response->getReasonPhrase());
         $this->assertSame(
-            'App\EsiController->esiV1(): application ' . $appId .
+            'App\EsiController: application ' . $appId .
                 ' "A1" exceeded the maximum permissible ESI error limit',
             $this->logger->getHandler()->getRecords()[0]['message']
         );

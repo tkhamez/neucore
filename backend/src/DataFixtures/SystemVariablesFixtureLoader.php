@@ -42,34 +42,37 @@ class SystemVariablesFixtureLoader implements FixtureInterface
                 'Alliance Core Services',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_DEFAULT_THEME       => ['Darkly', SystemVariable::SCOPE_PUBLIC],
-            SystemVariable::CUSTOMIZATION_WEBSITE             => [
+            SystemVariable::CUSTOMIZATION_DEFAULT_THEME         => ['Darkly', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_WEBSITE               => [
                 'https://github.com/tkhamez/neucore',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_NAV_TITLE           => ['Neucore', SystemVariable::SCOPE_PUBLIC],
-            SystemVariable::CUSTOMIZATION_NAV_LOGO            => [
+            SystemVariable::CUSTOMIZATION_NAV_TITLE             => ['Neucore', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_NAV_LOGO              => [
                 $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo_29.png')),
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_HOME_HEADLINE       => ['Core Services', SystemVariable::SCOPE_PUBLIC],
-            SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION    => [
+            SystemVariable::CUSTOMIZATION_HOME_HEADLINE         => ['Core Services', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_HOME_DESCRIPTION      => [
                 'An application to manage access for EVE Online players to external services.',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_HOME_LOGO           => [
+            SystemVariable::CUSTOMIZATION_HOME_LOGO             => [
                 $imagePrefix . base64_encode((string) file_get_contents($pathToImages . '/logo_300.png')),
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_HOME_MARKDOWN       => ['', SystemVariable::SCOPE_PUBLIC],
-            SystemVariable::CUSTOMIZATION_FOOTER_TEXT         => [
+            SystemVariable::CUSTOMIZATION_HOME_MARKDOWN         => ['', SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::CUSTOMIZATION_FOOTER_TEXT           => [
                 'Documentation is available on GitHub.',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_GITHUB              => [
+            SystemVariable::CUSTOMIZATION_GITHUB                => [
                 'https://github.com/tkhamez/neucore',
                 SystemVariable::SCOPE_PUBLIC
             ],
+            SystemVariable::API_RATE_LIMIT_MAX_REQUESTS         => ['',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::API_RATE_LIMIT_RESET_TIME           => ['',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::API_RATE_LIMIT_ACTIVE               => ['',  SystemVariable::SCOPE_SETTINGS],
         ];
         foreach ($vars as $name => $data) {
             $var = $repository->find($name);

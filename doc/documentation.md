@@ -3,7 +3,9 @@
 <!-- toc -->
 
 - [Features](#features)
-- [Authentication of applications](#authentication-of-applications)
+- [Application API](#application-api)
+  * [Authentication](#authentication)
+  * [Rate Limit](#rate-limit)
 - [Player Accounts](#player-accounts)
   * [Character Registration](#character-registration)
   * [Removing Characters](#removing-characters)
@@ -48,7 +50,9 @@ only the routes listed in the group `Application` are for Neucore applications. 
 separate OpenAPI definition file at 
 [https://your.domain/application-api-3.yml](https://neucore.herokuapp.com/application-api-3.yml).
 
-## Authentication of applications
+## Application API
+
+### Authentication
 
 An application must first be created by an app administrator and assigned to an app manager, 
 who can then generate the app secret.
@@ -62,6 +66,12 @@ Example:
 ```
 curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neucore.tld/api/app/v1/show
 ```
+
+### Rate Limit
+
+If the API rate limiting is configured (UI: Admin -> Settings -> Features), each response will contain 
+the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. If enabled, each request results 
+in an error 429 "Too many requests" if the limit has been exceeded.
 
 ## Player Accounts
 
