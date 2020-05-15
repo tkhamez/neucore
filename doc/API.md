@@ -350,6 +350,7 @@ Application API
 - Return the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
 - Return all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
 - Return all characters from the player account. `GET /app/v1/player-chars/{playerId}`
+- Return the player account to which the character ID belongs with all characters. `GET /app/v1/player-with-characters/{characterId}`
 - Return all characters that were removed from the player account to which the character ID belongs. `GET /app/v1/removed-characters/{characterId}`
 - Return all characters that were moved from another account to the player account to which the
                     ID belongs. `GET /app/v1/incoming-characters/{characterId}`

@@ -44,7 +44,7 @@ class CharController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Character (or player) not found. (default reason phrase)"
+     *         description="Character not found. (default reason phrase)"
      *     )
      * )
      */
@@ -177,7 +177,7 @@ class CharController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Character (or player) not found."
+     *         description="Character not found."
      *     )
      * )
      */
@@ -235,6 +235,53 @@ class CharController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
+     *     path="/app/v1/player-with-characters/{characterId}",
+     *     operationId="playerWithCharactersV1",
+     *     summary="Return the player account to which the character ID belongs with all characters.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="EVE character ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="The player, only id, name and characters properties are returned.",
+     *         @OA\JsonContent(ref="#/components/schemas/Player")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Character not found."
+     *     )
+     * )
+     */
+    public function playerWithCharactersV1(string $characterId): ResponseInterface
+    {
+        $character = $this->repositoryFactory->getCharacterRepository()->find((int) $characterId);
+        if ($character === null) {
+            return $this->response->withStatus(404, CharController::ERROR_CHARACTER_NOT_FOUND);
+        }
+
+        $player = $character->getPlayer();
+
+        return $this->withJson([
+            'id' => $player->getId(),
+            'name' => $player->getName(),
+            'characters' => $player->getCharacters(),
+        ]);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
      *     path="/app/v1/removed-characters/{characterId}",
      *     operationId="removedCharactersV1",
      *     summary="Return all characters that were removed from the player account to which the character ID belongs.",
@@ -259,7 +306,7 @@ class CharController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Character (or player) not found."
+     *         description="Character not found."
      *     )
      * )
      */
@@ -306,7 +353,7 @@ class CharController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Character (or player) not found."
+     *         description="Character not found."
      *     )
      * )
      */

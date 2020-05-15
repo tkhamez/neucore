@@ -19,39 +19,47 @@ use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\WatchlistController;
 
 return [
+    '/login'             => ['GET', AuthController::class.'::login'],
+    '/login-managed'     => ['GET', AuthController::class.'::loginManaged'],
+    '/login-managed-alt' => ['GET', AuthController::class.'::loginManagedAlt'],
+    '/login-alt'         => ['GET', AuthController::class.'::loginAlt'],
+    '/login-mail'        => ['GET', AuthController::class.'::loginMail'],
+    '/login-director'    => ['GET', AuthController::class.'::loginDirector'],
+    '/login-callback'    => ['GET', AuthController::class.'::callback'],
 
-    '/login'             => ['GET',  AuthController::class.'::login'],
-    '/login-managed'     => ['GET',  AuthController::class.'::loginManaged'],
-    '/login-managed-alt' => ['GET',  AuthController::class.'::loginManagedAlt'],
-    '/login-alt'         => ['GET',  AuthController::class.'::loginAlt'],
-    '/login-mail'        => ['GET',  AuthController::class.'::loginMail'],
-    '/login-director'    => ['GET',  AuthController::class.'::loginDirector'],
-    '/login-callback'    => ['GET',  AuthController::class.'::callback'],
+    '/api/user/auth/callback' => ['GET',  AuthController::class.'::callback'], // only for backwards compatibility
+    '/api/user/auth/result'   => ['GET',  AuthController::class.'::result'],
+    '/api/user/auth/logout'   => ['POST', AuthController::class.'::logout'],
 
-    '/api/app/v1/show'                               => ['GET',  ApplicationController::class.'::showV1'],
-    '/api/app/v1/groups/{cid}'                       => ['GET',  AppGroupController::class.'::groupsV1'],
-    '/api/app/v2/groups/{cid}'                       => ['GET',  AppGroupController::class.'::groupsV2'],
-    '/api/app/v1/groups'                             => ['POST', AppGroupController::class.'::groupsBulkV1'],
-    '/api/app/v1/corp-groups/{cid}'                  => ['GET',  AppGroupController::class.'::corpGroupsV1'],
-    '/api/app/v2/corp-groups/{cid}'                  => ['GET',  AppGroupController::class.'::corpGroupsV2'],
-    '/api/app/v1/corp-groups'                        => ['POST', AppGroupController::class.'::corpGroupsBulkV1'],
-    '/api/app/v1/alliance-groups/{aid}'              => ['GET',  AppGroupController::class.'::allianceGroupsV1'],
-    '/api/app/v2/alliance-groups/{aid}'              => ['GET',  AppGroupController::class.'::allianceGroupsV2'],
-    '/api/app/v1/alliance-groups'                    => ['POST', AppGroupController::class.'::allianceGroupsBulkV1'],
-    '/api/app/v1/groups-with-fallback'               => ['GET',  AppGroupController::class.'::groupsWithFallbackV1'],
-    '/api/app/v1/main/{cid}'                         => ['GET',  CharController::class.'::mainV1'],
-    '/api/app/v2/main/{cid}'                         => ['GET',  CharController::class.'::mainV2'],
-    '/api/app/v1/player/{characterId}'               => ['GET',  CharController::class.'::playerV1'],
-    '/api/app/v1/characters/{characterId}'           => ['GET',  CharController::class.'::charactersV1'],
-    '/api/app/v1/player-chars/{playerId}'            => ['GET',  CharController::class.'::playerCharactersV1'],
-    '/api/app/v1/removed-characters/{characterId}'   => ['GET',  CharController::class.'::removedCharactersV1'],
-    '/api/app/v1/incoming-characters/{characterId}'  => ['GET',  CharController::class.'::incomingCharactersV1'],
-    '/api/app/v1/corp-players/{corporationId}'       => ['GET',  CharController::class.'::corporationPlayersV1'],
-    '/api/app/v1/corporation/{id}/member-tracking'   => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
-    '/api/app/v1/esi[{path:.*}]'                     => [
-                                                            'GET'  => AppEsiController::class.'::esiV1',
-                                                            'POST' => AppEsiController::class.'::esiPostV1',
-                                                        ],
+    '/api/app/v1/show' => ['GET', ApplicationController::class.'::showV1'],
+
+    '/api/app/v1/main/{cid}'                           => ['GET', CharController::class.'::mainV1'],
+    '/api/app/v2/main/{cid}'                           => ['GET', CharController::class.'::mainV2'],
+    '/api/app/v1/player/{characterId}'                 => ['GET', CharController::class.'::playerV1'],
+    '/api/app/v1/characters/{characterId}'             => ['GET', CharController::class.'::charactersV1'],
+    '/api/app/v1/player-chars/{playerId}'              => ['GET', CharController::class.'::playerCharactersV1'],
+    '/api/app/v1/player-with-characters/{characterId}' => ['GET', CharController::class.'::playerWithCharactersV1'],
+    '/api/app/v1/removed-characters/{characterId}'     => ['GET', CharController::class.'::removedCharactersV1'],
+    '/api/app/v1/incoming-characters/{characterId}'    => ['GET', CharController::class.'::incomingCharactersV1'],
+    '/api/app/v1/corp-players/{corporationId}'         => ['GET', CharController::class.'::corporationPlayersV1'],
+
+    '/api/app/v1/corporation/{id}/member-tracking' => ['GET',  AppCorporationController::class.'::memberTrackingV1'],
+
+    '/api/app/v1/esi[{path:.*}]' => [
+        'GET'  => AppEsiController::class.'::esiV1',
+        'POST' => AppEsiController::class.'::esiPostV1',
+     ],
+
+    '/api/app/v1/groups/{cid}'          => ['GET',  AppGroupController::class.'::groupsV1'],
+    '/api/app/v2/groups/{cid}'          => ['GET',  AppGroupController::class.'::groupsV2'],
+    '/api/app/v1/groups'                => ['POST', AppGroupController::class.'::groupsBulkV1'],
+    '/api/app/v1/corp-groups/{cid}'     => ['GET',  AppGroupController::class.'::corpGroupsV1'],
+    '/api/app/v2/corp-groups/{cid}'     => ['GET',  AppGroupController::class.'::corpGroupsV2'],
+    '/api/app/v1/corp-groups'           => ['POST', AppGroupController::class.'::corpGroupsBulkV1'],
+    '/api/app/v1/alliance-groups/{aid}' => ['GET',  AppGroupController::class.'::allianceGroupsV1'],
+    '/api/app/v2/alliance-groups/{aid}' => ['GET',  AppGroupController::class.'::allianceGroupsV2'],
+    '/api/app/v1/alliance-groups'       => ['POST', AppGroupController::class.'::allianceGroupsBulkV1'],
+    '/api/app/v1/groups-with-fallback'  => ['GET',  AppGroupController::class.'::groupsWithFallbackV1'],
 
     '/api/user/app/all'                       => ['GET',    AppController::class.'::all'],
     '/api/user/app/create'                    => ['POST',   AppController::class.'::create'],
@@ -72,10 +80,6 @@ return [
     '/api/user/alliance/add/{id}'                => ['POST', AllianceController::class.'::add'],
     '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
     '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
-
-    '/api/user/auth/callback' => ['GET',  AuthController::class.'::callback'], // only for backwards compatibility
-    '/api/user/auth/result'   => ['GET',  AuthController::class.'::result'],
-    '/api/user/auth/logout'   => ['POST', AuthController::class.'::logout'],
 
     '/api/user/character/find-by/{name}'      => ['GET',  CharacterController::class.'::findBy'],
     '/api/user/character/show'                => ['GET',  CharacterController::class.'::show'],

@@ -2,6 +2,8 @@
 
 ## next
 
+- Added `/app/v1/player-with-characters/{characterId}` app API endpoint which returns the player account to which 
+  the character ID belongs with all characters.
 - Added rate limiting middleware for the application API.
 - APCu storage added for variables that do not need to be stored permanently.
 - Small bug fixes and improvements.

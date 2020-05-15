@@ -10,7 +10,18 @@ use Neucore\Entity\Role;
  * First match will be used, matched by "starts-with"
  */
 return [
+    '/api/app/v1/main'                             => [Role::APP_CHARS],
+    '/api/app/v2/main'                             => [Role::APP_CHARS],
+    '/api/app/v1/player/{characterId}'             => [Role::APP_CHARS],
+    '/api/app/v1/characters'                       => [Role::APP_CHARS],
+    '/api/app/v1/player-chars'                     => [Role::APP_CHARS],
+    '/api/app/v1/player-with-characters'           => [Role::APP_CHARS],
+    '/api/app/v1/removed-characters'               => [Role::APP_CHARS],
+    '/api/app/v1/incoming-characters'              => [Role::APP_CHARS],
+    '/api/app/v1/corp-players/{corporationId}'     => [Role::APP_CHARS],
+
     '/api/app/v1/corporation/{id}/member-tracking' => [Role::APP_TRACKING],
+
     '/api/app/v1/esi'                              => [Role::APP_ESI],
 
     '/api/app/v1/groups'                           => [Role::APP_GROUPS],
@@ -21,16 +32,7 @@ return [
     '/api/app/v2/alliance-groups'                  => [Role::APP_GROUPS],
     '/api/app/v1/groups-with-fallback'             => [Role::APP_GROUPS],
 
-    '/api/app/v1/main'                             => [Role::APP_CHARS],
-    '/api/app/v2/main'                             => [Role::APP_CHARS],
-    '/api/app/v1/player/{characterId}'             => [Role::APP_CHARS],
-    '/api/app/v1/characters'                       => [Role::APP_CHARS],
-    '/api/app/v1/player-chars'                     => [Role::APP_CHARS],
-    '/api/app/v1/removed-characters'               => [Role::APP_CHARS],
-    '/api/app/v1/incoming-characters'              => [Role::APP_CHARS],
-    '/api/app/v1/corp-players/{corporationId}'     => [Role::APP_CHARS],
-
-    '/api/app'                                     => [Role::APP],
+    '/api/app'                                     => [Role::APP], // only showV1
 
     '/api/user/alliance/all'      => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER, Role::SETTINGS],
     '/api/user/alliance/add/{id}' => [Role::GROUP_ADMIN, Role::WATCHLIST_MANAGER],

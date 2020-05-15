@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
+use Neucore\Controller\App\CharController;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Factory\RepositoryFactory;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
@@ -19,11 +19,6 @@ class CharControllerTest extends WebTestCase
      */
     private $helper;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
-
     private $app0Id;
 
     private $appId;
@@ -31,7 +26,6 @@ class CharControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testMainV1403()
@@ -279,6 +273,63 @@ class CharControllerTest extends WebTestCase
             ]],
             $body
         );
+    }
+
+    public function testPlayerWithCharactersV1_403()
+    {
+        $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setUpDb();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123', null, $headers);
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testPlayerWithCharactersV1_404()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123', null, $headers);
+
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(CharController::ERROR_CHARACTER_NOT_FOUND, $response->getReasonPhrase());
+    }
+
+    public function testPlayerWithCharactersV1_200()
+    {
+        $this->setUpDb();
+        $player = $this->helper->addCharacterMain('C1', 123, [Role::USER])->getPlayer();
+        $this->helper->addCharacterToPlayer('C2', 456, $player);
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/player-with-characters/123', null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            'id' => $player->getId(),
+            'name' => 'C1',
+            'characters' => [[
+                'id' => 123,
+                'name' => 'C1',
+                'main' => true,
+                'created' => null,
+                'lastUpdate' => null,
+                'validToken' => null,
+                'validTokenTime' => null,
+                'corporation' => null
+            ],[
+                'id' => 456,
+                'name' => 'C2',
+                'main' => false,
+                'created' => null,
+                'lastUpdate' => null,
+                'validToken' => null,
+                'validTokenTime' => null,
+                'corporation' => null
+            ]]
+        ], $this->parseJsonBody($response));
     }
 
     public function testRemovedCharactersV1403()
