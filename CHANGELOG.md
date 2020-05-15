@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- APCu storage added for variables that do not need to be stored permanently.
+
 ## 1.11.5
 
 4 May 2020
