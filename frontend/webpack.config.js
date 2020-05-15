@@ -84,11 +84,6 @@ module.exports = (env, argv) => {
                 filename: '../api.html',
                 inject: false,
             }),
-            new CleanWebpackPlugin({
-                cleanOnceBeforeBuildPatterns: ['**/*', '../fonts/*'],
-                dangerouslyAllowCleanPatternsOutsideProject: true,
-                dry: false,
-            }),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(devMode ? 'development' : 'production')
             }),
@@ -96,24 +91,6 @@ module.exports = (env, argv) => {
                 filename: '[name].[contenthash].css'
             }),
             new VueLoaderPlugin(),
-            new GoogleFontsPlugin({
-                fonts: [
-                    { family: "Source Sans Pro", variants: ["300", "400", "700", "400italic"] }, // cosmo, lumen
-                    { family: "Roboto", variants: ["300", "400", "500", "700"] }, // cyborg, materia, sandstone
-                    { family: "Lato", variants: ["300", "400", "700", "400italic"] }, // darkly, flatly, superhero
-                    { family: "News Cycle", variants: ["400", "700"] }, // journal
-                    { family: "Nunito Sans", variants: ["400", "600"] }, // lux
-                    { family: "Montserrat" }, // minty
-                    { // simplex, spacelab, yeti
-                        family: "Open Sans",
-                        variants: ["300", "400", "700", "300italic", "400italic", "700italic"]
-                    },
-                    { family: "Neucha" }, // sketchy
-                    { family: "Cabin Sketch" }, // sketchy
-                    { family: "Source Sans Pro" }, // solar
-                    { family: "Ubuntu", variants: ["400", "700"] }, // united
-                ]
-            }),
         ],
         optimization: {
             runtimeChunk: 'single',
@@ -131,7 +108,43 @@ module.exports = (env, argv) => {
         performance: {
             hints: devMode ? false : 'warning'
         },
+        watchOptions: {
+            ignored: [/node_modules/, /neucore-js-client/]
+        }
     };
+
+    // do not remove and rebuild google fonts during watch mode
+    const cleanPattern = ['**/*', '../fonts/*'];
+    if (argv.watch) {
+        cleanPattern.push('!fonts.css');
+        cleanPattern.push('!font/**');
+    }
+    config.plugins.push(new CleanWebpackPlugin({
+        cleanOnceBeforeBuildPatterns: cleanPattern,
+        dangerouslyAllowCleanPatternsOutsideProject: true,
+        dry: false,
+    }));
+    if (! argv.watch) {
+        config.plugins.push(new GoogleFontsPlugin({
+            fonts: [
+                { family: "Source Sans Pro", variants: ["300", "400", "700", "400italic"] }, // cosmo, lumen
+                { family: "Roboto", variants: ["300", "400", "500", "700"] }, // cyborg, materia, sandstone
+                { family: "Lato", variants: ["300", "400", "700", "400italic"] }, // darkly, flatly, superhero
+                { family: "News Cycle", variants: ["400", "700"] }, // journal
+                { family: "Nunito Sans", variants: ["400", "600"] }, // lux
+                { family: "Montserrat" }, // minty
+                { // simplex, spacelab, yeti
+                    family: "Open Sans",
+                    variants: ["300", "400", "700", "300italic", "400italic", "700italic"]
+                },
+                { family: "Neucha" }, // sketchy
+                { family: "Cabin Sketch" }, // sketchy
+                { family: "Source Sans Pro" }, // solar
+                { family: "Ubuntu", variants: ["400", "700"] }, // united
+            ]
+        }));
+    }
+
     if (! devMode) {
         config.plugins.push(new LicenseWebpackPlugin());
         config.plugins.push(new CreateFileWebpack({

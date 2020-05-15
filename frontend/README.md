@@ -53,6 +53,9 @@ Rebuild on change:
 npm run watch
 ```
 
+Note: This will not remove and create the Google font files, as this takes too long. Therefore, first run 
+`npm run build` to create them before using `npm run watch`.
+
 ## Console Commands
 
 ### ESI routes
