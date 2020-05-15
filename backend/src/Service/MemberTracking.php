@@ -416,7 +416,9 @@ class MemberTracking
                 $corpMember->setMissingCharacterMailSentNumber(0); // reset count
             }
             $corpMember->setCharacter($character);
-            $corpMember->setName($charNames[$id] ?? null);
+            if (isset($charNames[$id])) {
+                $corpMember->setName($charNames[$id]);
+            }
             if ($data->getLocationId() !== null) {
                 $location = $this->repositoryFactory->getEsiLocationRepository()->find($data->getLocationId());
                 $corpMember->setLocation($location);
