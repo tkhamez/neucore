@@ -117,9 +117,7 @@
                                 </p>
                             </div>
                             <div class="card-footer">
-                                <span v-if="char.main" class="small text-warning align-middle">
-                                    <span role="img" class="fas fa-star"></span> Main
-                                </span>
+                                <span v-if="char.main" class="badge badge-warning">Main</span>
                                 <a v-if="! char.main" class="badge badge-primary" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
                                 <a class="badge badge-primary" href="#"
