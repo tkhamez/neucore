@@ -6,7 +6,7 @@ parameters:
 	ignoreErrors:
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/Middleware/Psr15/Session/SessionData.php
+			path: %currentWorkingDirectory%/src/Service/SessionData.php
 		-
 			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
 			path: %currentWorkingDirectory%/src/Service/EsiData.php
@@ -21,7 +21,7 @@ parameters:
 			path: %currentWorkingDirectory%/src/Controller/BaseController.php
 		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/tests/Unit/Middleware/Psr15/Session/NonBlockingSessionTest.php
+			path: %currentWorkingDirectory%/tests/Unit/Slim/SessionMiddlewareTest.php
 		-
 			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
 			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
