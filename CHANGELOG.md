@@ -8,6 +8,12 @@
 - APCu storage added for variables that do not need to be stored permanently.
 - Small bug fixes and improvements.
 
+## 1.11.6
+
+15 May 2020
+
+- Fix menu.
+
 ## 1.11.5
 
 4 May 2020
