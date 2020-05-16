@@ -25,6 +25,8 @@ class CheckTokens extends Command
     use LogOutput;
     use EsiRateLimited;
 
+    private const CHARACTER = '  Character ';
+
     /**
      * @var CharacterRepository
      */
@@ -129,17 +131,17 @@ class CheckTokens extends Command
                     // check token, corporation Doomheim and character owner hash - this may delete the character!
                     $result = $this->charService->checkCharacter($char, $this->tokenService);
                     if ($result === Account::CHECK_TOKEN_NA) {
-                        $this->writeLine('  Character ' . $charId.': token N/A');
+                        $this->writeLine(self::CHARACTER . $charId.': token N/A');
                     } elseif ($result === Account::CHECK_TOKEN_OK) {
-                        $this->writeLine('  Character ' . $charId.': token OK');
+                        $this->writeLine(self::CHARACTER . $charId.': token OK');
                     } elseif ($result === Account::CHECK_TOKEN_NOK) {
-                        $this->writeLine('  Character ' . $charId.': token NOK');
+                        $this->writeLine(self::CHARACTER . $charId.': token NOK');
                     } elseif ($result === Account::CHECK_CHAR_DELETED) {
-                        $this->writeLine('  Character ' . $charId.': character deleted');
+                        $this->writeLine(self::CHARACTER . $charId.': character deleted');
                     } elseif ($result === Account::CHECK_TOKEN_PARSE_ERROR) {
-                        $this->writeLine('  Character ' . $charId.': token parse error');
+                        $this->writeLine(self::CHARACTER . $charId.': token parse error');
                     } else {
-                        $this->writeLine('  Character ' . $charId.': unknown result');
+                        $this->writeLine(self::CHARACTER . $charId.': unknown result');
                     }
                 }
 

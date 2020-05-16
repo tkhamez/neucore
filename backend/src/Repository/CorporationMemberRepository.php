@@ -17,7 +17,11 @@ use Neucore\Entity\Player;
  */
 class CorporationMemberRepository extends EntityRepository
 {
-    const DATE_FORMAT = 'Y-m-d H:i:s';
+    private const NOW = 'now';
+
+    private const DAYS = 'days';
+
+    private const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @var int|null
@@ -167,10 +171,10 @@ class CorporationMemberRepository extends EntityRepository
             ->where('m.corporation = :corporation_id')->setParameter('corporation_id', $corporationId)
             ->orderBy('m.logonDate', 'DESC');
 
-        if ($this->active > 0 && ($activeDate = date_create('now -'.$this->active.' days'))) {
+        if ($this->active > 0 && ($activeDate = date_create(self::NOW.' -'.$this->active.' '.self::DAYS))) {
             $qb->andWhere('m.logonDate >= :active')->setParameter('active', $activeDate->format(self::DATE_FORMAT));
         }
-        if ($this->inactive > 0 && ($inactiveDate = date_create('now -'.$this->inactive.' days'))) {
+        if ($this->inactive > 0 && ($inactiveDate = date_create(self::NOW.' -'.$this->inactive.' '.self::DAYS))) {
             $qb->andWhere('m.logonDate < :inactive')
                 ->setParameter('inactive', $inactiveDate->format(self::DATE_FORMAT));
         }
@@ -187,7 +191,10 @@ class CorporationMemberRepository extends EntityRepository
         } elseif ($this->validToken === false) {
             $qb->andWhere($qb->expr()->eq('c.validToken', 0));
         }
-        if ($this->tokenChanged > 0 && ($tokenChangedDate = date_create('now -'.$this->tokenChanged.' days'))) {
+        if (
+            $this->tokenChanged > 0 &&
+            ($tokenChangedDate = date_create(self::NOW.' -'.$this->tokenChanged.' '.self::DAYS))
+        ) {
             $qb->andWhere('c.validTokenTime < :tokenChanged')
                 ->setParameter('tokenChanged', $tokenChangedDate->format(self::DATE_FORMAT));
         }
@@ -294,7 +301,7 @@ class CorporationMemberRepository extends EntityRepository
             return [];
         }
 
-        $minLoginDate = date_create('now -'.$loginDays.' days');
+        $minLoginDate = date_create(self::NOW.' -'.$loginDays.' '.self::DAYS);
         if (! $minLoginDate) {
             return [];
         }

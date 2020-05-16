@@ -195,18 +195,20 @@ function loadList(vm) {
     vm.listContent.Alliance = [];
     vm.listContent.Corporation = [];
 
+    function setPlayer(error, data) {
+        if (! error) {
+            vm.listContent.Player = data;
+        }
+    }
+
     // load table data
     if (vm.tab === 'red') {
         api.watchlistPlayers(vm.id, (error, data) => {
-            if (! error) {
-                vm.listContent.Player = data;
-            }
+            setPlayer(error, data);
         });
     } else if (vm.tab === 'white') {
         api.watchlistExemptionList(vm.id, (error, data) => {
-            if (! error) {
-                vm.listContent.Player = data;
-            }
+            setPlayer(error, data);
         });
         api.watchlistWhitelistAllianceList(vm.id, (error, data) => {
             if (! error) {
@@ -220,9 +222,7 @@ function loadList(vm) {
         });
     } else if (vm.tab === 'black') {
         api.watchlistPlayersBlacklist(vm.id, (error, data) => {
-            if (! error) {
-                vm.listContent.Player = data;
-            }
+            setPlayer(error, data);
         });
     }
 

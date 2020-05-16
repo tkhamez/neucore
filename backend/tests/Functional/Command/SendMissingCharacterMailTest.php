@@ -12,6 +12,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -95,7 +96,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
 
         $client = new Client();
         $client->setMiddleware(function () {
-            throw new \Exception("'error_label': 'ContactCostNotApproved'", 520);
+            throw new RuntimeException("'error_label': 'ContactCostNotApproved'", 520);
         });
         $client->setResponse(new Response());
         $log = new Logger('Test');

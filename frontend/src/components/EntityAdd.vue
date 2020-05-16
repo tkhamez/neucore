@@ -135,7 +135,7 @@ const searchAlliCorpDelayed = _.debounce((vm, query) => {
             return;
         }
         $.post(
-            vm.settings.esiHost + `/latest/universe/names/?datasource=${vm.settings.esiDataSource}`,
+            `${vm.settings.esiHost}/latest/universe/names/?datasource=${vm.settings.esiDataSource}`,
             JSON.stringify(response1[category])
         ).always(response2 => {
             vm.searchIsLoading = false;

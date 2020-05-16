@@ -187,38 +187,10 @@ class EveMail
      */
     public function invalidTokenSend(int $recipient): string
     {
-        $tokenValues = $this->getToken();
-        if ($tokenValues === null) {
-            return 'Missing character that can send mails or missing token data.';
-        }
-
         $subject = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT);
-        if ($subject === null || trim($subject->getValue()) === '') {
-            return 'Missing subject.';
-        }
-
         $body = $this->sysVarRepo->find(SystemVariable::MAIL_INVALID_TOKEN_BODY);
-        if ($body === null || trim($body->getValue()) === '') {
-            return 'Missing body text.';
-        }
 
-        try {
-            $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
-                OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
-                OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
-                OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES]
-            ]));
-        } catch (IdentityProviderException $e) {
-            return 'Invalid token.';
-        }
-
-        return $this->sendMail(
-            $tokenValues[SystemVariable::TOKEN_ID],
-            $accessToken->getToken(),
-            $subject->getValue(),
-            $body->getValue(),
-            [$recipient]
-        );
+        return $this->prepareAndSendMail($recipient, $subject, $body);
     }
 
     /**
@@ -322,13 +294,37 @@ class EveMail
 
     public function missingCharacterSend(int $recipient): string
     {
+        $subject = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT);
+        $body = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_BODY);
+
+        return $this->prepareAndSendMail($recipient, $subject, $body);
+    }
+
+    /**
+     * Set date to NOW.
+     */
+    public function missingCharacterMailSent(int $corporationMemberId, string $result): bool
+    {
+        $member = $this->repositoryFactory->getCorporationMemberRepository()->find($corporationMemberId);
+        if ($member === null) {
+            return false;
+        }
+
+        $member->setMissingCharacterMailSentDate(new \DateTime());
+        $member->setMissingCharacterMailSentResult($result);
+        $member->setMissingCharacterMailSentNumber($member->getMissingCharacterMailSentNumber() + 1);
+        $this->objectManager->flush();
+
+        return true;
+    }
+
+    private function prepareAndSendMail(int $recipient, ?SystemVariable $subject, ?SystemVariable $body): string
+    {
         $tokenValues = $this->getToken();
         if ($tokenValues === null) {
             return 'Missing character that can send mails or missing token data.';
         }
 
-        $subject = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT);
-        $body = $this->sysVarRepo->find(SystemVariable::MAIL_MISSING_CHARACTER_BODY);
         if (
             $subject === null || trim($subject->getValue()) === '' ||
             $body === null || trim($body->getValue()) === ''
@@ -356,24 +352,6 @@ class EveMail
     }
 
     /**
-     * Set date to NOW.
-     */
-    public function missingCharacterMailSent(int $corporationMemberId, string $result): bool
-    {
-        $member = $this->repositoryFactory->getCorporationMemberRepository()->find($corporationMemberId);
-        if ($member === null) {
-            return false;
-        }
-
-        $member->setMissingCharacterMailSentDate(new \DateTime());
-        $member->setMissingCharacterMailSentResult($result);
-        $member->setMissingCharacterMailSentNumber($member->getMissingCharacterMailSentNumber() + 1);
-        $this->objectManager->flush();
-
-        return true;
-    }
-
-    /**
      * @param int $senderId EVE character ID
      * @param string $token A valid access token
      * @param string $subject max length 1000
@@ -383,7 +361,7 @@ class EveMail
      * @return string Error message or empty string on success
      * @see OAuthToken::getToken()
      */
-    public function sendMail(
+    private function sendMail(
         int $senderId,
         string $token,
         string $subject,

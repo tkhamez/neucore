@@ -285,7 +285,7 @@ class SettingsControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/settings/system/send-invalid-token-mail');
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertSame('Missing subject.', $this->parseJsonBody($response));
+        $this->assertSame('Missing subject or body text.', $this->parseJsonBody($response));
     }
 
     public function testMissingCharacterMail403()

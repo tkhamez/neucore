@@ -25,6 +25,7 @@ use Monolog\Formatter\LogglyFormatter;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
@@ -110,7 +111,7 @@ class Container
                 $rotation = $config['rotation'];
                 if (strpos($path, 'php://') === false) {
                     if (! is_writable($path)) {
-                        throw new \Exception('The log directory "' . $path . '" must be writable by the web server.');
+                        throw new RuntimeException("The log directory '$path' must be writable by the web server.");
                     }
                     $date = date('o\wW'); // weekly rotation
                     if ($rotation === 'daily') {

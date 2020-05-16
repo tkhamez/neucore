@@ -33,6 +33,8 @@ class GroupController extends BaseController
 {
     const KEY_GROUPS = 'groups';
 
+    const KEY_ALLIANCE = 'alliance';
+
     const TYPE_CORPORATION = 'Corporation';
 
     const TYPE_ALLIANCE = 'Alliance';
@@ -624,8 +626,8 @@ class GroupController extends BaseController
         }
 
         $result = $entity->jsonSerialize();
-        if (array_key_exists('alliance', $result)) {
-            unset($result['alliance']);
+        if (array_key_exists(self::KEY_ALLIANCE, $result)) {
+            unset($result[self::KEY_ALLIANCE]);
         }
         $result[self::KEY_GROUPS] = [];
 

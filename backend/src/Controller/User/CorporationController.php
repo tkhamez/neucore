@@ -537,17 +537,28 @@ class CorporationController extends BaseController
 
         $inactive = $this->getQueryParam($request, 'inactive');
         $active = $this->getQueryParam($request, 'active');
-        $account = $this->getQueryParam($request, 'account');
-        $validToken = $this->getQueryParam($request, 'valid-token');
+        $accountParam = $this->getQueryParam($request, 'account');
+        $validTokenParam = $this->getQueryParam($request, 'valid-token');
         $tokenStatusChanged = $this->getQueryParam($request, 'token-status-changed');
         $mailCount = $this->getQueryParam($request, 'mail-count');
+
+        if ($accountParam === 'true') {
+            $account = true;
+        } else {
+            $account = $accountParam === 'false' ? false : null;
+        }
+        if ($validTokenParam === 'true') {
+            $validToken = true;
+        } else {
+            $validToken = $validTokenParam === 'false' ? false : null;
+        }
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()
             ->setInactive($inactive !== null ? (int) $inactive : null)
             ->setActive($active !== null ? (int) $active : null)
-            ->setAccount($account === 'true' ? true : ($account === 'false' ? false : null))
-            ->setValidToken($validToken === 'true' ? true : ($validToken === 'false' ? false : null))
+            ->setAccount($account)
+            ->setValidToken($validToken)
             ->setTokenChanged($tokenStatusChanged !== null ? (int) $tokenStatusChanged : null)
             ->setMailCount((int) $mailCount)
             ->findMatching((int) $id);

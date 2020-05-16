@@ -299,28 +299,17 @@ class EsiController extends BaseController
         }
 
         // get/validate input
-
         list($esiPath, $esiParams) = $this->getEsiPathAndQueryParams($request, $path);
-
-        $body = null;
-        if ($method === 'POST') {
-            $body = $request->getBody()->__toString();
-        }
-
-        if (empty($esiPath)) {
-            return $this->response->withStatus(400, 'Path cannot be empty.');
-        }
-
-        if ($this->isPublicPath($esiPath)) {
-            return $this->response->withStatus(400, 'Public ESI routes are not allowed.');
-        }
-
         $characterId = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
-        if (empty($characterId)) {
-            return $this->response->withStatus(
-                400,
-                'The datasource parameter cannot be empty, it must contain an EVE character ID'
-            );
+        if (empty($esiPath) || $this->isPublicPath($esiPath) || empty($characterId)) {
+            if (empty($esiPath)) {
+                $reason = 'Path cannot be empty.';
+            } elseif ($this->isPublicPath($esiPath)) {
+                $reason = 'Public ESI routes are not allowed.';
+            } else { // empty($characterId)
+                $reason = 'The datasource parameter cannot be empty, it must contain an EVE character ID';
+            }
+            return $this->response->withStatus(400, $reason);
         }
 
         // get character
@@ -329,12 +318,13 @@ class EsiController extends BaseController
             return $this->response->withStatus(400, 'Character not found.');
         }
 
-        // get the token
+        // Get the token - This executes an ESI request to refresh the token as needed.
         $token = $this->tokenService->getToken($character);
         if ($token === '') {
             return $this->response->withStatus(400, 'Character has no valid token.');
         }
 
+        $body = $method === 'POST' ? $request->getBody()->__toString() : null;
         $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $method, $body);
 
         return $this->buildResponse($esiResponse);
@@ -343,16 +333,12 @@ class EsiController extends BaseController
     private function errorLimitReached(): bool
     {
         $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
-        if ($var === null) {
-            return false;
-        }
+        $values = \json_decode((string) $var);
 
-        $values = \json_decode($var);
-        if (! $values instanceof \stdClass) {
-            return false;
-        }
-
-        if ((int) $values->updated + $values->reset < time()) {
+        if (
+            ! $values instanceof \stdClass ||
+            (int) $values->updated + $values->reset < time()
+        ) {
             return false;
         }
 
@@ -406,10 +392,10 @@ class EsiController extends BaseController
         string $method,
         string $body = null
     ): ResponseInterface {
-        $config = $this->config['eve'];
-        $url = $config['esi_host'] . $esiPath.
+        $eveConfig = $this->config['eve'];
+        $url = $eveConfig['esi_host'] . $esiPath.
             (strpos($esiPath, '?') ? '&' : '?') .
-            self::PARAM_DATASOURCE . '=' . $config['datasource'] .
+            self::PARAM_DATASOURCE . '=' . $eveConfig['datasource'] .
             (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
         $options = [
             'headers' => ['Authorization' => 'Bearer ' . $token],

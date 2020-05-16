@@ -126,10 +126,10 @@ export default {
             if (vm.pathsGet.length > 0 && vm.pathsPost.length > 0) {
                 vm.ajaxLoading(false);
                 for (const path of vm.pathsGet) {
-                    vm.paths.push({ name: 'GET ' + path, path: path});
+                    vm.paths.push({ name: `GET ${path}`, path: path});
                 }
                 for (const path of vm.pathsPost) {
-                    vm.paths.push({ name: 'POST ' + path, path: path});
+                    vm.paths.push({ name: `POST ${path}`, path: path});
                 }
             }
         }

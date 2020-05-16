@@ -162,27 +162,32 @@ export default {
 
 function addNavBehaviour() {
     const $navMain = $("#navbar01");
+    const dropDown = '.dropdown';
+    const dropDownToggle = '.dropdown-toggle';
+    const dropDownMenu = '.dropdown-menu';
+    const ariaExpanded = 'aria-expanded';
+    const visible = ':visible';
     $navMain.on("click", "a:not([data-toggle])", null, function() {
         $navMain.collapse('hide');
-        $(this).closest('.dropdown').removeClass('show');
-        $(this).closest('.dropdown-toggle').attr('aria-expanded', true);
-        $(this).closest('.dropdown-menu').removeClass('show');
+        $(this).closest(dropDown).removeClass('show');
+        $(this).closest(dropDownToggle).attr(ariaExpanded, true);
+        $(this).closest(dropDownMenu).removeClass('show');
     });
-    $navMain.on("mouseover", ".dropdown", null, function() {
-        if ($('.navbar .navbar-toggler').is(':visible')) {
+    $navMain.on('mouseover', dropDown, null, function() {
+        if ($('.navbar .navbar-toggler').is(visible)) {
             return;
         }
         $(this).addClass('show');
-        $(this).find('.dropdown-toggle').attr('aria-expanded', true);
-        $(this).find('.dropdown-menu').addClass('show');
+        $(this).find(dropDownToggle).attr(ariaExpanded, true);
+        $(this).find(dropDownMenu).addClass('show');
     });
-    $navMain.on("mouseout", ".dropdown", null, function() {
-        if ($('.navbar .navbar-toggler').is(':visible')) {
+    $navMain.on('mouseout', dropDown, null, function() {
+        if ($('.navbar .navbar-toggler').is(visible)) {
             return;
         }
         $(this).removeClass('show');
-        $(this).find('.dropdown-toggle').attr('aria-expanded', false);
-        $(this).find('.dropdown-menu').removeClass('show');
+        $(this).find(dropDownToggle).attr(ariaExpanded, false);
+        $(this).find(dropDownMenu).removeClass('show');
     });
 }
 </script>

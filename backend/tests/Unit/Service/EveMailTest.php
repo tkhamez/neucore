@@ -517,13 +517,4 @@ class EveMailTest extends TestCase
         $this->assertSame('result', $memberDb->getMissingCharacterMailSentResult());
         $this->assertSame(1, $memberDb->getMissingCharacterMailSentNumber());
     }
-
-    public function testSendMail()
-    {
-        $this->client->setResponse(new Response(200, [], '373515628'));
-
-        $result = $this->eveMail->sendMail(123, 'access-token', 'subject', 'body', [456]);
-
-        $this->assertSame('', $result);
-    }
 }

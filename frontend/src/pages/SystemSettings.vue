@@ -140,7 +140,7 @@ export default {
          */
         buildIdArray (value, list) {
             const result = [];
-            for (let id of value.split(',')) {
+            for (const id of value.split(',')) {
                 for (const item of list) {
                     if (item.id === parseInt(id)) {
                         result.push(item);

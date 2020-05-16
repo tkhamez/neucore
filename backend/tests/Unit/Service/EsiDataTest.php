@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\EsiLocation;
+use Neucore\Exception\RuntimeException;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Entity\Corporation;
 use Neucore\Factory\RepositoryFactory;
@@ -521,7 +522,7 @@ class EsiDataTest extends TestCase
     public function testFetchCorporationMembersEsiError()
     {
         $this->client->setMiddleware(function () {
-            throw new \Exception("", 520);
+            throw new RuntimeException("", 520);
         });
         $this->client->setResponse(new Response(200, [], '[100, 200]'));
 

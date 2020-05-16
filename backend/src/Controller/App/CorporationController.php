@@ -60,8 +60,12 @@ class CorporationController extends BaseController
     {
         $inactive = $this->getQueryParam($request, 'inactive');
         $active = $this->getQueryParam($request, 'active');
-        $account = $this->getQueryParam($request, 'account');
-        $account = $account === 'true' ? true : ($account === 'false' ? false : null);
+        $accountParam = $this->getQueryParam($request, 'account');
+        if ($accountParam === 'true') {
+            $account = true;
+        } else {
+            $account = $accountParam === 'false' ? false : null;
+        }
 
         $members = $this->repositoryFactory
             ->getCorporationMemberRepository()

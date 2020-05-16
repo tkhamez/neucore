@@ -98,12 +98,12 @@ class RateLimit implements MiddlewareInterface
             $this->logger->debug(
                 "{$this->logPrefix($app)} limit exceeded with $numRequests request in $elapsedTime seconds."
             );
-            return $this->responseFactory->createResponse(429) // Too Many Requests
-                ->withHeader(self::HEADER_REMAIN, $remaining)
-                ->withHeader(self::HEADER_RESET, $resetIn);
+            $response = $this->responseFactory->createResponse(429); // Too Many Requests
+        } else {
+            $response = $handler->handle($request);
         }
 
-        return $handler->handle($request)
+        return $response
             ->withHeader(self::HEADER_REMAIN, $remaining)
             ->withHeader(self::HEADER_RESET, $resetIn);
     }
@@ -116,13 +116,13 @@ class RateLimit implements MiddlewareInterface
 
         $sysRepo = $this->repositoryFactory->getSystemVariableRepository();
 
-        $maxRequests = $sysRepo->find(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS);
-        $resetTime = $sysRepo->find(SystemVariable::API_RATE_LIMIT_RESET_TIME);
-        $active = $sysRepo->find(SystemVariable::API_RATE_LIMIT_ACTIVE);
+        $maxRequestsVar = $sysRepo->find(SystemVariable::API_RATE_LIMIT_MAX_REQUESTS);
+        $resetTimeVar = $sysRepo->find(SystemVariable::API_RATE_LIMIT_RESET_TIME);
+        $activeVar = $sysRepo->find(SystemVariable::API_RATE_LIMIT_ACTIVE);
 
-        $this->maxRequests = $maxRequests ? abs((int) $maxRequests->getValue()) : 0;
-        $this->resetTime = $resetTime ? abs((int) $resetTime->getValue()) : 0;
-        $this->active = $active ? (bool) $active->getValue() : false;
+        $this->maxRequests = $maxRequestsVar ? abs((int) $maxRequestsVar->getValue()) : 0;
+        $this->resetTime = $resetTimeVar ? abs((int) $resetTimeVar->getValue()) : 0;
+        $this->active = $activeVar ? (bool) $activeVar->getValue() : false;
     }
 
     private function checkLimit(App $app): array
