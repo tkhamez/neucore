@@ -62,7 +62,10 @@ class AssureMain extends Command
                     break;
                 }
 
-                $this->account->assureMain($this->playerRepository->find($playerId));
+                $player = $this->playerRepository->find($playerId);
+                if ($player) {
+                    $this->account->assureMain($player);
+                }
 
                 if ($j % 100 === 0) { // reduce memory usage
                     $this->entityManager->flush();
@@ -78,7 +81,7 @@ class AssureMain extends Command
         return 0;
     }
 
-    private function getPlayerIds($dbResultLimit, array $criteria = [], array $orderBy = [])
+    private function getPlayerIds(int $dbResultLimit, array $criteria = [], array $orderBy = []): iterable
     {
         $offset = $dbResultLimit * -1;
         do {
