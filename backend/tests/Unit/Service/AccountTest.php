@@ -482,25 +482,31 @@ class AccountTest extends TestCase
     {
         $player = (new Player())->setName('player 1');
         $newPlayer = (new Player())->setName('player 2');
-        $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
-        $player->addCharacter($char);
+        $char1 = (new Character())->setId(10)->setName('char1')->setPlayer($player)->setMain(true);
+        $char2 = (new Character())->setId(11)->setName('char2')->setPlayer($player)->setMain(false);
+        $player->addCharacter($char1);
+        $player->addCharacter($char2);
         $this->om->persist($player);
         $this->om->persist($newPlayer);
-        $this->om->persist($char);
+        $this->om->persist($char1);
+        $this->om->persist($char2);
         $this->om->flush();
 
-        $this->service->moveCharacter($char, $newPlayer);
+        $this->service->moveCharacter($char1, $newPlayer);
 
         $this->om->flush();
         $this->om->clear();
 
-        $this->assertSame(0, count($player->getCharacters()));
-        $this->assertSame(10, $player->getRemovedCharacters()[0]->getCharacterId());
-        $this->assertSame('char', $player->getRemovedCharacters()[0]->getCharacterName());
-        $this->assertSame('player 1', $player->getRemovedCharacters()[0]->getPlayer()->getName());
-        $this->assertEqualsWithDelta(time(), $player->getRemovedCharacters()[0]->getRemovedDate()->getTimestamp(), 10);
-        $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
-        $this->assertSame(RemovedCharacter::REASON_MOVED, $player->getRemovedCharacters()[0]->getReason());
+        $this->assertSame(1, count($player->getCharacters()));
+        $this->assertSame('char2', $player->getCharacters()[1]->getName()); // index 0 was removed
+        $this->assertTrue($player->getCharacters()[1]->getMain());
+        $removedChar = $player->getRemovedCharacters()[0];
+        $this->assertSame(10, $removedChar->getCharacterId());
+        $this->assertSame('char1', $removedChar->getCharacterName());
+        $this->assertSame('char2', $removedChar->getPlayer()->getName()); // assureMain() changed the name
+        $this->assertEqualsWithDelta(time(), $removedChar->getRemovedDate()->getTimestamp(), 10);
+        $this->assertSame($newPlayer, $removedChar->getNewPlayer());
+        $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar->getReason());
 
         // tests that the new object was persisted.
         $removedChars = $this->removedCharRepo->findBy([]);
@@ -510,12 +516,15 @@ class AccountTest extends TestCase
     public function testDeleteCharacter()
     {
         $player = (new Player())->setName('player 1');
-        $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
+        $char = (new Character())->setId(10)->setName('char')->setPlayer($player)->setMain(true);
+        $char2 = (new Character())->setId(11)->setName('char2')->setPlayer($player)->setMain(false);
         $corp = (new Corporation())->setId(1)->setName('c');
         $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
         $player->addCharacter($char);
+        $player->addCharacter($char2);
         $this->om->persist($player);
         $this->om->persist($char);
+        $this->om->persist($char2);
         $this->om->persist($corp);
         $this->om->persist($member);
         $this->om->flush();
@@ -523,8 +532,8 @@ class AccountTest extends TestCase
         $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY, $player);
         $this->om->flush();
 
-        $this->assertSame(0, count($player->getCharacters()));
-        $this->assertSame(0, count($this->charRepo->findAll()));
+        $this->assertSame(1, count($player->getCharacters()));
+        $this->assertSame(1, count($this->charRepo->findAll()));
 
         $corpMember = $this->corpMemberRepo->findBy([]);
         $this->assertSame(1, count($corpMember));
@@ -535,11 +544,14 @@ class AccountTest extends TestCase
         $this->assertSame(10, $removedChars[0]->getCharacterId());
         $this->assertSame('char', $removedChars[0]->getCharacterName());
         $this->assertSame($player->getId(), $removedChars[0]->getPlayer()->getId());
-        $this->assertSame('player 1', $removedChars[0]->getPlayer()->getName());
+        $this->assertSame('char2', $removedChars[0]->getPlayer()->getName()); // assureMain() changed the name
         $this->assertEqualsWithDelta(time(), $removedChars[0]->getRemovedDate()->getTimestamp(), 10);
         $this->assertNull($removedChars[0]->getNewPlayer());
         $this->assertSame(RemovedCharacter::REASON_DELETED_MANUALLY, $removedChars[0]->getReason());
         $this->assertSame($player->getId(), $removedChars[0]->getDeletedBy()->getId());
+        $this->assertSame(1, count($player->getCharacters()));
+        $this->assertSame('char2', $player->getCharacters()[1]->getName()); // index 0 was removed
+        $this->assertTrue($player->getCharacters()[1]->getMain());
     }
 
     public function testDeleteCharacterByAdmin()
@@ -571,6 +583,32 @@ class AccountTest extends TestCase
                 $player->getId() . ']',
             $this->log->getHandler()->getRecords()[0]['message']
         );
+    }
+
+    public function testAssureMain()
+    {
+        $main = $this->helper->addCharacterMain('Test main', 112);
+        $player = $main->getPlayer();
+        $alt1 = $this->helper->addCharacterToPlayer('Test alt 1', 113, $player)
+            ->setCreated(new \DateTime('2020-05-23 17:41:12'));
+        $alt2 = $this->helper->addCharacterToPlayer('Test alt 2', 114, $player)
+            ->setCreated(new \DateTime('2020-05-23 16:41:12'));
+
+        $this->service->assureMain($player);
+
+        $this->assertSame(3, count($player->getCharacters()));
+        $this->assertTrue($main->getMain());
+        $this->assertFalse($alt1->getMain());
+        $this->assertFalse($alt2->getMain());
+
+        $player->removeCharacter($main);
+
+        $this->service->assureMain($player);
+
+        $this->assertSame(2, count($player->getCharacters()));
+        $this->assertTrue($main->getMain());
+        $this->assertFalse($alt1->getMain());
+        $this->assertTrue($alt2->getMain());
     }
 
     public function testGroupsDeactivatedValidToken()

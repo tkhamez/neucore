@@ -282,7 +282,7 @@ class Account
      * Removes a character from it's current player account,
      * adds it to the new player and creates a RemovedCharacter record.
      *
-     * Does not flush the entity manager.
+     * Does not flush the entity manager at the end.
      */
     public function moveCharacter(Character $character, Player $newPlayer): void
     {
@@ -293,20 +293,23 @@ class Account
         $oldPlayer->removeCharacter($character);
         $character->setPlayer($newPlayer);
         $newPlayer->addCharacter($character);
+
+        $this->assureMain($oldPlayer);
     }
 
     /**
      * Deletes a character and creates a RemovedCharacter record.
      *
-     * Does not flush the entity manager.
+     * Does not flush the entity manager at the end.
      */
     public function deleteCharacter(Character $character, string $reason, Player $deletedBy = null): void
     {
+        $oldPlayer = $character->getPlayer();
         if ($reason === RemovedCharacter::REASON_DELETED_BY_ADMIN) {
             $this->log->info(
                 'An admin (player ID: ' . ($deletedBy ? $deletedBy->getId() : 'unknown') . ') ' .
                 'deleted character "' . $character->getName() . '" [' . $character->getId() . '] ' .
-                'from player "' . $character->getPlayer()->getName() . '" [' . $character->getPlayer()->getId() . ']'
+                'from player "' . $oldPlayer->getName() . '" [' . $oldPlayer->getId() . ']'
             );
         } else {
             $this->createRemovedCharacter($character, null, $reason, $deletedBy);
@@ -319,6 +322,41 @@ class Account
         }
 
         $this->objectManager->remove($character);
+
+        $oldPlayer->removeCharacter($character);
+        $this->assureMain($oldPlayer);
+    }
+
+    /**
+     * Sets the oldest character (first added to Neucore) as the main if the player account doesn't have a main.
+     *
+     * Does not flush the entity manager.
+     */
+    public function assureMain(Player $player): void
+    {
+        $oldestCharacter = null; /* @var Character $oldestCharacter */
+        $mainFound = false;
+        foreach ($player->getCharacters() as $character) {
+            if ($oldestCharacter === null) {
+                $oldestCharacter = $character;
+            } elseif (
+                $character->getCreated() === null ||
+                (
+                    $oldestCharacter->getCreated() !== null &&
+                    $character->getCreated()->getTimestamp() < $oldestCharacter->getCreated()->getTimestamp()
+                )
+            ) {
+                $oldestCharacter = $character;
+            }
+            if ($character->getMain()) {
+                $mainFound = true;
+                break;
+            }
+        }
+        if (! $mainFound && $oldestCharacter !== null) {
+            $oldestCharacter->setMain(true);
+            $player->setName($oldestCharacter->getName());
+        }
     }
 
     /**
