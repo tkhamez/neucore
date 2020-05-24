@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.12.0
+
+24 May 2020
 
 - Change: When the main character is removed from an account, another character is now automatically made the main.
 - Added `/app/v1/player-with-characters/{characterId}` app API endpoint which returns the player account to which 
