@@ -13,6 +13,14 @@ use PHPUnit\Framework\TestCase;
 
 class WatchlistTest extends TestCase
 {
+    public function testJsonSerialize()
+    {
+        $this->assertSame(
+            ['id' => 1, 'name' => 'name'],
+            (new Watchlist())->setId(1)->setName('name')->jsonSerialize()
+        );
+    }
+
     public function testSetGetId()
     {
         $watchlist = new Watchlist();

@@ -90,6 +90,56 @@ class WatchlistControllerTest extends WebTestCase
         $this->repositoryFactory = new RepositoryFactory($this->em);
     }
 
+    public function testListAll403()
+    {
+        $response1 = $this->runApp('GET', '/api/user/watchlist/listAll');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); # role watchlist with group
+
+        $response2 = $this->runApp('GET', '/api/user/watchlist/listAll');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testListAll200()
+    {
+        $this->setupDb();
+        $this->loginUser(10); # role watchlist-admin
+
+        $response = $this->runApp('GET', '/api/user/watchlist/listAll');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [['id' => 1, 'name' => 'ws1'], ['id' => 2, 'name' => 'ws2']],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testListAvailable403()
+    {
+        $response1 = $this->runApp('GET', '/api/user/watchlist/listAvailable');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(6); # not role watchlist
+
+        $response2 = $this->runApp('GET', '/api/user/watchlist/listAvailable');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testListAvailable200()
+    {
+        $this->setupDb();
+        $this->loginUser(9); # role watchlist with group
+
+        $response = $this->runApp('GET', '/api/user/watchlist/listAvailable');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [['id' => 1, 'name' => 'ws1']],
+            $this->parseJsonBody($response)
+        );
+    }
+
     public function testPlayers403()
     {
         $response = $this->runApp('GET', '/api/user/watchlist/1/players');
@@ -196,7 +246,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/exemption/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/exemption/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -240,7 +290,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/exemption/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/exemption/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -309,7 +359,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/corporation/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/corporation/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -353,7 +403,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/corporation/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/corporation/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -421,7 +471,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/alliance/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/alliance/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -465,7 +515,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/alliance/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/alliance/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -536,7 +586,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/group/add/100');
         $this->assertEquals(404, $response->getStatusCode());
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/group/add/'.$this->group2->getId());
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/group/add/'.$this->group2->getId());
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -574,7 +624,7 @@ class WatchlistControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/watchlist/1/group/remove/100');
         $this->assertEquals(404, $response->getStatusCode());
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/group/remove/'.$this->group1->getId());
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/group/remove/'.$this->group1->getId());
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -634,7 +684,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/blacklist-corporation/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/blacklist-corporation/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -684,7 +734,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/blacklist-corporation/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/blacklist-corporation/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -755,7 +805,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/blacklist-alliance/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/blacklist-alliance/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -799,7 +849,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/blacklist-alliance/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/blacklist-alliance/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -869,7 +919,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/whitelist-corporation/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/whitelist-corporation/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -919,7 +969,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/whitelist-corporation/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/whitelist-corporation/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -990,7 +1040,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/whitelist-alliance/add/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/whitelist-alliance/add/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -1034,7 +1084,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8); # role watchlist-manager
 
-        $response = $this->runApp('PUT', '/api/user/watchlist/2/whitelist-alliance/remove/100');
+        $response = $this->runApp('PUT', '/api/user/watchlist/10/whitelist-alliance/remove/100');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -1065,6 +1115,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->helper->emptyDb();
 
         $watchlist = (new Watchlist())->setId(1)->setName('ws1');
+        $watchlist2 = (new Watchlist())->setId(2)->setName('ws2');
 
         $this->player1 = $this->helper->addCharacterMain('User', 6, [Role::USER])->getPlayer();
         $this->player2 = $this->helper->addCharacterMain('Read', 7, [Role::WATCHLIST])->getPlayer();
@@ -1103,6 +1154,7 @@ class WatchlistControllerTest extends WebTestCase
         $watchlist->addWhitelistAlliance($this->alliance1);
 
         $this->em->persist($watchlist);
+        $this->em->persist($watchlist2);
         $this->em->persist($this->corporation1);
         $this->em->persist($this->corporation2);
         $this->em->persist($this->corporation3);

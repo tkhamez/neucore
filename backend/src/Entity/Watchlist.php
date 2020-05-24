@@ -7,14 +7,20 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Annotations as OA;
 
 /**
+ * @OA\Schema(
+ *     required={"id", "name"}
+ * )
+ *
  * @ORM\Entity
  * @ORM\Table(name="watchlists")
  */
-class Watchlist
+class Watchlist implements \JsonSerializable
 {
     /**
+     * @OA\Property()
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="NONE")
@@ -23,6 +29,7 @@ class Watchlist
     private $id;
 
     /**
+     * @OA\Property()
      * @ORM\Column(type="string", length=32)
      * @var string
      */
@@ -107,6 +114,14 @@ class Watchlist
      * @var Collection
      */
     private $whitelistAlliances;
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+    }
 
     /**
      * Constructor

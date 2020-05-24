@@ -152,6 +152,8 @@ return [
     '/api/user/settings/system/send-missing-character-mail' => ['POST', SettingsController::class.'::sendMissingCharacterMail'],
     '/api/user/settings/system/validate-director/{name}'    => ['PUT',  SettingsController::class.'::validateDirector'],
 
+    '/api/user/watchlist/listAll'                               => ['GET',  WatchlistController::class.'::listAll'],
+    '/api/user/watchlist/listAvailable'                         => ['GET',  WatchlistController::class.'::listAvailable'],
     '/api/user/watchlist/{id}/players'                          => ['GET',  WatchlistController::class.'::players'],
     '/api/user/watchlist/{id}/players-blacklist'                => ['GET',  WatchlistController::class.'::playersBlacklist'],
     '/api/user/watchlist/{id}/exemption/list'                   => ['GET',  WatchlistController::class.'::exemptionList'],

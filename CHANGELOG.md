@@ -5,6 +5,8 @@
 - Change: When the main character is removed from an account, another character is now automatically made the main.
 - Added `/app/v1/player-with-characters/{characterId}` app API endpoint which returns the player account to which 
   the character ID belongs with all characters.
+- Watchlist: Added a watchlist select box and removed hard coded selection. (API and UI for adding, removing and 
+  renaming watchlists are still missing.)
 - Added rate limiting middleware for the application API.
 - APCu storage added for variables that do not need to be stored permanently.
 - Small bug fixes and improvements.

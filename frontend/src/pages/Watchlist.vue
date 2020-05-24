@@ -7,6 +7,11 @@
     <div class="row mb-3 mt-3">
         <div class="col-lg-6">
             <h1>Watchlist</h1>
+            <label class="watchlist-selection ml-3 mb-0">
+                <select class="form-control" v-model="selectedId">
+                    <option v-for="watchlist in watchlists" v-bind:value="watchlist.id">{{ watchlist.name }}</option>
+                </select>
+            </label>
         </div>
         <div class="col-lg-6 text-right">
             <character-search v-on:result="searchResult = $event"></character-search>
@@ -36,33 +41,36 @@
         </div>
     </div>
 
-    <ul class="nav nav-pills nav-fill">
+    <ul v-cloak v-if="watchlistId" class="nav nav-pills nav-fill">
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'red' }"
-               :href="'#Watchlist/'+id+'/red'">Red Flags</a>
+               :href="'#Watchlist/'+watchlistId+'/red'">Red Flags</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'black' }"
-               :href="'#Watchlist/'+id+'/black'">Blacklist</a>
+               :href="'#Watchlist/'+watchlistId+'/black'">Blacklist</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'white' }"
-               :href="'#Watchlist/'+id+'/white'">Whitelist</a>
+               :href="'#Watchlist/'+watchlistId+'/white'">Whitelist</a>
         </li>
         <li v-if="hasRole('watchlist-manager')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'settings' }"
-               :href="'#Watchlist/'+id+'/settings'">Settings</a>
+               :href="'#Watchlist/'+watchlistId+'/settings'">Settings</a>
         </li>
     </ul>
 
-    <watchlistLists :id="id" :tab="tab"></watchlistLists>
+    <watchlistLists v-cloak v-if="watchlistId && tab !== 'settings'"
+                    :id="watchlistId" :tab="tab"></watchlistLists>
 
-    <watchlistSettings v-cloak v-if="tab === 'settings'" :id="id" :settings="settings"></watchlistSettings>
+    <watchlistSettings v-cloak v-if="watchlistId && tab === 'settings'"
+                       :id="watchlistId" :settings="settings"></watchlistSettings>
 
 </div>
 </template>
 
 <script>
+import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistLists    from './Watchlist--Lists.vue';
 import WatchlistSettings from './Watchlist--Settings.vue';
 import Characters        from '../components/Characters.vue';
@@ -84,7 +92,9 @@ export default {
 
     data: function() {
         return {
-            id: 1,
+            watchlists: [],
+            watchlistId: null,
+            selectedId: '',
             tab: '',
             searchResult: [],
         }
@@ -92,29 +102,72 @@ export default {
 
     mounted: function() {
         window.scrollTo(0,0);
-        setTab(this);
+
+        const vm = this;
+        getWatchlists(vm, () => {
+            // auto select 1st if route does not have an ID
+            if (! vm.route[1] && vm.watchlists[0]) {
+                window.location.hash = `#Watchlist/${vm.watchlists[0].id}`;
+            } else {
+                setTab(vm);
+            }
+        });
     },
 
     watch: {
+        selectedId () {
+            const tab = this.route[2] ? this.route[2] : '';
+            window.location.hash = `#Watchlist/${this.selectedId}/${tab}`;
+        },
         route () {
             setTab(this);
         },
         player () {
-            setTab(this);
+            const vm = this;
+            getWatchlists(vm, () => {
+                setTab(vm);
+            });
         },
     },
 
     methods: {
-        showCharacters: function(playerId) {
+        showCharacters: (playerId) => {
             this.$refs.charactersModal.showCharacters(playerId);
         },
     },
 }
 
+/**
+ * @param vm
+ * @param [callback]
+ */
+function getWatchlists(vm, callback) {
+    (new WatchlistApi).watchlistListAvailable((error, data) => {
+        if (! error) {
+            vm.watchlists = data;
+            if (typeof callback === typeof Function) {
+                callback();
+            }
+        }
+    });
+}
+
 function setTab(vm) {
     const tabs = ['red', 'black', 'white', 'settings'];
     if (vm.route[1]) {
-        vm.id = parseInt(vm.route[1], 10);
+        const idFromPath = parseInt(vm.route[1], 10);
+        let found = false;
+        for (const list of vm.watchlists) {
+            if (list.id === idFromPath) {
+                found = true;
+                vm.watchlistId = idFromPath;
+                vm.selectedId = idFromPath;
+            }
+        }
+        if (! found) {
+            vm.watchlistId = null;
+            vm.selectedId = '';
+        }
     }
     if (vm.route[2] && tabs.indexOf(vm.route[2]) !== -1) {
         vm.tab = vm.route[2];
@@ -127,6 +180,13 @@ function setTab(vm) {
 </script>
 
 <style type="text/css" scoped>
+    h1 {
+        display: inline-block;
+    }
+    .watchlist-selection {
+        position: relative;
+        top: -0.5rem;
+    }
     @media (min-width: 992px) {
         .search-result {
             position: absolute;

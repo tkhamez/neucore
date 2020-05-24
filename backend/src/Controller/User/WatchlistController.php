@@ -10,6 +10,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\WatchlistRepository;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
@@ -34,6 +35,11 @@ class WatchlistController extends BaseController
      */
     private $watchlistService;
 
+    /**
+     * @var WatchlistRepository
+     */
+    private $watchlistRepository;
+
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
@@ -43,6 +49,63 @@ class WatchlistController extends BaseController
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->watchlistService = $watchlist;
+        $this->watchlistRepository = $repositoryFactory->getWatchlistRepository();
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/listAll",
+     *     operationId="watchlistListAll",
+     *     summary="Lists all watchlists.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of watchlists.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Watchlist"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function listAll(): ResponseInterface
+    {
+        return $this->withJson($this->watchlistRepository->findBy([]));
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/watchlist/listAvailable",
+     *     operationId="watchlistListAvailable",
+     *     summary="Lists all accessible watchlists.",
+     *     description="Needs role: watchlist or watchlist-manager",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of watchlists.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Watchlist"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function listAvailable(UserAuth $userAuth): ResponseInterface
+    {
+        $result = [];
+        foreach ($this->watchlistRepository->findBy([]) as $list) {
+            if ($this->checkPermission($list->getId(), $userAuth)) {
+                $result[] = $list;
+            }
+        }
+        return $this->withJson($result);
     }
 
     /**

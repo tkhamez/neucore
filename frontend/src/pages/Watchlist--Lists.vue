@@ -137,6 +137,9 @@ export default {
     },
 
     watch: {
+        id () {
+            loadList(this);
+        },
         tab () {
             loadList(this);
         },
@@ -148,6 +151,9 @@ export default {
         },
 
         addToWhitelist: function(playerId) {
+            if (! this.id) {
+                return;
+            }
             const vm = this;
             new WatchlistApi().watchlistExemptionAdd(this.id, playerId, () => {
                 loadList(vm);
@@ -159,6 +165,9 @@ export default {
          * @param {number} id
          */
         removeFromWhitelist: function(type, id) {
+            if (! this.id) {
+                return;
+            }
             const vm = this;
             const api = new WatchlistApi();
             let method;
@@ -189,6 +198,9 @@ export default {
 }
 
 function loadList(vm) {
+    if (! vm.id) {
+        return;
+    }
     const api = new WatchlistApi();
 
     vm.listContent.Player = [];

@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { WatchlistApi }  from 'neucore-js-client';
 import Admin from '../components/EntityRelationEdit.vue';
 
 export default {
@@ -79,6 +80,10 @@ function setWatchlistIdAndContentType(vm) {
 }
 
 function getWatchlists(vm) {
-    vm.watchlists = [{id: 1, name: 'auto-red-flags'}];
+    (new WatchlistApi).watchlistListAll((error, data) => {
+        if (! error) {
+            vm.watchlists = data;
+        }
+    });
 }
 </script>

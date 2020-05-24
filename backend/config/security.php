@@ -95,6 +95,7 @@ return [
     '/api/user/settings/system/list'  => [Role::ANONYMOUS, Role::USER],
     '/api/user/settings/system'       => [Role::SETTINGS],
 
+    '/api/user/watchlist/listAvailable'                   => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
     '/api/user/watchlist/{id}/players'                    => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/players-blacklist'          => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/exemption/list'             => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],

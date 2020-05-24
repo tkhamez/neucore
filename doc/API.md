@@ -259,6 +259,7 @@ Player API
 - Show player with characters. `GET /user/player/{id}/characters`
 
 Watchlist API
+- Lists all accessible watchlists. `GET /user/watchlist/listAvailable`
 - List of player accounts that have characters in one of the configured alliances or corporations
                     and additionally have other characters in another player (not NPC) corporation that is not
                     whitelisted and have not been manually excluded. `GET /user/watchlist/{id}/players`
@@ -284,6 +285,7 @@ Corporation API
 - Add an EVE corporation to the database. `POST /user/corporation/add/{id}`
 
 Watchlist API
+- Lists all accessible watchlists. `GET /user/watchlist/listAvailable`
 - List of exempt players. `GET /user/watchlist/{id}/exemption/list`
 - Add player to exemption list. `PUT /user/watchlist/{id}/exemption/add/{player}`
 - Remove player from exemption list. `PUT /user/watchlist/{id}/exemption/remove/{player}`
@@ -314,6 +316,7 @@ Group API
 - List all groups. `GET /user/group/all`
 
 Watchlist API
+- Lists all watchlists. `GET /user/watchlist/listAll`
 - List of groups with access to this list. `GET /user/watchlist/{id}/group/list`
 - Add access group to the list. `PUT /user/watchlist/{id}/group/add/{group}`
 - Remove access group from the list. `PUT /user/watchlist/{id}/group/remove/{group}`
