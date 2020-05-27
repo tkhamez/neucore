@@ -217,11 +217,10 @@ function loadList(vm) {
     }
     const api = new WatchlistApi();
 
-    vm.listContent.Player = [];
-    vm.listContent.Alliance = [];
-    vm.listContent.Corporation = [];
-
     function setPlayer(error, data) {
+        vm.listContent.Player = [];
+        vm.listContent.Alliance = [];
+        vm.listContent.Corporation = [];
         if (! error) {
             vm.listContent.Player = data;
         }
