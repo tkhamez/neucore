@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.12.1
+
+27 May 2020
+
+- Fixed character modal on Watchlist page again.
+- Improved some table layouts
+- Fixed: watchlist name was changed in data fixture.
+- Updated dependencies
+
 ## 1.12.0
 
 24 May 2020
