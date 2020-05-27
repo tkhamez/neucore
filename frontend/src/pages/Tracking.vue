@@ -99,7 +99,7 @@
         </div>
         <div class="row mt-3">
             <div class="col-lg-12">
-                <table class="table table-hover table-sm member-table" aria-describedby="Corporation members">
+                <table class="table table-hover nc-table-sm member-table" aria-describedby="Corporation members">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Character</th>
@@ -399,9 +399,6 @@ function configureDataTable(vm) {
     .input-option {
         display: inline;
         width: 80px;
-    }
-    .member-table {
-        font-size: 90%;
     }
     @supports (position: sticky) {
         .member-table thead th {

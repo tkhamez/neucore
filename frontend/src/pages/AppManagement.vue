@@ -56,7 +56,7 @@
                         <hr>
 
                         <h5>Groups</h5>
-                        <table class="table table-hover table-sm" aria-describedby="groups">
+                        <table class="table table-hover nc-table-sm" aria-describedby="groups">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col">ID</th>
@@ -74,7 +74,7 @@
                         </table>
 
                         <h5>Roles</h5>
-                        <table class="table table-hover table-sm" aria-describedby="roles">
+                        <table class="table table-hover nc-table-sm" aria-describedby="roles">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -176,9 +176,3 @@ export default {
     },
 }
 </script>
-
-<style scoped>
-    table {
-        font-size: 90%;
-    }
-</style>

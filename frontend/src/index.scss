@@ -130,3 +130,16 @@ body.superhero .bg-body {
         display: inline;
     }
 }
+
+/**
+ * Smaller table than .table-sm
+ */
+.nc-table-sm {
+    font-size: 90%;
+    td, th {
+        padding: 0.25rem 0.75rem;
+    }
+    td .btn-sm {
+        padding: 0.01rem 0.25rem;
+    }
+}

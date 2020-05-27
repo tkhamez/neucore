@@ -95,7 +95,7 @@
                    :type="'Group'"></admin>
 
             <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3">
-                <table class="table table-hover mb-0" aria-describedby="Members">
+                <table class="table table-hover mb-0 nc-table-sm" aria-describedby="Members">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>

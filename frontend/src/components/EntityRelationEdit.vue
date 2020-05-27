@@ -78,21 +78,27 @@ Select and table to add and remove objects from other objects.
             </multiselect>
         </div>
 
-        <table v-cloak v-if="typeId" class="table table-hover mb-0" aria-describedby="Elements already added">
-            <thead>
+        <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
+               aria-describedby="Elements already added">
+            <thead class="thead-dark" :class="{ 'sticky' : sticky > 0}">
                 <tr>
-                    <th scope="col" v-if="contentType === 'managers' || contentType === 'groups'">ID</th>
-                    <th scope="col" v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
-                    <th scope="col" v-if="contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
-                    <th scope="col">Name</th>
-                    <th scope="col" v-if="contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
-                    <th scope="col" v-if="contentType === 'managers'">Characters</th>
-                    <th scope="col" v-if="contentType === 'corporations'">Alliance</th>
-                    <th scope="col" v-if="contentType === 'corporations' && type === 'WatchlistWhitelist'">auto *</th>
-                    <th scope="col" v-if="
+                    <th scope="col" :style="stickyTop" v-if="
+                        contentType === 'managers' || contentType === 'groups'">ID</th>
+                    <th scope="col" :style="stickyTop" v-if="
+                        contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
+                    <th scope="col" :style="stickyTop" v-if="
+                        contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
+                    <th scope="col" :style="stickyTop">Name</th>
+                    <th scope="col" :style="stickyTop" v-if="
+                        contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
+                    <th scope="col" :style="stickyTop" v-if="contentType === 'managers'">Characters</th>
+                    <th scope="col" :style="stickyTop" v-if="contentType === 'corporations'">Alliance</th>
+                    <th scope="col" :style="stickyTop" v-if="
+                        contentType === 'corporations' && type === 'WatchlistWhitelist'">auto *</th>
+                    <th scope="col" :style="stickyTop" v-if="
                         (type === 'Group' || type === 'App') &&
                         (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
-                    <th scope="col">Action</th>
+                    <th scope="col" :style="stickyTop">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -182,6 +188,11 @@ export default {
          */
         typeId: Number,
 
+        /**
+         * Optional offset top for a sticky table head.
+         */
+        sticky: Number,
+
         player: Object,
 
         settings: Object,
@@ -196,6 +207,14 @@ export default {
             tableContent: [],
             showGroupsEntity: null, // one alliance or corporation object with groups
             withGroups: [], // all alliances or corporations with groups
+        }
+    },
+
+    computed: {
+        stickyTop() {
+            return {
+                top: `${this.sticky}px`,
+            };
         }
     },
 
@@ -603,3 +622,9 @@ function lowerCaseFirst(string) {
 }
 
 </script>
+
+<style type="text/css" scoped>
+    table thead.sticky th {
+        position: sticky;
+    }
+</style>

@@ -29,7 +29,7 @@
     <div class="row" v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'">
         <div :class="{'col-lg-6': tab === 'white', 'col-12': tab !== 'white' }">
             <h5 class="mt-4">Players</h5>
-            <table class="table table-hover table-sm" aria-describedby="List of player accounts">
+            <table class="table table-hover nc-table-sm" aria-describedby="List of player accounts">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">ID</th>
@@ -57,13 +57,13 @@
         <div v-cloak v-if="tab === 'white'" class="col-lg-6">
             <div v-for="listName in ['Alliance', 'Corporation']">
                 <h5 class="mt-4">{{listName}}s</h5>
-                <table class="table table-hover table-sm" aria-describedby="List of alliances or corporations">
+                <table class="table table-hover nc-table-sm" aria-describedby="List of alliances or corporations">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Ticker</th>
                             <th scope="col">Name</th>
                             <th scope="col" v-if="listName === 'Corporation'">Alliance</th>
-                            <th scope="col" v-if="listName === 'Corporation'">auto *</th>
+                            <th scope="col" v-if="listName === 'Corporation'" class="text-nowrap">auto *</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -273,3 +273,10 @@ function loadList(vm) {
     }
 }
 </script>
+
+<style type="text/css" scoped>
+    table thead th {
+        position: sticky;
+        top: 80px;
+    }
+</style>

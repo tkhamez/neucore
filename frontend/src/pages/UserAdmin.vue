@@ -195,7 +195,7 @@
 
                     <h4>Characters</h4>
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm" aria-describedby="Characters">
+                        <table class="table table-hover nc-table-sm" aria-describedby="Characters">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col">ID</th>
@@ -270,7 +270,7 @@
                         Groups for this account are disabled (or will be disabled soon)
                         because one or more characters do not have a valid ESI token.
                     </p>
-                    <table class="table table-hover table-sm" aria-describedby="Member of groups">
+                    <table class="table table-hover nc-table-sm" aria-describedby="Member of groups">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">ID</th>
@@ -288,7 +288,7 @@
                     </table>
 
                     <h4>Group Manager</h4>
-                    <table class="table table-hover table-sm" aria-describedby="Manager of groups">
+                    <table class="table table-hover nc-table-sm" aria-describedby="Manager of groups">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">ID</th>
@@ -306,7 +306,7 @@
                     </table>
 
                     <h4>App Manager</h4>
-                    <table class="table table-hover table-sm" aria-describedby="Manager of apps">
+                    <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">ID</th>
@@ -324,7 +324,7 @@
                     <div>
                         <h4>Moved Characters</h4>
                         <div class="table-responsive">
-                            <table class="table table-hover table-sm" aria-describedby="'Moved Characters'">
+                            <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th scope="col">Character ID</th>
@@ -625,9 +625,6 @@ function buildCharacterMovements(data) {
 </script>
 
 <style scoped>
-    table {
-        font-size: 90%;
-    }
     .update-char {
         float: right;
         cursor: pointer;
