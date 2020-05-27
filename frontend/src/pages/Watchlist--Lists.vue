@@ -28,7 +28,7 @@
 
     <div class="row" v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'">
         <div :class="{'col-lg-6': tab === 'white', 'col-12': tab !== 'white' }">
-            <h5 class="mt-4">Players</h5>
+            <h5 class="mt-4 bg-body">Players</h5>
             <table class="table table-hover nc-table-sm" aria-describedby="List of player accounts">
                 <thead class="thead-dark">
                     <tr>
@@ -55,19 +55,27 @@
             <p class="small text-muted">{{ listContent.Player.length }} player account(s)</p>
         </div>
         <div v-cloak v-if="tab === 'white'" class="col-lg-6">
-            <div v-for="listName in ['Alliance', 'Corporation']">
-                <h5 class="mt-4">{{listName}}s</h5>
+            <div v-for="(listName, index) in ['Alliance', 'Corporation', 'Corporation']">
+                <h5 class="mt-4 bg-body">
+                    {{listName}}s
+                    <span v-if="index === 1">(manually added)</span>
+                    <span v-if="index === 2">(automatically added*)</span>
+                </h5>
                 <table class="table table-hover nc-table-sm" aria-describedby="List of alliances or corporations">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Ticker</th>
                             <th scope="col">Name</th>
                             <th scope="col" v-if="listName === 'Corporation'">Alliance</th>
-                            <th scope="col" v-if="listName === 'Corporation'" class="text-nowrap">auto *</th>
+                            <th scope="col" v-if="listName === 'Corporation'">auto</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="entity in listContent[listName]">
+                        <tr v-for="entity in listContent[listName]"
+                            v-if="
+                                listName !== 'Corporation' ||
+                                (index === 1 && ! entity.autoWhitelist) ||
+                                (index === 2 && entity.autoWhitelist)">
                             <td>{{ entity.ticker }}</td>
                             <td>
                                 <a v-if="listName === 'Alliance'"
@@ -88,8 +96,14 @@
                     </tbody>
                 </table>
                 <p class="small text-muted">
-                    {{ listContent[listName].length }} {{ listName.toLowerCase() }}(s)
-                    <span v-if="listName === 'Corporation'">
+                    <span v-if="index === 0">{{ listContent[listName].length }} alliances(s)</span>
+                    <span v-if="index === 1">
+                        {{ listContent[listName].filter(corporation => ! corporation.autoWhitelist).length }}
+                        corporation(s)
+                    </span>
+                    <span v-if="index === 2">
+                        {{ listContent[listName].filter(corporation => corporation.autoWhitelist).length }}
+                        corporation(s)
                         <br>
                         * Corporations are automatically added if all their members belong to the same account.
                     </span>
