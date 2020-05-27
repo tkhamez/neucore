@@ -63,11 +63,11 @@ export default {
     },
 
     methods: {
-        showAddEntityModal: function(addType) {
+        showAddEntityModal (addType) {
             this.$refs.addEntityModal.showModal(addType);
         },
 
-        addEntitySuccess: function() {
+        addEntitySuccess () {
             this.$refs.adminAlliance.getSelectContent();
             this.$refs.adminCorp.getSelectContent();
         },

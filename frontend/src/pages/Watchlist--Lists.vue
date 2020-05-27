@@ -118,7 +118,7 @@ export default {
         tab: String,
     },
 
-    data: function() {
+    data () {
         return {
             listContent: {
                 Player: [],
@@ -132,7 +132,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted () {
         loadList(this);
     },
 
@@ -146,11 +146,11 @@ export default {
     },
 
     methods: {
-        showCharacters: function(playerId) {
-            this.$parent.$refs.charactersModal.showCharacters(playerId);
+        showCharacters (playerId) {
+            this.$parent.showCharacters(playerId);
         },
 
-        addToWhitelist: function(playerId) {
+        addToWhitelist (playerId) {
             if (! this.id) {
                 return;
             }
@@ -164,7 +164,7 @@ export default {
          * @param {string} type Players, Alliances or Corporations
          * @param {number} id
          */
-        removeFromWhitelist: function(type, id) {
+        removeFromWhitelist (type, id) {
             if (! this.id) {
                 return;
             }

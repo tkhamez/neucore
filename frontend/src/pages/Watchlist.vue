@@ -90,7 +90,7 @@ export default {
         settings: Object,
     },
 
-    data: function() {
+    data () {
         return {
             watchlists: [],
             watchlistId: null,
@@ -100,7 +100,7 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted () {
         window.scrollTo(0,0);
 
         const vm = this;
@@ -131,7 +131,7 @@ export default {
     },
 
     methods: {
-        showCharacters: (playerId) => {
+        showCharacters (playerId) {
             this.$refs.charactersModal.showCharacters(playerId);
         },
     },

@@ -51,7 +51,7 @@ export default {
         player: Object,
     },
 
-    data: function() {
+    data () {
         return {
             watchlists: [],
             watchlistId: null, // current watchlist
@@ -59,14 +59,14 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted () {
         window.scrollTo(0,0);
         getWatchlists(this);
         setWatchlistIdAndContentType(this);
     },
 
     watch: {
-        route: function() {
+        route () {
             setWatchlistIdAndContentType(this);
         },
     },
