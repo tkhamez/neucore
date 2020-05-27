@@ -143,8 +143,8 @@ As soon as the token was updated by logging in with the appropriate character, t
 
 ### Required Groups
 
-Other groups can be added to a group as a prerequisite. This means that players must be members of one 
-of these other groups, otherwise they will automatically be removed from the group.
+Other groups can be added to a group as a prerequisite. This means that players must be members of all 
+these other groups, otherwise they will be automatically removed from the group.
 
 This check is also done for "managed" Player accounts (see "Account status" above).
 
