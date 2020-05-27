@@ -276,9 +276,7 @@ class AutoWhitelist extends Command
             }
         }
 
-        if ($this->objectManager->flush()) {
-            $this->writeLine('  List saved successfully.', false);
-        } else {
+        if (! $this->objectManager->flush()) {
             $this->writeLine('  Failed to save list.', false);
         }
     }
