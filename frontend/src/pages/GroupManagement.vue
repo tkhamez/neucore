@@ -48,38 +48,12 @@
                         automatically be removed from this group.
                     </p>
 
-                    <!--suppress HtmlUnknownTag -->
                     <character-search v-on:result="searchResult = $event"></character-search>
+                    <character-result :searchResult="searchResult" :selectedPlayers="groupMembers"
+                        v-on:add="addPlayer($event)" v-on:remove="removePlayer($event)"></character-result>
 
-                    <div class="search-result border" v-if="searchResult.length > 0">
-                        <table class="table table-hover table-sm mb-0" aria-describedby="search result">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Character</th>
-                                    <th scope="col">Account</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="char in searchResult">
-                                    <td>
-                                        <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
-                                        {{ char.character_name }}
-                                    </td>
-                                    <td>{{ char.player_name }} #{{ char.player_id }}</td>
-                                    <td>
-                                        <button v-if="! isMember(char.player_id)" class="btn btn-success btn-sm"
-                                                @click="addPlayer(char.player_id)">Add to group</button>
-                                        <button v-if="isMember(char.player_id)" class="btn btn-danger btn-sm"
-                                                @click="removePlayer(char.player_id)">Remove from group</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
-
-                <table v-cloak v-if="groupId" class="table table-hover mb-0" aria-describedby="members">
+                <table v-cloak v-if="groupId" class="table table-hover mb-0 nc-table-sm" aria-describedby="members">
                     <thead>
                         <tr>
                             <th scope="col">Player ID</th>
@@ -149,13 +123,13 @@
 
 <script>
 import { GroupApi } from 'neucore-js-client';
-import Characters      from '../components/Characters.vue';
 import CharacterSearch from '../components/CharacterSearch.vue';
+import CharacterResult from '../components/CharacterResult.vue';
 
 export default {
     components: {
-        Characters,
         CharacterSearch,
+        CharacterResult,
     },
 
     props: {
@@ -217,15 +191,6 @@ export default {
                 }
                 vm.groupMembers = data;
             });
-        },
-
-        isMember: function(playerId) {
-            for (const member of this.groupMembers) {
-                if (member.id === playerId) {
-                    return true;
-                }
-            }
-            return false;
         },
 
         getApplications: function() {

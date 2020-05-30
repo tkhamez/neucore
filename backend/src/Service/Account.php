@@ -445,13 +445,6 @@ class Account
             return;
         }
 
-        // get role
-        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::TRACKING]);
-        if ($role === null) { // should not happen
-            $this->log->error('Account::syncTrackingRole(): Role not found.');
-            return;
-        }
-
         // collect all groups that grant the tracking role
         $groupIds = [];
         $corpIds = $this->repositoryFactory->getCorporationMemberRepository()->fetchCorporationIds();
@@ -463,37 +456,8 @@ class Account
                 $groupIds = array_merge($groupIds, $corp->getGroupsTrackingIds());
             }
         }
-        
-        // get all players that need the role
-        $playersAdd = [];
-        if ($changedPlayer) {
-            if ($changedPlayer->hasAnyGroup($groupIds)) {
-                $playersAdd = [$changedPlayer];
-            }
-        } else {
-            $playersAdd = $this->repositoryFactory->getPlayerRepository()->findWithGroups($groupIds);
-        }
-        
-        // assign role
-        foreach ($playersAdd as $playerAdd) {
-            if (! $playerAdd->hasRole(Role::TRACKING)) {
-                $playerAdd->addRole($role);
-            }
-        }
 
-        // get all players that have the role
-        if ($changedPlayer) {
-            $playersRemove = [$changedPlayer];
-        } else {
-            $playersRemove = $this->repositoryFactory->getPlayerRepository()->findWithRole($role->getId());
-        }
-
-        // remove role
-        foreach ($playersRemove as $playerRemove) {
-            if (! $playerRemove->hasAnyGroup($groupIds)) {
-                $playerRemove->removeRole($role);
-            }
-        }
+        $this->syncRoleByGroupMembership(Role::TRACKING, $groupIds, $changedPlayer);
     }
 
     /**
@@ -505,15 +469,7 @@ class Account
      */
     public function syncWatchlistRole(Player $changedPlayer = null): void
     {
-        // get role
-        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => Role::WATCHLIST]);
-        if ($role === null) { // should not happen
-            $this->log->error('Account::syncWatchlistRole(): Role not found.');
-            return;
-        }
-
         $watchlistRepository = $this->repositoryFactory->getWatchlistRepository();
-        $playerRepository = $this->repositoryFactory->getPlayerRepository();
 
         // collect all groups that grant the watchlist role
         $groupIds = [];
@@ -522,6 +478,54 @@ class Account
                 return $group->getId();
             }, $watchlist->getGroups()));
         }
+
+        $this->syncRoleByGroupMembership(Role::WATCHLIST, $groupIds, $changedPlayer);
+    }
+
+    /**
+     * Adds or removes the app- or group-manager role,
+     * depending on whether the player is a manager of an app or a group
+     *
+     * Does not flush the entity manager.
+     *
+     * @param Player $player Player object that is attached to the entity manager
+     */
+    public function syncManagerRole(Player $player, string $roleName): void
+    {
+        // get role
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
+        if ($role === null) {
+            $this->log->error('Account::syncGroupManagerRole(): Role not found.');
+            return;
+        }
+
+        $addRole = false;
+        if ($roleName === Role::GROUP_MANAGER && count($player->getManagerGroups()) > 0) {
+            $addRole = true;
+        } elseif ($roleName === Role::APP_MANAGER && count($player->getManagerApps()) > 0) {
+            $addRole = true;
+        }
+
+        if ($addRole && ! $player->hasRole($role->getName())) {
+            $player->addRole($role);
+        } elseif (! $addRole && $player->hasRole($role->getName())) {
+            $player->removeRole($role);
+        }
+    }
+
+    /**
+     * @param int[] $groupIds Group IDs that grant the role
+     */
+    private function syncRoleByGroupMembership(string $roleName, array $groupIds, Player $changedPlayer = null): void
+    {
+        // get role
+        $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
+        if ($role === null) { // should not happen
+            $this->log->error('Account::syncRole(): Role not found.');
+            return;
+        }
+
+        $playerRepository = $this->repositoryFactory->getPlayerRepository();
 
         // get all players that need the role
         $playersAdd = [];
@@ -535,14 +539,17 @@ class Account
 
         // assign role
         foreach ($playersAdd as $playerAdd) {
-            if (! $playerAdd->hasRole(Role::WATCHLIST)) {
+            if (! $playerAdd->hasRole($role->getName())) {
                 $playerAdd->addRole($role);
             }
         }
 
         // get all players that have the role
+        $playersRemove = [];
         if ($changedPlayer) {
-            $playersRemove = [$changedPlayer];
+            if ($changedPlayer->hasRole($role->getName())) {
+                $playersRemove = [$changedPlayer];
+            }
         } else {
             $playersRemove = $playerRepository->findWithRole($role->getId());
         }

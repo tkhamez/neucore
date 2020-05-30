@@ -1,9 +1,5 @@
 <template>
 <div class="container-fluid">
-
-    <!--suppress HtmlUnknownTag -->
-    <characters ref="charactersModal"></characters>
-
     <div class="row mb-3 mt-3">
         <div class="col-lg-6">
             <h1>Watchlist</h1>
@@ -13,31 +9,9 @@
                 </select>
             </label>
         </div>
-        <div class="col-lg-6 text-right">
+        <div class="col-lg-6">
             <character-search v-on:result="searchResult = $event"></character-search>
-            <div class="search-result border text-left bg-body" v-if="searchResult.length > 0">
-                <table class="table table-hover table-sm mb-0" aria-describedby="search result">
-                    <thead>
-                        <tr>
-                            <th scope="col">Character</th>
-                            <th scope="col">Account</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="char in searchResult">
-                            <td>
-                                <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
-                                {{ char.character_name }}
-                            </td>
-                            <td>
-                                <a href="#" @click.prevent="showCharacters(char.player_id)">
-                                    {{ char.player_name }} #{{ char.player_id }}
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <character-result :searchResult="searchResult" :withCharacters="true"></character-result>
         </div>
     </div>
 
@@ -73,15 +47,15 @@
 import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistLists    from './Watchlist--Lists.vue';
 import WatchlistSettings from './Watchlist--Settings.vue';
-import Characters        from '../components/Characters.vue';
 import CharacterSearch   from '../components/CharacterSearch.vue';
+import CharacterResult   from '../components/CharacterResult.vue';
 
 export default {
     components: {
         WatchlistLists,
         WatchlistSettings,
-        Characters,
         CharacterSearch,
+        CharacterResult,
     },
 
     props: {
@@ -127,12 +101,6 @@ export default {
             getWatchlists(vm, () => {
                 setTab(vm);
             });
-        },
-    },
-
-    methods: {
-        showCharacters (playerId) {
-            this.$refs.charactersModal.showCharacters(playerId);
         },
     },
 }

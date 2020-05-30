@@ -96,6 +96,8 @@ class Role implements \JsonSerializable
     /**
      * Allows a player to change the secret of his apps.
      *
+     * This role is assigned automatically depending on whether the player is a manager of an app.
+     *
      * @var string
      */
     const APP_MANAGER = 'app-manager';
@@ -109,6 +111,8 @@ class Role implements \JsonSerializable
 
     /**
      * Allows a player to add and remove members to his groups.
+     *
+     * This role is assigned automatically depending on whether the player is a manager of a group.
      *
      * @var string
      */

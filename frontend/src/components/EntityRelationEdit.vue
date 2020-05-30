@@ -5,9 +5,6 @@ Select and table to add and remove objects from other objects.
 <template>
     <div class="card border-secondary mb-3">
 
-        <!--suppress HtmlUnknownTag -->
-        <characters ref="charactersModal"></characters>
-
         <div v-cloak v-if="showGroupsEntity" class="modal fade" id="showGroupsModal">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -70,12 +67,23 @@ Select and table to add and remove objects from other objects.
             <p v-if="type === 'Watchlist' && contentType === 'groups'">
                 Groups whose members are allowed to view the lists.
             </p>
-            <multiselect v-model="newObject" :options="currentSelectContent"
+
+            <multiselect v-if="! useSearch"
+                         v-model="newObject" :options="currentSelectContent"
                          v-bind:placeholder="placeholder"
                          label="name" track-by="id"
                          :loading="false"
                          :custom-label="customLabel">
             </multiselect>
+
+            <character-search v-if="useSearch" v-on:result="searchResult = $event"></character-search>
+            <character-result v-if="useSearch"
+                              :searchResult="searchResult"
+                              :selectedPlayers="tableContent"
+                              v-on:add="addOrRemoveEntityToEntity($event, 'add')"
+                              v-on:remove="addOrRemoveEntityToEntity($event, 'remove')"
+                              :withCharacters="searchWithCharacters"></character-result>
+
         </div>
 
         <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
@@ -89,8 +97,6 @@ Select and table to add and remove objects from other objects.
                     <th scope="col" :style="stickyTop" v-if="
                         contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
                     <th scope="col" :style="stickyTop">Name</th>
-                    <th scope="col" :style="stickyTop" v-if="
-                        contentType === 'managers'">has {{ type.toLowerCase() }}-manager role</th>
                     <th scope="col" :style="stickyTop" v-if="contentType === 'managers'">Characters</th>
                     <th scope="col" :style="stickyTop" v-if="contentType === 'corporations'">Alliance</th>
                     <th scope="col" :style="stickyTop" v-if="
@@ -119,11 +125,6 @@ Select and table to add and remove objects from other objects.
                             {{ row.name }}
                         </a>
                         <span v-else>{{ row.name }}</span>
-                    </td>
-                    <td v-if="contentType === 'managers'">
-                        <span :class="{ 'text-danger': hasRequiredRole(row) === 'no' }">
-                            {{ hasRequiredRole(row) }}
-                        </span>
                     </td>
                     <td v-if="contentType === 'managers'">
                         <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
@@ -165,11 +166,13 @@ Select and table to add and remove objects from other objects.
 <script>
 import $ from 'jquery';
 import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, WatchlistApi} from 'neucore-js-client';
-import Characters from '../components/Characters.vue';
+import CharacterSearch from '../components/CharacterSearch.vue';
+import CharacterResult from '../components/CharacterResult.vue';
 
 export default {
     components: {
-        Characters,
+        CharacterSearch,
+        CharacterResult,
     },
 
     props: {
@@ -207,6 +210,9 @@ export default {
             tableContent: [],
             showGroupsEntity: null, // one alliance or corporation object with groups
             withGroups: [], // all alliances or corporations with groups
+            useSearch: false,
+            searchWithCharacters: false,
+            searchResult: [],
         }
     },
 
@@ -219,6 +225,7 @@ export default {
     },
 
     mounted: function() {
+        setUseSearch(this);
         this.customPlaceholder();
         this.getSelectContent();
         if (this.typeId) {
@@ -236,6 +243,7 @@ export default {
         },
 
         contentType: function() {
+            setUseSearch(this);
             this.newObject = "";
             this.customPlaceholder();
             this.getSelectContent();
@@ -455,20 +463,6 @@ export default {
             }
         },
 
-        hasRequiredRole: function(row) {
-            if ((this.type === 'App' && row.roles.indexOf('app-manager') !== -1) ||
-                (this.type === 'Group' && row.roles.indexOf('group-manager') !== -1)
-            ) {
-                return 'yes';
-            } else {
-                return 'no';
-            }
-        },
-
-        showCharacters: function(managerId) {
-            this.$refs.charactersModal.showCharacters(managerId);
-        },
-
         showGroups: function(corpOrAllianceId) {
             this.showGroupsEntity = null;
             for (const entity of this.withGroups) {
@@ -611,6 +605,13 @@ export default {
             }]);
         },
     },
+}
+
+function setUseSearch(vm) {
+    vm.useSearch =
+        (vm.type === 'App' && vm.contentType === 'managers') ||
+        (vm.type === 'Group' && vm.contentType === 'managers');
+    vm.searchWithCharacters = vm.useSearch; // same conditions atm.
 }
 
 function upperCaseFirst(string) {

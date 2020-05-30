@@ -1,9 +1,5 @@
 <template>
     <div class="container-fluid">
-
-        <!--suppress HtmlUnknownTag -->
-        <characters ref="charactersModal"></characters>
-
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Player Groups Management</h1>
@@ -63,7 +59,8 @@
                         </h4>
                         <p>
                             Status: {{ playerData.status }}
-                            <a class="badge badge-info ml-1" href="" v-on:click.prevent="showCharacters(playerData.id)">
+                            <a class="badge badge-info ml-1" href=""
+                               v-on:click.prevent="showCharacters(playerData.id)">
                                 Show characters
                             </a>
                         </p>
@@ -106,13 +103,11 @@
 <script>
 import { PlayerApi }   from 'neucore-js-client';
 import Admin           from '../components/EntityRelationEdit.vue';
-import Characters      from '../components/Characters.vue';
 import CharacterSearch from '../components/CharacterSearch.vue';
 
 export default {
     components: {
         Admin,
-        Characters,
         CharacterSearch,
     },
 
@@ -165,10 +160,6 @@ export default {
 
         setPlayerId: function() {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
-        },
-
-        showCharacters: function(memberId) {
-            this.$refs.charactersModal.showCharacters(memberId);
         },
 
         onSearchResult: function(result) {

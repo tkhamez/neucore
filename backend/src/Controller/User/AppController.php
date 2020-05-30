@@ -9,6 +9,7 @@ use Neucore\Entity\App;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Service\Account;
 use Neucore\Service\Random;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
@@ -354,7 +355,7 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function addManager(string $id, string $pid): ResponseInterface
+    public function addManager(string $id, string $pid, Account $account): ResponseInterface
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
             return $this->response->withStatus(404);
@@ -365,7 +366,9 @@ class AppController extends BaseController
             $isManager[] = $mg->getId();
         }
         if (! in_array($this->player->getId(), $isManager)) {
-            $this->application->addManager($this->player);
+            $this->application->addManager($this->player); // needed to persist
+            $this->player->addManagerApp($this->application); // needed for check in syncManagerRole()
+            $account->syncManagerRole($this->player, Role::APP_MANAGER);
         }
 
         return $this->flushAndReturn(204);
@@ -408,13 +411,15 @@ class AppController extends BaseController
      *     )
      * )
      */
-    public function removeManager(string $id, string $pid): ResponseInterface
+    public function removeManager(string $id, string $pid, Account $account): ResponseInterface
     {
         if (! $this->findAppAndPlayer($id, $pid)) {
             return $this->response->withStatus(404);
         }
 
-        $this->application->removeManager($this->player);
+        $this->application->removeManager($this->player); // needed to persist
+        $this->player->removeManagerApp($this->application); // needed for check in syncManagerRole()
+        $account->syncManagerRole($this->player, Role::APP_MANAGER);
 
         return $this->flushAndReturn(204);
     }

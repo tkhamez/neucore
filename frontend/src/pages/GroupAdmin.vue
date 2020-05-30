@@ -6,8 +6,6 @@
           v-on:deleted="groupDeleted()"
           v-on:itemChange="groupChanged()"></edit>
 
-    <characters ref="charactersModal"></characters>
-
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addAlliCorpSuccess()"></add-entity>
 
     <div class="row mb-3 mt-3">
@@ -89,7 +87,6 @@
                 </li>
             </ul>
 
-            <!--suppress HtmlUnknownTag -->
             <admin v-cloak v-if="groupId && contentType !== 'members'" ref="admin"
                    :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
                    :type="'Group'"></admin>
@@ -128,14 +125,12 @@ import {GroupApi} from 'neucore-js-client';
 import AddEntity  from '../components/EntityAdd.vue';
 import Edit       from '../components/GroupAppEdit.vue';
 import Admin      from '../components/EntityRelationEdit.vue';
-import Characters from '../components/Characters.vue';
 
 export default {
     components: {
         AddEntity,
         Edit,
         Admin,
-        Characters,
     },
 
     props: {
@@ -234,10 +229,6 @@ export default {
             if (this.groupId) {
                 this.contentType = this.route[2] ? this.route[2] : 'managers';
             }
-        },
-
-        showCharacters: function(playerId) {
-            this.$refs.charactersModal.showCharacters(playerId);
         },
     },
 }

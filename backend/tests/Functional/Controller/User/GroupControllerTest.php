@@ -618,6 +618,7 @@ class GroupControllerTest extends WebTestCase
             $actual[] = $mg->getId();
         }
         $this->assertSame([$this->pid, $player->getId()], $actual);
+        $this->assertTrue($player->hasRole(Role::GROUP_MANAGER));
     }
 
     public function testRemoveManager403()
@@ -657,6 +658,10 @@ class GroupControllerTest extends WebTestCase
             $actual[] = $mg->getId();
         }
         $this->assertSame([$this->gid2], $actual);
+        $this->assertTrue($player->hasRole(Role::GROUP_MANAGER));
+
+        $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/remove-manager/'.$this->pid);
+        $this->assertFalse($player->hasRole(Role::GROUP_MANAGER));
     }
 
     public function testApplications403()

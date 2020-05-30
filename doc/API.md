@@ -153,7 +153,8 @@ Player API
 
 #### group-manager
 
-Allows a player to add and remove members to his groups.
+Allows a player to add and remove members to his groups.  
+This role is assigned automatically depending on whether the player is a manager of a group.
 
 Character API
 - Return a list of characters that matches the name (partial matching). `GET /user/character/find-by/{name}`
@@ -194,7 +195,8 @@ Player API
 
 #### app-manager
 
-Allows a player to change the secret of his apps.
+Allows a player to change the secret of his apps.  
+This role is assigned automatically depending on whether the player is a manager of an app.
 
 App API
 - Shows app information. `GET /user/app/{id}/show`

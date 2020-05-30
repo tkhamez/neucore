@@ -44,7 +44,8 @@ Allows a player to create groups and add and remove managers or corporation and 
 
 #### group-manager
 
-Allows a player to add and remove members to his groups.
+Allows a player to add and remove members to his groups.  
+This role is assigned automatically depending on whether the player is a manager of a group.
 
 {group-manager}
 
@@ -56,7 +57,8 @@ Allows a player to create apps and add and remove managers and roles.
 
 #### app-manager
 
-Allows a player to change the secret of his apps.
+Allows a player to change the secret of his apps.  
+This role is assigned automatically depending on whether the player is a manager of an app.
 
 {app-manager}
 

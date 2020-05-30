@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- Change: the app-manager and group-manager roles are now added and removed automatically, 
+  depending on whether the player is a manager of an app or a group.
+
 ## 1.12.1
 
 27 May 2020

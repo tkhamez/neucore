@@ -1,8 +1,5 @@
 <template>
     <div class="container-fluid">
-
-        <characters ref="charactersModal"></characters>
-
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Member Tracking</h1>
@@ -130,13 +127,7 @@ import _ from 'lodash';
 import $ from 'jquery';
 import {CorporationApi} from 'neucore-js-client';
 
-import Characters from '../components/Characters.vue';
-
 export default {
-    components: {
-        Characters,
-    },
-
     props: {
         route: Array,
     },
@@ -312,7 +303,7 @@ function configureDataTable(vm) {
             $('[data-toggle="tooltip"]').tooltip();
             $('a[data-player-id]').on('click', (evt) => {
                 $.Event(evt).preventDefault();
-                vm.$refs.charactersModal.showCharacters(evt.target.dataset.playerId)
+                vm.showCharacters(evt.target.dataset.playerId);
             });
         },
         columns: [{

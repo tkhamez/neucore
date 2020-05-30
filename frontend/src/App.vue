@@ -12,6 +12,8 @@
         <nav-bar v-if="settings.customization_default_theme" v-cloak
                  :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
 
+        <characters ref="charactersModal"></characters>
+
         <component v-if="settings.customization_default_theme" v-cloak v-bind:is="page"
                    :route="route"
                    :settings="settings"
@@ -38,6 +40,7 @@
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
 import NavBar from './components/NavBar.vue';
+import Characters from './components/Characters.vue';
 import Home from './pages/Home.vue';
 import Groups from './pages/Groups.vue';
 import GroupManagement from './pages/GroupManagement.vue';
@@ -58,6 +61,7 @@ export default {
 
     components: {
         NavBar,
+        Characters,
         Home,
         Groups,
         GroupManagement,
@@ -146,6 +150,9 @@ export default {
         });
         this.$root.$on('message', (text, type, timeout) => {
             this.showMessage(text, type, timeout);
+        });
+        this.$root.$on('showCharacters', (playerId) => {
+            this.$refs.charactersModal.showCharacters(playerId);
         });
 
         // refresh session every 5 minutes

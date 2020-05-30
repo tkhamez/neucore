@@ -62,6 +62,10 @@ Vue.mixin({
             }
         },
 
+        showCharacters: function(playerId) {
+            this.$root.$emit('showCharacters', playerId);
+        },
+
         hasRole: function(name, player) {
             player = player || this.$root.player;
             if (! player) {

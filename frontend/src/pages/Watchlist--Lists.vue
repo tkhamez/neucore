@@ -40,7 +40,11 @@
                 <tbody>
                     <tr v-for="player in listContent.Player">
                         <td>{{ player.id }}</td>
-                        <td><a href="#" v-on:click.prevent="showCharacters(player.id)">{{ player.name }}</a></td>
+                        <td>
+                            <a href="#" v-on:click.prevent="showCharacters(player.id)">
+                                {{ player.name }}
+                            </a>
+                        </td>
                         <td v-if="hasRole('watchlist-manager')">
                             <button v-if="tab === 'red' || tab === 'black'" class="btn btn-primary btn-sm"
                                     v-on:click="addToWhitelist(player.id)">
@@ -117,13 +121,11 @@
 <script>
 import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistSettings from './Watchlist--Settings.vue';
-import Characters        from '../components/Characters.vue';
 import CharacterSearch   from '../components/CharacterSearch.vue';
 
 export default {
     components: {
         WatchlistSettings,
-        Characters,
         CharacterSearch,
     },
 
@@ -160,10 +162,6 @@ export default {
     },
 
     methods: {
-        showCharacters (playerId) {
-            this.$parent.showCharacters(playerId);
-        },
-
         addToWhitelist (playerId) {
             if (! this.id) {
                 return;

@@ -658,9 +658,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addManager(string $id, string $pid): ResponseInterface
+    public function addManager(string $id, string $pid, Account $account): ResponseInterface
     {
-        return $this->addPlayerAs($id, $pid, 'manager', false);
+        return $this->addPlayerAs($id, $pid, 'manager', false, $account);
     }
 
     /**
@@ -700,9 +700,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeManager(string $id, string $pid): ResponseInterface
+    public function removeManager(string $id, string $pid, Account $account): ResponseInterface
     {
-        return $this->removePlayerFrom($id, $pid, self::TYPE_MANAGERS, false);
+        return $this->removePlayerFrom($id, $pid, self::TYPE_MANAGERS, false, $account);
     }
 
     /**
@@ -857,9 +857,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function addMember(string $id, string $pid): ResponseInterface
+    public function addMember(string $id, string $pid, Account $account): ResponseInterface
     {
-        return $this->addPlayerAs($id, $pid, 'member', true);
+        return $this->addPlayerAs($id, $pid, 'member', true, $account);
     }
 
     /**
@@ -899,9 +899,9 @@ class GroupController extends BaseController
      *     )
      * )
      */
-    public function removeMember(string $id, string $pid): ResponseInterface
+    public function removeMember(string $id, string $pid, Account $account): ResponseInterface
     {
-        return $this->removePlayerFrom($id, $pid, self::TYPE_MEMBERS, true);
+        return $this->removePlayerFrom($id, $pid, self::TYPE_MEMBERS, true, $account);
     }
 
     /**
@@ -997,7 +997,8 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManager
+        bool $onlyIfManager,
+        Account $account
     ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
@@ -1008,7 +1009,9 @@ class GroupController extends BaseController
         }
 
         if ($type === 'manager' && ! $this->player->hasManagerGroup($this->group)) {
-            $this->group->addManager($this->player);
+            $this->group->addManager($this->player); // needed to persist
+            $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
+            $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
             $this->player->addGroup($this->group);
             $this->account->syncTrackingRole($this->player);
@@ -1022,7 +1025,8 @@ class GroupController extends BaseController
         string $groupId,
         string $playerId,
         string $type,
-        bool $onlyIfManager
+        bool $onlyIfManager,
+        Account $account
     ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
@@ -1033,7 +1037,9 @@ class GroupController extends BaseController
         }
 
         if ($type === self::TYPE_MANAGERS) {
-            $this->group->removeManager($this->player);
+            $this->group->removeManager($this->player); // needed to persist
+            $this->player->removeManagerGroup($this->group); // needed for check in syncManagerRole()
+            $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === self::TYPE_MEMBERS) {
             $this->player->removeGroup($this->group);
             $this->account->syncTrackingRole($this->player);

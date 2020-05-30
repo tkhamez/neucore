@@ -163,22 +163,38 @@
                         <select class="custom-select" v-model="newRole" id="userAdminSelectRole">
                             <option value="">Select role ...</option>
                             <option v-for="role in availableRoles"
-                                v-if="! hasRole(role, playerEdit)" v-bind:value="role">
+                                    v-if="! hasRole(role, playerEdit) && autoRoles.indexOf(role) === -1"
+                                    v-bind:value="role">
                                 {{ role }}
                             </option>
                         </select>
                     </div>
 
-                    <div v-for="role in playerEdit.roles" v-if="role !== 'user'" class="list-group-item">
-                        <button type="button" class="btn btn-danger mr-5"
-                                :disabled="role === 'user-admin' && playerEdit.id === player.id"
-                                v-on:click="removeRole(role)">
-                            <span role="img" class="fas fa-minus-circle"></span>
-                            remove
-                        </button>
-                        {{ role }}
-                    </div>
-                    <div v-if="playerEdit.roles.length === 1">No roles.</div>
+                    <table class="table table-hover nc-table-sm" aria-describedby="Roles">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Role</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="role in playerEdit.roles" v-if="role !== 'user'">
+                                <td>{{ role }}</td>
+                                <td>
+                                    <button v-if="autoRoles.indexOf(role) === -1"
+                                            type="button" class="btn btn-danger btn-sm mr-5"
+                                            :disabled="role === 'user-admin' && playerEdit.id === player.id"
+                                            v-on:click="removeRole(role)">
+                                        <span role="img" class="fas fa-minus-circle"></span>
+                                        remove
+                                    </button>
+                                    <span v-if="autoRoles.indexOf(role) !== -1" class="text-muted">
+                                        automatically assigned
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <hr>
 
@@ -434,6 +450,12 @@ export default {
                 'watchlist',
                 'watchlist-manager',
                 'watchlist-admin',
+            ],
+            autoRoles: [
+                'app-manager',
+                'group-manager',
+                'tracking',
+                'watchlist',
             ],
             newRole: '',
             searchResult: [],

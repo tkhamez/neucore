@@ -16,6 +16,7 @@ use Neucore\Repository\AppRepository;
 use Neucore\Entity\App;
 use Doctrine\ORM\Events;
 use Monolog\Handler\TestHandler;
+use Neucore\Repository\PlayerRepository;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -49,13 +50,14 @@ class AppControllerTest extends WebTestCase
      */
     private $groupRepo;
 
+    /**
+     * @var PlayerRepository
+     */
+    private $playerRepo;
+
     private $gid;
 
     private $aid;
-
-    private $pid;
-
-    private $pid2;
 
     private $pid3;
 
@@ -74,6 +76,7 @@ class AppControllerTest extends WebTestCase
         $repositoryFactory = new RepositoryFactory($this->em);
         $this->appRepo = $repositoryFactory->getAppRepository();
         $this->groupRepo = $repositoryFactory->getGroupRepository();
+        $this->playerRepo = $repositoryFactory->getPlayerRepository();
     }
 
     public function tearDown(): void
@@ -349,6 +352,7 @@ class AppControllerTest extends WebTestCase
             $actual[] = $mg->getId();
         }
         $this->assertSame([$this->pid3, $player->getId()], $actual);
+        $this->assertTrue($player->hasRole(Role::APP_MANAGER));
     }
 
     public function testRemoveManager403()
@@ -382,12 +386,13 @@ class AppControllerTest extends WebTestCase
         $response = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-manager/'.$this->pid3);
         $this->assertEquals(204, $response->getStatusCode());
 
-        $player = (new RepositoryFactory($this->em))->getPlayerRepository()->find($this->pid3);
+        $player = $this->playerRepo->find($this->pid3);
         $actual = [];
         foreach ($player->getManagerGroups() as $mg) {
             $actual[] = $mg->getId();
         }
         $this->assertSame([], $actual);
+        $this->assertFalse($player->hasRole(Role::APP_MANAGER));
     }
 
     public function testShow403()
@@ -717,8 +722,8 @@ class AppControllerTest extends WebTestCase
         $char = $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::APP_ADMIN]);
         $char2 = $this->helper->addCharacterMain('Manager', 9, [Role::USER, Role::APP_MANAGER]);
         $char3 = $this->helper->addCharacterMain('Manager', 10, [Role::USER, Role::APP_MANAGER]);
-        $this->pid = $char->getPlayer()->getId();
-        $this->pid2 = $char2->getPlayer()->getId();
+        $char->getPlayer()->getId();
+        $char2->getPlayer()->getId();
         $this->pid3 = $char3->getPlayer()->getId();
 
         $a->addManager($char3->getPlayer());
