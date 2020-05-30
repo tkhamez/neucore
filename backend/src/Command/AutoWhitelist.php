@@ -109,7 +109,7 @@ class AutoWhitelist extends Command
     {
         $this->setName('auto-whitelist')
             ->setDescription('Adds personal alt corps to the watchlist corporation whitelist.')
-            ->addArgument('id', InputArgument::REQUIRED, 'The Watchlist ID.')
+            ->addArgument('id', InputArgument::OPTIONAL, 'The Watchlist ID.')
             ->addOption(
                 'sleep',
                 's',
@@ -128,10 +128,29 @@ class AutoWhitelist extends Command
 
         $this->writeLine('Started "auto-whitelist"', false);
 
+        if ($id > 0) {
+            $ids = [$id];
+        } else {
+            $ids = array_map(function (\Neucore\Entity\Watchlist $watchlist) {
+                return $watchlist->getId();
+            }, $this->watchlistRepository->findBy([]));
+        }
+
+        foreach ($ids as $watchlistId) {
+            $this->writeLine("  Processing watchlist $watchlistId", false);
+            $this->whitelist($watchlistId);
+        }
+
+        $this->writeLine('Finished "auto-whitelist"', false);
+        return 0;
+    }
+
+    private function whitelist($id): void
+    {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            $this->writeLine('Watchlist not found.', false);
-            return 0;
+            $this->writeLine('    Watchlist not found.', false);
+            return;
         }
 
         $players = $this->watchlistService->getRedFlagList($id, true, true); // include blacklist and whitelist
@@ -144,20 +163,17 @@ class AutoWhitelist extends Command
         $whitelist = $this->getWhitelist($accountsData);
 
         $this->writeLine(
-            "  Corporations to check: {$this->numCorporations}, checked: {$this->numCorporationsChecked}, ".
-                "whitelisted: {$this->numCorporationsWhitelisted}",
+            "    Corporations to check: {$this->numCorporations}, checked: {$this->numCorporationsChecked}, ".
+            "whitelisted: {$this->numCorporationsWhitelisted}",
             false
         );
 
         $watchlist = $this->watchlistRepository->find($id); // read again because of "clear" above
         if ($watchlist === null) {
-            $this->writeLine('Watchlist not found.', false);
-            return 0;
+            $this->writeLine('    Watchlist not found.', false);
+            return;
         }
         $this->saveWhitelist($watchlist, $whitelist);
-
-        $this->writeLine('Finished "auto-whitelist"', false);
-        return 0;
     }
 
     /**
@@ -209,7 +225,7 @@ class AutoWhitelist extends Command
                 unset($accountsData[$playerId]);
             }
 
-            $this->writeLine("  Collected data from player $playerId.");
+            $this->writeLine("    Collected data from player $playerId.");
             usleep($this->sleep * 1000);
         }
 
@@ -252,7 +268,7 @@ class AutoWhitelist extends Command
                     }
                 }
 
-                $this->writeLine("  Checked corporation $corporationId.");
+                $this->writeLine("    Checked corporation $corporationId.");
                 usleep($this->sleep * 1000);
             }
         }
@@ -277,7 +293,7 @@ class AutoWhitelist extends Command
         }
 
         if (! $this->objectManager->flush()) {
-            $this->writeLine('  Failed to save list.', false);
+            $this->writeLine('    Failed to save list.', false);
         }
     }
 }

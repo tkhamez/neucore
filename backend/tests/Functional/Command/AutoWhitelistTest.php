@@ -52,9 +52,13 @@ class AutoWhitelistTest extends ConsoleTestCase
         $char2a = $helper->addCharacterMain('char2a', 1021)->setCorporation($corp1);
         $helper->addCharacterToPlayer('char2c', 1023, $char2a->getPlayer())->setCorporation($corp3);
 
-        $watchlist = new Watchlist();
-        $watchlist->setId(2)->setName('test')->addCorporation($corp1)->addWhitelistCorporation($corp3);
-        $this->om->persist($watchlist);
+        $watchlist1 = new Watchlist();
+        $watchlist1->setId(1)->setName('test1');
+        $this->om->persist($watchlist1);
+
+        $watchlist2 = new Watchlist();
+        $watchlist2->setId(2)->setName('test2')->addCorporation($corp1)->addWhitelistCorporation($corp3);
+        $this->om->persist($watchlist2);
 
         $this->om->flush();
 
@@ -72,19 +76,22 @@ class AutoWhitelistTest extends ConsoleTestCase
             new Response(200, [], '[1012]') // getCorporationsCorporationIdMembers
         );
 
-        $output = $this->runConsoleApp('auto-whitelist', ['id' => 2, '--sleep' => 0], [
+        $output = $this->runConsoleApp('auto-whitelist', ['--sleep' => 0], [
             ClientInterface::class => $client,
         ]);
 
         $log = explode("\n", $output);
-        $this->assertSame(7, count($log));
+        $this->assertSame(10, count($log));
         $this->assertStringContainsString('Started "auto-whitelist"', $log[0]);
-        $this->assertStringContainsString("  Collected data from player {$this->data['player1Id']}.", $log[1]);
-        $this->assertStringContainsString("  Collected data from player {$this->data['player2Id']}.", $log[2]);
-        $this->assertStringContainsString('  Checked corporation 2000102.', $log[3]);
-        $this->assertStringContainsString('  Corporations to check: 1, checked: 1, whitelisted: 1', $log[4]);
-        $this->assertStringContainsString('Finished "auto-whitelist"', $log[5]);
-        $this->assertStringContainsString('', $log[6]);
+        $this->assertStringContainsString('  Processing watchlist 1', $log[1]);
+        $this->assertStringContainsString('    Corporations to check: 0, checked: 0, whitelisted: 0', $log[2]);
+        $this->assertStringContainsString('  Processing watchlist 2', $log[3]);
+        $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[4]);
+        $this->assertStringContainsString("    Collected data from player {$this->data['player2Id']}.", $log[5]);
+        $this->assertStringContainsString('    Checked corporation 2000102.', $log[6]);
+        $this->assertStringContainsString('    Corporations to check: 1, checked: 1, whitelisted: 1', $log[7]);
+        $this->assertStringContainsString('Finished "auto-whitelist"', $log[8]);
+        $this->assertStringContainsString('', $log[9]);
 
         $this->om->clear();
 
