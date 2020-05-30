@@ -184,7 +184,7 @@ export default {
                 vm.status = response.statusCode;
                 try {
                     result = JSON.parse(response.text);
-                    vm.body = result.body || result;
+                    vm.body = result.hasOwnProperty('body') ? result.body : result;
                     vm.headers = result.headers || [];
                 } catch(e) {
                     vm.body = response.text;

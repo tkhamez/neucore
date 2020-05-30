@@ -4,6 +4,7 @@
 
 - Change: the app-manager and group-manager roles are now added and removed automatically, 
   depending on whether the player is a manager of an app or a group.
+- Fix: ESI result body was not always displayed correctly.
 
 ## 1.12.1
 
