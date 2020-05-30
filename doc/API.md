@@ -244,6 +244,7 @@ Player API
 Allows a player to change the tracking corporation/groups configuration.
 
 Corporation API
+- Returns a list of directors with an ESI token for this corporation. `GET /user/corporation/{id}/tracking-director`
 - Returns required groups to view member tracking data. `GET /user/corporation/{id}/get-groups-tracking`
 - Add a group to the corporation for member tracking permission. `PUT /user/corporation/{id}/add-group-tracking/{groupId}`
 - Remove a group for member tracking permission from the corporation. `PUT /user/corporation/{id}/remove-group-tracking/{groupId}`

@@ -23,15 +23,6 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
-    const VALUE_CHARACTER_ID = 'character_id';
-
-    const VALUE_CHARACTER_NAME = 'character_name';
-
-    const VALUE_CORPORATION_ID = 'corporation_id';
-
-    const VALUE_CORPORATION_NAME = 'corporation_name';
-
-    const VALUE_CORPORATION_TICKER = 'corporation_ticker';
 
     /**
      * @var LoggerInterface
@@ -140,13 +131,13 @@ class MemberTracking
             return false;
         }
         $data = \json_decode($variable->getValue(), true);
-        if (! isset($data[self::VALUE_CHARACTER_ID])) {
+        if (! isset($data[SystemVariable::VALUE_CHARACTER_ID])) {
             return false;
         }
 
         try {
             $char = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId($data[self::VALUE_CHARACTER_ID], $this->datasource);
+                ->getCharactersCharacterId($data[SystemVariable::VALUE_CHARACTER_ID], $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
@@ -157,10 +148,10 @@ class MemberTracking
             return false;
         }
 
-        $data[self::VALUE_CHARACTER_NAME] = $char->getName();
-        $data[self::VALUE_CORPORATION_ID] = $corporation->getId();
-        $data[self::VALUE_CORPORATION_NAME] = $corporation->getName();
-        $data[self::VALUE_CORPORATION_TICKER] = $corporation->getTicker();
+        $data[SystemVariable::VALUE_CHARACTER_NAME] = $char->getName();
+        $data[SystemVariable::VALUE_CORPORATION_ID] = $corporation->getId();
+        $data[SystemVariable::VALUE_CORPORATION_NAME] = $corporation->getName();
+        $data[SystemVariable::VALUE_CORPORATION_TICKER] = $corporation->getTicker();
 
         $variable->setValue((string) \json_encode($data));
 
@@ -181,11 +172,11 @@ class MemberTracking
 
         $characterData = \json_decode($characterVar ? $characterVar->getValue() : '', true);
         $tokenData = \json_decode($tokenVar ? $tokenVar->getValue() : '', true);
-        if (! isset($characterData[self::VALUE_CHARACTER_ID]) || ! isset($tokenData[SystemVariable::TOKEN_ACCESS])) {
+        if (! isset($characterData[SystemVariable::VALUE_CHARACTER_ID]) || ! isset($tokenData[SystemVariable::TOKEN_ACCESS])) {
             return null;
         }
 
-        $tokenData[self::VALUE_CHARACTER_ID] = $characterData[self::VALUE_CHARACTER_ID];
+        $tokenData[SystemVariable::VALUE_CHARACTER_ID] = $characterData[SystemVariable::VALUE_CHARACTER_ID];
 
         return $tokenData;
     }
@@ -211,7 +202,7 @@ class MemberTracking
             OAuthToken::OPTION_ACCESS_TOKEN => $token->getToken(),
             OAuthToken::OPTION_REFRESH_TOKEN => $token->getRefreshToken(),
             OAuthToken::OPTION_EXPIRES => $token->getExpires(),
-            OAuthToken::OPTION_RESOURCE_OWNER_ID => $tokenData[self::VALUE_CHARACTER_ID],
+            OAuthToken::OPTION_RESOURCE_OWNER_ID => $tokenData[SystemVariable::VALUE_CHARACTER_ID],
         ]);
     }
 
@@ -466,8 +457,8 @@ class MemberTracking
             $number = (int) explode('_', $existingDirector->getName())[2];
             $maxNumber = max($maxNumber, $number);
             $value = \json_decode($existingDirector->getValue(), true);
-            if ($value && isset($value[self::VALUE_CHARACTER_ID])) {
-                $existingDirectors[$value[self::VALUE_CHARACTER_ID]] = [
+            if ($value && isset($value[SystemVariable::VALUE_CHARACTER_ID])) {
+                $existingDirectors[$value[SystemVariable::VALUE_CHARACTER_ID]] = [
                     'system_variable' => $existingDirector,
                     'number' => $number
                 ];
@@ -492,11 +483,11 @@ class MemberTracking
             $this->entityManager->persist($directorToken);
         }
         $directorChar->setValue((string) json_encode([
-            self::VALUE_CHARACTER_ID => $authCharacterId,
-            self::VALUE_CHARACTER_NAME => $eveAuth->getCharacterName(),
-            self::VALUE_CORPORATION_ID => $corporation->getId(),
-            self::VALUE_CORPORATION_NAME => $corporation->getName(),
-            self::VALUE_CORPORATION_TICKER => $corporation->getTicker()
+            SystemVariable::VALUE_CHARACTER_ID => $authCharacterId,
+            SystemVariable::VALUE_CHARACTER_NAME => $eveAuth->getCharacterName(),
+            SystemVariable::VALUE_CORPORATION_ID => $corporation->getId(),
+            SystemVariable::VALUE_CORPORATION_NAME => $corporation->getName(),
+            SystemVariable::VALUE_CORPORATION_TICKER => $corporation->getTicker()
         ]));
         $directorToken->setScope(SystemVariable::SCOPE_BACKEND);
         $directorToken->setValue((string) json_encode([

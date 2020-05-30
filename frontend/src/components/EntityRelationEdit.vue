@@ -62,7 +62,12 @@ Select and table to add and remove objects from other objects.
                 for permissions for each role.
             </p>
             <p v-if="type === 'Corporation' && contentType === 'groups'">
-                Members of these groups can view the tracking data of the selected corporation.
+                Members of these groups can view the tracking data of the selected corporation.<br>
+                Director(s):
+                <span v-for="director in directors">
+                    <a :href="'https://evewho.com/character/' + director.id" title="Eve Who" target="_blank"
+                       rel="noopener noreferrer">{{ director.name }}</a>&nbsp;
+                </span>
             </p>
             <p v-if="type === 'Watchlist' && contentType === 'groups'">
                 Groups whose members are allowed to view the lists.
@@ -213,6 +218,7 @@ export default {
             useSearch: false,
             searchWithCharacters: false,
             searchResult: [],
+            directors: [],
         }
     },
 
@@ -231,6 +237,7 @@ export default {
         if (this.typeId) {
             this.getTableContent();
             this.getWithGroups();
+            fetchDirector(this);
         }
     },
 
@@ -239,6 +246,7 @@ export default {
             this.newObject = "";
             if (this.typeId) {
                 this.getTableContent();
+                fetchDirector(this);
             }
         },
 
@@ -612,6 +620,19 @@ function setUseSearch(vm) {
         (vm.type === 'App' && vm.contentType === 'managers') ||
         (vm.type === 'Group' && vm.contentType === 'managers');
     vm.searchWithCharacters = vm.useSearch; // same conditions atm.
+}
+
+function fetchDirector(vm) {
+    if (vm.type !== 'Corporation' || vm.contentType !== 'groups') {
+        return;
+    }
+    vm.directors = [];
+    new CorporationApi().corporationTrackingDirector(vm.typeId, function(error, data) {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.directors = data;
+    });
 }
 
 function upperCaseFirst(string) {

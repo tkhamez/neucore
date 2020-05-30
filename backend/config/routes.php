@@ -90,6 +90,7 @@ return [
     '/api/user/corporation/add/{id}'                             => ['POST', CorporationController::class.'::add'],
     '/api/user/corporation/{id}/add-group/{gid}'                 => ['PUT',  CorporationController::class.'::addGroup'],
     '/api/user/corporation/{id}/remove-group/{gid}'              => ['PUT',  CorporationController::class.'::removeGroup'],
+    '/api/user/corporation/{id}/tracking-director'               => ['GET',  CorporationController::class.'::trackingDirector'],
     '/api/user/corporation/{id}/get-groups-tracking'             => ['GET',  CorporationController::class.'::getGroupsTracking'],
     '/api/user/corporation/{id}/add-group-tracking/{groupId}'    => ['PUT',  CorporationController::class.'::addGroupTracking'],
     '/api/user/corporation/{id}/remove-group-tracking/{groupId}' => ['PUT',  CorporationController::class.'::removeGroupTracking'],

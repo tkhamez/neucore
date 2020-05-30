@@ -22,6 +22,19 @@ use Psr\Http\Message\ServerRequestInterface;
  *     name="Corporation",
  *     description="Corporation management (for automatic group assignment) and tracking."
  * )
+ * @OA\Schema(
+ *     schema="TrackingDirector",
+ *     required={"id", "name"},
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         format="int64"
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string"
+ *     )
+ * )
  */
 class CorporationController extends BaseController
 {
@@ -282,6 +295,51 @@ class CorporationController extends BaseController
         $this->corp->removeGroup($this->group);
 
         return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/corporation/{id}/tracking-director",
+     *     operationId="corporationTrackingDirector",
+     *     summary="Returns a list of directors with an ESI token for this corporation.",
+     *     description="Needs role: tracking-admin",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the corporation.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of directors.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/TrackingDirector"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function trackingDirector(string $id): ResponseInterface
+    {
+        $repository = $this->repositoryFactory->getSystemVariableRepository();
+
+        $directors = [];
+        foreach ($repository->getDirectors() as $director) {
+            $value = \json_decode($director->getValue());
+            if ($value->corporation_id === (int) $id) {
+                $directors[] = [
+                    'id' => $value->character_id,
+                    'name' => $value->character_name,
+                ];
+            }
+        }
+
+        return $this->withJson($directors);
     }
 
     /**

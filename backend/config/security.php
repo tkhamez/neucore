@@ -50,6 +50,7 @@ return [
 
     '/api/user/corporation/tracked-corporations'       => [Role::TRACKING, Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/members'               => [Role::TRACKING],
+    '/api/user/corporation/{id}/tracking-director'     => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/get-groups-tracking'   => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/add-group-tracking'    => [Role::TRACKING_ADMIN],
     '/api/user/corporation/{id}/remove-group-tracking' => [Role::TRACKING_ADMIN],

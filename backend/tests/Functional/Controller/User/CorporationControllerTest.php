@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
+use Neucore\Entity\SystemVariable;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Entity\Corporation;
 use Neucore\Repository\CorporationRepository;
@@ -439,6 +440,48 @@ class CorporationControllerTest extends WebTestCase
         );
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
+    }
+
+    public function testTrackingDirector403()
+    {
+        $response = $this->runApp('GET', '/api/user/corporation/123/tracking-director');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->h->emptyDb();
+        $this->h->addCharacterMain('Tracking Admin', 7, [Role::USER, Role::TRACKING]);
+        $this->loginUser(7);
+
+        $response = $this->runApp('GET', '/api/user/corporation/123/tracking-director');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testTrackingDirector200()
+    {
+        $this->h->emptyDb();
+        $this->h->addCharacterMain('Tracking Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
+        $director1 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'1'))->setValue(\json_encode([
+            SystemVariable::VALUE_CHARACTER_ID => 1020301,
+            SystemVariable::VALUE_CHARACTER_NAME => 'Dir 1',
+            SystemVariable::VALUE_CORPORATION_ID => 123,
+        ]));
+        $director2 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'2'))->setValue(\json_encode([
+            SystemVariable::VALUE_CHARACTER_ID => 1020302,
+            SystemVariable::VALUE_CHARACTER_NAME => 'Dir 2',
+            SystemVariable::VALUE_CORPORATION_ID => 124,
+        ]));
+        $this->em->persist($director1);
+        $this->em->persist($director2);
+        $this->em->flush();
+
+        $this->loginUser(8); # tracking-admin
+
+        $response = $this->runApp('GET', '/api/user/corporation/123/tracking-director');
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [['id' => 1020301, 'name' => 'Dir 1']],
+            $this->parseJsonBody($response)
+        );
     }
 
     public function testGetGroupsTracking403()

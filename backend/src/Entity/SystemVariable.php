@@ -283,15 +283,17 @@ class SystemVariable implements \JsonSerializable
      */
     const API_RATE_LIMIT_ACTIVE = 'api_rate_limit_active';
 
-    const TOKEN_ID = 'id';
+    public const TOKEN_ID = 'id';
+    public const TOKEN_ACCESS = 'access';
+    public const TOKEN_REFRESH = 'refresh';
+    public const TOKEN_EXPIRES = 'expires';
+    public const TOKEN_SCOPES = 'scopes';
 
-    const TOKEN_ACCESS = 'access';
-
-    const TOKEN_REFRESH = 'refresh';
-
-    const TOKEN_EXPIRES = 'expires';
-
-    const TOKEN_SCOPES = 'scopes';
+    public const VALUE_CHARACTER_ID = 'character_id';
+    public const VALUE_CORPORATION_NAME = 'corporation_name';
+    public const VALUE_CORPORATION_ID = 'corporation_id';
+    public const VALUE_CHARACTER_NAME = 'character_name';
+    public const VALUE_CORPORATION_TICKER = 'corporation_ticker';
 
     /**
      * Variable name.

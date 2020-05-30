@@ -27,7 +27,6 @@
                     </li>
                 </ul>
 
-                <!--suppress HtmlUnknownTag -->
                 <admin v-cloak v-if="corporationId" ref="admin"
                        :player="player" :contentType="contentType" :typeId="corporationId" :settings="settings"
                        :type="'Corporation'"></admin>
