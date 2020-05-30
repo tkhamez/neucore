@@ -216,7 +216,7 @@ export default {
 }
 
 function getCorporations(vm) {
-    new CorporationApi().trackedCorporations((error, data) => {
+    new CorporationApi().corporationAllTrackedCorporations((error, data) => {
         if (! error) {
             vm.trackingCorporations = data;
             vm.trackingCorporationsLoaded = true;

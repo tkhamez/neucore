@@ -7,7 +7,6 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
-use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
@@ -488,9 +487,9 @@ class CorporationController extends BaseController
      * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/corporation/tracked-corporations",
-     *     operationId="trackedCorporations",
+     *     operationId="corporationTrackedCorporations",
      *     summary="Returns corporations that have member tracking data.",
-     *     description="Needs role: tracking-admin or tracking and membership in appropriate group",
+     *     description="Needs role: tracking and membership in appropriate group",
      *     tags={"Corporation"},
      *     security={{"Session"={}}},
      *     @OA\Response(
@@ -508,12 +507,6 @@ class CorporationController extends BaseController
     {
         $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
 
-        if ($this->getUser($this->userAuth)->getPlayer()->hasRole(Role::TRACKING_ADMIN)) {
-            return $this->withJson(array_map(function (Corporation $corporation) {
-                return $corporation->jsonSerialize(true);
-            }, $corporations));
-        }
-
         $result = [];
         foreach ($corporations as $corporation) {
             if ($this->checkPermission($corporation)) {
@@ -522,6 +515,35 @@ class CorporationController extends BaseController
         }
 
         return $this->withJson($result);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/corporation/all-tracked-corporations",
+     *     operationId="corporationAllTrackedCorporations",
+     *     summary="Returns all corporations that have member tracking data.",
+     *     description="Needs role: tracking-admin",
+     *     tags={"Corporation"},
+     *     security={{"Session"={}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of corporations.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Corporation"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function allTrackedCorporations(): ResponseInterface
+    {
+        $corporations = $this->repositoryFactory->getCorporationRepository()->getAllWithMemberTrackingData();
+
+        return $this->withJson(array_map(function (Corporation $corporation) {
+            return $corporation->jsonSerialize(true);
+        }, $corporations));
     }
 
     /**

@@ -95,6 +95,7 @@ return [
     '/api/user/corporation/{id}/add-group-tracking/{groupId}'    => ['PUT',  CorporationController::class.'::addGroupTracking'],
     '/api/user/corporation/{id}/remove-group-tracking/{groupId}' => ['PUT',  CorporationController::class.'::removeGroupTracking'],
     '/api/user/corporation/tracked-corporations'                 => ['GET',  CorporationController::class.'::trackedCorporations'],
+    '/api/user/corporation/all-tracked-corporations'             => ['GET',  CorporationController::class.'::allTrackedCorporations'],
     '/api/user/corporation/{id}/members'                         => ['GET',  CorporationController::class.'::members'],
 
     '/api/user/esi/request' =>  [

@@ -74,7 +74,7 @@ export default {
     methods: {
         getCorporations: function() {
             const vm = this;
-            new CorporationApi().trackedCorporations(function(error, data) {
+            new CorporationApi().corporationAllTrackedCorporations(function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }

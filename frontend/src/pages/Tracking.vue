@@ -192,7 +192,7 @@ export default {
 };
 
 function getCorporations(vm) {
-    new CorporationApi().trackedCorporations((error, data) => {
+    new CorporationApi().corporationTrackedCorporations((error, data) => {
         if (error) { // 403 usually
             return;
         }

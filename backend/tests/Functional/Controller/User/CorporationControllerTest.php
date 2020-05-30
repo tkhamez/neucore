@@ -659,12 +659,27 @@ class CorporationControllerTest extends WebTestCase
             'alliance' => null,
             'trackingLastUpdate' => '2019-12-19T13:44:02Z',
         ]], $this->parseJsonBody($response2));
+    }
 
-        # admin
+    public function testAllTrackedCorporations403()
+    {
+        $this->setupDb();
 
-        $this->loginUser(8);
+        $response = $this->runApp('GET', '/api/user/corporation/all-tracked-corporations');
+        $this->assertEquals(403, $response->getStatusCode());
 
-        $response3 = $this->runApp('GET', '/api/user/corporation/tracked-corporations');
+        $this->loginUser(7); # not tracking-admin
+
+        $response = $this->runApp('GET', '/api/user/corporation/all-tracked-corporations');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAllTrackedCorporations200()
+    {
+        $this->setupDb();
+        $this->loginUser(8); # tracking-admin
+
+        $response3 = $this->runApp('GET', '/api/user/corporation/all-tracked-corporations');
         $this->assertEquals(200, $response3->getStatusCode());
         $this->assertSame([[
             'id' => 222,
