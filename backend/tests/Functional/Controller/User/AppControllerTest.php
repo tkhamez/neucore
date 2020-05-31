@@ -352,7 +352,7 @@ class AppControllerTest extends WebTestCase
             $actual[] = $mg->getId();
         }
         $this->assertSame([$this->pid3, $player->getId()], $actual);
-        $this->assertTrue($player->hasRole(Role::APP_MANAGER));
+        $this->assertTrue($this->playerRepo->find($player->getId())->hasRole(Role::APP_MANAGER));
     }
 
     public function testRemoveManager403()
