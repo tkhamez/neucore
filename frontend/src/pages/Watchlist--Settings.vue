@@ -5,21 +5,18 @@
     <div class="card">
         <div class="card-header">Red Flags</div>
         <div class="card-body">
-            <p>
-                Alliances and corporations whose members are included in the list if they
-                also have characters in other (not NPC) corporations.
-            </p>
-            <admin :contentType="'alliances'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
-            <admin :contentType="'corporations'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
+            Alliances and corporations whose members are included in the list if they
+            also have characters in other (not NPC) corporations.
         </div>
+        <admin :contentType="'alliances'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
+        <admin :contentType="'corporations'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
 
         <div class="card-header">Blacklist</div>
         <div class="card-body">
-            <p>
-                Accounts from the Red Flags list are moved to the blacklist
-                if they have a character in one of these alliances or corporations.
-            </p>
-            <p class="small text-muted">
+            Accounts from the Red Flags list are moved to the blacklist
+            if they have a character in one of these alliances or corporations.
+            <br>
+            <span class="small text-muted">
                 Add missing
                 <a href="#" @click.prevent="showAddEntityModal('Alliance')">
                     <span class="far fa-plus-square"></span> alliances
@@ -28,25 +25,23 @@
                 <a href="#" @click.prevent="showAddEntityModal('Corporation')">
                     <span class="far fa-plus-square"></span> corporations
                 </a>
-            </p>
-            <admin ref="adminAlliance" :contentType="'alliances'" :type="'WatchlistBlacklist'" :typeId="id"
-                   :sticky="sticky"></admin>
-            <admin ref="adminCorp" :contentType="'corporations'" :type="'WatchlistBlacklist'" :typeId="id"
-                   :sticky="sticky"></admin>
+            </span>
         </div>
+        <admin ref="adminAlliance" :contentType="'alliances'" :type="'WatchlistBlacklist'" :typeId="id"
+               :sticky="sticky"></admin>
+        <admin ref="adminCorp" :contentType="'corporations'" :type="'WatchlistBlacklist'" :typeId="id"
+               :sticky="sticky"></admin>
 
         <div class="card-header">Whitelist</div>
         <div class="card-body">
-            <p>
-                Alliances and corporations that should be treated like NPC corporations
-                (usually personal alt corporations).
-            </p>
-            <admin :contentType="'alliances'" :type="'WatchlistWhitelist'" :typeId="id" :sticky="sticky"></admin>
-            <admin :contentType="'corporations'" :type="'WatchlistWhitelist'" :typeId="id" :sticky="sticky"></admin>
-            <p class="small text-muted">
-                * Corporations are automatically added (and removed accordingly) if all their members belong to
-                the same account.
-            </p>
+            Alliances and corporations that should be treated like NPC corporations
+            (usually personal alt corporations).
+        </div>
+        <admin :contentType="'alliances'" :type="'WatchlistWhitelist'" :typeId="id" :sticky="sticky"></admin>
+        <admin :contentType="'corporations'" :type="'WatchlistWhitelist'" :typeId="id" :sticky="sticky"></admin>
+        <div class="card-body small text-muted">
+            * Corporations are automatically added (and removed accordingly) if all their members belong to
+            the same account.
         </div>
     </div>
 </div>
@@ -91,8 +86,5 @@ export default {
         position: sticky;
         top: 80px;
         z-index: 2;
-    }
-    .card-body {
-        z-index: 1;
     }
 </style>
