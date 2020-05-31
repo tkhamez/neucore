@@ -165,6 +165,10 @@ Select and table to add and remove objects from other objects.
                 </tr>
             </tbody>
         </table>
+        <p v-if="contentType === 'corporations' && type === 'WatchlistWhitelist'" class="small text-muted ml-1 mt-1">
+            * Corporations are automatically added (and removed accordingly) if all their members belong to
+            the same account.
+        </p>
     </div> <!-- card -->
 </template>
 

@@ -39,10 +39,6 @@
         </div>
         <admin :contentType="'alliances'" :type="'WatchlistWhitelist'" :typeId="id" :sticky="sticky"></admin>
         <admin :contentType="'corporations'" :type="'WatchlistWhitelist'" :typeId="id" :sticky="sticky"></admin>
-        <div class="card-body small text-muted">
-            * Corporations are automatically added (and removed accordingly) if all their members belong to
-            the same account.
-        </div>
     </div>
 </div>
 </template>
