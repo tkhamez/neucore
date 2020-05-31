@@ -13,6 +13,7 @@
 /nbproject
 /.vscode
 /.idea
+/.editorconfig
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
