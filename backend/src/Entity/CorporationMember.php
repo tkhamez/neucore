@@ -86,6 +86,7 @@ class CorporationMember implements \JsonSerializable
     /**
      * @OA\Property(ref="#/components/schemas/Character", nullable=true)
      * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      * @var Character|null
      */
     private $character;

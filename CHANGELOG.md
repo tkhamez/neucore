@@ -7,9 +7,10 @@
 - Change: the app-manager and group-manager roles are now added and removed automatically, 
   depending on whether the player is a manager of an app or a group.
 - Change: The "auto-whitelist" command no longer needs a watchlist ID, it now runs for all watchlists without it.
-- Member Tracking Administration: Name of the director with ESI token added.
+- Improvement: Added name of the director with ESI token to the Member Tracking Administration page.
 - Fix: The Member Tracking corporation selection now only offers corporation that the user can see.
 - Fix: ESI result body was not always displayed correctly.
+- Fix: Could not delete character from a corporation with member tracking data.
 
 ## 1.12.1
 
