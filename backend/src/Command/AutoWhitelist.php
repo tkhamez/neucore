@@ -145,7 +145,7 @@ class AutoWhitelist extends Command
         return 0;
     }
 
-    private function whitelist($id): void
+    private function whitelist(int $id): void
     {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {

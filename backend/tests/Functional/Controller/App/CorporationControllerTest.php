@@ -9,7 +9,6 @@ use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
-use Neucore\Factory\RepositoryFactory;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Neucore\Entity\Corporation;
@@ -21,15 +20,9 @@ class CorporationControllerTest extends WebTestCase
      */
     private $helper;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
-
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testMemberTrackingV1403()

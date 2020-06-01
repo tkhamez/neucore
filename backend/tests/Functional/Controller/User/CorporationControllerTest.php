@@ -459,12 +459,12 @@ class CorporationControllerTest extends WebTestCase
     {
         $this->h->emptyDb();
         $this->h->addCharacterMain('Tracking Admin', 8, [Role::USER, Role::TRACKING_ADMIN]);
-        $director1 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'1'))->setValue(\json_encode([
+        $director1 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'1'))->setValue((string) \json_encode([
             SystemVariable::VALUE_CHARACTER_ID => 1020301,
             SystemVariable::VALUE_CHARACTER_NAME => 'Dir 1',
             SystemVariable::VALUE_CORPORATION_ID => 123,
         ]));
-        $director2 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'2'))->setValue(\json_encode([
+        $director2 = (new SystemVariable(SystemVariable::DIRECTOR_CHAR.'2'))->setValue((string) \json_encode([
             SystemVariable::VALUE_CHARACTER_ID => 1020302,
             SystemVariable::VALUE_CHARACTER_NAME => 'Dir 2',
             SystemVariable::VALUE_CORPORATION_ID => 124,
