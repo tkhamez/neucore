@@ -34,7 +34,7 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Name</th>
-                        <th v-if="hasRole('watchlist-manager')" scope="col">Action</th>
+                        <th v-if="manageIds.indexOf(id) !== -1" scope="col">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
                                 {{ player.name }}
                             </a>
                         </td>
-                        <td v-if="hasRole('watchlist-manager')">
+                        <td v-if="manageIds.indexOf(id) !== -1">
                             <button v-if="tab === 'red' || tab === 'black'" class="btn btn-primary btn-sm"
                                     v-on:click="addToWhitelist(player.id)">
                                 Add to Whitelist
@@ -132,6 +132,7 @@ export default {
     props: {
         id: Number,
         tab: String,
+        manageIds: Array,
     },
 
     data () {

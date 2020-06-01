@@ -6,6 +6,7 @@ namespace Tests\Functional\Command;
 
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
+use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\ConsoleTestCase;
@@ -21,6 +22,7 @@ class UpdatePlayerGroupsTest extends ConsoleTestCase
         // setup
         $h = new Helper();
         $h->emptyDb();
+        $h->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
         $om = $h->getObjectManager();
 
         $group = (new Group())->setName('g');

@@ -210,7 +210,7 @@ class AuthControllerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles([Role::USER, Role::TRACKING, Role::WATCHLIST]);
+        $h->addRoles([Role::USER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
 
         list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
         $state = '1jdHR64hSdYf';
@@ -284,7 +284,7 @@ class AuthControllerTest extends WebTestCase
     {
         $h = new Helper();
         $h->emptyDb();
-        $h->addRoles([Role::TRACKING, Role::WATCHLIST]);
+        $h->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
 
         $h->addCharacterMain('User1', 654, [Role::USER], ['group1']);
         $this->loginUser(654);

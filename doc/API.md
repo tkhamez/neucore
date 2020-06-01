@@ -262,7 +262,7 @@ Player API
 - Show player with characters. `GET /user/player/{id}/characters`
 
 Watchlist API
-- Lists all accessible watchlists. `GET /user/watchlist/listAvailable`
+- Lists all watchlists with view permission. `GET /user/watchlist/list-available`
 - List of player accounts that have characters in one of the configured alliances or corporations
                     and additionally have other characters in another player (not NPC) corporation that is not
                     whitelisted and have not been manually excluded. `GET /user/watchlist/{id}/players`
@@ -277,7 +277,8 @@ Watchlist API
 
 #### watchlist-manager
 
-Allows a player to edit exemptions and settings of a watch list to which they have access.
+Allows a player to edit exemptions and settings of a watch list to which they have access.  
+This role is assigned automatically based on group membership.
 
 Alliance API
 - List all alliances. `GET /user/alliance/all`
@@ -288,7 +289,7 @@ Corporation API
 - Add an EVE corporation to the database. `POST /user/corporation/add/{id}`
 
 Watchlist API
-- Lists all accessible watchlists. `GET /user/watchlist/listAvailable`
+- Lists all watchlists with manage permission. `GET /user/watchlist/list-available-manage`
 - List of exempt players. `GET /user/watchlist/{id}/exemption/list`
 - Add player to exemption list. `PUT /user/watchlist/{id}/exemption/add/{player}`
 - Remove player from exemption list. `PUT /user/watchlist/{id}/exemption/remove/{player}`
@@ -323,6 +324,9 @@ Watchlist API
 - List of groups with access to this list. `GET /user/watchlist/{id}/group/list`
 - Add access group to the list. `PUT /user/watchlist/{id}/group/add/{group}`
 - Remove access group from the list. `PUT /user/watchlist/{id}/group/remove/{group}`
+- List of groups with manager access to this list. `GET /user/watchlist/{id}/manager-group/list`
+- Add manager access group to the list. `PUT /user/watchlist/{id}/manager-group/add/{group}`
+- Remove manager access group from the list. `PUT /user/watchlist/{id}/manager-group/remove/{group}`
 
 ### Application API
 

@@ -178,6 +178,7 @@ class CharacterControllerTest extends WebTestCase
     public function testUpdate200LoggedInUser()
     {
         $this->setupDb();
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
         $this->loginUser(96061222);
 
         $this->client->setResponse(
@@ -241,6 +242,7 @@ class CharacterControllerTest extends WebTestCase
     public function testUpdate200Admin()
     {
         $this->setupDb();
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
         $this->loginUser(9);
 
         $this->client->setResponse(

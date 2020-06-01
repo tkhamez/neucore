@@ -421,9 +421,10 @@ class Account
         }
 
         $this->autoGroupAssignment->assign($player);
+        $this->autoGroupAssignment->checkRequiredGroups($player);
         $this->syncTrackingRole($player);
         $this->syncWatchlistRole($player);
-        $this->autoGroupAssignment->checkRequiredGroups($player);
+        $this->syncWatchlistManagerRole($player);
 
         return $this->objectManager->flush();
     }
@@ -480,6 +481,21 @@ class Account
         }
 
         $this->syncRoleByGroupMembership(Role::WATCHLIST, $groupIds, $changedPlayer);
+    }
+
+    public function syncWatchlistManagerRole(Player $changedPlayer = null): void
+    {
+        $watchlistRepository = $this->repositoryFactory->getWatchlistRepository();
+
+        // collect all groups that grant the watchlist-manager role
+        $groupIds = [];
+        foreach ($watchlistRepository->findBy([]) as $watchlist) {
+            $groupIds = array_merge($groupIds, array_map(function (Group $group) {
+                return $group->getId();
+            }, $watchlist->getManagerGroups()));
+        }
+
+        $this->syncRoleByGroupMembership(Role::WATCHLIST_MANAGER, $groupIds, $changedPlayer);
     }
 
     /**

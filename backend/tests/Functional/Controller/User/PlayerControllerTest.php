@@ -1303,6 +1303,7 @@ class PlayerControllerTest extends WebTestCase
             Role::USER_MANAGER,
             Role::TRACKING,
             Role::WATCHLIST,
+            Role::WATCHLIST_MANAGER,
         ]);
 
         $gs = $this->h->addGroups(['test-pub', 'test-private']);

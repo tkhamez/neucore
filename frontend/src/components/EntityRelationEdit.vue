@@ -72,6 +72,9 @@ Select and table to add and remove objects from other objects.
             <p v-if="type === 'Watchlist' && contentType === 'groups'">
                 Groups whose members are allowed to view the lists.
             </p>
+            <p v-if="type === 'Watchlist' && contentType === 'groupsManage'">
+                Groups whose members are allowed to edit the list configuration.
+            </p>
 
             <multiselect v-if="! useSearch"
                          v-model="newObject" :options="currentSelectContent"
@@ -96,9 +99,14 @@ Select and table to add and remove objects from other objects.
             <thead class="thead-dark" :class="{ 'sticky' : sticky > 0}">
                 <tr>
                     <th scope="col" :style="stickyTop" v-if="
-                        contentType === 'managers' || contentType === 'groups'">ID</th>
-                    <th scope="col" :style="stickyTop" v-if="
-                        contentType === 'corporations' || contentType === 'alliances'">EVE ID</th>
+                            contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||
+                            contentType === 'corporations' || contentType === 'alliances'">
+                        <span v-if="
+                            contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage'">
+                            ID
+                        </span>
+                        <span v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</span>
+                    </th>
                     <th scope="col" :style="stickyTop" v-if="
                         contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
                     <th scope="col" :style="stickyTop">Name</th>
@@ -115,7 +123,7 @@ Select and table to add and remove objects from other objects.
             <tbody>
                 <tr v-for="row in tableContent">
                     <td v-if="
-                            contentType === 'managers' || contentType === 'groups' ||
+                            contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||
                             contentType === 'corporations' || contentType === 'alliances'">
                         {{ row.id }}
                     </td>
@@ -129,6 +137,8 @@ Select and table to add and remove objects from other objects.
                            target="_blank" rel="noopener noreferrer">
                             {{ row.name }}
                         </a>
+                        <a v-else-if="contentType === 'managers' && hasRole('user-admin')"
+                           :href="'#UserAdmin/' + row.id" title="User Administration">{{ row.name }}</a>
                         <span v-else>{{ row.name }}</span>
                     </td>
                     <td v-if="contentType === 'managers'">
@@ -290,7 +300,7 @@ export default {
                 this.placeholder = 'Add alliance';
             } else if (this.contentType === 'corporations') {
                 this.placeholder = 'Add corporation';
-            } else if (this.contentType === 'groups') {
+            } else if (this.contentType === 'groups' || this.contentType === 'groupsManage') {
                 this.placeholder = 'Add group';
             } else if (this.contentType === 'roles') {
                 this.placeholder = 'Add role';
@@ -329,7 +339,7 @@ export default {
             } else if (this.contentType === 'alliances') {
                 api = new AllianceApi();
                 method = 'all';
-            } else if (this.contentType === 'groups') {
+            } else if (this.contentType === 'groups' || this.contentType === 'groupsManage') {
                 api = new GroupApi();
                 method = 'all';
             } else if (this.contentType === 'roles') {
@@ -390,6 +400,8 @@ export default {
                 method = 'getGroupsTracking';
             } else if (this.type === 'Watchlist' && this.contentType === 'groups') {
                 method = 'watchlistGroupList';
+            } else if (this.type === 'Watchlist' && this.contentType === 'groupsManage') {
+                method = 'watchlistManagerGroupList';
             } else if (this.type === 'Watchlist' && this.contentType === 'alliances') {
                 method = 'watchlistAllianceList';
             } else if (this.type === 'Watchlist' && this.contentType === 'corporations') {
@@ -554,6 +566,8 @@ export default {
                 let type;
                 if (this.contentType === 'groups') { // Watchlist only
                     type = 'Group';
+                } else if (this.contentType === 'groupsManage') {
+                    type = 'ManagerGroup';
                 } else {
                     type = this.contentType === 'alliances' ? 'Alliance' : 'Corporation';
                 }
@@ -568,7 +582,7 @@ export default {
             this.callApi(api, method, param1, param2, function() {
                 if (
                     (vm.type === 'Player' && vm.typeId === vm.player.id) ||
-                    (vm.type === 'Watchlist' && vm.contentType === 'groups') ||
+                    (vm.type === 'Watchlist' && (vm.contentType === 'groups' || vm.contentType === 'groupsManage')) ||
                     (
                         (vm.type === 'Group' || vm.type === 'App') &&
                         vm.contentType === 'managers' &&

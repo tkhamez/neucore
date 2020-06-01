@@ -15,158 +15,38 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     type="string",
  *     enum={"app", "app-groups", "app-chars", "app-tracking", "app-esi", "user", "user-admin", "user-manager",
- *           "app-admin", "app-manager", "group-admin", "group-manager", "esi", "settings", "tracking"})
+ *           "group-admin", "group-manager", "app-admin", "app-manager", "esi", "settings", "tracking",
+ *           "tracking-admin", "watchlist", "watchlist-manager", "watchlist-admin"})
  * )
  *
  * @ORM\Entity
  * @ORM\Table(name="roles")
+ *
+ * @see doc/API.md for role descriptions
  */
 class Role implements \JsonSerializable
 {
-    /**
-     * Role for third party apps.
-     *
-     * @var string
-     */
     const APP = 'app';
-
-    /**
-     * Allows an app to get groups from a player account.
-     *
-     * @var string
-     */
     const APP_GROUPS = 'app-groups';
-
-    /**
-     * Allows an app to get characters from a player account.
-     *
-     * @var string
-     */
     const APP_CHARS = 'app-chars';
-
-    /**
-     * Allows an app to get corporation member tracking data.
-     *
-     * @var string
-     */
     const APP_TRACKING = 'app-tracking';
-
-    /**
-     * Allows an app to make an ESI request on behalf of a character from the database.
-     *
-     * @var string
-     */
     const APP_ESI = 'app-esi';
 
-    /**
-     * This role is given to unauthenticated user.
-     *
-     * @var string
-     */
     const ANONYMOUS = 'anonymous';
 
-    /**
-     * This role is given to every authenticated user.
-     *
-     * @var string
-     */
     const USER = 'user';
-
-    /**
-     * Allows a player to add and remove roles from players.
-     *
-     * @var string
-     */
     const USER_ADMIN = 'user-admin';
-
-    /**
-     * Allows a player to add and remove groups from players with "managed" status.
-     *
-     * @var string
-     */
     const USER_MANAGER = 'user-manager';
-
-    /**
-     * Allows a player to create apps and add and remove managers and roles.
-     *
-     * @var string
-     */
-    const APP_ADMIN = 'app-admin';
-
-    /**
-     * Allows a player to change the secret of his apps.
-     *
-     * This role is assigned automatically depending on whether the player is a manager of an app.
-     *
-     * @var string
-     */
-    const APP_MANAGER = 'app-manager';
-
-    /**
-     * Allows a player to create groups and add and remove managers or corporation and alliances.
-     *
-     * @var string
-     */
     const GROUP_ADMIN = 'group-admin';
-
-    /**
-     * Allows a player to add and remove members to his groups.
-     *
-     * This role is assigned automatically depending on whether the player is a manager of a group.
-     *
-     * @var string
-     */
     const GROUP_MANAGER = 'group-manager';
-
-    /**
-     * Allows a player to make an ESI request on behalf of a character from the database.
-     *
-     * @var string
-     */
+    const APP_ADMIN = 'app-admin';
+    const APP_MANAGER = 'app-manager';
     const ESI = 'esi';
-
-    /**
-     * Allows a player to change the system settings.
-     *
-     * @var string
-     */
     const SETTINGS = 'settings';
-
-    /**
-     * Allows a player to view corporation member tracking data.
-     *
-     * This role is assigned automatically based on group membership.
-     *
-     * @var string
-     */
     const TRACKING = 'tracking';
-
-    /**
-     * Allows a player to change the tracking corporation/groups configuration.
-     *
-     * @var string
-     */
     const TRACKING_ADMIN = 'tracking-admin';
-
-    /**
-     * Allows a player to view the watchlist.
-     *
-     * This role is assigned automatically based on group membership.
-     *
-     * @var string
-     */
     const WATCHLIST = 'watchlist';
-
-    /**
-     * Allows a player to edit exemptions and settings of a watch list to which they have access.
-     */
     const WATCHLIST_MANAGER = 'watchlist-manager';
-
-    /**
-     * Allows a player to edit watchlist access.
-     *
-     * @var string
-     */
     const WATCHLIST_ADMIN = 'watchlist-admin';
 
     /**

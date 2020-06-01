@@ -130,10 +130,27 @@ class AccountTest extends TestCase
      */
     private $group2;
 
+    /**
+     * @var Role
+     */
+    private $role1;
+
+    /**
+     * @var Role
+     */
+    private $role2;
+
+    /**
+     * @var Role
+     */
+    private $role3;
+
     protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
+        list($this->role1, $this->role2, $this->role3) =
+            $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
         $this->om = $this->helper->getObjectManager();
 
         $this->log = new Logger('Test');
@@ -790,6 +807,7 @@ class AccountTest extends TestCase
 
     public function testSyncTrackingRoleNoRole()
     {
+        $this->helper->emptyDb();
         $this->service->syncTrackingRole(new Player());
 
         $this->assertSame(
@@ -847,17 +865,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::TRACKING));
     }
 
-    public function testSyncWatchlistRoleNoRole()
-    {
-        $this->service->syncWatchlistRole(new Player());
-
-        $this->assertSame(
-            'Account::syncRole(): Role not found.',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-    }
-
-    public function testSyncWatchlistRoleNoChanged()
+    public function testSyncWatchlistRole_NoChange()
     {
         $this->setUpWatchlistData();
 
@@ -872,7 +880,7 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::WATCHLIST));
     }
 
-    public function testSyncWatchlistRolePlayerChanged()
+    public function testSyncWatchlistRole_PlayerChanged()
     {
         $this->setUpWatchlistData();
 
@@ -889,7 +897,7 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::WATCHLIST));
     }
 
-    public function testSyncWatchlistRoleGroupChanged()
+    public function testSyncWatchlistRole_GroupChanged()
     {
         $this->setUpWatchlistData();
 
@@ -907,7 +915,36 @@ class AccountTest extends TestCase
         $this->assertTrue($players[1]->hasRole(Role::WATCHLIST));
     }
 
-    public function testSyncGroupManagerRole_RoleNotFound()
+    public function testSyncWatchlistManagerRole_PlayerChanged()
+    {
+        $this->setUpWatchlistData();
+        $this->player2->addGroup($this->group1);
+
+        $this->service->syncWatchlistManagerRole($this->player2);
+        $this->om->flush();
+        $this->om->clear();
+
+        $players = $this->playerRepo->findBy(['name' => 'char 2']);
+        $this->assertSame('char 2', $players[0]->getName());
+        $this->assertTrue($players[0]->hasRole(Role::WATCHLIST_MANAGER));
+    }
+
+    public function testSyncWatchlistManagerRole_AddsMissingRole()
+    {
+        $this->setUpWatchlistData();
+
+        $this->service->syncWatchlistManagerRole();
+        $this->om->flush();
+        $this->om->clear();
+
+        $players = $this->playerRepo->findBy([]);
+        $this->assertSame('char 1', $players[0]->getName());
+        $this->assertSame('char 2', $players[1]->getName());
+        $this->assertTrue($players[0]->hasRole(Role::WATCHLIST_MANAGER));
+        $this->assertFalse($players[1]->hasRole(Role::WATCHLIST_MANAGER));
+    }
+
+    public function testSyncManagerRole_RoleNotFound()
     {
         $this->service->syncManagerRole(new Player, 'name');
 
@@ -917,7 +954,7 @@ class AccountTest extends TestCase
         );
     }
 
-    public function testSyncGroupManagerRole()
+    public function testSyncManagerRole()
     {
         $role1 = (new Role(10))->setName(Role::GROUP_MANAGER);
         $role2 = (new Role(11))->setName(Role::APP_MANAGER);
@@ -954,7 +991,6 @@ class AccountTest extends TestCase
 
     private function setUpTrackingData()
     {
-        $role = (new Role(10))->setName(Role::TRACKING);
         $this->corp1 = (new Corporation())->setId(11)->setTicker('t1')->setName('corp 1');
         $this->corp2 = (new Corporation())->setId(12)->setTicker('t2')->setName('corp 2');
         $member1 = (new CorporationMember())->setId(101)->setName('member 1')->setCorporation($this->corp1);
@@ -963,7 +999,6 @@ class AccountTest extends TestCase
         $this->group2 = (new Group())->setName('group 2');
         $this->corp1->addGroupTracking($this->group1);
         // corp2 does not have tracking group
-        $this->om->persist($role);
         $this->om->persist($this->corp1);
         $this->om->persist($this->corp2);
         $this->om->persist($member1);
@@ -972,7 +1007,7 @@ class AccountTest extends TestCase
         $this->om->persist($this->group2);
         $this->player1 = $this->helper->addCharacterMain('char 1', 101)->getPlayer();
         $this->player2 = $this->helper->addCharacterMain('char 2', 102)->getPlayer();
-        $this->player1->addRole($role);
+        $this->player1->addRole($this->role1);
         // player2 does not have tracking role
         $this->player1->addGroup($this->group1);
         $this->player2->addGroup($this->group2);
@@ -981,21 +1016,20 @@ class AccountTest extends TestCase
 
     private function setUpWatchlistData()
     {
-        $role = (new Role(10))->setName(Role::WATCHLIST);
         $this->watchlist1 = (new Watchlist())->setId(11)->setName('wl 1');
         $this->watchlist2 = (new Watchlist())->setId(12)->setName('wl 2');
         $this->group1 = (new Group())->setName('group 1');
         $this->group2 = (new Group())->setName('group 2');
         $this->watchlist1->addGroup($this->group1);
+        $this->watchlist1->addManagerGroup($this->group1);
         // watchlist2 does not have an access group
-        $this->om->persist($role);
         $this->om->persist($this->watchlist1);
         $this->om->persist($this->watchlist2);
         $this->om->persist($this->group1);
         $this->om->persist($this->group2);
         $this->player1 = $this->helper->addCharacterMain('char 1', 101)->getPlayer();
         $this->player2 = $this->helper->addCharacterMain('char 2', 102)->getPlayer();
-        $this->player1->addRole($role);
+        $this->player1->addRole($this->role2);
         // player2 does not have watchlist role
         $this->player1->addGroup($this->group1);
         $this->player2->addGroup($this->group2);

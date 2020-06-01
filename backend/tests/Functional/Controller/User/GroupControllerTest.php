@@ -1004,7 +1004,7 @@ class GroupControllerTest extends WebTestCase
         $this->em->persist($alli);
         $this->em->persist($corp);
 
-        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST]);
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
 
         $this->em->flush();
         $this->em->clear();

@@ -99,6 +99,22 @@ class WatchlistTest extends TestCase
         $this->assertSame([], $watchlist->getGroups());
     }
 
+    public function testAddGetRemoveManagerGroup()
+    {
+        $watchlist = new Watchlist();
+        $group1 = new Group();
+        $group2 = new Group();
+
+        $this->assertSame([], $watchlist->getManagerGroups());
+
+        $watchlist->addManagerGroup($group1);
+        $watchlist->addManagerGroup($group2);
+        $this->assertSame([$group1], $watchlist->getManagerGroups());
+
+        $watchlist->removeManagerGroup($group1);
+        $this->assertSame([], $watchlist->getManagerGroups());
+    }
+
     public function testAddGetRemoveBlacklistCorporation()
     {
         $watchlist = new Watchlist();

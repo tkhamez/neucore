@@ -57,10 +57,12 @@ class WatchlistTest extends TestCase
         $helper->emptyDb();
 
         $group = (new Group())->setName('g1');
+        $managerGroup = (new Group())->setName('g2');
 
         $watchlist = (new \Neucore\Entity\Watchlist())->setId(1)->setName('w1');
 
         $watchlist->addGroup($group);
+        $watchlist->addManagerGroup($managerGroup);
 
         $alliance1 = (new Alliance())->setId(11)->setName('a1'); // watched
         $alliance2 = (new Alliance())->setId(12)->setName('a2'); // white list
@@ -84,6 +86,7 @@ class WatchlistTest extends TestCase
 
         $helper->getObjectManager()->persist($watchlist);
         $helper->getObjectManager()->persist($group);
+        $helper->getObjectManager()->persist($managerGroup);
         $helper->getObjectManager()->persist($alliance1);
         $helper->getObjectManager()->persist($alliance2);
         $helper->getObjectManager()->persist($alliance3);
@@ -155,6 +158,7 @@ class WatchlistTest extends TestCase
     public function testGetList()
     {
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::GROUP)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::MANAGER_GROUP)));
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::ALLIANCE)));
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::CORPORATION)));
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::EXEMPTION)));
@@ -164,6 +168,7 @@ class WatchlistTest extends TestCase
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::WHITELIST_ALLIANCE)));
 
         $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, Watchlist::GROUP)[0]);
+        $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, Watchlist::MANAGER_GROUP)[0]);
         $this->assertInstanceOf(Alliance::class, self::$watchlistService->getList(1, Watchlist::ALLIANCE)[0]);
         $this->assertInstanceOf(Corporation::class, self::$watchlistService->getList(1, Watchlist::CORPORATION)[0]);
         $this->assertInstanceOf(Player::class, self::$watchlistService->getList(1, Watchlist::EXEMPTION)[0]);

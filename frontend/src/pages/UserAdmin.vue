@@ -315,7 +315,12 @@
                         <tbody>
                             <tr v-for="managerGroup in playerEdit.managerGroups">
                                 <td>{{ managerGroup.id }}</td>
-                                <td>{{ managerGroup.name }}</td>
+                                <td>
+                                    <a v-if="hasRole('group-admin')"
+                                       :href="'#GroupAdmin/'+managerGroup.id+'/managers'"
+                                       title="Group Administration">{{ managerGroup.name }}</a>
+                                    <span v-else>{{ managerGroup.name }}</span>
+                                </td>
                                 <td>{{ managerGroup.visibility }}</td>
                             </tr>
                         </tbody>
@@ -332,7 +337,12 @@
                         <tbody>
                             <tr v-for="managerApp in playerEdit.managerApps">
                                 <td>{{ managerApp.id }}</td>
-                                <td>{{ managerApp.name }}</td>
+                                <td>
+                                    <a v-if="hasRole('app-admin')"
+                                       :href="'#AppAdmin/'+managerApp.id+'/managers'"
+                                       title="App Administration">{{ managerApp.name }}</a>
+                                    <span v-else>{{ managerApp.name }}</span>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -456,6 +466,7 @@ export default {
                 'group-manager',
                 'tracking',
                 'watchlist',
+                'watchlist-manager',
             ],
             newRole: '',
             searchResult: [],

@@ -28,14 +28,14 @@
             <a class="nav-link" :class="{ 'active': tab === 'white' }"
                :href="'#Watchlist/'+watchlistId+'/white'">Whitelist</a>
         </li>
-        <li v-if="hasRole('watchlist-manager')" class="nav-item">
+        <li v-if="manageIds.indexOf(watchlistId) !== -1" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'settings' }"
                :href="'#Watchlist/'+watchlistId+'/settings'">Settings</a>
         </li>
     </ul>
 
     <watchlistLists v-cloak v-if="watchlistId && tab !== 'settings'"
-                    :id="watchlistId" :tab="tab"></watchlistLists>
+                    :id="watchlistId" :tab="tab" :manageIds="manageIds"></watchlistLists>
 
     <watchlistSettings v-cloak v-if="watchlistId && tab === 'settings'"
                        :id="watchlistId" :settings="settings"></watchlistSettings>
@@ -66,7 +66,8 @@ export default {
 
     data () {
         return {
-            watchlists: [],
+            watchlists: [], // watchlists with view permission
+            manageIds: [], // watchlist IDs with edit permission
             watchlistId: null,
             selectedId: '',
             tab: '',
@@ -110,11 +111,20 @@ export default {
  * @param [callback]
  */
 function getWatchlists(vm, callback) {
-    (new WatchlistApi).watchlistListAvailable((error, data) => {
+    const api = new WatchlistApi;
+    api.watchlistListAvailable((error, data) => {
         if (! error) {
             vm.watchlists = data;
             if (typeof callback === typeof Function) {
                 callback();
+            }
+        }
+    });
+    api.watchlistListAvailableManage((error, data) => {
+        if (! error) {
+            vm.manageIds = [];
+            for (const list of data) {
+                vm.manageIds.push(list.id);
             }
         }
     });
@@ -137,12 +147,16 @@ function setTab(vm) {
             vm.selectedId = '';
         }
     }
-    if (vm.route[2] && tabs.indexOf(vm.route[2]) !== -1) {
+
+    if (
+        vm.route[2] &&
+        tabs.indexOf(vm.route[2]) !== -1 &&
+        (vm.route[2] !== 'settings' || vm.manageIds.indexOf(vm.watchlistId) !== -1)
+    ) {
         vm.tab = vm.route[2];
-    } else if (! vm.hasRole('watchlist') && vm.hasRole('watchlist-manager')) {
-        vm.tab = 'settings';
     } else {
         vm.tab = 'red';
+        window.location.hash = `#Watchlist/${vm.watchlistId}`;
     }
 }
 </script>

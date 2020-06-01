@@ -23,13 +23,18 @@
                     <li class="nav-item">
                         <a class="nav-link"
                            :class="{ 'active': contentType === 'groups' }"
-                           :href="'#WatchlistAdmin/' + watchlistId + '/groups'">Groups</a>
+                           :href="'#WatchlistAdmin/' + watchlistId + '/groups'">View</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           :class="{ 'active': contentType === 'groupsManage' }"
+                           :href="'#WatchlistAdmin/' + watchlistId + '/groupsManage'">Manage</a>
                     </li>
                 </ul>
 
                 <!--suppress HtmlUnknownTag -->
-                <admin v-cloak v-if="watchlistId"
-                       :contentType="'groups'" :type="'Watchlist'" :typeId="watchlistId"></admin>
+                <admin v-cloak v-if="watchlistId && contentType !== ''"
+                       :contentType="contentType" :type="'Watchlist'" :typeId="watchlistId"></admin>
 
             </div>
         </div>

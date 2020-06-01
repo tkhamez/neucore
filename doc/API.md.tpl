@@ -97,7 +97,8 @@ This role is assigned automatically based on group membership.
 
 #### watchlist-manager
 
-Allows a player to edit exemptions and settings of a watch list to which they have access.
+Allows a player to edit exemptions and settings of a watch list to which they have access.  
+This role is assigned automatically based on group membership.
 
 {watchlist-manager}
 

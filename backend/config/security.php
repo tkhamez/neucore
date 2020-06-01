@@ -97,7 +97,8 @@ return [
     '/api/user/settings/system/list'  => [Role::ANONYMOUS, Role::USER],
     '/api/user/settings/system'       => [Role::SETTINGS],
 
-    '/api/user/watchlist/listAvailable'                   => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/list-available-manage'           => [Role::WATCHLIST_MANAGER],
+    '/api/user/watchlist/list-available'                  => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/players'                    => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/players-blacklist'          => [Role::WATCHLIST],
     '/api/user/watchlist/{id}/exemption/list'             => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
@@ -114,7 +115,7 @@ return [
     '/api/user/watchlist/{id}/blacklist-alliance/'        => [Role::WATCHLIST_MANAGER], # add,remove
     '/api/user/watchlist/{id}/whitelist-corporation/'     => [Role::WATCHLIST_MANAGER], # add,remove
     '/api/user/watchlist/{id}/whitelist-alliance/'        => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # group/list,add,remove
+    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # (manager-)group/list,add,remove
 
     '/api/user' => [Role::USER],
 ];

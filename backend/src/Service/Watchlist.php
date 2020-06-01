@@ -17,6 +17,8 @@ class Watchlist
 {
     const GROUP = 'group';
 
+    const MANAGER_GROUP = 'managerGroup';
+
     const ALLIANCE = 'alliance';
 
     const CORPORATION = 'corporation';
@@ -161,6 +163,8 @@ class Watchlist
 
         if ($type === self::GROUP) {
             $data = $watchlist->getGroups();
+        } elseif ($type === self::MANAGER_GROUP) {
+            $data = $watchlist->getManagerGroups();
         } elseif ($type === self::ALLIANCE) {
             $data = $watchlist->getAlliances();
         } elseif ($type === self::CORPORATION) {

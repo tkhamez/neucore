@@ -1016,6 +1016,7 @@ class GroupController extends BaseController
             $this->player->addGroup($this->group);
             $this->account->syncTrackingRole($this->player);
             $this->account->syncWatchlistRole($this->player);
+            $this->account->syncWatchlistManagerRole($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -1044,6 +1045,7 @@ class GroupController extends BaseController
             $this->player->removeGroup($this->group);
             $this->account->syncTrackingRole($this->player);
             $this->account->syncWatchlistRole($this->player);
+            $this->account->syncWatchlistManagerRole($this->player);
         }
 
         return $this->flushAndReturn(204);
@@ -1072,6 +1074,7 @@ class GroupController extends BaseController
                 $app->getPlayer()->addGroup($app->getGroup());
                 $this->account->syncTrackingRole($app->getPlayer());
                 $this->account->syncWatchlistRole($app->getPlayer());
+                $this->account->syncWatchlistManagerRole($app->getPlayer());
             }
         } elseif ($action === 'deny') {
             $app->setStatus(GroupApplication::STATUS_DENIED);

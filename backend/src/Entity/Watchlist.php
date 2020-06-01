@@ -74,6 +74,16 @@ class Watchlist implements \JsonSerializable
     private $groups;
 
     /**
+     * Members of theses groups can change settings for this list.
+     *
+     * @ORM\ManyToMany(targetEntity="Group")
+     * @ORM\JoinTable(name="watchlist_manager_group")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $managerGroups;
+
+    /**
      * Accounts that are on the list and have members in one of these corporations
      * are moved to the blacklist.
      *
@@ -132,6 +142,7 @@ class Watchlist implements \JsonSerializable
         $this->corporations = new ArrayCollection();
         $this->alliances = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->managerGroups = new ArrayCollection();
         $this->blacklistCorporations = new ArrayCollection();
         $this->blacklistAlliances = new ArrayCollection();
         $this->whitelistCorporations = new ArrayCollection();
@@ -263,6 +274,31 @@ class Watchlist implements \JsonSerializable
     public function getGroups(): array
     {
         return $this->groups->toArray();
+    }
+
+    public function addManagerGroup(Group $group): Watchlist
+    {
+        foreach ($this->getManagerGroups() as $entity) {
+            if ($entity->getId() === $group->getId()) {
+                return $this;
+            }
+        }
+        $this->managerGroups[] = $group;
+
+        return $this;
+    }
+
+    public function removeManagerGroup(Group $group): bool
+    {
+        return $this->managerGroups->removeElement($group);
+    }
+
+    /**
+     * @return Group[]
+     */
+    public function getManagerGroups(): array
+    {
+        return $this->managerGroups->toArray();
     }
 
     public function addBlacklistCorporation(Corporation $blacklistCorporation): self
