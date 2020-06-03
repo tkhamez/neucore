@@ -4,6 +4,7 @@
 
 - **BC break** The editing permission for a watchlist is now configured separately for each watchlist using a group, 
   so the role "watchlist-manager" is now also managed automatically.
+- Change: The character search for group managers can now only find main characters, no more alts.
 - Change: the app-manager and group-manager roles are now added and removed automatically, 
   depending on whether the player is a manager of an app or a group.
 - Change: The "auto-whitelist" command no longer needs a watchlist ID, it now runs for all watchlists without it.

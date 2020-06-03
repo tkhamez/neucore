@@ -81,9 +81,10 @@ return [
     '/api/user/alliance/{id}/add-group/{gid}'    => ['PUT',  AllianceController::class.'::addGroup'],
     '/api/user/alliance/{id}/remove-group/{gid}' => ['PUT',  AllianceController::class.'::removeGroup'],
 
-    '/api/user/character/find-by/{name}'      => ['GET',  CharacterController::class.'::findBy'],
-    '/api/user/character/show'                => ['GET',  CharacterController::class.'::show'],
-    '/api/user/character/{id}/update'         => ['PUT',  CharacterController::class.'::update'],
+    '/api/user/character/find-character/{name}' => ['GET',  CharacterController::class.'::findCharacter'],
+    '/api/user/character/find-player/{name}'    => ['GET',  CharacterController::class.'::findPlayer'],
+    '/api/user/character/show'                  => ['GET',  CharacterController::class.'::show'],
+    '/api/user/character/{id}/update'           => ['PUT',  CharacterController::class.'::update'],
 
     '/api/user/corporation/all'                                  => ['GET',  CorporationController::class.'::all'],
     '/api/user/corporation/with-groups'                          => ['GET',  CorporationController::class.'::withGroups'],

@@ -5,7 +5,7 @@ Input element to search for characters
 <template>
 <div class="input-group input-group-sm mb-1">
     <div class="input-group-prepend">
-        <label class="input-group-text" for="characterSearchInput">Search Character</label>
+        <label class="input-group-text" for="characterSearchInput">Search {{ admin ? 'Character' : 'Player' }}</label>
     </div>
     <input type="text" class="form-control" id="characterSearchInput"
            placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
@@ -21,6 +21,10 @@ import _  from 'lodash';
 import {CharacterApi} from 'neucore-js-client';
 
 export default {
+    props: {
+        admin: Boolean, // false = search only for mains, otherwise all characters
+    },
+
     data: function() {
         return {
             searchTerm: '',
@@ -46,12 +50,14 @@ const findCharacter = _.debounce((vm) => {
     if (vm.searchTerm.length < 3) {
         return;
     }
-    new CharacterApi().findBy(vm.searchTerm, function(error, data) {
+    const api = new CharacterApi();
+    const method = vm.admin ? 'findCharacter' : 'findPlayer';
+    api[method].apply(api, [vm.searchTerm, function(error, data) {
         if (error) {
             vm.$emit('result', []);
             return;
         }
         vm.$emit('result', data);
-    });
+    }]);
 }, 250);
 </script>

@@ -48,8 +48,8 @@
                         automatically be removed from this group.
                     </p>
 
-                    <character-search v-on:result="searchResult = $event"></character-search>
-                    <character-result :searchResult="searchResult" :selectedPlayers="groupMembers"
+                    <character-search v-on:result="searchResult = $event" :admin="false"></character-search>
+                    <character-result :searchResult="searchResult" :admin="false" :selectedPlayers="groupMembers"
                         v-on:add="addPlayer($event)" v-on:remove="removePlayer($event)"></character-result>
 
                 </div>

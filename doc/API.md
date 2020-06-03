@@ -80,7 +80,7 @@ Settings API
 Allows a player to add and remove roles from players.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-by/{name}`
+- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
 - List all players with characters. `GET /user/player/with-characters`
@@ -100,7 +100,7 @@ Player API
 Allows a player to add and remove groups from players with "managed" status.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-by/{name}`
+- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Group API
 - List all groups. `GET /user/group/all`
@@ -157,7 +157,7 @@ Allows a player to add and remove members to his groups.
 This role is assigned automatically depending on whether the player is a manager of a group.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-by/{name}`
+- Return a list of players that matches the main character name (partial matching). `GET /user/character/find-player/{name}`
 
 Group API
 - List all required groups of a group. `GET /user/group/{id}/required-groups`
@@ -256,7 +256,7 @@ Allows players to view the watchlist if they are also member of an appropriate g
 This role is assigned automatically based on group membership.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-by/{name}`
+- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
 - Show player with characters. `GET /user/player/{id}/characters`

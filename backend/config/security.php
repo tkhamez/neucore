@@ -45,7 +45,8 @@ return [
     '/api/user/auth/callback' => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility
     '/api/user/auth/result'   => [Role::ANONYMOUS, Role::USER],
 
-    '/api/user/character/find-by'        => [Role::USER_ADMIN, Role::USER_MANAGER, Role::GROUP_MANAGER, Role::WATCHLIST],
+    '/api/user/character/find-character' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::WATCHLIST],
+    '/api/user/character/find-player'    => [Role::GROUP_MANAGER],
     '/api/user/character/{id}/update'    => [Role::USER],
 
     '/api/user/corporation/tracked-corporations'       => [Role::TRACKING],

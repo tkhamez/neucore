@@ -121,12 +121,10 @@
 <script>
 import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistSettings from './Watchlist--Settings.vue';
-import CharacterSearch   from '../components/CharacterSearch.vue';
 
 export default {
     components: {
         WatchlistSettings,
-        CharacterSearch,
     },
 
     props: {

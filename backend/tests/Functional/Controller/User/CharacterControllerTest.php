@@ -72,24 +72,24 @@ class CharacterControllerTest extends WebTestCase
         );
     }
 
-    public function testFindBy403()
+    public function testFindCharacter403()
     {
         $this->setupDb();
 
-        $response1 = $this->runApp('GET', '/api/user/character/find-by/abc');
+        $response1 = $this->runApp('GET', '/api/user/character/find-character/abc');
         $this->assertSame(403, $response1->getStatusCode());
 
-        $this->loginUser(96061222); // not an admin
-        $response2 = $this->runApp('GET', '/api/user/character/find-by/abc');
+        $this->loginUser(10); // not an admin but group-manager
+        $response2 = $this->runApp('GET', '/api/user/character/find-character/abc');
         $this->assertSame(403, $response2->getStatusCode());
     }
 
-    public function testFindBy200()
+    public function testFindCharacter200()
     {
         $this->setupDb();
-        $this->loginUser(9);
+        $this->loginUser(9); // admin
 
-        $response = $this->runApp('GET', '/api/user/character/find-by/ser');
+        $response = $this->runApp('GET', '/api/user/character/find-character/ser');
         $this->assertSame(200, $response->getStatusCode());
 
         $this->assertSame([[
@@ -98,6 +98,34 @@ class CharacterControllerTest extends WebTestCase
             'player_id' => $this->playerId,
             'player_name' => 'User'
         ], [
+            'character_id' => 96061222,
+            'character_name' => 'User',
+            'player_id' => $this->playerId,
+            'player_name' => 'User'
+        ]], $this->parseJsonBody($response));
+    }
+
+    public function testFindPlayer403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/character/find-player/abc');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $this->loginUser(96061222); // not group-manager or admin
+        $response2 = $this->runApp('GET', '/api/user/character/find-player/abc');
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testFindPlayer200()
+    {
+        $this->setupDb();
+        $this->loginUser(10); // group-manager
+
+        $response = $this->runApp('GET', '/api/user/character/find-player/ser');
+        $this->assertSame(200, $response->getStatusCode());
+
+        $this->assertSame([[
             'character_id' => 96061222,
             'character_name' => 'User',
             'player_id' => $this->playerId,
@@ -282,6 +310,7 @@ class CharacterControllerTest extends WebTestCase
         $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();
         $this->helper->addCharacterMain('Admin', 9, [Role::USER, Role::USER_ADMIN]);
+        $this->helper->addCharacterMain('Manager', 10, [Role::GROUP_MANAGER]);
 
         $groups = $this->helper->addGroups(['auto.bni']);
 

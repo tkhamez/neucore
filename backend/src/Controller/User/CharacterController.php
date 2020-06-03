@@ -100,10 +100,10 @@ class CharacterController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/user/character/find-by/{name}",
-     *     operationId="findBy",
+     *     path="/user/character/find-character/{name}",
+     *     operationId="findCharacter",
      *     summary="Return a list of characters that matches the name (partial matching).",
-     *     description="Needs role: user-admin, user-manager, group-manager, watchlist",
+     *     description="Needs role: user-admin, user-manager, watchlist",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -123,8 +123,9 @@ class CharacterController extends BaseController
      *         description="Not authorized"
      *     )
      * )
+     * @noinspection PhpUnused
      */
-    public function findBy(string $name): ResponseInterface
+    public function findCharacter(string $name, bool $mainOnly = false): ResponseInterface
     {
         $name = trim($name);
         if (mb_strlen($name) < 3) {
@@ -132,7 +133,7 @@ class CharacterController extends BaseController
         }
 
         $retVal = [];
-        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name);
+        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name, $mainOnly);
         foreach ($result as $char) {
             $retVal[] = [
                 'character_id' => $char->getId(),
@@ -143,6 +144,38 @@ class CharacterController extends BaseController
         }
 
         return $this->withJson($retVal);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/character/find-player/{name}",
+     *     operationId="findPlayer",
+     *     summary="Return a list of players that matches the main character name (partial matching).",
+     *     description="Needs role: group-manager",
+     *     tags={"Character"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="Name of the main character (min. 3 characters).",
+     *         @OA\Schema(type="string", minLength=3)
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of main characters.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/SearchResult"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized"
+     *     )
+     * )
+     * @noinspection PhpUnused
+     */
+    public function findPlayer(string $name): ResponseInterface
+    {
+        return $this->findCharacter($name, true);
     }
 
     /**

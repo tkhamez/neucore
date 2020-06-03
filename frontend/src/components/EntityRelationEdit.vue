@@ -84,13 +84,13 @@ Select and table to add and remove objects from other objects.
                          :custom-label="customLabel">
             </multiselect>
 
-            <character-search v-if="useSearch" v-on:result="searchResult = $event"></character-search>
-            <character-result v-if="useSearch"
+            <character-search v-if="useSearch" :admin="searchAdmin"
+                              v-on:result="searchResult = $event"></character-search>
+            <character-result v-if="useSearch" :admin="searchAdmin"
                               :searchResult="searchResult"
                               :selectedPlayers="tableContent"
                               v-on:add="addOrRemoveEntityToEntity($event, 'add')"
-                              v-on:remove="addOrRemoveEntityToEntity($event, 'remove')"
-                              :withCharacters="searchWithCharacters"></character-result>
+                              v-on:remove="addOrRemoveEntityToEntity($event, 'remove')"></character-result>
 
         </div>
 
@@ -230,7 +230,7 @@ export default {
             showGroupsEntity: null, // one alliance or corporation object with groups
             withGroups: [], // all alliances or corporations with groups
             useSearch: false,
-            searchWithCharacters: false,
+            searchAdmin: false,
             searchResult: [],
             directors: [],
         }
@@ -637,7 +637,7 @@ function setUseSearch(vm) {
     vm.useSearch =
         (vm.type === 'App' && vm.contentType === 'managers') ||
         (vm.type === 'Group' && vm.contentType === 'managers');
-    vm.searchWithCharacters = vm.useSearch; // same conditions atm.
+    vm.searchAdmin = vm.useSearch; // same conditions atm.
 }
 
 function fetchDirector(vm) {

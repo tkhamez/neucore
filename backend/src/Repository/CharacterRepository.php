@@ -20,16 +20,18 @@ use Neucore\Entity\Character;
 class CharacterRepository extends EntityRepository
 {
     /**
-     * @param string $name
      * @return Character[]
      */
-    public function findByNamePartialMatch($name)
+    public function findByNamePartialMatch(string $name, bool $mainOnly): array
     {
-        return $this->createQueryBuilder('c')
+        $query = $this->createQueryBuilder('c')
             ->where('c.name LIKE :name')
             ->addOrderBy('c.name', 'ASC')
-            ->setParameter('name', "%$name%")
-            ->getQuery()
-            ->getResult();
+            ->setParameter('name', "%$name%");
+        if ($mainOnly) {
+            $query->andWhere('c.main = :main')
+                ->setParameter('main', true);
+        }
+        return $query->getQuery()->getResult();
     }
 }

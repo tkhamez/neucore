@@ -10,8 +10,8 @@
             </label>
         </div>
         <div class="col-lg-6">
-            <character-search v-on:result="searchResult = $event"></character-search>
-            <character-result :searchResult="searchResult" :withCharacters="true"></character-result>
+            <character-search v-on:result="searchResult = $event" :admin="true"></character-search>
+            <character-result :searchResult="searchResult" :admin="true"></character-result>
         </div>
     </div>
 

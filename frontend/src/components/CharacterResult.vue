@@ -7,20 +7,22 @@ Result table for the character search
         <table class="table table-hover table-sm mb-0" aria-describedby="search result">
             <thead>
                 <tr>
-                    <th scope="col">Character</th>
-                    <th scope="col">Account</th>
-                    <th scope="col" v-if="withCharacters">Characters</th>
+                    <th scope="col" v-if="! admin">Player ID</th>
+                    <th scope="col">{{ ! admin ? 'Main' : '' }} Character</th>
+                    <th scope="col" v-if="admin">Player Account</th>
+                    <th scope="col" v-if="admin">Characters</th>
                     <th scope="col" v-if="selectedPlayers">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="char in searchResult">
+                    <td v-if="! admin">{{ char.player_id }}</td>
                     <td>
                         <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
                         {{ char.character_name }}
                     </td>
-                    <td>{{ char.player_name }} #{{ char.player_id }}</td>
-                    <td v-if="withCharacters">
+                    <td v-if="admin">{{ char.player_name }} #{{ char.player_id }}</td>
+                    <td v-if="admin">
                         <button class="btn btn-info btn-sm" v-on:click="showCharacters(char.player_id)">
                             Show characters
                         </button>
@@ -42,7 +44,7 @@ export default {
     props: {
         selectedPlayers: Array,
         searchResult: Array,
-        withCharacters: Boolean
+        admin: Boolean // false = search only for "mains", otherwise all characters and add "alts" modal button
     },
     methods: {
         isSelected (playerId) {
