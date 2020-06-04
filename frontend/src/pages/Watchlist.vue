@@ -160,14 +160,4 @@ function setTab(vm) {
         position: relative;
         top: -0.5rem;
     }
-    @media (min-width: 992px) {
-        .search-result {
-            position: absolute;
-            background-color: white;
-            z-index: 10;
-            height: calc(100vh - 140px);
-            width: calc(100% - 30px);
-            overflow: auto;
-        }
-    }
 </style>
