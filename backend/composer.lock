@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50157d82cf6243420e6ba363033c0978",
+    "content-hash": "6c20e67468f7c8a508799bba16fcb03b",
     "packages": [
         {
             "name": "bravecollective/sso-basics",
@@ -5083,20 +5083,20 @@
         },
         {
             "name": "drenso/phan-extensions",
-            "version": "v2.5.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Drenso/PhanExtensions.git",
-                "reference": "cedef1c214c259bfaab0652256abf931b00c2781"
+                "reference": "242f8a2b7ee21304b16975ba2cd3092de27886ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/cedef1c214c259bfaab0652256abf931b00c2781",
-                "reference": "cedef1c214c259bfaab0652256abf931b00c2781",
+                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/242f8a2b7ee21304b16975ba2cd3092de27886ce",
+                "reference": "242f8a2b7ee21304b16975ba2cd3092de27886ce",
                 "shasum": ""
             },
             "require-dev": {
-                "phan/phan": "~1|~2"
+                "phan/phan": "~2|~3"
             },
             "type": "project",
             "notification-url": "https://packagist.org/downloads/",
@@ -5123,7 +5123,7 @@
                 "stubs",
                 "symfony"
             ],
-            "time": "2019-05-31T15:22:44+00:00"
+            "time": "2020-05-06T08:46:30+00:00"
         },
         {
             "name": "felixfbecker/advanced-json-rpc",
@@ -5394,16 +5394,16 @@
         },
         {
             "name": "phan/phan",
-            "version": "2.7.2",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "df79f6def6cb7643955af14aa4b97acdd3495ad6"
+                "reference": "a2eb629c09952383ae78315d240ce3770670c1a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/df79f6def6cb7643955af14aa4b97acdd3495ad6",
-                "reference": "df79f6def6cb7643955af14aa4b97acdd3495ad6",
+                "url": "https://api.github.com/repos/phan/phan/zipball/a2eb629c09952383ae78315d240ce3770670c1a5",
+                "reference": "a2eb629c09952383ae78315d240ce3770670c1a5",
                 "shasum": ""
             },
             "require": {
@@ -5415,15 +5415,14 @@
                 "felixfbecker/advanced-json-rpc": "^3.0.4",
                 "microsoft/tolerant-php-parser": "0.0.20",
                 "netresearch/jsonmapper": "^1.6.0|^2.0",
-                "php": "^7.1.0",
+                "php": "^7.2.0",
                 "sabre/event": "^5.0",
                 "symfony/console": "^2.3|^3.0|^4.0|^5.0",
-                "symfony/polyfill-mbstring": "^1.11.0",
-                "symfony/polyfill-php72": "^1.15"
+                "symfony/polyfill-mbstring": "^1.11.0"
             },
             "require-dev": {
                 "brianium/paratest": "^4.0.0",
-                "phpunit/phpunit": "^7.5.0"
+                "phpunit/phpunit": "^8.5.0"
             },
             "suggest": {
                 "ext-ast": "Needed for parsing ASTs (unless --use-fallback-parser is used). 1.0.1+ is needed, 1.0.6+ is recommended.",
@@ -5464,7 +5463,7 @@
                 "php",
                 "static"
             ],
-            "time": "2020-05-02T14:09:53+00:00"
+            "time": "2020-05-09T13:37:27+00:00"
         },
         {
             "name": "phar-io/manifest",
