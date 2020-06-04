@@ -16,7 +16,7 @@ of an alliance.
   * [App Setup](#app-setup)
     + [Server Requirements](#server-requirements)
     + [Install/Update](#installupdate)
-      - [Archive file](#archive-file)
+      - [Pre-built Distribution file](#pre-built-distribution-file)
       - [Git](#git)
     + [Cron Job](#cron-job)
   * [First login and Customization](#first-login-and-customization)
@@ -66,24 +66,26 @@ A preview/demo installation is available at https://neucore.herokuapp.com.
 
 #### Server Requirements
 
-* PHP >=7.2.0 with Composer, see `backend/composer.json` for necessary extensions (APCu highly recommended).
-* Node.js >=10.13.0 with npm >=6.4.1 (only tested with LTS releases v10 and v12)
+A Linux server (others may work, but are not tested).
+
+To run the application:
+* PHP >=7.2.0, see `backend/composer.json` for necessary extensions (APCu highly recommended).
 * MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.2, 10.3, 10.4).  
-  Unit tests can also be run using a SQLite in-memory database, but migration files work with MySQL/MariaDB only.
+  Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 
       is a [.htaccess](web/.htaccess) file in the `web` directory.
     * A sample [Nginx configuration](doc/docker-nginx.conf) file can be found in the `doc` directory.
-* Java 8+ runtime (only for openapi-generator)
 
-If your're using the pre-build releases, you only need PHP, a Database and a HTTP Server (not Composer,
-Node.js or Java).
+Additionally, to build the application:
+* Composer
+* Node.js >=10.13.0 with npm >=6.4.1 (only tested with LTS releases v10 and v12)
+* Java 8+ runtime (only to generate the OpenAPI JavaScript client)
 
 #### Install/Update
 
-Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the distribution 
-(the distribution does not require Composer, Node.js or Java).
+Clone the repository or [download](https://github.com/tkhamez/neucore/releases) the pre-built distribution.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
@@ -92,13 +94,13 @@ Make sure that the web server can write to the log and cache directories, by def
 `backend/var/logs` and `backend/var/cache`.
 
 Please note that both the web server and console user write the same files to the cache directory,
-so make sure they can override each other's files, e. g. by putting them into each other's group
+so make sure they can override each other's files, e.g. by putting them into each other's group
 (the app uses umask 0002 when writing files and directories).
 
-If available, the app uses an APCu cache in production mode. This must be cleared during an update
-(depending on the configuration, restart the web server or php-fpm).
+If available, the app uses an APCu cache in production mode. This must be cleared during an update:
+depending on the configuration, restart the web server or php-fpm.
 
-##### Archive file
+##### Pre-built Distribution file
 
 If you downloaded the .tar.gz file, you only need to run the database migrations and seeds and clear the cache.
 
