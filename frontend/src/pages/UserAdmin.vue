@@ -173,8 +173,8 @@
                     <table class="table table-hover nc-table-sm" aria-describedby="Roles">
                         <thead class="thead-dark">
                             <tr>
-                                <th>Role</th>
-                                <th>Action</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>

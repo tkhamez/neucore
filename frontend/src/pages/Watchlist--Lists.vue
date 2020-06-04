@@ -34,7 +34,7 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Name</th>
-                        <th v-if="manageIds.indexOf(id) !== -1" scope="col">Action</th>
+                        <th scope="col" v-if="manageIds.indexOf(id) !== -1">Action</th>
                     </tr>
                 </thead>
                 <tbody>

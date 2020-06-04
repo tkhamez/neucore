@@ -27,9 +27,9 @@
                 <table class="table table-hover table-sm">
                     <thead class="thead-dark">
                         <tr>
-                            <th class="text-nowrap">Player ID</th>
-                            <th>Main</th>
-                            <th>Alts</th>
+                            <th scope="col" class="text-nowrap">Player ID</th>
+                            <th scope="col">Main</th>
+                            <th scope="col">Alts</th>
                         </tr>
                     </thead>
                     <tbody>
