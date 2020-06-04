@@ -79,7 +79,7 @@
                            href="#Esi">ESI</a>
                         <a v-if="hasRole('user-chars')"
                            class="dropdown-item" :class="{ active: page === 'FindAlts' }"
-                           href="#FindAlts">FindAlts</a>
+                           href="#FindAlts">Find Alts</a>
                     </div>
                 </li>
             </ul>
