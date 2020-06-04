@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.13.0
+
+5 Jun 2020
 
 - New: Added the "Find Alts" page, which accepts a list of character names and returns them grouped by player account. 
   It requires the new role "user-chars".
