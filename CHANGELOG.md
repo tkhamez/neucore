@@ -2,10 +2,12 @@
 
 ## next
 
-- **BC break** The editing permission for a watchlist is now configured separately for each watchlist using a group, 
-  so the role "watchlist-manager" is now also managed automatically.
-- New: Added the "user-chars" role and the "Find Alts" page, which accepts a list of character names and returns them 
-  grouped by player account.
+- New: Added the "Find Alts" page, which accepts a list of character names and returns them grouped by player account. 
+  It requires the new role "user-chars".
+- Change: **BC break** The character search and the list of alts has been moved from the watchlist to the new page 
+  "Find Alts" and now requires the new role "user-chars".
+- Change: **BC break** The editing permission for a watchlist is now configured separately for each watchlist 
+  using a group, so the role "watchlist-manager" is now also managed automatically.
 - Change: The character search for group managers can now only find main characters, no more alts.
 - Change: the app-manager and group-manager roles are now added and removed automatically, 
   depending on whether the player is a manager of an app or a group.

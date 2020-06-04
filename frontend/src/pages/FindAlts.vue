@@ -1,8 +1,16 @@
 <template>
     <div class="container-fluid">
         <div class="row mb-3 mt-3">
-            <div class="col-lg-12">
+            <div class="col-lg-6">
                 <h1>Find Alts</h1>
+            </div>
+            <div class="col-lg-6">
+                <character-search v-if="hasRole('user-chars')"
+                                  v-on:result="searchResult = $event" :admin="true"></character-search>
+                <character-result v-if="hasRole('user-chars')"
+                                  :searchResult="searchResult" :admin="true"></character-result>
+            </div>
+            <div class="col-lg-12">
                 <div class="form-group">
                     <label>
                         Paste a list of character names, one name per line.
@@ -42,12 +50,19 @@
 
 <script>
 import {PlayerApi} from "neucore-js-client";
+import CharacterSearch   from '../components/CharacterSearch.vue';
+import CharacterResult   from '../components/CharacterResult.vue';
 
 export default {
+    components: {
+        CharacterSearch,
+        CharacterResult,
+    },
     data: function() {
         return {
             input: '',
             result: [],
+            searchResult: [],
         }
     },
     methods: {

@@ -8,7 +8,6 @@ namespace Tests\Functional\Controller\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
-use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
@@ -448,6 +447,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
+            ['id' => $this->player5, 'name' => 'Account with no main'],
             ['id' => $this->player3Id, 'name' => 'Admin'],
             ['id' => $this->managerId, 'name' => 'Manager'],
             ['id' => $this->player1Id, 'name' => 'User'],
@@ -526,6 +526,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame([
+            ['id' => $this->player5, 'name' => 'Account with no main'],
             ['id' => $this->managerId, 'name' => 'Manager'],
             ['id' => $this->player1Id, 'name' => 'User'],
         ], $this->parseJsonBody($response));
@@ -773,7 +774,7 @@ class PlayerControllerTest extends WebTestCase
 
         $player = $this->fetchPlayer($this->player3Id);
         $this->assertSame(
-            [Role::APP_ADMIN, Role::APP_MANAGER, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN, Role::USER_CHARS],
+            [Role::APP_ADMIN, Role::APP_MANAGER, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
         );
     }
@@ -839,7 +840,7 @@ class PlayerControllerTest extends WebTestCase
 
         $player = $this->fetchPlayer($this->player3Id);
         $this->assertSame(
-            [Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN, Role::USER_CHARS],
+            [Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             $player->getRoleNames()
         );
     }
@@ -877,7 +878,7 @@ class PlayerControllerTest extends WebTestCase
             'id' => $this->player3Id,
             'name' => 'Admin',
             'status' => Player::STATUS_STANDARD,
-            'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN, Role::USER_CHARS],
+            'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
             'characters' => [
                 [
                     'id' => 12,
@@ -915,7 +916,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters403()
     {
         $this->setupDb();
-        $this->loginUser(10); // not a group-admin or app-admin
+        $this->loginUser(11); // role tracking, but not with access to member tracking data
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
         $this->assertEquals(403, $response->getStatusCode());
@@ -933,7 +934,7 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters200()
     {
         $this->setupDb();
-        $this->loginUser(12);
+        $this->loginUser(10);
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
         $this->assertEquals(200, $response->getStatusCode());
@@ -986,7 +987,7 @@ class PlayerControllerTest extends WebTestCase
     public function testGroupCharactersByAccount200()
     {
         $this->setupDb();
-        $this->loginUser(12);
+        $this->loginUser(10);
 
         $response = $this->runApp(
             'POST',
@@ -1379,7 +1380,7 @@ class PlayerControllerTest extends WebTestCase
         $this->groupId = $gs[0]->getId();
         $this->gPrivateId = $gs[1]->getId();
 
-        $player1 = $this->h->addCharacterMain('User', 10, [Role::USER])->getPlayer();
+        $player1 = $this->h->addCharacterMain('User', 10, [Role::USER, Role::USER_CHARS])->getPlayer();
         $this->player1Id = $player1->getId();
         $this->h->addCharacterToPlayer('Alt1', 9, $player1);
 
@@ -1399,7 +1400,7 @@ class PlayerControllerTest extends WebTestCase
         $char3a = $this->h->addCharacterMain(
             'Admin',
             12,
-            [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::USER_CHARS, Role::GROUP_ADMIN]
+            [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]
         );
         $char3a->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
         $char3a->setCorporation($corp);

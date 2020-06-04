@@ -882,7 +882,9 @@ class PlayerController extends BaseController
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
      *     summary="Show player with characters.",
-     *     description="Needs role: app-admin, group-admin, user-manager, watchlist, tracking",
+     *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking<br>
+                        If a user only has the role 'tracking', the player must have a character in a corporation
+                        for which the user has access to the member tracking data.",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -921,7 +923,7 @@ class PlayerController extends BaseController
         $roles = $userAccount->getRoleNames();
         $neededRolesExceptTracking = array_intersect(
             $roles,
-            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::WATCHLIST]
+            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS, Role::WATCHLIST]
         );
         if (in_array(Role::TRACKING, $roles) && count($neededRolesExceptTracking) === 0) {
             $requiredGroups = [];

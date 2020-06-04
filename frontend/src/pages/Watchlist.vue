@@ -1,17 +1,13 @@
 <template>
 <div class="container-fluid">
     <div class="row mb-3 mt-3">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <h1>Watchlist</h1>
             <label class="watchlist-selection ml-3 mb-0">
                 <select class="form-control" v-model="selectedId">
                     <option v-for="watchlist in watchlists" v-bind:value="watchlist.id">{{ watchlist.name }}</option>
                 </select>
             </label>
-        </div>
-        <div class="col-lg-6">
-            <character-search v-on:result="searchResult = $event" :admin="true"></character-search>
-            <character-result :searchResult="searchResult" :admin="true"></character-result>
         </div>
     </div>
 
@@ -47,15 +43,11 @@
 import { WatchlistApi }  from 'neucore-js-client';
 import WatchlistLists    from './Watchlist--Lists.vue';
 import WatchlistSettings from './Watchlist--Settings.vue';
-import CharacterSearch   from '../components/CharacterSearch.vue';
-import CharacterResult   from '../components/CharacterResult.vue';
 
 export default {
     components: {
         WatchlistLists,
         WatchlistSettings,
-        CharacterSearch,
-        CharacterResult,
     },
 
     props: {
@@ -71,7 +63,6 @@ export default {
             watchlistId: null,
             selectedId: '',
             tab: '',
-            searchResult: [],
         }
     },
 

@@ -118,7 +118,11 @@ Player API
 
 Allows a player to view all characters of an account.
 
+Character API
+- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
+
 Player API
+- Show player with characters. `GET /user/player/{id}/characters`
 - Accepts a list of character names and returns them grouped by account. `POST /user/player/group-characters-by-account`
 
 #### group-admin
@@ -262,9 +266,6 @@ Corporation API
 
 Allows players to view the watchlist if they are also member of an appropriate group.  
 This role is assigned automatically based on group membership.
-
-Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
 - Show player with characters. `GET /user/player/{id}/characters`
