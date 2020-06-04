@@ -17,6 +17,11 @@
                         <textarea class="form-control" v-model="input" rows="10"></textarea>
                     </label>
                     <br>
+                    <small class="text-muted">
+                        This will only return alts that are included in the input,
+                        not all alts from the account.
+                    </small>
+                    <br>
                     <button type="submit" class="btn btn-primary" v-on:click.prevent="find()">Submit</button>
                 </div>
                 <table class="table table-hover table-sm">
