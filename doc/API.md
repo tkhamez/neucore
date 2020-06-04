@@ -14,6 +14,7 @@ The API is documented with OpenAPI, it is available at
   * [user](#user)
   * [user-admin](#user-admin)
   * [user-manager](#user-manager)
+  * [user-chars](#user-chars)
   * [group-admin](#group-admin)
   * [group-manager](#group-manager)
   * [app-admin](#app-admin)
@@ -112,6 +113,13 @@ Player API
 - Show all data from a player. `GET /user/player/{id}/show`
 - Show player with characters. `GET /user/player/{id}/characters`
 - Lists all players with characters who have a certain status. `GET /user/player/with-status/{name}`
+
+#### user-chars
+
+Allows a player to view all characters of an account.
+
+Player API
+- Accepts a list of character names and returns them grouped by account. `POST /user/player/group-characters-by-account`
 
 #### group-admin
 

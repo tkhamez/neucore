@@ -139,10 +139,10 @@ class CorporationMember implements \JsonSerializable
         ];
 
         if ($forUser) {
+            $char = $this->getCharacter();
             $result = array_merge($result, [
-                'character' => $this->getCharacter() !== null ? $this->getCharacter()->jsonSerialize(false) : null,
-                'player' => $this->getCharacter() !== null ?
-                    $this->getCharacter()->getPlayer()->jsonSerialize(true) : null,
+                'character' => $char !== null ? $char->jsonSerialize(false, false) : null,
+                'player' => $char !== null ? $char->getPlayer()->jsonSerialize(true) : null,
             ]);
         }
 

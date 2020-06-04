@@ -39,7 +39,12 @@ class CharacterTest extends TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'validTokenTime' => null,
-        ], $char->jsonSerialize(false));
+        ], $char->jsonSerialize(false, false));
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+        ], $char->jsonSerialize(true));
     }
 
     public function testSetGetId()

@@ -453,6 +453,7 @@ export default {
                 'group-manager',
                 'user-admin',
                 'user-manager',
+                'user-chars',
                 'esi',
                 'settings',
                 'tracking',

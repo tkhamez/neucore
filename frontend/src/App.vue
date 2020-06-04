@@ -55,6 +55,7 @@ import SystemSettings from './pages/SystemSettings.vue';
 import Tracking from './pages/Tracking.vue';
 import Watchlist from './pages/Watchlist.vue';
 import WatchlistAdmin from './pages/WatchlistAdmin.vue';
+import FindAlts from './pages/FindAlts.vue';
 
 export default {
     name: 'app',
@@ -76,6 +77,7 @@ export default {
         Tracking,
         Watchlist,
         WatchlistAdmin,
+        FindAlts,
     },
 
     props: {
@@ -109,6 +111,7 @@ export default {
                 'Tracking',
                 'Watchlist',
                 'WatchlistAdmin',
+                'FindAlts',
             ],
 
             /**

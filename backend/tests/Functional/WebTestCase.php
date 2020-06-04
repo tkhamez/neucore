@@ -20,7 +20,7 @@ class WebTestCase extends TestCase
      *
      * @param string $requestMethod the request method (e.g. GET, POST, etc.)
      * @param string $requestUri the request URI
-     * @param array|object|null $requestData the request data
+     * @param string|array|object|null $requestData the request data
      * @param array|null $headers
      * @param array $mocks key/value paris for the dependency injection container
      * @param string[] $envVars var=value
@@ -38,9 +38,9 @@ class WebTestCase extends TestCase
         $request = RequestFactory::createRequest($requestMethod, $requestUri);
 
         // Add request data, if it exists
-        $contentType = $headers['Content-Type'] ?? null;
         if ($requestData !== null) {
-            if ($contentType === 'application/x-www-form-urlencoded') {
+            $contentType = $headers['Content-Type'] ?? null;
+            if ($contentType === 'application/x-www-form-urlencoded' && ! is_string($requestData)) {
                 if ($requestMethod === 'POST') {
                     $request = $request->withParsedBody($requestData);
                 } else { // PUT
@@ -52,6 +52,11 @@ class WebTestCase extends TestCase
             } elseif ($contentType === 'application/json') { // POST with Content-Type: application/json
                 $body = $request->getBody();
                 $body->write((string) \json_encode($requestData));
+                $body->rewind();
+                $request = $request->withBody($body);
+            } elseif (is_string($requestData))  { // text/plain
+                $body = $request->getBody();
+                $body->write($requestData);
                 $body->rewind();
                 $request = $request->withBody($body);
             }
@@ -90,7 +95,7 @@ class WebTestCase extends TestCase
     /**
      * @return mixed
      */
-    protected function parseJsonBody(?ResponseInterface $response, $assoc = true)
+    protected function parseJsonBody(?ResponseInterface $response, bool $assoc = true)
     {
         if (! $response) {
             return '';

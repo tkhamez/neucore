@@ -63,6 +63,7 @@ class MakeAdmin extends Command
         $newRoles = [
             Role::USER_ADMIN,
             Role::USER_MANAGER,
+            Role::USER_CHARS,
             Role::APP_ADMIN,
             Role::APP_MANAGER,
             Role::GROUP_ADMIN,

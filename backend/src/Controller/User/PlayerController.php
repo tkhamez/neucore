@@ -25,6 +25,20 @@ use Psr\Log\LoggerInterface;
  *     name="Player",
  *     description="Player management."
  * )
+ * @OA\Schema(
+ *     schema="CharacterGroup",
+ *     required={"player_id", "characters"},
+ *     @OA\Property(
+ *         property="player_id",
+ *         type="integer",
+ *         nullable=true
+ *     ),
+ *     @OA\Property(
+ *         property="characters",
+ *         type="array",
+ *         @OA\Items(ref="#/components/schemas/Character")
+ *     )
+ * )
  */
 class PlayerController extends BaseController
 {
@@ -52,6 +66,7 @@ class PlayerController extends BaseController
         Role::GROUP_MANAGER,
         Role::USER_ADMIN,
         Role::USER_MANAGER,
+        Role::USER_CHARS,
         Role::ESI,
         Role::SETTINGS,
         Role::TRACKING,
@@ -931,6 +946,76 @@ class PlayerController extends BaseController
             'name' => $player->getName(),
             'characters' => $player->getCharacters(),
         ]);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Post(
+     *     path="/user/player/group-characters-by-account",
+     *     operationId="playerGroupCharactersByAccount",
+     *     summary="Accepts a list of character names and returns them grouped by account.",
+     *     description="Needs role: user-chars.<br>
+                        The returned character list always contains the main character as the first character
+                        in the list. Characters that do not exist will all be added to a separate group as the
+                        last element of the result list.",
+     *     tags={"Player"},
+     *     security={{"Session"={}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="List of character names, one per line.",
+     *         @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of character groups, only the id and name properties will be included.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CharacterGroup"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function groupCharactersByAccount(ServerRequestInterface $request): ResponseInterface
+    {
+        $result = [];
+        $notFound = ['player_id' => null, 'characters' => []];
+
+        $charRepo = $this->repositoryFactory->getCharacterRepository();
+        foreach (explode("\n", $request->getBody()->__toString()) as $name) {
+            $char = $charRepo->findOneBy(['name' => trim($name)]);
+            if ($char) {
+                $player = $char->getPlayer();
+                if (! isset($result[$player->getId()])) {
+                    $result[$player->getId()] = [];
+                    $main = $player->getMain();
+                    $result[$player->getId()]['player_id'] = $player->getId();
+                    if ($main) {
+                        $result[$player->getId()]['characters'][$main->getId()] = $main->jsonSerialize(true);
+                    } else {
+                        $result[$player->getId()]['characters'][0] = ['id' => 0, 'name' => '[no main]'];
+                    }
+                }
+                if (! isset($result[$player->getId()]['characters'][$char->getId()])) {
+                    $result[$player->getId()]['characters'][$char->getId()] = $char->jsonSerialize(true);
+                }
+            } elseif (trim($name) !== '') {
+                $notFound['characters'][] = ['id' => 0, 'name' => $name];
+            }
+        }
+
+        // remove IDs from indexes
+        $result = array_values($result);
+        foreach ($result as $idx => $player) {
+            $result[$idx]['characters'] = array_values($player['characters']);
+        }
+
+        // add missing chars
+        if (count($notFound['characters']) > 0) {
+            $result[] = $notFound;
+        }
+
+        return $this->withJson($result);
     }
 
     /**

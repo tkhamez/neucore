@@ -61,7 +61,7 @@
                            href="#SystemSettings">Settings</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi'])"
+                <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
                     class="nav-item dropdown" :class="{ active: memberDataPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -77,6 +77,9 @@
                         <a v-if="hasRole('esi')"
                            class="dropdown-item" :class="{ active: page === 'Esi' }"
                            href="#Esi">ESI</a>
+                        <a v-if="hasRole('user-chars')"
+                           class="dropdown-item" :class="{ active: page === 'FindAlts' }"
+                           href="#FindAlts">FindAlts</a>
                     </div>
                 </li>
             </ul>
@@ -117,7 +120,7 @@ export default {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: ['GroupAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
-            memberDataPages: ['Tracking', 'Watchlist', 'Esi'],
+            memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'FindAlts'],
             selectedTheme: '',
         }
     },

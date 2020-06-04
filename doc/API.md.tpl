@@ -36,6 +36,12 @@ Allows a player to add and remove groups from players with "managed" status.
 
 {user-manager}
 
+#### user-chars
+
+Allows a player to view all characters of an account.
+
+{user-chars}
+
 #### group-admin
 
 Allows a player to create groups and add and remove managers or corporation and alliances.

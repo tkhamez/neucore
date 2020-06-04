@@ -151,8 +151,15 @@ class Character implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize(bool $withRelations = true): array
+    public function jsonSerialize(bool $minimum = false, bool $withRelations = true): array
     {
+        if ($minimum) {
+            return [
+                'id' => $this->getId(),
+                'name' => $this->name,
+            ];
+        }
+
         $result = [
             'id' => $this->getId(),
             'name' => $this->name,
