@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Added missing CSS for character search on the "Find Alts" page.
+
 ## 1.13.0
 
 5 Jun 2020
