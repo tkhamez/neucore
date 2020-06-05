@@ -162,6 +162,8 @@ Corporations can be automatically added to the whitelist (and removed accordingl
 are on the same account using the `auto-whitelist` command. This only works if at least one character in
 that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope.
 
+The permissions are managed via groups, one for viewing and one for administration separately for each watch list.
+
 ## Mail Notifications
 
 ### Invalid ESI Token
