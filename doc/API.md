@@ -81,7 +81,8 @@ Settings API
 Allows a player to add and remove roles from players.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character)
+                    that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
 - List all players with characters. `GET /user/player/with-characters`
@@ -101,7 +102,8 @@ Player API
 Allows a player to add and remove groups from players with "managed" status.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character)
+                    that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Group API
 - List all groups. `GET /user/group/all`
@@ -119,7 +121,8 @@ Player API
 Allows a player to view all characters of an account.
 
 Character API
-- Return a list of characters that matches the name (partial matching). `GET /user/character/find-character/{name}`
+- Returns a list of characters (together with the name of the player account/main character)
+                    that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
 - Show player with characters. `GET /user/player/{id}/characters`

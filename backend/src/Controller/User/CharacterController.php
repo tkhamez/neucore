@@ -102,7 +102,8 @@ class CharacterController extends BaseController
      * @OA\Get(
      *     path="/user/character/find-character/{name}",
      *     operationId="findCharacter",
-     *     summary="Return a list of characters that matches the name (partial matching).",
+     *     summary="Returns a list of characters (together with the name of the player account/main character)
+                    that matches the name (partial matching).",
      *     description="Needs role: user-admin, user-manager, user-chars",
      *     tags={"Character"},
      *     security={{"Session"={}}},
