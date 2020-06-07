@@ -79,7 +79,7 @@ To run the application:
     * A sample [Nginx configuration](doc/docker-nginx.conf) file can be found in the `doc` directory.
 
 Additionally, to build the application:
-* Composer
+* Composer 1.x
 * Node.js >=10.13.0 with npm >=6.4.1 (only tested with LTS releases v10 and v12)
 * Java 8+ runtime (only to generate the OpenAPI JavaScript client)
 
@@ -171,44 +171,25 @@ Environment variables defined in `docker-compose.yml` have priority over `backen
 
 Execute the following to start the containers and build the app:
 ```sh
-# rebuild if necessary
+# Rebuild if necessary
 $ docker-compose build
 
-# start services
+# Start services
 $ export UID
 $ docker-compose up -d
 
-# Install backend and generate OpenAPI files
-$ docker-compose run composer install --ignore-platform-reqs
-$ docker-compose run composer composer openapi
-
-# Generate OpenAPI JavaScript client
-$ docker-compose run java /app/frontend/openapi.sh
-
-# Build OpenAPI JS client
-docker-compose run node npm install --prefix /app/frontend/neucore-js-client
-docker-compose run node npm run build --prefix /app/frontend/neucore-js-client
-
-# Build frontend
-$ docker-compose run node npm install
-$ docker-compose run node npm run build
-
-# Update the database schema and seed data
-$ docker-compose run php-cli vendor/bin/doctrine-migrations migrations:migrate --no-interaction
-$ docker-compose run php-cli bin/console doctrine-fixtures-load
+# Install
+$ ./install-docker.sh
 ```
 
 Browse to http://localhost:8080
 
-Create database for unit tests
-```
-$ docker exec neucore_db sh -c 'mysql -e "CREATE DATABASE IF NOT EXISTS neucore_test" -pneucore'
-$ docker exec neucore_db sh -c 'mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@\"%\" IDENTIFIED BY \"neucore\"" -pneucore'
-```
+The database is also available at 127.0.0.1:30306 (user and pw: neucore).
 
-Run tests and other commands in the php-cli container: 
+Run tests and other commands in the php-fpm or node container: 
 ```
-$ docker-compose run php-cli /bin/bash
+$ docker-compose exec php-fpm /bin/bash
+$ docker-compose run node /bin/bash
 ```
 
 Stop containers: 
@@ -217,7 +198,7 @@ docker-compose stop
 ```
 
 Known problems:
-- Unit tests that need the database don't work: "Aborted connection to db" errors.
+- Composer install is very slow.
 
 ### Deploy on Heroku
 
