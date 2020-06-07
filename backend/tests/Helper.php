@@ -146,13 +146,11 @@ class Helper
 
     public function addEm(array $mocks): array
     {
-        if ($this->getDbName() === 'sqlite') {
-            if (! array_key_exists(ObjectManager::class, $mocks)) {
-                $mocks[ObjectManager::class] = (new Helper())->getEm();
-            }
-            if (! array_key_exists(EntityManagerInterface::class, $mocks)) {
-                $mocks[EntityManagerInterface::class] = (new Helper())->getEm();
-            }
+        if (! array_key_exists(ObjectManager::class, $mocks)) {
+            $mocks[ObjectManager::class] = (new self())->getEm();
+        }
+        if (! array_key_exists(EntityManagerInterface::class, $mocks)) {
+            $mocks[EntityManagerInterface::class] = (new self())->getEm();
         }
 
         return $mocks;

@@ -77,7 +77,7 @@ class WebTestCase extends TestCase
             putenv($envVar);
         }
 
-        // for sqlite in-memory db: add connection with database
+        // Add existing db connection
         $mocks = (new Helper)->addEm($mocks);
 
         // Process the application
