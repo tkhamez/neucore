@@ -192,7 +192,7 @@ export default {
                 return;
             }
             api[method].apply(api, [this.id, id, () => {
-                loadList(vm);
+                loadList(vm, true);
             }]);
         },
 
@@ -201,23 +201,25 @@ export default {
          * @returns {string}
          */
         nameList (entities) {
-            return entities.map((entity) => {
+            return entities.map(entity => {
                 return entity.name;
             }).join(', ');
         },
     },
 }
 
-function loadList(vm) {
+/**
+ * @param vm
+ * @param {bool} [onlyPlayers] for whitelist, reload players only
+ */
+function loadList(vm, onlyPlayers) {
     if (! vm.id) {
         return;
     }
     const api = new WatchlistApi();
 
     function setPlayer(error, data) {
-        vm.listContent.Player = [];
-        vm.listContent.Alliance = [];
-        vm.listContent.Corporation = [];
+        vm.listContent.Player = []; // not before, so that the list does not scroll up
         if (! error) {
             vm.listContent.Player = data;
         }
@@ -232,11 +234,18 @@ function loadList(vm) {
         api.watchlistExemptionList(vm.id, (error, data) => {
             setPlayer(error, data);
         });
+        if (onlyPlayers) {
+            return;
+        }
+
+        vm.listContent.Alliance = [];
         api.watchlistWhitelistAllianceList(vm.id, (error, data) => {
             if (! error) {
                 vm.listContent.Alliance = data;
             }
         });
+
+        vm.listContent.Corporation = [];
         api.watchlistWhitelistCorporationList(vm.id, (error, data) => {
             if (! error) {
                 vm.listContent.Corporation = data;
