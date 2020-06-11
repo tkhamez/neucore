@@ -36,7 +36,11 @@
                         <tr v-for="group in result">
                             <td><span v-if="group.player_id">{{ group.player_id }}</span></td>
                             <td class="text-nowrap">
-                                <span v-if="group.player_id">{{ group.characters[0].name }}</span>
+                                <span v-if="group.player_id">
+                                    <a href="#" v-on:click.prevent="showCharacters(group.player_id)">
+                                        {{ group.characters[0].name }}
+                                    </a>
+                                </span>
                                 <span v-else>[no player account]</span>
                             </td>
                             <td>
@@ -73,6 +77,7 @@ export default {
     methods: {
         find () {
             const vm = this;
+            vm.result = [];
             new PlayerApi().playerGroupCharactersByAccount(vm.input, function(error, data) {
                 if (! error) {
                     vm.result = data;
