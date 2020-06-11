@@ -65,15 +65,10 @@ class MakeAdmin extends Command
             Role::USER_MANAGER,
             Role::USER_CHARS,
             Role::APP_ADMIN,
-            Role::APP_MANAGER,
             Role::GROUP_ADMIN,
-            Role::GROUP_MANAGER,
             Role::ESI,
             Role::SETTINGS,
-            Role::TRACKING,
             Role::TRACKING_ADMIN,
-            Role::WATCHLIST,
-            Role::WATCHLIST_MANAGER,
             Role::WATCHLIST_ADMIN,
         ];
         foreach ($this->roleRepository->findBy(['name' => $newRoles]) as $newRole) {

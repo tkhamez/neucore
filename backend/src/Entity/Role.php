@@ -39,16 +39,17 @@ class Role implements \JsonSerializable
     const USER_MANAGER = 'user-manager';
     const USER_CHARS = 'user-chars';
     const GROUP_ADMIN = 'group-admin';
-    const GROUP_MANAGER = 'group-manager';
     const APP_ADMIN = 'app-admin';
-    const APP_MANAGER = 'app-manager';
     const ESI = 'esi';
     const SETTINGS = 'settings';
-    const TRACKING = 'tracking';
     const TRACKING_ADMIN = 'tracking-admin';
+    const WATCHLIST_ADMIN = 'watchlist-admin';
+
+    const GROUP_MANAGER = 'group-manager';
+    const APP_MANAGER = 'app-manager';
+    const TRACKING = 'tracking';
     const WATCHLIST = 'watchlist';
     const WATCHLIST_MANAGER = 'watchlist-manager';
-    const WATCHLIST_ADMIN = 'watchlist-admin';
 
     /**
      * @ORM\Id

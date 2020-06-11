@@ -71,20 +71,15 @@ class MakeAdminTest extends ConsoleTestCase
 
         $expected = [
             Role::APP_ADMIN,
-            Role::APP_MANAGER,
             Role::ESI,
             Role::GROUP_ADMIN,
-            Role::GROUP_MANAGER,
             Role::SETTINGS,
-            Role::TRACKING,
             Role::TRACKING_ADMIN,
             Role::USER,
             Role::USER_ADMIN,
             Role::USER_CHARS,
             Role::USER_MANAGER,
-            Role::WATCHLIST,
             Role::WATCHLIST_ADMIN,
-            Role::WATCHLIST_MANAGER,
         ];
         $actual = (new RepositoryFactory(self::$em))
             ->getCharacterRepository()->find(1234)->getPlayer()->getRoleNames();
