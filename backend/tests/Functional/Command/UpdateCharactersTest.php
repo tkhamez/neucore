@@ -76,7 +76,7 @@ class UpdateCharactersTest extends ConsoleTestCase
         $this->client->setResponse(
             new Response(200, [], '[
                 {"id": 3, "name": "char1", "category": "character"},
-                {"id": 6, "name": "char2", "category": "character"}
+                {"id": 6, "name": "char2 changed", "category": "character"}
             ]'), // postUniverseNames
             new Response(200, [], '[
                 {"character_id": 3, "corporation_id": 101},
@@ -103,7 +103,9 @@ class UpdateCharactersTest extends ConsoleTestCase
         $actualChars = $repositoryFactory->getCharacterRepository()->findBy([]);
         $this->assertSame(2, count($actualChars));
         $this->assertSame(3, $actualChars[0]->getId());
+        $this->assertSame("char1", $actualChars[0]->getName());
         $this->assertSame(6, $actualChars[1]->getId());
+        $this->assertSame("char2 changed", $actualChars[1]->getName());
         $this->assertNotNull($actualChars[0]->getLastUpdate());
         $this->assertNotNull($actualChars[1]->getLastUpdate());
 

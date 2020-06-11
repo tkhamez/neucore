@@ -132,14 +132,16 @@ class UpdateCharacters extends Command
                     break;
                 }
 
-                if (! isset($names[$char->getId()]) || ! isset($affiliations[$char->getId()])) {
+                if (! isset($affiliations[$char->getId()])) {
                     $this->writeLine('  Character ' . $char->getId().': update NOK');
                     continue;
                 }
 
-                $char->setName($names[$char->getId()]);
-                if ($char->getMain()) {
-                    $char->getPlayer()->setName($char->getName());
+                if (isset($names[$char->getId()])) {
+                    $char->setName($names[$char->getId()]);
+                    if ($char->getMain()) {
+                        $char->getPlayer()->setName($char->getName());
+                    }
                 }
 
                 $corp = $this->esiData->getCorporationEntity($affiliations[$char->getId()]['corporation']);
