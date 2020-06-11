@@ -984,8 +984,12 @@ class PlayerController extends BaseController
         $notFound = ['player_id' => null, 'characters' => []];
 
         $charRepo = $this->repositoryFactory->getCharacterRepository();
-        foreach (explode("\n", $request->getBody()->__toString()) as $name) {
-            $char = $charRepo->findOneBy(['name' => trim($name)]);
+        foreach (array_unique(explode("\n", $request->getBody()->__toString())) as $name) {
+            $name = trim($name);
+            if ($name === '') {
+                continue;
+            }
+            $char = $charRepo->findOneBy(['name' => $name]);
             if ($char) {
                 $player = $char->getPlayer();
                 if (! isset($result[$player->getId()])) {
@@ -1001,7 +1005,7 @@ class PlayerController extends BaseController
                 if (! isset($result[$player->getId()]['characters'][$char->getId()])) {
                     $result[$player->getId()]['characters'][$char->getId()] = $char->jsonSerialize(true);
                 }
-            } elseif (trim($name) !== '') {
+            } else {
                 $notFound['characters'][] = ['id' => 0, 'name' => $name];
             }
         }
