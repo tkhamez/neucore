@@ -18,5 +18,5 @@ docker-compose exec php-fpm vendor/bin/doctrine-migrations migrations:migrate --
 docker-compose exec php-fpm bin/console doctrine-fixtures-load
 
 # Create database for unit tests
-docker exec neucore_db sh -c 'mysql -e "CREATE DATABASE IF NOT EXISTS neucore_test" -pneucore'
-docker exec neucore_db sh -c 'mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@\"%\" IDENTIFIED BY \"neucore\"" -pneucore'
+docker exec neucore_db sh -c 'mysql -e "CREATE DATABASE IF NOT EXISTS neucore_test" -uroot -pneucore'
+docker exec neucore_db sh -c 'mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@\"%\" IDENTIFIED BY \"neucore\"" -uroot -pneucore'

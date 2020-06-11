@@ -2,8 +2,9 @@
 
 ## next
 
-- Added missing CSS for character search on the "Find Alts" page.
+- Improved "Find Alts" page layout
 - Fixed Watchlist: Whitelist does not always load [#30][i30]
+- Other small stuff
 
 [i30]: https://github.com/tkhamez/neucore/issues/30
 

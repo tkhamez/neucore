@@ -131,7 +131,7 @@ If you have cloned the repository, you must install the dependencies and build t
 
 #### Cron Job
 
-Set up necessary cron jobs, e. g. update characters every 2 hours and the rest 3 times daily 
+Set up necessary cron jobs, e.g. update characters every 2 hours and the rest 3 times daily 
 using a lock file (adjust user and paths):
 
 ```
@@ -151,7 +151,10 @@ installation.
 
 ### Using Vagrant
 
-Only tested with Vagrant 2 + libvirt.
+Only tested on Linux with Vagrant 2 + libvirt.
+
+Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
+the database host is `localhost`.
 
 - `vagrant up` creates and configures the virtual machine.
 - If the Vagrant file changes, run `vagrant provision` to update the VM.
@@ -161,41 +164,23 @@ Please note that the `rsync` synchronization method used is a one-way synchroniz
 machine that is performed each time `vagrant up` or `vagrant reload` is executed.
 See https://www.vagrantup.com/docs/synced-folders for other methods. 
 
-The Vagrant setup will create the file `backend/.env` with correct values for the database connection.
-The values for the EVE application must be adjusted.
-
 ### Using Docker
 
-Create the `backend/.env` file.  
-Environment variables defined in `docker-compose.yml` have priority over `backend/.env`.
+Only tested on Linux.
 
-Execute the following to start the containers and build the app:
-```sh
-# Rebuild if necessary
-$ docker-compose build
+Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
+the database host is `db`.
 
-# Start services
-$ export UID
-$ docker-compose up -d
+- Build the containers with `docker-compose build`
+- Start services: `export UID && docker-compose up -d`
+- Install the app: `./install-docker.sh`
+- Run tests and other commands in the php-fpm or node container:  
+    `export UID && docker-compose exec php-fpm /bin/bash` or  
+    `export UID && docker-compose run node /bin/bash`
+- Stop containers: `docker-compose stop`
 
-# Install
-$ ./install-docker.sh
-```
-
-Browse to http://localhost:8080
-
-The database is also available at 127.0.0.1:30306 (user and pw: neucore).
-
-Run tests and other commands in the php-fpm or node container: 
-```
-$ docker-compose exec php-fpm /bin/bash
-$ docker-compose run node /bin/bash
-```
-
-Stop containers: 
-```
-docker-compose stop
-```
+The web application is available at http://localhost:8080, the database is also available at `127.0.0.1:30306`, 
+the data is stored in the `.mariadb` subdirectory.
 
 Known problems:
 - Composer install is very slow.

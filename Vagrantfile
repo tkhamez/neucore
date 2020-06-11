@@ -35,10 +35,10 @@ Vagrant.configure("2") do |config|
 
         # install mariadb server (10.1)
         apt-get install -y mariadb-server
-        mysql -e 'CREATE DATABASE IF NOT EXISTS core'
-        mysql -e 'CREATE DATABASE IF NOT EXISTS core_test'
-        mysql -e "GRANT ALL PRIVILEGES ON core.* TO core@localhost IDENTIFIED BY 'brave'"
-        mysql -e "GRANT ALL PRIVILEGES ON core_test.* TO core@localhost IDENTIFIED BY 'brave'"
+        mysql -e 'CREATE DATABASE IF NOT EXISTS neucore'
+        mysql -e 'CREATE DATABASE IF NOT EXISTS neucore_test'
+        mysql -e "GRANT ALL PRIVILEGES ON neucore.* TO neucore@localhost IDENTIFIED BY 'neucore'"
+        mysql -e "GRANT ALL PRIVILEGES ON neucore_test.* TO neucore@localhost IDENTIFIED BY 'neucore'"
 
         # install apache
         apt-get install apache2 -y
@@ -87,10 +87,10 @@ EOL
 
         echo " "
         echo "--------------------------------------------------------------------------------"
-        echo "-- Neucore http://192.168.121.111 (change IP as needed)                       --"
-        echo "-- SSH user: vagrant/vagrant                                                  --"
         echo "-- IP of vm:                                                                  --"
         /sbin/ifconfig eth0 | grep "inet "
+        echo "-- SSH user: vagrant/vagrant                                                  --"
+        echo "-- Neucore http://ip.of.vm                                                    --"
         echo "--------------------------------------------------------------------------------"
     SHELL
 end

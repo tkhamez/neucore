@@ -3,6 +3,6 @@ RUN apt-get update -y && apt-get -y install libgmp-dev libzip-dev unzip
 RUN docker-php-ext-install pdo_mysql gmp zip
 RUN pecl install apcu && docker-php-ext-enable apcu
 RUN pecl install xdebug && docker-php-ext-enable xdebug
-RUN php -r "copy('https://getcomposer.org/download/1.10.7/composer.phar', 'composer.phar');"
-RUN mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
-RUN mkdir /.composer && chmod 0777 /.composer
+COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
+RUN mkdir -p /home/composer/.composer && chmod 0777 /home/composer/.composer
+ENV COMPOSER_HOME /home/composer/.composer
