@@ -71,18 +71,17 @@ class AutoWhitelist extends Command
     /**
      * @var int
      */
-    private $numCorporations = 0;
+    private $numCorporations;
 
     /**
      * @var int
      */
-    private $numCorporationsChecked = 0;
+    private $numCorporationsChecked;
 
     /**
      * @var int
      */
-    private $numCorporationsWhitelisted = 0;
-
+    private $numCorporationsWhitelisted;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -138,6 +137,9 @@ class AutoWhitelist extends Command
 
         foreach ($ids as $watchlistId) {
             $this->writeLine("  Processing watchlist $watchlistId", false);
+            $this->numCorporations = 0;
+            $this->numCorporationsChecked = 0;
+            $this->numCorporationsWhitelisted = 0;
             $this->whitelist($watchlistId);
         }
 
