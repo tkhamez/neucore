@@ -10,7 +10,6 @@ Result table for the character search
                     <th scope="col" v-if="! admin">Player ID</th>
                     <th scope="col">{{ ! admin ? 'Main' : '' }} Character</th>
                     <th scope="col" v-if="admin">Player Account</th>
-                    <th scope="col" v-if="admin">Characters</th>
                     <th scope="col" v-if="selectedPlayers">Action</th>
                 </tr>
             </thead>
@@ -21,11 +20,9 @@ Result table for the character search
                         <img :src="characterPortrait(char.character_id, 32)" alt="portrait">
                         {{ char.character_name }}
                     </td>
-                    <td v-if="admin">{{ char.player_name }} #{{ char.player_id }}</td>
                     <td v-if="admin">
-                        <button class="btn btn-info btn-sm" v-on:click="showCharacters(char.player_id)">
-                            Show characters
-                        </button>
+                        <a href="#" v-on:click.prevent="showCharacters(char.player_id)">{{ char.player_name }}</a>
+                        #{{ char.player_id }}
                     </td>
                     <td v-if="selectedPlayers">
                         <button v-if="! isSelected(char.player_id)" class="btn btn-success btn-sm"
