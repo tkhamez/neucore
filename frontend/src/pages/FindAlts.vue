@@ -26,7 +26,7 @@
                 <br>
                 <button type="submit" class="btn btn-primary" v-on:click.prevent="find()">Submit</button>
             </div>
-            <table class="table table-hover table-sm mb-0">
+            <table class="table table-hover table-sm mb-0" aria-describedby="Characters grouped by account">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Main</th>
