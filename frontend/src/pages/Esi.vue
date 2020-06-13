@@ -57,8 +57,7 @@
                 <div class="form-group">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox"
-                                   :checked="debug === true" v-model="debug">
+                            <input class="form-check-input" type="checkbox" v-model="debug">
                             Debug (show all headers, no cache)
                         </label>
                     </div>
