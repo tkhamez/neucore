@@ -6,6 +6,7 @@ namespace Neucore\Command\Traits;
 
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
+use Psr\Log\LoggerInterface;
 
 trait EsiRateLimited
 {
@@ -13,6 +14,11 @@ trait EsiRateLimited
      * @var StorageInterface
      */
     private $storage;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var bool
@@ -24,9 +30,10 @@ trait EsiRateLimited
      */
     private $sleepInSeconds;
 
-    protected function esiRateLimited(StorageInterface $storage, bool $simulate = false): void
+    protected function esiRateLimited(StorageInterface $storage, LoggerInterface $logger, bool $simulate = false): void
     {
         $this->storage = $storage;
+        $this->logger = $logger;
         $this->simulate = $simulate;
     }
 
@@ -56,6 +63,7 @@ trait EsiRateLimited
 
         if ($data->remain < 10) {
             $sleep = min(60, $data->reset + time() - $data->updated);
+            $this->logger->info("EsiRateLimited: hit limit, sleeping $sleep seconds");
             if ($this->simulate) {
                 $this->sleepInSeconds =  $sleep;
             } else {

@@ -69,7 +69,7 @@ class UpdateCorporations extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage);
+        $this->esiRateLimited($storage, $logger);
 
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->alliRepo = $repositoryFactory->getAllianceRepository();

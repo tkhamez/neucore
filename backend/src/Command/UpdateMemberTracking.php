@@ -66,7 +66,7 @@ class UpdateMemberTracking extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage);
+        $this->esiRateLimited($storage, $logger);
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;

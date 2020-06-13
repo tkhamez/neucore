@@ -53,7 +53,7 @@ class UpdateCharacters extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage);
+        $this->esiRateLimited($storage, $logger);
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->esiData = $esiData;

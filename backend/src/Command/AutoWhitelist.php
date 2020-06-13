@@ -94,7 +94,7 @@ class AutoWhitelist extends Command
     ) {
         parent::__construct();
         $this->logOutput($logger);
-        $this->esiRateLimited($storage);
+        $this->esiRateLimited($storage, $logger);
 
         $this->watchlistService = $watchlist;
         $this->esiData = $esiData;

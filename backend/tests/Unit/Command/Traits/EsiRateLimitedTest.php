@@ -23,20 +23,24 @@ class EsiRateLimitedTest extends TestCase
         $helper->emptyDb();
         $om = $helper->getObjectManager();
 
-        $storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, new Logger('Test')));
+        $logger = new Logger('Test');
+        $storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $logger));
         #apcu_clear_cache();
         #$storage = new \Neucore\Storage\ApcuStorage();
-
-        $this->esiRateLimited($storage, true);
-
         $storage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode([
             'updated' => time(),
             'remain' => 9,
             'reset' => 20,
         ]));
+        $this->esiRateLimited($storage, $logger, true);
 
         $this->checkErrorLimit();
 
         $this->assertGreaterThanOrEqual(20, $this->getSleepInSeconds());
+        $this->assertStringStartsWith(
+            'EsiRateLimited: hit limit, sleeping ',
+            $logger->getHandler()->getRecords()[0]['message']
+        );
+        $this->assertStringEndsWith(' seconds',$logger->getHandler()->getRecords()[0]['message']);
     }
 }
