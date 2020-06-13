@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.13.1
+
+13 Jun 2020
 
 - Improved "Find Alts" page layout.
 - Fixed Watchlist: Whitelist did not always load. [#30][i30]
