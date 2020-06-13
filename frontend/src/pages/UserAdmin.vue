@@ -73,10 +73,11 @@
     <div v-cloak v-if="player" class="row">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">Characters</h3>
+                <h4 class="card-header">Characters</h4>
                 <div class="card-body">
                     <!--suppress HtmlUnknownTag -->
-                    <character-search v-on:result="onSearchResult($event)" :admin="true"></character-search>
+                    <character-search v-on:result="onSearchResult($event)" :admin="true"
+                                      :labelWithoutPaddingLeft="true"></character-search>
                     <span class="text-muted small">
                         Select a character to show it's player account.
                     </span>
@@ -92,9 +93,7 @@
             </div>
 
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">
-                    <label for="roleList">Players by role</label>
-                </h3>
+                <h4 class="card-header"><label for="roleList">Players by role</label></h4>
                 <div class="card-body">
                     <select class="form-control" id="roleList"
                             v-model="activeRole" @change="getPlayerByRole(activeRole)">
@@ -111,9 +110,7 @@
                 </div>
             </div>
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">
-                    <label for="accountList">Player accounts ...</label>
-                </h3>
+                <h4 class="card-header"><label for="accountList">Player accounts ...</label></h4>
                 <div class="card-body">
                     <select class="form-control" id="accountList"
                             v-model="activeList" @change="getPlayers(activeList)">

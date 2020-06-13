@@ -5,7 +5,10 @@ Input element to search for characters
 <template>
 <div class="input-group input-group-sm mb-1">
     <div class="input-group-prepend">
-        <label class="input-group-text" for="characterSearchInput">Search {{ admin ? 'Character' : 'Player' }}</label>
+        <label class="input-group-text" :class="{ 'search-label-no-padding-left': labelWithoutPaddingLeft }"
+               for="characterSearchInput">
+            Search {{ admin ? 'Character' : 'Player' }}
+        </label>
     </div>
     <input type="text" class="form-control" id="characterSearchInput"
            placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
@@ -23,6 +26,7 @@ import {CharacterApi} from 'neucore-js-client';
 export default {
     props: {
         admin: Boolean, // false = search only for mains, otherwise all characters
+        labelWithoutPaddingLeft: Boolean,
     },
 
     data: function() {
@@ -61,3 +65,9 @@ const findCharacter = _.debounce((vm) => {
     }]);
 }, 250);
 </script>
+
+<style scoped>
+    .input-group-text.search-label-no-padding-left {
+        padding-left: 0;
+    }
+</style>

@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-lg-4 sticky-column">
                 <div class="card border-secondary mb-3">
-                    <h3 class="card-header">Watchlists</h3>
+                    <h4 class="card-header">Watchlists</h4>
                     <div class="list-group">
                         <a v-for="watchlist in watchlists" class="list-group-item list-group-item-action"
                            :class="{ active: watchlistId === watchlist.id }"

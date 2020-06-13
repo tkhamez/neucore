@@ -84,8 +84,8 @@ Select and table to add and remove objects from other objects.
                          :custom-label="customLabel">
             </multiselect>
 
-            <character-search v-if="useSearch" :admin="searchAdmin"
-                              v-on:result="searchResult = $event"></character-search>
+            <character-search v-if="useSearch" :admin="searchAdmin" v-on:result="searchResult = $event"
+                              :labelWithoutPaddingLeft="true"></character-search>
             <character-result v-if="useSearch" :admin="searchAdmin"
                               :searchResult="searchResult"
                               :selectedPlayers="tableContent"

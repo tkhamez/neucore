@@ -16,13 +16,13 @@
     <div class="row">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">
+                <h4 class="card-header">
                     Apps
                     <span class="far fa-plus-square add-app"
                        @mouseover="mouseover"
                        @mouseleave="mouseleave"
                        v-on:click="showCreateAppModal()"></span>
-                </h3>
+                </h4>
                 <div class="list-group">
                     <span v-for="app in apps" class="list-item-wrap" :class="{ active: appId === app.id }">
                         <a class="list-group-item list-group-item-action"

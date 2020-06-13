@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3" >
-                <h3 class="card-header">Groups</h3>
+                <h4 class="card-header">Groups</h4>
                 <div v-cloak v-if="player" class="list-group">
                     <a
                         v-for="group in player.managerGroups"
@@ -48,7 +48,8 @@
                         automatically be removed from this group.
                     </p>
 
-                    <character-search v-on:result="searchResult = $event" :admin="false"></character-search>
+                    <character-search v-on:result="searchResult = $event" :admin="false"
+                                      :labelWithoutPaddingLeft="true"></character-search>
                     <character-result :searchResult="searchResult" :admin="false" :selectedPlayers="groupMembers"
                         v-on:add="addPlayer($event)" v-on:remove="removePlayer($event)"></character-result>
 

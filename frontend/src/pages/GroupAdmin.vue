@@ -17,13 +17,13 @@
     <div class="row">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3">
-                <h3 class="card-header">
+                <h4 class="card-header">
                     Groups
                     <span class="far fa-plus-square add-group"
                        @mouseover="mouseover"
                        @mouseleave="mouseleave"
                        v-on:click="showCreateGroupModal()"></span>
-                </h3>
+                </h4>
                 <div class="list-group">
                     <span v-for="group in groups" class="list-item-wrap" :class="{ active: groupId === group.id }">
                         <a class="list-group-item list-group-item-action"
@@ -248,11 +248,13 @@ function fetchMembers(vm) {
         float: right;
         cursor: pointer;
     }
-
     .add-alli-corp {
         position: relative;
         top: 1px;
         margin-left: 12px;
         font-size: 1.1rem;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem;
     }
 </style>

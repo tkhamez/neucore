@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-lg-4 sticky-column">
                 <div class="card border-secondary mb-3" >
-                    <h3 class="card-header">Apps</h3>
+                    <h4 class="card-header">Apps</h4>
                     <div v-cloak v-if="player" class="list-group">
                         <a
                             v-for="playerApp in player.managerApps"

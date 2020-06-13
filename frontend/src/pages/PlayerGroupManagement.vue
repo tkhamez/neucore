@@ -18,9 +18,10 @@
         <div class="row">
             <div class="col-lg-4">
                 <div class="card border-secondary mb-3" >
-                    <h3 class="card-header">Characters</h3>
+                    <h4 class="card-header">Characters</h4>
                     <div class="card-body">
-                        <character-search v-on:result="onSearchResult($event)" :admin="true"></character-search>
+                        <character-search v-on:result="onSearchResult($event)" :admin="true"
+                                          :labelWithoutPaddingLeft="true"></character-search>
                     </div>
                     <div class="list-group">
                         <a v-for="char in searchResult"
@@ -32,10 +33,10 @@
                     </div>
                 </div>
                 <div class="card border-secondary mb-3" >
-                    <h3 class="card-header">
+                    <h4 class="card-header">
                         Players
                         <span class="hdl-small">status = managed</span>
-                    </h3>
+                    </h4>
                     <div class="list-group">
                         <span v-for="managedPlayer in players">
                             <a class="list-group-item list-group-item-action"

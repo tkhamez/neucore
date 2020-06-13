@@ -1,12 +1,16 @@
 <template>
 <div class="container-fluid">
-    <h1>Find Alts</h1>
+    <div class="row mb-3 mt-3">
+        <div class="col-lg-12">
+            <h1>Find Alts</h1>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-6">
-            <character-search v-if="hasRole('user-chars')"
-                              v-on:result="searchResult = $event" :admin="true"></character-search>
-            <character-result v-if="hasRole('user-chars')"
-                              :searchResult="searchResult" :admin="true"></character-result>
+            <character-search v-if="hasRole('user-chars')" v-on:result="searchResult = $event"
+                              :admin="true"></character-search>
+            <character-result v-if="hasRole('user-chars')" :searchResult="searchResult"
+                              :admin="true"></character-result>
         </div>
         <div class="col-lg-6 col2">
             <div class="form-group">
