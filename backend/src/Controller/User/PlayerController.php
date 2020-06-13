@@ -59,20 +59,15 @@ class PlayerController extends BaseController
     /**
      * @var array
      */
-    private $availableRoles = [
+    private $assignableRoles = [
         Role::APP_ADMIN,
-        Role::APP_MANAGER,
         Role::GROUP_ADMIN,
-        Role::GROUP_MANAGER,
         Role::USER_ADMIN,
         Role::USER_MANAGER,
         Role::USER_CHARS,
         Role::ESI,
         Role::SETTINGS,
-        Role::TRACKING,
         Role::TRACKING_ADMIN,
-        Role::WATCHLIST,
-        Role::WATCHLIST_MANAGER,
         Role::WATCHLIST_ADMIN,
     ];
 
@@ -653,8 +648,9 @@ class PlayerController extends BaseController
      *         description="Role name.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
-     *                 "esi", "settings", "tracking"}
+     *             enum={"user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager",
+     *                   "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin", "watchlist",
+     *                   "watchlist-manager", "watchlist-admin"}
      *         ),
      *     ),
      *     @OA\Response(
@@ -674,7 +670,22 @@ class PlayerController extends BaseController
      */
     public function withRole(string $name): ResponseInterface
     {
-        if (! in_array($name, $this->availableRoles)) {
+        if (! in_array($name, [
+            Role::USER_ADMIN,
+            Role::USER_MANAGER,
+            Role::USER_CHARS,
+            Role::GROUP_ADMIN,
+            Role::APP_ADMIN,
+            Role::ESI,
+            Role::SETTINGS,
+            Role::TRACKING_ADMIN,
+            Role::WATCHLIST_ADMIN,
+            Role::GROUP_MANAGER,
+            Role::APP_MANAGER,
+            Role::TRACKING,
+            Role::WATCHLIST,
+            Role::WATCHLIST_MANAGER,
+        ])) {
             return $this->response->withStatus(400);
         }
 
@@ -742,8 +753,8 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
-     *                 "esi", "settings", "tracking"}
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "user-admin", "app-admin",
+     *                   "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
      *     @OA\Response(
@@ -765,7 +776,7 @@ class PlayerController extends BaseController
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
-        if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
+        if (! $player || ! $role || ! in_array($role->getName(), $this->assignableRoles)) {
             return $this->response->withStatus(404);
         }
 
@@ -799,8 +810,8 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "app-manager", "group-admin", "group-manager", "user-admin", "user-manager",
-     *                 "esi", "settings", "tracking"}
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "user-admin", "app-admin",
+     *                   "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
      *     @OA\Response(
@@ -822,7 +833,7 @@ class PlayerController extends BaseController
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $name]);
 
-        if (! $player || ! $role || ! in_array($role->getName(), $this->availableRoles)) {
+        if (! $player || ! $role || ! in_array($role->getName(), $this->assignableRoles)) {
             return $this->response->withStatus(404);
         }
 

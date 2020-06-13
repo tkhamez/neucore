@@ -751,13 +751,15 @@ class PlayerControllerTest extends WebTestCase
         $response2 = $this->runApp('PUT', '/api/user/player/101/add-role/'.Role::APP_MANAGER);
         $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/add-role/role');
 
-        // app is a valid role, but not for users
+        // app is a valid role, but not for users, app-manager is auto assigned
         $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/add-role/'.Role::APP);
+        $response5 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/add-role/'.Role::APP_MANAGER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
         $this->assertEquals(404, $response3->getStatusCode());
         $this->assertEquals(404, $response4->getStatusCode());
+        $this->assertEquals(404, $response5->getStatusCode());
     }
 
     public function testAddRole204()
@@ -765,8 +767,8 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
-        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player3Id).'/add-role/'.Role::APP_MANAGER);
-        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player3Id).'/add-role/'.Role::APP_MANAGER);
+        $r1 = $this->runApp('PUT', '/api/user/player/'.($this->player3Id).'/add-role/'.Role::USER_MANAGER);
+        $r2 = $this->runApp('PUT', '/api/user/player/'.($this->player3Id).'/add-role/'.Role::USER_MANAGER);
         $this->assertEquals(204, $r1->getStatusCode());
         $this->assertEquals(204, $r2->getStatusCode());
 
@@ -774,7 +776,7 @@ class PlayerControllerTest extends WebTestCase
 
         $player = $this->fetchPlayer($this->player3Id);
         $this->assertSame(
-            [Role::APP_ADMIN, Role::APP_MANAGER, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
+            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN, Role::USER_MANAGER],
             $player->getRoleNames()
         );
     }
@@ -800,13 +802,15 @@ class PlayerControllerTest extends WebTestCase
         $response2 = $this->runApp('PUT', '/api/user/player/101/remove-role/'.Role::APP_MANAGER);
         $response3 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/remove-role/a');
 
-        // user is a valid role, but may not be removed
+        // user is a valid role, but may not be removed, group-manager is auto assigned
         $response4 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/remove-role/'.Role::USER);
+        $response5 = $this->runApp('PUT', '/api/user/player/'.$this->player3Id.'/remove-role/'.Role::GROUP_MANAGER);
 
         $this->assertEquals(404, $response1->getStatusCode());
         $this->assertEquals(404, $response2->getStatusCode());
         $this->assertEquals(404, $response3->getStatusCode());
         $this->assertEquals(404, $response4->getStatusCode());
+        $this->assertEquals(404, $response5->getStatusCode());
     }
 
     public function testRemoveRole500()
