@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
-use Brave\Sso\Basics\JsonWebToken;
 use Doctrine\ORM\Mapping as ORM;
+use Eve\Sso\JsonWebToken;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Api;

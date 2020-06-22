@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Brave\Sso\Basics\JsonWebToken;
+use Eve\Sso\EveAuthentication;
+use Eve\Sso\JsonWebToken;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -13,8 +15,6 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Brave\Sso\Basics\EveAuthentication;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Psr\Log\LoggerInterface;
 
 class Account

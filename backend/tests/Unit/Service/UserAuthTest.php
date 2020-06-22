@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Eve\Sso\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
+use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
@@ -16,10 +18,8 @@ use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
-use Neucore\Service\UserAuth;
 use Neucore\Service\SessionData;
-use Brave\Sso\Basics\EveAuthentication;
-use League\OAuth2\Client\Token\AccessToken;
+use Neucore\Service\UserAuth;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;

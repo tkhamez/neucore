@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Neucore;
 
-use Brave\Sso\Basics\AuthenticationProvider;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
+use Eve\Sso\AuthenticationProvider;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;

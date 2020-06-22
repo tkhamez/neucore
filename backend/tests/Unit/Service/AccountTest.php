@@ -5,20 +5,24 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Eve\Sso\EveAuthentication;
+use GuzzleHttp\Psr7\Response;
+use League\OAuth2\Client\Token\AccessToken;
+use Monolog\Handler\TestHandler;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Group;
+use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
-use Neucore\Repository\CharacterRepository;
-use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
@@ -28,15 +32,11 @@ use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
-use Brave\Sso\Basics\EveAuthentication;
-use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Token\AccessToken;
-use Monolog\Handler\TestHandler;
 use PHPUnit\Framework\TestCase;
+use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
 use Tests\OAuthProvider;
-use Tests\Client;
 
 class AccountTest extends TestCase
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Brave\Sso\Basics\EveAuthentication;
+use Eve\Sso\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Player;

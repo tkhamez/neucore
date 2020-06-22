@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Brave\Sso\Basics\EveAuthentication;
+use Eve\Sso\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
@@ -172,7 +172,10 @@ class MemberTracking
 
         $characterData = \json_decode($characterVar ? $characterVar->getValue() : '', true);
         $tokenData = \json_decode($tokenVar ? $tokenVar->getValue() : '', true);
-        if (! isset($characterData[SystemVariable::VALUE_CHARACTER_ID]) || ! isset($tokenData[SystemVariable::TOKEN_ACCESS])) {
+        if (
+            ! isset($characterData[SystemVariable::VALUE_CHARACTER_ID]) ||
+            ! isset($tokenData[SystemVariable::TOKEN_ACCESS])
+        ) {
             return null;
         }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Brave\Sso\Basics\EveAuthentication;
+use Eve\Sso\EveAuthentication;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Exception\RuntimeException;

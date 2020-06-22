@@ -14,7 +14,6 @@
         "ext-pdo_mysql": "*",
         "ext-phar": "*",
         "ext-tokenizer": "*",
-        "bravecollective/sso-basics": "^3.0",
         "doctrine/cache": "^1.8",
         "doctrine/data-fixtures": "^1.3",
         "doctrine/migrations": "^2.0",
@@ -33,6 +32,7 @@
         "symfony/dotenv": "^4.0",
         "symfony/http-foundation": "^4.0",
         "symfony/yaml": "^4.3",
+        "tkhamez/eve-sso": "^1.0",
         "tkhamez/slim-role-auth": "^3.0",
         "tkhamez/swagger-eve-php": "~4.0.0",
         "zircote/swagger-php": "^3.0"

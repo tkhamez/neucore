@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
-use Brave\Sso\Basics\AuthenticationProvider;
+use Eve\Sso\AuthenticationProvider;
 use Neucore\Api;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\SessionData;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\Random;
+use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;

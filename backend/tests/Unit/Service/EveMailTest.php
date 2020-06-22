@@ -5,6 +5,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Eve\Sso\EveAuthentication;
+use GuzzleHttp\Psr7\Response;
+use League\OAuth2\Client\Token\AccessToken;
+use Monolog\Logger;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
@@ -17,10 +21,6 @@ use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
-use Brave\Sso\Basics\EveAuthentication;
-use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Token\AccessToken;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;

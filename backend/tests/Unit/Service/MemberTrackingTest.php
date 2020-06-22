@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Eve\Sso\EveAuthentication;
+use GuzzleHttp\Psr7\Response;
+use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -18,10 +22,6 @@ use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
-use Brave\Sso\Basics\EveAuthentication;
-use GuzzleHttp\Psr7\Response;
-use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Token\AccessTokenInterface;
 use PHPUnit\Framework\TestCase;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Tests\Client;
