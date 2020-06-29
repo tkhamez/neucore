@@ -166,20 +166,21 @@ See https://www.vagrantup.com/docs/synced-folders for other methods.
 
 ### Using Docker
 
-Only tested on Linux.
+Only tested on Linux and once on MacOS.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
 the database host is `db`.
 
+- Run `export UID` once before you run any `docker-compose` command.
 - Build the containers with `docker-compose build`
-- Start services: `export UID && docker-compose up -d`
+- Start services: `docker-compose up -d`
 - Install the app: `./install-docker.sh`
 - Run tests and other commands in the php-fpm or node container:  
-    `export UID && docker-compose exec php-fpm /bin/bash` or  
-    `export UID && docker-compose run node /bin/bash`
+    `docker-compose exec php-fpm /bin/bash` or  
+    `docker-compose run node /bin/bash`
 - Stop containers: `docker-compose stop`
 
-The web application is available at http://localhost:8080, the database is also available at `127.0.0.1:30306`, 
+The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
 the data is stored in the `.mariadb` subdirectory.
 
 Known problems:

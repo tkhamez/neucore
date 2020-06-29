@@ -24,7 +24,7 @@ services:
     container_name: neucore_node
     image: node:12
     volumes: [".:/app"]
-    user: ${UID}
+    user: node
     working_dir: /app/frontend
 
   php-fpm:
