@@ -434,7 +434,7 @@ class EsiController extends BaseController
 
         $response = $this->response->withStatus($esiResponse->getStatusCode(), $esiResponse->getReasonPhrase());
 
-        $headerWhiteList = [
+        $headerAllowList = [
             'Content-Type',
             'Expires',
             'X-Esi-Error-Limit-Remain',
@@ -444,7 +444,7 @@ class EsiController extends BaseController
             'Warning',
         ];
         foreach ($esiResponse->getHeaders() as $name => $value) {
-            if (in_array($name, $headerWhiteList)) {
+            if (in_array($name, $headerAllowList)) {
                 $response = $response->withHeader($name, $value);
             }
         }

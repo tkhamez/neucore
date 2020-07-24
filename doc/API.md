@@ -277,15 +277,16 @@ Watchlist API
 - Lists all watchlists with view permission. `GET /user/watchlist/list-available`
 - List of player accounts that have characters in one of the configured alliances or corporations
                     and additionally have other characters in another player (not NPC) corporation that is not
-                    whitelisted and have not been manually excluded. `GET /user/watchlist/{id}/players`
-- Accounts from the watchlist with members in one of the blacklisted alliances or corporations. `GET /user/watchlist/{id}/players-blacklist`
+                    on the allowlist and have not been manually excluded. `GET /user/watchlist/{id}/players`
+- Accounts from the watchlist with members in one of the alliances or corporations
+                    from the kicklist. `GET /user/watchlist/{id}/players-kicklist`
 - List of exempt players. `GET /user/watchlist/{id}/exemption/list`
 - List of corporations for this list. `GET /user/watchlist/{id}/corporation/list`
 - List of alliances for this list. `GET /user/watchlist/{id}/alliance/list`
-- List of corporations for the blacklist. `GET /user/watchlist/{id}/blacklist-corporation/list`
-- List of alliances for the blacklist. `GET /user/watchlist/{id}/blacklist-alliance/list`
-- List of corporations for the corporation whitelist. `GET /user/watchlist/{id}/whitelist-corporation/list`
-- List of alliances for the alliance whitelist. `GET /user/watchlist/{id}/whitelist-alliance/list`
+- List of corporations for the kicklist. `GET /user/watchlist/{id}/kicklist-corporation/list`
+- List of alliances for the kicklist. `GET /user/watchlist/{id}/kicklist-alliance/list`
+- List of corporations for the corporation allowlist. `GET /user/watchlist/{id}/allowlist-corporation/list`
+- List of alliances for the alliance allowlist. `GET /user/watchlist/{id}/allowlist-alliance/list`
 
 #### watchlist-manager
 
@@ -311,18 +312,18 @@ Watchlist API
 - List of alliances for this list. `GET /user/watchlist/{id}/alliance/list`
 - Add alliance to the list. `PUT /user/watchlist/{id}/alliance/add/{alliance}`
 - Remove alliance from the list. `PUT /user/watchlist/{id}/alliance/remove/{alliance}`
-- List of corporations for the blacklist. `GET /user/watchlist/{id}/blacklist-corporation/list`
-- Add corporation to the blacklist. `PUT /user/watchlist/{id}/blacklist-corporation/add/{corporation}`
-- Remove corporation from the blacklist. `PUT /user/watchlist/{id}/blacklist-corporation/remove/{corporation}`
-- List of alliances for the blacklist. `GET /user/watchlist/{id}/blacklist-alliance/list`
-- Add alliance to the blacklist. `PUT /user/watchlist/{id}/blacklist-alliance/add/{alliance}`
-- Remove alliance from the blacklist. `PUT /user/watchlist/{id}/blacklist-alliance/remove/{alliance}`
-- List of corporations for the corporation whitelist. `GET /user/watchlist/{id}/whitelist-corporation/list`
-- Add corporation to the corporation whitelist. `PUT /user/watchlist/{id}/whitelist-corporation/add/{corporation}`
-- Remove corporation from the corporation whitelist. `PUT /user/watchlist/{id}/whitelist-corporation/remove/{corporation}`
-- List of alliances for the alliance whitelist. `GET /user/watchlist/{id}/whitelist-alliance/list`
-- Add alliance to the alliance whitelist. `PUT /user/watchlist/{id}/whitelist-alliance/add/{alliance}`
-- Remove alliance from the alliance whitelist. `PUT /user/watchlist/{id}/whitelist-alliance/remove/{alliance}`
+- List of corporations for the kicklist. `GET /user/watchlist/{id}/kicklist-corporation/list`
+- Add corporation to the kicklist. `PUT /user/watchlist/{id}/kicklist-corporation/add/{corporation}`
+- Remove corporation from the kicklist. `PUT /user/watchlist/{id}/kicklist-corporation/remove/{corporation}`
+- List of alliances for the kicklist. `GET /user/watchlist/{id}/kicklist-alliance/list`
+- Add alliance to the kicklist. `PUT /user/watchlist/{id}/kicklist-alliance/add/{alliance}`
+- Remove alliance from the kicklist. `PUT /user/watchlist/{id}/kicklist-alliance/remove/{alliance}`
+- List of corporations for the corporation allowlist. `GET /user/watchlist/{id}/allowlist-corporation/list`
+- Add corporation to the corporation allowlist. `PUT /user/watchlist/{id}/allowlist-corporation/add/{corporation}`
+- Remove corporation from the corporation allowlist. `PUT /user/watchlist/{id}/allowlist-corporation/remove/{corporation}`
+- List of alliances for the alliance allowlist. `GET /user/watchlist/{id}/allowlist-alliance/list`
+- Add alliance to the alliance allowlist. `PUT /user/watchlist/{id}/allowlist-alliance/add/{alliance}`
+- Remove alliance from the alliance allowlist. `PUT /user/watchlist/{id}/allowlist-alliance/remove/{alliance}`
 
 #### watchlist-admin
 

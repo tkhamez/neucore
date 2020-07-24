@@ -195,10 +195,10 @@ class Helper
             try {
                 $em->getConnection()->exec('DELETE FROM watchlist_corporation WHERE 1');
                 $em->getConnection()->exec('DELETE FROM watchlist_alliance WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_blacklist_corporation WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_blacklist_alliance WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_whitelist_corporation WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_whitelist_alliance WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_kicklist_corporation WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_kicklist_alliance WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_allowlist_corporation WHERE 1');
+                $em->getConnection()->exec('DELETE FROM watchlist_allowlist_alliance WHERE 1');
             } catch (DBALException $e) {
                 echo $e->getMessage();
             }

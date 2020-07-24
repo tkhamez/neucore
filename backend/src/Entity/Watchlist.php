@@ -36,7 +36,7 @@ class Watchlist implements \JsonSerializable
     private $name;
 
     /**
-     * Player accounts that are white listed.
+     * Player accounts that are on the allowlist.
      *
      * @ORM\ManyToMany(targetEntity="Player")
      * @ORM\JoinTable(name="watchlist_exemption")
@@ -85,45 +85,45 @@ class Watchlist implements \JsonSerializable
 
     /**
      * Accounts that are on the list and have members in one of these corporations
-     * are moved to the blacklist.
+     * are moved to the kicklist.
      *
      * @ORM\ManyToMany(targetEntity="Corporation")
-     * @ORM\JoinTable(name="watchlist_blacklist_corporation")
+     * @ORM\JoinTable(name="watchlist_kicklist_corporation")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
-    private $blacklistCorporations;
+    private $kicklistCorporations;
 
     /**
-     * Same as $blacklistCorporations but for alliances.
+     * Same as $kicklistCorporations but for alliances.
      *
      * @ORM\ManyToMany(targetEntity="Alliance")
-     * @ORM\JoinTable(name="watchlist_blacklist_alliance")
+     * @ORM\JoinTable(name="watchlist_kicklist_alliance")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
-    private $blacklistAlliances;
+    private $kicklistAlliances;
 
     /**
      * Corporations that should be treated like NPC corporations, for example personal alt corps.
      * Accounts will not be added to the list is they have a character in one of these.
      *
      * @ORM\ManyToMany(targetEntity="Corporation")
-     * @ORM\JoinTable(name="watchlist_whitelist_corporation")
+     * @ORM\JoinTable(name="watchlist_allowlist_corporation")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
-    private $whitelistCorporations;
+    private $allowlistCorporations;
 
     /**
-     * Same as $whitelistCorporations but for alliances.
+     * Same as $allowlistCorporations but for alliances.
      *
      * @ORM\ManyToMany(targetEntity="Alliance")
-     * @ORM\JoinTable(name="watchlist_whitelist_alliance")
+     * @ORM\JoinTable(name="watchlist_allowlist_alliance")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
-    private $whitelistAlliances;
+    private $allowlistAlliances;
 
     public function jsonSerialize(): array
     {
@@ -143,10 +143,10 @@ class Watchlist implements \JsonSerializable
         $this->alliances = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->managerGroups = new ArrayCollection();
-        $this->blacklistCorporations = new ArrayCollection();
-        $this->blacklistAlliances = new ArrayCollection();
-        $this->whitelistCorporations = new ArrayCollection();
-        $this->whitelistAlliances = new ArrayCollection();
+        $this->kicklistCorporations = new ArrayCollection();
+        $this->kicklistAlliances = new ArrayCollection();
+        $this->allowlistCorporations = new ArrayCollection();
+        $this->allowlistAlliances = new ArrayCollection();
     }
 
     public function setId(int $id): Watchlist
@@ -301,15 +301,15 @@ class Watchlist implements \JsonSerializable
         return $this->managerGroups->toArray();
     }
 
-    public function addBlacklistCorporation(Corporation $blacklistCorporation): self
+    public function addKicklistCorporation(Corporation $kicklistCorporation): self
     {
-        foreach ($this->getBlacklistCorporations() as $entity) {
-            if ($entity->getId() === $blacklistCorporation->getId()) {
+        foreach ($this->getKicklistCorporations() as $entity) {
+            if ($entity->getId() === $kicklistCorporation->getId()) {
                 return $this;
             }
         }
 
-        $this->blacklistCorporations[] = $blacklistCorporation;
+        $this->kicklistCorporations[] = $kicklistCorporation;
 
         return $this;
     }
@@ -317,27 +317,27 @@ class Watchlist implements \JsonSerializable
     /**
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeBlacklistCorporation(Corporation $blacklistCorporation): bool
+    public function removeKicklistCorporation(Corporation $kicklistCorporation): bool
     {
-        return $this->blacklistCorporations->removeElement($blacklistCorporation);
+        return $this->kicklistCorporations->removeElement($kicklistCorporation);
     }
 
     /**
      * @return Corporation[]
      */
-    public function getBlacklistCorporations(): array
+    public function getKicklistCorporations(): array
     {
-        return $this->blacklistCorporations->toArray();
+        return $this->kicklistCorporations->toArray();
     }
 
-    public function addBlacklistAlliance(Alliance $blacklistAlliance): self
+    public function addKicklistAlliance(Alliance $kicklistAlliance): self
     {
-        foreach ($this->getBlacklistAlliances() as $entity) {
-            if ($entity->getId() === $blacklistAlliance->getId()) {
+        foreach ($this->getKicklistAlliances() as $entity) {
+            if ($entity->getId() === $kicklistAlliance->getId()) {
                 return $this;
             }
         }
-        $this->blacklistAlliances[] = $blacklistAlliance;
+        $this->kicklistAlliances[] = $kicklistAlliance;
 
         return $this;
     }
@@ -345,28 +345,28 @@ class Watchlist implements \JsonSerializable
     /**
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeBlacklistAlliance(Alliance $blacklistAlliance): bool
+    public function removeKicklistAlliance(Alliance $kicklistAlliance): bool
     {
-        return $this->blacklistAlliances->removeElement($blacklistAlliance);
+        return $this->kicklistAlliances->removeElement($kicklistAlliance);
     }
 
     /**
      * @return Alliance[]
      */
-    public function getBlacklistAlliances(): array
+    public function getKicklistAlliances(): array
     {
-        return $this->blacklistAlliances->toArray();
+        return $this->kicklistAlliances->toArray();
     }
 
-    public function addWhitelistCorporation(Corporation $whitelistCorporation): self
+    public function addAllowlistCorporation(Corporation $allowlistCorporation): self
     {
-        foreach ($this->getWhitelistCorporations() as $entity) {
-            if ($entity->getId() === $whitelistCorporation->getId()) {
+        foreach ($this->getAllowlistCorporations() as $entity) {
+            if ($entity->getId() === $allowlistCorporation->getId()) {
                 return $this;
             }
         }
 
-        $this->whitelistCorporations[] = $whitelistCorporation;
+        $this->allowlistCorporations[] = $allowlistCorporation;
 
         return $this;
     }
@@ -374,29 +374,29 @@ class Watchlist implements \JsonSerializable
     /**
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeWhitelistCorporation(Corporation $whitelistCorporation): bool
+    public function removeAllowlistCorporation(Corporation $allowlistCorporation): bool
     {
-        $whitelistCorporation->setAutoWhitelist(false);
-        return $this->whitelistCorporations->removeElement($whitelistCorporation);
+        $allowlistCorporation->setAutoAllowlist(false);
+        return $this->allowlistCorporations->removeElement($allowlistCorporation);
     }
 
     /**
      * @return Corporation[]
      */
-    public function getWhitelistCorporations(): array
+    public function getAllowlistCorporations(): array
     {
-        return $this->whitelistCorporations->toArray();
+        return $this->allowlistCorporations->toArray();
     }
 
-    public function addWhitelistAlliance(Alliance $whitelistAlliance): self
+    public function addAllowlistAlliance(Alliance $allowlistAlliance): self
     {
-        foreach ($this->getWhitelistAlliances() as $entity) {
-            if ($entity->getId() === $whitelistAlliance->getId()) {
+        foreach ($this->getAllowlistAlliances() as $entity) {
+            if ($entity->getId() === $allowlistAlliance->getId()) {
                 return $this;
             }
         }
 
-        $this->whitelistAlliances[] = $whitelistAlliance;
+        $this->allowlistAlliances[] = $allowlistAlliance;
 
         return $this;
     }
@@ -404,16 +404,16 @@ class Watchlist implements \JsonSerializable
     /**
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeWhitelistAlliance(Alliance $whitelistAlliance): bool
+    public function removeAllowlistAlliance(Alliance $allowlistAlliance): bool
     {
-        return $this->whitelistAlliances->removeElement($whitelistAlliance);
+        return $this->allowlistAlliances->removeElement($allowlistAlliance);
     }
 
     /**
      * @return Alliance[]
      */
-    public function getWhitelistAlliances(): array
+    public function getAllowlistAlliances(): array
     {
-        return $this->whitelistAlliances->toArray();
+        return $this->allowlistAlliances->toArray();
     }
 }

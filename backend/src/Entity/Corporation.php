@@ -112,13 +112,13 @@ class Corporation implements \JsonSerializable
     private $members;
 
     /**
-     * True if this corporation was automatically placed on the whitelist of a watchlist (API: not included by default).
+     * True if this corporation was automatically placed on the allowlist of a watchlist (API: not included by default).
      *
      * @OA\Property(type="boolean")
-     * @ORM\Column(type="boolean", name="auto_whitelist", nullable=false, options={"default" : 0})
+     * @ORM\Column(type="boolean", name="auto_allowlist", nullable=false, options={"default" : 0})
      * @var bool
      */
-    private $autoWhitelist = false;
+    private $autoAllowlist = false;
 
     /**
      * Contains only information that is of interest for clients.
@@ -126,7 +126,7 @@ class Corporation implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize(bool $includeTrackingDate = false, bool $includeAutoWhitelist = false): array
+    public function jsonSerialize(bool $includeTrackingDate = false, bool $includeAutoAllowlist = false): array
     {
         $data = [
             'id' => $this->getId(),
@@ -141,8 +141,8 @@ class Corporation implements \JsonSerializable
                 $this->trackingLastUpdate->format(Api::DATE_FORMAT) : null;
         }
 
-        if ($includeAutoWhitelist) {
-            $data['autoWhitelist'] = $this->autoWhitelist;
+        if ($includeAutoAllowlist) {
+            $data['autoAllowlist'] = $this->autoAllowlist;
         }
 
         return $data;
@@ -448,15 +448,15 @@ class Corporation implements \JsonSerializable
         return $this->members->toArray();
     }
 
-    public function setAutoWhitelist(bool $autoWhitelist): self
+    public function setAutoAllowlist(bool $autoAllowlist): self
     {
-        $this->autoWhitelist = $autoWhitelist;
+        $this->autoAllowlist = $autoAllowlist;
 
         return $this;
     }
 
-    public function getAutoWhitelist(): bool
+    public function getAutoAllowlist(): bool
     {
-        return $this->autoWhitelist;
+        return $this->autoAllowlist;
     }
 }

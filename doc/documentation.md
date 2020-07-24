@@ -158,8 +158,8 @@ members are added or removed from these groups.
 
 ## Watchlist
 
-Corporations can be automatically added to the whitelist (and removed accordingly) if all their members 
-are on the same account using the `auto-whitelist` command. This only works if at least one character in
+Corporations can be automatically added to the allowlist (and removed accordingly) if all their members 
+are on the same account using the `auto-allowlist` command. This only works if at least one character in
 that corporation has authorized the `esi-corporations.read_corporation_membership.v1` ESI scope.
 
 The permissions are managed via groups, one for viewing and one for administration separately for each watch list.

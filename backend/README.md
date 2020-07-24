@@ -52,7 +52,7 @@ bin/doc-api-gen.php
 
 ### ESI routes
 
-The `/api/app/v1/esi` endpoint uses a blacklist to block requests to publicly accessible ESI routes. 
+The `/api/app/v1/esi` endpoint uses a denylist to block requests to publicly accessible ESI routes. 
 This list can be regenerated with:
 
 ```

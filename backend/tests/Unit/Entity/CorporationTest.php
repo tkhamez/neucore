@@ -21,7 +21,7 @@ class CorporationTest extends TestCase
         $corp->setName('test corp');
         $corp->setTicker('ABC');
         $corp->setTrackingLastUpdate(new \DateTime('2019-12-19 13:44:02'));
-        $corp->setAutoWhitelist(true);
+        $corp->setAutoAllowlist(true);
 
         $this->assertSame([
             'id' => 123,
@@ -44,7 +44,7 @@ class CorporationTest extends TestCase
             'ticker' => 'ABC',
             'alliance' => null,
             'trackingLastUpdate' => '2019-12-19T13:44:02Z',
-            'autoWhitelist' => true,
+            'autoAllowlist' => true,
         ], $corp->jsonSerialize(true, true));
     }
 
@@ -222,12 +222,12 @@ class CorporationTest extends TestCase
         $this->assertSame([$cm1], $corp->getMembers());
     }
 
-    public function testSetGetAutoWhitelist()
+    public function testSetGetAutoAllowlist()
     {
         $corp = new Corporation();
 
-        $this->assertFalse($corp->getAutoWhitelist());
-        $this->assertSame($corp, $corp->setAutoWhitelist(true));
-        $this->assertTrue($corp->getAutoWhitelist());
+        $this->assertFalse($corp->getAutoAllowlist());
+        $this->assertSame($corp, $corp->setAutoAllowlist(true));
+        $this->assertTrue($corp->getAutoAllowlist());
     }
 }

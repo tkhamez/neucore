@@ -115,68 +115,68 @@ class WatchlistTest extends TestCase
         $this->assertSame([], $watchlist->getManagerGroups());
     }
 
-    public function testAddGetRemoveBlacklistCorporation()
+    public function testAddGetRemoveKicklistCorporation()
     {
         $watchlist = new Watchlist();
         $e1 = new Corporation();
         $e2 = new Corporation();
 
-        $this->assertSame([], $watchlist->getBlacklistCorporations());
+        $this->assertSame([], $watchlist->getKicklistCorporations());
 
-        $watchlist->addBlacklistCorporation($e1);
-        $watchlist->addBlacklistCorporation($e2);
-        $this->assertSame([$e1], $watchlist->getBlacklistCorporations());
+        $watchlist->addKicklistCorporation($e1);
+        $watchlist->addKicklistCorporation($e2);
+        $this->assertSame([$e1], $watchlist->getKicklistCorporations());
 
-        $watchlist->removeBlacklistCorporation($e1);
-        $this->assertSame([], $watchlist->getBlacklistCorporations());
+        $watchlist->removeKicklistCorporation($e1);
+        $this->assertSame([], $watchlist->getKicklistCorporations());
     }
 
-    public function testAddGetRemoveBlacklistAlliance()
+    public function testAddGetRemoveKicklistAlliance()
     {
         $watchlist = new Watchlist();
         $e1 = new Alliance();
         $e2 = new Alliance();
 
-        $this->assertSame([], $watchlist->getBlacklistAlliances());
+        $this->assertSame([], $watchlist->getKicklistAlliances());
 
-        $watchlist->addBlacklistAlliance($e1);
-        $watchlist->addBlacklistAlliance($e2);
-        $this->assertSame([$e1], $watchlist->getBlacklistAlliances());
+        $watchlist->addKicklistAlliance($e1);
+        $watchlist->addKicklistAlliance($e2);
+        $this->assertSame([$e1], $watchlist->getKicklistAlliances());
 
-        $watchlist->removeBlacklistAlliance($e1);
-        $this->assertSame([], $watchlist->getBlacklistAlliances());
+        $watchlist->removeKicklistAlliance($e1);
+        $this->assertSame([], $watchlist->getKicklistAlliances());
     }
 
-    public function testAddGetRemoveWhitelistCorporation()
+    public function testAddGetRemoveAllowlistCorporation()
     {
         $watchlist = new Watchlist();
-        $e1 = (new Corporation())->setAutoWhitelist(true);
+        $e1 = (new Corporation())->setAutoAllowlist(true);
         $e2 = new Corporation();
 
-        $this->assertSame([], $watchlist->getWhitelistCorporations());
+        $this->assertSame([], $watchlist->getAllowlistCorporations());
 
-        $watchlist->addWhitelistCorporation($e1);
-        $watchlist->addWhitelistCorporation($e2);
-        $this->assertSame([$e1], $watchlist->getWhitelistCorporations());
+        $watchlist->addAllowlistCorporation($e1);
+        $watchlist->addAllowlistCorporation($e2);
+        $this->assertSame([$e1], $watchlist->getAllowlistCorporations());
 
-        $watchlist->removeWhitelistCorporation($e1);
-        $this->assertSame([], $watchlist->getWhitelistCorporations());
-        $this->assertFalse($e1->getAutoWhitelist());
+        $watchlist->removeAllowlistCorporation($e1);
+        $this->assertSame([], $watchlist->getAllowlistCorporations());
+        $this->assertFalse($e1->getAutoAllowlist());
     }
 
-    public function testAddGetRemoveWhitelistAlliance()
+    public function testAddGetRemoveAllowlistAlliance()
     {
         $watchlist = new Watchlist();
         $e1 = new Alliance();
         $e2 = new Alliance();
 
-        $this->assertSame([], $watchlist->getWhitelistAlliances());
+        $this->assertSame([], $watchlist->getAllowlistAlliances());
 
-        $watchlist->addWhitelistAlliance($e1);
-        $watchlist->addWhitelistAlliance($e2);
-        $this->assertSame([$e1], $watchlist->getWhitelistAlliances());
+        $watchlist->addAllowlistAlliance($e1);
+        $watchlist->addAllowlistAlliance($e2);
+        $this->assertSame([$e1], $watchlist->getAllowlistAlliances());
 
-        $watchlist->removeWhitelistAlliance($e1);
-        $this->assertSame([], $watchlist->getWhitelistAlliances());
+        $watchlist->removeAllowlistAlliance($e1);
+        $this->assertSame([], $watchlist->getAllowlistAlliances());
     }
 }

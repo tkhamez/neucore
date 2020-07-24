@@ -2,14 +2,17 @@
 
 ## next
 
--  Small UI improvements and fixes.
+- Inclusive and more descriptive terminology (changed "red flags" to warnings, blacklist to kicklist or denylist and 
+  whitelist to allowlist)
+- Change: **BC break** The console command `auto-whitelist` was renamed to `auto-allowlist`
+- Small UI improvements and fixes.
 
 ## 1.13.1
 
 13 Jun 2020
 
 - Improved "Find Alts" page layout.
-- Fixed Watchlist: Whitelist did not always load. [#30][i30]
+- Fixed Watchlist: Allowlist did not always load. [#30][i30]
 - Fixed an error that broke the app in IE 11.
 - Other small stuff.
 
@@ -28,7 +31,7 @@
 - Change: The character search for group managers can now only find main characters, no more alts.
 - Change: the app-manager and group-manager roles are now added and removed automatically, 
   depending on whether the player is a manager of an app or a group.
-- Change: The "auto-whitelist" command no longer needs a watchlist ID, it now runs for all watchlists without it.
+- Change: The "auto-allowlist" command no longer needs a watchlist ID, it now runs for all watchlists without it.
 - Improvement: Added name of the director with ESI token to the Member Tracking Administration page.
 - Fix: The Member Tracking corporation selection now only offers corporation that the user can see.
 - Fix: ESI result body was not always displayed correctly.
@@ -93,7 +96,7 @@
 2 May 2020
 
 - Reduced CPU usage of tracking role sync.
-- Added `Warning` header to the white list of the app ESI endpoint.
+- Added `Warning` header to the allowlist of the app ESI endpoint.
 - Changed environment variable prefix from `BRAVECORE_` to `NEUCORE_` (with fallback, old names still work).
 
 ## 1.11.0
@@ -146,7 +149,7 @@
 
 29 Feb 2020
 
-- New: Automatic inclusion of corporations in the whitelist for the watchlist.
+- New: Automatic inclusion of corporations in the allowlist for the watchlist.
 - New: Added character search with list of all characters on a player account to the watchlist page.
 - Change: Group managers can no longer see a list of all characters on a player account.
 - Change: Access to the list of all characters on a player account for the "tracking" role is now limited to 
@@ -159,8 +162,8 @@
 
 26 Dec 2019
 
-- New: Watchlist, Blacklist added.
-- New: Watchlist, Whitelist for corporations and alliances added.
+- New: Watchlist: Kicklist added.
+- New: Watchlist: Allowlist for corporations and alliances added.
 - New: Notification mail for characters from tracked corporations that have not yet been added to Neucore.
 - New: `incoming-characters` endpoint for apps.
 - Added last update date to corporation tracking data.

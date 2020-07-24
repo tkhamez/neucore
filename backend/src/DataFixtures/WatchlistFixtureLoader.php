@@ -20,7 +20,7 @@ class WatchlistFixtureLoader implements FixtureInterface
         if ($list1 === null) {
             $list1 = new Watchlist();
             $list1->setId(1);
-            $list1->setName('auto-red-flags');
+            $list1->setName('List 1');
             $manager->persist($list1);
         }
 

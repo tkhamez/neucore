@@ -65,24 +65,24 @@ class WatchlistTest extends TestCase
         $watchlist->addManagerGroup($managerGroup);
 
         $alliance1 = (new Alliance())->setId(11)->setName('a1'); // watched
-        $alliance2 = (new Alliance())->setId(12)->setName('a2'); // white list
-        $alliance3 = (new Alliance())->setId(13)->setName('a3'); // black list
+        $alliance2 = (new Alliance())->setId(12)->setName('a2'); // allowlist
+        $alliance3 = (new Alliance())->setId(13)->setName('a3'); // kicklist
 
         self::$corp1a = (new Corporation())->setId(1011)->setName('c1a')
             ->setAlliance($alliance1); // watched via alliance
         self::$corp1b = (new Corporation())->setId(1012)->setName('c1b'); // watched
-        $corp2a = (new Corporation())->setId(1021)->setName('c2a')->setAlliance($alliance2); // white list via alliance
-        $corp2b = (new Corporation())->setId(1022)->setName('c2b'); // white listed
-        $corp3a = (new Corporation())->setId(1031)->setName('c3a')->setAlliance($alliance3); // black list via alliance
-        $corp3b = (new Corporation())->setId(1032)->setName('c3b'); // black listed
+        $corp2a = (new Corporation())->setId(1021)->setName('c2a')->setAlliance($alliance2); // allowlist via alliance
+        $corp2b = (new Corporation())->setId(1022)->setName('c2b'); // on allowlist
+        $corp3a = (new Corporation())->setId(1031)->setName('c3a')->setAlliance($alliance3); // kicklist via alliance
+        $corp3b = (new Corporation())->setId(1032)->setName('c3b'); // on kicklist
         $corp4 = (new Corporation())->setId(2000000 + 1040)->setName('c4'); // other corp, not NPC
 
         $watchlist->addAlliance($alliance1);
         $watchlist->addCorporation(self::$corp1b);
-        $watchlist->addWhitelistAlliance($alliance2);
-        $watchlist->addBlacklistAlliance($alliance3);
-        $watchlist->addWhitelistCorporation($corp2b);
-        $watchlist->addBlacklistCorporation($corp3b);
+        $watchlist->addAllowlistAlliance($alliance2);
+        $watchlist->addKicklistAlliance($alliance3);
+        $watchlist->addAllowlistCorporation($corp2b);
+        $watchlist->addKicklistCorporation($corp3b);
 
         $helper->getObjectManager()->persist($watchlist);
         $helper->getObjectManager()->persist($group);
@@ -110,22 +110,22 @@ class WatchlistTest extends TestCase
         $helper->addCharacterToPlayer('c4b', 10042, self::$char4->getPlayer())->setCorporation($corp4); // other corp
 
         $helper->addCharacterToPlayer('c2c', 10023, self::$char2->getPlayer())
-            ->setCorporation($corp3a); // black list via alliance
+            ->setCorporation($corp3a); // kicklist via alliance
         $helper->addCharacterToPlayer('c3c', 10033, self::$char3->getPlayer())
-            ->setCorporation($corp3b); // black list
+            ->setCorporation($corp3b); // kicklist
 
         $helper->addCharacterToPlayer('c3d', 10034, self::$char3->getPlayer())
-            ->setCorporation($corp2a); // white listed corp, but also on black listed corp
-        $watchlist->addExemption(self::$char4->getPlayer()); // whitelist player
+            ->setCorporation($corp2a); // corp on allowlist, but also on corp from kicklist
+        $watchlist->addExemption(self::$char4->getPlayer()); // add to allowlist
 
         $helper->getObjectManager()->flush();
 
         self::$watchlistService = new Watchlist(new RepositoryFactory($helper->getEm()));
     }
 
-    public function testGetRedFlagList()
+    public function testGetWarningList()
     {
-        $actual = self::$watchlistService->getRedFlagList(1);
+        $actual = self::$watchlistService->getWarningList(1);
         $this->assertSame(1, count($actual));
         $this->assertSame([
             'id' => self::$char1->getPlayer()->getId(),
@@ -133,9 +133,9 @@ class WatchlistTest extends TestCase
         ], $actual[0]->jsonSerialize(true));
     }
 
-    public function testGetRedFlagListWithBlacklistAndWhitelist()
+    public function testGetWarningListWithKicklistAndAllowlist()
     {
-        $actual = self::$watchlistService->getRedFlagList(1, true, true);
+        $actual = self::$watchlistService->getWarningList(1, true, true);
         $this->assertSame(4, count($actual));
         $this->assertSame('c1a', $actual[0]->getName());
         $this->assertSame('c2a', $actual[1]->getName());
@@ -143,15 +143,15 @@ class WatchlistTest extends TestCase
         $this->assertSame('c4a', $actual[3]->getName());
     }
 
-    public function testGetBlacklist()
+    public function testGetKicklist()
     {
-        $actual = self::$watchlistService->getBlacklist(1);
+        $actual = self::$watchlistService->getKicklist(1);
         $this->assertSame([[
             'id' => self::$char2->getPlayer()->getId(),
             'name' => 'c2a',
         ], [
             'id' => self::$char3->getPlayer()->getId(),
-            'name' => 'c3a', // white and black list via different corps
+            'name' => 'c3a', // allowlist and kicklist via different corps
         ]], $actual);
     }
 
@@ -162,10 +162,10 @@ class WatchlistTest extends TestCase
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::ALLIANCE)));
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::CORPORATION)));
         $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::EXEMPTION)));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::BLACKLIST_CORPORATION)));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::BLACKLIST_ALLIANCE)));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::WHITELIST_CORPORATION)));
-        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::WHITELIST_ALLIANCE)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::KICKLIST_CORPORATION)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::KICKLIST_ALLIANCE)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::ALLOWLIST_CORPORATION)));
+        $this->assertSame(1, count(self::$watchlistService->getList(1, Watchlist::ALLOWLIST_ALLIANCE)));
 
         $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, Watchlist::GROUP)[0]);
         $this->assertInstanceOf(Group::class, self::$watchlistService->getList(1, Watchlist::MANAGER_GROUP)[0]);
@@ -174,19 +174,19 @@ class WatchlistTest extends TestCase
         $this->assertInstanceOf(Player::class, self::$watchlistService->getList(1, Watchlist::EXEMPTION)[0]);
         $this->assertInstanceOf(
             Corporation::class,
-            self::$watchlistService->getList(1, Watchlist::BLACKLIST_CORPORATION)[0]
+            self::$watchlistService->getList(1, Watchlist::KICKLIST_CORPORATION)[0]
         );
         $this->assertInstanceOf(
             Alliance::class,
-            self::$watchlistService->getList(1, Watchlist::BLACKLIST_ALLIANCE)[0]
+            self::$watchlistService->getList(1, Watchlist::KICKLIST_ALLIANCE)[0]
         );
         $this->assertInstanceOf(
             Corporation::class,
-            self::$watchlistService->getList(1, Watchlist::WHITELIST_CORPORATION)[0]
+            self::$watchlistService->getList(1, Watchlist::ALLOWLIST_CORPORATION)[0]
         );
         $this->assertInstanceOf(
             Alliance::class,
-            self::$watchlistService->getList(1, Watchlist::WHITELIST_ALLIANCE)[0]
+            self::$watchlistService->getList(1, Watchlist::ALLOWLIST_ALLIANCE)[0]
         );
     }
 

@@ -15,7 +15,7 @@ use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
 use Tests\Helper;
 
-class AutoWhitelistTest extends ConsoleTestCase
+class AutoAllowlistTest extends ConsoleTestCase
 {
     /**
      * @var ObjectManager
@@ -37,7 +37,7 @@ class AutoWhitelistTest extends ConsoleTestCase
         $corp1 = (new Corporation())->setId(2000101)->setName('corp1'); // watched
         $corp2 = (new Corporation())->setId(2000102)->setName('corp2'); // PAC
         $corp3 = (new Corporation())->setId(2000103)->setName('corp3'); // other corp
-        $corp3->setAutoWhitelist(true); // was whitelisted before
+        $corp3->setAutoAllowlist(true); // was on allowlist before
         $this->om->persist($corp1);
         $this->om->persist($corp2);
         $this->om->persist($corp3);
@@ -57,7 +57,7 @@ class AutoWhitelistTest extends ConsoleTestCase
         $this->om->persist($watchlist1);
 
         $watchlist2 = new Watchlist();
-        $watchlist2->setId(2)->setName('test2')->addCorporation($corp1)->addWhitelistCorporation($corp3);
+        $watchlist2->setId(2)->setName('test2')->addCorporation($corp1)->addAllowlistCorporation($corp3);
         $this->om->persist($watchlist2);
 
         $this->om->flush();
@@ -76,22 +76,22 @@ class AutoWhitelistTest extends ConsoleTestCase
             new Response(200, [], '[1012]') // getCorporationsCorporationIdMembers watchlist 3
         );
 
-        $output = $this->runConsoleApp('auto-whitelist', ['--sleep' => 0], [
+        $output = $this->runConsoleApp('auto-allowlist', ['--sleep' => 0], [
             ClientInterface::class => $client,
         ]);
 
         $log = explode("\n", $output);
         $this->assertSame(11, count($log));
-        $this->assertStringContainsString('Started "auto-whitelist"', $log[0]);
+        $this->assertStringContainsString('Started "auto-allowlist"', $log[0]);
         $this->assertStringContainsString('  Processing watchlist 1', $log[1]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[2]);
-        $this->assertStringContainsString('    Corporations to check: 1, checked: 0, whitelisted: 0', $log[3]);
+        $this->assertStringContainsString('    Corporations to check: 1, checked: 0, allowlist: 0', $log[3]);
         $this->assertStringContainsString('  Processing watchlist 2', $log[4]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[5]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player2Id']}.", $log[6]);
         $this->assertStringContainsString('    Checked corporation 2000102.', $log[7]);
-        $this->assertStringContainsString('    Corporations to check: 1, checked: 1, whitelisted: 1', $log[8]);
-        $this->assertStringContainsString('Finished "auto-whitelist"', $log[9]);
+        $this->assertStringContainsString('    Corporations to check: 1, checked: 1, allowlist: 1', $log[8]);
+        $this->assertStringContainsString('Finished "auto-allowlist"', $log[9]);
         $this->assertStringContainsString('', $log[10]);
 
         $this->om->clear();
@@ -100,9 +100,9 @@ class AutoWhitelistTest extends ConsoleTestCase
         $corp2 = (new RepositoryFactory($this->om))->getCorporationRepository()->find(2000102);
         $corp3 = (new RepositoryFactory($this->om))->getCorporationRepository()->find(2000103);
 
-        $this->assertSame(1, count($list->getWhitelistCorporations()));
-        $this->assertSame(2000102, $list->getWhitelistCorporations()[0]->getId());
-        $this->assertTrue($corp2->getAutoWhitelist());
-        $this->assertFalse($corp3->getAutoWhitelist());
+        $this->assertSame(1, count($list->getAllowlistCorporations()));
+        $this->assertSame(2000102, $list->getAllowlistCorporations()[0]->getId());
+        $this->assertTrue($corp2->getAutoAllowlist());
+        $this->assertFalse($corp3->getAutoAllowlist());
     }
 }

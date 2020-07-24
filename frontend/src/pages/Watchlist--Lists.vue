@@ -1,33 +1,33 @@
 <template>
 <div>
-    <div v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'" class="card">
+    <div v-cloak v-if="tab === 'warnings' || tab === 'kick' || tab === 'allow'" class="card">
         <div class="card-body">
-            <span v-if="tab === 'red'">
+            <span v-if="tab === 'warnings'">
                 List of player accounts that have characters in one of the configured alliances or corporations
                 and additionally other characters in another player (non-NPC) corporations (that are not on the
-                whitelist) and have not been manually excluded.<br>
+                allowlist) and have not been manually excluded.<br>
                 <span class="text-muted small">
                     <strong>Alliances</strong>: {{ nameList(alliances) }}<br>
                     <strong>Corporations</strong>: {{ nameList(corporations) }}
                 </span>
             </span>
-            <span v-if="tab === 'black'">
-                Player accounts from the "Red Flags" list are moved here if they have characters in one of the
-                "black listed" alliances or corporations.<br>
+            <span v-if="tab === 'kick'">
+                Player accounts from the warning list are moved here if they have characters in one of the
+                alliances or corporations from the kicklist.<br>
                 <span class="text-muted small">
-                    <strong>Alliances</strong>: {{ nameList(blacklistAlliances) }}<br>
-                    <strong>Corporations</strong>: {{ nameList(blacklistCorporations) }}
+                    <strong>Alliances</strong>: {{ nameList(kicklistAlliances) }}<br>
+                    <strong>Corporations</strong>: {{ nameList(kicklistCorporations) }}
                 </span>
             </span>
-            <span v-if="tab === 'white'">
-                Player accounts that were manually excluded from the "Red Flags" list.<br>
-                Alliances and corporations that were put on the white list.
+            <span v-if="tab === 'allow'">
+                Player accounts that were manually excluded from the warning list or kicklist.<br>
+                Alliances and corporations that were put on the allowlist.
             </span>
         </div>
     </div>
 
-    <div class="row" v-cloak v-if="tab === 'red' || tab === 'black' || tab === 'white'">
-        <div :class="{'col-lg-6': tab === 'white', 'col-12': tab !== 'white' }">
+    <div class="row" v-cloak v-if="tab === 'warnings' || tab === 'kick' || tab === 'allow'">
+        <div :class="{'col-lg-6': tab === 'allow', 'col-12': tab !== 'allow' }">
             <h5 class="mt-4 bg-body">Players</h5>
             <table class="table table-hover nc-table-sm" aria-describedby="List of player accounts">
                 <thead class="thead-dark">
@@ -46,19 +46,19 @@
                             </a>
                         </td>
                         <td v-if="manageIds.indexOf(id) !== -1">
-                            <button v-if="tab === 'red' || tab === 'black'" class="btn btn-primary btn-sm"
-                                    v-on:click="addToWhitelist(player.id)">
-                                Add to Whitelist
+                            <button v-if="tab === 'warnings' || tab === 'kick'" class="btn btn-primary btn-sm"
+                                    v-on:click="addToAllowlist(player.id)">
+                                Add to allowlist
                             </button>
-                            <button v-if="tab === 'white'" class="btn btn-primary btn-sm"
-                                    v-on:click="removeFromWhitelist('Players', player.id)">Remove</button>
+                            <button v-if="tab === 'allow'" class="btn btn-primary btn-sm"
+                                    v-on:click="removeFromAllowlist('Players', player.id)">Remove</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <p class="small text-muted">{{ listContent.Player.length }} player account(s)</p>
         </div>
-        <div v-cloak v-if="tab === 'white'" class="col-lg-6">
+        <div v-cloak v-if="tab === 'allow'" class="col-lg-6">
             <div v-for="(listName, index) in ['Alliance', 'Corporation', 'Corporation']">
                 <h5 class="mt-4 bg-body">
                     {{listName}}s
@@ -78,8 +78,8 @@
                         <tr v-for="entity in listContent[listName]"
                             v-if="
                                 listName !== 'Corporation' ||
-                                (index === 1 && ! entity.autoWhitelist) ||
-                                (index === 2 && entity.autoWhitelist)">
+                                (index === 1 && ! entity.autoAllowlist) ||
+                                (index === 2 && entity.autoAllowlist)">
                             <td>{{ entity.ticker }}</td>
                             <td>
                                 <a v-if="listName === 'Alliance'"
@@ -95,18 +95,18 @@
                                     {{ entity.alliance.name }}
                                 </span>
                             </td>
-                            <td v-if="listName === 'Corporation'">{{ entity.autoWhitelist }}</td>
+                            <td v-if="listName === 'Corporation'">{{ entity.autoAllowlist }}</td>
                         </tr>
                     </tbody>
                 </table>
                 <p class="small text-muted">
                     <span v-if="index === 0">{{ listContent[listName].length }} alliances(s)</span>
                     <span v-if="index === 1">
-                        {{ listContent[listName].filter(corporation => ! corporation.autoWhitelist).length }}
+                        {{ listContent[listName].filter(corporation => ! corporation.autoAllowlist).length }}
                         corporation(s)
                     </span>
                     <span v-if="index === 2">
-                        {{ listContent[listName].filter(corporation => corporation.autoWhitelist).length }}
+                        {{ listContent[listName].filter(corporation => corporation.autoAllowlist).length }}
                         corporation(s)
                         <br>
                         * Corporations are automatically added if all their members belong to the same account.
@@ -142,8 +142,8 @@ export default {
             },
             alliances: [],
             corporations: [],
-            blacklistAlliances: [],
-            blacklistCorporations: [],
+            kicklistAlliances: [],
+            kicklistCorporations: [],
         }
     },
 
@@ -161,7 +161,7 @@ export default {
     },
 
     methods: {
-        addToWhitelist (playerId) {
+        addToAllowlist (playerId) {
             if (! this.id) {
                 return;
             }
@@ -175,7 +175,7 @@ export default {
          * @param {string} type Players, Alliances or Corporations
          * @param {number} id
          */
-        removeFromWhitelist (type, id) {
+         removeFromAllowlist (type, id) {
             if (! this.id) {
                 return;
             }
@@ -185,9 +185,9 @@ export default {
             if (type === 'Players') {
                 method = 'watchlistExemptionRemove';
             } else if (type === 'Alliances') {
-                 method = 'watchlistWhitelistAllianceRemove';
+                 method = 'watchlistAllowlistAllianceRemove';
              } else if (type === 'Corporations') {
-                 method = 'watchlistWhitelistCorporationRemove';
+                 method = 'watchlistAllowlistCorporationRemove';
              } else {
                 return;
             }
@@ -210,7 +210,7 @@ export default {
 
 /**
  * @param vm
- * @param {bool} [onlyPlayers] for whitelist, reload players only
+ * @param {bool} [onlyPlayers] for allowlist, reload players only
  */
 function loadList(vm, onlyPlayers) {
     if (! vm.id) {
@@ -226,11 +226,11 @@ function loadList(vm, onlyPlayers) {
     }
 
     // load table data
-    if (vm.tab === 'red') {
+    if (vm.tab === 'warnings') {
         api.watchlistPlayers(vm.id, (error, data) => {
             setPlayer(error, data);
         });
-    } else if (vm.tab === 'white') {
+    } else if (vm.tab === 'allow') {
         api.watchlistExemptionList(vm.id, (error, data) => {
             setPlayer(error, data);
         });
@@ -239,26 +239,26 @@ function loadList(vm, onlyPlayers) {
         }
 
         vm.listContent.Alliance = [];
-        api.watchlistWhitelistAllianceList(vm.id, (error, data) => {
+        api.watchlistAllowlistAllianceList(vm.id, (error, data) => {
             if (! error) {
                 vm.listContent.Alliance = data;
             }
         });
 
         vm.listContent.Corporation = [];
-        api.watchlistWhitelistCorporationList(vm.id, (error, data) => {
+        api.watchlistAllowlistCorporationList(vm.id, (error, data) => {
             if (! error) {
                 vm.listContent.Corporation = data;
             }
         });
-    } else if (vm.tab === 'black') {
-        api.watchlistPlayersBlacklist(vm.id, (error, data) => {
+    } else if (vm.tab === 'kick') {
+        api.watchlistPlayersKicklist(vm.id, (error, data) => {
             setPlayer(error, data);
         });
     }
 
     // load alliance and corporation config
-    if (vm.tab === 'red') {
+    if (vm.tab === 'warnings') {
         vm.alliances = [];
         api.watchlistAllianceList(vm.id, (error, data) => {
             if (! error) {
@@ -274,19 +274,19 @@ function loadList(vm, onlyPlayers) {
         });
     }
 
-    // load blacklist alliance and corporation config
-    if (vm.tab === 'black') {
-        vm.blacklistAlliances = [];
-        api.watchlistBlacklistAllianceList(vm.id, (error, data) => {
+    // load kicklist alliance and corporation config
+    if (vm.tab === 'kick') {
+        vm.kicklistAlliances = [];
+        api.watchlistKicklistAllianceList(vm.id, (error, data) => {
             if (! error) {
-                vm.blacklistAlliances = data;
+                vm.kicklistAlliances = data;
             }
         });
 
-        vm.blacklistCorporations = [];
-        api.watchlistBlacklistCorporationList(vm.id, (error, data) => {
+        vm.kicklistCorporations = [];
+        api.watchlistKicklistCorporationList(vm.id, (error, data) => {
             if (! error) {
-                vm.blacklistCorporations = data;
+                vm.kicklistCorporations = data;
             }
         });
     }

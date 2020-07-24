@@ -24,7 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AutoWhitelist extends Command
+class AutoAllowlist extends Command
 {
     use LogOutput;
     use EsiRateLimited;
@@ -81,7 +81,7 @@ class AutoWhitelist extends Command
     /**
      * @var int
      */
-    private $numCorporationsWhitelisted;
+    private $numCorporationsAllowed;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -106,8 +106,8 @@ class AutoWhitelist extends Command
 
     protected function configure(): void
     {
-        $this->setName('auto-whitelist')
-            ->setDescription('Adds personal alt corps to the watchlist corporation whitelist.')
+        $this->setName('auto-allowlist')
+            ->setDescription('Adds personal alt corps to the watchlist corporation allowlist.')
             ->addArgument('id', InputArgument::OPTIONAL, 'The Watchlist ID.')
             ->addOption(
                 'sleep',
@@ -125,7 +125,7 @@ class AutoWhitelist extends Command
         $id = intval($input->getArgument('id'));
         $this->executeLogOutput($input, $output);
 
-        $this->writeLine('Started "auto-whitelist"', false);
+        $this->writeLine('Started "auto-allowlist"', false);
 
         if ($id > 0) {
             $ids = [$id];
@@ -139,15 +139,15 @@ class AutoWhitelist extends Command
             $this->writeLine("  Processing watchlist $watchlistId", false);
             $this->numCorporations = 0;
             $this->numCorporationsChecked = 0;
-            $this->numCorporationsWhitelisted = 0;
-            $this->whitelist($watchlistId);
+            $this->numCorporationsAllowed = 0;
+            $this->allow($watchlistId);
         }
 
-        $this->writeLine('Finished "auto-whitelist"', false);
+        $this->writeLine('Finished "auto-allowlist"', false);
         return 0;
     }
 
-    private function whitelist(int $id): void
+    private function allow(int $id): void
     {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
@@ -155,18 +155,18 @@ class AutoWhitelist extends Command
             return;
         }
 
-        $players = $this->watchlistService->getRedFlagList($id, true, true); // include blacklist and whitelist
+        $players = $this->watchlistService->getWarningList($id, true, true); // include kicklist and allowlist
         $watchedCorporationIds = $this->watchlistService->getCorporationIds($id, 'alliance', 'corporation');
 
         $accountsData = $this->getAccountData($players, $watchedCorporationIds);
 
         $this->objectManager->clear(); // reduces memory usage a little bit
 
-        $whitelist = $this->getWhitelist($accountsData);
+        $allowlist = $this->getAllowlist($accountsData);
 
         $this->writeLine(
             "    Corporations to check: {$this->numCorporations}, checked: {$this->numCorporationsChecked}, ".
-            "whitelisted: {$this->numCorporationsWhitelisted}",
+            "allowlist: {$this->numCorporationsAllowed}",
             false
         );
 
@@ -175,7 +175,7 @@ class AutoWhitelist extends Command
             $this->writeLine('    Watchlist not found.', false);
             return;
         }
-        $this->saveWhitelist($watchlist, $whitelist);
+        $this->saveAllowlist($watchlist, $allowlist);
     }
 
     /**
@@ -240,9 +240,9 @@ class AutoWhitelist extends Command
      * @param array $accountsData
      * @return int[]
      */
-    private function getWhitelist(array $accountsData): array
+    private function getAllowlist(array $accountsData): array
     {
-        $whitelist = [];
+        $allowlist = [];
         foreach ($accountsData as $corporations) {
             $this->numCorporations ++;
             foreach ($corporations as $corporationId => $characters) {
@@ -265,8 +265,8 @@ class AutoWhitelist extends Command
 
                     if (count(array_diff($members, $characters[self::KEY_IDS])) === 0) {
                         // all members are on this account
-                        $whitelist[] = $corporationId;
-                        $this->numCorporationsWhitelisted ++;
+                        $allowlist[] = $corporationId;
+                        $this->numCorporationsAllowed ++;
                     }
                 }
 
@@ -275,22 +275,22 @@ class AutoWhitelist extends Command
             }
         }
 
-        return $whitelist;
+        return $allowlist;
     }
 
-    private function saveWhitelist(\Neucore\Entity\Watchlist $watchlist, array $whitelist): void
+    private function saveAllowlist(\Neucore\Entity\Watchlist $watchlist, array $allowlist): void
     {
-        foreach ($watchlist->getWhitelistCorporations() as $corporationRemove) {
-            if ($corporationRemove->getAutoWhitelist()) {
-                $watchlist->removeWhitelistCorporation($corporationRemove);
+        foreach ($watchlist->getAllowlistCorporations() as $corporationRemove) {
+            if ($corporationRemove->getAutoAllowlist()) {
+                $watchlist->removeAllowlistCorporation($corporationRemove);
             }
         }
 
-        foreach ($whitelist as $corporationId) {
+        foreach ($allowlist as $corporationId) {
             $corporation = $this->corporationRepository->find($corporationId);
             if ($corporation) {
-                $corporation->setAutoWhitelist(true);
-                $watchlist->addWhitelistCorporation($corporation);
+                $corporation->setAutoAllowlist(true);
+                $watchlist->addAllowlistCorporation($corporation);
             }
         }
 

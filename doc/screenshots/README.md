@@ -31,5 +31,5 @@
 #### Watchlist
 ![watchlist](11-watchlist.png)
 
-#### Watchlist, Whitelist
-![watchlist-whitelist](12-watchlist-whitelist.png)
+#### Watchlist, Allowlist
+![watchlist-allowlist](12-watchlist-allowlist.png)

@@ -147,7 +147,7 @@ class WatchlistController extends BaseController
      *     operationId="watchlistPlayers",
      *     summary="List of player accounts that have characters in one of the configured alliances or corporations
                     and additionally have other characters in another player (not NPC) corporation that is not
-                    whitelisted and have not been manually excluded.",
+                    on the allowlist and have not been manually excluded.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -177,7 +177,7 @@ class WatchlistController extends BaseController
 
         $players = array_map(function (Player $player) {
             return $player->jsonSerialize(true);
-        }, $this->watchlistService->getRedFlagList((int) $id));
+        }, $this->watchlistService->getWarningList((int) $id));
 
         return $this->withJson($players);
     }
@@ -185,9 +185,10 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/{id}/players-blacklist",
-     *     operationId="watchlistPlayersBlacklist",
-     *     summary="Accounts from the watchlist with members in one of the blacklisted alliances or corporations.",
+     *     path="/user/watchlist/{id}/players-kicklist",
+     *     operationId="watchlistPlayersKicklist",
+     *     summary="Accounts from the watchlist with members in one of the alliances or corporations
+                    from the kicklist.",
      *     description="Needs role: watchlist",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -209,13 +210,13 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function playersBlacklist(string $id, UserAuth $userAuth): ResponseInterface
+    public function playersKicklist(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getBlacklist((int) $id));
+        return $this->withJson($this->watchlistService->getKicklist((int) $id));
     }
 
     /**
@@ -853,9 +854,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/{id}/blacklist-corporation/list",
-     *     operationId="watchlistBlacklistCorporationList",
-     *     summary="List of corporations for the blacklist.",
+     *     path="/user/watchlist/{id}/kicklist-corporation/list",
+     *     operationId="watchlistKicklistCorporationList",
+     *     summary="List of corporations for the kicklist.",
      *     description="Needs role: watchlist, watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -877,21 +878,21 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function blacklistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
+    public function kicklistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::BLACKLIST_CORPORATION));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::KICKLIST_CORPORATION));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/blacklist-corporation/add/{corporation}",
-     *     operationId="watchlistBlacklistCorporationAdd",
-     *     summary="Add corporation to the blacklist.",
+     *     path="/user/watchlist/{id}/kicklist-corporation/add/{corporation}",
+     *     operationId="watchlistKicklistCorporationAdd",
+     *     summary="Add corporation to the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -923,7 +924,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function blacklistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
+    public function kicklistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
@@ -933,7 +934,7 @@ class WatchlistController extends BaseController
             (int)
             $id,
             self::ACTION_ADD,
-            Watchlist::BLACKLIST_CORPORATION,
+            Watchlist::KICKLIST_CORPORATION,
             (int) $corporation
         );
     }
@@ -941,9 +942,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/blacklist-corporation/remove/{corporation}",
-     *     operationId="watchlistBlacklistCorporationRemove",
-     *     summary="Remove corporation from the blacklist.",
+     *     path="/user/watchlist/{id}/kicklist-corporation/remove/{corporation}",
+     *     operationId="watchlistKicklistCorporationRemove",
+     *     summary="Remove corporation from the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -975,7 +976,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function blacklistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
+    public function kicklistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
@@ -984,7 +985,7 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity(
             (int) $id,
             self::ACTION_REMOVE,
-            Watchlist::BLACKLIST_CORPORATION,
+            Watchlist::KICKLIST_CORPORATION,
             (int) $corporation
         );
     }
@@ -992,9 +993,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/{id}/blacklist-alliance/list",
-     *     operationId="watchlistBlacklistAllianceList",
-     *     summary="List of alliances for the blacklist.",
+     *     path="/user/watchlist/{id}/kicklist-alliance/list",
+     *     operationId="watchlistKicklistAllianceList",
+     *     summary="List of alliances for the kicklist.",
      *     description="Needs role: watchlist, watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1016,21 +1017,21 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function blacklistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
+    public function kicklistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::BLACKLIST_ALLIANCE));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::KICKLIST_ALLIANCE));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/blacklist-alliance/add/{alliance}",
-     *     operationId="watchlistBlacklistAllianceAdd",
-     *     summary="Add alliance to the blacklist.",
+     *     path="/user/watchlist/{id}/kicklist-alliance/add/{alliance}",
+     *     operationId="watchlistKicklistAllianceAdd",
+     *     summary="Add alliance to the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1062,21 +1063,21 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function blacklistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
+    public function kicklistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::BLACKLIST_ALLIANCE, (int) $alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::KICKLIST_ALLIANCE, (int) $alliance);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/blacklist-alliance/remove/{alliance}",
-     *     operationId="watchlistBlacklistAllianceRemove",
-     *     summary="Remove alliance from the blacklist.",
+     *     path="/user/watchlist/{id}/kicklist-alliance/remove/{alliance}",
+     *     operationId="watchlistKicklistAllianceRemove",
+     *     summary="Remove alliance from the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1108,7 +1109,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function blacklistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
+    public function kicklistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
@@ -1117,7 +1118,7 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity(
             (int) $id,
             self::ACTION_REMOVE,
-            Watchlist::BLACKLIST_ALLIANCE,
+            Watchlist::KICKLIST_ALLIANCE,
             (int) $alliance
         );
     }
@@ -1125,9 +1126,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/{id}/whitelist-corporation/list",
-     *     operationId="watchlistWhitelistCorporationList",
-     *     summary="List of corporations for the corporation whitelist.",
+     *     path="/user/watchlist/{id}/allowlist-corporation/list",
+     *     operationId="watchlistAllowlistCorporationList",
+     *     summary="List of corporations for the corporation allowlist.",
      *     description="Needs role: watchlist, watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1149,7 +1150,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function whitelistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
+    public function allowlistCorporationList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
@@ -1157,7 +1158,7 @@ class WatchlistController extends BaseController
 
         $data = array_map(function (Corporation $corporation) {
             return $corporation->jsonSerialize(false, true);
-        }, $this->watchlistService->getList((int) $id, Watchlist::WHITELIST_CORPORATION));
+        }, $this->watchlistService->getList((int) $id, Watchlist::ALLOWLIST_CORPORATION));
 
         return $this->withJson($data);
     }
@@ -1165,9 +1166,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/whitelist-corporation/add/{corporation}",
-     *     operationId="watchlistWhitelistCorporationAdd",
-     *     summary="Add corporation to the corporation whitelist.",
+     *     path="/user/watchlist/{id}/allowlist-corporation/add/{corporation}",
+     *     operationId="watchlistAllowlistCorporationAdd",
+     *     summary="Add corporation to the corporation allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1199,7 +1200,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function whitelistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
+    public function allowlistCorporationAdd(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
@@ -1208,7 +1209,7 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity(
             (int) $id,
             self::ACTION_ADD,
-            Watchlist::WHITELIST_CORPORATION,
+            Watchlist::ALLOWLIST_CORPORATION,
             (int) $corporation
         );
     }
@@ -1216,9 +1217,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/whitelist-corporation/remove/{corporation}",
-     *     operationId="watchlistWhitelistCorporationRemove",
-     *     summary="Remove corporation from the corporation whitelist.",
+     *     path="/user/watchlist/{id}/allowlist-corporation/remove/{corporation}",
+     *     operationId="watchlistAllowlistCorporationRemove",
+     *     summary="Remove corporation from the corporation allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1250,7 +1251,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function whitelistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
+    public function allowlistCorporationRemove(string $id, string $corporation, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
@@ -1259,7 +1260,7 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity(
             (int) $id,
             self::ACTION_REMOVE,
-            Watchlist::WHITELIST_CORPORATION,
+            Watchlist::ALLOWLIST_CORPORATION,
             (int) $corporation
         );
     }
@@ -1267,9 +1268,9 @@ class WatchlistController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/watchlist/{id}/whitelist-alliance/list",
-     *     operationId="watchlistWhitelistAllianceList",
-     *     summary="List of alliances for the alliance whitelist.",
+     *     path="/user/watchlist/{id}/allowlist-alliance/list",
+     *     operationId="watchlistAllowlistAllianceList",
+     *     summary="List of alliances for the alliance allowlist.",
      *     description="Needs role: watchlist, watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1291,21 +1292,21 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function whitelistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
+    public function allowlistAllianceList(string $id, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::WHITELIST_ALLIANCE));
+        return $this->withJson($this->watchlistService->getList((int) $id, Watchlist::ALLOWLIST_ALLIANCE));
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/whitelist-alliance/add/{alliance}",
-     *     operationId="watchlistWhitelistAllianceAdd",
-     *     summary="Add alliance to the alliance whitelist.",
+     *     path="/user/watchlist/{id}/allowlist-alliance/add/{alliance}",
+     *     operationId="watchlistAllowlistAllianceAdd",
+     *     summary="Add alliance to the alliance allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1337,21 +1338,21 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function whitelistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
+    public function allowlistAllianceAdd(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
         }
 
-        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::WHITELIST_ALLIANCE, (int) $alliance);
+        return $this->addOrRemoveEntity((int) $id, self::ACTION_ADD, Watchlist::ALLOWLIST_ALLIANCE, (int) $alliance);
     }
 
     /**
      * @noinspection PhpUnused
      * @OA\Put(
-     *     path="/user/watchlist/{id}/whitelist-alliance/remove/{alliance}",
-     *     operationId="watchlistWhitelistAllianceRemove",
-     *     summary="Remove alliance from the alliance whitelist.",
+     *     path="/user/watchlist/{id}/allowlist-alliance/remove/{alliance}",
+     *     operationId="watchlistAllowlistAllianceRemove",
+     *     summary="Remove alliance from the alliance allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
      *     security={{"Session"={}}},
@@ -1383,7 +1384,7 @@ class WatchlistController extends BaseController
      *     )
      * )
      */
-    public function whitelistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
+    public function allowlistAllianceRemove(string $id, string $alliance, UserAuth $userAuth): ResponseInterface
     {
         if (! $this->checkPermission((int) $id, $userAuth, Role::WATCHLIST_MANAGER)) {
             return $this->response->withStatus(403);
@@ -1392,7 +1393,7 @@ class WatchlistController extends BaseController
         return $this->addOrRemoveEntity(
             (int) $id,
             self::ACTION_REMOVE,
-            Watchlist::WHITELIST_ALLIANCE,
+            Watchlist::ALLOWLIST_ALLIANCE,
             (int) $alliance
         );
     }
@@ -1433,12 +1434,12 @@ class WatchlistController extends BaseController
             $entity = $this->repositoryFactory->getPlayerRepository()->find($entityId);
         } elseif (in_array(
             $type,
-            [Watchlist::CORPORATION, Watchlist::BLACKLIST_CORPORATION, Watchlist::WHITELIST_CORPORATION]
+            [Watchlist::CORPORATION, Watchlist::KICKLIST_CORPORATION, Watchlist::ALLOWLIST_CORPORATION]
         )) {
             $entity = $this->repositoryFactory->getCorporationRepository()->find($entityId);
         } elseif (in_array(
             $type,
-            [Watchlist::ALLIANCE, Watchlist::BLACKLIST_ALLIANCE, Watchlist::WHITELIST_ALLIANCE]
+            [Watchlist::ALLIANCE, Watchlist::KICKLIST_ALLIANCE, Watchlist::ALLOWLIST_ALLIANCE]
         )) {
             $entity = $this->repositoryFactory->getAllianceRepository()->find($entityId);
         } elseif ($type === Watchlist::GROUP || $type === Watchlist::MANAGER_GROUP) {
@@ -1462,14 +1463,14 @@ class WatchlistController extends BaseController
                 $watchlist->addGroup($entity);
             } elseif ($entity instanceof Group && $type === Watchlist::MANAGER_GROUP) {
                 $watchlist->addManagerGroup($entity);
-            } elseif ($entity instanceof Corporation && $type === Watchlist::BLACKLIST_CORPORATION) {
-                $watchlist->addBlacklistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === Watchlist::BLACKLIST_ALLIANCE) {
-                $watchlist->addBlacklistAlliance($entity);
-            } elseif ($entity instanceof Corporation && $type === Watchlist::WHITELIST_CORPORATION) {
-                $watchlist->addWhitelistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === Watchlist::WHITELIST_ALLIANCE) {
-                $watchlist->addWhitelistAlliance($entity);
+            } elseif ($entity instanceof Corporation && $type === Watchlist::KICKLIST_CORPORATION) {
+                $watchlist->addKicklistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === Watchlist::KICKLIST_ALLIANCE) {
+                $watchlist->addKicklistAlliance($entity);
+            } elseif ($entity instanceof Corporation && $type === Watchlist::ALLOWLIST_CORPORATION) {
+                $watchlist->addAllowlistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === Watchlist::ALLOWLIST_ALLIANCE) {
+                $watchlist->addAllowlistAlliance($entity);
             }
         } elseif ($action === self::ACTION_REMOVE) {
             if ($entity instanceof Player) {
@@ -1482,14 +1483,14 @@ class WatchlistController extends BaseController
                 $watchlist->removeGroup($entity);
             } elseif ($entity instanceof Group && $type === Watchlist::MANAGER_GROUP) {
                 $watchlist->removeManagerGroup($entity);
-            } elseif ($entity instanceof Corporation && $type === Watchlist::BLACKLIST_CORPORATION) {
-                $watchlist->removeBlacklistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === Watchlist::BLACKLIST_ALLIANCE) {
-                $watchlist->removeBlacklistAlliance($entity);
-            } elseif ($entity instanceof Corporation && $type === Watchlist::WHITELIST_CORPORATION) {
-                $watchlist->removeWhitelistCorporation($entity);
-            } elseif ($entity instanceof Alliance && $type === Watchlist::WHITELIST_ALLIANCE) {
-                $watchlist->removeWhitelistAlliance($entity);
+            } elseif ($entity instanceof Corporation && $type === Watchlist::KICKLIST_CORPORATION) {
+                $watchlist->removeKicklistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === Watchlist::KICKLIST_ALLIANCE) {
+                $watchlist->removeKicklistAlliance($entity);
+            } elseif ($entity instanceof Corporation && $type === Watchlist::ALLOWLIST_CORPORATION) {
+                $watchlist->removeAllowlistCorporation($entity);
+            } elseif ($entity instanceof Alliance && $type === Watchlist::ALLOWLIST_ALLIANCE) {
+                $watchlist->removeAllowlistAlliance($entity);
             }
         }
 

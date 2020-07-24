@@ -113,7 +113,7 @@ Select and table to add and remove objects from other objects.
                     <th scope="col" :style="stickyTop" v-if="contentType === 'managers'">Characters</th>
                     <th scope="col" :style="stickyTop" v-if="contentType === 'corporations'">Alliance</th>
                     <th scope="col" :style="stickyTop" v-if="
-                        contentType === 'corporations' && type === 'WatchlistWhitelist'">auto *</th>
+                        contentType === 'corporations' && type === 'WatchlistAllowlist'">auto *</th>
                     <th scope="col" :style="stickyTop" v-if="
                         (type === 'Group' || type === 'App') &&
                         (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
@@ -153,8 +153,8 @@ Select and table to add and remove objects from other objects.
                             {{ row.alliance.name }}
                         </a>
                     </td>
-                    <td v-if="contentType === 'corporations' && type === 'WatchlistWhitelist'">
-                        {{ row.autoWhitelist }}
+                    <td v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'">
+                        {{ row.autoAllowlist }}
                     </td>
                     <td v-if="
                             (type === 'Group' || type === 'App') &&
@@ -175,7 +175,7 @@ Select and table to add and remove objects from other objects.
                 </tr>
             </tbody>
         </table>
-        <p v-if="contentType === 'corporations' && type === 'WatchlistWhitelist'" class="small text-muted ml-1 mt-1">
+        <p v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'" class="small text-muted ml-1 mt-1">
             * Corporations are automatically added (and removed accordingly) if all their members belong to
             the same account.
         </p>
@@ -379,8 +379,8 @@ export default {
                 api = new CorporationApi();
             } else if (
                 this.type === 'Watchlist' ||
-                this.type === 'WatchlistBlacklist' ||
-                this.type === 'WatchlistWhitelist'
+                this.type === 'WatchlistKicklist' ||
+                this.type === 'WatchlistAllowlist'
             ) {
                 api = new WatchlistApi();
             }
@@ -407,15 +407,23 @@ export default {
             } else if (this.type === 'Watchlist' && this.contentType === 'corporations') {
                 method = 'watchlistCorporationList';
             } else if (
-                (this.type === 'WatchlistBlacklist' || this.type === 'WatchlistWhitelist') &&
+                (this.type === 'WatchlistKicklist' || this.type === 'WatchlistAllowlist') &&
                 this.contentType === 'alliances'
             ) {
-                method = `${lowerCaseFirst(this.type)}AllianceList`;
+                if (this.type === 'WatchlistKicklist') {
+                    method = 'watchlistKicklistAllianceList';
+                } else {
+                    method = 'watchlistAllowlistAllianceList';
+                }
             } else if (
-                (this.type === 'WatchlistBlacklist' || this.type === 'WatchlistWhitelist') &&
+                (this.type === 'WatchlistKicklist' || this.type === 'WatchlistAllowlist') &&
                 this.contentType === 'corporations'
             ) {
-                method = `${lowerCaseFirst(this.type)}CorporationList`;
+                if (this.type === 'WatchlistKicklist') {
+                    method = 'watchlistKicklistCorporationList';
+                } else {
+                    method = 'watchlistAllowlistCorporationList';
+                }
             }
             if (! api || ! method) {
                 return;
@@ -512,12 +520,28 @@ export default {
             let param2;
             if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
                 api = new AppApi();
-                method = action + (this.contentType === 'groups' ? 'Group' : 'Role'); // add/remove + Group/Role
+                if (action === 'add') {
+                    if (this.contentType === 'groups') {
+                        method = 'addGroup';
+                    } else {
+                        method = 'addRole';
+                    }
+                } else {
+                    if (this.contentType === 'groups') {
+                        method = 'removeGroup';
+                    } else {
+                        method = 'removeRole';
+                    }
+                }
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Player') {
                 api = new GroupApi();
-                method = `${action}Member`;
+                if (action === 'add') {
+                    method = 'addMember';
+                } else {
+                    method = 'removeMember';
+                }
                 param1 = id;
                 param2 = this.typeId;
             } else if (
@@ -529,12 +553,20 @@ export default {
                 } else if (this.contentType === 'alliances') {
                     api = new AllianceApi();
                 }
-                method = action + this.type; // addGroup, removeGroup
+                if (action === 'add') {
+                    method = 'addGroup';
+                } else {
+                    method = 'removeGroup';
+                }
                 param1 = id;
                 param2 = this.typeId;
             } else if (this.type === 'Group' && this.contentType === 'groups') {
                 api = new GroupApi();
-                method = `${action}RequiredGroup`;
+                if (action === 'add') {
+                    method = 'addRequiredGroup';
+                } else {
+                    method = 'removeRequiredGroup';
+                }
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.contentType === 'managers') {
@@ -543,35 +575,83 @@ export default {
                 } else if (this.type === 'App') {
                     api = new AppApi();
                 }
-                method = `${action}Manager`; // add/removeManager
+                if (action === 'add') {
+                    method = 'addManager';
+                } else {
+                    method = 'removeManager';
+                }
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Corporation') {
                 api = new CorporationApi();
-                method = `${action}GroupTracking`;
+                if (action === 'add') {
+                    method = 'addGroupTracking';
+                } else {
+                    method = 'removeGroupTracking';
+                }
                 param1 = this.typeId;
                 param2 = id;
             } else if (
                 this.type === 'Watchlist' ||
-                this.type === 'WatchlistBlacklist' ||
-                this.type === 'WatchlistWhitelist'
+                this.type === 'WatchlistKicklist' ||
+                this.type === 'WatchlistAllowlist'
             ) {
                 api = new WatchlistApi();
-                let suffix = '';
-                if (this.type === 'WatchlistBlacklist') {
-                    suffix = 'Blacklist';
-                } else if (this.type === 'WatchlistWhitelist') {
-                    suffix = 'Whitelist';
+                if (this.type === 'Watchlist') {
+                    if (this.contentType === 'groups') {
+                        if (action === 'add') {
+                            method = 'watchlistGroupAdd';
+                        } else {
+                            method = 'watchlistGroupRemove';
+                        }
+                    } else if (this.contentType === 'groupsManage') {
+                        if (action === 'add') {
+                            method = 'watchlistManagerGroupAdd';
+                        } else {
+                            method = 'watchlistManagerGroupRemove';
+                        }
+                    } else if (this.contentType === 'alliances') {
+                        if (action === 'add') {
+                            method = 'watchlistAllianceAdd';
+                        } else {
+                            method = 'watchlistAllianceRemove';
+                        }
+                    } else {
+                        if (action === 'add') {
+                            method = 'watchlistCorporationAdd';
+                        } else {
+                            method = 'watchlistCorporationRemove';
+                        }
+                    }
+                } else if (this.type === 'WatchlistKicklist') {
+                    if (this.contentType === 'alliances') {
+                        if (action === 'add') {
+                            method = 'watchlistKicklistAllianceAdd';
+                        } else {
+                            method = 'watchlistKicklistAllianceRemove';
+                        }
+                    } else {
+                        if (action === 'add') {
+                            method = 'watchlistKicklistCorporationAdd';
+                        } else {
+                            method = 'watchlistKicklistCorporationRemove';
+                        }
+                    }
+                } else if (this.type === 'WatchlistAllowlist') {
+                    if (this.contentType === 'alliances') {
+                        if (action === 'add') {
+                            method = 'watchlistAllowlistAllianceAdd';
+                        } else {
+                            method = 'watchlistAllowlistAllianceRemove';
+                        }
+                    } else {
+                        if (action === 'add') {
+                            method = 'watchlistAllowlistCorporationAdd';
+                        } else {
+                            method = 'watchlistAllowlistCorporationRemove';
+                        }
+                    }
                 }
-                let type;
-                if (this.contentType === 'groups') { // Watchlist only
-                    type = 'Group';
-                } else if (this.contentType === 'groupsManage') {
-                    type = 'ManagerGroup';
-                } else {
-                    type = this.contentType === 'alliances' ? 'Alliance' : 'Corporation';
-                }
-                method = `watchlist${suffix}${type}${upperCaseFirst(action)}`;
                 param1 = this.typeId;
                 param2 = id;
             }
@@ -652,15 +732,6 @@ function fetchDirector(vm) {
         vm.directors = data;
     });
 }
-
-function upperCaseFirst(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function lowerCaseFirst(string) {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-}
-
 </script>
 
 <style type="text/css" scoped>

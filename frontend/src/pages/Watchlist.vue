@@ -13,16 +13,16 @@
 
     <ul v-cloak v-if="watchlistId" class="nav nav-pills nav-fill">
         <li v-if="hasRole('watchlist')" class="nav-item">
-            <a class="nav-link" :class="{ 'active': tab === 'red' }"
-               :href="'#Watchlist/'+watchlistId+'/red'">Red Flags</a>
+            <a class="nav-link" :class="{ 'active': tab === 'warnings' }"
+               :href="'#Watchlist/'+watchlistId+'/warnings'">Warnings</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
-            <a class="nav-link" :class="{ 'active': tab === 'black' }"
-               :href="'#Watchlist/'+watchlistId+'/black'">Blacklist</a>
+            <a class="nav-link" :class="{ 'active': tab === 'kick' }"
+               :href="'#Watchlist/'+watchlistId+'/kick'">Kicklist</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
-            <a class="nav-link" :class="{ 'active': tab === 'white' }"
-               :href="'#Watchlist/'+watchlistId+'/white'">Whitelist</a>
+            <a class="nav-link" :class="{ 'active': tab === 'allow' }"
+               :href="'#Watchlist/'+watchlistId+'/allow'">Allowlist</a>
         </li>
         <li v-if="manageIds.indexOf(watchlistId) !== -1" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'settings' }"
@@ -122,7 +122,7 @@ function getWatchlists(vm, callback) {
 }
 
 function setTab(vm) {
-    const tabs = ['red', 'black', 'white', 'settings'];
+    const tabs = ['warnings', 'kick', 'allow', 'settings'];
     if (vm.route[1]) {
         const idFromPath = parseInt(vm.route[1], 10);
         let found = false;
@@ -146,7 +146,7 @@ function setTab(vm) {
     ) {
         vm.tab = vm.route[2];
     } else {
-        vm.tab = 'red';
+        vm.tab = 'warnings';
         window.location.hash = `#Watchlist/${vm.watchlistId}`;
     }
 }
