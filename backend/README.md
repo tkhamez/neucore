@@ -80,6 +80,13 @@ The differences between `dev` and `prod` mode (which is determined by the enviro
 - Doctrine proxy classes are auto generated in dev mode, the APCu cache is used in prod mode
 - PHP-DI uses compilation and the APCu cache in prod mode
 
+## Guidelines
+
+### Clear Entity Manager
+
+Some commands clear the entity manager to save memory. Never do this anywhere else, only
+in "Command" classes.
+
 ## Console Commands
 
 ### Console application

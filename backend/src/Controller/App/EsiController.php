@@ -96,7 +96,7 @@ class EsiController extends BaseController
      *         Public ESI routes are not allowed.<br>
      *         The following headers from ESI are passed through to the response if they exist:
                Content-Type Expires X-Esi-Error-Limit-Remain X-Esi-Error-Limit-Reset X-Pages warning, Warning<br>
-     *         The HTTP status code from ESI is also passed through, so maybe there's more than the documented.<br>
+     *         The HTTP status code from ESI is also passed through, so there may be more than the documented ones.<br>
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                this allows to use OpenAPI clients that were generated for the ESI API,
                see doc/app-esi-examples.php for more.",

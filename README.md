@@ -166,7 +166,7 @@ See https://www.vagrantup.com/docs/synced-folders for other methods.
 
 ### Using Docker
 
-Only tested on Linux and once on MacOS.
+Only tested on Linux and once on macOS.
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
 the database host is `db`.

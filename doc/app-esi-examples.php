@@ -65,7 +65,7 @@ echo PHP_EOL;
 
 //
 // Example 2: making a POST request using a generated OpenAPI client from the Neucore API file
-//            (e. g. https://github.com/bravecollective/neucore-api)
+//            (e. g. https://packagist.org/packages/bravecollective/neucore-api)
 
 // Change the host to the Neucore domain including the API path and add the app token
 $config = Brave\NeucoreApi\Configuration::getDefaultConfiguration();
