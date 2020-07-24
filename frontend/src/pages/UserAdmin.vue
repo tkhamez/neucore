@@ -95,6 +95,12 @@
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header"><label for="roleList">Players by role</label></h4>
                 <div class="card-body">
+                    <p v-cloak>
+                        See
+                        <a :href="settings.customization_github + '/blob/master/doc/API.md'"
+                           target="_blank" rel="noopener noreferrer">doc/API.md</a>
+                        for permissions for each role.
+                    </p>
                     <select class="form-control" id="roleList"
                             v-model="activeRole" @change="getPlayerByRole(activeRole)">
                         <option value="">select a role</option>
@@ -147,12 +153,6 @@
 
                 <div v-cloak v-if="playerEdit" class="card-body">
                     <h4>Roles</h4>
-                    <p v-cloak>
-                        See
-                        <a :href="settings.customization_github + '/blob/master/doc/API.md'"
-                           target="_blank" rel="noopener noreferrer">doc/API.md</a>
-                        for permissions for each role.
-                    </p>
                     <div class="input-group mb-1">
                         <div class="input-group-prepend">
                             <label class="input-group-text" for="userAdminSelectRole">Add role</label>
