@@ -196,6 +196,16 @@ function addNavBehaviour() {
 </script>
 
 <style scoped>
+    .navbar {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+    }
+    .lux .navbar,
+    .simplex .navbar,
+    .slate .navbar {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
     .dropdown-menu {
         margin: 0;
     }

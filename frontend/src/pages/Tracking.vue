@@ -394,7 +394,7 @@ function configureDataTable(vm) {
     @supports (position: sticky) {
         .member-table thead th {
             position: sticky;
-            top: 80px;
+            top: 51px;
         }
     }
 </style>

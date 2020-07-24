@@ -27,8 +27,8 @@ body.neucore {
     @media (min-width: 992px) {
         @supports (position: sticky) {
             position: sticky;
-            top: 80px;
-            max-height: calc(100vh - 84px);
+            top: 51px;
+            max-height: calc(100vh - 55px);
             overflow-y: auto;
         }
     }

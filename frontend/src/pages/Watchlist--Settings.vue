@@ -65,7 +65,7 @@ export default {
 
     data: function() {
         return {
-            sticky: 130,
+            sticky: 100,
         }
     },
 
@@ -85,7 +85,7 @@ export default {
 <style type="text/css" scoped>
     .card-header {
         position: sticky;
-        top: 80px;
+        top: 51px;
         z-index: 2;
     }
 </style>
