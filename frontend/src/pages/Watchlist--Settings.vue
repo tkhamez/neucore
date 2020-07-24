@@ -3,7 +3,7 @@
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addEntitySuccess()"></add-entity>
 
     <div class="card">
-        <div class="card-header">Red Flags</div>
+        <div class="card-header bg-dark text-light"><strong>Red Flags</strong></div>
         <div class="card-body">
             <p>
                 Alliances and corporations whose members are included in the list if they
@@ -13,7 +13,7 @@
             <admin :contentType="'corporations'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
         </div>
 
-        <div class="card-header">Blacklist</div>
+        <div class="card-header bg-dark text-light"><strong>Blacklist</strong></div>
         <div class="card-body">
             <p>
                 Accounts from the Red Flags list are moved to the blacklist
@@ -35,7 +35,7 @@
                    :sticky="sticky"></admin>
         </div>
 
-        <div class="card-header">Whitelist</div>
+        <div class="card-header bg-dark text-light"><strong>Whitelist</strong></div>
         <div class="card-body">
             <p>
                 Alliances and corporations that should be treated like NPC corporations
