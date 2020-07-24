@@ -2,7 +2,7 @@
 
 ## next
 
--  ...
+-  Small UI improvements and fixes.
 
 ## 1.13.1
 

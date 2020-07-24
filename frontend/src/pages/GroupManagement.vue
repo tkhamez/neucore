@@ -23,8 +23,11 @@
         </div>
 
         <div class="col-lg-8">
+            <div class="card border-secondary mb-3" >
+                <h4 class="card-header">{{groupName}}</h4>
+            </div>
 
-            <ul class="nav nav-pills nav-fill">
+            <ul v-if="groupId" class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link" :class="{ 'active': contentType === 'members' }"
                        :href="'#GroupManagement/' + groupId + '/members'">Members</a>
@@ -141,6 +144,7 @@ export default {
     data: function() {
         return {
             groupId: null,
+            groupName: '',
             groupMembers: [],
             groupApplications: [],
             searchResult: [],
@@ -165,10 +169,25 @@ export default {
 
     methods: {
         getData: function() {
+            // reset variables
+            this.groupName = '';
+            this.groupMembers = [];
+            this.searchResult = [];
+            this.groupMembers = [];
+            this.requiredGroups = [];
+            this.contentType = '';
+
             this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (this.groupId === null) {
+            if (this.groupId === null ) {
                 return;
             }
+            if (this.player.managerGroups.map(group => group.id).indexOf(this.groupId) === -1) {
+                this.groupId = null;
+                return;
+            }
+
+            this.groupName = this.player.managerGroups.filter(group => group.id === this.groupId)[0].name;
+
             this.contentType = this.route[2] ? this.route[2] : 'members';
             if (this.contentType === 'members') {
                 this.getMembers();
@@ -180,12 +199,6 @@ export default {
 
         getMembers: function() {
             const vm = this;
-
-            // reset variables
-            vm.groupMembers = [];
-            vm.searchResult = [];
-
-            // get members
             new GroupApi().members(this.groupId, function(error, data) {
                 if (error) { // 403 usually
                     return;
@@ -196,7 +209,6 @@ export default {
 
         getApplications: function() {
             const vm = this;
-            vm.groupMembers = [];
             new GroupApi().applications(this.groupId, function(error, data) {
                 if (error) { // 403 usually
                     return;
@@ -207,7 +219,6 @@ export default {
 
         getRequiredGroups: function() {
             const vm = this;
-            vm.requiredGroups = [];
             new GroupApi().requiredGroups(this.groupId, function(error, data) {
                 if (error) {
                     return;

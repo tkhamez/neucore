@@ -47,6 +47,9 @@
             </div>
         </div>
         <div class="col-lg-8">
+            <div class="card border-secondary mb-3" >
+                <h4 class="card-header">{{groupName}}</h4>
+            </div>
             <ul class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
@@ -143,6 +146,7 @@ export default {
         return {
             groups: [],
             groupId: null, // current group
+            groupName: '',
             contentType: '',
             members: [],
         }
@@ -150,19 +154,13 @@ export default {
 
     mounted: function() {
         window.scrollTo(0,0);
-        this.getGroups();
-        this.setGroupIdAndContentType();
-        if (this.contentType === 'members') {
-            fetchMembers(this);
-        }
+        getGroups(this);
+        setGroupIdAndContentType(this);
     },
 
     watch: {
         route: function() {
-            this.setGroupIdAndContentType();
-            if (this.contentType === 'members') {
-                fetchMembers(this);
-            }
+            setGroupIdAndContentType(this);
         },
     },
 
@@ -181,7 +179,7 @@ export default {
 
         groupCreated: function(newGroupId) {
             window.location.hash = `#GroupAdmin/${newGroupId}`;
-            this.getGroups();
+            getGroups(this);
         },
 
         showDeleteGroupModal: function(group) {
@@ -192,7 +190,7 @@ export default {
             window.location.hash = '#GroupAdmin';
             this.groupId = null;
             this.contentType = '';
-            this.getGroups();
+            getGroups(this);
             this.$root.$emit('playerChange'); // current player could have been a manager or member
         },
 
@@ -211,29 +209,42 @@ export default {
         },
 
         groupChanged: function() {
-            this.getGroups();
+            getGroups(this);
         },
 
-        getGroups: function() {
-            const vm = this;
-            new GroupApi().all(function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.groups = data;
-            });
-        },
-
-        setGroupIdAndContentType: function() {
-            this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (this.groupId) {
-                this.contentType = this.route[2] ? this.route[2] : 'managers';
-            }
-        },
     },
 }
 
+function setGroupIdAndContentType(vm) {
+    vm.groupId = vm.route[1] ? parseInt(vm.route[1], 10) : null;
+    if (vm.groupId) {
+        setGroupName(vm);
+        vm.contentType = vm.route[2] ? vm.route[2] : 'managers';
+    }
+    if (vm.contentType === 'members') {
+        fetchMembers(vm);
+    }
+}
+
+function getGroups(vm) {
+    new GroupApi().all(function(error, data) {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.groups = data;
+        setGroupName(vm);
+    });
+}
+
+function setGroupName(vm) {
+    const group = vm.groups.filter(group => group.id === vm.groupId);
+    if (group.length === 1) { // not yet there on page refresh
+        vm.groupName = group[0].name;
+    }
+}
+
 function fetchMembers(vm) {
+    vm.members = [];
     new GroupApi().members(vm.groupId, function(error, data) {
         if (error) {
             return;

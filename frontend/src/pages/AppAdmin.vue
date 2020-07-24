@@ -45,6 +45,9 @@
             </div>
         </div>
         <div class="col-lg-8">
+            <div class="card border-secondary mb-3" >
+                <h4 class="card-header">{{appName}}</h4>
+            </div>
             <ul class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
@@ -96,19 +99,20 @@ export default {
         return {
             apps: [],
             appId: null, // current app
-            contentType: "",
+            appName: '',
+            contentType: '',
         }
     },
 
     mounted: function() {
         window.scrollTo(0,0);
-        this.getApps();
-        this.setAppIdAndContentType();
+        getApps(this);
+        setAppIdAndContentType(this);
     },
 
     watch: {
         route: function() {
-            this.setAppIdAndContentType();
+            setAppIdAndContentType(this);
         },
     },
 
@@ -127,7 +131,7 @@ export default {
 
         appCreated: function(newAppId) {
             window.location.hash = `#AppAdmin/${newAppId}`;
-            this.getApps();
+            getApps(this);
         },
 
         showDeleteAppModal: function(app) {
@@ -138,7 +142,7 @@ export default {
             window.location.hash = '#AppAdmin';
             this.appId = null;
             this.contentType = '';
-            this.getApps();
+            getApps(this);
             this.$root.$emit('playerChange'); // current player could have been a manager
         },
 
@@ -148,27 +152,36 @@ export default {
 
         appChanged: function() {
             this.$refs.editModal.hideEditModal();
-            this.getApps();
-        },
-
-        getApps: function() {
-            const vm = this;
-            new AppApi().all(function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.apps = data;
-            });
-        },
-
-        setAppIdAndContentType: function() {
-            this.appId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (this.appId) {
-                this.contentType = this.route[2] ? this.route[2] : 'managers';
-            }
+            getApps(this);
         },
     },
 }
+
+function setAppIdAndContentType(vm) {
+    vm.appId = vm.route[1] ? parseInt(vm.route[1], 10) : null;
+    if (vm.appId) {
+        setAppName(vm);
+        vm.contentType = vm.route[2] ? vm.route[2] : 'managers';
+    }
+}
+
+function getApps(vm) {
+    new AppApi().all(function(error, data) {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.apps = data;
+        setAppName(vm);
+    });
+}
+
+function setAppName(vm) {
+    const app = vm.apps.filter(app => app.id === vm.appId);
+    if (app.length === 1) { // not yet there on page refresh
+        vm.appName = app[0].name;
+    }
+}
+
 </script>
 
 <style type="text/scss" scoped>
