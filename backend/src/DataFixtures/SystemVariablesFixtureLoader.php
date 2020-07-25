@@ -8,10 +8,8 @@ use Doctrine\Persistence\ObjectManager;
 use Neucore\Application;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\Common\DataFixtures\FixtureInterface;
 
-/** @noinspection PhpUnused */
-class SystemVariablesFixtureLoader implements FixtureInterface
+class SystemVariablesFixtureLoader
 {
     public function load(ObjectManager $manager): void
     {

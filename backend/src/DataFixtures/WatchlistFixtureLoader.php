@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Neucore\DataFixtures;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 
-/** @noinspection PhpUnused */
-class WatchlistFixtureLoader implements FixtureInterface
+class WatchlistFixtureLoader
 {
     public function load(ObjectManager $manager): void
     {

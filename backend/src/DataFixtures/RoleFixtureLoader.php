@@ -7,10 +7,8 @@ namespace Neucore\DataFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
-use Doctrine\Common\DataFixtures\FixtureInterface;
 
-/** @noinspection PhpUnused */
-class RoleFixtureLoader implements FixtureInterface
+class RoleFixtureLoader
 {
     public function load(ObjectManager $manager): void
     {

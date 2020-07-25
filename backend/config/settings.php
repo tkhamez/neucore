@@ -37,7 +37,6 @@ return [
             'mysql_ssl_ca'             => '${NEUCORE_MYSQL_SSL_CA}',
             'mysql_verify_server_cert' => '${NEUCORE_MYSQL_VERIFY_SERVER_CERT}',
         ],
-        'data_fixtures' => Application::ROOT_DIR . '/src/DataFixtures'
     ],
 
     'CORS' => [

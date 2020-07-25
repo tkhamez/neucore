@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
-use Doctrine\Common\Persistence\ObjectManagerDecorator;
+use Doctrine\Persistence\ObjectManagerDecorator;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 

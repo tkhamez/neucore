@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
-use Neucore\Service\Config;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\Loader;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
+use Neucore\DataFixtures\RoleFixtureLoader;
+use Neucore\DataFixtures\SystemVariablesFixtureLoader;
+use Neucore\DataFixtures\WatchlistFixtureLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,21 +15,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DoctrineFixturesLoad extends Command
 {
     /**
-     * @var EntityManagerInterface
+     * @var ObjectManager
      */
-    private $entityManager;
+    private $objectManager;
 
-    /**
-     * @var Config
-     */
-    private $config;
-
-    public function __construct(EntityManagerInterface $entityManager, Config $config)
+    public function __construct(ObjectManager $objectManager)
     {
         parent::__construct();
 
-        $this->entityManager = $entityManager;
-        $this->config = $config;
+        $this->objectManager = $objectManager;
     }
 
     protected function configure(): void
@@ -44,15 +38,14 @@ class DoctrineFixturesLoad extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $loader = new Loader();
-        $loader->loadFromDirectory($this->config['doctrine']['data_fixtures']);
+        $output->writeln('loading Neucore\DataFixtures\RoleFixtureLoader');
+        (new RoleFixtureLoader())->load($this->objectManager);
 
-        $executor = new ORMExecutor($this->entityManager);
-        $executor->setLogger(static function ($message) use ($output) : void {
-            $output->writeln($message);
-        });
+        $output->writeln('loading Neucore\DataFixtures\SystemVariablesFixtureLoader');
+        (new SystemVariablesFixtureLoader())->load($this->objectManager);
 
-        $executor->execute($loader->getFixtures(), true);
+        $output->writeln('loading Neucore\DataFixtures\WatchlistFixtureLoader');
+        (new WatchlistFixtureLoader())->load($this->objectManager);
 
         return 0;
     }
