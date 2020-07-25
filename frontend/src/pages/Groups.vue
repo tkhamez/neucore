@@ -31,7 +31,7 @@
             <div class="col-lg-12">
                 <h1>Requestable Groups</h1>
                 <table class="table table-hover table-sm" aria-describedby="groups">
-                    <thead class="thead-dark">
+                    <thead class="thead-light">
                         <tr>
                             <th scope="col">Name</th>
                             <th scope="col">Status</th>

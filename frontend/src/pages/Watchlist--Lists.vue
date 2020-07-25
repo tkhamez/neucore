@@ -30,7 +30,7 @@
         <div :class="{'col-lg-6': tab === 'allow', 'col-12': tab !== 'allow' }">
             <h5 class="mt-4 bg-body">Players</h5>
             <table class="table table-hover nc-table-sm" aria-describedby="List of player accounts">
-                <thead class="thead-dark">
+                <thead class="thead-light">
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Name</th>
@@ -66,7 +66,7 @@
                     <span v-if="index === 2">(automatically added*)</span>
                 </h5>
                 <table class="table table-hover nc-table-sm" aria-describedby="List of alliances or corporations">
-                    <thead class="thead-dark">
+                    <thead class="thead-light">
                         <tr>
                             <th scope="col">Ticker</th>
                             <th scope="col">Name</th>

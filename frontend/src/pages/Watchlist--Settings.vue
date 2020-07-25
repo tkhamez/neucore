@@ -3,7 +3,7 @@
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addEntitySuccess()"></add-entity>
 
     <div class="card">
-        <div class="card-header bg-dark text-light"><strong>Warnings</strong></div>
+        <div class="card-header bg-light text-dark"><strong>Warnings</strong></div>
         <div class="card-body">
             <p>
                 Alliances and corporations whose members are included in the list if they
@@ -13,7 +13,7 @@
             <admin :contentType="'corporations'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
         </div>
 
-        <div class="card-header bg-dark text-light"><strong>Kicklist</strong></div>
+        <div class="card-header bg-light text-dark"><strong>Kicklist</strong></div>
         <div class="card-body">
             <p>
                 Accounts from the warning list are moved to the kicklist
@@ -35,7 +35,7 @@
                    :sticky="sticky"></admin>
         </div>
 
-        <div class="card-header bg-dark text-light"><strong>Allowlist</strong></div>
+        <div class="card-header bg-light text-dark"><strong>Allowlist</strong></div>
         <div class="card-body">
             <p>
                 Alliances and corporations that should be treated like NPC corporations

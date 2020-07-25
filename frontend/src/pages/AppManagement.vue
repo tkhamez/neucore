@@ -57,7 +57,7 @@
 
                         <h5>Groups</h5>
                         <table class="table table-hover nc-table-sm" aria-describedby="groups">
-                            <thead class="thead-dark">
+                            <thead class="thead-light">
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
@@ -75,7 +75,7 @@
 
                         <h5>Roles</h5>
                         <table class="table table-hover nc-table-sm" aria-describedby="roles">
-                            <thead class="thead-dark">
+                            <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
                                 </tr>

@@ -96,7 +96,7 @@ Select and table to add and remove objects from other objects.
 
         <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
                aria-describedby="Elements already added">
-            <thead class="thead-dark" :class="{ 'sticky' : sticky > 0}">
+            <thead class="thead-light" :class="{ 'sticky' : sticky > 0}">
                 <tr>
                     <th scope="col" :style="stickyTop" v-if="
                             contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||

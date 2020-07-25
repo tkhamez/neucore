@@ -97,7 +97,7 @@
         <div class="row mt-3">
             <div class="col-lg-12">
                 <table class="table table-hover nc-table-sm member-table" aria-describedby="Corporation members">
-                    <thead class="thead-dark">
+                    <thead class="thead-light">
                         <tr>
                             <th scope="col">Character</th>
                             <th scope="col">Account</th>
