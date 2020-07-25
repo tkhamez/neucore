@@ -201,10 +201,32 @@ function addNavBehaviour() {
         padding-bottom: 0.25rem;
     }
     .lux .navbar,
+    .sketchy .navbar {
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+    }
+    .materia .navbar {
+        padding-top: 0.1rem;
+        padding-bottom: 0.1rem;
+    }
     .simplex .navbar,
     .slate .navbar {
         padding-top: 0;
         padding-bottom: 0;
+    }
+    .simplex .navbar-brand,
+    .slate .navbar-brand {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    .slate .navbar .nav-link {
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+    .lux .navbar .btn,
+    .slate .navbar .btn {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
     }
     .dropdown-menu {
         margin: 0;
