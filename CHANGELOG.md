@@ -4,7 +4,8 @@
 
 - Inclusive and more descriptive terminology (changed "red flags" to warnings, blacklist to kicklist or denylist and 
   whitelist to allowlist)
-- Change: **BC break** The console command `auto-whitelist` was renamed to `auto-allowlist`
+- **BC break** The console command `auto-whitelist` was renamed to `auto-allowlist`
+- Added `run-jobs2.sh` with `update-chars` and `update-player-groups` jobs.
 - Small UI improvements and fixes.
 
 ## 1.13.1

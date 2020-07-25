@@ -100,7 +100,9 @@ class UpdatePlayerGroups extends Command
                 if ($i % 100 === 0) { // reduce memory usage
                     $this->entityManager->clear();
                 }
-                usleep($sleep * 1000);
+                if ($i % 4 === 0) { // reduce CPU usage
+                    usleep($sleep * 1000);
+                }
             }
         } while (count($playerIds) === $dbResultLimit);
 
