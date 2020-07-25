@@ -90,7 +90,6 @@ body.neucore {
 
 /**
  * Change form control background color for dark themes
- * (solar and superhero already have different colors)
  */
 .cyborg,
 .darkly,
@@ -118,6 +117,34 @@ body.neucore {
     .multiselect__option--selected {
         color: #fff;
         background-color: #444;
+    }
+}
+.solar,
+.superhero {
+    // colors from .solar
+    .form-control,
+    .custom-select,
+    .custom-control-label::before,
+    .multiselect__tags,
+    .multiselect__input,
+    .multiselect__spinner {
+        color: #495057;
+        background-color: #A9BDBD;
+    }
+    .multiselect__single {
+        background-color: #A9BDBD;
+    }
+    .multiselect__input::placeholder,
+    .form-control::placeholder {
+        color: #495057;
+    }
+    .multiselect__content {
+        color: #495057;
+        background-color: #A9BDBD;
+    }
+    .multiselect__option--selected {
+        color: #495057;
+        background-color: #A9BDBD;
     }
 }
 
