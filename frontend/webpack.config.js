@@ -70,7 +70,12 @@ module.exports = (env, argv) => {
                 use: 'babel-loader'
             }, {
                 test: /datatables\.net.*\.js$/,
-                loader: 'imports-loader?define=>false'
+                use: [{
+                    loader: 'imports-loader',
+                    options: {
+                        additionalCode: 'var define = false;', // Disable AMD
+                    },
+                }]
             }]
         },
         plugins: [
