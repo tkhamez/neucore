@@ -1,4 +1,4 @@
-name: Neucore Migrations
-migrations_namespace: Neucore\Migrations
-table_name: doctrine_migration_versions
-migrations_directory: src/Migrations/
+migrations_paths:
+  Neucore\Migrations: src/Migrations/
+table_storage:
+  table_name: doctrine_migration_versions
