@@ -231,10 +231,14 @@ function addNavBehaviour() {
     .dropdown-menu {
         margin: 0;
     }
+    .sketchy .dropdown-menu {
+        margin: -3px;
+    }
     .scrollable-menu {
         height: auto;
         max-height: calc(100vh - 80px);
         overflow-x: hidden;
+        overflow-y: scroll;
     }
     .navbar-brand img {
         max-height: 100px;
