@@ -410,20 +410,14 @@ export default {
                 (this.type === 'WatchlistKicklist' || this.type === 'WatchlistAllowlist') &&
                 this.contentType === 'alliances'
             ) {
-                if (this.type === 'WatchlistKicklist') {
-                    method = 'watchlistKicklistAllianceList';
-                } else {
-                    method = 'watchlistAllowlistAllianceList';
-                }
+                method = this.type === 'WatchlistKicklist' ?
+                    'watchlistKicklistAllianceList' : 'watchlistAllowlistAllianceList';
             } else if (
                 (this.type === 'WatchlistKicklist' || this.type === 'WatchlistAllowlist') &&
                 this.contentType === 'corporations'
             ) {
-                if (this.type === 'WatchlistKicklist') {
-                    method = 'watchlistKicklistCorporationList';
-                } else {
-                    method = 'watchlistAllowlistCorporationList';
-                }
+                method = this.type === 'WatchlistKicklist' ?
+                    'watchlistKicklistCorporationList' : 'watchlistAllowlistCorporationList';
             }
             if (! api || ! method) {
                 return;
@@ -520,28 +514,16 @@ export default {
             let param2;
             if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
                 api = new AppApi();
-                if (action === 'add') {
-                    if (this.contentType === 'groups') {
-                        method = 'addGroup';
-                    } else {
-                        method = 'addRole';
-                    }
+                if (this.contentType === 'groups') {
+                    method = action === 'add' ? 'addGroup' : 'removeGroup';
                 } else {
-                    if (this.contentType === 'groups') {
-                        method = 'removeGroup';
-                    } else {
-                        method = 'removeRole';
-                    }
+                    method = action === 'add' ? 'addRole' : 'removeRole';
                 }
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Player') {
                 api = new GroupApi();
-                if (action === 'add') {
-                    method = 'addMember';
-                } else {
-                    method = 'removeMember';
-                }
+                method = action === 'add' ? 'addMember' : 'removeMember';
                 param1 = id;
                 param2 = this.typeId;
             } else if (
@@ -553,20 +535,12 @@ export default {
                 } else if (this.contentType === 'alliances') {
                     api = new AllianceApi();
                 }
-                if (action === 'add') {
-                    method = 'addGroup';
-                } else {
-                    method = 'removeGroup';
-                }
+                method = action === 'add' ? 'addGroup' : 'removeGroup';
                 param1 = id;
                 param2 = this.typeId;
             } else if (this.type === 'Group' && this.contentType === 'groups') {
                 api = new GroupApi();
-                if (action === 'add') {
-                    method = 'addRequiredGroup';
-                } else {
-                    method = 'removeRequiredGroup';
-                }
+                method = action === 'add' ? 'addRequiredGroup' : 'removeRequiredGroup';
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.contentType === 'managers') {
@@ -575,20 +549,12 @@ export default {
                 } else if (this.type === 'App') {
                     api = new AppApi();
                 }
-                if (action === 'add') {
-                    method = 'addManager';
-                } else {
-                    method = 'removeManager';
-                }
+                method = action === 'add' ? 'addManager' : 'removeManager';
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Corporation') {
                 api = new CorporationApi();
-                if (action === 'add') {
-                    method = 'addGroupTracking';
-                } else {
-                    method = 'removeGroupTracking';
-                }
+                method = action === 'add' ? 'addGroupTracking' : 'removeGroupTracking';
                 param1 = this.typeId;
                 param2 = id;
             } else if (
@@ -599,57 +565,28 @@ export default {
                 api = new WatchlistApi();
                 if (this.type === 'Watchlist') {
                     if (this.contentType === 'groups') {
-                        if (action === 'add') {
-                            method = 'watchlistGroupAdd';
-                        } else {
-                            method = 'watchlistGroupRemove';
-                        }
+                        method = action === 'add' ? 'watchlistGroupAdd' : 'watchlistGroupRemove';
                     } else if (this.contentType === 'groupsManage') {
-                        if (action === 'add') {
-                            method = 'watchlistManagerGroupAdd';
-                        } else {
-                            method = 'watchlistManagerGroupRemove';
-                        }
+                        method = action === 'add' ? 'watchlistManagerGroupAdd' : 'watchlistManagerGroupRemove';
                     } else if (this.contentType === 'alliances') {
-                        if (action === 'add') {
-                            method = 'watchlistAllianceAdd';
-                        } else {
-                            method = 'watchlistAllianceRemove';
-                        }
+                        method = action === 'add' ? 'watchlistAllianceAdd' : 'watchlistAllianceRemove';
                     } else {
-                        if (action === 'add') {
-                            method = 'watchlistCorporationAdd';
-                        } else {
-                            method = 'watchlistCorporationRemove';
-                        }
+                        method = action === 'add' ? 'watchlistCorporationAdd' : 'watchlistCorporationRemove';
                     }
                 } else if (this.type === 'WatchlistKicklist') {
                     if (this.contentType === 'alliances') {
-                        if (action === 'add') {
-                            method = 'watchlistKicklistAllianceAdd';
-                        } else {
-                            method = 'watchlistKicklistAllianceRemove';
-                        }
+                        method = action === 'add' ? 'watchlistKicklistAllianceAdd' : 'watchlistKicklistAllianceRemove';
                     } else {
-                        if (action === 'add') {
-                            method = 'watchlistKicklistCorporationAdd';
-                        } else {
-                            method = 'watchlistKicklistCorporationRemove';
-                        }
+                        method = action === 'add' ?
+                            'watchlistKicklistCorporationAdd' : 'watchlistKicklistCorporationRemove';
                     }
                 } else if (this.type === 'WatchlistAllowlist') {
                     if (this.contentType === 'alliances') {
-                        if (action === 'add') {
-                            method = 'watchlistAllowlistAllianceAdd';
-                        } else {
-                            method = 'watchlistAllowlistAllianceRemove';
-                        }
+                        method = action === 'add' ?
+                            'watchlistAllowlistAllianceAdd' : 'watchlistAllowlistAllianceRemove';
                     } else {
-                        if (action === 'add') {
-                            method = 'watchlistAllowlistCorporationAdd';
-                        } else {
-                            method = 'watchlistAllowlistCorporationRemove';
-                        }
+                        method = action === 'add' ?
+                            'watchlistAllowlistCorporationAdd' : 'watchlistAllowlistCorporationRemove';
                     }
                 }
                 param1 = this.typeId;
