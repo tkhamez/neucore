@@ -19,6 +19,7 @@ const ui = SwaggerUIBundle({
         SwaggerUIStandalonePreset,
     ],
     layout: 'StandaloneLayout',
+    validatorUrl: null,
 });
 
 ui.getConfigs().requestInterceptor = function(e) {
