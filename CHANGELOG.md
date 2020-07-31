@@ -2,6 +2,7 @@
 
 ## next
 
+- List of the characters of an account: Date added when the characters were added.
 - Inclusive and more descriptive terminology (changed "red flags" to warnings, blacklist to kicklist or denylist and 
   whitelist to allowlist)
 - **BC break** The console command `auto-whitelist` was renamed to `auto-allowlist`

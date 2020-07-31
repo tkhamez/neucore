@@ -32,19 +32,26 @@ Modal window with all characters of one player.
                         </div>
                     </div>
                     <div class="small row">
-                        <span class="text-muted col-2">Corporation:</span>
-                        <span class="col-10" v-if="character.corporation">
-                            [{{ character.corporation.ticker }}]
-                            {{ character.corporation.name }}
-                            <span v-if="character.corporation.id < 2000000" class="badge badge-info">NPC</span>
-                        </span>
-                    </div>
-                    <div class="small row">
-                        <span class="text-muted col-2">Alliance:</span>
-                        <span class="col-10" v-if="character.corporation && character.corporation.alliance">
-                            [{{ character.corporation.alliance.ticker }}]
-                            {{ character.corporation.alliance.name }}
-                        </span>
+                        <div class="col-2 text-muted">
+                            Corporation:<br>
+                            Alliance:
+                        </div>
+                        <div class="col-6">
+                            <span v-if="character.corporation">
+                                [{{ character.corporation.ticker }}]
+                                {{ character.corporation.name }}
+                                <span v-if="character.corporation.id < 2000000" class="badge badge-info">NPC</span>
+                            </span>
+                            <br>
+                            <span v-if="character.corporation && character.corporation.alliance">
+                                [{{ character.corporation.alliance.ticker }}]
+                                {{ character.corporation.alliance.name }}
+                            </span>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="text-muted">Added:</span>
+                            <span v-if="character.created">{{ formatDate(character.created) }}</span>
+                        </div>
                     </div>
                 </li>
             </ul>
