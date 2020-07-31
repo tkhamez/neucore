@@ -104,7 +104,7 @@
                             <th scope="col" title="ESI token status">ESI</th>
                             <th scope="col">Logon</th>
                             <th scope="col">Logoff</th>
-                            <th scope="col">Location (System, Structure)</th>
+                            <th scope="col">Location</th>
                             <th scope="col">Ship</th>
                             <th scope="col">Joined</th>
                         </tr>
@@ -298,7 +298,7 @@ function configureDataTable(vm) {
         ],
         pageLength: 10,
         deferRender: true,
-        order: [[4, "desc"]],
+        order: [[3, "desc"]],
         'drawCallback': function() {
             $('[data-toggle="tooltip"]').tooltip();
             $('a[data-player-id]').on('click', (evt) => {
@@ -323,7 +323,7 @@ function configureDataTable(vm) {
                         </a>`;
                 } else if (row.missingCharacterMailSentNumber > 0) {
                     return `
-                        <div data-toggle="tooltip" data-html="true" title="
+                        <div class="with-tooltip" data-toggle="tooltip" data-html="true" title="
                             Number mails sent: ${row.missingCharacterMailSentNumber}<br>
                             Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
                             Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
@@ -347,7 +347,7 @@ function configureDataTable(vm) {
                 }
                 if (row.character.validTokenTime) {
                     return `
-                        <div data-toggle="tooltip" data-html="true"
+                        <div class="with-tooltip" data-toggle="tooltip" data-html="true"
                               title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}">
                             ${text}
                         </div>`;
@@ -386,7 +386,27 @@ function configureDataTable(vm) {
 }
 </script>
 
+<style type="text/scss">
+    .member-table .with-tooltip {
+        text-decoration: underline;
+        text-decoration-style: dotted;
+    }
+</style>
 <style type="text/scss" scoped>
+    .member-table {
+        th:nth-child(2) {
+          width: 15%; // +2.5
+        }
+        th:nth-child(3) {
+          width: 5%; // -7.5
+        }
+        th:nth-child(6) {
+          width: 20%; // +7.5
+        }
+        th:nth-child(7) {
+          width: 10%; // -2.5
+        }
+    }
     .input-option {
         display: inline;
         width: 80px;
