@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Neucore\Controller\App\ApplicationController;
 use Neucore\Controller\App\CharController;
-use Neucore\Controller\App\CorporationController as AppCorporationController;
+use Neucore\Controller\App\TrackingController as AppCorporationController;
 use Neucore\Controller\App\EsiController as AppEsiController;
 use Neucore\Controller\App\GroupController as AppGroupController;
 use Neucore\Controller\User\AllianceController;

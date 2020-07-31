@@ -355,7 +355,7 @@ Application API
 
 Allows an app to get groups from a player account.
 
-Application API
+Application - Groups API
 - Return groups of the character's player account. `GET /app/v2/groups/{cid}`
 - Return groups of multiple players, identified by one of their character IDs. `POST /app/v1/groups`
 - Return groups of the corporation. `GET /app/v2/corp-groups/{cid}`
@@ -368,7 +368,7 @@ Application API
 
 Allows an app to get characters from a player account.
 
-Application API
+Application - Characters API
 - Return the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
 - Return the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
 - Return all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
@@ -383,7 +383,7 @@ Application API
 
 Allows an app to get corporation member tracking data.
 
-Application API
+Application - Tracking API
 - Return corporation member tracking data. `GET /app/v1/corporation/{id}/member-tracking`
 
 #### app-esi

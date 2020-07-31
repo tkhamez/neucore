@@ -9,7 +9,12 @@ use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class CorporationController extends BaseController
+/**
+ * @OA\Tag(
+ *     name="Application - Tracking"
+ * )
+ */
+class TrackingController extends BaseController
 {
     /**
      * @noinspection PhpUnused
@@ -18,7 +23,7 @@ class CorporationController extends BaseController
      *     operationId="memberTrackingV1",
      *     summary="Return corporation member tracking data.",
      *     description="Needs role: app-tracking",
-     *     tags={"Application"},
+     *     tags={"Application - Tracking"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="id",

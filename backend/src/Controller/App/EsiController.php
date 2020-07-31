@@ -24,6 +24,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @OA\Tag(
+ *     name="Application - ESI"
+ * )
+ */
 class EsiController extends BaseController
 {
     const ERROR_MESSAGE_PREFIX = 'App\EsiController: ';
@@ -100,7 +105,7 @@ class EsiController extends BaseController
      *         The ESI path and query parameters can alternatively be appended to the path of this endpoint,
                this allows to use OpenAPI clients that were generated for the ESI API,
                see doc/app-esi-examples.php for more.",
-     *     tags={"Application"},
+     *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="esi-path-query",
@@ -190,8 +195,8 @@ class EsiController extends BaseController
      * @OA\Post(
      *     path="/app/v1/esi",
      *     operationId="esiPostV1",
-     *     summary="Same as GET​/app/v1/esi, but for POST requests.",
-     *     tags={"Application"},
+     *     summary="Same as GET /app/v1/esi, but for POST requests.",
+     *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="esi-path-query",

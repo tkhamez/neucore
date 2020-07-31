@@ -15,6 +15,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
+ * @OA\Tag(
+ *     name="Application - Groups"
+ * )
+ *
  * @OA\Schema(
  *     schema="CharacterGroups",
  *     required={"character", "groups"},
@@ -69,7 +73,7 @@ class GroupController extends BaseController
      *     operationId="groupsV1",
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="cid",
@@ -112,7 +116,7 @@ class GroupController extends BaseController
      *     operationId="groupsV2",
      *     summary="Return groups of the character's player account.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="cid",
@@ -156,7 +160,7 @@ class GroupController extends BaseController
      *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips characters that are not found in the local database.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -193,7 +197,7 @@ class GroupController extends BaseController
      *     operationId="corpGroupsV1",
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="cid",
@@ -229,7 +233,7 @@ class GroupController extends BaseController
      *     operationId="corpGroupsV2",
      *     summary="Return groups of the corporation.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="cid",
@@ -273,7 +277,7 @@ class GroupController extends BaseController
      *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips corporations that are not found in the local database.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -310,7 +314,7 @@ class GroupController extends BaseController
      *     operationId="allianceGroupsV1",
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="aid",
@@ -346,7 +350,7 @@ class GroupController extends BaseController
      *     operationId="allianceGroupsV2",
      *     summary="Return groups of the alliance.",
      *     description="Needs role: app-groups.<br>Returns only groups that have been added to the app as well.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="aid",
@@ -390,7 +394,7 @@ class GroupController extends BaseController
      *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.
      *                  Skips alliances that are not found in the local database.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -429,7 +433,7 @@ class GroupController extends BaseController
      *     description="Needs role: app-groups.<br>
      *                  Returns only groups that have been added to the app as well.<br>
      *                  It is not checked if character, corporation and alliance match.",
-     *     tags={"Application"},
+     *     tags={"Application - Groups"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="character",

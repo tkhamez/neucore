@@ -9,6 +9,11 @@ use Neucore\Entity\Player;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @OA\Tag(
+ *     name="Application - Characters"
+ * )
+ */
 class CharController extends BaseController
 {
     const ERROR_CHARACTER_NOT_FOUND = 'Character not found.';
@@ -20,7 +25,7 @@ class CharController extends BaseController
      *     operationId="mainV1",
      *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="cid",
@@ -70,7 +75,7 @@ class CharController extends BaseController
      *     operationId="mainV2",
      *     summary="Return the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="cid",
@@ -116,7 +121,7 @@ class CharController extends BaseController
      *     operationId="playerV1",
      *     summary="Return the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="characterId",
@@ -157,7 +162,7 @@ class CharController extends BaseController
      *     operationId="charactersV1",
      *     summary="Return all characters of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="characterId",
@@ -198,7 +203,7 @@ class CharController extends BaseController
      *     operationId="playerCharactersV1",
      *     summary="Return all characters from the player account.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="playerId",
@@ -239,7 +244,7 @@ class CharController extends BaseController
      *     operationId="playerWithCharactersV1",
      *     summary="Return the player account to which the character ID belongs with all characters.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="characterId",
@@ -286,7 +291,7 @@ class CharController extends BaseController
      *     operationId="removedCharactersV1",
      *     summary="Return all characters that were removed from the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="characterId",
@@ -333,7 +338,7 @@ class CharController extends BaseController
      *     summary="Return all characters that were moved from another account to the player account to which the
                     ID belongs.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="characterId",
@@ -379,7 +384,7 @@ class CharController extends BaseController
      *     operationId="corporationPlayersV1",
      *     summary="Return a list of all players that have a character in the corporation.",
      *     description="Needs role: app-chars.",
-     *     tags={"Application"},
+     *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="corporationId",

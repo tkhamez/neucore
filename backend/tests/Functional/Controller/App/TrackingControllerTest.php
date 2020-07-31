@@ -13,7 +13,7 @@ use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Neucore\Entity\Corporation;
 
-class CorporationControllerTest extends WebTestCase
+class TrackingControllerTest extends WebTestCase
 {
     /**
      * @var Helper
