@@ -2,9 +2,9 @@
 <div class="container-fluid">
 
     <edit :type="'Group'" ref="editModal"
-          v-on:created="groupCreated($event)"
-          v-on:deleted="groupDeleted()"
-          v-on:itemChange="groupChanged()"></edit>
+          :functionCreate="create"
+          :functionDelete="deleteIt"
+          :functionRename="rename"></edit>
 
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addAlliCorpSuccess()"></add-entity>
 
@@ -19,7 +19,7 @@
             <div class="card border-secondary mb-3">
                 <h4 class="card-header">
                     Groups
-                    <span class="far fa-plus-square add-group"
+                    <span class="far fa-plus-square add-group" title="Add group"
                        @mouseover="mouseover"
                        @mouseleave="mouseleave"
                        v-on:click="showCreateGroupModal()"></span>
@@ -32,7 +32,7 @@
                             {{ group.name }}
                             <span class="text-muted small">{{ group.visibility }}</span>
                         </a>
-                        <span class="group-actions">
+                        <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"
                                   class="fas fa-pencil-alt mr-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
@@ -126,7 +126,7 @@
 import $ from 'jquery';
 import {GroupApi} from 'neucore-js-client';
 import AddEntity  from '../components/EntityAdd.vue';
-import Edit       from '../components/GroupAppEdit.vue';
+import Edit       from '../components/EntityEdit.vue';
 import Admin      from '../components/EntityRelationEdit.vue';
 
 export default {
@@ -177,21 +177,8 @@ export default {
             this.$refs.editModal.showCreateModal();
         },
 
-        groupCreated: function(newGroupId) {
-            window.location.hash = `#GroupAdmin/${newGroupId}`;
-            getGroups(this);
-        },
-
         showDeleteGroupModal: function(group) {
             this.$refs.editModal.showDeleteModal(group);
-        },
-
-        groupDeleted: function() {
-            window.location.hash = '#GroupAdmin';
-            this.groupId = null;
-            this.contentType = '';
-            getGroups(this);
-            this.$root.$emit('playerChange'); // current player could have been a manager or member
         },
 
         showEditGroupModal: function(group) {
@@ -208,10 +195,58 @@ export default {
             }
         },
 
-        groupChanged: function() {
-            getGroups(this);
+        create (name) {
+            const vm = this;
+            new GroupApi().create(name, (error, data, response) => {
+                if (response.status === 409) {
+                    vm.message('A group with this name already exists.', 'error');
+                } else if (response.status === 400) {
+                    vm.message('Invalid name.', 'error');
+                } else if (error) {
+                    vm.message('Error creating group.', 'error');
+                } else {
+                    vm.$refs.editModal.hideModal();
+                    vm.message('Group created.', 'success');
+                    window.location.hash = `#GroupAdmin/${data.id}`;
+                    getGroups(vm);
+                }
+            });
         },
 
+        deleteIt (id) {
+            const vm = this;
+            new GroupApi().callDelete(id, (error) => {
+                if (error) {
+                    vm.message('Error deleting group', 'error');
+                } else {
+                    vm.$refs.editModal.hideModal();
+                    vm.message('Group deleted.', 'success');
+                    window.location.hash = '#GroupAdmin';
+                    vm.groupId = null;
+                    vm.contentType = '';
+                    getGroups(vm);
+                    vm.$root.$emit('playerChange'); // current player could have been a manager or member
+                }
+            });
+        },
+
+        rename (id, name) {
+            const vm = this;
+            new GroupApi().rename(id, name, (error, data, response) => {
+                if (response.status === 409) {
+                    vm.message('A group with this name already exists.', 'error');
+                } else if (response.status === 400) {
+                    vm.message('Invalid group name.', 'error');
+                } else if (error) {
+                    vm.message('Error renaming group.', 'error');
+                } else {
+                    vm.message('Group renamed.', 'success');
+                    vm.$refs.editModal.hideModal();
+                    vm.$root.$emit('playerChange');
+                    getGroups(vm);
+                }
+            });
+        },
     },
 }
 

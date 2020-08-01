@@ -158,6 +158,9 @@ return [
     '/api/user/settings/system/send-missing-character-mail' => ['POST', SettingsController::class.'::sendMissingCharacterMail'],
     '/api/user/settings/system/validate-director/{name}'    => ['PUT',  SettingsController::class.'::validateDirector'],
 
+    '/api/user/watchlist/create'                                => ['POST', WatchlistController::class.'::create'],
+    '/api/user/watchlist/{id}/rename'                           => ['PUT',  WatchlistController::class.'::rename'],
+    '/api/user/watchlist/{id}/delete'                           => ['DELETE', WatchlistController::class.'::delete'],
     '/api/user/watchlist/listAll'                               => ['GET',  WatchlistController::class.'::listAll'],
     '/api/user/watchlist/list-available'                        => ['GET',  WatchlistController::class.'::listAvailable'],
     '/api/user/watchlist/list-available-manage'                 => ['GET',  WatchlistController::class.'::listAvailableManage'],

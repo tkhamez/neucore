@@ -53,17 +53,19 @@ class AutoAllowlistTest extends ConsoleTestCase
         $helper->addCharacterToPlayer('char2c', 1023, $char2a->getPlayer())->setCorporation($corp3);
 
         $watchlist1 = new Watchlist();
-        $watchlist1->setId(1)->setName('test1')->addCorporation($corp2);
+        $watchlist1->setName('test1')->addCorporation($corp2);
         $this->om->persist($watchlist1);
 
         $watchlist2 = new Watchlist();
-        $watchlist2->setId(2)->setName('test2')->addCorporation($corp1)->addAllowlistCorporation($corp3);
+        $watchlist2->setName('test2')->addCorporation($corp1)->addAllowlistCorporation($corp3);
         $this->om->persist($watchlist2);
 
         $this->om->flush();
 
         $this->data['player1Id'] = $char1a->getPlayer()->getId();
         $this->data['player2Id'] = $char2a->getPlayer()->getId();
+        $this->data['watchlist1Id'] = $watchlist1->getId();
+        $this->data['watchlist2Id'] = $watchlist2->getId();
     }
 
     /**
@@ -83,10 +85,10 @@ class AutoAllowlistTest extends ConsoleTestCase
         $log = explode("\n", $output);
         $this->assertSame(11, count($log));
         $this->assertStringContainsString('Started "auto-allowlist"', $log[0]);
-        $this->assertStringContainsString('  Processing watchlist 1', $log[1]);
+        $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist1Id'], $log[1]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[2]);
         $this->assertStringContainsString('    Corporations to check: 1, checked: 0, allowlist: 0', $log[3]);
-        $this->assertStringContainsString('  Processing watchlist 2', $log[4]);
+        $this->assertStringContainsString('  Processing watchlist '.$this->data['watchlist2Id'], $log[4]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player1Id']}.", $log[5]);
         $this->assertStringContainsString("    Collected data from player {$this->data['player2Id']}.", $log[6]);
         $this->assertStringContainsString('    Checked corporation 2000102.', $log[7]);
@@ -96,7 +98,7 @@ class AutoAllowlistTest extends ConsoleTestCase
 
         $this->om->clear();
 
-        $list = (new RepositoryFactory($this->om))->getWatchlistRepository()->find(2);
+        $list = (new RepositoryFactory($this->om))->getWatchlistRepository()->find($this->data['watchlist2Id']);
         $corp2 = (new RepositoryFactory($this->om))->getCorporationRepository()->find(2000102);
         $corp3 = (new RepositoryFactory($this->om))->getCorporationRepository()->find(2000103);
 

@@ -23,7 +23,7 @@ class Watchlist implements \JsonSerializable
      * @OA\Property()
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue
      * @var integer
      */
     private $id;
@@ -147,13 +147,6 @@ class Watchlist implements \JsonSerializable
         $this->kicklistAlliances = new ArrayCollection();
         $this->allowlistCorporations = new ArrayCollection();
         $this->allowlistAlliances = new ArrayCollection();
-    }
-
-    public function setId(int $id): Watchlist
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     /**

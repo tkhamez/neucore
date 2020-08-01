@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -18,6 +19,7 @@ use Neucore\Service\UserAuth;
 use Neucore\Service\Watchlist;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -54,7 +56,166 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
+     * @OA\Post(
+     *     path="/user/watchlist/create",
+     *     operationId="watchlistCreate",
+     *     summary="Create a watchlist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="name",
+     *                     description="Name of the watchlist.",
+     *                     type="string",
+     *                     maxLength=32,
+     *                 )
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="201",
+     *         description="The new watchlist.",
+     *         @OA\JsonContent(ref="#/components/schemas/Watchlist")
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Watchlist name is missing."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function create(ServerRequestInterface $request): ResponseInterface
+    {
+        $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
+        if ($name === '') {
+            return $this->response->withStatus(400);
+        }
+
+        $watchlist = new \Neucore\Entity\Watchlist();
+        $watchlist->setName($name);
+        $this->objectManager->persist($watchlist);
+
+        return $this->flushAndReturn(201, $watchlist);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/user/watchlist/{id}/rename",
+     *     operationId="watchlistRename",
+     *     summary="Rename a watchlist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the watchlist.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="name",
+     *                     description="New name for the watchlist.",
+     *                     type="string",
+     *                     maxLength=32,
+     *                 )
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Watchlist was renamed.",
+     *         @OA\JsonContent(ref="#/components/schemas/Watchlist")
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Watchlist name is missing."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Watchlist not found."
+     *     ),
+     * )
+     */
+    public function rename(string $id, ServerRequestInterface $request): ResponseInterface
+    {
+        $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
+        if ($name === '') {
+            return $this->response->withStatus(400);
+        }
+
+        $watchlist = $this->watchlistRepository->find($id);
+        if ($watchlist === null) {
+            return $this->response->withStatus(404, 'Watchlist not found.');
+        }
+
+        $watchlist->setName($name);
+        $this->objectManager->persist($watchlist);
+
+        return $this->flushAndReturn(200, $watchlist);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/user/watchlist/{id}/delete",
+     *     operationId="watchlistDelete",
+     *     summary="Delete a watchlist.",
+     *     description="Needs role: watchlist-admin",
+     *     tags={"Watchlist"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the watchlist.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Watchlist was deleted."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Watchlist not found."
+     *     )
+     * )
+     */
+    public function delete(string $id): ResponseInterface
+    {
+        $watchlist = $this->watchlistRepository->find($id);
+        if ($watchlist === null) {
+            return $this->response->withStatus(404, 'Watchlist not found.');
+        }
+
+        $this->objectManager->remove($watchlist);
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
      * @OA\Get(
      *     path="/user/watchlist/listAll",
      *     operationId="watchlistListAll",
@@ -75,11 +236,10 @@ class WatchlistController extends BaseController
      */
     public function listAll(): ResponseInterface
     {
-        return $this->withJson($this->watchlistRepository->findBy([]));
+        return $this->withJson($this->watchlistRepository->findBy([], ['name' => 'ASC']));
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/list-available",
      *     operationId="watchlistListAvailable",
@@ -110,7 +270,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/list-available-manage",
      *     operationId="watchlistListAvailableManage",
@@ -141,7 +300,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/players",
      *     operationId="watchlistPlayers",
@@ -183,7 +341,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/players-kicklist",
      *     operationId="watchlistPlayersKicklist",
@@ -220,7 +377,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/exemption/list",
      *     operationId="watchlistExemptionList",
@@ -260,7 +416,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/exemption/add/{player}",
      *     operationId="watchlistExemptionAdd",
@@ -306,7 +461,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/exemption/remove/{player}",
      *     operationId="watchlistExemptionRemove",
@@ -352,7 +506,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/corporation/list",
      *     operationId="watchlistCorporationList",
@@ -388,7 +541,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/corporation/add/{corporation}",
      *     operationId="watchlistCorporationAdd",
@@ -434,7 +586,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/corporation/remove/{corporation}",
      *     operationId="watchlistCorporationRemove",
@@ -480,7 +631,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/alliance/list",
      *     operationId="watchlistAllianceList",
@@ -516,7 +666,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/alliance/add/{alliance}",
      *     operationId="watchlistAllianceAdd",
@@ -562,7 +711,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/alliance/remove/{alliance}",
      *     operationId="watchlistAllianceRemove",
@@ -608,7 +756,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/group/list",
      *     operationId="watchlistGroupList",
@@ -640,7 +787,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/group/add/{group}",
      *     operationId="watchlistGroupAdd",
@@ -685,7 +831,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/group/remove/{group}",
      *     operationId="watchlistGroupRemove",
@@ -730,7 +875,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/manager-group/list",
      *     operationId="watchlistManagerGroupList",
@@ -762,7 +906,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/manager-group/add/{group}",
      *     operationId="watchlistManagerGroupAdd",
@@ -807,7 +950,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/manager-group/remove/{group}",
      *     operationId="watchlistManagerGroupRemove",
@@ -852,7 +994,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/kicklist-corporation/list",
      *     operationId="watchlistKicklistCorporationList",
@@ -888,7 +1029,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/kicklist-corporation/add/{corporation}",
      *     operationId="watchlistKicklistCorporationAdd",
@@ -940,7 +1080,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/kicklist-corporation/remove/{corporation}",
      *     operationId="watchlistKicklistCorporationRemove",
@@ -991,7 +1130,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/kicklist-alliance/list",
      *     operationId="watchlistKicklistAllianceList",
@@ -1027,7 +1165,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/kicklist-alliance/add/{alliance}",
      *     operationId="watchlistKicklistAllianceAdd",
@@ -1073,7 +1210,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/kicklist-alliance/remove/{alliance}",
      *     operationId="watchlistKicklistAllianceRemove",
@@ -1124,7 +1260,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/allowlist-corporation/list",
      *     operationId="watchlistAllowlistCorporationList",
@@ -1164,7 +1299,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/allowlist-corporation/add/{corporation}",
      *     operationId="watchlistAllowlistCorporationAdd",
@@ -1215,7 +1349,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/allowlist-corporation/remove/{corporation}",
      *     operationId="watchlistAllowlistCorporationRemove",
@@ -1266,7 +1399,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/watchlist/{id}/allowlist-alliance/list",
      *     operationId="watchlistAllowlistAllianceList",
@@ -1302,7 +1434,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/allowlist-alliance/add/{alliance}",
      *     operationId="watchlistAllowlistAllianceAdd",
@@ -1348,7 +1479,6 @@ class WatchlistController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/watchlist/{id}/allowlist-alliance/remove/{alliance}",
      *     operationId="watchlistAllowlistAllianceRemove",

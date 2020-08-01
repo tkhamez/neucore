@@ -7,7 +7,6 @@ namespace Neucore\Command;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\DataFixtures\RoleFixtureLoader;
 use Neucore\DataFixtures\SystemVariablesFixtureLoader;
-use Neucore\DataFixtures\WatchlistFixtureLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,9 +42,6 @@ class DoctrineFixturesLoad extends Command
 
         $output->writeln('loading Neucore\DataFixtures\SystemVariablesFixtureLoader');
         (new SystemVariablesFixtureLoader())->load($this->objectManager);
-
-        $output->writeln('loading Neucore\DataFixtures\WatchlistFixtureLoader');
-        (new WatchlistFixtureLoader())->load($this->objectManager);
 
         return 0;
     }

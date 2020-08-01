@@ -1016,8 +1016,8 @@ class AccountTest extends TestCase
 
     private function setUpWatchlistData()
     {
-        $this->watchlist1 = (new Watchlist())->setId(11)->setName('wl 1');
-        $this->watchlist2 = (new Watchlist())->setId(12)->setName('wl 2');
+        $this->watchlist1 = (new Watchlist())->setName('wl 1');
+        $this->watchlist2 = (new Watchlist())->setName('wl 2');
         $this->group1 = (new Group())->setName('group 1');
         $this->group2 = (new Group())->setName('group 2');
         $this->watchlist1->addGroup($this->group1);

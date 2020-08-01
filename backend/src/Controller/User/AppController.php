@@ -77,7 +77,7 @@ class AppController extends BaseController
     public function all(): ResponseInterface
     {
         $apps = [];
-        foreach ($this->repositoryFactory->getAppRepository()->findBy([]) as $app) {
+        foreach ($this->repositoryFactory->getAppRepository()->findBy([], ['name' => 'ASC']) as $app) {
             $apps[] = [
                 'id' => $app->getId(),
                 'name' => $app->getName(),
@@ -130,7 +130,7 @@ class AppController extends BaseController
      */
     public function create(ServerRequestInterface $request, LoggerInterface $log): ResponseInterface
     {
-        $name = $this->sanitize($this->getBodyParam($request, 'name', ''));
+        $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
         if ($name === '') {
             return $this->response->withStatus(400);
         }
@@ -217,7 +217,7 @@ class AppController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $name = $this->sanitize($this->getBodyParam($request, 'name', ''));
+        $name = $this->sanitizePrintable($this->getBodyParam($request, 'name', ''));
         if ($name === '') {
             return $this->response->withStatus(400);
         }
@@ -772,10 +772,5 @@ class AppController extends BaseController
         $this->application = $applicationEntity;
 
         return true;
-    }
-
-    private function sanitize(string $name): string
-    {
-        return str_replace(["\r", "\n"], ' ', trim($name));
     }
 }

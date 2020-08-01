@@ -1,11 +1,10 @@
 <template>
 <div class="container-fluid">
 
-    <!--suppress HtmlUnknownTag -->
     <edit :type="'App'" ref="editModal"
-        v-on:created="appCreated($event)"
-        v-on:deleted="appDeleted()"
-        v-on:itemChange="appChanged()"></edit>
+          :functionCreate="create"
+          :functionDelete="deleteIt"
+          :functionRename="rename"></edit>
 
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
@@ -18,7 +17,7 @@
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header">
                     Apps
-                    <span class="far fa-plus-square add-app"
+                    <span class="far fa-plus-square add-app" title="Add application"
                        @mouseover="mouseover"
                        @mouseleave="mouseleave"
                        v-on:click="showCreateAppModal()"></span>
@@ -30,7 +29,7 @@
                            :href="'#AppAdmin/' + app.id + '/' + contentType">
                             {{ app.name }}
                         </a>
-                        <span class="group-actions">
+                        <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"
                                   class="fas fa-pencil-alt mr-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
@@ -66,7 +65,6 @@
                 </li>
             </ul>
 
-            <!--suppress HtmlUnknownTag -->
             <admin v-cloak v-if="appId" ref="admin"
                    :player="player" :contentType="contentType" :typeId="appId" :settings="settings"
                    :type="'App'"></admin>
@@ -80,7 +78,7 @@
 import $ from 'jquery';
 import {AppApi} from 'neucore-js-client';
 
-import Edit  from '../components/GroupAppEdit.vue';
+import Edit  from '../components/EntityEdit.vue';
 import Admin from '../components/EntityRelationEdit.vue';
 
 export default {
@@ -129,30 +127,65 @@ export default {
             this.$refs.editModal.showCreateModal();
         },
 
-        appCreated: function(newAppId) {
-            window.location.hash = `#AppAdmin/${newAppId}`;
-            getApps(this);
-        },
-
         showDeleteAppModal: function(app) {
             this.$refs.editModal.showDeleteModal(app);
-        },
-
-        appDeleted: function() {
-            window.location.hash = '#AppAdmin';
-            this.appId = null;
-            this.contentType = '';
-            getApps(this);
-            this.$root.$emit('playerChange'); // current player could have been a manager
         },
 
         showRenameAppModal: function(app) {
             this.$refs.editModal.showEditModal(app);
         },
 
-        appChanged: function() {
-            this.$refs.editModal.hideEditModal();
-            getApps(this);
+        create (name) {
+            const vm = this;
+            new AppApi().create(name, (error, data, response) => {
+                if (response.status === 409) {
+                    vm.message('An app with this name already exists.', 'error');
+                } else if (response.status === 400) {
+                    vm.message('Invalid name.', 'error');
+                } else if (error) {
+                    vm.message('Error creating app.', 'error');
+                } else {
+                    vm.$refs.editModal.hideModal();
+                    vm.message('App created.', 'success');
+                    window.location.hash = `#AppAdmin/${data.id}`;
+                    getApps(vm);
+                }
+            });
+        },
+
+        deleteIt (id) {
+            const vm = this;
+            new AppApi().callDelete(id, (error) => {
+                if (error) {
+                    vm.message('Error deleting app', 'error');
+                } else {
+                    vm.$refs.editModal.hideModal();
+                    vm.message('App deleted.', 'success');
+                    window.location.hash = '#AppAdmin';
+                    vm.$root.$emit('playerChange'); // current player could have been a manager
+                    vm.appId = null;
+                    vm.contentType = '';
+                    getApps(vm);
+                }
+            });
+        },
+
+        rename (id, name) {
+            const vm = this;
+            new AppApi().rename(id, name, (error, data, response) => {
+                if (response.status === 409) {
+                    vm.message('An app with this name already exists.', 'error');
+                } else if (response.status === 400) {
+                    vm.message('Invalid app name.', 'error');
+                } else if (error) {
+                    vm.message('Error renaming app.', 'error');
+                } else {
+                    vm.message('App renamed.', 'success');
+                    vm.$refs.editModal.hideModal();
+                    vm.$root.$emit('playerChange');
+                    getApps(vm);
+                }
+            });
         },
     },
 }

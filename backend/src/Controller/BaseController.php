@@ -80,6 +80,14 @@ abstract class BaseController
     }
 
     /**
+     * Removes all non-printable characters from the string.
+     */
+    protected function sanitizePrintable(string $string): string
+    {
+        return preg_replace('/[^[:print:]]/', '', trim($string));
+    }
+
+    /**
      * @param mixed $data
      * @param int|null $status
      * @return ResponseInterface

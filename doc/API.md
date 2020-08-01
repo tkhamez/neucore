@@ -333,6 +333,9 @@ Group API
 - List all groups. `GET /user/group/all`
 
 Watchlist API
+- Create a watchlist. `POST /user/watchlist/create`
+- Rename a watchlist. `PUT /user/watchlist/{id}/rename`
+- Delete a watchlist. `DELETE /user/watchlist/{id}/delete`
 - Lists all watchlists. `GET /user/watchlist/listAll`
 - List of groups with access to this list. `GET /user/watchlist/{id}/group/list`
 - Add access group to the list. `PUT /user/watchlist/{id}/group/add/{group}`
@@ -372,7 +375,7 @@ Application - Characters API
 - Returns the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
 - Returns the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
 - Returns all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
-- Returns all known characters from the list. `POST /app/v1/character-list`
+- Returns all known characters from the parameter list. `POST /app/v1/character-list`
 - Returns all characters from the player account. `GET /app/v1/player-chars/{playerId}`
 - Returns the player account to which the character ID belongs with all characters. `GET /app/v1/player-with-characters/{characterId}`
 - Returns all characters that were removed from the player account to which the character ID

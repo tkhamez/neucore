@@ -112,14 +112,14 @@ return [
     '/api/user/watchlist/{id}/kicklist-alliance/list'     => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
     '/api/user/watchlist/{id}/allowlist-corporation/list' => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
     '/api/user/watchlist/{id}/allowlist-alliance/list'    => [Role::WATCHLIST, Role::WATCHLIST_MANAGER],
-    '/api/user/watchlist/{id}/exemption/'                 => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist/{id}/corporation/'               => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist/{id}/alliance/'                  => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist/{id}/kicklist-corporation/'      => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist/{id}/kicklist-alliance/'         => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist/{id}/allowlist-corporation/'     => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist/{id}/allowlist-alliance/'        => [Role::WATCHLIST_MANAGER], # add,remove
-    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # (manager-)group/list,add,remove
+    '/api/user/watchlist/{id}/exemption/'                 => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist/{id}/corporation/'               => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist/{id}/alliance/'                  => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist/{id}/kicklist-corporation/'      => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist/{id}/kicklist-alliance/'         => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist/{id}/allowlist-corporation/'     => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist/{id}/allowlist-alliance/'        => [Role::WATCHLIST_MANAGER], # add, remove
+    '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # several admin functions
 
     '/api/user' => [Role::USER],
 ];

@@ -172,7 +172,7 @@ body.neucore {
             padding-right: 5rem;
         }
     }
-    .group-actions {
+    .entity-actions {
         display: none;
         position: absolute;
         top: 0.75rem;
@@ -184,7 +184,7 @@ body.neucore {
             border: 1px solid white;
         }
     }
-    &.active .group-actions {
+    &.active .entity-actions {
         display: inline;
     }
 }

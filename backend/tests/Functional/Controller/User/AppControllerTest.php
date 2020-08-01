@@ -141,7 +141,7 @@ class AppControllerTest extends WebTestCase
 
         $log = new Logger('test');
 
-        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], [
+        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\n app"], [
             'Content-Type' => 'application/x-www-form-urlencoded'
         ], [
             LoggerInterface::class => $log
@@ -159,7 +159,7 @@ class AppControllerTest extends WebTestCase
         $this->helper->addRoles([Role::APP]);
         $this->loginUser(8);
 
-        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new\napp"], [
+        $response = $this->runApp('POST', '/api/user/app/create', ['name' => "new \napp"], [
             'Content-Type' => 'application/x-www-form-urlencoded'
         ]);
         $this->assertEquals(201, $response->getStatusCode());
@@ -223,7 +223,7 @@ class AppControllerTest extends WebTestCase
 
         $expectedGroup = ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE];
         $this->assertSame(
-            ['id' => $this->aid, 'name' => 'n  a n', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
+            ['id' => $this->aid, 'name' => 'n a n', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
             $this->parseJsonBody($response1)
         );
         $this->assertSame(
