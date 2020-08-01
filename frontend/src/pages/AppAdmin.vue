@@ -209,9 +209,9 @@ function getApps(vm) {
 }
 
 function setAppName(vm) {
-    const app = vm.apps.filter(app => app.id === vm.appId);
-    if (app.length === 1) { // not yet there on page refresh
-        vm.appName = app[0].name;
+    const activeApp = vm.apps.filter(app => app.id === vm.appId);
+    if (activeApp.length === 1) { // not yet there on page refresh
+        vm.appName = activeApp[0].name;
     }
 }
 

@@ -272,9 +272,9 @@ function getGroups(vm) {
 }
 
 function setGroupName(vm) {
-    const group = vm.groups.filter(group => group.id === vm.groupId);
-    if (group.length === 1) { // not yet there on page refresh
-        vm.groupName = group[0].name;
+    const activeGroup = vm.groups.filter(group => group.id === vm.groupId);
+    if (activeGroup.length === 1) { // not yet there on page refresh
+        vm.groupName = activeGroup[0].name;
     }
 }
 

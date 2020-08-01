@@ -112,8 +112,8 @@ Select and table to add and remove objects from other objects.
                     <th scope="col" :style="stickyTop">Name</th>
                     <th scope="col" :style="stickyTop" v-if="contentType === 'managers'">Characters</th>
                     <th scope="col" :style="stickyTop" v-if="contentType === 'corporations'">Alliance</th>
-                    <th scope="col" :style="stickyTop" v-if="
-                        contentType === 'corporations' && type === 'WatchlistAllowlist'" nowrap>auto *</th>
+                    <th scope="col" :style="stickyTop" class="text-nowrap" v-if="
+                        contentType === 'corporations' && type === 'WatchlistAllowlist'">auto *</th>
                     <th scope="col" :style="stickyTop" v-if="
                         (type === 'Group' || type === 'App') &&
                         (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
