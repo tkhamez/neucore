@@ -1,13 +1,16 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
 namespace Neucore\Controller\App;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Character;
 use Neucore\Entity\Player;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -23,7 +26,7 @@ class CharController extends BaseController
      *     path="/app/v1/main/{cid}",
      *     deprecated=true,
      *     operationId="mainV1",
-     *     summary="Return the main character of the player account to which the character ID belongs.",
+     *     summary="Returns the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -69,11 +72,10 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v2/main/{cid}",
      *     operationId="mainV2",
-     *     summary="Return the main character of the player account to which the character ID belongs.",
+     *     summary="Returns the main character of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.<br>It is possible that an account has no main character.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -115,11 +117,10 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/player/{characterId}",
      *     operationId="playerV1",
-     *     summary="Return the player account to which the character ID belongs.",
+     *     summary="Returns the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -156,11 +157,10 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/characters/{characterId}",
      *     operationId="charactersV1",
-     *     summary="Return all characters of the player account to which the character ID belongs.",
+     *     summary="Returns all characters of the player account to which the character ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -197,11 +197,59 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
+     * @OA\Post(
+     *     path="/app/v1/character-list",
+     *     operationId="characterListV1",
+     *     summary="Returns all known characters from the parameter list.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application - Characters"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Array with EVE character IDs.",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="A list of characters (does not include the corporation property).",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Character"))
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function characterListV1(ServerRequestInterface $request): ResponseInterface
+    {
+        $ids = $this->getIntegerArrayFromBody($request);
+        if ($ids === null) {
+            return $this->response->withStatus(400);
+        }
+
+        if (count($ids) === 0) {
+            return $this->withJson([]);
+        }
+
+        $characters = $this->repositoryFactory->getCharacterRepository()->findBy(['id' => $ids]);
+
+        return $this->withJson(array_map(function(Character $character) {
+            return $character->jsonSerialize(false, false);
+        }, $characters));
+    }
+
+    /**
      * @OA\Get(
      *     path="/app/v1/player-chars/{playerId}",
      *     operationId="playerCharactersV1",
-     *     summary="Return all characters from the player account.",
+     *     summary="Returns all characters from the player account.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -238,11 +286,10 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/player-with-characters/{characterId}",
      *     operationId="playerWithCharactersV1",
-     *     summary="Return the player account to which the character ID belongs with all characters.",
+     *     summary="Returns the player account to which the character ID belongs with all characters.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -285,11 +332,11 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/removed-characters/{characterId}",
      *     operationId="removedCharactersV1",
-     *     summary="Return all characters that were removed from the player account to which the character ID belongs.",
+     *     summary="Returns all characters that were removed from the player account to which the character ID
+                    belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -331,11 +378,10 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/incoming-characters/{characterId}",
      *     operationId="incomingCharactersV1",
-     *     summary="Return all characters that were moved from another account to the player account to which the
+     *     summary="Returns all characters that were moved from another account to the player account to which the
                     ID belongs.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
@@ -378,11 +424,10 @@ class CharController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/corp-players/{corporationId}",
      *     operationId="corporationPlayersV1",
-     *     summary="Return a list of all players that have a character in the corporation.",
+     *     summary="Returns a list of all players that have a character in the corporation.",
      *     description="Needs role: app-chars.",
      *     tags={"Application - Characters"},
      *     security={{"BearerAuth"={}}},
@@ -411,5 +456,43 @@ class CharController extends BaseController
         return $this->withJson(array_map(function (Player $player) {
             return $player->jsonSerialize(true);
         }, $players));
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/v1/corp-characters/{corporationId}",
+     *     operationId="corporationCharactersV1",
+     *     summary="Returns a list of all known characters from the corporation.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application - Characters"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="corporationId",
+     *         in="path",
+     *         required=true,
+     *         description="EVE corporation ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of characters (does not include the corporation property).",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Character"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function corporationCharactersV1(string $corporationId): ResponseInterface
+    {
+        $corporation = $this->repositoryFactory->getCorporationRepository()->find((int) $corporationId);
+        if ($corporation === null) {
+            return $this->withJson([]);
+        }
+
+        return $this->withJson(array_map(function(Character $character) {
+            return $character->jsonSerialize(false, false);
+        }, $corporation->getCharacters()));
     }
 }

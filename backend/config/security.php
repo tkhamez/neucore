@@ -12,13 +12,15 @@ use Neucore\Entity\Role;
 return [
     '/api/app/v1/main'                             => [Role::APP_CHARS],
     '/api/app/v2/main'                             => [Role::APP_CHARS],
-    '/api/app/v1/player/{characterId}'             => [Role::APP_CHARS],
+    '/api/app/v1/player/'                          => [Role::APP_CHARS],
+    '/api/app/v1/character-list'                   => [Role::APP_CHARS],
     '/api/app/v1/characters'                       => [Role::APP_CHARS],
     '/api/app/v1/player-chars'                     => [Role::APP_CHARS],
     '/api/app/v1/player-with-characters'           => [Role::APP_CHARS],
     '/api/app/v1/removed-characters'               => [Role::APP_CHARS],
     '/api/app/v1/incoming-characters'              => [Role::APP_CHARS],
-    '/api/app/v1/corp-players/{corporationId}'     => [Role::APP_CHARS],
+    '/api/app/v1/corp-players'                     => [Role::APP_CHARS],
+    '/api/app/v1/corp-characters'                  => [Role::APP_CHARS],
 
     '/api/app/v1/corporation/{id}/member-tracking' => [Role::APP_TRACKING],
 

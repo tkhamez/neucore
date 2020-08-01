@@ -68,6 +68,17 @@ abstract class BaseController
         return $default;
     }
 
+    protected function getIntegerArrayFromBody(ServerRequestInterface $request): ?array
+    {
+        $ids = $request->getParsedBody();
+
+        if (! is_array($ids)) {
+            return null;
+        }
+
+        return array_unique(array_map('intVal', $ids));
+    }
+
     /**
      * @param mixed $data
      * @param int|null $status

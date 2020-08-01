@@ -178,9 +178,6 @@ class Helper
         }
     }
 
-    /**
-     * @noinspection SqlResolve
-     */
     public function emptyDb(): void
     {
         $em = $this->getEm();

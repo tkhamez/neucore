@@ -555,19 +555,6 @@ class GroupController extends BaseController
         return $this->withJson($result);
     }
 
-    private function getIntegerArrayFromBody(ServerRequestInterface $request): ?array
-    {
-        $ids = $request->getParsedBody();
-
-        if (! is_array($ids)) {
-            return null;
-        }
-
-        $ids = array_map('intVal', $ids);
-
-        return array_unique($ids);
-    }
-
     /**
      * @param int $characterId
      * @param Group[] $appGroups

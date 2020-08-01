@@ -369,15 +369,18 @@ Application - Groups API
 Allows an app to get characters from a player account.
 
 Application - Characters API
-- Return the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
-- Return the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
-- Return all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
-- Return all characters from the player account. `GET /app/v1/player-chars/{playerId}`
-- Return the player account to which the character ID belongs with all characters. `GET /app/v1/player-with-characters/{characterId}`
-- Return all characters that were removed from the player account to which the character ID belongs. `GET /app/v1/removed-characters/{characterId}`
-- Return all characters that were moved from another account to the player account to which the
+- Returns the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
+- Returns the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
+- Returns all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
+- Returns all known characters from the list. `POST /app/v1/character-list`
+- Returns all characters from the player account. `GET /app/v1/player-chars/{playerId}`
+- Returns the player account to which the character ID belongs with all characters. `GET /app/v1/player-with-characters/{characterId}`
+- Returns all characters that were removed from the player account to which the character ID
+                    belongs. `GET /app/v1/removed-characters/{characterId}`
+- Returns all characters that were moved from another account to the player account to which the
                     ID belongs. `GET /app/v1/incoming-characters/{characterId}`
-- Return a list of all players that have a character in the corporation. `GET /app/v1/corp-players/{corporationId}`
+- Returns a list of all players that have a character in the corporation. `GET /app/v1/corp-players/{corporationId}`
+- Returns a list of all known characters from the corporation. `GET /app/v1/corp-characters/{corporationId}`
 
 #### app-tracking
 
