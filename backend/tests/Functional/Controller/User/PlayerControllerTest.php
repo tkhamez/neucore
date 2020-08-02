@@ -15,6 +15,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Entity\Watchlist;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\GroupApplicationRepository;
@@ -920,16 +921,35 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters403()
     {
         $this->setupDb();
-        $this->loginUser(11); // role tracking, but not with access to member tracking data
+        $this->loginUser(15); // does not have any of the required roles
+
+        $response0 = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
+        $this->assertEquals(403, $response0->getStatusCode());
+    }
+
+    public function testCharacters_Tracking_403()
+    {
+        $this->setupDb();
+        $this->loginUser(11); // tracking role but missing group, not watchlist role
 
         $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    public function testCharacters_Watchlist_403()
+    {
+        $this->setupDb();
+        $this->h->addCharacterMain('Watchlist', 1011, [Role::USER, Role::WATCHLIST]);
+        $this->loginUser(1011);
+
+        $response2 = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
     public function testCharacters404()
     {
         $this->setupDb();
-        $this->loginUser(12);
+        $this->loginUser(12); // user-admin
 
         $response = $this->runApp('GET', '/api/user/player/'.($this->player3Id + 5).'/characters');
         $this->assertEquals(404, $response->getStatusCode());
@@ -938,11 +958,10 @@ class PlayerControllerTest extends WebTestCase
     public function testCharacters200()
     {
         $this->setupDb();
-        $this->loginUser(10);
 
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
-        $this->assertEquals(200, $response->getStatusCode());
-
+        $this->loginUser(10); // user-chars
+        $response1 = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
+        $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame([
             'id' => $this->player3Id,
             'name' => 'Admin',
@@ -972,7 +991,40 @@ class PlayerControllerTest extends WebTestCase
                     'corporation' => null
                 ],
             ],
-        ], $this->parseJsonBody($response));
+        ], $this->parseJsonBody($response1));
+    }
+
+    public function testCharacters_Tracking_200()
+    {
+        $this->setupDb();
+        $this->loginUser(11);
+
+        $this->corpRepo->find($this->corpId)->addGroupTracking($this->fetchGroup($this->groupId));
+        $this->em->flush();
+
+        $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testCharacters_Watchlist_200()
+    {
+        $this->setupDb();
+        $corpOther = (new Corporation())->setId(100500600)->setName('c2')->setTicker('c-2');
+        $playerWatch = $this->playerRepo->find($this->player3Id);
+        $playerWatch->getCharacters()[1]->setCorporation($corpOther);
+        $group = $this->groupRepo->find($this->gPrivateId);
+        $watchlist = (new Watchlist())->setName('wl1');
+        $watchlist->addGroup($group);
+        $watchlist->addCorporation($playerWatch->getCharacters()[0]->getCorporation());
+        $this->em->persist($watchlist);
+        $this->em->persist($corpOther);
+        $user = $this->h->addCharacterMain('Watchlist', 1011, [Role::USER, Role::WATCHLIST])->getPlayer();
+        $user->addGroup($group);
+        $this->em->flush();
+        $this->loginUser(1011);
+
+        $response2 = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
+        $this->assertEquals(200, $response2->getStatusCode());
     }
 
     public function testGroupCharactersByAccount403()
@@ -1015,27 +1067,6 @@ class PlayerControllerTest extends WebTestCase
                 ['id' => 0, 'name' => 'Invalid']
             ]],
         ], $this->parseJsonBody($response));
-    }
-
-    public function testCharacters_Tracking_403()
-    {
-        $this->setupDb();
-        $this->loginUser(11); // tracking role but missing group
-
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testCharacters_Tracking_200()
-    {
-        $this->setupDb();
-        $this->loginUser(11);
-
-        $this->corpRepo->find($this->corpId)->addGroupTracking($this->fetchGroup($this->groupId));
-        $this->em->flush();
-
-        $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/characters');
-        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testDeleteCharacter404()

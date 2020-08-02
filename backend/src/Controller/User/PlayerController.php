@@ -15,6 +15,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+use Neucore\Service\Watchlist;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -894,8 +895,9 @@ class PlayerController extends BaseController
      *     operationId="characters",
      *     summary="Show player with characters.",
      *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking<br>
-                        If a user only has the role 'tracking', the player must have a character in a corporation
-                        for which the user has access to the member tracking data.",
+                        If a user only has the tracking or watchlist roles, the player must have a character in a
+                        corporation for which the user has access to the member tracking data or the player must
+                        be on a watchlist that the user can view.",
      *     tags={"Player"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -920,7 +922,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function characters(string $id, UserAuth $userAuth): ResponseInterface
+    public function characters(string $id, UserAuth $userAuth, Watchlist $watchlistService): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -928,30 +930,13 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // Check special tracking permission:
-        // The logged in user must be a member of a "tracking" group of a corporation where the player has a character.
-        $userAccount = $this->getUser($userAuth)->getPlayer();
-        $roles = $userAccount->getRoleNames();
-        $neededRolesExceptTracking = array_intersect(
-            $roles,
-            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS, Role::WATCHLIST]
-        );
-        if (in_array(Role::TRACKING, $roles) && count($neededRolesExceptTracking) === 0) {
-            $requiredGroups = [];
-            foreach ($player->getCharacters() as $character) {
-                if ($character->getCorporation() !== null) {
-                    foreach ($character->getCorporation()->getGroupsTracking() as $group) {
-                        $requiredGroups[] = $group->getId();
-                    }
-                }
-            }
-            $userGroupIds = $userAccount->getGroupIds();
-            if (
-                count($userGroupIds) === 0 ||
-                count(array_intersect($requiredGroups, $userGroupIds)) === 0
-            ) {
-                return $this->response->withStatus(403);
-            }
+        // Check special tracking and watchlist permissions
+        if (
+            $this->needsTrackingOrWatchlistPermission($userAuth) &&
+            ! $this->hasTrackingPermission($userAuth, $player) &&
+            ! $this->hasWatchlistPermission($userAuth, $player, $watchlistService)
+        ) {
+            return $this->response->withStatus(403);
         }
 
         return $this->withJson([
@@ -1148,5 +1133,66 @@ class PlayerController extends BaseController
         }
 
         return $this->withJson($ret);
+    }
+
+    private function needsTrackingOrWatchlistPermission(UserAuth $userAuth): bool
+    {
+        $roles = $this->getUser($userAuth)->getPlayer()->getRoleNames();
+        $neededRolesExceptTracking = array_intersect(
+            $roles,
+            [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER_MANAGER, Role::USER_CHARS]
+        );
+        if (
+            (in_array(Role::TRACKING, $roles) || in_array(Role::WATCHLIST, $roles)) &&
+            count($neededRolesExceptTracking) === 0
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private function hasTrackingPermission(UserAuth $userAuth, Player $player): bool
+    {
+        $requiredGroups = [];
+        foreach ($player->getCharacters() as $character) {
+            if ($character->getCorporation() !== null) {
+                foreach ($character->getCorporation()->getGroupsTracking() as $group) {
+                    $requiredGroups[] = $group->getId();
+                }
+            }
+        }
+        $userGroupIds = $this->getUser($userAuth)->getPlayer()->getGroupIds();
+        if (count($userGroupIds) === 0 || count(array_intersect($requiredGroups, $userGroupIds)) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    private function hasWatchlistPermission(UserAuth $userAuth, Player $player, Watchlist $watchlistService): bool
+    {
+        // Collect all watchlists that the user can view
+        $watchlistsWithAccess = [];
+        $userGroupIds = $this->getUser($userAuth)->getPlayer()->getGroupIds();
+        foreach ($this->repositoryFactory->getWatchlistRepository()->findBy([]) as $watchlist) {
+            $requiredGroups = [];
+            foreach ($watchlist->getGroups() as $group) {
+                $requiredGroups[] = $group->getId();
+            }
+            if (count($userGroupIds) > 0 && count(array_intersect($requiredGroups, $userGroupIds)) > 0) {
+                $watchlistsWithAccess[] = $watchlist;
+            }
+        }
+
+        // Check if player is on one of those watchlists
+        foreach ($watchlistsWithAccess as $watchlistWithAccess) {
+            // Get all players including kicklist and allowlist
+            foreach ($watchlistService->getWarningList($watchlistWithAccess->getId(), true, true) as $playerOnList) {
+                if ($playerOnList->getId() === $player->getId()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

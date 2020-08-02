@@ -2,10 +2,13 @@
 
 ## next
 
-- Implemented API and UI to add, rename and delete watchlists.
-- List of characters: Added the date when a character was added to the database.
-- Inclusive and more descriptive terminology (changed "red flags" to warnings, blacklist to kicklist or denylist and 
-  whitelist to allowlist)
+- New: Added the date when a character was added to the database to the list of characters.
+- New: Implemented API and UI to add, rename and delete watchlists.
+- Change: The watchlist role no longer gives access to all characters from all accounts, but only to accounts that  
+  are on a watchlist for which the user has view permission (similar to how it works for the tracking role and member 
+  tracking data).
+- Change: Inclusive and more descriptive terminology (changed "red flags" to warnings, blacklist to kicklist or 
+  denylist and whitelist to allowlist)
 - **BC break** The console command `auto-whitelist` was renamed to `auto-allowlist`
 - Added `run-jobs2.sh` with `update-chars` and `update-player-groups` jobs.
 - Small UI improvements and fixes.
