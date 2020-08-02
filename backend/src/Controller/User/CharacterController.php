@@ -184,8 +184,8 @@ class CharacterController extends BaseController
      *     path="/user/character/{id}/update",
      *     operationId="update",
      *     summary="Update a character with data from ESI.",
-     *     description="Needs role: user or user-admin, user-manager, group-admin, watchlist or tracking to
-                        update any character. It also updates groups and verifies the OAuth token.",
+     *     description="Needs role: user to update own characters or user-admin, user-manager, group-admin, app-admin
+                        or user-chars to update any character. It also updates groups and verifies the OAuth token.",
      *     tags={"Character"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -229,8 +229,8 @@ class CharacterController extends BaseController
             $player->hasRole(Role::USER_ADMIN) ||
             $player->hasRole(Role::USER_MANAGER) ||
             $player->hasRole(Role::GROUP_ADMIN) ||
-            $player->hasRole(Role::WATCHLIST) ||
-            $player->hasRole(Role::TRACKING)
+            $player->hasRole(Role::APP_ADMIN) ||
+            $player->hasRole(Role::USER_CHARS)
         ) {
             $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {

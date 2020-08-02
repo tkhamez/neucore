@@ -139,6 +139,15 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    public function testUpdate403_OtherChar()
+    {
+        $this->setupDb();
+        $this->loginUser(10);
+
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testUpdate404()
     {
         $this->setupDb();
@@ -203,7 +212,7 @@ class CharacterControllerTest extends WebTestCase
         $this->assertNull($char);
     }
 
-    public function testUpdate200LoggedInUser()
+    public function testUpdate200_LoggedInUser()
     {
         $this->setupDb();
         $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
@@ -227,12 +236,14 @@ class CharacterControllerTest extends WebTestCase
             new Response(200, [], '{"CharacterOwnerHash": "coh1"}') // for getResourceOwner()
         );
 
+        $logHandler = new TestHandler();
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
+            LoggerInterface::class => (new Logger('Test'))->pushHandler($logHandler)
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(1, count($logHandler->getRecords()));
 
         $expected = [
             'id' => 96061222,
@@ -267,7 +278,7 @@ class CharacterControllerTest extends WebTestCase
         $this->assertTrue($player->getCharacters()[1]->getValidToken());
     }
 
-    public function testUpdate200Admin()
+    public function testUpdate200_Admin()
     {
         $this->setupDb();
         $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
@@ -290,10 +301,12 @@ class CharacterControllerTest extends WebTestCase
             new Response(200, [], '{}') // for OAuthTestProvider->getResourceOwner()
         );
 
+        $logHandler = new TestHandler();
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
+            LoggerInterface::class => (new Logger('Test'))->pushHandler($logHandler)
         ]);
+        $this->assertSame(1, count($logHandler->getRecords()));
 
         $this->assertEquals(200, $response->getStatusCode());
     }

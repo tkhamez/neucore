@@ -57,7 +57,7 @@ Modal window with all characters of one player.
             </ul>
             <div class="modal-footer">
                 <button v-cloak
-                        v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'watchlist', 'tracking'])"
+                        v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])"
                         type="button" class="btn btn-info" v-on:click="updateCharacters">
                     <span role="img" class="fas fa-sync" title="Update from ESI"></span>
                     Update from ESI

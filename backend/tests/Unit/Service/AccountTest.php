@@ -811,7 +811,7 @@ class AccountTest extends TestCase
         $this->service->syncTrackingRole(new Player());
 
         $this->assertSame(
-            'Account::syncRole(): Role not found.',
+            "Account::syncRole(): Role 'tracking' not found.",
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }

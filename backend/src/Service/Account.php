@@ -537,7 +537,7 @@ class Account
         // get role
         $role = $this->repositoryFactory->getRoleRepository()->findOneBy(['name' => $roleName]);
         if ($role === null) { // should not happen
-            $this->log->error('Account::syncRole(): Role not found.');
+            $this->log->error("Account::syncRole(): Role '$roleName' not found.");
             return;
         }
 
