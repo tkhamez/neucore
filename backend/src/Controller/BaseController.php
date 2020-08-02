@@ -84,7 +84,7 @@ abstract class BaseController
      */
     protected function sanitizePrintable(string $string): string
     {
-        return preg_replace('/[^[:print:]]/', '', trim($string));
+        return (string) preg_replace('/[^[:print:]]/', '', trim($string));
     }
 
     /**

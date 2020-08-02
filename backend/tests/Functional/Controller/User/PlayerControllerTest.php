@@ -1012,14 +1012,19 @@ class PlayerControllerTest extends WebTestCase
         $corpOther = (new Corporation())->setId(100500600)->setName('c2')->setTicker('c-2');
         $playerWatch = $this->playerRepo->find($this->player3Id);
         $playerWatch->getCharacters()[1]->setCorporation($corpOther);
-        $group = $this->groupRepo->find($this->gPrivateId);
+        $corpWatch = $playerWatch->getCharacters()[0]->getCorporation();
         $watchlist = (new Watchlist())->setName('wl1');
-        $watchlist->addGroup($group);
-        $watchlist->addCorporation($playerWatch->getCharacters()[0]->getCorporation());
+        if ($corpWatch) {
+            $watchlist->addCorporation($corpWatch);
+        }
         $this->em->persist($watchlist);
         $this->em->persist($corpOther);
         $user = $this->h->addCharacterMain('Watchlist', 1011, [Role::USER, Role::WATCHLIST])->getPlayer();
-        $user->addGroup($group);
+        $group = $this->groupRepo->find($this->gPrivateId);
+        if ($group) {
+            $watchlist->addGroup($group);
+            $user->addGroup($group);
+        }
         $this->em->flush();
         $this->loginUser(1011);
 
