@@ -91,7 +91,6 @@ class AssureMain extends Command
             }, $this->playerRepository->findBy($criteria, $orderBy, $dbResultLimit, $offset));
 
             yield $playerIds;
-
         } while (count($playerIds) === $dbResultLimit);
     }
 }

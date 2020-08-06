@@ -29,7 +29,6 @@ final class Version20200724212809 extends AbstractMigration
         $this->addSql('RENAME TABLE watchlist_blacklist_corporation TO watchlist_kicklist_corporation');
         $this->addSql('RENAME TABLE watchlist_whitelist_alliance TO watchlist_allowlist_alliance');
         $this->addSql('RENAME TABLE watchlist_whitelist_corporation TO watchlist_allowlist_corporation');
-
     }
 
     public function down(Schema $schema) : void

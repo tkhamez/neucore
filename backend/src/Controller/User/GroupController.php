@@ -998,7 +998,11 @@ class GroupController extends BaseController
     }
 
     private function addPlayerAs(
-        string $groupId, string $playerId, string $type, bool $onlyIfManager, Account $account
+        string $groupId,
+        string $playerId,
+        string $type,
+        bool $onlyIfManager,
+        Account $account
     ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);

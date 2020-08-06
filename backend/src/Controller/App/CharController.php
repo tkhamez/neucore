@@ -240,7 +240,7 @@ class CharController extends BaseController
 
         $characters = $this->repositoryFactory->getCharacterRepository()->findBy(['id' => $ids]);
 
-        return $this->withJson(array_map(function(Character $character) {
+        return $this->withJson(array_map(function (Character $character) {
             return $character->jsonSerialize(false, false);
         }, $characters));
     }
@@ -491,7 +491,7 @@ class CharController extends BaseController
             return $this->withJson([]);
         }
 
-        return $this->withJson(array_map(function(Character $character) {
+        return $this->withJson(array_map(function (Character $character) {
             return $character->jsonSerialize(false, false);
         }, $corporation->getCharacters()));
     }

@@ -1589,7 +1589,11 @@ class WatchlistController extends BaseController
      * @return bool
      */
     private function checkPermission(
-        int $id, UserAuth $userAuth, string $roleName = null, $admin = false, $checkSettingsLock = false
+        int $id,
+        UserAuth $userAuth,
+        string $roleName = null,
+        $admin = false,
+        $checkSettingsLock = false
     ): bool {
         $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {
