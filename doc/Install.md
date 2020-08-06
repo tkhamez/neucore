@@ -37,9 +37,9 @@ To run the application:
   Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
-    * A sample Apache configuration is included in the [Vagrantfile](Vagrantfile) file and there 
-      is a [.htaccess](web/.htaccess) file in the `web` directory.
-    * A sample [Nginx configuration](doc/docker-nginx.conf) file can be found in the `doc` directory.
+    * A sample Apache configuration is included in the [Vagrantfile](../Vagrantfile) file and there 
+      is a [.htaccess](../web/.htaccess) file in the `web` directory.
+    * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
 
 Additionally, to build the application:
 * Composer 1.x
