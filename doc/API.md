@@ -336,7 +336,14 @@ Watchlist API
 - Create a watchlist. `POST /user/watchlist/create`
 - Rename a watchlist. `PUT /user/watchlist/{id}/rename`
 - Delete a watchlist. `DELETE /user/watchlist/{id}/delete`
+- Lock or unlock the watchlist settings. `PUT /user/watchlist/{id}/lock-watchlist-settings/{lock}`
 - Lists all watchlists. `GET /user/watchlist/listAll`
+- List of corporations for this list. `GET /user/watchlist/{id}/corporation/list`
+- Add corporation to the list. `PUT /user/watchlist/{id}/corporation/add/{corporation}`
+- Remove corporation from the list. `PUT /user/watchlist/{id}/corporation/remove/{corporation}`
+- List of alliances for this list. `GET /user/watchlist/{id}/alliance/list`
+- Add alliance to the list. `PUT /user/watchlist/{id}/alliance/add/{alliance}`
+- Remove alliance from the list. `PUT /user/watchlist/{id}/alliance/remove/{alliance}`
 - List of groups with access to this list. `GET /user/watchlist/{id}/group/list`
 - Add access group to the list. `PUT /user/watchlist/{id}/group/add/{group}`
 - Remove access group from the list. `PUT /user/watchlist/{id}/group/remove/{group}`

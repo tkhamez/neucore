@@ -24,9 +24,9 @@
                 </h4>
                 <div class="list-group">
                     <span v-for="watchlist in watchlists" class="list-item-wrap"
-                          :class="{ active: watchlistId === watchlist.id }">
+                          :class="{ active: currentWatchlist && currentWatchlist.id === watchlist.id }">
                         <a class="list-group-item list-group-item-action"
-                           :class="{ active: watchlistId === watchlist.id }"
+                           :class="{ active: currentWatchlist && currentWatchlist.id === watchlist.id }"
                            :href="'#WatchlistAdmin/' + watchlist.id + '/' + contentType">{{ watchlist.name }}
                         </a>
                         <span class="entity-actions">
@@ -44,22 +44,55 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <ul class="nav nav-pills nav-fill">
+            <div class="card border-secondary mb-3" >
+                <h4 class="card-header">{{ currentWatchlist ? currentWatchlist.name : '' }}</h4>
+            </div>
+            <ul v-cloak v-if="currentWatchlist" class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groups' }"
-                       :href="'#WatchlistAdmin/' + watchlistId + '/groups'">View</a>
+                       :href="'#WatchlistAdmin/' + currentWatchlist.id + '/groups'">View</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groupsManage' }"
-                       :href="'#WatchlistAdmin/' + watchlistId + '/groupsManage'">Manage</a>
+                       :href="'#WatchlistAdmin/' + currentWatchlist.id + '/groupsManage'">Manage</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'setting' }"
+                       :href="'#WatchlistAdmin/' + currentWatchlist.id + '/setting'">Settings</a>
                 </li>
             </ul>
 
-            <admin v-cloak v-if="watchlistId && contentType !== ''"
-                   :contentType="contentType" :type="'Watchlist'" :typeId="watchlistId"></admin>
+            <admin v-cloak v-if="currentWatchlist && ['groups', 'groupsManage'].indexOf(contentType) !== -1"
+                   :contentType="contentType" :type="'Watchlist'" :typeId="currentWatchlist.id"></admin>
 
+            <div v-cloak v-if="currentWatchlist && contentType === 'setting'" class="card border-secondary mb-3">
+                <div class="card-body mb-0">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" value="1"
+                               id="lockWatchlistSettings" name="lockWatchlistSettings"
+                               :checked="currentWatchlist.lockWatchlistSettings === true"
+                               @change="saveLockWatchlistSettings($event.target.checked)">
+                        <label class="custom-control-label" for="lockWatchlistSettings">
+                            <strong>Lock Watchlist settings.</strong>
+                        </label>
+                        <p class="mb-0">
+                            If checked, only watchlist admins can add or remove corporations and alliances from
+                            the watchlist. This has no effect on the kick and allow list settings.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div v-cloak v-if="currentWatchlist && contentType === 'setting' && currentWatchlist.lockWatchlistSettings"
+                 class="card border-secondary">
+                <div class="card-header">Alliances and Corporations to watch</div>
+                <div class="card-body mb-0">
+                    <admin :contentType="'alliances'" :type="'Watchlist'" :typeId="currentWatchlist.id"></admin>
+                    <admin :contentType="'corporations'" :type="'Watchlist'" :typeId="currentWatchlist.id"></admin>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -86,7 +119,7 @@ export default {
     data () {
         return {
             watchlists: [],
-            watchlistId: null, // current watchlist
+            currentWatchlist: null,
             contentType: '',
         }
     },
@@ -94,12 +127,11 @@ export default {
     mounted () {
         window.scrollTo(0,0);
         getWatchlists(this);
-        setWatchlistIdAndContentType(this);
     },
 
     watch: {
         route () {
-            setWatchlistIdAndContentType(this);
+            setWatchlistAndContentType(this);
         },
     },
 
@@ -149,7 +181,7 @@ export default {
                     vm.$refs.editModal.hideModal();
                     vm.message('Watchlist deleted.', 'success');
                     window.location.hash = '#WatchlistAdmin';
-                    vm.watchlistId = null;
+                    vm.currentWatchlist = null;
                     vm.contentType = '';
                     getWatchlists(vm);
                     vm.$root.$emit('playerChange'); // current player could have been a manager or "viewer"
@@ -171,12 +203,31 @@ export default {
                 }
             });
         },
+
+        saveLockWatchlistSettings (checked) {
+            const vm = this;
+            const lock = checked ? '1' : '0';
+            new WatchlistApi().watchlistLockWatchlistSettings(vm.currentWatchlist.id, lock, (error, data) => {
+                if (error) {
+                    vm.message('Error.', 'error');
+                    return;
+                }
+                vm.currentWatchlist = data;
+                for (let i = 0; i < vm.watchlists.length; i++) {
+                    if (vm.watchlists[i].id === data.id) {
+                        vm.watchlists[i] = data;
+                        break;
+                    }
+                }
+            });
+        },
     }
 }
 
-function setWatchlistIdAndContentType(vm) {
-    vm.watchlistId = vm.route[1] ? parseInt(vm.route[1], 10) : null;
-    if (vm.watchlistId) {
+function setWatchlistAndContentType(vm) {
+    const watchlistId = vm.route[1] ? parseInt(vm.route[1], 10) : null;
+    if (watchlistId) {
+        vm.currentWatchlist = vm.watchlists.filter(watchlist => watchlist.id === watchlistId)[0];
         vm.contentType = vm.route[2] ? vm.route[2] : 'groups';
     }
 }
@@ -185,6 +236,7 @@ function getWatchlists(vm) {
     (new WatchlistApi).watchlistListAll((error, data) => {
         if (! error) {
             vm.watchlists = data;
+            setWatchlistAndContentType(vm);
         }
     });
 }

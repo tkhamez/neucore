@@ -2,8 +2,11 @@
 
 ## next
 
-- New: Added the date when a character was added to the database to the list of characters.
+- New: Added the date when a character was added to the database to the list of characters (UI).
 - New: Implemented API and UI to add, rename and delete watchlists.
+- New: Lock for the watchlist settings implemented: If enabled, only watchlist admins can add and remove alliances 
+  and corporations from the list of watched alliances and corporations. Watchlist managers can still edit the
+  kick- and allowlist.
 - Change: The watchlist role no longer gives access to all characters from all accounts, but only to accounts that  
   are on a watchlist for which the user has view permission (similar to how it works for the tracking role and member 
   tracking data).

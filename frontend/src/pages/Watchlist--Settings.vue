@@ -3,14 +3,16 @@
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addEntitySuccess()"></add-entity>
 
     <div class="card">
-        <div class="card-header bg-light text-dark"><strong>Warnings</strong></div>
-        <div class="card-body">
+        <div  v-cloak v-if="! list.lockWatchlistSettings" class="card-header bg-light text-dark">
+            <strong>Watchlist</strong>
+        </div>
+        <div v-cloak v-if="! list.lockWatchlistSettings" class="card-body">
             <p>
                 Alliances and corporations whose members are included in the list if they
                 also have characters in other (not NPC) corporations.
             </p>
-            <admin :contentType="'alliances'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
-            <admin :contentType="'corporations'" :type="'Watchlist'" :typeId="id" :sticky="sticky"></admin>
+            <admin :sticky="sticky" :contentType="'alliances'" :type="'Watchlist'" :typeId="list.id"></admin>
+            <admin :sticky="sticky" :contentType="'corporations'" :type="'Watchlist'" :typeId="list.id"></admin>
         </div>
 
         <div class="card-header bg-light text-dark"><strong>Kicklist</strong></div>
@@ -29,10 +31,10 @@
                     <span class="far fa-plus-square"></span> corporations
                 </a>
             </p>
-            <admin ref="adminAlliance" :contentType="'alliances'" :type="'WatchlistKicklist'" :typeId="id"
-                   :sticky="sticky"></admin>
-            <admin ref="adminCorp" :contentType="'corporations'" :type="'WatchlistKicklist'" :typeId="id"
-                   :sticky="sticky"></admin>
+            <admin ref="adminAllianceKick" :sticky="sticky"
+                   :contentType="'alliances'" :type="'WatchlistKicklist'" :typeId="list.id"></admin>
+            <admin ref="adminCorpKick" :sticky="sticky"
+                   :contentType="'corporations'" :type="'WatchlistKicklist'" :typeId="list.id"></admin>
         </div>
 
         <div class="card-header bg-light text-dark"><strong>Allowlist</strong></div>
@@ -41,8 +43,10 @@
                 Alliances and corporations that should be treated like NPC corporations
                 (usually personal alt corporations).
             </p>
-            <admin :contentType="'alliances'" :type="'WatchlistAllowlist'" :typeId="id" :sticky="sticky"></admin>
-            <admin :contentType="'corporations'" :type="'WatchlistAllowlist'" :typeId="id" :sticky="sticky"></admin>
+            <admin :sticky="sticky"
+                   :contentType="'alliances'" :type="'WatchlistAllowlist'" :typeId="list.id"></admin>
+            <admin :sticky="sticky"
+                   :contentType="'corporations'" :type="'WatchlistAllowlist'" :typeId="list.id"></admin>
         </div>
     </div>
 </div>
@@ -59,7 +63,7 @@ export default {
     },
 
     props: {
-        id: Number,
+        list: Object,
         settings: Object,
     },
 
@@ -75,8 +79,8 @@ export default {
         },
 
         addEntitySuccess () {
-            this.$refs.adminAlliance.getSelectContent();
-            this.$refs.adminCorp.getSelectContent();
+            this.$refs.adminAllianceKick.getSelectContent();
+            this.$refs.adminCorpKick.getSelectContent();
         },
     }
 }

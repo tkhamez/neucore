@@ -36,6 +36,13 @@ class Watchlist implements \JsonSerializable
     private $name;
 
     /**
+     * @OA\Property()
+     * @ORM\Column(type="boolean")
+     * @var bool
+     */
+    private $lockWatchlistSettings = false;
+
+    /**
      * Player accounts that are on the allowlist.
      *
      * @ORM\ManyToMany(targetEntity="Player")
@@ -130,6 +137,7 @@ class Watchlist implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'lockWatchlistSettings' => $this->lockWatchlistSettings,
         ];
     }
 
@@ -167,6 +175,18 @@ class Watchlist implements \JsonSerializable
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function setLockWatchlistSettings(bool $lockWatchlistSettings): self
+    {
+        $this->lockWatchlistSettings = $lockWatchlistSettings;
+
+        return $this;
+    }
+
+    public function getLockWatchlistSettings(): bool
+    {
+        return $this->lockWatchlistSettings;
     }
 
     public function addExemption(Player $exemption): Watchlist

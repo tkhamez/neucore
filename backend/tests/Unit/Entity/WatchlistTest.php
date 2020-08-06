@@ -16,7 +16,7 @@ class WatchlistTest extends TestCase
     public function testJsonSerialize()
     {
         $this->assertSame(
-            ['id' => null, 'name' => 'name'],
+            ['id' => null, 'name' => 'name', 'lockWatchlistSettings' => false],
             (new Watchlist())->setName('name')->jsonSerialize()
         );
     }
@@ -26,6 +26,13 @@ class WatchlistTest extends TestCase
         $watchlist = new Watchlist();
         $watchlist->setName('name');
         $this->assertSame('name', $watchlist->getName());
+    }
+
+    public function testSetGetLockWatchlistSettings()
+    {
+        $watchlist = new Watchlist();
+        $watchlist->setLockWatchlistSettings(true);
+        $this->assertTrue($watchlist->getLockWatchlistSettings());
     }
 
     public function testAddGetRemoveExemptions()

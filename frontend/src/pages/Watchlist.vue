@@ -11,31 +11,30 @@
         </div>
     </div>
 
-    <ul v-cloak v-if="watchlistId" class="nav nav-pills nav-fill">
+    <ul v-cloak v-if="currentWatchlist" class="nav nav-pills nav-fill">
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'warnings' }"
-               :href="'#Watchlist/'+watchlistId+'/warnings'">Warnings</a>
+               :href="'#Watchlist/'+currentWatchlist.id+'/warnings'">Warnings</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'kick' }"
-               :href="'#Watchlist/'+watchlistId+'/kick'">Kicklist</a>
+               :href="'#Watchlist/'+currentWatchlist.id+'/kick'">Kicklist</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'allow' }"
-               :href="'#Watchlist/'+watchlistId+'/allow'">Allowlist</a>
+               :href="'#Watchlist/'+currentWatchlist.id+'/allow'">Allowlist</a>
         </li>
-        <li v-if="manageIds.indexOf(watchlistId) !== -1" class="nav-item">
+        <li v-if="manageIds.indexOf(currentWatchlist.id) !== -1" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'settings' }"
-               :href="'#Watchlist/'+watchlistId+'/settings'">Settings</a>
+               :href="'#Watchlist/'+currentWatchlist.id+'/settings'">Settings</a>
         </li>
     </ul>
 
-    <watchlistLists v-cloak v-if="watchlistId && tab !== 'settings'"
-                    :id="watchlistId" :tab="tab" :manageIds="manageIds"></watchlistLists>
+    <watchlistLists v-cloak v-if="currentWatchlist && tab !== 'settings'"
+                    :id="currentWatchlist.id" :tab="tab" :manageIds="manageIds"></watchlistLists>
 
-    <watchlistSettings v-cloak v-if="watchlistId && tab === 'settings'"
-                       :id="watchlistId" :settings="settings"></watchlistSettings>
-
+    <watchlistSettings v-cloak v-if="currentWatchlist && tab === 'settings'"
+                       :list="currentWatchlist" :settings="settings"></watchlistSettings>
 </div>
 </template>
 
@@ -60,7 +59,7 @@ export default {
         return {
             watchlists: [], // watchlists with view permission
             manageIds: [], // watchlist IDs with edit permission
-            watchlistId: null,
+            currentWatchlist: null,
             selectedId: '',
             tab: '',
         }
@@ -123,31 +122,33 @@ function getWatchlists(vm, callback) {
 
 function setTab(vm) {
     const tabs = ['warnings', 'kick', 'allow', 'settings'];
+    let found = false;
     if (vm.route[1]) {
         const idFromPath = parseInt(vm.route[1], 10);
-        let found = false;
         for (const list of vm.watchlists) {
             if (list.id === idFromPath) {
                 found = true;
-                vm.watchlistId = idFromPath;
+                vm.currentWatchlist = list;
                 vm.selectedId = idFromPath;
             }
         }
-        if (! found) {
-            vm.watchlistId = null;
-            vm.selectedId = '';
-        }
+    }
+
+    if (! found) {
+        vm.currentWatchlist = null;
+        vm.selectedId = '';
+        return;
     }
 
     if (
         vm.route[2] &&
         tabs.indexOf(vm.route[2]) !== -1 &&
-        (vm.route[2] !== 'settings' || vm.manageIds.indexOf(vm.watchlistId) !== -1)
+        (vm.route[2] !== 'settings' || vm.manageIds.indexOf(vm.currentWatchlist.id) !== -1)
     ) {
         vm.tab = vm.route[2];
     } else {
         vm.tab = 'warnings';
-        window.location.hash = `#Watchlist/${vm.watchlistId}`;
+        window.location.hash = `#Watchlist/${vm.currentWatchlist.id}`;
     }
 }
 </script>

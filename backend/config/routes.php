@@ -161,6 +161,7 @@ return [
     '/api/user/watchlist/create'                                => ['POST', WatchlistController::class.'::create'],
     '/api/user/watchlist/{id}/rename'                           => ['PUT',  WatchlistController::class.'::rename'],
     '/api/user/watchlist/{id}/delete'                           => ['DELETE', WatchlistController::class.'::delete'],
+    '/api/user/watchlist/{id}/lock-watchlist-settings/{lock}'   => ['PUT',  WatchlistController::class.'::lockWatchlistSettings'],
     '/api/user/watchlist/listAll'                               => ['GET',  WatchlistController::class.'::listAll'],
     '/api/user/watchlist/list-available'                        => ['GET',  WatchlistController::class.'::listAvailable'],
     '/api/user/watchlist/list-available-manage'                 => ['GET',  WatchlistController::class.'::listAvailableManage'],
