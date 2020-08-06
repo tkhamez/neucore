@@ -2,6 +2,8 @@
 
 ## next
 
+- New: Application API endpoint that returns all known characters from a list of character IDs.
+- New: Application API endpoint that returns all known characters from one corporation. 
 - New: Added the date when a character was added to the database to the list of characters (UI).
 - New: Implemented API and UI to add, rename and delete watchlists.
 - New: Lock for the watchlist settings implemented: If enabled, only watchlist admins can add and remove alliances 
@@ -193,7 +195,8 @@
 
 21 Nov 2019
 
-- **BC break** Deactivate Groups: This is now limited to accounts with characters in configurable alliances or corporations.
+- **BC break** Deactivate Groups: This is now limited to accounts with characters in configurable alliances or 
+  corporations.
 - New: Watchlist (show accounts with characters in other alliances or corporations).
 - Invalid ESI token mail: This can now also be sent to members of corporations that are not part of an alliance.
 - UI fixes.
