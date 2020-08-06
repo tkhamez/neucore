@@ -24,7 +24,7 @@ include __DIR__ . '/vendor/autoload.php';
  * Both use the "datasource" parameter to tell Neucore from which character the ESI token should be used for the
  * request. The ESI datasource (tranquility) is decided by the Neucore configuration.
  *
- * See doc/documentation.md -> "Authentication of applications" for details about the token.
+ * See doc/Documentation.md -> "Authentication of applications" for details about the token.
  */
 
 

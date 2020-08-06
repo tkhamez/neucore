@@ -7,12 +7,14 @@ with the [PHP-DI container](http://php-di.org/).
 
 <!-- toc -->
 
+- [Install](#install)
 - [Style Guide](#style-guide)
+- [Guidelines](#guidelines)
+  * [Clear Entity Manager](#clear-entity-manager)
 - [API](#api)
   * [operationId](#operationid)
   * [Documentation](#documentation)
   * [ESI routes](#esi-routes)
-- [Install](#install)
 - [Console Commands](#console-commands)
   * [Console application](#console-application)
     + [Making yourself an admin](#making-yourself-an-admin)
@@ -21,15 +23,43 @@ with the [PHP-DI container](http://php-di.org/).
 
 <!-- tocstop -->
 
+## Install
+
+See also [doc/Install.md](../doc/Install.md#server-requirements) for prerequisites.
+
+dev:
+```
+composer install
+composer compile
+```
+
+prod:
+```
+composer install --no-dev --optimize-autoloader --no-interaction
+composer compile:prod
+```
+
+The differences between `dev` and `prod` mode (which is determined by the environment variable 
+`NEUCORE_APP_ENV`) are:
+- Doctrine proxy classes are auto generated in dev mode, the APCu cache is used in prod mode
+- PHP-DI uses compilation and the APCu cache in prod mode
+
 ## Style Guide
 
-[PSR-2: Coding Style Guide](https://www.php-fig.org/psr/psr-2/)
+[PSR-12: Coding Style Guide](https://www.php-fig.org/psr/psr-12/)
 
 You can partially check and fix the code by executing the following:
 ```
 composer style:check
 composer style:fix
 ```
+
+## Guidelines
+
+### Clear Entity Manager
+
+Some commands clear the entity manager to save memory. Never do this anywhere else, only
+in "Command" classes.
 
 ## API
 
@@ -58,34 +88,6 @@ This list can be regenerated with:
 ```
 bin/esi-paths-public.php
 ```
-
-## Install
-
-See also main [**README**](../README.md#server-requirements) for prerequisites.
-
-dev:
-```
-composer install
-composer compile
-```
-
-prod:
-```
-composer install --no-dev --optimize-autoloader --no-interaction
-composer compile:prod
-```
-
-The differences between `dev` and `prod` mode (which is determined by the environment variable 
-`NEUCORE_APP_ENV`) are:
-- Doctrine proxy classes are auto generated in dev mode, the APCu cache is used in prod mode
-- PHP-DI uses compilation and the APCu cache in prod mode
-
-## Guidelines
-
-### Clear Entity Manager
-
-Some commands clear the entity manager to save memory. Never do this anywhere else, only
-in "Command" classes.
 
 ## Console Commands
 

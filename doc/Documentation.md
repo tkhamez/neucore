@@ -54,7 +54,7 @@ separate OpenAPI definition file at
 
 ### Authentication
 
-An application must first be created by an app administrator and assigned to an app manager, 
+First an application must be created by an app administrator and assigned to an app manager, 
 who can then generate the app secret.
 
 Apps are authenticated using an HTTP authorization header.

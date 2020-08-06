@@ -355,7 +355,7 @@
 22 Apr 2019
 
 - New: Membership in one group can now be made dependent on another group membership 
-  (see documentation [Required Groups](doc/documentation.md#required-groups).
+  (see documentation [Required Groups](doc/Documentation.md#required-groups).
 - New: error limit for applications (only for esi endpoints).
 - New: `removed-characters` endpoint for apps.
 - BC-Break: DB migrations no longer add data, this is now done with Doctrine data fixtures. If you update 
@@ -373,7 +373,7 @@
 
 13 Mar 2019
 
-- Added "managed" accounts (see documentation [Account status](doc/documentation.md#account-status)).
+- Added "managed" accounts (see documentation [Account status](doc/Documentation.md#account-status)).
 - Added ESI "proxy" endpoint for apps.
 - Added cache for ESI data.
 - Added app endpoint that combines the player groups, corp groups and alliance groups endpoints.
