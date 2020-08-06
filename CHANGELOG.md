@@ -1,13 +1,15 @@
 # Changelog
 
-## next
+## 1.14.0
+
+6 Aug 2020
 
 - New: Application API endpoint that returns all known characters from a list of character IDs.
 - New: Application API endpoint that returns all known characters from one corporation. 
 - New: Added the date when a character was added to the database to the list of characters (UI).
 - New: Required groups are now checked when adding new members to a group.
 - New: Implemented API and UI to add, rename and delete watchlists.
-- New: Lock for the watchlist settings implemented: If enabled, only watchlist admins can add and remove alliances 
+- New: Lock for the watchlist settings: If enabled, only watchlist admins can add and remove alliances 
   and corporations from the list of watched alliances and corporations. Watchlist managers can still edit the
   kick- and allowlist.
 - Change: The watchlist role no longer gives access to all characters from all accounts, but only to accounts that  
