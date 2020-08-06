@@ -154,7 +154,7 @@ class Account
         $char->setAccessToken($token->getToken());
         $char->setExpires($token->getExpires());
         $char->setRefreshToken($token->getRefreshToken());
-        if (count($char->getScopesFromToken()) > 0) {
+        if (! empty($char->getScopesFromToken())) {
             $char->setValidToken(true);
         } else {
             $char->setValidToken(null);
@@ -248,7 +248,7 @@ class Account
         
         // token is valid here, check scopes
         // (scopes should not change after login since you cannot revoke individual scopes)
-        if (count($eveAuth->getScopes()) === 0) {
+        if (empty($eveAuth->getScopes())) {
             $char->setValidToken(null);
             $result = self::CHECK_TOKEN_NOK;
         } else {
@@ -337,9 +337,8 @@ class Account
         $oldestCharacter = null; /* @var Character $oldestCharacter */
         $mainFound = false;
         foreach ($player->getCharacters() as $character) {
-            if ($oldestCharacter === null) {
-                $oldestCharacter = $character;
-            } elseif (
+            if (
+                $oldestCharacter === null ||
                 $character->getCreated() === null ||
                 (
                     $oldestCharacter->getCreated() !== null &&
@@ -516,9 +515,10 @@ class Account
         }
 
         $addRole = false;
-        if ($roleName === Role::GROUP_MANAGER && count($player->getManagerGroups()) > 0) {
-            $addRole = true;
-        } elseif ($roleName === Role::APP_MANAGER && count($player->getManagerApps()) > 0) {
+        if (
+            ($roleName === Role::GROUP_MANAGER && ! empty($player->getManagerGroups())) ||
+            ($roleName === Role::APP_MANAGER && ! empty($player->getManagerApps()))
+        ) {
             $addRole = true;
         }
 

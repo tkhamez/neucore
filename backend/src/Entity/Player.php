@@ -588,7 +588,7 @@ class Player implements \JsonSerializable
      */
     public function hasAnyGroup(array $groupIds): bool
     {
-        return count(array_intersect($groupIds, $this->getGroupIds())) > 0;
+        return ! empty(array_intersect($groupIds, $this->getGroupIds()));
     }
     
     /**

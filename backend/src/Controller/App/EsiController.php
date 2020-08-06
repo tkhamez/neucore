@@ -401,7 +401,7 @@ class EsiController extends BaseController
         $url = $eveConfig['esi_host'] . $esiPath.
             (strpos($esiPath, '?') ? '&' : '?') .
             self::PARAM_DATASOURCE . '=' . $eveConfig['datasource'] .
-            (count($esiParams) > 0 ? '&' . implode('&', $esiParams) : '');
+            (! empty($esiParams) ? '&' . implode('&', $esiParams) : '');
         $options = [
             'headers' => ['Authorization' => 'Bearer ' . $token],
             'body' => $body

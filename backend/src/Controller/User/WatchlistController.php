@@ -29,9 +29,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class WatchlistController extends BaseController
 {
-    const ACTION_ADD = 'add';
+    private const ACTION_ADD = 'add';
 
-    const ACTION_REMOVE = 'remove';
+    private const ACTION_REMOVE = 'remove';
+
+    private const ERROR_404 = 'Watchlist not found.';
 
     /**
      * @var Watchlist
@@ -165,7 +167,7 @@ class WatchlistController extends BaseController
 
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            return $this->response->withStatus(404, 'Watchlist not found.');
+            return $this->response->withStatus(404, self::ERROR_404);
         }
 
         $watchlist->setName($name);
@@ -206,7 +208,7 @@ class WatchlistController extends BaseController
     {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            return $this->response->withStatus(404, 'Watchlist not found.');
+            return $this->response->withStatus(404, self::ERROR_404);
         }
 
         $this->objectManager->remove($watchlist);
@@ -254,7 +256,7 @@ class WatchlistController extends BaseController
     {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            return $this->response->withStatus(404, 'Watchlist not found.');
+            return $this->response->withStatus(404, self::ERROR_404);
         }
 
         $watchlist->setLockWatchlistSettings((bool) $lock);

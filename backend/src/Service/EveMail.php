@@ -110,7 +110,7 @@ class EveMail
                 $invalidChars[] = $character->getId();
             }
         }
-        if (count($invalidChars) === 0) {
+        if (empty($invalidChars)) {
             return null;
         }
 

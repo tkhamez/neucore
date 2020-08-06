@@ -223,7 +223,7 @@ class AutoAllowlist extends Command
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] = $character->createAccessToken();
                 }
             }
-            if (count($accountsData[$playerId]) === 0) {
+            if (empty($accountsData[$playerId])) {
                 unset($accountsData[$playerId]);
             }
 
@@ -260,10 +260,10 @@ class AutoAllowlist extends Command
 
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
 
-                if (count($members) > 0) { // <1 would be an ESI error
+                if (! empty($members)) { // <1 would be an ESI error
                     $this->numCorporationsChecked ++;
 
-                    if (count(array_diff($members, $characters[self::KEY_IDS])) === 0) {
+                    if (empty(array_diff($members, $characters[self::KEY_IDS]))) {
                         // all members are on this account
                         $allowlist[] = $corporationId;
                         $this->numCorporationsAllowed ++;

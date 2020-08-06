@@ -145,7 +145,7 @@ class PlayerRepository extends EntityRepository
      */
     public function findInCorporationsWithExcludes(array $corporationIds, array $players)
     {
-        if (count($corporationIds) === 0) {
+        if (empty($corporationIds)) {
             return [];
         }
 
@@ -155,7 +155,7 @@ class PlayerRepository extends EntityRepository
         $qb->andWhere($qb->expr()->in('c.corporation', ':corporationIds'))
             ->setParameter('corporationIds', $corporationIds);
 
-        if (count($players) > 0) {
+        if (! empty($players)) {
             $qb->andWhere($qb->expr()->notIn('p.id', ':playerIds'))
                 ->setParameter('playerIds', $players);
         }
@@ -182,12 +182,12 @@ class PlayerRepository extends EntityRepository
         $qb->andWhere($qb->expr()->gt('c.corporation', ':npc'))
             ->setParameter('npc', 2000000);
 
-        if (count($corporationIds) > 0) {
+        if (! empty($corporationIds)) {
             $qb->andWhere($qb->expr()->notIn('c.corporation', ':corporationIds'))
                 ->setParameter('corporationIds', $corporationIds);
         }
 
-        if (count($players) > 0) {
+        if (! empty($players)) {
             $qb->andWhere($qb->expr()->notIn('p.id', ':playerIds'))
                 ->setParameter('playerIds', $players);
         }

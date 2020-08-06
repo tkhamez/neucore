@@ -159,7 +159,7 @@ class UpdateCharacters extends Command
                     usleep($this->sleep * 1000); // reduce CPU usage
                 }
             }
-            if (count($updateOk) > 0 && $this->entityManager->flush()) {
+            if (! empty($updateOk) && $this->entityManager->flush()) {
                 $this->writeLine('  Characters ' . implode(',', $updateOk).': update OK');
             }
 

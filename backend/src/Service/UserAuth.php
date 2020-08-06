@@ -74,7 +74,7 @@ class UserAuth implements RoleProviderInterface
                 $roles[] = $role->getName();
             }
         }
-        if (count($roles) === 0) {
+        if (empty($roles)) {
             $roles[] = Role::ANONYMOUS;
         }
 

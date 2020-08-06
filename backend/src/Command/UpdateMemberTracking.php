@@ -186,7 +186,7 @@ class UpdateMemberTracking extends Command
         array $trackingData,
         ResourceOwnerAccessTokenInterface $token = null
     ): void {
-        if (count($trackingData) === 0) {
+        if (empty($trackingData)) {
             return;
         }
 

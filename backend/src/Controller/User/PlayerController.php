@@ -288,7 +288,7 @@ class PlayerController extends BaseController
             self::COLUMN_GROUP => (int) $gid
         ]);
 
-        if (count($groupApplications) === 0) {
+        if (empty($groupApplications)) {
             return $this->response->withStatus(404);
         }
 
@@ -1013,7 +1013,7 @@ class PlayerController extends BaseController
         }
 
         // add missing chars
-        if (count($notFound['characters']) > 0) {
+        if (! empty($notFound['characters'])) {
             $result[] = $notFound;
         }
 
@@ -1144,7 +1144,7 @@ class PlayerController extends BaseController
         );
         if (
             (in_array(Role::TRACKING, $roles) || in_array(Role::WATCHLIST, $roles)) &&
-            count($neededRolesExceptTracking) === 0
+            empty($neededRolesExceptTracking)
         ) {
             return true;
         }
@@ -1162,7 +1162,7 @@ class PlayerController extends BaseController
             }
         }
         $userGroupIds = $this->getUser($userAuth)->getPlayer()->getGroupIds();
-        if (count($userGroupIds) === 0 || count(array_intersect($requiredGroups, $userGroupIds)) === 0) {
+        if (empty($userGroupIds) || empty(array_intersect($requiredGroups, $userGroupIds))) {
             return false;
         }
         return true;
@@ -1178,7 +1178,7 @@ class PlayerController extends BaseController
             foreach ($watchlist->getGroups() as $group) {
                 $requiredGroups[] = $group->getId();
             }
-            if (count($userGroupIds) > 0 && count(array_intersect($requiredGroups, $userGroupIds)) > 0) {
+            if (! empty($userGroupIds) && ! empty(array_intersect($requiredGroups, $userGroupIds))) {
                 $watchlistsWithAccess[] = $watchlist;
             }
         }

@@ -234,7 +234,7 @@ class CharController extends BaseController
             return $this->response->withStatus(400);
         }
 
-        if (count($ids) === 0) {
+        if (empty($ids)) {
             return $this->withJson([]);
         }
 

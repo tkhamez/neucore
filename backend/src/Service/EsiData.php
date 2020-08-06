@@ -183,7 +183,7 @@ class EsiData
     public function fetchCharactersAffiliation(array $ids)
     {
         $affiliations = [];
-        while (count($ids) > 0) {
+        while (! empty($ids)) {
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 $result = $this->esiApiFactory->getCharacterApi()
@@ -316,7 +316,7 @@ class EsiData
     public function fetchUniverseNames(array $ids): array
     {
         $names = [];
-        while (count($ids) > 0) {
+        while (! empty($ids)) {
             $checkIds = array_splice($ids, 0, 1000);
             try {
                 // it's possible that postUniverseNames() returns null

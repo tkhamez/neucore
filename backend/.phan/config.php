@@ -2,11 +2,12 @@
 
 /**
  * This configuration will be read and overlaid on top of the
- * default configuration. Command line arguments will be applied
+ * default configuration. Command-line arguments will be applied
  * after this file is read.
  */
 return [
-    // Supported values: `'5.6'`, `'7.0'`, `'7.1'`, `'7.2'`, `'7.3'`, `null`.
+    // Supported values: `'5.6'`, `'7.0'`, `'7.1'`, `'7.2'`, `'7.3'`,
+    // `'7.4'`, `null`.
     // If this is set to `null`,
     // then Phan assumes the PHP version which is closest to the minor version
     // of the php executable used to execute Phan.
@@ -14,7 +15,7 @@ return [
     // Note that the **only** effect of choosing `'5.6'` is to infer
     // that functions removed in php 7.0 exist.
     // (See `backward_compatibility_checks` for additional options)
-    'target_php_version' => '7.2',
+    'target_php_version' => '7.4',
 
     // A list of directories that should be parsed for class and
     // method information. After excluding the directories
