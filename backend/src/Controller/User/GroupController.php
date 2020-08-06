@@ -848,6 +848,10 @@ class GroupController extends BaseController
      *         description="Player added."
      *     ),
      *     @OA\Response(
+     *         response="400",
+     *         description="This player is not a member of the required group(s)."
+     *     ),
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
@@ -994,11 +998,7 @@ class GroupController extends BaseController
     }
 
     private function addPlayerAs(
-        string $groupId,
-        string $playerId,
-        string $type,
-        bool $onlyIfManager,
-        Account $account
+        string $groupId, string $playerId, string $type, bool $onlyIfManager, Account $account
     ): ResponseInterface {
         if (! $this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
@@ -1013,6 +1013,11 @@ class GroupController extends BaseController
             $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
+            foreach ($this->group->getRequiredGroups() as $requiredGroup) {
+                if (! $this->player->hasGroup($requiredGroup->getId())) {
+                    return $this->flushAndReturn(400, null, 'This player is not a member of the required group(s).');
+                }
+            }
             $this->player->addGroup($this->group);
             $this->account->syncTrackingRole($this->player);
             $this->account->syncWatchlistRole($this->player);

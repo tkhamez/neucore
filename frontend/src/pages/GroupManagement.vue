@@ -47,8 +47,9 @@
                         </span>
                         <span v-if="requiredGroups.length === 0">none</span>
                         <br>
-                        Any member who is not also a member of at least one of these groups will
-                        automatically be removed from this group.
+                        <span  v-if="requiredGroups.length > 0">
+                            Any member who is not also a member of <em>all</em> these groups is automatically removed.
+                        </span>
                     </p>
 
                     <character-search v-on:result="searchResult = $event" :admin="false"
@@ -232,7 +233,10 @@ export default {
                 return;
             }
             const vm = this;
-            new GroupApi().addMember(this.groupId, playerId, function(error) {
+            new GroupApi().addMember(this.groupId, playerId, function(error, data, response) {
+                if (response.statusCode === 400) {
+                    vm.message(response.statusText, 'warning');
+                }
                 addRemoveResult(vm, playerId, error);
             });
         },

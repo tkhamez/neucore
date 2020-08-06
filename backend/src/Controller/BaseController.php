@@ -105,15 +105,16 @@ abstract class BaseController
     /**
      * @param int $status
      * @param mixed|null $data
+     * @param string $reasonPhrase
      * @return ResponseInterface
      */
-    protected function flushAndReturn(int $status, $data = null): ResponseInterface
+    protected function flushAndReturn(int $status, $data = null, $reasonPhrase = ''): ResponseInterface
     {
         if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
         }
 
-        $this->response = $this->response->withStatus($status);
+        $this->response = $this->response->withStatus($status, $reasonPhrase);
         if ($data !== null) {
             return $this->withJson($data);
         } else {

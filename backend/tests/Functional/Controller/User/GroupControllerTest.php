@@ -823,22 +823,31 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(404, $response3->getStatusCode());
     }
 
+    public function testAddMember400()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.$this->pid);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('This player is not a member of the required group(s).', $response->getReasonPhrase());
+    }
+
     public function testAddMember204()
     {
         $this->setupDb();
         $this->loginUser(8);
 
         $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.$this->pid2); // already member
-        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.$this->pid);
-        $response3 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.$this->pid);
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/add-member/'.$this->pid);
+        $response3 = $this->runApp('PUT', '/api/user/group/'.$this->gid2.'/add-member/'.$this->pid);
         $this->assertEquals(204, $response1->getStatusCode());
         $this->assertEquals(204, $response2->getStatusCode());
         $this->assertEquals(204, $response3->getStatusCode());
 
         $this->em->clear();
 
-        $group = $this->groupRepo->find($this->gid);
-        $this->assertSame(2, count($group->getPlayers()));
+        $this->assertSame(1, count($this->groupRepo->find($this->gid2)->getPlayers()));
     }
 
     public function testAddMember204AsManager()
