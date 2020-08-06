@@ -79,11 +79,14 @@ This is also where the name "Neucore" comes from.
 
 ### Related Software
 
-- [neucore-api](https://github.com/bravecollective/neucore-api) PHP OpenAPI client
-- [neucore-api-python](https://github.com/bravecollective/neucore-api-python) Python OpenAPI client
+- [neucore-api](https://github.com/bravecollective/neucore-api) PHP OpenAPI client.
+- [neucore-api-python](https://github.com/bravecollective/neucore-api-python) Python OpenAPI client.
+- [neucore-api-go](https://github.com/bravecollective/neucore-api-go) Go OpenAPI client.
+- [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
 - [Neucore connector boilerplate](https://github.com/bravecollective/neucore-connector-boilerplate) 
   An example application that uses EVE SSO and Neucore groups for access control.
 - A [TimerBoard](https://github.com/tkhamez/neucore-timerboard) (based on the boilerplate).
+- A [Ping](https://github.com/bravecollective/ping-app) app for Slack.
 - Neucore integration with other apps:
   [EVE-SRP](https://github.com/eve-n0rman/evesrp/tree/feature/braveneucore),
   [phpBB](https://github.com/bravecollective/forum-auth),
