@@ -4,6 +4,8 @@
 
 6 Aug 2020
 
+- **BC break** The application API is now split into several tags. This can lead to backwards incompatible API clients
+  that were generated automatically.
 - New: Application API endpoint that returns all known characters from a list of character IDs.
 - New: Application API endpoint that returns all known characters from one corporation. 
 - New: Added the date when a character was added to the database to the list of characters (UI).
