@@ -70,7 +70,7 @@ A Linux server (others may work, but are not tested).
 
 To run the application:
 * PHP >=7.2.0, see `backend/composer.json` for necessary extensions (APCu highly recommended).
-* MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.2, 10.3, 10.4).  
+* MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.2, 10.3, 10.4, 10.5).  
   Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
 * Apache or another HTTP Server
     * Set the document root to the `web` directory.
