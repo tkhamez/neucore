@@ -235,7 +235,9 @@ export default {
             const vm = this;
             new GroupApi().addMember(this.groupId, playerId, function(error, data, response) {
                 if (response.statusCode === 400) {
-                    vm.message(response.statusText, 'warning');
+                    // The reason phrase contains the same error message, but do not rely on it
+                    // (e.g. http/2 does not support it).
+                    vm.message('This player is not a member of the required group(s).', 'warning');
                 }
                 addRemoveResult(vm, playerId, error);
             });

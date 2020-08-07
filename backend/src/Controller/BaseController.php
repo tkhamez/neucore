@@ -105,7 +105,7 @@ abstract class BaseController
     /**
      * @param int $status
      * @param mixed|null $data
-     * @param string $reasonPhrase
+     * @param string $reasonPhrase Ignored if data is not null
      * @return ResponseInterface
      */
     protected function flushAndReturn(int $status, $data = null, $reasonPhrase = ''): ResponseInterface

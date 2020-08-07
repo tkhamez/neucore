@@ -1,5 +1,11 @@
 # Changelog
 
+##
+
+dd mm yyyy
+
+- Fixed error message when adding a new member to a group failed.
+
 ## 1.14.0
 
 6 Aug 2020
