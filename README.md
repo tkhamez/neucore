@@ -95,8 +95,9 @@ This is also where the name "Neucore" comes from.
 
 ### Contact
 
-If you have any questions or feedback, you can contact Tian Khamez on [Tweetfleet Slack](https://tweetfleet.slack.com)
-(get invites [here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)).
+If you have any questions or feedback, you can contact [Tian Khamez](https://evewho.com/character/96061222) on 
+[Tweetfleet Slack](https://tweetfleet.slack.com) (get invites 
+[here](https://www.fuzzwork.co.uk/tweetfleet-slack-invites/)) or on Discord Tian#0172.
 
 ### Copyright notice
 
