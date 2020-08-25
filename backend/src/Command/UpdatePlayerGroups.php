@@ -58,7 +58,7 @@ class UpdatePlayerGroups extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                90
+                35
             );
         $this->configureLogOutput($this);
     }
@@ -100,9 +100,7 @@ class UpdatePlayerGroups extends Command
                 if ($i % 100 === 0) { // reduce memory usage
                     $this->entityManager->clear();
                 }
-                if ($i % 4 === 0) { // reduce CPU usage
-                    usleep($sleep * 1000);
-                }
+                usleep($sleep * 1000); // reduce CPU usage
             }
         } while (count($playerIds) === $dbResultLimit);
 

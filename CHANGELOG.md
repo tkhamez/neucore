@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - Fixed error message when adding a new member to a group failed.
+- Changed sleep time for update-player-groups command 
 
 ## 1.14.0
 
