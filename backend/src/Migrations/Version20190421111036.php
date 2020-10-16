@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Migrations;
 
 use Neucore\Entity\RemovedCharacter;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -20,7 +20,7 @@ final class Version20190421111036 extends AbstractMigration
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function up(Schema $schema) : void
     {
@@ -44,7 +44,7 @@ final class Version20190421111036 extends AbstractMigration
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function down(Schema $schema) : void
     {

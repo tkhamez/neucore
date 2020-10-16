@@ -5,6 +5,9 @@ parameters:
 	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		-
+			message: '#Call to an undefined method(.*)fetchAllAssociative#'
+			path: %currentWorkingDirectory%/src/Command/DBVerifySSL.php
+		-
 			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
 			path: %currentWorkingDirectory%/src/Service/SessionData.php
 		-

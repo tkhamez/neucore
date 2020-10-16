@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\DBALException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,8 +32,10 @@ class DBVerifySSL extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $result = $this->entityManager->getConnection()->query("SHOW SESSION STATUS LIKE 'Ssl_cipher'")->fetchAll();
-        } catch (DBALException $e) {
+            $result = $this->entityManager->getConnection()
+                ->executeQuery("SHOW SESSION STATUS LIKE 'Ssl_cipher'")
+                ->fetchAllAssociative();
+        } catch (Exception | \Doctrine\DBAL\Exception $e) {
             $output->writeln($e->getMessage());
             return 1;
         }

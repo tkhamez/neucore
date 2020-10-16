@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -139,7 +139,7 @@ class Helper
     {
         try {
             return $this->getEm()->getConnection()->getDatabasePlatform()->getName();
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             return 'error';
         }
     }
@@ -157,7 +157,7 @@ class Helper
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function updateDbSchema(): void
     {
@@ -172,9 +172,9 @@ class Helper
         if ($this->getDbName() === 'sqlite') {
             $tool->updateSchema($classes);
         } else {
-            $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 0;');
+            $em->getConnection()->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
             $tool->updateSchema($classes);
-            $em->getConnection()->exec('SET FOREIGN_KEY_CHECKS = 1;');
+            $em->getConnection()->executeStatement('SET FOREIGN_KEY_CHECKS = 1;');
         }
     }
 
@@ -190,13 +190,13 @@ class Helper
         if ($this->getDbName() === 'sqlite') {
             // for some reason these relation tables are not empties with SQLite in-memory db
             try {
-                $em->getConnection()->exec('DELETE FROM watchlist_corporation WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_alliance WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_kicklist_corporation WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_kicklist_alliance WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_allowlist_corporation WHERE 1');
-                $em->getConnection()->exec('DELETE FROM watchlist_allowlist_alliance WHERE 1');
-            } catch (DBALException $e) {
+                $em->getConnection()->executeStatement('DELETE FROM watchlist_corporation WHERE 1');
+                $em->getConnection()->executeStatement('DELETE FROM watchlist_alliance WHERE 1');
+                $em->getConnection()->executeStatement('DELETE FROM watchlist_kicklist_corporation WHERE 1');
+                $em->getConnection()->executeStatement('DELETE FROM watchlist_kicklist_alliance WHERE 1');
+                $em->getConnection()->executeStatement('DELETE FROM watchlist_allowlist_corporation WHERE 1');
+                $em->getConnection()->executeStatement('DELETE FROM watchlist_allowlist_alliance WHERE 1');
+            } catch (Exception $e) {
                 echo $e->getMessage();
             }
         }

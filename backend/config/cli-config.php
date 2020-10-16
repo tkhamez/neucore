@@ -30,6 +30,6 @@ AnnotationRegistry::registerLoader('class_exists');
 $em = EntityManager::create($conf['connection'], $config);
 
 return new HelperSet(array(
-    'db' => new ConnectionHelper($em->getConnection()),
+    'db' => new ConnectionHelper($em->getConnection()), # TODO what's the replacement?
     'em' => new EntityManagerHelper($em)
 ));
