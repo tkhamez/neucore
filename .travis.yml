@@ -1,4 +1,4 @@
-dist: xenial
+dist: bionic
 
 language: php
 
@@ -9,7 +9,7 @@ php:
   - "7.2"
   - "7.3"
   - "7.4"
-  - nightly
+  - "nightly"
 
 addons:
   sonarcloud:
@@ -31,7 +31,7 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-    - php: nightly
+    - php: "nightly"
   exclude:
     - php: "7.3"
       env: NODE_VERSION="10.13.0" DB=mysql:5.7
@@ -42,8 +42,8 @@ matrix:
       env:
         - NODE_VERSION="10.16.3" DB=mysql:8.0
       before_install:
-        - wget https://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb
-        - sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb
+        - wget https://repo.mysql.com/mysql-apt-config_0.8.15-1_all.deb
+        - sudo dpkg -i mysql-apt-config_0.8.15-1_all.deb
         - sudo apt-get update -q
         - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
         - sudo systemctl restart mysql
