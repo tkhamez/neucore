@@ -32,7 +32,7 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.2.0, see `backend/composer.json` for necessary extensions (APCu highly recommended).
+* PHP >=7.3.0, see `backend/composer.json` for necessary extensions (APCu highly recommended).
 * MariaDB or MySQL Server (tested with MySQL 5.7, 8.0 and MariaDB 10.2, 10.3, 10.4, 10.5).  
   Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
 * Apache or another HTTP Server
@@ -108,18 +108,7 @@ The output is logged to backend/var/logs.
 
 ### Vagrant
 
-Only tested on Linux with Vagrant 2 + libvirt.
-
-Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
-the database host is `localhost`.
-
-- `vagrant up` creates and configures the virtual machine.
-- If the Vagrant file changes, run `vagrant provision` to update the VM.
-- `vagrant destroy` will completely remove the VM.
-
-Please note that the `rsync` synchronization method used is a one-way synchronization from host to virtual 
-machine that is performed each time `vagrant up` or `vagrant reload` is executed.
-See https://www.vagrantup.com/docs/synced-folders for other methods. 
+See [Vagrantfile](../Vagrantfile) for an outdated example.
 
 ### Docker
 
@@ -160,6 +149,8 @@ heroku buildpacks:add heroku/php
 ```
 
 ### Deploy on AWS Beanstalk
+
+NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outdated as Neucore requires PHP 7.4 now.
 
 - Add an IAM user with Policy "AWSElasticBeanstalkFullAccess"
 - Create a database (RDS)

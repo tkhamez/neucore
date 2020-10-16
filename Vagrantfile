@@ -1,4 +1,20 @@
-# Only tested with Vagrant 2 and libvirt provider
+#
+# NOTE: This is outdated since Neucore needs at least PHP 7.3 now.
+#       But it should be relatively easy to adjust it for "ubuntu2004" with PHP 7.4.
+#
+
+# Only tested on Linux with Vagrant 2 + libvirt.
+#
+# Copy `backend/.env.dist` to `backend/.env` and adjust values, the database password and user are both `neucore`
+# the database host is `localhost`.
+#
+# "vagrant up" creates and configures the virtual machine.
+# If the Vagrant file changes, run "vagrant provision" to update the VM.
+# "vagrant destroy" will completely remove the VM.
+#
+# Please note that the `rsync` synchronization method used is a one-way synchronization from host to virtual
+# machine that is performed each time `vagrant up` or `vagrant reload` is executed.
+# See https://www.vagrantup.com/docs/synced-folders for other methods.
 
 Vagrant.configure("2") do |config|
     config.vm.provider :libvirt do |libvirt|

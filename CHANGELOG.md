@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- **BC break**: Raised minimum required PHP Version to 7.3.0
 - Fixed error message when adding a new member to a group failed.
 - Changed sleep time for update-player-groups command 
 
