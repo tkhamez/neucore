@@ -141,8 +141,10 @@ class Application
 
         // Load environment variables from file if it exists.
         if (file_exists(Application::ROOT_DIR . '/.env')) {
+            $dotEnv = new Dotenv();
+            $dotEnv->usePutenv();
             try {
-                (new Dotenv())->load(Application::ROOT_DIR . '/.env');
+                $dotEnv->load(Application::ROOT_DIR . '/.env');
             } catch (FormatException $e) {
                 $this->logException($e);
             }
