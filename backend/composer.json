@@ -43,7 +43,7 @@
         "friendsofphp/php-cs-fixer": "^2.14",
         "phan/phan": "^3.0",
         "phpstan/phpstan": "^0.12.2",
-        "phpunit/phpunit": "^8.4",
+        "phpunit/phpunit": "^9.4",
         "sensiolabs/security-checker": "^6.0",
         "vimeo/psalm": "^3.14"
     },

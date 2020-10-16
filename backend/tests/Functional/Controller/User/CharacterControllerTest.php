@@ -261,7 +261,10 @@ class CharacterControllerTest extends WebTestCase
         ];
         $actual = $this->parseJsonBody($response);
 
-        $this->assertRegExp('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/', $actual['lastUpdate']);
+        $this->assertMatchesRegularExpression(
+            '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/',
+            $actual['lastUpdate']
+        );
         unset($actual['lastUpdate']);
 
         $this->assertSame($expected, $actual);

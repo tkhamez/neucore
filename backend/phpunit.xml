@@ -1,19 +1,22 @@
 <!DOCTYPE xml>
-<phpunit bootstrap="tests/bootstrap.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
     <testsuites>
         <testsuite name="Neucore">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
+    <coverage processUncoveredFiles="true">
+        <include>
             <directory suffix=".php">./src</directory>
-            <exclude>
-                <directory>./src/Migrations</directory>
-            </exclude>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="coverage-clover" target="var/logs/clover.xml" />
-    </logging>
+        </include>
+        <exclude>
+            <directory>./src/Migrations</directory>
+        </exclude>
+        <report>
+            <clover outputFile="var/logs/clover.xml"/>
+        </report>
+    </coverage>
+    <logging/>
 </phpunit>
