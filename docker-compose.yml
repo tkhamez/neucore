@@ -30,7 +30,8 @@ services:
     container_name: neucore_php-fpm
     build:
       context: doc
-      dockerfile: Dockerfile-php-fpm
+      dockerfile: Dockerfile-php74-fpm
+      #dockerfile: Dockerfile-php80-fpm
     depends_on: [db]
     volumes: [".:/app"]
     user: ${UID}

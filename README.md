@@ -12,6 +12,7 @@ of an alliance.
 
 - [Overview](#overview)
 - [Getting started](#getting-started)
+  * [Installation](#installation)
   * [First login and Customization](#first-login-and-customization)
   * [Setting up Member Tracking and Watchlist](#setting-up-member-tracking-and-watchlist)
 - [Final Notes](#final-notes)
@@ -41,6 +42,8 @@ and the [**Frontend**](frontend/README.md).
 A preview/demo installation is available at https://neucore.herokuapp.com.
 
 ## Getting started
+
+### Installation
 
 See [doc/Install.md](doc/Install.md) for installation instructions.
 

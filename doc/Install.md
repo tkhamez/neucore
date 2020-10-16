@@ -119,12 +119,11 @@ the database host is `db`.
 
 - Run `export UID` once before you run any `docker-compose` command.
 - Build the containers with `docker-compose build`
-- Start services: `docker-compose up -d`
+- Start services: `docker-compose up`
 - Install the app: `./install-docker.sh`
 - Run tests and other commands in the php-fpm or node container:  
-    `docker-compose exec php-fpm /bin/bash` or  
+    `docker-compose exec php-fpm /bin/sh` or  
     `docker-compose run node /bin/bash`
-- Stop containers: `docker-compose stop`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
 the data is stored in the `.mariadb` subdirectory.

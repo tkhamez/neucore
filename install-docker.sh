@@ -2,6 +2,7 @@
 
 # Install backend and generate OpenAPI files
 docker-compose exec php-fpm composer install
+docker-compose exec php-fpm bin/console clear-cache
 docker-compose exec php-fpm composer openapi
 
 # Generate and build OpenAPI JavaScript client
