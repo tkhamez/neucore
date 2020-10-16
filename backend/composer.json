@@ -20,7 +20,7 @@
         "doctrine/orm": "^2.6",
         "doctrine/persistence": "^2.0",
         "graylog2/gelf-php": "^1.6",
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "^7.2",
         "kevinrob/guzzle-cache-middleware": "^3.2",
         "league/oauth2-client": "^2.2",
         "monolog/monolog": "^2.0",
@@ -33,9 +33,9 @@
         "symfony/dotenv": "^4.0",
         "symfony/http-foundation": "^4.0",
         "symfony/yaml": "^4.3",
-        "tkhamez/eve-sso": "^1.0",
+        "tkhamez/eve-sso": "^2.0",
         "tkhamez/slim-role-auth": "^3.0",
-        "tkhamez/swagger-eve-php": "~4.0.0",
+        "tkhamez/swagger-eve-php": "~5.0.0",
         "zircote/swagger-php": "^3.0"
     },
     "require-dev": {

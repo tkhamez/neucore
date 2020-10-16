@@ -1,9 +1,8 @@
 <?php
-
 declare(strict_types=1);
 
+use GuzzleHttp\ClientInterface;
 use Neucore\Application;
-use GuzzleHttp\Client;
 
 return [
 
@@ -75,7 +74,7 @@ return [
             'dir' => '${NEUCORE_CACHE_DIR}/http'
         ],
         'user_agent' => 'Neucore/' . NEUCORE_VERSION . ' (https://github.com/tkhamez/neucore) ' .
-                        'GuzzleHttp/' . Client::VERSION,
+                        'GuzzleHttp/' . ClientInterface::MAJOR_VERSION,
     ],
 
     'di' => [

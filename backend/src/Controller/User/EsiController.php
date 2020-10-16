@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Utils;
 use Neucore\Controller\BaseController;
 use Neucore\Exception\RuntimeException;
 use Neucore\Service\Config;
@@ -139,7 +140,7 @@ class EsiController extends BaseController
 
         // make request
         if ($debug) {
-            $stack = $this->httpClient->getConfig('handler');
+            $stack = $this->httpClient->getConfig('handler'); # TODO find another way
             if ($stack instanceof HandlerStack) {
                 /* @phan-suppress-next-line PhanUndeclaredFunctionInCallable */
                 $stack->remove('cache');
@@ -167,7 +168,7 @@ class EsiController extends BaseController
         }
         $body = null;
         try {
-            $body = \GuzzleHttp\json_decode($json);
+            $body = Utils::jsonDecode($json);
         } catch (\InvalidArgumentException $iae) {
             return $this->prepareResponse($iae->getMessage(), $debug, $response, 400);
         }

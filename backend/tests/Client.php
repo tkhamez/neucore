@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Tests;
@@ -45,7 +44,7 @@ class Client extends \GuzzleHttp\Client
         return $response;
     }
 
-    public function request($method, $uri = '', array $options = []): ResponseInterface
+    public function request(string $method, $uri = '', array $options = []): ResponseInterface
     {
         $response = array_shift($this->responses);
         if (! $response) {
