@@ -205,6 +205,8 @@ class Watchlist
     /**
      * @param int $id
      * @return Player[]
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     private function getExemptionList(int $id): array
     {

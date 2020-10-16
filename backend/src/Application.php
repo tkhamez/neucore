@@ -38,7 +38,6 @@ use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
 use Neucore\Storage\StorageInterface;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
@@ -443,7 +442,7 @@ class Application
         if ($this->container instanceof ContainerInterface) {
             try {
                 $log = $this->container->get(LoggerInterface::class);
-            } catch (ContainerExceptionInterface $e) {
+            } catch (DependencyException | NotFoundException $e) {
                 // do nothing
             }
         }

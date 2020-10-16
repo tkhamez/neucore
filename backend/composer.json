@@ -44,7 +44,8 @@
         "phan/phan": "^3.0",
         "phpstan/phpstan": "^0.12.2",
         "phpunit/phpunit": "^8.4",
-        "sensiolabs/security-checker": "^6.0"
+        "sensiolabs/security-checker": "^6.0",
+        "vimeo/psalm": "^3.14"
     },
     "suggest": {
         "ext-apcu": "*",
@@ -83,6 +84,7 @@
         "phan": "phan --color",
         "phpstan:src": "phpstan analyse src --level 8 --ansi",
         "phpstan:tests": "phpstan analyse tests --level 8 --ansi",
+        "psalm": "psalm",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",
         "security-checker": "security-checker security:check",
