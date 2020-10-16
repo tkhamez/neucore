@@ -4116,12 +4116,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/eve-sso-php.git",
-                "reference": "117f96359190f294e45a0279a3185db6219351aa"
+                "reference": "4e9d366a92b2693e9412c58cab274a9776f6ad34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/eve-sso-php/zipball/117f96359190f294e45a0279a3185db6219351aa",
-                "reference": "117f96359190f294e45a0279a3185db6219351aa",
+                "url": "https://api.github.com/repos/tkhamez/eve-sso-php/zipball/4e9d366a92b2693e9412c58cab274a9776f6ad34",
+                "reference": "4e9d366a92b2693e9412c58cab274a9776f6ad34",
                 "shasum": ""
             },
             "require": {
@@ -4129,7 +4129,7 @@
                 "guzzlehttp/guzzle": "^7.2",
                 "league/oauth2-client": "^2.2",
                 "paragonie/random_compat": "^2|^9.99",
-                "php": "^7.2",
+                "php": "^7.3",
                 "web-token/jwt-key-mgmt": "^2.0",
                 "web-token/jwt-signature": "^2.0",
                 "web-token/jwt-signature-algorithm-ecdsa": "^2.0",
@@ -4150,7 +4150,7 @@
             "license": [
                 "MIT"
             ],
-            "time": "2020-10-16T16:38:48+00:00"
+            "time": "2020-10-16T23:45:53+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",
