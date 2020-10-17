@@ -151,6 +151,9 @@ heroku buildpacks:add heroku/php
 
 NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outdated as Neucore requires PHP 7.4 now.
 
+A more recent configuration for Amazon Linux 2 is available at 
+[bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk).
+
 - Add an IAM user with Policy "AWSElasticBeanstalkFullAccess"
 - Create a database (RDS)
 - Create app environment:
@@ -162,6 +165,3 @@ NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outda
 - Add a database for Neucore
 - Add environment Variables (NEUCORE_APP_ENV, NEUCORE_DATABASE_URL etc.)
 - Deploy again: `eb deploy`
-
-See also [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) 
-for an example of how to deploy the pre-build releases.
