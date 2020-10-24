@@ -44,7 +44,7 @@ To run the application:
 
 Additionally, to build the application:
 * Composer 1.x.
-* Node.js >=10.13.0 <14 with npm >=6.4.1 <7 (only tested with LTS releases v10 and v12).
+* Node.js >=10.16.0 <14 with npm >=6.9.0 <7 (only tested with LTS releases v10 and v12).
 * Java 8+ runtime to generate the OpenAPI JavaScript client.
 
 ### Install/Update
@@ -124,7 +124,7 @@ the database host is `db`.
 - Install the app: `./install-docker.sh`
 - Run tests and other commands in the php-fpm or node container:  
     `docker-compose exec php-fpm /bin/sh` or  
-    `docker-compose run node /bin/bash`
+    `docker-compose run node /bin/sh`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
 the data is stored in the `.mariadb` subdirectory.

@@ -4,7 +4,7 @@
     "private": true,
     "license": "MIT",
     "engines": {
-        "npm": "6.9.0",
-        "node": "10.16.3"
+        "node": "10.16.0",
+        "npm": "6.9.0"
     }
 }
