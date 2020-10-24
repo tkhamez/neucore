@@ -5,17 +5,19 @@
     "description": "For Heroku and AWS Beanstalk to setup the PHP environment and install the backend and frontend.",
     "require": {
         "php": "^7.3.0",
+        "ext-apcu": "*",
         "ext-curl": "*",
         "ext-dom": "*",
         "ext-gmp": "*",
         "ext-iconv": "*",
+        "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-phar": "*",
         "ext-tokenizer": "*",
-        "ext-apcu": "*",
         "ext-zend-opcache": "*"
     },
     "scripts": {

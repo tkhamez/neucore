@@ -5,15 +5,10 @@
     "require": {
         "php-64bit": "^7.3",
         "ext-curl": "*",
-        "ext-dom": "*",
-        "ext-gmp": "*",
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "ext-pdo": "*",
         "ext-pdo_mysql": "*",
-        "ext-phar": "*",
-        "ext-tokenizer": "*",
         "doctrine/cache": "^1.8",
         "doctrine/common": "^3.0",
         "doctrine/migrations": "^3.0",
@@ -50,6 +45,9 @@
     "suggest": {
         "ext-apcu": "*",
         "ext-ast": "*",
+        "ext-gmp": "*",
+        "ext-intl": "*",
+        "ext-pdo_sqlite": "*",
         "ext-xdebug": "*",
         "ext-zend-opcache": "*"
     },
