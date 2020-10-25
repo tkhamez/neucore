@@ -122,8 +122,8 @@ the database host is `db`.
 - Build the containers with `docker-compose build`
 - Start services: `docker-compose up`
 - Install the app: `./install-docker.sh`
-- Run tests and other commands in the php-fpm or node container:  
-    `docker-compose exec php-fpm /bin/bash` (/bin/sh for PHP 8) or  
+- Run tests and other commands in the php-fpm and node containers:  
+    `docker-compose exec php-fpm /bin/sh`
     `docker-compose run node /bin/sh`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 

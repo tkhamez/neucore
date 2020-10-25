@@ -1,8 +1,10 @@
-FROM php:7.4-fpm
-RUN apt-get update -y && apt-get -y install libgmp-dev libzip-dev unzip
-RUN docker-php-ext-install pdo_mysql gmp zip
-RUN pecl install apcu && docker-php-ext-enable apcu
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+FROM php:7.4-fpm-alpine
+RUN apk update && apk add gmp-dev libzip-dev
+RUN mkdir -p /usr/src/php/ext/apcu && \
+    curl -fsSL https://pecl.php.net/get/apcu-5.1.19.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
+RUN mkdir -p /usr/src/php/ext/xdebug && \
+    curl -fsSL https://pecl.php.net/get/xdebug-2.9.8.tgz | tar xvz -C "/usr/src/php/ext/xdebug" --strip 1
+RUN docker-php-ext-install pdo_mysql gmp zip apcu xdebug
 COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/composer/.composer && chmod 0777 /home/composer/.composer
 ENV COMPOSER_HOME /home/composer/.composer
