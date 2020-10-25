@@ -8,6 +8,7 @@ dd mm yyyy
 - **BC break** (dev only): Raised minimum Node.js version to 10.16.0 (with npm 6.9.0)
 - Fixed error message when adding a new member to a group failed.
 - Changed sleep time for update-player-groups command 
+- Replaced Google Fonts Plugin with Fontsource.
 
 ## 1.14.0
 

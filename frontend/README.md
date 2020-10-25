@@ -18,26 +18,20 @@ The frontend is based on [Vue.js](https://vuejs.org) and
 ## Install
 
 Install dependencies and build:
-
 ```
 npm install
 npm run build
 ```
 
 For production use:
-
 ```
 npm run build:prod
 ```
 
 Rebuild on change:
-
 ```
 npm run watch
 ```
-
-Note: This will not remove and create the Google font files, as this takes too long. Therefore, first run 
-`npm run build` to create them before using `npm run watch`.
 
 ## Style Guide
 

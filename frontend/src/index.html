@@ -53,7 +53,11 @@
         </script>
         <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
             const file = htmlWebpackPlugin.files.js[i];
-            if (! file.match(/^dist\/theme-/) && ! file.match(/^dist\/(vendors~)?api\./)) {
+            if (
+                ! file.match(/^dist\/theme-/) &&
+                ! file.match(/^dist\/vendors~theme-/) &&
+                ! file.match(/^dist\/(vendors~)?api\./)
+            ) {
                 %><script type="text/javascript" src="/<%= file %>"></script><%
             }
         } %>
