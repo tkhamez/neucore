@@ -44,7 +44,7 @@ To run the application:
 
 Additionally, to build the application:
 * Composer 1.x.
-* Node.js >=10.16.0 <14 with npm >=6.9.0 <7 (only tested with LTS releases v10 and v12).
+* Node.js >=10.16.0 <15 with npm >=6.9.0 <7 (only tested with LTS releases v10, 12 and 14).
 * Java 8+ runtime to generate the OpenAPI JavaScript client.
 
 ### Install/Update

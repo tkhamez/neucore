@@ -23,6 +23,7 @@ services:
     container_name: neucore_node
     image: node:10.16.0-alpine
     #image: node:12.19.0-alpine
+    #image: node:14.14.0-alpine
     volumes: [".:/app"]
     user: node
     working_dir: /app/frontend

@@ -9,6 +9,7 @@ dd mm yyyy
 - Fixed error message when adding a new member to a group failed.
 - Changed sleep time for update-player-groups command 
 - Replaced Google Fonts Plugin with Fontsource.
+- Compatibility with Node.js 14.
 
 ## 1.14.0
 

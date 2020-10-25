@@ -57,12 +57,12 @@ matrix:
         mariadb: "10.3"
     - php: "7.4"
       env:
-        - NODE_VERSION="12.16.2" DB=mariadb:10.4
+        - NODE_VERSION="12.19.0" DB=mariadb:10.4
       addons:
         mariadb: "10.4"
     - php: "7.4"
       env:
-        - NODE_VERSION="12.19.0" DB=mariadb:10.5
+        - NODE_VERSION="14.14.0" DB=mariadb:10.5
       addons:
         mariadb: "10.5"
 
