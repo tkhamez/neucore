@@ -8,4 +8,5 @@ RUN docker-php-ext-install pdo_mysql gmp zip apcu xdebug
 COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/composer/.composer && chmod 0777 /home/composer/.composer
 ENV COMPOSER_HOME /home/composer/.composer
-RUN echo "xdebug.mode=coverage" > /usr/local/etc/php/conf.d/docker-php-neucore.ini
+RUN echo "memory_limit=256M" > /usr/local/etc/php/conf.d/docker-php-neucore.ini
+RUN echo "xdebug.mode=coverage" >> /usr/local/etc/php/conf.d/docker-php-neucore.ini
