@@ -1393,7 +1393,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertFalse($this->parseJsonBody($response2));
     }
 
-    private function setupDb()
+    private function setupDb(): void
     {
         $this->h->emptyDb();
 
@@ -1467,12 +1467,12 @@ class PlayerControllerTest extends WebTestCase
         $this->emptyAccId = $emptyAcc->getId();
     }
 
-    private function fetchPlayer($id): Player
+    private function fetchPlayer(int $id): Player
     {
         return $this->playerRepo->find($id);
     }
 
-    private function fetchGroup($id): Group
+    private function fetchGroup(int $id): Group
     {
         return $this->groupRepo->find($id);
     }

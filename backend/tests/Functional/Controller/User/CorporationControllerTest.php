@@ -736,7 +736,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame(null, $result[0]['startDate']);
     }
 
-    private function setupDb()
+    private function setupDb(): void
     {
         $this->h->emptyDb();
 

@@ -140,6 +140,7 @@ class EsiController extends BaseController
 
         // make request
         if ($debug) {
+            /* @phan-suppress-next-line PhanDeprecatedFunction */
             $stack = $this->httpClient->getConfig('handler'); # TODO find another way
             if ($stack instanceof HandlerStack) {
                 /* @phan-suppress-next-line PhanUndeclaredFunctionInCallable */

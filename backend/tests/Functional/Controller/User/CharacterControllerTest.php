@@ -314,7 +314,7 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    private function setupDb($token = null)
+    private function setupDb(string $token = null): void
     {
         $this->helper->emptyDb();
         $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER]);

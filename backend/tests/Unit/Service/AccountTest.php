@@ -989,7 +989,7 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::APP_MANAGER));
     }
 
-    private function setUpTrackingData()
+    private function setUpTrackingData(): void
     {
         $this->corp1 = (new Corporation())->setId(11)->setTicker('t1')->setName('corp 1');
         $this->corp2 = (new Corporation())->setId(12)->setTicker('t2')->setName('corp 2');
@@ -1014,7 +1014,7 @@ class AccountTest extends TestCase
         $this->om->flush();
     }
 
-    private function setUpWatchlistData()
+    private function setUpWatchlistData(): void
     {
         $this->watchlist1 = (new Watchlist())->setName('wl 1');
         $this->watchlist2 = (new Watchlist())->setName('wl 2');

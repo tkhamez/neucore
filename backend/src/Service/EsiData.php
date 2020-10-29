@@ -12,6 +12,9 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
+use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
@@ -143,6 +146,9 @@ class EsiData
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
+        if (!$eveChar instanceof GetCharactersCharacterIdOk) {
+            return null;
+        }
 
         // update char (and player) name
         $char->setName($eveChar->getName());
@@ -227,6 +233,9 @@ class EsiData
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
+        if (!$eveCorp instanceof GetCorporationsCorporationIdOk) {
+            return null;
+        }
 
         // get or create corp
         $corp = $this->getCorporationEntity($id);
@@ -284,6 +293,9 @@ class EsiData
         } catch (\Exception $e) {
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            return null;
+        }
+        if (!$eveAlli instanceof GetAlliancesAllianceIdOk) {
             return null;
         }
 

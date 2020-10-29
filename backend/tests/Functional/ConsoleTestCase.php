@@ -20,7 +20,7 @@ class ConsoleTestCase extends TestCase
         array $mocks = [],
         array $envVars = [],
         bool $forceDevMode = false
-    ) {
+    ): string {
         $app = new Application();
         $app->loadSettings(true, $forceDevMode);
 

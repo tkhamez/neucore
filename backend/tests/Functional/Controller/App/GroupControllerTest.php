@@ -543,7 +543,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame([], $body);
     }
 
-    private function setUpDb($invalidHours = 0)
+    private function setUpDb(int $invalidHours = 0): void
     {
         $this->helper->emptyDb();
 

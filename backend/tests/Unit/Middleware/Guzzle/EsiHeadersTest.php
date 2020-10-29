@@ -81,16 +81,16 @@ class EsiHeadersTest extends TestCase
         );
     }
 
-    private function getHandler($response)
+    private function getHandler(Response $response): callable
     {
         return function () use ($response) {
             return new class($response) {
                 private $response;
-                public function __construct($response)
+                public function __construct(Response $response)
                 {
                     $this->response = $response;
                 }
-                public function then(callable $onFulfilled)
+                public function then(callable $onFulfilled): void
                 {
                     $onFulfilled($this->response);
                 }

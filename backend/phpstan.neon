@@ -8,35 +8,20 @@ parameters:
 			message: '#Call to an undefined method(.*)fetchAllAssociative#'
 			path: %currentWorkingDirectory%/src/Command/DBVerifySSL.php
 		-
-			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/src/Service/SessionData.php
-		-
-			message: '#undefined method Swagger(.*)::(getName)?(getCorporationId)?(getTicker)?(getAllianceId)?\(\)#'
-			path: %currentWorkingDirectory%/src/Service/EsiData.php
-		-
-			message: '#Call to an undefined method Swagger(.*)::(getName)?(getCorporationId)?\(\)#'
-			path: %currentWorkingDirectory%/src/Service/MemberTracking.php
-		-
 			message: '#(.*)Watchlist::getExemptionList\(\) should return(.*)but returns(.*)#'
 			path: %currentWorkingDirectory%/src/Service/Watchlist.php
 		-
 			message: '#(.*)BaseController::getUser\(\)(.*)but returns Neucore\\Entity\\Character\|null.#'
 			path: %currentWorkingDirectory%/src/Controller/BaseController.php
 		-
-			message: '#Variable \$_SESSION in isset\(\) always exists and is not nullable.#'
-			path: %currentWorkingDirectory%/tests/Unit/Slim/SessionMiddlewareTest.php
-		-
 			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
 			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
 		-
-			message: '#Cannot call method (.*) on (.*)null.#'
+			message: '#Cannot call method (.*) on (.*)\|null.#'
 			path: %currentWorkingDirectory%/tests/*
 		-
-			message: '#Method (.*) has no return typehint specified.#'
+			message: '#Method (.*)::test(.*) has no return typehint specified.#'
 			path: %currentWorkingDirectory%/tests/*
 		-
 			message: '#Property (.*) has no typehint specified.#'
-			path: %currentWorkingDirectory%/tests/*
-		-
-			message: '#Method (.*) has parameter (.*) with no typehint specified.#'
 			path: %currentWorkingDirectory%/tests/*

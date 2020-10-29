@@ -971,7 +971,7 @@ class GroupControllerTest extends WebTestCase
         );
     }
 
-    private function setupDb()
+    private function setupDb(): void
     {
         $this->helper->emptyDb();
 

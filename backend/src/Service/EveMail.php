@@ -246,7 +246,6 @@ class EveMail
             if (
                 $corporation &&
                 $corporation->getTrackingLastUpdate() > $yesterday &&
-                /* @phan-suppress-next-line PhanPossiblyUndeclaredVariable */
                 ! in_array($corporation->getId(), $result)
             ) {
                 $result[] = $corporation->getId();

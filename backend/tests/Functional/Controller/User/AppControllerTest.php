@@ -693,7 +693,7 @@ class AppControllerTest extends WebTestCase
         $this->assertSame(64, strlen($this->parseJsonBody($response)));
     }
 
-    private function setupDb($addRoles = ['app'])
+    private function setupDb(array $addRoles = ['app']): void
     {
         $this->helper->emptyDb();
 

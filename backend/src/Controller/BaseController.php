@@ -127,6 +127,7 @@ abstract class BaseController
      *
      * Don't call it if there is no user logged in, it will return null in that case. This
      * is not documented in the return type hint to avoid a lot of static code analysis error.
+     * TODO find a better way
      */
     protected function getUser(UserAuth $userAuth): Character
     {

@@ -32,6 +32,7 @@ class DBVerifySSL extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            /* @phan-suppress-next-line PhanUndeclaredMethod */
             $result = $this->entityManager->getConnection()
                 ->executeQuery("SHOW SESSION STATUS LIKE 'Ssl_cipher'")
                 ->fetchAllAssociative();

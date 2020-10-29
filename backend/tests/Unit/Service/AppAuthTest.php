@@ -8,6 +8,7 @@ use Neucore\Repository\AppRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
 use Tests\Helper;
 use Tests\RequestFactory;
 
@@ -113,7 +114,7 @@ class AppAuthTest extends TestCase
         $this->assertStringStartsNotWith('$1$', $newHash);
     }
 
-    private function getRequest(string $authHeader = null)
+    private function getRequest(string $authHeader = null): ServerRequestInterface
     {
         $request = RequestFactory::createRequest();
         if ($authHeader !== null) {

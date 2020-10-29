@@ -616,7 +616,7 @@ class CharControllerTest extends WebTestCase
         $this->assertSame([], $this->parseJsonBody($response2));
     }
 
-    private function setUpDb()
+    private function setUpDb(): void
     {
         $this->helper->emptyDb();
         $this->app0Id = $this->helper->addApp('A0', 's0', [Role::APP])->getId();

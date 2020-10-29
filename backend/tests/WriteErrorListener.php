@@ -9,7 +9,7 @@ class WriteErrorListener
     /**
      * @throws \Exception
      */
-    public function onFlush()
+    public function onFlush(): void
     {
         throw new \Exception('error');
     }

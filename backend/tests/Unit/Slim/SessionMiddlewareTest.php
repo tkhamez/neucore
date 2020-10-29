@@ -7,6 +7,7 @@ namespace Tests\Unit\Slim;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\SessionData;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Interfaces\RouteInterface;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Routing\RouteContext;
@@ -85,7 +86,7 @@ class SessionMiddlewareTest extends TestCase
         $this->assertFalse(SessionData::isReadOnly());
     }
 
-    private function invokeMiddleware($conf, $path = null)
+    private function invokeMiddleware(array $conf, string $path = null): ResponseInterface
     {
         $routeParser = $this->createMock(RouteParserInterface::class);
         $routingResults = $this->createMock(RoutingResults::class);

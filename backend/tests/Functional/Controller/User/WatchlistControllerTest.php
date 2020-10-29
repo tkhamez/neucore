@@ -1598,7 +1598,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertSame(0, count($result->getAllowlistAlliances()));
     }
 
-    private function setupDb()
+    private function setupDb(): void
     {
         $this->helper->emptyDb();
 

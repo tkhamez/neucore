@@ -56,7 +56,6 @@ class Container
                     null,
                     false
                 );
-                /** @noinspection PhpDeprecationInspection */
                 /* @phan-suppress-next-line PhanDeprecatedFunction */
                 AnnotationRegistry::registerLoader('class_exists');
                 $options = $conf['driver_options'];
@@ -68,6 +67,7 @@ class Container
                         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                     ];
                 }
+                /** @noinspection PhpUnnecessaryLocalVariableInspection */
                 $em = EntityManager::create($conf['connection'], $config);
                 /*$logger = new class() extends \Doctrine\DBAL\Logging\DebugStack {
                     public function startQuery($sql, ?array $params = null, ?array $types = null)

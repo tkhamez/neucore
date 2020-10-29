@@ -358,7 +358,7 @@ class AllianceControllerTest extends WebTestCase
         $this->assertEquals(204, $response2->getStatusCode());
     }
 
-    private function setupDb()
+    private function setupDb(): void
     {
         $this->helper->emptyDb();
 

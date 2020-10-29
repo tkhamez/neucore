@@ -112,7 +112,7 @@ class EsiControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    private function setupDb()
+    private function setupDb(): void
     {
         $helper = new Helper();
         $helper->emptyDb();

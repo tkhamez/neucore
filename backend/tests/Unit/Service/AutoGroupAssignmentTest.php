@@ -201,7 +201,7 @@ class AutoGroupAssignmentTest extends TestCase
         );
     }
 
-    private function setUpData()
+    private function setUpData(): void
     {
         $this->th->emptyDb();
 

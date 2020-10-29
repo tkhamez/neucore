@@ -146,7 +146,7 @@ class SendInvalidTokenMailTest extends ConsoleTestCase
         $this->assertTrue($player->getDeactivationMailSent());
     }
 
-    private function setupData()
+    private function setupData(): void
     {
         $active = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ACTIVE))->setValue('1');
         $alliances = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES))->setValue('1010');

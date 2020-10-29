@@ -146,7 +146,7 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $this->assertSame(Api::MAIL_OK, $member4->getMissingCharacterMailSentResult());
     }
 
-    private function setupData($invalidConfig = false)
+    private function setupData(bool $invalidConfig = false): void
     {
         $token = (new SystemVariable(SystemVariable::MAIL_TOKEN))
             ->setValue('{"id": 90, "access": "abc", "refresh": "", "expires": ""}');

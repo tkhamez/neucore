@@ -106,7 +106,7 @@ class WebTestCase extends TestCase
         return json_decode($json, $assoc);
     }
 
-    protected function loginUser($id)
+    protected function loginUser(int $id): void
     {
         $_SESSION['character_id'] = $id;
     }

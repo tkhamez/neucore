@@ -17,6 +17,7 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
@@ -91,6 +92,9 @@ class MemberTracking
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
+        if (!$char instanceof GetCharactersCharacterIdOk) {
+            return false;
+        }
 
         // check if character has required roles
         if (! $this->verifyDirectorRole((int) $eveAuth->getCharacterId(), $eveAuth->getToken()->getToken())) {
@@ -140,6 +144,9 @@ class MemberTracking
                 ->getCharactersCharacterId($data[SystemVariable::VALUE_CHARACTER_ID], $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            return false;
+        }
+        if (!$char instanceof GetCharactersCharacterIdOk) {
             return false;
         }
 
