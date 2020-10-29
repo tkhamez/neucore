@@ -1,4 +1,4 @@
-FROM php:8.0-rc-fpm-alpine
+FROM php:8.0.0RC2-fpm-alpine
 RUN apk update && apk add gmp-dev libzip-dev
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.19.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
@@ -8,3 +8,4 @@ RUN docker-php-ext-install pdo_mysql gmp zip apcu xdebug
 COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /home/composer/.composer && chmod 0777 /home/composer/.composer
 ENV COMPOSER_HOME /home/composer/.composer
+RUN echo "xdebug.mode=coverage" > /usr/local/etc/php/conf.d/docker-php-neucore.ini
