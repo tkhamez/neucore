@@ -126,7 +126,7 @@
                                         && settings.allow_character_deletion === '1'"
                                    class="badge badge-danger"
                                    v-on:click.prevent="askDeleteChar(char.id, char.name)"
-                                   href="#"><span role="img" class="fas fa-trash-alt"></span></a>
+                                   href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
                                 <br>
                                 <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
                                 <span v-if="char.validToken === null"
