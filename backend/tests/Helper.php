@@ -320,7 +320,11 @@ class Helper
         $this->getObjectManager()->flush();
     }
 
-    public function addApp(string $name, string $secret, array $roles, string $hashAlgorithm = PASSWORD_BCRYPT): App
+    /**
+     * @param int|string $hashAlgorithm
+     * @return App
+     */
+    public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_BCRYPT): App
     {
         $hash = $hashAlgorithm === 'md5' ? crypt($secret, '$1$12345678$') : password_hash($secret, $hashAlgorithm);
 
