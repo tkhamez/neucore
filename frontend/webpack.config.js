@@ -50,10 +50,7 @@ module.exports = (env, argv) => {
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            esModule: false, // see https://github.com/vuejs/vue-loader/issues/1742
-                            publicPath: '',
-                        },
+                        options: { publicPath: '' },
                     },
                     'css-loader',
                     'sass-loader',
@@ -109,10 +106,6 @@ module.exports = (env, argv) => {
             }),
         ],
         optimization: {
-            runtimeChunk: 'single',
-            splitChunks: {
-                chunks: 'all',
-            },
             minimizer: [
                 new TerserPlugin(),
                 new OptimizeCSSAssetsPlugin({

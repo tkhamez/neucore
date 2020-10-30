@@ -5,7 +5,7 @@
     <title>Neucore API</title>
     <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
         const file = htmlWebpackPlugin.files.css[i];
-        if (file.match(/^dist\/vendors~api\./)) {
+        if (file.match(/^dist\/api\./)) {
             %><link href="/<%= file %>" rel="stylesheet"><%
         }
     } %>
@@ -27,7 +27,7 @@
     <div id="swagger-ui"></div>
     <% for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
         const file = htmlWebpackPlugin.files.js[i];
-        if (file.match(/^dist\/(((vendors~)?api)|(runtime))[~.]/)) {
+        if (file.match(/^dist\/api\./)) {
             %><script type="text/javascript" src="/<%= file %>"></script><%
         }
     } %>
