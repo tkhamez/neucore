@@ -11,6 +11,9 @@ const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlu
 module.exports = (env, argv) => {
     const devMode = argv.mode !== 'production';
     const config = {
+        resolve: {
+            fallback: { 'querystring': require.resolve('querystring-es3') }
+        },
         entry: {
             'theme-basic': './src/themes/basic.scss',
             'theme-cerulean': './src/themes/cerulean.scss',
@@ -49,6 +52,7 @@ module.exports = (env, argv) => {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
                             esModule: false, // see https://github.com/vuejs/vue-loader/issues/1742
+                            publicPath: '',
                         },
                     },
                     'css-loader',
@@ -121,11 +125,15 @@ module.exports = (env, argv) => {
             hints: devMode ? false : 'warning'
         },
         watchOptions: {
-            ignored: [/node_modules/, /neucore-js-client/]
+            ignored: /node_modules|neucore-js-client/
         }
     };
     if (! devMode) {
-        config.plugins.push(new LicenseWebpackPlugin());
+        config.plugins.push(new LicenseWebpackPlugin({
+            // TODO This fixes "ERROR in Conflict: Multiple assets emit different content to the same
+            // filename mini-css-extract-plugin.licenses.txt", but produces a lot of duplicates.
+            outputFilename: '[name].[fullhash].licenses.txt',
+        }));
     }
     return config;
 };
