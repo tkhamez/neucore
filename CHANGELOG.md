@@ -10,6 +10,7 @@ dd mm yyyy
 - Changed sleep time for update-player-groups command 
 - Replaced Google Fonts Plugin with Fontsource.
 - Compatibility with Node.js 14.
+- Many dependencies updated.
 
 ## 1.14.0
 
