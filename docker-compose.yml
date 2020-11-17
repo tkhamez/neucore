@@ -5,7 +5,6 @@ services:
     container_name: neucore_db
     image: mariadb:10.4
     volumes: ["./.mariadb:/var/lib/mysql"]
-    user: ${UID}
     environment:
       MYSQL_ROOT_PASSWORD: neucore
       MYSQL_USER: neucore
