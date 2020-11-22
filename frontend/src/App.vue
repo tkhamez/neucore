@@ -9,19 +9,18 @@
             </button>
         </div>
 
-        <nav-bar v-if="settings.customization_default_theme" v-cloak
-                 :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
+        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
 
         <characters ref="charactersModal"></characters>
 
-        <component v-if="settings.customization_default_theme" v-cloak v-bind:is="page"
+        <component v-if="settingsLoaded" v-cloak v-bind:is="page"
                    :route="route"
                    :settings="settings"
                    :player="player"
                    :auth-char="authChar">
         </component>
 
-        <footer v-if="settings.customization_github" v-cloak class="footer border-top text-muted small">
+        <footer class="footer border-top text-muted small">
             <div class="container-fluid">
                 <span v-cloak>{{ settings.customization_footer_text }}</span>
                 <a v-cloak :href="settings.customization_github" class="github text-dark text-muted"
@@ -127,6 +126,8 @@ export default {
             messageTxt: '',
 
             messageType: '',
+
+            settingsLoaded: false,
         }
     },
 
@@ -243,6 +244,7 @@ export default {
                     settings[variable.name] = variable.value;
                 }
                 vm.$root.settings = settings; // watch() will work this way
+                vm.settingsLoaded = true;
             });
         },
 

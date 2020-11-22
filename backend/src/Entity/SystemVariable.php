@@ -192,13 +192,6 @@ class SystemVariable implements \JsonSerializable
     const DIRECTOR_TOKEN = 'director_token_';
 
     /**
-     * The default theme.
-     *
-     * Scope = public
-     */
-    const CUSTOMIZATION_DEFAULT_THEME = 'customization_default_theme';
-
-    /**
      * Value for HTML head title tag.
      *
      * Scope = public

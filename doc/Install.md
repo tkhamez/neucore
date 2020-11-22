@@ -54,6 +54,8 @@ Clone the repository or [download](https://github.com/tkhamez/neucore/releases) 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
 
+Adjust `web/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user tracking.
+
 Make sure that the web server can write to the log and cache directories, by default 
 `backend/var/logs` and `backend/var/cache`.
 

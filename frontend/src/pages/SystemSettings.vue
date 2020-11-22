@@ -103,7 +103,6 @@ export default {
                         'customization_nav_logo',
                         'customization_home_markdown',
                         'customization_document_title',
-                        'customization_default_theme',
                     ].indexOf(name) !== -1 ||
                     name.indexOf('director_char_') !== -1
                 ) {

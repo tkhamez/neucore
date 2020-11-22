@@ -34,16 +34,6 @@ class SettingsController extends BaseController
      */
     private $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
 
-    /** @noinspection PhpUnused */
-    public function theme(): ResponseInterface
-    {
-        $repository = $this->repositoryFactory->getSystemVariableRepository();
-        $result = $repository->find(SystemVariable::CUSTOMIZATION_DEFAULT_THEME);
-        $value = $result ? $result->getValue() : '';
-        $this->response->getBody()->write("var theme = '$value';");
-        return $this->response->withHeader('Content-Type', 'text/javascript');
-    }
-
     /**
      * @noinspection PhpUnused
      * @OA\Get(

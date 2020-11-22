@@ -1,11 +1,13 @@
 # Changelog
 
-##
+## 1.15.0
 
 dd mm yyyy
 
 - **BC break**: Raised minimum required PHP version to 7.3.0
 - **BC break** (dev only): Raised minimum Node.js version to 10.16.0 (with npm 6.9.0)
+- **BC break** The default theme has been removed from the settings. Instead there is now a configuration file 
+  `web/theme.js`.
 - Fixed error message when adding a new member to a group failed.
 - Changed sleep time for update-player-groups command 
 - Replaced Google Fonts Plugin with Fontsource.

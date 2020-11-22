@@ -12,20 +12,6 @@
         </div>
         <hr>
         <div class="form-group">
-            <label class="col-form-label" for="customizationDefaultTheme">Theme</label>
-            <select id="customizationDefaultTheme" class="form-control"
-                    v-model="settings.customization_default_theme"
-                    @change="$emit(
-                        'changeSetting', 'customization_default_theme', settings.customization_default_theme
-                    )">
-                <option v-for="theme in themes" v-bind:value="theme">
-                    {{ theme }}
-                </option>
-            </select>
-            <small class="form-text text-muted">The default theme.</small>
-        </div>
-        <hr>
-        <div class="form-group">
             <label class="col-form-label" for="customizationHomepage">Website</label>
             <input id="customizationHomepage" type="text" class="form-control"
                    v-model="settings.customization_website"

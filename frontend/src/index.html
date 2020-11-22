@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="shortcut icon" href="/favicon.ico">
         <title></title>
-    
         <% for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
             const file = htmlWebpackPlugin.files.css[i];
             if (file.match(/^dist\/api\./)) {
@@ -17,22 +16,23 @@
                 %><link href="/<%= file %>" rel="stylesheet"><%
             }
         } %>
-    
-        <script src="/api/user/settings/system/theme"></script>
         <script type="text/javascript">
-            // activate theme css - the above script defined the variable "theme"
-            var links = document.getElementsByTagName('link');
-            for (var i = 0; i < links.length; i++) {
-                if (links[i].getAttribute('title') !== 'theme') {
-                    continue;
-                }
-                if (links[i].getAttribute('href').indexOf('dist/theme-' + theme.toLowerCase()) !== -1) {
-                    links[i].disabled = false;
-                    links[i].setAttribute('rel', 'stylesheet');
-                    break;
+            function setTheme(theme) {
+                // activate theme css
+                var links = document.getElementsByTagName('link');
+                for (var i = 0; i < links.length; i++) {
+                    if (links[i].getAttribute('title') !== 'theme') {
+                        continue;
+                    }
+                    if (links[i].getAttribute('href').indexOf('dist/theme-' + theme.toLowerCase()) !== -1) {
+                        links[i].disabled = false;
+                        links[i].setAttribute('rel', 'stylesheet');
+                        break;
+                    }
                 }
             }
         </script>
+        <script type="text/javascript" src="/theme.js"></script>
     </head>
     <body class="neucore">
         <p id="unsupportedBrowser">

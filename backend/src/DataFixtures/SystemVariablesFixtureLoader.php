@@ -40,7 +40,6 @@ class SystemVariablesFixtureLoader
                 'Alliance Core Services',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::CUSTOMIZATION_DEFAULT_THEME         => ['Darkly', SystemVariable::SCOPE_PUBLIC],
             SystemVariable::CUSTOMIZATION_WEBSITE               => [
                 'https://github.com/tkhamez/neucore',
                 SystemVariable::SCOPE_PUBLIC
@@ -85,6 +84,7 @@ class SystemVariablesFixtureLoader
         $varsRemove = [
             'show_preview_banner', // removed in version > 0.8.0
             'esi_error_limit', // removed in version > 1.11.5
+            'customization_default_theme', // removed in v1.15.0
         ];
         foreach ($varsRemove as $nameRemove) {
             $varRemove = $repository->find($nameRemove);
