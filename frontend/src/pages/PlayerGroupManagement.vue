@@ -20,8 +20,7 @@
                 <div class="card border-secondary mb-3" >
                     <h4 class="card-header">Characters</h4>
                     <div class="card-body">
-                        <character-search v-on:result="onSearchResult($event)" :admin="true"
-                                          :labelWithoutPaddingLeft="true"></character-search>
+                        <character-search v-on:result="onSearchResult($event)" :admin="true"></character-search>
                     </div>
                     <div class="list-group">
                         <a v-for="char in searchResult"

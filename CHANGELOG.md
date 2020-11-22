@@ -10,8 +10,7 @@ dd mm yyyy
   `web/theme.js`.
 - Added statistics with number of logins per account and month.
 - Added statistics with number of requests per app and day.
-- Small fixes.
-- Fixed error message when adding a new member to a group failed.
+- Several small fixes.
 - Changed sleep time for update-player-groups command 
 - Replaced Google Fonts Plugin with Fontsource.
 - Compatibility with Node.js 14.

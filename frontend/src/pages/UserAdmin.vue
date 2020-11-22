@@ -76,8 +76,7 @@
                 <h4 class="card-header">Characters</h4>
                 <div class="card-body">
                     <!--suppress HtmlUnknownTag -->
-                    <character-search v-on:result="onSearchResult($event)" :admin="true"
-                                      :labelWithoutPaddingLeft="true"></character-search>
+                    <character-search v-on:result="onSearchResult($event)" :admin="true"></character-search>
                     <span class="text-muted small">
                         Select a character to show it's player account.
                     </span>

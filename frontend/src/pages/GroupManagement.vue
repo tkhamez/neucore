@@ -52,8 +52,7 @@
                         </span>
                     </p>
 
-                    <character-search v-on:result="searchResult = $event" :admin="false"
-                                      :labelWithoutPaddingLeft="true"></character-search>
+                    <character-search v-on:result="searchResult = $event" :admin="false"></character-search>
                     <character-result :searchResult="searchResult" :admin="false" :selectedPlayers="groupMembers"
                         v-on:add="addPlayer($event)" v-on:remove="removePlayer($event)"></character-result>
 
