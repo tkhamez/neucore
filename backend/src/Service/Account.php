@@ -11,6 +11,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
+use Neucore\Entity\PlayerLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -182,6 +183,30 @@ class Account
         }
 
         return $success;
+    }
+
+    public function increaseLoginCount(Player $player): void
+    {
+        $year = (int) date('Y');
+        $month = (int) date('m');
+
+        $login = $this->repositoryFactory->getPlayerLoginRepository()->findOneBy([
+            'player' => $player,
+            'year' => $year,
+            'month' => $month,
+        ]);
+        if ($login === null) {
+            $login = new PlayerLogin();
+            $login->setPlayer($player);
+            $login->setYear($year);
+            $login->setMonth($month);
+            $login->setCount(0);
+            $this->objectManager->persist($login);
+        }
+
+        $login->setCount($login->getCount() + 1);
+
+        $this->objectManager->flush();
     }
 
     /**

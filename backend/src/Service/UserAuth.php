@@ -133,6 +133,7 @@ class UserAuth implements RoleProviderInterface
             return false;
         }
 
+        $this->accountService->increaseLoginCount($char->getPlayer());
         $this->user = $char;
         $this->session->set('character_id', $this->user->getId());
 

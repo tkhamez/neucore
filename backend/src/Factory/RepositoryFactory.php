@@ -15,6 +15,7 @@ use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
+use Neucore\Entity\PlayerLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -28,6 +29,7 @@ use Neucore\Repository\EsiLocationRepository;
 use Neucore\Repository\EsiTypeRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
+use Neucore\Repository\PlayerLoginRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Repository\RoleRepository;
@@ -113,6 +115,11 @@ class RepositoryFactory
     public function getPlayerRepository(): PlayerRepository
     {
         return $this->getRepository(PlayerRepository::class, Player::class);
+    }
+
+    public function getPlayerLoginRepository(): PlayerLoginRepository
+    {
+        return $this->getRepository(PlayerLoginRepository::class, PlayerLogin::class);
     }
 
     public function getRoleRepository(): RoleRepository

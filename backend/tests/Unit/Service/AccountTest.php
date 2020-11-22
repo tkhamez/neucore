@@ -24,6 +24,7 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
+use Neucore\Repository\PlayerLoginRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
@@ -89,6 +90,11 @@ class AccountTest extends TestCase
      * @var CorporationMemberRepository
      */
     private $corpMemberRepo;
+
+    /**
+     * @var PlayerLoginRepository
+     */
+    private $playerLoginRepo;
 
     /**
      * @var Player
@@ -184,6 +190,7 @@ class AccountTest extends TestCase
         $this->playerRepo = $repoFactory->getPlayerRepository();
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->corpMemberRepo = $repoFactory->getCorporationMemberRepository();
+        $this->playerLoginRepo = $repoFactory->getPlayerLoginRepository();
     }
 
     public function testCreateNewPlayerWithMain()
@@ -310,6 +317,24 @@ class AccountTest extends TestCase
         $this->assertSame('char name changed', $character->getName());
         $this->assertNull($character->getRefreshToken());
         $this->assertNull($character->getValidToken());
+    }
+
+    public function testIncreaseLoginCount()
+    {
+        $player = (new PLayer())->setName('p');
+        $this->om->persist($player);
+
+        $this->service->increaseLoginCount($player);
+        $this->service->increaseLoginCount($player);
+
+        $logins = $this->playerLoginRepo->findBy([]);
+
+        $this->assertSame(1, count($logins));
+        $this->assertGreaterThanOrEqual(1, $logins[0]->getPlayer()->getId());
+        $this->assertSame($player->getId(), $logins[0]->getPlayer()->getId());
+        $this->assertSame(2, $logins[0]->getCount());
+        $this->assertSame((int)date('Y'), $logins[0]->getYear());
+        $this->assertSame((int)date('m'), $logins[0]->getMonth());
     }
 
     public function testCheckTokenUpdateCharacterDeletesBiomassedChar()

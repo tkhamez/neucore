@@ -27,6 +27,7 @@ use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
+use Neucore\Entity\PlayerLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -53,6 +54,7 @@ class Helper
         CorporationMember::class,
         Character::class,
         RemovedCharacter::class,
+        PlayerLogin::class,
         Player::class,
         Group::class,
         Role::class,
