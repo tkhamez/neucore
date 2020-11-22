@@ -136,10 +136,6 @@ class AutoGroupAssignment
             $removeGroup = $player->findGroupById($removeId);
             if ($removeGroup) {
                 $player->removeGroup($removeGroup);
-                $this->log->debug(
-                    'AutoGroupAssignment: removed group ' . $removeGroup->getName() . ' [' . $removeId . '] ' .
-                    'from player ' . $player->getName() . ' [' . $player->getId() . ']'
-                );
             }
         }
 
@@ -148,10 +144,6 @@ class AutoGroupAssignment
             $addGroup = $this->groupRepo->find($addId);
             if ($addGroup) {
                 $player->addGroup($addGroup);
-                $this->log->debug(
-                    'AutoGroupAssignment: added group ' . $addGroup->getName() . ' [' . $addId . '] ' .
-                    'to player ' . $player->getName() . ' [' . $player->getId() . ']'
-                );
             }
         }
 

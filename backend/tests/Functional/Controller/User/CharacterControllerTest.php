@@ -236,14 +236,11 @@ class CharacterControllerTest extends WebTestCase
             new Response(200, [], '{"CharacterOwnerHash": "coh1"}') // for getResourceOwner()
         );
 
-        $logHandler = new TestHandler();
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
-            LoggerInterface::class => (new Logger('Test'))->pushHandler($logHandler)
+            ClientInterface::class => $this->client
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame(1, count($logHandler->getRecords()));
 
         $expected = [
             'id' => 96061222,
@@ -304,12 +301,9 @@ class CharacterControllerTest extends WebTestCase
             new Response(200, [], '{}') // for OAuthTestProvider->getResourceOwner()
         );
 
-        $logHandler = new TestHandler();
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
-            LoggerInterface::class => (new Logger('Test'))->pushHandler($logHandler)
+            ClientInterface::class => $this->client
         ]);
-        $this->assertSame(1, count($logHandler->getRecords()));
 
         $this->assertEquals(200, $response->getStatusCode());
     }

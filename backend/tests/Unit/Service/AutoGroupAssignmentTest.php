@@ -41,11 +41,6 @@ class AutoGroupAssignmentTest extends TestCase
      */
     private $aga;
 
-    /**
-     * @var Logger
-     */
-    private $log;
-
     private $playerId;
 
     private $playerManagedId;
@@ -81,14 +76,14 @@ class AutoGroupAssignmentTest extends TestCase
         $this->th = new Helper();
         $this->om = $this->th->getObjectManager();
 
-        $this->log = new Logger('Test');
+        $log = new Logger('Test');
 
         $repositoryFactory = new RepositoryFactory($this->om);
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $objectManager = new ObjectManager($this->om, $this->log);
+        $objectManager = new ObjectManager($this->om, $log);
 
-        $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $this->log);
+        $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $log);
     }
 
     public function testAssignManaged()
@@ -145,15 +140,6 @@ class AutoGroupAssignmentTest extends TestCase
             $this->group7Id
         ], $groupIds);
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
-
-        $logs = $this->log->getHandler()->getRecords();
-        $this->assertSame(6, count($logs));
-        $this->assertStringContainsString('removed group g4 ['.$this->group4->getId().']', $logs[0]['message']);
-        $this->assertStringContainsString('added group g1 ['.$this->group1->getId().']', $logs[1]['message']);
-        $this->assertStringContainsString('added group g2 ['.$this->group2->getId().']', $logs[2]['message']);
-        $this->assertStringContainsString('added group g3 ['.$this->group3->getId().']', $logs[3]['message']);
-        $this->assertStringContainsString('added group g7 ['.$this->group7Id.']', $logs[4]['message']);
-        $this->assertStringContainsString('added group g6 ['.$this->group6Id.']', $logs[5]['message']);
     }
 
     public function testCheckRequiredGroups()
