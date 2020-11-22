@@ -28,6 +28,10 @@ Vue.mixin({
                 'United',
                 'Yeti',
             ],
+
+            messages: {
+                errorMissingRequiredGroup: 'This player is not a member of the required group(s).'
+            }
         }
     },
 

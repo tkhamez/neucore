@@ -830,7 +830,6 @@ class GroupControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/add-member/'.$this->pid);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals('This player is not a member of the required group(s).', $response->getReasonPhrase());
     }
 
     public function testAddMember204()

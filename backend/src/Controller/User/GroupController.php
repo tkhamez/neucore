@@ -1019,7 +1019,7 @@ class GroupController extends BaseController
         } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
             foreach ($this->group->getRequiredGroups() as $requiredGroup) {
                 if (! $this->player->hasGroup($requiredGroup->getId())) {
-                    return $this->flushAndReturn(400, null, 'This player is not a member of the required group(s).');
+                    return $this->flushAndReturn(400);
                 }
             }
             $this->player->addGroup($this->group);

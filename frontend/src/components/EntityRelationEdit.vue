@@ -596,7 +596,7 @@ export default {
                 return;
             }
 
-            this.callApi(api, method, param1, param2, function() {
+            callApi(this, api, method, param1, param2, function() {
                 if (
                     (vm.type === 'Player' && vm.typeId === vm.player.id) ||
                     (vm.type === 'Watchlist' && (vm.contentType === 'groups' || vm.contentType === 'groupsManage')) ||
@@ -629,7 +629,7 @@ export default {
                 if (groups.length > 0) {
                     const id = groups[0].id;
                     groups.splice(0, 1);
-                    vm.callApi(api, 'addGroup', vm.typeId, id, function() {
+                    callApi(vm, api, 'addGroup', vm.typeId, id, function() {
                         addGroup();
                     });
                 } else {
@@ -638,16 +638,19 @@ export default {
             }
             addGroup();
         },
-
-        callApi: function(api, method, param1, param2, callback) {
-            api[method].apply(api, [param1, param2, function(error) {
-                if (error) { // 403 usually
-                    return;
-                }
-                callback();
-            }]);
-        },
     },
+}
+
+function callApi(vm, api, method, param1, param2, callback) {
+    api[method].apply(api, [param1, param2, function(error, data, response) {
+        if (vm.type === 'Player' && method === 'addMember' && response.statusCode === 400) {
+            vm.message(vm.messages.errorMissingRequiredGroup, 'warning');
+        }
+        if (error) { // 403 usually
+            return;
+        }
+        callback();
+    }]);
 }
 
 function setUseSearch(vm) {
