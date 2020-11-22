@@ -26,9 +26,9 @@ Result table for the character search
                     </td>
                     <td v-if="selectedPlayers">
                         <button v-if="! isSelected(char.player_id)" class="btn btn-success btn-sm"
-                                @click="$emit('add', char.player_id)">Add to group</button>
+                                @click="$emit('add', char.player_id)">Add</button>
                         <button v-if="isSelected(char.player_id)" class="btn btn-danger btn-sm"
-                                @click="$emit('remove', char.player_id)">Remove from group</button>
+                                @click="$emit('remove', char.player_id)">Remove</button>
                     </td>
                 </tr>
             </tbody>
