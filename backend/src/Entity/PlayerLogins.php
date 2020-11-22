@@ -35,21 +35,18 @@ class PlayerLogins
 
     /**
      * @ORM\Column(type="integer")
-     * @ORM\JoinColumn(nullable=false)
      * @var int
      */
     private $year;
 
     /**
      * @ORM\Column(type="integer")
-     * @ORM\JoinColumn(nullable=false)
      * @var int
      */
     private $month;
 
     /**
      * @ORM\Column(type="integer")
-     * @ORM\JoinColumn(nullable=false)
      * @var int
      */
     private $count;
