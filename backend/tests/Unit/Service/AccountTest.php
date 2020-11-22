@@ -24,7 +24,7 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
-use Neucore\Repository\PlayerLoginRepository;
+use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
@@ -92,9 +92,9 @@ class AccountTest extends TestCase
     private $corpMemberRepo;
 
     /**
-     * @var PlayerLoginRepository
+     * @var PlayerLoginsRepository
      */
-    private $playerLoginRepo;
+    private $playerLoginsRepo;
 
     /**
      * @var Player
@@ -190,7 +190,7 @@ class AccountTest extends TestCase
         $this->playerRepo = $repoFactory->getPlayerRepository();
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->corpMemberRepo = $repoFactory->getCorporationMemberRepository();
-        $this->playerLoginRepo = $repoFactory->getPlayerLoginRepository();
+        $this->playerLoginsRepo = $repoFactory->getPlayerLoginsRepository();
     }
 
     public function testCreateNewPlayerWithMain()
@@ -327,7 +327,7 @@ class AccountTest extends TestCase
         $this->service->increaseLoginCount($player);
         $this->service->increaseLoginCount($player);
 
-        $logins = $this->playerLoginRepo->findBy([]);
+        $logins = $this->playerLoginsRepo->findBy([]);
 
         $this->assertSame(1, count($logins));
         $this->assertGreaterThanOrEqual(1, $logins[0]->getPlayer()->getId());

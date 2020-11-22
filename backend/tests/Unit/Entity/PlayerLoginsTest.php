@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Tests\Unit\Entity;
 
 use Neucore\Entity\Player;
-use Neucore\Entity\PlayerLogin;
+use Neucore\Entity\PlayerLogins;
 use PHPUnit\Framework\TestCase;
 
-class PlayerLoginTest extends TestCase
+class PlayerLoginsTest extends TestCase
 {
     public function testGetId()
     {
-        $this->assertNull((new PlayerLogin())->getId());
+        $this->assertNull((new PlayerLogins())->getId());
     }
 
     public function testSetGetPlayer()
     {
-        $pl = new PlayerLogin();
+        $pl = new PlayerLogins();
         $this->assertNull($pl->getPlayer());
 
         $pl->setPlayer((new Player())->setName('p'));
@@ -27,7 +27,7 @@ class PlayerLoginTest extends TestCase
 
     public function testSetGetYear()
     {
-        $pl = new PlayerLogin();
+        $pl = new PlayerLogins();
         $this->assertNull($pl->getYear());
 
         $pl->setYear(2020);
@@ -36,7 +36,7 @@ class PlayerLoginTest extends TestCase
 
     public function testSetGetMonth()
     {
-        $pl = new PlayerLogin();
+        $pl = new PlayerLogins();
         $this->assertNull($pl->getMonth());
 
         $pl->setMonth(11);
@@ -45,7 +45,7 @@ class PlayerLoginTest extends TestCase
 
     public function testSetGetCount()
     {
-        $pl = new PlayerLogin();
+        $pl = new PlayerLogins();
         $this->assertNull($pl->getCount());
 
         $pl->setCount(31);

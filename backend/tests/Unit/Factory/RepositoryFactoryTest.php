@@ -15,7 +15,7 @@ use Neucore\Entity\EsiType;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
-use Neucore\Entity\PlayerLogin;
+use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -29,7 +29,7 @@ use Neucore\Repository\EsiLocationRepository;
 use Neucore\Repository\EsiTypeRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
-use Neucore\Repository\PlayerLoginRepository;
+use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
@@ -132,11 +132,11 @@ class RepositoryFactoryTest extends TestCase
         $this->assertSame(Player::class, $repo->getClassName());
     }
 
-    public function testGetPlayerLoginRepository()
+    public function testGetPlayerLoginsRepository()
     {
-        $repo = $this->factory->getPlayerLoginRepository();
-        $this->assertInstanceOf(PlayerLoginRepository::class, $repo);
-        $this->assertSame(PlayerLogin::class, $repo->getClassName());
+        $repo = $this->factory->getPlayerLoginsRepository();
+        $this->assertInstanceOf(PlayerLoginsRepository::class, $repo);
+        $this->assertSame(PlayerLogins::class, $repo->getClassName());
     }
 
     public function testGetRoleRepository()

@@ -8,9 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="player_logins")
+ * @ORM\Table(
+ *     name="player_logins",
+ *     indexes={
+ *         @ORM\Index(name="year_idx", columns={"year"}),
+ *         @ORM\Index(name="month_idx", columns={"month"})
+ *     }
+ * )
  */
-class PlayerLogin
+class PlayerLogins
 {
     /**
      * @ORM\Id

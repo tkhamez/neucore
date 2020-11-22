@@ -11,7 +11,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
-use Neucore\Entity\PlayerLogin;
+use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -190,13 +190,13 @@ class Account
         $year = (int) date('Y');
         $month = (int) date('m');
 
-        $login = $this->repositoryFactory->getPlayerLoginRepository()->findOneBy([
+        $login = $this->repositoryFactory->getPlayerLoginsRepository()->findOneBy([
             'player' => $player,
             'year' => $year,
             'month' => $month,
         ]);
         if ($login === null) {
-            $login = new PlayerLogin();
+            $login = new PlayerLogins();
             $login->setPlayer($player);
             $login->setYear($year);
             $login->setMonth($month);
