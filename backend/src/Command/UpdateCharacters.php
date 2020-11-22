@@ -114,7 +114,7 @@ class UpdateCharacters extends Command
 
             $names = [];
             foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
-                $names[$name->getId()] = $name->getName();
+                $names[$name->getId()] = (string)$name->getName();
             }
 
             $affiliations = [];
@@ -138,7 +138,9 @@ class UpdateCharacters extends Command
                 }
 
                 if (isset($names[$char->getId()])) {
-                    $char->setName($names[$char->getId()]);
+                    if ($names[$char->getId()] !== '') { // empty character name from ESI happened
+                        $char->setName($names[$char->getId()]);
+                    }
                     if ($char->getMain()) {
                         $char->getPlayer()->setName($char->getName());
                     }

@@ -145,7 +145,9 @@ class Account
     ): bool {
         // update character
         $token = $eveAuth->getToken();
-        $char->setName($eveAuth->getCharacterName());
+        if ($eveAuth->getCharacterName() !== '') { // don't update name if it is empty
+            $char->setName($eveAuth->getCharacterName());
+        }
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception $e) {
