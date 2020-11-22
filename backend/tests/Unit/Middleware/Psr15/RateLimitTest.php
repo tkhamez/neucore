@@ -123,13 +123,6 @@ class RateLimitTest extends TestCase
             RateLimit::HEADER_REMAIN => ['49'],
             RateLimit::HEADER_RESET => ['10.0'],
         ], $response->getHeaders());
-
-        $logs = $this->logger->getHandler()->getRecords();
-        $this->assertSame(1, count($logs));
-        $this->assertStringStartsWith(
-            "API Rate Limit: App {$this->appId} 'Test app', 41 requests in ", // ... ~15.5 seconds.
-            $logs[0]['message']
-        );
     }
 
     public function testProcess_configured_notActive()

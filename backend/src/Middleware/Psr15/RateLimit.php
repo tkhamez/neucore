@@ -95,7 +95,7 @@ class RateLimit implements MiddlewareInterface
         list($remaining, $resetIn, $numRequests, $elapsedTime) = $this->checkLimit($app);
 
         if ($remaining < 0 && $this->active) {
-            $this->logger->debug(
+            $this->logger->info(
                 "{$this->logPrefix($app)} limit exceeded with $numRequests request in $elapsedTime seconds."
             );
             $response = $this->responseFactory->createResponse(429); // Too Many Requests
@@ -144,9 +144,6 @@ class RateLimit implements MiddlewareInterface
         $elapsedTime = round(microtime(true) - $variable->created, 1); // log value
 
         if ($resetIn <= 0) {
-            $this->logger->debug(
-                "{$this->logPrefix($app)} $numRequests requests in $elapsedTime seconds."
-            );
             $variable->remaining = $this->maxRequests - 1;
             $variable->created = microtime(true);
             $resetIn = $this->resetTime;
