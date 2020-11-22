@@ -127,6 +127,9 @@ export default {
 
     mounted: function() {
         addNavBehaviour();
+        if (this.selectedTheme === '') {
+            this.selectedTheme = window.APP_DEFAULT_THEME;
+        }
     },
 
     watch: {

@@ -18,7 +18,7 @@
         } %>
         <script type="text/javascript">
             function setTheme(theme) {
-                // activate theme css
+                window.APP_DEFAULT_THEME = theme;
                 var links = document.getElementsByTagName('link');
                 for (var i = 0; i < links.length; i++) {
                     if (links[i].getAttribute('title') !== 'theme') {
