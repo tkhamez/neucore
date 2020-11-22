@@ -19,6 +19,7 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
 use Neucore\Application;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
+use Neucore\Entity\AppRequests;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -50,6 +51,7 @@ class Helper
     private $entities = [
         Watchlist::class,
         GroupApplication::class,
+        AppRequests::class,
         App::class,
         CorporationMember::class,
         Character::class,

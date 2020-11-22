@@ -30,6 +30,7 @@ use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
+use Neucore\Middleware\Psr15\AppRequestCount;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\RateLimit;
@@ -276,6 +277,12 @@ class Application
             $this->container->get(ResponseFactoryInterface::class),
             $this->container->get(LoggerInterface::class),
             $this->container->get(RepositoryFactory::class)
+        ));
+
+        $app->add(new AppRequestCount(
+            $this->container->get(AppAuth::class),
+            $this->container->get(RepositoryFactory::class),
+            $this->container->get(EntityManagerInterface::class)
         ));
 
         /** @noinspection PhpIncludeInspection */

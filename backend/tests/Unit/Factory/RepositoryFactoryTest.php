@@ -7,6 +7,7 @@ namespace Tests\Unit\Factory;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
+use Neucore\Entity\AppRequests;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -22,6 +23,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\AppRepository;
+use Neucore\Repository\AppRequestsRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
@@ -74,6 +76,13 @@ class RepositoryFactoryTest extends TestCase
         $repo = $this->factory->getAppRepository();
         $this->assertInstanceOf(AppRepository::class, $repo);
         $this->assertSame(App::class, $repo->getClassName());
+    }
+
+    public function testGetAppRequestsRepository()
+    {
+        $repo = $this->factory->getAppRequestsRepository();
+        $this->assertInstanceOf(AppRequestsRepository::class, $repo);
+        $this->assertSame(AppRequests::class, $repo->getClassName());
     }
 
     public function testGetCharacterRepository()

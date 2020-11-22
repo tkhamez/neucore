@@ -7,6 +7,7 @@ namespace Neucore\Factory;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
+use Neucore\Entity\AppRequests;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -22,6 +23,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\AppRepository;
+use Neucore\Repository\AppRequestsRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
@@ -75,6 +77,11 @@ class RepositoryFactory
     public function getAppRepository(): AppRepository
     {
         return $this->getRepository(AppRepository::class, App::class);
+    }
+
+    public function getAppRequestsRepository(): AppRequestsRepository
+    {
+        return $this->getRepository(AppRequestsRepository::class, AppRequests::class);
     }
 
     public function getCharacterRepository(): CharacterRepository

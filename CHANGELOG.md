@@ -9,6 +9,7 @@ dd mm yyyy
 - **BC break** The default theme has been removed from the settings. Instead there is now a configuration file 
   `web/theme.js`.
 - Added statistics with number of logins per account and month.
+- Added statistics with number of requests per app and day.
 - Fixed error message when adding a new member to a group failed.
 - Changed sleep time for update-player-groups command 
 - Replaced Google Fonts Plugin with Fontsource.
