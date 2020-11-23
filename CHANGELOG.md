@@ -3,6 +3,7 @@
 ## next
 
 - Added Content-Length header for JSON responses to enable compression with nginx.
+- Fixed frontend build for IE 11.
 
 ## 1.15.0
 

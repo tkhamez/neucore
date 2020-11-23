@@ -44,6 +44,7 @@ module.exports = (env, argv) => {
             path: path.resolve(__dirname, '../web/dist'),
             filename: '[name].[contenthash].js'
         },
+        target: ['web', 'es5'],
         module: {
             rules: [{
                 test: /\.(css|scss)$/,
@@ -69,7 +70,7 @@ module.exports = (env, argv) => {
                 exclude: /(node_modules|neucore-js-client)/,
                 loader: 'babel-loader'
             }, {
-                test: /node_modules\/markdown-it-attrs\/.*\.js$/,
+                test: /node_modules\/(markdown-it-attrs|punycode)\/.*\.js$/,
                 use: 'babel-loader'
             }, {
                 test: /datatables\.net.*\.js$/,
