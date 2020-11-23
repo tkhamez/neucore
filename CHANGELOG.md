@@ -4,6 +4,7 @@
 
 - Added Content-Length header for JSON responses to enable compression with nginx.
 - Fixed frontend build for IE 11.
+- Fixed member tracking table sort for columns with HTML.
 
 ## 1.15.0
 

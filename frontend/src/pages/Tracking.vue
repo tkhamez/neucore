@@ -291,6 +291,14 @@ function configureDataTable(vm) {
         return false;
     });
 
+    // fix: sort by text instead of html
+    $.fn.dataTable.ext.type.order['html-pre'] = function (a) {
+        if (a.indexOf('<a ') !== -1 || a.indexOf('<div ') !== -1) {
+            return a.replace(/<[^>]+>/g, '').trim().toLowerCase();
+        }
+        return a;
+    };
+
     vm.table = $('.member-table').DataTable({
         lengthMenu: [
             [10, 25, 50, 100, 200, 500, 1000, 5000, -1],
