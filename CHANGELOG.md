@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Added Content-Length header for JSON responses to enable compression with nginx.
+
 ## 1.15.0
 
 23 Nov 2020

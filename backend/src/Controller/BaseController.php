@@ -94,12 +94,16 @@ abstract class BaseController
      */
     protected function withJson($data, ?int $status = null): ResponseInterface
     {
-        $this->response->getBody()->write((string) \json_encode($data));
+        $json = (string) \json_encode($data);
+
+        $this->response->getBody()->write($json);
         if (isset($status)) {
             $this->response = $this->response->withStatus($status);
         }
 
-        return $this->response->withHeader('Content-Type', 'application/json');
+        return $this->response
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Content-Length', strlen($json));
     }
 
     /**
