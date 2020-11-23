@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
@@ -123,6 +124,11 @@ module.exports = (env, argv) => {
         }
     };
     if (! devMode) {
+        config.plugins.push(new CompressionPlugin({
+            test: /\.(js|css)$/,
+            threshold: 1,
+            compressionOptions: { level: 6 },
+        }));
         config.plugins.push(new LicenseWebpackPlugin({
             // TODO This fixes "ERROR in Conflict: Multiple assets emit different content to the same
             // filename mini-css-extract-plugin.licenses.txt", but produces a lot of duplicates.

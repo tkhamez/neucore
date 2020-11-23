@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15.2
+
+23 Nov 2020
+
+- Add compression for frontend production build.
+
 ## 1.15.1
 
 23 Nov 2020
