@@ -2,7 +2,7 @@
 
 ## 1.15.0
 
-dd mm yyyy
+23 Nov 2020
 
 - **BC break**: Raised minimum required PHP version to 7.3.0
 - **BC break** (dev only): Raised minimum Node.js version to 10.16.0 (with npm 6.9.0)
@@ -10,8 +10,8 @@ dd mm yyyy
   `web/theme.js`.
 - Added statistics with number of logins per account and month.
 - Added statistics with number of requests per app and day.
+- Changed sleep time for update-player-groups command.
 - Several small fixes.
-- Changed sleep time for update-player-groups command 
 - Replaced Google Fonts Plugin with Fontsource.
 - Compatibility with Node.js 14.
 - Many dependencies updated.
