@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.15.1
+
+23 Nov 2020
 
 - Added Content-Length header for JSON responses to enable compression with nginx.
 - Fixed frontend build for IE 11.
