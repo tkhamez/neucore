@@ -25,6 +25,7 @@
 - Added statistics with number of logins per account and month.
 - Added statistics with number of requests per app and day.
 - Changed sleep time for update-player-groups command.
+- Removed the debug log of application rate limits.
 - Several small fixes.
 - Replaced Google Fonts Plugin with Fontsource.
 - Compatibility with Node.js 14.

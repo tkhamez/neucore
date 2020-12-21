@@ -64,7 +64,7 @@ so make sure they can override each other's files, e.g. by putting them into eac
 (the app uses umask 0002 when writing files and directories).
 
 If available, the app uses an APCu cache in production mode. This must be cleared during an update:
-depending on the configuration, restart the web server or php-fpm.
+depending on the setup, restart the web server or php-fpm.
 
 #### Pre-built Distribution file
 
@@ -152,7 +152,7 @@ heroku buildpacks:add heroku/php
 
 ### Deploy on AWS Beanstalk
 
-NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outdated as Neucore requires PHP 7.4 now.
+NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outdated as Neucore requires PHP 7.3 now.
 
 A more recent configuration for Amazon Linux 2 is available at 
 [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk).
