@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -140,6 +141,13 @@ class RateLimitTest extends TestCase
 
         $this->assertSame('-1', $response->getHeader(RateLimit::HEADER_REMAIN)[0]);
         $this->assertEqualsWithDelta(4.5, $response->getHeader(RateLimit::HEADER_RESET)[0], 1.0);
+
+        $logs = $this->logger->getHandler()->getRecords();
+        $this->assertSame(1, count($logs));
+        $this->assertStringStartsWith(
+            "API Rate Limit: App {$this->appId} 'Test app', limit exceeded with 51 request in ", // ... ~5.5 seconds.
+            $logs[0]['message']
+        );
     }
 
     public function testProcess_notConfigured()

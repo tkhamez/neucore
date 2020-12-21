@@ -94,12 +94,16 @@ class RateLimit implements MiddlewareInterface
 
         list($remaining, $resetIn, $numRequests, $elapsedTime) = $this->checkLimit($app);
 
-        if ($remaining < 0 && $this->active) {
+        $response = null;
+        if ($remaining < 0) {
             $this->logger->info(
                 "{$this->logPrefix($app)} limit exceeded with $numRequests request in $elapsedTime seconds."
             );
-            $response = $this->responseFactory->createResponse(429); // Too Many Requests
-        } else {
+            if ($this->active) {
+                $response = $this->responseFactory->createResponse(429); // Too Many Requests
+            }
+        }
+        if (!$response) {
             $response = $handler->handle($request);
         }
 
