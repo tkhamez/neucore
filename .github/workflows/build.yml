@@ -8,6 +8,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -22,3 +24,13 @@ jobs:
           NEUCORE_APP_ENV: dev
           NEUCORE_TEST_DATABASE_URL: 'sqlite:///:memory:'
         run: cd backend && vendor/bin/phpunit
+      - name: Setup SonarQube
+        uses: warchant/setup-sonar-scanner@v3
+      - name: Run SonarQube
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: sonar-scanner
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.organization=tkhamez-github
+          -Dsonar.host.url=https://sonarcloud.io/
+
