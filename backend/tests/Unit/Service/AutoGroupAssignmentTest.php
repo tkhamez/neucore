@@ -94,11 +94,11 @@ class AutoGroupAssignmentTest extends TestCase
         $playerBefore = $this->playerRepo->find($this->playerManagedId);
         if (! $playerBefore) {
             $this->fail();
-            return;
+        } else { // put in else block to prevent errors from static code analysis
+            $this->assertSame([], $playerBefore->getGroupIds());
+            $this->aga->assign($playerBefore);
         }
-        $this->assertSame([], $playerBefore->getGroupIds());
 
-        $this->aga->assign($playerBefore);
         $this->om->flush();
         $this->om->clear();
 
@@ -120,11 +120,10 @@ class AutoGroupAssignmentTest extends TestCase
         $playerBefore = $this->playerRepo->find($this->playerId);
         if (! $playerBefore) {
             $this->fail();
-            return;
+        } else { // put in else block to prevent errors from static code analysis
+            $this->assertSame([$this->group4->getId(), $this->group5Id], $playerBefore->getGroupIds());
+            $this->aga->assign($playerBefore);
         }
-        $this->assertSame([$this->group4->getId(), $this->group5Id], $playerBefore->getGroupIds());
-
-        $this->aga->assign($playerBefore);
 
         $this->om->flush();
         $this->om->clear();
@@ -148,30 +147,30 @@ class AutoGroupAssignmentTest extends TestCase
         $playerBefore = $this->playerRepo->find($this->playerId);
         if (! $playerBefore) {
             $this->fail();
-            return;
+        } else { // put in else block to prevent errors from static code analysis
+            $playerBefore->addGroup($this->group1);
+            $playerBefore->addGroup($this->group2);
+            $playerBefore->addGroup($this->group3);
+            $this->om->flush();
+
+            $this->assertSame(
+                [
+                    $this->group4->getId(),
+                    $this->group5Id,
+                    $this->group1->getId(),
+                    $this->group2->getId(),
+                    $this->group3->getId(),
+                ],
+                $playerBefore->getGroupIds()
+            );
+
+            // group1 depends on group5 -> player has g5
+            // group5 depends on group6 -> player has not g6
+            // group2 depends on group3 -> player has g3
+            // group4 has no required groups
+
+            $this->aga->checkRequiredGroups($playerBefore);
         }
-        $playerBefore->addGroup($this->group1);
-        $playerBefore->addGroup($this->group2);
-        $playerBefore->addGroup($this->group3);
-        $this->om->flush();
-
-        $this->assertSame(
-            [
-                $this->group4->getId(),
-                $this->group5Id,
-                $this->group1->getId(),
-                $this->group2->getId(),
-                $this->group3->getId(),
-            ],
-            $playerBefore->getGroupIds()
-        );
-
-        // group1 depends on group5 -> player has g5
-        // group5 depends on group6 -> player has not g6
-        // group2 depends on group3 -> player has g3
-        // group4 has no required groups
-
-        $this->aga->checkRequiredGroups($playerBefore);
 
         $this->om->flush();
         $this->om->clear();

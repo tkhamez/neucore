@@ -103,7 +103,7 @@ abstract class BaseController
 
         return $this->response
             ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Content-Length', strlen($json));
+            ->withHeader('Content-Length', (string) strlen($json));
     }
 
     /**

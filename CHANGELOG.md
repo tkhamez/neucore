@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Compatibility with PHP 8.0
+
 ## 1.15.2
 
 23 Nov 2020

@@ -989,9 +989,8 @@ class PlayerController extends BaseController
             if ($char) {
                 $player = $char->getPlayer();
                 if (! isset($result[$player->getId()])) {
-                    $result[$player->getId()] = [];
+                    $result[$player->getId()] = ['player_id' => $player->getId(), 'characters' => []];
                     $main = $player->getMain();
-                    $result[$player->getId()]['player_id'] = $player->getId();
                     if ($main) {
                         $result[$player->getId()]['characters'][$main->getId()] = $main->jsonSerialize(true);
                     } else {
