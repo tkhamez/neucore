@@ -120,13 +120,12 @@ Only tested on Linux and once on macOS.
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
 the database host is `db`.
 
-- Run `export UID` once before you run any `docker-compose` command.
 - Build the containers with `docker-compose build`
-- Start services: `docker-compose up`
-- Install the app: `./install-docker.sh`
+- Start services: `export UID && docker-compose up`
+- Install the app: `export UID && ./install-docker.sh`
 - Run tests and other commands in the php-fpm and node containers:  
-    `docker-compose exec php-fpm /bin/sh`
-    `docker-compose run node /bin/sh`
+    `export UID && docker-compose exec php-fpm /bin/sh`
+    `export UID && docker-compose run node /bin/sh`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
 the data is stored in the `.mariadb` subdirectory.

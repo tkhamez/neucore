@@ -104,10 +104,9 @@ All character removals are recorded and are visible to user admins.
 There a two account status: standard and managed.
 
 - The status can be changed at any time by a user admin.
-- If the status is changed, all groups are removed.
-- User managers can manually assign groups to "managed" accounts
-  (technically, they can use this API endpoint for all players).
-- Automatic group assignment is disabled for managed accounts (but "Required Groups" are still checked, see below).
+- If the status is changed, all groups are removed. New groups can be added manually in the same way as for normal 
+  accounts.
+- Automatic group assignment is disabled for managed accounts, "Required Groups" are still checked, see below.
 - Groups are never deactivated for managed accounts.
 - There is a separate login URL for managed accounts that does not require ESI scopes 
   (must be allowed in the settings).

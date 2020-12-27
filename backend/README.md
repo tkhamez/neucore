@@ -112,7 +112,7 @@ This will add all available roles to your player account.
 
 ### Commands via Composer
 
-Run unit tests, with or without coverage:
+Run unit tests, with or without HTML coverage:
 ```
 composer test:cov
 composer test
@@ -138,15 +138,14 @@ Security check of packages from composer.lock:
 composer security-checker
 ```
 
-Check code with PHPStan:
+Check code with PHPStan, Phan and Psalm:
 ```
 composer phpstan:src
 composer phpstan:test
-```
 
-Check code with Phan:
-```
 composer phan
+
+composer psalm
 ```
 
 Run the built-in web server:
@@ -171,9 +170,9 @@ Validate the mapping files:
 vendor/bin/doctrine orm:validate-schema
 ```
 
-Generate a migration by comparing the current database to the mapping information  
-(set the server version to something below 5.7 to generate MariaDB 10.2 compatible syntax, e. g. 
-`mysql://neucore:password@127.0.0.1/core?serverVersion=5.6`):
+Generate a migration by comparing the current database to the mapping information.  
+Set the server version to something below 5.7 to generate MariaDB 10.2 compatible syntax, e.g. 
+`mysql://neucore:password@127.0.0.1/core?serverVersion=5.6`:
 ```
 vendor/bin/doctrine-migrations migrations:diff
 ```
