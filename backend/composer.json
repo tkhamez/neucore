@@ -79,7 +79,7 @@
             "openapi src --output ../web/frontend-api-3.yml --exclude src/Controller/App",
             "openapi src --output ../web/application-api-3.yml --exclude src/Controller/User"
         ],
-        "phan": "PHAN_ALLOW_XDEBUG=1 phan --color --allow-polyfill-parser",
+        "phan": "PHAN_DISABLE_XDEBUG_WARN=1 phan --color",
         "phpstan": "phpstan analyse --level 8 --ansi src tests",
         "psalm": "psalm",
         "test": "phpunit --colors=always",

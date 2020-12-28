@@ -1,5 +1,6 @@
 FROM php:7.4-fpm-alpine3.12
-RUN apk update && apk add gmp-dev libzip-dev icu-dev
+RUN apk update && apk add --no-cache autoconf gcc g++ make gmp-dev libzip-dev icu-dev
+RUN pecl install ast && docker-php-ext-enable ast
 RUN mkdir -p /usr/src/php/ext/apcu && \
     curl -fsSL https://pecl.php.net/get/apcu-5.1.19.tgz | tar xvz -C "/usr/src/php/ext/apcu" --strip 1
 RUN mkdir -p /usr/src/php/ext/xdebug && \
