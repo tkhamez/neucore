@@ -31,6 +31,7 @@ use Neucore\Entity\Player;
 use Neucore\Entity\PlayerLogins;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
@@ -49,6 +50,7 @@ class Helper
     private static $roleSequence = 0;
 
     private $entities = [
+        Service::class,
         Watchlist::class,
         GroupApplication::class,
         AppRequests::class,

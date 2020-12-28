@@ -15,6 +15,7 @@ use Neucore\Controller\User\CorporationController;
 use Neucore\Controller\User\EsiController;
 use Neucore\Controller\User\GroupController;
 use Neucore\Controller\User\PlayerController;
+use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\WatchlistController;
 
@@ -193,4 +194,6 @@ return [
     '/api/user/watchlist/{id}/allowlist-alliance/list'                    => ['GET',  WatchlistController::class.'::allowlistAllianceList'],
     '/api/user/watchlist/{id}/allowlist-alliance/add/{alliance}'          => ['PUT',  WatchlistController::class.'::allowlistAllianceAdd'],
     '/api/user/watchlist/{id}/allowlist-alliance/remove/{alliance}'       => ['PUT',  WatchlistController::class.'::allowlistAllianceRemove'],
+
+    '/api/user/service/{id}'               => ['GET', ServiceController::class.'::get'],
 ];

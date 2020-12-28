@@ -76,6 +76,9 @@ Player API
 Settings API
 - List all settings. `GET /user/settings/system/list`
 
+Service API
+- Returns service. `GET /user/service/{id}`
+
 #### user-admin
 
 Allows a player to add and remove roles from players.

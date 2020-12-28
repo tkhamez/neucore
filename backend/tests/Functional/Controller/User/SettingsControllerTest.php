@@ -12,6 +12,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
@@ -47,6 +48,11 @@ class SettingsControllerTest extends WebTestCase
      */
     private $systemVariableRepository;
 
+    /**
+     * @var int
+     */
+    private $serviceId;
+
     public static function setupBeforeClass(): void
     {
         self::$writeErrorListener = new WriteErrorListener();
@@ -79,6 +85,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
+            ['name' => 'navigationServices', 'value' => \json_encode([['id' => $this->serviceId, 'name' => 's1']])],
         ], $this->parseJsonBody($response));
     }
 
@@ -94,6 +101,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
+            ['name' => 'navigationServices', 'value' => \json_encode([['id' => $this->serviceId, 'name' => 's1']])],
         ], $this->parseJsonBody($response));
     }
 
@@ -113,6 +121,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
+            ['name' => 'navigationServices', 'value' => \json_encode([['id' => $this->serviceId, 'name' => 's1']])],
         ], $this->parseJsonBody($response));
     }
 
@@ -377,6 +386,7 @@ class SettingsControllerTest extends WebTestCase
         if ($publicGroup) {
             $group->setVisibility(Group::VISIBILITY_PUBLIC);
         }
+        $service = (new Service())->setName('s1');
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);
@@ -417,9 +427,12 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($var7);
         $this->em->persist($var8);
         $this->em->persist($group);
+        $this->em->persist($service);
         $this->em->persist($alli);
         $this->em->persist($corp);
 
         $this->em->flush();
+
+        $this->serviceId = $service->getId();
     }
 }

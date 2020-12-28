@@ -19,6 +19,18 @@
                     class="nav-item" :class="{ active: page === 'Groups' }">
                     <a class="nav-link" href="#Groups">Groups</a>
                 </li>
+                <li v-if="settings.navigationServices.length > 0"
+                    class="nav-item dropdown" :class="{ active: page === 'Service' }">
+                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Services
+                    </a>
+                    <div class="dropdown-menu">
+                        <a v-for="service in settings.navigationServices" class="dropdown-item"
+                           :class="{ active: page === 'Service' && parseInt(route[1]) === service.id }"
+                           :href="'#Service/'+service.id">{{ service.name }}</a>
+                    </div>
+                </li>
                 <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"
                     class="nav-item dropdown" :class="{ active: managePages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
@@ -113,7 +125,7 @@ import $ from 'jquery';
 export default {
     props: {
         authChar: Object,
-        page: String,
+        route: Array,
         settings: Object,
     },
 
@@ -122,6 +134,7 @@ export default {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: ['GroupAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'FindAlts'],
+            page: '',
             selectedTheme: '',
         }
     },
@@ -130,12 +143,16 @@ export default {
         this.$nextTick(function () {
             window.setTimeout(addNavBehaviour, 500);
         });
+        this.page = this.route[0];
         if (this.selectedTheme === '') {
             this.selectedTheme = window.APP_DEFAULT_THEME;
         }
     },
 
     watch: {
+        route () {
+            this.page = this.route[0];
+        },
         selectedTheme () {
             const $body = $('body');
             for (const theme of this.themes) {

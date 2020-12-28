@@ -55,6 +55,7 @@ class SettingsController extends BaseController
     {
         $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
         $groupRepository = $this->repositoryFactory->getGroupRepository();
+        $serviceRepository = $this->repositoryFactory->getServiceRepository();
 
         if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
             $scopes = $this->validScopes;
@@ -74,7 +75,10 @@ class SettingsController extends BaseController
                 self::COLUMN_NAME => 'navigationShowGroups',
                 self::COLUMN_VALUE => $groupRepository->count(['visibility' => Group::VISIBILITY_PUBLIC]) > 0 ?
                     '1' : '0'
-            ]
+            ], [
+                self::COLUMN_NAME => 'navigationServices',
+                self::COLUMN_VALUE => \json_encode($serviceRepository->findBy([], ['name' => 'asc']))
+            ],
         ]);
 
         return $this->withJson($result);

@@ -9,7 +9,7 @@
             </button>
         </div>
 
-        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :page="page" :settings="settings"></nav-bar>
+        <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :route="route" :settings="settings"></nav-bar>
 
         <characters ref="charactersModal"></characters>
 
@@ -42,6 +42,7 @@ import NavBar from './components/NavBar.vue';
 import Characters from './components/Characters.vue';
 import Home from './pages/Home.vue';
 import Groups from './pages/Groups.vue';
+import Service from './pages/Service.vue';
 import GroupManagement from './pages/GroupManagement.vue';
 import AppManagement from './pages/AppManagement.vue';
 import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
@@ -64,6 +65,7 @@ export default {
         Characters,
         Home,
         Groups,
+        Service,
         GroupManagement,
         AppManagement,
         PlayerGroupManagement,
@@ -98,6 +100,7 @@ export default {
             pages: [
                 'Home',
                 'Groups',
+                'Service',
                 'GroupManagement',
                 'AppManagement',
                 'PlayerGroupManagement',
@@ -242,7 +245,9 @@ export default {
                 }
                 const settings = {};
                 for (const variable of data) {
-                    settings[variable.name] = variable.value;
+                    settings[variable.name] = variable.name === 'navigationServices' ?
+                        JSON.parse(variable.value) :
+                        variable.value;
                 }
                 vm.$root.settings = settings; // watch() will work this way
                 vm.settingsLoaded = true;
