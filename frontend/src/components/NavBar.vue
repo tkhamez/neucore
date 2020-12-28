@@ -15,7 +15,8 @@
                 <li class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
-                <li v-if="hasRole('user')" class="nav-item" :class="{ active: page === 'Groups' }">
+                <li v-if="hasRole('user') && settings.navigationShowGroups === '1'"
+                    class="nav-item" :class="{ active: page === 'Groups' }">
                     <a class="nav-link" href="#Groups">Groups</a>
                 </li>
                 <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"

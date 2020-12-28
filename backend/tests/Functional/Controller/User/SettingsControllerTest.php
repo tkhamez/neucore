@@ -10,6 +10,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -69,7 +70,7 @@ class SettingsControllerTest extends WebTestCase
 
     public function testSystemList200Anonymous()
     {
-        $this->setupDb();
+        $this->setupDb(false);
 
         $response = $this->runApp('GET', '/api/user/settings/system/list');
         $this->assertEquals(200, $response->getStatusCode());
@@ -77,6 +78,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
+            ['name' => 'navigationShowGroups', 'value' => '0'],
         ], $this->parseJsonBody($response));
     }
 
@@ -91,6 +93,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
+            ['name' => 'navigationShowGroups', 'value' => '1'],
         ], $this->parseJsonBody($response));
     }
 
@@ -109,6 +112,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
+            ['name' => 'navigationShowGroups', 'value' => '1'],
         ], $this->parseJsonBody($response));
     }
 
@@ -364,11 +368,15 @@ class SettingsControllerTest extends WebTestCase
         $this->assertTrue($this->parseJsonBody($response));
     }
 
-    private function setupDb(): void
+    private function setupDb($publicGroup = true): void
     {
         $this->helper->addCharacterMain('User', 5, [Role::USER]);
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
 
+        $group = (new Group())->setName('g1');
+        if ($publicGroup) {
+            $group->setVisibility(Group::VISIBILITY_PUBLIC);
+        }
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);
@@ -408,6 +416,7 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($var6);
         $this->em->persist($var7);
         $this->em->persist($var8);
+        $this->em->persist($group);
         $this->em->persist($alli);
         $this->em->persist($corp);
 

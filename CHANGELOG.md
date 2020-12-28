@@ -4,6 +4,7 @@
 
 - Compatibility with PHP 8.0
 - Rate limit: always log if the configured limit was reached, even if it's not active.
+- Navigation: Do not show "Groups" link if there are no public groups.
 
 ## 1.15.2
 

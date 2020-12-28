@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Service\Config;
@@ -52,14 +53,16 @@ class SettingsController extends BaseController
      */
     public function systemList(UserAuth $userAuth, Config $config): ResponseInterface
     {
-        $repository = $this->repositoryFactory->getSystemVariableRepository();
+        $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
+        $groupRepository = $this->repositoryFactory->getGroupRepository();
+
         if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
             $scopes = $this->validScopes;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
         }
 
-        $result = $repository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
+        $result = $settingsRepository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
         $result = array_merge($result, [
             [
                 self::COLUMN_NAME => 'esiDataSource',
@@ -67,6 +70,10 @@ class SettingsController extends BaseController
             ], [
                 self::COLUMN_NAME => 'esiHost',
                 self::COLUMN_VALUE => $config['eve']['esi_host']
+            ], [
+                self::COLUMN_NAME => 'navigationShowGroups',
+                self::COLUMN_VALUE => $groupRepository->count(['visibility' => Group::VISIBILITY_PUBLIC]) > 0 ?
+                    '1' : '0'
             ]
         ]);
 
