@@ -128,7 +128,7 @@ the database host is `db`.
     `export UID && docker-compose run node /bin/sh`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
-the data is stored in the `.mariadb` subdirectory.
+the data is stored in the `.db` subdirectory.
 
 Known problems:
 - Composer install is very slow.
