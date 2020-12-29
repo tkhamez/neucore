@@ -195,5 +195,6 @@ return [
     '/api/user/watchlist/{id}/allowlist-alliance/add/{alliance}'          => ['PUT',  WatchlistController::class.'::allowlistAllianceAdd'],
     '/api/user/watchlist/{id}/allowlist-alliance/remove/{alliance}'       => ['PUT',  WatchlistController::class.'::allowlistAllianceRemove'],
 
-    '/api/user/service/{id}'               => ['GET', ServiceController::class.'::get'],
+    '/api/user/service/service/{id}'                                => ['GET', ServiceController::class.'::service'],
+    '/api/user/service/service-accounts/{serviceId}/{playerId}'     => ['GET', ServiceController::class.'::serviceAccounts'],
 ];

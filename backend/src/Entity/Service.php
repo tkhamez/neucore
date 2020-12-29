@@ -29,9 +29,10 @@ class Service implements \JsonSerializable
      * @ORM\Column(type="string", length=255)
      * @var string
      */
-    private $name = '';
+    private $name;
 
     /**
+     * TODO split into individual properties: phpClass, ...
      * @OA\Property()
      * @ORM\Column(type="text", length=16777215, nullable=true)
      * @var string|null
@@ -45,7 +46,7 @@ class Service implements \JsonSerializable
             'name' => $this->name,
         ];
         if (! $onlyRequired) {
-            $data['configuration'] = (string) $this->configuration;
+            $data['configuration'] = $this->configuration;
         }
         return $data;
     }
@@ -72,8 +73,8 @@ class Service implements \JsonSerializable
         return $this;
     }
 
-    public function getConfiguration(): string
+    public function getConfiguration(): ?string
     {
-        return (string) $this->configuration;
+        return $this->configuration;
     }
 }

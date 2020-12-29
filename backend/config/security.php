@@ -120,7 +120,7 @@ return [
     '/api/user/watchlist/{id}/allowlist-alliance/'        => [Role::WATCHLIST_MANAGER], # add, remove
     '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # several admin functions
 
-    '/api/user/service' => [Role::USER],
+    '/api/user/service/' => [Role::USER],
 
     '/api/user' => [Role::USER],
 ];

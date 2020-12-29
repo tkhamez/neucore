@@ -19,7 +19,7 @@ class ServiceTest extends TestCase
             json_decode((string) json_encode($service), true)
         );
         $this->assertSame(
-            ['id' => 0, 'name' => 's1', 'configuration' => ''],
+            ['id' => 0, 'name' => 's1', 'configuration' => null],
             $service->jsonSerialize(false)
         );
     }
@@ -39,7 +39,7 @@ class ServiceTest extends TestCase
     public function testSetGetConfiguration()
     {
         $service = new Service();
-        $this->assertSame('', $service->getConfiguration());
+        $this->assertNull($service->getConfiguration());
         $this->assertSame('{}', $service->setConfiguration('{}')->getConfiguration());
     }
 }

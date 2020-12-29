@@ -20,17 +20,18 @@ export default {
     data: function() {
         return {
             service: null,
+            accounts: [],
         }
     },
 
     mounted: function() {
         window.scrollTo(0, 0);
-        getService(this);
+        getData(this);
     },
 
     watch: {
         route: function() {
-            getService(this);
+            getData(this);
         }
     },
 
@@ -39,15 +40,24 @@ export default {
     }
 }
 
-function getService(vm) {
+function getData(vm) {
     const id = vm.route[1] ? parseInt(vm.route[1]) : null;
     if (!id) {
         return;
     }
+    const api = new ServiceApi();
+
     vm.service = null;
-    new ServiceApi().serviceGet(id, function(error, data) {
+    api.serviceService(id, function(error, data) {
         if (!error) {
             vm.service = data;
+        }
+    });
+
+    vm.accounts = [];
+    api.serviceServiceAccounts(id, vm.player.id, function(error, data) {
+        if (!error) {
+            vm.accounts = data;
         }
     });
 }
