@@ -10,12 +10,12 @@
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div v-cloak class="navbar-collapse collapse" id="navbar01">
+        <div v-if="hasRole('user')" v-cloak class="navbar-collapse collapse" id="navbar01">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item" :class="{ active: page === 'Home' }">
                     <a class="nav-link" href="#Home">Home</a>
                 </li>
-                <li v-if="hasRole('user') && settings.navigationShowGroups === '1'"
+                <li v-if="settings.navigationShowGroups === '1'"
                     class="nav-item" :class="{ active: page === 'Groups' }">
                     <a class="nav-link" href="#Groups">Groups</a>
                 </li>
