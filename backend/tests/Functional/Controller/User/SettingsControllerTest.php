@@ -368,7 +368,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertTrue($this->parseJsonBody($response));
     }
 
-    private function setupDb($publicGroup = true): void
+    private function setupDb(bool $publicGroup = true): void
     {
         $this->helper->addCharacterMain('User', 5, [Role::USER]);
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);

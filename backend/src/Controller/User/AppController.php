@@ -146,8 +146,8 @@ class AppController extends BaseController
         } catch (\Exception $e) {
             return $this->response->withStatus(500);
         }
-        $hash = password_hash($secret, PASSWORD_BCRYPT);
-        if ($hash === false) {
+        $hash = (string) password_hash($secret, PASSWORD_BCRYPT);
+        if ($hash === '') {
             return $this->response->withStatus(500);
         }
 
@@ -720,8 +720,8 @@ class AppController extends BaseController
         } catch (\Exception $e) {
             return $this->response->withStatus(500);
         }
-        $hash = password_hash($secret, PASSWORD_BCRYPT);
-        if ($hash === false) {
+        $hash = (string) password_hash($secret, PASSWORD_BCRYPT);
+        if ($hash === '') {
             return $this->response->withStatus(500);
         }
 
