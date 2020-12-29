@@ -140,11 +140,8 @@ composer security-checker
 
 Check code with PHPStan, Phan and Psalm:
 ```
-composer phpstan:src
-composer phpstan:test
-
+composer phpstan
 composer phan
-
 composer psalm
 ```
 
