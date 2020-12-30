@@ -17,6 +17,7 @@ class AccountDataTest extends TestCase
             'username' => 'u',
             'password' => 'p',
             'email' => 'e',
+            'status' => null,
         ], $data->jsonSerialize());
     }
 
@@ -41,5 +42,12 @@ class AccountDataTest extends TestCase
     {
         $data = new AccountData(1);
         $this->assertSame('e', $data->setEmail('e')->getEmail());
+    }
+
+    public function testSetGetStatus()
+    {
+        $data = new AccountData(1);
+        $this->assertSame(null, $data->setStatus('invalid')->getStatus());
+        $this->assertSame(AccountData::STATUS_ACTIVE, $data->setStatus(AccountData::STATUS_ACTIVE)->getStatus());
     }
 }

@@ -132,11 +132,7 @@ class ServiceControllerTest extends WebTestCase
         $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/{$this->p1}");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
-            'service' => ['id' => $this->s1, 'name' => 'S1'],
-            'player' => ['id' => $this->p1, 'name' => 'Char1'],
-            'accountData' => [
-                ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e']
-            ],
+            ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e', 'status' => null]
         ], $this->parseJsonBody($response));
     }
 

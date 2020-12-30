@@ -7,7 +7,6 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Data\ServiceAccount;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use OpenApi\Annotations as OA;
@@ -104,7 +103,7 @@ class ServiceController extends BaseController
      *         response="200",
      *         description="Service accounts.",
      *         description="The player property contains only the id and name.",
-     *         @OA\JsonContent(ref="#/components/schemas/ServiceAccount")
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/AccountData"))
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -141,11 +140,7 @@ class ServiceController extends BaseController
             return $character->getId();
         }, $player->getCharacters());
         $accountData = $serviceRegistration->getAccounts($serviceObject, $characterIds);
-        $serviceAccount = (new ServiceAccount())
-            ->setService($service)
-            ->setPlayer($player)
-            ->setAccountData(...$accountData);
 
-        return $this->withJson($serviceAccount);
+        return $this->withJson($accountData);
     }
 }

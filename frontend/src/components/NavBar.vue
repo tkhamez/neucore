@@ -27,7 +27,7 @@
                     </a>
                     <div class="dropdown-menu">
                         <a v-for="service in settings.navigationServices" class="dropdown-item"
-                           :class="{ active: page === 'Service' && parseInt(route[1]) === service.id }"
+                           :class="{ active: page === 'Service' && parseInt(route[1], 10) === service.id }"
                            :href="'#Service/'+service.id">{{ service.name }}</a>
                     </div>
                 </li>
