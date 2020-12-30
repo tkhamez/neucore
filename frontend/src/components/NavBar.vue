@@ -127,7 +127,9 @@ export default {
     },
 
     mounted: function() {
-        addNavBehaviour();
+        this.$nextTick(function () {
+            window.setTimeout(addNavBehaviour, 500);
+        });
         if (this.selectedTheme === '') {
             this.selectedTheme = window.APP_DEFAULT_THEME;
         }
