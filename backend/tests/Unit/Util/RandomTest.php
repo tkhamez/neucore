@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Util;
 
-use Neucore\Service\Random;
+use Neucore\Util\Random;
 use PHPUnit\Framework\TestCase;
 
 class RandomTest extends TestCase

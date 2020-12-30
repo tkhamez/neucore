@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Service;
+namespace Neucore\Util;
 
 class Random
 {

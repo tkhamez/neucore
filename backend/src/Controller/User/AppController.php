@@ -10,7 +10,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Service\Account;
-use Neucore\Service\Random;
+use Neucore\Util\Random;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
