@@ -7,10 +7,9 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\AccountData;
 use Neucore\Data\ServiceAccount;
-use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ObjectManager;
+use Neucore\Service\ServiceRegistration;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -117,8 +116,11 @@ class ServiceController extends BaseController
      *     )
      * )
      */
-    public function serviceAccounts(string $serviceId, string $playerId): ResponseInterface
-    {
+    public function serviceAccounts(
+        string $serviceId,
+        string $playerId,
+        ServiceRegistration $serviceRegistration
+    ): ResponseInterface {
         $service = $this->repositoryFactory->getServiceRepository()->find((int) $serviceId);
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
 
@@ -126,43 +128,19 @@ class ServiceController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $serviceConfig = json_decode((string)$service->getConfiguration(), true);
-
-        $serviceClass = $serviceConfig['phpClass'] ?? '';
-        if (!class_exists($serviceClass)) {
-            $this->log->error("ServiceController: Class '$serviceClass' does not exist.");
-            return $this->withJson([]);
-        }
-        $implements = class_implements($serviceClass);
-        if (!is_array($implements) || !in_array(ServiceInterface::class, $implements)) {
+        $serviceObject = $serviceRegistration->getServiceObject($service);
+        if ($serviceObject === null) {
             $this->log->error(
-                "ServiceController: Class '$serviceClass' does not implement Neucore\Plugin\ServiceInterface."
+                "ServiceController: The configured service class does not exist of does not ".
+                "implement Neucore\Plugin\ServiceInterface."
             );
             return $this->withJson([]);
         }
 
-        /* @var ServiceInterface $serviceObject */
-        $serviceObject = new $serviceClass;
-
         $characterIds = array_map(function (Character $character) {
             return $character->getId();
         }, $player->getCharacters());
-
-        $accountData = [];
-        foreach ($serviceObject->getAccounts(...$characterIds) as $account) {
-            if (!$account instanceof AccountData) {
-                $this->log->error(
-                    "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects."
-                );
-                continue;
-            }
-            if (! in_array($account->getCharacterId(), $characterIds)) {
-                $this->log->error("ServiceController: Character ID does not match.");
-                continue;
-            }
-            $accountData[] = $account;
-        }
-
+        $accountData = $serviceRegistration->getAccounts($serviceObject, $characterIds);
         $serviceAccount = (new ServiceAccount())
             ->setService($service)
             ->setPlayer($player)

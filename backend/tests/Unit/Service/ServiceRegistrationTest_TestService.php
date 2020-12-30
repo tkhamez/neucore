@@ -1,13 +1,14 @@
 <?php
+/* @phan-file-suppress PhanTypeMismatchReturn */
 
 declare(strict_types=1);
 
-namespace Tests\Functional\Controller\User;
+namespace Tests\Unit\Service;
 
 use Neucore\Plugin\AccountData;
 use Neucore\Plugin\ServiceInterface;
 
-class TestService implements ServiceInterface
+class ServiceRegistrationTest_TestService implements ServiceInterface
 {
     public function getAccounts(int ...$characterIds): array
     {

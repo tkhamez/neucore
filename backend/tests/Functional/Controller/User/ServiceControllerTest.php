@@ -45,11 +45,6 @@ class ServiceControllerTest extends WebTestCase
      */
     private $s2;
 
-    /**
-     * @var int
-     */
-    private $s3;
-
     protected function setUp(): void
     {
         $_SESSION = null;
@@ -85,7 +80,9 @@ class ServiceControllerTest extends WebTestCase
             [
                 'id' => $this->s1,
                 'name' => 'S1',
-                'configuration' => json_encode(['phpClass' => 'Tests\Functional\Controller\User\TestService'])
+                'configuration' => json_encode([
+                    'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService'
+                ])
             ],
             $this->parseJsonBody($response)
         );
@@ -110,7 +107,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response2->getStatusCode());
     }
 
-    public function testServiceAccounts200_NoPhpClass()
+    public function testServiceAccounts200_InvalidPhpClass()
     {
         $this->setupDb();
         $this->loginUser(1); // role: USER
@@ -121,24 +118,8 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([], $this->parseJsonBody($response));
         $this->assertSame(
-            "ServiceController: Class 'Tests' does not exist.",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-    }
-
-    public function testServiceAccounts200_InvalidPhpClass()
-    {
-        $this->setupDb();
-        $this->loginUser(1); // role: USER
-
-        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s3}/{$this->p1}", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([], $this->parseJsonBody($response));
-        $this->assertSame(
-            "ServiceController: Class 'Neucore\Controller\User\ServiceController' ".
-            "does not implement Neucore\Plugin\ServiceInterface.",
+            "ServiceController: The configured service class does not exist of does not implement ".
+            "Neucore\Plugin\ServiceInterface.",
             $this->log->getHandler()->getRecords()[0]['message']
         );
     }
@@ -148,9 +129,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1); // role: USER
 
-        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/{$this->p1}", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
+        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/{$this->p1}");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             'service' => ['id' => $this->s1, 'name' => 'S1'],
@@ -159,23 +138,14 @@ class ServiceControllerTest extends WebTestCase
                 ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e']
             ],
         ], $this->parseJsonBody($response));
-        $this->assertSame(
-            "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects.",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-        $this->assertSame(
-            "ServiceController: Character ID does not match.",
-            $this->log->getHandler()->getRecords()[1]['message']
-        );
     }
 
     private function setupDb(): void
     {
         $service1 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
-            'phpClass' => 'Tests\Functional\Controller\User\TestService',
+            'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
         ]));
-        $service2 = (new Service())->setName('S1')->setConfiguration((string)json_encode(['phpClass' => 'Tests']));
-        $service3 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
+        $service2 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
             'phpClass' => ServiceController::class
         ]));
         $player = $this->helper->addCharacterMain('Char1', 1, [Role::USER])->getPlayer();
@@ -183,12 +153,10 @@ class ServiceControllerTest extends WebTestCase
 
         $this->em->persist($service1);
         $this->em->persist($service2);
-        $this->em->persist($service3);
         $this->em->flush();
 
         $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
-        $this->s3 = $service3->getId();
         $this->p1 = $player->getId();
     }
 }

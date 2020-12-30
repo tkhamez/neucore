@@ -26,11 +26,16 @@ export default {
 
     mounted: function() {
         window.scrollTo(0, 0);
-        getData(this);
+        if (this.player !== null) {
+            getData(this);
+        }
     },
 
     watch: {
-        route: function() {
+        route () {
+            getData(this);
+        },
+        player () {
             getData(this);
         }
     },
