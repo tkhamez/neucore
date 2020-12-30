@@ -14,9 +14,6 @@
         <exclude>
             <directory>./src/Migrations</directory>
         </exclude>
-        <report>
-            <clover outputFile="var/logs/clover.xml"/>
-        </report>
     </coverage>
     <logging/>
 </phpunit>

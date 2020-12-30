@@ -23,7 +23,7 @@ jobs:
         env:
           NEUCORE_APP_ENV: dev
           NEUCORE_TEST_DATABASE_URL: 'sqlite:///:memory:'
-        run: cd backend && vendor/bin/phpunit
+        run: cd backend && vendor/bin/phpunit --coverage-clover var/logs/clover.xml
       - name: Setup SonarQube
         uses: warchant/setup-sonar-scanner@v3
       - name: Run SonarQube

@@ -23,7 +23,7 @@ steps:
       - docker-php-ext-enable xdebug
       - cd backend
       - vendor/bin/doctrine orm:generate-proxies
-      - vendor/bin/phpunit
+      - vendor/bin/phpunit --coverage-clover var/logs/clover.xml
 
   - name: generate-api-client
     image: openjdk:11

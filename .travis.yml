@@ -79,7 +79,7 @@ install:
   - ./install.sh
 
 script:
-  - backend/vendor/bin/phpunit -c backend/phpunit.xml
+  - backend/vendor/bin/phpunit -c backend/phpunit.xml --coverage-clover var/logs/clover.xml
   - if [[ $(phpenv version-name) == "7.3" ]] && [[ "$DB" == "mysql:5.7" ]] && [[ $TRAVIS_REPO_SLUG == "tkhamez/neucore" ]]; then sonar-scanner; fi
 
 before_deploy:
