@@ -155,7 +155,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertSame([
             'service' => ['id' => $this->s1, 'name' => 'S1'],
             'player' => ['id' => $this->p1, 'name' => 'Char1'],
-            'data' => [
+            'accountData' => [
                 ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e']
             ],
         ], $this->parseJsonBody($response));

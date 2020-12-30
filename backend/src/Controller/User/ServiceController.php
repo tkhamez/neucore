@@ -8,7 +8,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\AccountData;
-use Neucore\Plugin\ServiceAccount;
+use Neucore\Data\ServiceAccount;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
@@ -166,7 +166,7 @@ class ServiceController extends BaseController
         $serviceAccount = (new ServiceAccount())
             ->setService($service)
             ->setPlayer($player)
-            ->setData(...$accountData);
+            ->setAccountData(...$accountData);
 
         return $this->withJson($serviceAccount);
     }

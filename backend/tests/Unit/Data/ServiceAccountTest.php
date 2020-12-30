@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Plugin;
+namespace Tests\Unit\Data;
 
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
 use Neucore\Plugin\AccountData;
-use Neucore\Plugin\ServiceAccount;
+use Neucore\Data\ServiceAccount;
 use PHPUnit\Framework\TestCase;
 
 class ServiceAccountTest extends TestCase
@@ -17,7 +17,7 @@ class ServiceAccountTest extends TestCase
         $service = new ServiceAccount();
 
         $this->assertSame(
-            ['service' => null, 'player' => null, 'data' => []],
+            ['service' => null, 'player' => null, 'accountData' => []],
             json_decode((string) json_encode($service), true)
         );
     }
@@ -42,7 +42,7 @@ class ServiceAccountTest extends TestCase
     {
         $serviceAccount = new ServiceAccount();
         $data = [new AccountData(1), new AccountData(2)];
-        $this->assertSame([], $serviceAccount->getData());
-        $this->assertSame($data, $serviceAccount->setData(...$data)->getData());
+        $this->assertSame([], $serviceAccount->getAccountData());
+        $this->assertSame($data, $serviceAccount->setAccountData(...$data)->getAccountData());
     }
 }

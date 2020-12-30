@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Neucore\Plugin;
+namespace Neucore\Data;
 
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
+use Neucore\Plugin\AccountData;
 use OpenApi\Annotations as OA;
 
 /**
@@ -29,14 +30,14 @@ class ServiceAccount implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/AccountData"))
      * @var array
      */
-    private $data = [];
+    private $accountData = [];
 
     public function jsonSerialize(): array
     {
         return [
             'service' => $this->service,
             'player' => $this->player ? $this->player->jsonSerialize(true) : null,
-            'data' => $this->data,
+            'accountData' => $this->accountData,
         ];
     }
 
@@ -65,14 +66,14 @@ class ServiceAccount implements \JsonSerializable
     /**
      * @return AccountData[]
      */
-    public function getData(): array
+    public function getAccountData(): array
     {
-        return $this->data;
+        return $this->accountData;
     }
 
-    public function setData(AccountData ...$data): self
+    public function setAccountData(AccountData ...$accountData): self
     {
-        $this->data = $data;
+        $this->accountData = $accountData;
         return $this;
     }
 }
