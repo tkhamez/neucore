@@ -151,7 +151,7 @@ export default {
         // event listeners
         this.$root.$on('playerChange', () => {
             this.getPlayer();
-            this.getSettings(); // roles of a player can affect settings
+            this.getSettings(); // roles and groups of a player can affect settings
         });
         this.$root.$on('settingsChange', () => {
             this.getSettings();

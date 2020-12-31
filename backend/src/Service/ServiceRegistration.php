@@ -17,9 +17,33 @@ class ServiceRegistration
      */
     private $log;
 
-    public function __construct(LoggerInterface $log)
+    /**
+     * @var UserAuth
+     */
+    private $userAuth;
+
+    public function __construct(LoggerInterface $log, UserAuth $userAuth)
     {
         $this->log = $log;
+        $this->userAuth = $userAuth;
+    }
+
+    public function hasRequiredGroups(Service $service): bool
+    {
+        $character = $this->userAuth->getUser();
+        if ($character === null) {
+            return false;
+        }
+
+        $serviceConfig = json_decode((string)$service->getConfiguration(), true);
+        $groups = array_map('intval', explode(',', (string)($serviceConfig['groups'] ?? '')));
+
+        foreach ($groups as $group) {
+            if ($group > 0 && !$character->getPlayer()->hasGroup($group)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function getServiceObject(Service $service): ?ServiceInterface

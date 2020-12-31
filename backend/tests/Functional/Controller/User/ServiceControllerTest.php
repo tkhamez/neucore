@@ -6,6 +6,7 @@ namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Controller\User\ServiceController;
+use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Psr\Log\LoggerInterface;
@@ -30,20 +31,12 @@ class ServiceControllerTest extends WebTestCase
      */
     private $log;
 
-    /**
-     * @var int
-     */
-    private $p1;
-
-    /**
-     * @var int
-     */
+    // entity IDs
+    private $g1;
     private $s1;
-
-    /**
-     * @var int
-     */
     private $s2;
+    private $s3;
+    private $p1;
 
     protected function setUp(): void
     {
@@ -57,6 +50,15 @@ class ServiceControllerTest extends WebTestCase
     public function testService403()
     {
         $response = $this->runApp('GET', '/api/user/service/service/1');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testService403_MissingGroup()
+    {
+        $this->setupDb();
+        $this->loginUser(1); // role: USER
+
+        $response = $this->runApp('GET', '/api/user/service/service/'.$this->s3);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -81,7 +83,8 @@ class ServiceControllerTest extends WebTestCase
                 'id' => $this->s1,
                 'name' => 'S1',
                 'configuration' => json_encode([
-                    'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService'
+                    'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
+                    'groups' => $this->g1,
                 ])
             ],
             $this->parseJsonBody($response)
@@ -93,6 +96,15 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
 
         $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/{$this->p1}");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testServiceAccounts403_MissingGroup()
+    {
+        $this->setupDb();
+        $this->loginUser(1); // role: USER, missing group 2
+
+        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s3}/{$this->p1}");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -138,21 +150,35 @@ class ServiceControllerTest extends WebTestCase
 
     private function setupDb(): void
     {
+        $group1 = (new Group())->setName('G1');
+        $group2 = (new Group())->setName('G2');
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->flush();
+
         $service1 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
             'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
+            'groups' => $group1->getId(),
         ]));
         $service2 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
             'phpClass' => ServiceController::class
         ]));
-        $player = $this->helper->addCharacterMain('Char1', 1, [Role::USER])->getPlayer();
-        $this->helper->addCharacterToPlayer('Char2', 2, $player);
-
+        $service3 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
+            'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
+            'groups' => implode(',', [$group1->getId(), $group2->getId()]),
+        ]));
         $this->em->persist($service1);
         $this->em->persist($service2);
+        $this->em->persist($service3);
         $this->em->flush();
 
+        $player = $this->helper->addCharacterMain('Char1', 1, [Role::USER], [$group1->getName()])->getPlayer();
+        $this->helper->addCharacterToPlayer('Char2', 2, $player);
+
+        $this->g1 = $group1->getId();
         $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
+        $this->s3 = $service3->getId();
         $this->p1 = $player->getId();
     }
 }

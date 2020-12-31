@@ -11,6 +11,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
+use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -51,16 +52,25 @@ class SettingsController extends BaseController
      *     )
      * )
      */
-    public function systemList(UserAuth $userAuth, Config $config): ResponseInterface
-    {
+    public function systemList(
+        UserAuth $userAuth,
+        Config $config,
+        ServiceRegistration $serviceRegistration
+    ): ResponseInterface {
         $settingsRepository = $this->repositoryFactory->getSystemVariableRepository();
         $groupRepository = $this->repositoryFactory->getGroupRepository();
-        $serviceRepository = $this->repositoryFactory->getServiceRepository();
 
         if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
             $scopes = $this->validScopes;
         } else {
             $scopes = [SystemVariable::SCOPE_PUBLIC];
+        }
+
+        $services = [];
+        foreach ($this->repositoryFactory->getServiceRepository()->findBy([], ['name' => 'asc']) as $service) {
+            if ($serviceRegistration->hasRequiredGroups($service)) {
+                $services[] = $service;
+            }
         }
 
         $result = $settingsRepository->findBy(['scope' => $scopes], [self::COLUMN_NAME => 'ASC']);
@@ -77,7 +87,7 @@ class SettingsController extends BaseController
                     '1' : '0'
             ], [
                 self::COLUMN_NAME => 'navigationServices',
-                self::COLUMN_VALUE => \json_encode($serviceRepository->findBy([], ['name' => 'asc']))
+                self::COLUMN_VALUE => \json_encode($services)
             ],
         ]);
 

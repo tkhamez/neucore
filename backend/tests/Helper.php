@@ -34,8 +34,14 @@ use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
+use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Account;
+use Neucore\Service\AutoGroupAssignment;
+use Neucore\Service\Config;
+use Neucore\Service\EsiData;
 use Neucore\Service\SessionData;
+use Neucore\Service\UserAuth;
 
 class Helper
 {
@@ -146,6 +152,17 @@ class Helper
         }
 
         return self::$em;
+    }
+
+    public function getUserAuthService(Logger $logger, Client $client): UserAuth
+    {
+        $repoFactory = new RepositoryFactory($this->getObjectManager());
+        $objManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
+        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $esi = new EsiData($logger, new EsiApiFactory($client, $config), $objManager, $repoFactory, $config);
+        $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $logger);
+        $characterService = new Account($logger, $objManager, $repoFactory, $esi, $autoGroups);
+        return new UserAuth(new SessionData(), $characterService, $repoFactory, $logger);
     }
 
     public function getDbName(): string

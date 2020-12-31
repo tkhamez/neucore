@@ -32,7 +32,7 @@ class Service implements \JsonSerializable
     private $name;
 
     /**
-     * TODO split into individual properties: phpClass, psr4Prefix, psr4Path, ...
+     * TODO split into individual properties: phpClass, psr4Prefix, psr4Path, groups, ...
      * @OA\Property()
      * @ORM\Column(type="text", length=16777215, nullable=true)
      * @var string|null

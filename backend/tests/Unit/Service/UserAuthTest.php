@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
-use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\RemovedCharacterRepository;
-use Neucore\Service\Account;
-use Neucore\Service\AutoGroupAssignment;
-use Neucore\Service\Config;
-use Neucore\Service\EsiData;
-use Neucore\Service\ObjectManager;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +28,7 @@ class UserAuthTest extends TestCase
     private $helper;
 
     /**
-     * @var \Doctrine\Persistence\ObjectManager
+     * @var ObjectManager
      */
     private $om;
 
@@ -67,29 +62,9 @@ class UserAuthTest extends TestCase
 
         $this->log = new Logger('test');
         $this->om = $this->helper->getObjectManager();
-
         $repoFactory = new RepositoryFactory($this->om);
-
-        $objManager = new ObjectManager($this->om, $this->log);
-
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $this->client = new Client();
-        $esi = new EsiData(
-            $this->log,
-            new EsiApiFactory($this->client, $config),
-            $objManager,
-            $repoFactory,
-            $config
-        );
-        $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $this->log);
-
-        $characterService = new Account($this->log, $objManager, $repoFactory, $esi, $autoGroups);
-        $this->service = new UserAuth(
-            new SessionData(),
-            $characterService,
-            $repoFactory,
-            $this->log
-        );
+        $this->service = $this->helper->getUserAuthService($this->log, $this->client);
 
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
     }

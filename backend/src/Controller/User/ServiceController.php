@@ -26,14 +26,21 @@ class ServiceController extends BaseController
      */
     private $log;
 
+    /**
+     * @var ServiceRegistration
+     */
+    private $serviceRegistration;
+
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
-        LoggerInterface $log
+        LoggerInterface $log,
+        ServiceRegistration $serviceRegistration
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         $this->log = $log;
+        $this->serviceRegistration = $serviceRegistration;
     }
 
     /**
@@ -72,6 +79,10 @@ class ServiceController extends BaseController
 
         if ($service === null) {
             return $this->response->withStatus(404);
+        }
+
+        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
+            return $this->response->withStatus(403);
         }
 
         return $this->withJson($service->jsonSerialize(false));
@@ -115,11 +126,8 @@ class ServiceController extends BaseController
      *     )
      * )
      */
-    public function serviceAccounts(
-        string $serviceId,
-        string $playerId,
-        ServiceRegistration $serviceRegistration
-    ): ResponseInterface {
+    public function serviceAccounts(string $serviceId, string $playerId): ResponseInterface
+    {
         $service = $this->repositoryFactory->getServiceRepository()->find((int) $serviceId);
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
 
@@ -127,7 +135,11 @@ class ServiceController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $serviceObject = $serviceRegistration->getServiceObject($service);
+        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
+            return $this->response->withStatus(403);
+        }
+
+        $serviceObject = $this->serviceRegistration->getServiceObject($service);
         if ($serviceObject === null) {
             $this->log->error(
                 "ServiceController: The configured service class does not exist of does not ".
@@ -139,7 +151,7 @@ class ServiceController extends BaseController
         $characterIds = array_map(function (Character $character) {
             return $character->getId();
         }, $player->getCharacters());
-        $accountData = $serviceRegistration->getAccounts($serviceObject, $characterIds);
+        $accountData = $this->serviceRegistration->getAccounts($serviceObject, $characterIds);
 
         return $this->withJson($accountData);
     }

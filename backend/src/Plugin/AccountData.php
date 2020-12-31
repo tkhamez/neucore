@@ -17,6 +17,8 @@ class AccountData implements \JsonSerializable
 
     const STATUS_DEACTIVATED = 'Deactivated';
 
+    const STATUS_UNKNOWN = 'Unknown';
+
     /**
      * @OA\Property()
      * @var int
@@ -121,7 +123,10 @@ class AccountData implements \JsonSerializable
      */
     public function setStatus(string $status): self
     {
-        if (in_array($status, [self::STATUS_ACTIVE, self::STATUS_DEACTIVATED, self::STATUS_PENDING])) {
+        if (in_array(
+            $status,
+            [self::STATUS_ACTIVE, self::STATUS_DEACTIVATED, self::STATUS_PENDING, self::STATUS_UNKNOWN]
+        )) {
             $this->status = $status;
         }
         return $this;

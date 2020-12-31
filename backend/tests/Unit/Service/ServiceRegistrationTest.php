@@ -6,11 +6,14 @@ namespace Tests\Unit\Service;
 
 use Composer\Autoload\ClassLoader;
 use Neucore\Application;
+use Neucore\Entity\Group;
 use Neucore\Entity\Service;
 use Neucore\Plugin\AccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ServiceRegistration;
 use PHPUnit\Framework\TestCase;
+use Tests\Client;
+use Tests\Helper;
 use Tests\Logger;
 
 class ServiceRegistrationTest extends TestCase
@@ -27,6 +30,16 @@ class ServiceRegistrationTest extends TestCase
      */
     private $log;
 
+    /**
+     * @var Helper
+     */
+    private $helper;
+
+    /**
+     * @var ServiceRegistration
+     */
+    private $serviceRegistration;
+
     public static function setUpBeforeClass(): void
     {
         /** @noinspection PhpIncludeInspection */
@@ -36,6 +49,9 @@ class ServiceRegistrationTest extends TestCase
     protected function setUp(): void
     {
         $this->log = new Logger('Test');
+        $this->helper = new Helper();
+        $userAuth = $this->helper->getUserAuthService($this->log, new Client());
+        $this->serviceRegistration = new ServiceRegistration($this->log, $userAuth);
     }
 
     protected function tearDown(): void
@@ -43,13 +59,41 @@ class ServiceRegistrationTest extends TestCase
         self::$loader->setPsr4(self::PSR_PREFIX, []);
     }
 
+    public function testHasRequiredGroups()
+    {
+        $this->helper->emptyDb();
+        $group = (new Group())->setName('G1');
+        $this->helper->getEm()->persist($group);
+        $this->helper->getEm()->flush();
+
+        // no required group, no logged in user
+        $service = new Service();
+        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
+
+        // log in user
+        $character = $this->helper->addCharacterMain('Test User', 800);
+        $_SESSION['character_id'] = 800;
+        $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
+
+        // add require group
+        $service->setConfiguration((string)json_encode(['groups' => $group->getId()]));
+        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
+
+        // add group to player
+        $character->getPlayer()->addGroup($group);
+        $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
+
+        // add another require group
+        $service->setConfiguration((string)json_encode(['groups' => implode(',', [$group->getId(), '2'])]));
+        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
+    }
+
     public function testGetServiceObject_MissingPhpClass()
     {
         $service = new Service();
         $service->setConfiguration((string)\json_encode(['phpClass' => 'Test\TestService']));
-        $serviceRegistration = new ServiceRegistration($this->log);
 
-        $this->assertNull($serviceRegistration->getServiceObject($service));
+        $this->assertNull($this->serviceRegistration->getServiceObject($service));
     }
 
     public function testGetServiceObject_PhpClassMissingImplementation()
@@ -58,9 +102,8 @@ class ServiceRegistrationTest extends TestCase
         $service->setConfiguration((string)\json_encode([
             'phpClass' => ServiceRegistrationTest_TestServiceInvalid::class
         ]));
-        $serviceRegistration = new ServiceRegistration($this->log);
 
-        $this->assertNull($serviceRegistration->getServiceObject($service));
+        $this->assertNull($this->serviceRegistration->getServiceObject($service));
     }
 
     public function testGetServiceObject()
@@ -75,8 +118,7 @@ class ServiceRegistrationTest extends TestCase
             'psr4Path' => __DIR__ .  '/AutoloadTest',
         ]));
 
-        $serviceRegistration = new ServiceRegistration($this->log);
-        $this->assertInstanceOf(ServiceInterface::class, $serviceRegistration->getServiceObject($service));
+        $this->assertInstanceOf(ServiceInterface::class, $this->serviceRegistration->getServiceObject($service));
 
         $this->assertSame(
             ['/some/path', __DIR__ .  '/AutoloadTest'],
@@ -86,8 +128,7 @@ class ServiceRegistrationTest extends TestCase
 
     public function testGetAccounts()
     {
-        $serviceRegistration = new ServiceRegistration($this->log);
-        $actual = $serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService(), [123, 456]);
+        $actual = $this->serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService(), [123, 456]);
 
         $this->assertSame(1, count($actual));
         $this->assertInstanceOf(AccountData::class, $actual[0]);

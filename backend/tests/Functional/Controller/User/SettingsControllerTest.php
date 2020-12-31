@@ -49,9 +49,14 @@ class SettingsControllerTest extends WebTestCase
     private $systemVariableRepository;
 
     /**
-     * @var int
+     * @var Service
      */
-    private $serviceId;
+    private $service1;
+
+    /**
+     * @var Service
+     */
+    private $service2;
 
     public static function setupBeforeClass(): void
     {
@@ -85,7 +90,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '0'],
-            ['name' => 'navigationServices', 'value' => \json_encode([['id' => $this->serviceId, 'name' => 's1']])],
+            ['name' => 'navigationServices', 'value' => \json_encode([])],
         ], $this->parseJsonBody($response));
     }
 
@@ -101,7 +106,10 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
-            ['name' => 'navigationServices', 'value' => \json_encode([['id' => $this->serviceId, 'name' => 's1']])],
+            ['name' => 'navigationServices', 'value' => \json_encode([
+                $this->service1->jsonSerialize(),
+                $this->service2->jsonSerialize(),
+            ])],
         ], $this->parseJsonBody($response));
     }
 
@@ -121,7 +129,7 @@ class SettingsControllerTest extends WebTestCase
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
             ['name' => 'esiHost', 'value' => 'https://esi.evetech.net'],
             ['name' => 'navigationShowGroups', 'value' => '1'],
-            ['name' => 'navigationServices', 'value' => \json_encode([['id' => $this->serviceId, 'name' => 's1']])],
+            ['name' => 'navigationServices', 'value' => \json_encode([$this->service1->jsonSerialize()])],
         ], $this->parseJsonBody($response));
     }
 
@@ -379,14 +387,21 @@ class SettingsControllerTest extends WebTestCase
 
     private function setupDb(bool $publicGroup = true): void
     {
-        $this->helper->addCharacterMain('User', 5, [Role::USER]);
-        $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
-
         $group = (new Group())->setName('g1');
         if ($publicGroup) {
             $group->setVisibility(Group::VISIBILITY_PUBLIC);
         }
-        $service = (new Service())->setName('s1');
+        $this->em->persist($group);
+        $this->em->flush();
+
+        $this->helper->addCharacterMain('User', 5, [Role::USER], ['g1']);
+        $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
+
+        $this->service1 = (new Service())->setName('s1');
+        $this->service2 = (new Service())->setName('s2')
+            ->setConfiguration((string)json_encode(['groups' => $group->getId()]));
+        $service3 = (new Service())->setName('s3')
+            ->setConfiguration((string)json_encode(['groups' => $group->getId()+99]));
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);
@@ -426,13 +441,12 @@ class SettingsControllerTest extends WebTestCase
         $this->em->persist($var6);
         $this->em->persist($var7);
         $this->em->persist($var8);
-        $this->em->persist($group);
-        $this->em->persist($service);
+        $this->em->persist($this->service1);
+        $this->em->persist($this->service2);
+        $this->em->persist($service3);
         $this->em->persist($alli);
         $this->em->persist($corp);
 
         $this->em->flush();
-
-        $this->serviceId = $service->getId();
     }
 }
