@@ -37,7 +37,9 @@ services:
       #dockerfile: Dockerfile-php74-fpm
       #dockerfile: Dockerfile-php80-fpm
     depends_on: [db]
-    volumes: [".:/app"]
+    volumes: [
+        ".:/app",
+    ]
     user: ${UID}
     working_dir: /app/backend
 
