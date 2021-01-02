@@ -98,7 +98,7 @@ class ServiceRegistration
         array $characters,
         bool $logErrorOnCharacterMismatch = true
     ): array {
-        if (count($characters) === 0) {
+        if (empty($characters)) {
             return [];
         }
 

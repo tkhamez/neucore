@@ -22,7 +22,7 @@ use Tests\Logger;
 
 class ServiceRegistrationTest extends TestCase
 {
-    private const PSR_PREFIX = 'Tests\ServiceRegistration_AutoloadTest\\';
+    private const PSR_PREFIX = 'Tests\ServiceRegistration_AutoloadTest';
 
     /**
      * @var ClassLoader
@@ -60,7 +60,7 @@ class ServiceRegistrationTest extends TestCase
 
     protected function tearDown(): void
     {
-        self::$loader->setPsr4(self::PSR_PREFIX, []);
+        self::$loader->setPsr4(self::PSR_PREFIX.'\\', []);
     }
 
     public function testHasRequiredGroups()
@@ -113,7 +113,7 @@ class ServiceRegistrationTest extends TestCase
     public function testGetServiceObject()
     {
         // add same prefix to test that the new path is added, not replaced
-        self::$loader->setPsr4(self::PSR_PREFIX, ['/some/path']);
+        self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
 
         $service = new Service();
         $service->setConfiguration((string)\json_encode([
@@ -126,7 +126,15 @@ class ServiceRegistrationTest extends TestCase
 
         $this->assertSame(
             ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest'],
-            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX]
+            self::$loader->getPrefixesPsr4()[self::PSR_PREFIX.'\\']
+        );
+    }
+
+    public function testGetAccounts_NoCharacters()
+    {
+        $this->assertSame(
+            [],
+            $this->serviceRegistration->getAccounts( new ServiceRegistrationTest_TestService($this->log), [])
         );
     }
 

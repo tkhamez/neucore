@@ -182,7 +182,7 @@ class ServiceController extends BaseController
             return $this->response->withStatus(500);
         }
         if (
-            count($accounts) > 0 &&
+            !empty($accounts) &&
             !in_array(
                 $accounts[0]->getStatus(),
                 [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN]
@@ -263,7 +263,7 @@ class ServiceController extends BaseController
         $serviceObject = $this->serviceRegistration->getServiceObject($service);
         if ($serviceObject === null) {
             $this->log->error(self::SERVICE_OBJECT_ERROR);
-            return $this->withJson([]);
+            return $this->response->withStatus(500);
         }
 
         try {

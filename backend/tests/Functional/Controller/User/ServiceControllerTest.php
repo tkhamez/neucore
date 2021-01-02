@@ -167,18 +167,38 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals('already_registered', $response->getReasonPhrase());
     }
 
-    public function testRegister500_GetAccounts()
+    public function testRegister409_RegisterFailed()
     {
         $this->setupDb();
         $this->loginUser(1);
 
         // change main, so that a new account can be added
-        // and add a group, so that ServiceControllerTest_TestService can return null
+        // and add a group, so that ServiceControllerTest_TestService will throw an exception
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
-        $group4 = (new Group())->setName('G4');
-        $this->player->addGroup($group4);
-        $this->em->persist($group4);
+        $group5 = (new Group())->setName('G5');
+        $this->player->addGroup($group5);
+        $this->em->persist($group5);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertEquals('test', $response->getReasonPhrase());
+    }
+
+    public function testRegister500_RegisterFailed()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // change main, so that a new account can be added
+        // and add a group, so that ServiceControllerTest_TestService will throw an exception
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->player->getCharacters()[1]->setMain(true);
+        $group3 = (new Group())->setName('G3');
+        $this->player->addGroup($group3);
+        $this->em->persist($group3);
         $this->em->flush();
         $this->em->clear();
 
@@ -186,18 +206,34 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    public function testRegister500_Register()
+    public function testRegister500_NoServiceObject()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s2}/register", null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(
+            "ServiceController: The configured service class does not exist of does not implement ".
+            "Neucore\Plugin\ServiceInterface.",
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testRegister500_GetAccountsFailed()
     {
         $this->setupDb();
         $this->loginUser(1);
 
         // change main, so that a new account can be added
-        // and add a group, so that ServiceControllerTest_TestService can return null
+        // and add a group, so that ServiceControllerTest_TestService throws an exception
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
-        $group3 = (new Group())->setName('G3');
-        $this->player->addGroup($group3);
-        $this->em->persist($group3);
+        $group4 = (new Group())->setName('G4');
+        $this->player->addGroup($group4);
+        $this->em->persist($group4);
         $this->em->flush();
         $this->em->clear();
 
@@ -229,23 +265,6 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testAccounts200_InvalidPhpClass()
-    {
-        $this->setupDb();
-        $this->loginUser(1);
-
-        $response = $this->runApp('GET', "/api/user/service/{$this->s2}/accounts", null, null, [
-            LoggerInterface::class => $this->log
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([], $this->parseJsonBody($response));
-        $this->assertSame(
-            "ServiceController: The configured service class does not exist of does not implement ".
-            "Neucore\Plugin\ServiceInterface.",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-    }
-
     public function testAccounts200()
     {
         $this->setupDb();
@@ -257,6 +276,22 @@ class ServiceControllerTest extends WebTestCase
             ['characterId' => 1, 'username' => 'u', 'password' => 'p',
                 'email' => 'e', 'status' => ServiceAccountData::STATUS_ACTIVE]
         ], $this->parseJsonBody($response));
+    }
+
+    public function testAccounts500_NoServiceObject()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s2}/accounts", null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(
+            "ServiceController: The configured service class does not exist of does not implement ".
+            "Neucore\Plugin\ServiceInterface.",
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
     }
 
     public function testAccounts500()
@@ -287,10 +322,10 @@ class ServiceControllerTest extends WebTestCase
             'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
             'groups' => $group1->getId(),
         ]));
-        $service2 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
+        $service2 = (new Service())->setName('S2')->setConfiguration((string)json_encode([
             'phpClass' => ServiceController::class
         ]));
-        $service3 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
+        $service3 = (new Service())->setName('S3')->setConfiguration((string)json_encode([
             'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
             'groups' => implode(',', [$group1->getId(), $group2->getId()]),
         ]));

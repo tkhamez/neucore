@@ -45,8 +45,10 @@ class ServiceControllerTest_TestService implements ServiceInterface
         string $emailAddress,
         array $otherCharacterIds
     ): ServiceAccountData {
-        if (count($groups) === 2) {
+        if (count($groups) === 2 && $groups[1]->name === 'G3') {
             throw new Exception();
+        } elseif (count($groups) === 2 && $groups[1]->name === 'G5') {
+            throw new Exception('test');
         } else {
             return new ServiceAccountData($character->id, 'u2', 'p2', 'e2', ServiceAccountData::STATUS_ACTIVE);
         }

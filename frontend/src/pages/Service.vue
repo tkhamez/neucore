@@ -102,9 +102,10 @@ export default {
             for (const character of this.player.characters) {
                 if (character.main) {
                     this.mainCharacterId = character.id;
-                    return this.mainCharacterId;
+                    break;
                 }
             }
+            return this.mainCharacterId;
         },
         characterName(characterId) {
             for (const character of this.player.characters) {
