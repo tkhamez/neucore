@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin;
 
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Schema(required={"characterId", "username", "password", "email", "status"})
- */
 class ServiceAccountData implements \JsonSerializable
 {
     const STATUS_PENDING = 'Pending';
@@ -20,31 +15,26 @@ class ServiceAccountData implements \JsonSerializable
     const STATUS_UNKNOWN = 'Unknown';
 
     /**
-     * @OA\Property(format="int64")
      * @var int
      */
     private $characterId;
 
     /**
-     * @OA\Property(nullable=true)
      * @var string|null
      */
     private $username;
 
     /**
-     * @OA\Property(nullable=true)
      * @var string|null
      */
     private $password;
 
     /**
-     * @OA\Property(nullable=true)
      * @var string|null
      */
     private $email;
 
     /**
-     * @OA\Property(nullable=true, enum={"Pending", "Active", "Deactivated", "Unknown"})
      * @var string|null
      */
     private $status;

@@ -24,6 +24,18 @@ use Psr\Log\LoggerInterface;
  *     name="Service",
  *     description="Service management."
  * )
+ *
+ * The schema for Neucore\Plugin\ServiceAccountData:
+ * @OA\Schema(
+ *     schema="ServiceAccountData",
+ *     required={"characterId", "username", "password", "email", "status"},
+ *     @OA\Property(property="characterId", type="int", format="int64"),
+ *     @OA\Property(property="username", type="string", nullable=true),
+ *     @OA\Property(property="password", type="string", nullable=true),
+ *     @OA\Property(property="email", type="string", nullable=true),
+ *     @OA\Property(property="status", type="string", nullable=true,
+ *                  enum={"Pending", "Active", "Deactivated", "Unknown"})
+ * )
  */
 class ServiceController extends BaseController
 {
