@@ -57,13 +57,12 @@ Vue.mixin({
                 case 'warning':
                     type = type === 'error' ? 'danger' : type;
                     timeout = timeout || null;
-                    this.$root.$emit('message', text, type, timeout);
                     break;
                 default: // success
                     timeout = timeout || 1500;
-                    this.$root.$emit('message', text, type, timeout);
                     break;
             }
+            this.$root.$emit('message', text, type, timeout);
         },
 
         showCharacters: function(playerId) {

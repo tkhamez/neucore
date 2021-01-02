@@ -12,14 +12,29 @@
                 <div class="card border-secondary mb-3">
                     <div class="card-header">{{ characterName(getMainCharacterId()) }} - Main</div>
                     <div class="card-body">
+                        <div v-if="newPassword">new password: {{ newPassword }}</div>
                         <div v-if="mainAccount" >
                             username: {{ mainAccount.username }}<br>
                             password: {{ mainAccount.password }}<br>
                             email: {{ mainAccount.email }}<br>
                             status: {{ mainAccount.status }}<br>
                         </div>
-                        <div v-else-if="accountsLoaded">
-                            [register]
+
+                        <div v-if="accountsLoaded && (
+                            mainAccount === null ||
+                            mainAccount.status === 'Deactivated' ||
+                            mainAccount.status === 'Unknown'
+                        )">
+
+                            <div class="form-group">
+                                <label class="col-form-label col-form-label-sm" for="email">E-Mail address</label>
+                                <input class="form-control form-control-sm" type="text" id="email" v-model="email" >
+                            </div>
+                            <button type="submit" class="btn btn-primary" v-on:click.prevent="register()"
+                                    :disabled="registerButtonDisabled">
+                                Register
+                            </button>
+
                         </div>
                     </div>
                 </div>
@@ -57,21 +72,21 @@ export default {
             mainCharacterId: null,
             accountsLoaded: false,
             mainAccount: null,
+            registerButtonDisabled: false,
+            email: null,
+            newPassword: null,
         }
     },
 
     mounted () {
         window.scrollTo(0, 0);
-        if (this.player !== null) {
-            getData(this);
-        }
+        getData(this);
     },
 
     watch: {
         route () {
-            getData(this);
-        },
-        player () {
+            this.newPassword = null;
+            this.email = null;
             getData(this);
         },
         accounts () {
@@ -99,29 +114,61 @@ export default {
             }
             return characterId; // should never reach this
         },
+        register() {
+            this.registerButtonDisabled = true;
+            const vm = this;
+            const api = new ServiceApi();
+            api.serviceRegister(getServiceId(vm), {email: vm.email}, (error, data, response) => {
+                if (response.statusCode === 200) {
+                    vm.message('Successfully registered with service.', 'success');
+                    getAccountData(vm, api, () => {
+                        vm.registerButtonDisabled = false;
+                    });
+                    vm.newPassword = data.password;
+                } else if ([403, 404, 409].indexOf(response.statusCode) !== -1) {
+                    vm.message('Service not found, not authorized or already registered.', 'warning');
+                    vm.registerButtonDisabled = false;
+                } else { // 500
+                    vm.message('Error. Please try again.', 'error');
+                    vm.registerButtonDisabled = false;
+                }
+            });
+        }
     }
 }
 
+function getServiceId(vm) {
+    return vm.route[1] ? parseInt(vm.route[1], 10) : 0;
+}
+
 function getData(vm) {
-    const id = vm.route[1] ? parseInt(vm.route[1], 10) : null;
-    if (!id) {
-        return;
-    }
     const api = new ServiceApi();
 
     vm.service = null;
-    api.serviceService(id, (error, data) => {
+    api.serviceGet(getServiceId(vm), (error, data) => {
         if (!error) {
             vm.service = data;
         }
     });
 
+    getAccountData(vm, api);
+}
+
+/**
+ * @param vm
+ * @param {ServiceApi} api
+ * @param {function} [callback]
+ */
+function getAccountData(vm, api, callback) {
     vm.accounts = [];
     vm.accountsLoaded = false;
-    api.serviceServiceAccounts(id, vm.player.id, (error, data) => {
+    api.serviceAccounts(getServiceId(vm), (error, data) => {
         if (!error) {
             vm.accountsLoaded = true;
             vm.accounts = data;
+        }
+        if (typeof callback === typeof Function) {
+            callback();
         }
     });
 }
@@ -132,5 +179,6 @@ function getMainAccount(vm) {
             return account;
         }
     }
+    return null;
 }
 </script>

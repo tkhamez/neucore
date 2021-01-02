@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Neucore\Service;
 
 use Neucore\Application;
+use Neucore\Entity\Character;
 use Neucore\Entity\Service;
-use Neucore\Plugin\AccountData;
+use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -79,28 +80,47 @@ class ServiceRegistration
             return null;
         }
 
-        return new $serviceClass;
+        return new $serviceClass($this->log);
     }
 
     /**
-     * @return AccountData[]
      */
-    public function getAccounts(ServiceInterface $service, array $characterIds): array
-    {
+    /**
+     * @param ServiceInterface $service
+     * @param Character[] $characters
+     * @param bool $logErrorOnCharacterMismatch
+     * @return ServiceAccountData[]
+     */
+    public function getAccounts(
+        ServiceInterface $service,
+        array $characters,
+        bool $logErrorOnCharacterMismatch = true
+    ): array {
         $accountData = [];
-        foreach ($service->getAccounts(...$characterIds) as $account) {
-            if (!$account instanceof AccountData) {
+
+        $coreCharacters = [];
+        $characterIds = [];
+        foreach ($characters as $character) {
+            $coreCharacters[] = $character->toCoreCharacter();
+            $characterIds[] = $character->getId();
+        }
+
+        foreach ($service->getAccounts(...$coreCharacters) as $account) {
+            if (!$account instanceof ServiceAccountData) {
                 $this->log->error(
                     "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects."
                 );
                 continue;
             }
             if (! in_array($account->getCharacterId(), $characterIds)) {
-                $this->log->error("ServiceController: Character ID does not match.");
+                if ($logErrorOnCharacterMismatch) {
+                    $this->log->error("ServiceController: Character ID does not match.");
+                }
                 continue;
             }
             $accountData[] = $account;
         }
+
         return $accountData;
     }
 }

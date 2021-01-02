@@ -1,16 +1,15 @@
 <?php
-/* @phan-file-suppress PhanTypeMismatchReturn */
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\ServiceRegistration_AutoloadTest;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 
-class ServiceRegistrationTest_TestService implements ServiceInterface
+class TestService implements ServiceInterface
 {
     public function __construct(LoggerInterface $logger)
     {
@@ -18,11 +17,7 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function getAccounts(CoreCharacter ...$characters): array
     {
-        return [
-            new ServiceAccountData($characters[0]->id, 'u', 'p', 'e'),
-            [],
-            new ServiceAccountData(123456),
-        ];
+        return [];
     }
 
     public function register(CoreCharacter $character, string $emailAddress): ?ServiceAccountData

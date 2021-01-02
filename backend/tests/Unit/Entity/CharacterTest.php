@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
+use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
@@ -250,5 +251,33 @@ class CharacterTest extends TestCase
         $token = Helper::generateToken(['s1', 's2']);
         $char->setAccessToken($token[0]);
         $this->assertSame(['s1', 's2'], $char->getScopesFromToken());
+    }
+
+    public function testToCoreCharacter()
+    {
+        $character = (new Character())
+            ->setId(100)
+            ->setName('char name')
+            ->setCorporation((new Corporation())
+                ->setId(10)
+                ->setName('corp name')
+                ->setTicker('-C-')
+                ->setAlliance((new Alliance())
+                    ->setId(1)
+                    ->setName('alli name')
+                    ->setTicker('-A-')
+                )
+            );
+
+        $coreCharacter = $character->toCoreCharacter();
+
+        $this->assertSame(100, $coreCharacter->id);
+        $this->assertSame('char name', $coreCharacter->name);
+        $this->assertSame(10, $coreCharacter->corporationId);
+        $this->assertSame('corp name', $coreCharacter->corporationName);
+        $this->assertSame('-C-', $coreCharacter->corporationTicker);
+        $this->assertSame(1, $coreCharacter->allianceId);
+        $this->assertSame('alli name', $coreCharacter->allianceName);
+        $this->assertSame('-A-', $coreCharacter->allianceTicker);
     }
 }

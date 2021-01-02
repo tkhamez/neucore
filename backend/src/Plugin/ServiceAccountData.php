@@ -9,7 +9,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Schema(required={"characterId", "username", "password", "email", "status"})
  */
-class AccountData implements \JsonSerializable
+class ServiceAccountData implements \JsonSerializable
 {
     const STATUS_PENDING = 'Pending';
 
@@ -20,7 +20,7 @@ class AccountData implements \JsonSerializable
     const STATUS_UNKNOWN = 'Unknown';
 
     /**
-     * @OA\Property()
+     * @OA\Property(format="int64")
      * @var int
      */
     private $characterId;
@@ -44,7 +44,7 @@ class AccountData implements \JsonSerializable
     private $email;
 
     /**
-     * @OA\Property(nullable=true)
+     * @OA\Property(nullable=true, enum={"Pending", "Active", "Deactivated", "Unknown"})
      * @var string|null
      */
     private $status;

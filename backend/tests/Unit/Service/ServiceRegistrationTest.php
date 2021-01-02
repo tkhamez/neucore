@@ -6,9 +6,10 @@ namespace Tests\Unit\Service;
 
 use Composer\Autoload\ClassLoader;
 use Neucore\Application;
+use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\Service;
-use Neucore\Plugin\AccountData;
+use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ServiceRegistration;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,7 @@ use Tests\Logger;
 
 class ServiceRegistrationTest extends TestCase
 {
-    private const PSR_PREFIX = 'Tests\AutoloadTest\\';
+    private const PSR_PREFIX = 'Tests\ServiceRegistration_AutoloadTest\\';
 
     /**
      * @var ClassLoader
@@ -113,25 +114,28 @@ class ServiceRegistrationTest extends TestCase
 
         $service = new Service();
         $service->setConfiguration((string)\json_encode([
-            'phpClass' => 'Tests\AutoloadTest\TestService',
+            'phpClass' => 'Tests\ServiceRegistration_AutoloadTest\TestService',
             'psr4Prefix' => self::PSR_PREFIX, // no \ at the end to test that it is added
-            'psr4Path' => __DIR__ .  '/AutoloadTest',
+            'psr4Path' => __DIR__ .  '/ServiceRegistration_AutoloadTest',
         ]));
 
         $this->assertInstanceOf(ServiceInterface::class, $this->serviceRegistration->getServiceObject($service));
 
         $this->assertSame(
-            ['/some/path', __DIR__ .  '/AutoloadTest'],
+            ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest'],
             self::$loader->getPrefixesPsr4()[self::PSR_PREFIX]
         );
     }
 
     public function testGetAccounts()
     {
-        $actual = $this->serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService(), [123, 456]);
+        $actual = $this->serviceRegistration->getAccounts(
+            new ServiceRegistrationTest_TestService($this->log),
+            [(new Character())->setId(123), (new Character())->setId(456)]
+        );
 
         $this->assertSame(1, count($actual));
-        $this->assertInstanceOf(AccountData::class, $actual[0]);
+        $this->assertInstanceOf(ServiceAccountData::class, $actual[0]);
         $this->assertSame(123, $actual[0]->getCharacterId());
 
         $this->assertSame(

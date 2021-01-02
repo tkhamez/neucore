@@ -7,8 +7,10 @@ namespace Tests\Functional\Controller\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Entity\Group;
+use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
+use Neucore\Plugin\ServiceAccountData;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -31,12 +33,16 @@ class ServiceControllerTest extends WebTestCase
      */
     private $log;
 
+    /**
+     * @var Player
+     */
+    private $player;
+
     // entity IDs
     private $g1;
     private $s1;
     private $s2;
     private $s3;
-    private $p1;
 
     protected function setUp(): void
     {
@@ -47,36 +53,36 @@ class ServiceControllerTest extends WebTestCase
         $this->log = new Logger('Test');
     }
 
-    public function testService403()
+    public function testGet403()
     {
-        $response = $this->runApp('GET', '/api/user/service/service/1');
+        $response = $this->runApp('GET', '/api/user/service/1/get');
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testService403_MissingGroup()
+    public function testGet403_MissingGroup()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER
+        $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service/service/'.$this->s3);
+        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testService404()
+    public function testGet404()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER
+        $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service/service/'.($this->s1 + 100));
+        $response = $this->runApp('GET', '/api/user/service/'.($this->s1 + 100).'/get');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testService200()
+    public function testGet200()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER
+        $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service/service/'.$this->s1);
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/get");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
@@ -91,40 +97,109 @@ class ServiceControllerTest extends WebTestCase
         );
     }
 
-    public function testServiceAccounts403()
+    public function testRegister403()
     {
-        $this->setupDb();
-
-        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/{$this->p1}");
+        $response = $this->runApp('POST', "/api/user/service/1/register");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testServiceAccounts403_MissingGroup()
+    public function testRegister403_MissingGroup()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER, missing group 2
+        $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s3}/{$this->p1}");
+        $response = $this->runApp('POST', "/api/user/service/{$this->s3}/register");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testServiceAccounts404()
+    public function testRegister404()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER
+        $this->loginUser(1);
 
-        $response1 = $this->runApp('GET', '/api/user/service/service-accounts/'.($this->s1 + 100)."/{$this->p1}");
-        $response2 = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/".($this->p1 + 100));
-        $this->assertEquals(404, $response1->getStatusCode());
-        $this->assertEquals(404, $response2->getStatusCode());
+        $response = $this->runApp('POST', '/api/user/service/'.($this->s1+99).'/register');
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testServiceAccounts200_InvalidPhpClass()
+    public function testRegister200()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER
+        $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s2}/{$this->p1}", null, null, [
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->player->getCharacters()[1]->setMain(true);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            'characterId' => 2,
+            'username' => 'u2',
+            'password' => 'p2',
+            'email' => 'e2',
+            'status' => ServiceAccountData::STATUS_ACTIVE,
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testRegister409()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(409, $response->getStatusCode());
+    }
+
+    public function testRegister500()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // change main, so that a new account can be added
+        // and add a group, so that ServiceControllerTest_TestService can return null
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->player->getCharacters()[1]->setMain(true);
+        $group3 = (new Group())->setName('G3');
+        $this->player->addGroup($group3);
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testAccounts403()
+    {
+        $response = $this->runApp('GET', "/api/user/service/1/accounts");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAccounts403_MissingGroup()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/accounts");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAccounts404()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', '/api/user/service/'.($this->s1 + 100).'/accounts');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testAccounts200_InvalidPhpClass()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s2}/accounts", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -136,15 +211,16 @@ class ServiceControllerTest extends WebTestCase
         );
     }
 
-    public function testServiceAccounts200()
+    public function testAccounts200()
     {
         $this->setupDb();
-        $this->loginUser(1); // role: USER
+        $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/service-accounts/{$this->s1}/{$this->p1}");
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
-            ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e', 'status' => null]
+            ['characterId' => 1, 'username' => 'u', 'password' => 'p',
+                'email' => 'e', 'status' => ServiceAccountData::STATUS_ACTIVE]
         ], $this->parseJsonBody($response));
     }
 
@@ -172,13 +248,13 @@ class ServiceControllerTest extends WebTestCase
         $this->em->persist($service3);
         $this->em->flush();
 
-        $player = $this->helper->addCharacterMain('Char1', 1, [Role::USER], [$group1->getName()])->getPlayer();
-        $this->helper->addCharacterToPlayer('Char2', 2, $player);
+        $this->player = $this->helper->addCharacterMain('Char1', 1, [Role::USER], [$group1->getName()])
+            ->getPlayer();
+        $this->helper->addCharacterToPlayer('Char2', 2, $this->player);
 
         $this->g1 = $group1->getId();
         $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
         $this->s3 = $service3->getId();
-        $this->p1 = $player->getId();
     }
 }

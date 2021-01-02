@@ -9,6 +9,7 @@ use Eve\Sso\JsonWebToken;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Api;
+use Neucore\Plugin\CoreCharacter;
 use OpenApi\Annotations as OA;
 
 /**
@@ -406,5 +407,23 @@ class Character implements \JsonSerializable
         }
 
         return $jwt->getEveAuthentication()->getScopes();
+    }
+
+    public function toCoreCharacter(): CoreCharacter
+    {
+        $alliance = $this->getCorporation() !== null && $this->getCorporation()->getAlliance() !== null ?
+            $this->getCorporation()->getAlliance() :
+            null;
+        return new CoreCharacter(
+            $this->getId(),
+            $this->getName() !== '' ? $this->getName() : null,
+            $this->getCharacterOwnerHash(),
+            $this->getCorporation() !== null ? $this->getCorporation()->getId() : null,
+            $this->getCorporation() !== null ? $this->getCorporation()->getName() : null,
+            $this->getCorporation() !== null ? $this->getCorporation()->getTicker() : null,
+            $alliance !== null ? $alliance->getId() : null,
+            $alliance !== null ? $alliance->getName() : null,
+            $alliance !== null ? $alliance->getTicker() : null
+        );
     }
 }
