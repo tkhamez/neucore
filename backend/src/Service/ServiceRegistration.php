@@ -6,7 +6,10 @@ namespace Neucore\Service;
 
 use Neucore\Application;
 use Neucore\Entity\Character;
+use Neucore\Entity\Group;
 use Neucore\Entity\Service;
+use Neucore\Plugin\CoreGroup;
+use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
@@ -84,19 +87,26 @@ class ServiceRegistration
     }
 
     /**
-     */
-    /**
      * @param ServiceInterface $service
-     * @param Character[] $characters
+     * @param Character[] $characters All character must belong to the same player.
      * @param bool $logErrorOnCharacterMismatch
      * @return ServiceAccountData[]
+     * @throws Exception
      */
     public function getAccounts(
         ServiceInterface $service,
         array $characters,
         bool $logErrorOnCharacterMismatch = true
     ): array {
+        if (count($characters) === 0) {
+            return [];
+        }
+
         $accountData = [];
+
+        $coreGroups = array_map(function (Group $group) {
+            return new CoreGroup($group->getId(), $group->getName());
+        }, $characters[0]->getPlayer()->getGroups());
 
         $coreCharacters = [];
         $characterIds = [];
@@ -105,7 +115,7 @@ class ServiceRegistration
             $characterIds[] = $character->getId();
         }
 
-        foreach ($service->getAccounts(...$coreCharacters) as $account) {
+        foreach ($service->getAccounts($coreCharacters, $coreGroups) as $account) {
             if (!$account instanceof ServiceAccountData) {
                 $this->log->error(
                     "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects."

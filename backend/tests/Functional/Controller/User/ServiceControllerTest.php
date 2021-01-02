@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -142,16 +143,50 @@ class ServiceControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testRegister409()
+    public function testRegister409_noMain()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertEquals('no_main', $response->getReasonPhrase());
+    }
+
+    public function testRegister409_AlreadyRegistered()
     {
         $this->setupDb();
         $this->loginUser(1);
 
         $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
         $this->assertEquals(409, $response->getStatusCode());
+        $this->assertEquals('already_registered', $response->getReasonPhrase());
     }
 
-    public function testRegister500()
+    public function testRegister500_GetAccounts()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // change main, so that a new account can be added
+        // and add a group, so that ServiceControllerTest_TestService can return null
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->player->getCharacters()[1]->setMain(true);
+        $group4 = (new Group())->setName('G4');
+        $this->player->addGroup($group4);
+        $this->em->persist($group4);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testRegister500_Register()
     {
         $this->setupDb();
         $this->loginUser(1);
@@ -222,6 +257,22 @@ class ServiceControllerTest extends WebTestCase
             ['characterId' => 1, 'username' => 'u', 'password' => 'p',
                 'email' => 'e', 'status' => ServiceAccountData::STATUS_ACTIVE]
         ], $this->parseJsonBody($response));
+    }
+
+    public function testAccounts500()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // and add a group, so that ServiceControllerTest_TestService can throw an exception
+        $group4 = (new Group())->setName('G4');
+        $this->player->addGroup($group4);
+        $this->em->persist($group4);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $this->assertEquals(500, $response->getStatusCode());
     }
 
     private function setupDb(): void

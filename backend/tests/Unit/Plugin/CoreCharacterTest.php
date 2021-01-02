@@ -33,10 +33,4 @@ class CoreCharacterTest extends TestCase
         $this->assertSame('alli', $char2->allianceName);
         $this->assertSame('a-tick', $char2->allianceTicker);
     }
-
-    public function testCoreGroup()
-    {
-        $char = new CoreCharacter(200);
-        $this->assertSame([], $char->groups);
-    }
 }

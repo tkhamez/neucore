@@ -125,8 +125,23 @@ export default {
                         vm.registerButtonDisabled = false;
                     });
                     vm.newPassword = data.password;
-                } else if ([403, 404, 409].indexOf(response.statusCode) !== -1) {
-                    vm.message('Service not found, not authorized or already registered.', 'warning');
+                } else if ([403, 404].indexOf(response.statusCode) !== -1) {
+                    vm.message('Service not found or not authorized.', 'warning');
+                    vm.registerButtonDisabled = false;
+                } else if (response.statusCode === 409) {
+                    if (response.statusText === 'no_main') {
+                        vm.message('This account does not have a main character.', 'warning');
+                    } else if (response.statusText === 'already_registered') {
+                        vm.message('There is already an account for this character.', 'warning');
+                    } else if (response.statusText === 'missing_email') {
+                        vm.message('Please provide an e-mail address.', 'warning');
+                    } else if (response.statusText === 'email_mismatch') {
+                        vm.message('This e-mail address belongs to another account.', 'warning');
+                    } else if (response.statusText === 'invite_wait') {
+                        vm.message("You've already requested an invite recently, please wait.", 'warning');
+                    } else {
+                        vm.message(response.statusText, 'warning');
+                    }
                     vm.registerButtonDisabled = false;
                 } else { // 500
                     vm.message('Error. Please try again.', 'error');

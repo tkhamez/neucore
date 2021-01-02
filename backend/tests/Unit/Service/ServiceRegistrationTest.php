@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 declare(strict_types=1);
 
@@ -8,7 +9,9 @@ use Composer\Autoload\ClassLoader;
 use Neucore\Application;
 use Neucore\Entity\Character;
 use Neucore\Entity\Group;
+use Neucore\Entity\Player;
 use Neucore\Entity\Service;
+use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ServiceRegistration;
@@ -129,9 +132,10 @@ class ServiceRegistrationTest extends TestCase
 
     public function testGetAccounts()
     {
+        $p = new Player();
         $actual = $this->serviceRegistration->getAccounts(
             new ServiceRegistrationTest_TestService($this->log),
-            [(new Character())->setId(123), (new Character())->setId(456)]
+            [(new Character())->setId(123)->setPlayer($p), (new Character())->setId(456)->setPlayer($p)]
         );
 
         $this->assertSame(1, count($actual));
@@ -145,6 +149,15 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame(
             "ServiceController: Character ID does not match.",
             $this->log->getHandler()->getRecords()[1]['message']
+        );
+    }
+
+    public function testGetAccounts_Exception()
+    {
+        $this->expectException(Exception::class);
+        $this->serviceRegistration->getAccounts(
+            new ServiceRegistrationTest_TestService($this->log),
+            [(new Character())->setId(999)->setPlayer(new Player())]
         );
     }
 }

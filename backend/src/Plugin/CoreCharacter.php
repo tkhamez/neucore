@@ -51,11 +51,6 @@ class CoreCharacter
      */
     public $allianceTicker;
 
-    /**
-     * @var CoreGroup[]
-     */
-    public $groups = [];
-
     public function __construct(
         int $id,
         string $name = null,

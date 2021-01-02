@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\CoreGroup;
+use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
@@ -140,7 +142,7 @@ class ServiceController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="409",
-     *         description="Already registered or account does not have a main character."
+     *         description="Different errors, check reason phrase."
      *     ),
      *     @OA\Response(
      *         response="500",
@@ -166,7 +168,7 @@ class ServiceController extends BaseController
         // get main character
         $main = $player->getMain();
         if (!$main) {
-            return $this->response->withStatus(409);
+            return $this->response->withStatus(409, 'no_main');
         }
 
         $serviceObject = $this->serviceRegistration->getServiceObject($service);
@@ -174,7 +176,11 @@ class ServiceController extends BaseController
             $this->log->error(self::SERVICE_OBJECT_ERROR);
             return $this->response->withStatus(500);
         }
-        $accounts = $this->serviceRegistration->getAccounts($serviceObject, [$main], false);
+        try {
+            $accounts = $this->serviceRegistration->getAccounts($serviceObject, [$main], false);
+        } catch (Exception $e) {
+            return $this->response->withStatus(500);
+        }
         if (
             count($accounts) > 0 &&
             !in_array(
@@ -182,19 +188,30 @@ class ServiceController extends BaseController
                 [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN]
             )
         ) {
-            return $this->response->withStatus(409);
+            return $this->response->withStatus(409, 'already_registered');
         }
 
-        $coreCharacter = $main->toCoreCharacter();
-        $coreCharacter->groups = array_map(function (Group $group) {
+        $coreGroups = array_map(function (Group $group) {
             return new CoreGroup($group->getId(), $group->getName());
         }, $player->getGroups());
-        $accountData = $serviceObject->register($coreCharacter, $emailAddress);
-        if ($accountData === null) {
-            return $this->response->withStatus(500);
-        } else {
-            return $this->withJson($accountData);
+        $otherCharacterIds = array_map(function (Character $character) {
+            return $character->getId();
+        }, $player->getCharacters());
+        try {
+            $accountData = $serviceObject->register(
+                $main->toCoreCharacter(),
+                $coreGroups,
+                $emailAddress,
+                $otherCharacterIds
+            );
+        } catch (Exception $e) {
+            if ($e->getMessage() !== '') {
+                return $this->response->withStatus(409, $e->getMessage());
+            } else {
+                return $this->response->withStatus(500);
+            }
         }
+        return $this->withJson($accountData);
     }
 
     /**
@@ -225,6 +242,10 @@ class ServiceController extends BaseController
      *     @OA\Response(
      *         response="404",
      *         description="Service not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="In the event of an error when retrieving accounts."
      *     )
      * )
      */
@@ -245,10 +266,14 @@ class ServiceController extends BaseController
             return $this->withJson([]);
         }
 
-        $accountData = $this->serviceRegistration->getAccounts(
-            $serviceObject,
-            $this->getUser($userAuth)->getPlayer()->getCharacters()
-        );
+        try {
+            $accountData = $this->serviceRegistration->getAccounts(
+                $serviceObject,
+                $this->getUser($userAuth)->getPlayer()->getCharacters()
+            );
+        } catch (Exception $e) {
+            return $this->response->withStatus(500);
+        }
 
         return $this->withJson($accountData);
     }
