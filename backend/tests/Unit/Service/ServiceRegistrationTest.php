@@ -134,7 +134,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->assertSame(
             [],
-            $this->serviceRegistration->getAccounts( new ServiceRegistrationTest_TestService($this->log), [])
+            $this->serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService($this->log), [])
         );
     }
 

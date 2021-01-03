@@ -6,6 +6,12 @@ namespace Neucore\Plugin;
 
 use Psr\Log\LoggerInterface;
 
+/**
+ * Methods to implement for a Neucore service.
+ *
+ * A player can only register a new account for their main character and only if that account does not
+ * already exists or if it's ServiceAccountData::$status is "Deactivated" or "Unknown".
+ */
 interface ServiceInterface
 {
     /**

@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Neucore\Plugin;
 
+/**
+ * Represents a service account.
+ *
+ * $characterId and either $username or $email must be set, $password and $status are optional.
+ * If the account status is not provided it is considered to be active.
+ * If a password is provided, it will be displayed to the user.
+ */
 class ServiceAccountData implements \JsonSerializable
 {
     const STATUS_PENDING = 'Pending';

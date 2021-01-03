@@ -7,52 +7,51 @@
         </div>
         <div v-if="player" v-cloak class="row mb-3">
             <div class="col-lg-12">
-
-                <!-- main character and registration -->
-                <div class="card border-secondary mb-3">
-                    <div class="card-header">{{ characterName(getMainCharacterId()) }} - Main</div>
+                <div v-for="account in accounts" class="card border-secondary mb-3">
+                    <div class="card-header">
+                        {{ characterName(account.characterId) }}
+                        <span v-if="account.characterId === getMainCharacterId()"> - Main</span>
+                    </div>
                     <div class="card-body">
-                        <div v-if="newPassword">new password: {{ newPassword }}</div>
-                        <div v-if="mainAccount" >
-                            username: {{ mainAccount.username }}<br>
-                            password: {{ mainAccount.password }}<br>
-                            email: {{ mainAccount.email }}<br>
-                            status: {{ mainAccount.status }}<br>
+
+                        <div v-if="newPassword[account.characterId]">
+                            new password: {{ newPassword[account.characterId] }}
                         </div>
 
-                        <div v-if="accountsLoaded && (
-                            mainAccount === null ||
-                            mainAccount.status === 'Deactivated' ||
-                            mainAccount.status === 'Unknown'
-                        )">
+                        <!-- Account data -->
+                        <div v-if="isAccount(account)">
+                            username: {{ account.username }}<br>
+                            password: {{ account.password }}<br>
+                            email: {{ account.email }}<br>
+                            status: {{ account.status }}<br>
+                        </div>
 
+                        <!-- Reset Password -->
+                        <button v-if="isAccount(account) && isActive(account)"
+                                type="submit" class="btn btn-sm btn-primary"
+                                v-on:click.prevent="resetPassword(account.characterId)"
+                                :disabled="resetPasswordButtonDisabled">
+                            Reset Password
+                        </button>
+
+                        <!-- Register -->
+                        <div v-if="account.characterId === getMainCharacterId() &&
+                                   (!isAccount(account) || isInactive(account))">
                             <div class="form-group">
-                                <label class="col-form-label col-form-label-sm" for="email">E-Mail address</label>
-                                <input class="form-control form-control-sm" type="text" id="email" v-model="email" >
+                                <label class="col-form-label col-form-label-sm" for="formEmail">E-Mail address</label>
+                                <input class="form-control form-control-sm" type="text" id="formEmail"
+                                       v-model="formEmail">
                             </div>
                             <button type="submit" class="btn btn-primary" v-on:click.prevent="register()"
                                     :disabled="registerButtonDisabled">
                                 Register
                             </button>
-
                         </div>
+
                     </div>
                 </div>
-
-                <!-- additional accounts from alts -->
-                <div v-for="account in accounts" v-if="account.characterId !== getMainCharacterId()"
-                     class="card border-secondary mb-3">
-                    <div class="card-header">{{ characterName(account.characterId) }}</div>
-                    <div class="card-body">
-                        username: {{ account.username }}<br>
-                        password: {{ account.password }}<br>
-                        email: {{ account.email }}<br>
-                        status: {{ account.status }}<br>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+            </div> <!-- col -->
+        </div> <!-- row -->
     </div>
 </template>
 
@@ -70,11 +69,10 @@ export default {
             service: null,
             accounts: [],
             mainCharacterId: null,
-            accountsLoaded: false,
-            mainAccount: null,
             registerButtonDisabled: false,
-            email: null,
-            newPassword: null,
+            resetPasswordButtonDisabled: false,
+            newPassword: {},
+            formEmail: null,
         }
     },
 
@@ -85,13 +83,10 @@ export default {
 
     watch: {
         route () {
-            this.newPassword = null;
-            this.email = null;
+            this.newPassword = {};
+            this.formEmail = null;
             getData(this);
         },
-        accounts () {
-            this.mainAccount = getMainAccount(this);
-        }
     },
 
     methods: {
@@ -115,17 +110,29 @@ export default {
             }
             return characterId; // should never reach this
         },
+
+        isAccount(account) {
+            return account.username !== null || account.email !== null;
+        },
+        isActive(account) {
+            // other status are: Pending, Deactivated, Unknown
+            return account.status === null || account.status === 'Active';
+        },
+        isInactive(account) {
+            // other status are: Pending, null
+            return account.status === 'Deactivated' || account.status === 'Unknown';
+        },
+
         register() {
-            this.registerButtonDisabled = true;
             const vm = this;
+            vm.registerButtonDisabled = true;
+            vm.newPassword = {};
             const api = new ServiceApi();
-            api.serviceRegister(getServiceId(vm), {email: vm.email}, (error, data, response) => {
+            api.serviceRegister(getServiceId(vm), {email: vm.formEmail}, (error, data, response) => {
                 if (response.statusCode === 200) {
                     vm.message('Successfully registered with service.', 'success');
-                    getAccountData(vm, api, () => {
-                        vm.registerButtonDisabled = false;
-                    });
-                    vm.newPassword = data.password;
+                    vm.newPassword[data.characterId] = data.password;
+                    getAccountData(vm, api);
                 } else if ([403, 404].indexOf(response.statusCode) !== -1) {
                     vm.message('Service not found or not authorized.', 'warning');
                     vm.registerButtonDisabled = false;
@@ -147,6 +154,25 @@ export default {
                 } else { // 500
                     vm.message('Error. Please try again.', 'error');
                     vm.registerButtonDisabled = false;
+                }
+            });
+        },
+        resetPassword(characterId) {
+            const vm = this;
+            vm.resetPasswordButtonDisabled = true;
+            vm.newPassword = {}
+            const api = new ServiceApi();
+            api.serviceResetPassword(getServiceId(vm), characterId, (error, data, response) => {
+                if (response.statusCode === 200) {
+                    vm.message('Successfully changed the password.', 'success');
+                    vm.newPassword[characterId] = data;
+                    getAccountData(vm, api);
+                } else if (response.statusCode === 404) {
+                    vm.message('Service or account not found.', 'warning');
+                    vm.resetPasswordButtonDisabled = false;
+                } else if (response.statusCode === 500) {
+                    vm.message('Error. Please try again.', 'error');
+                    vm.resetPasswordButtonDisabled = false;
                 }
             });
         }
@@ -173,28 +199,39 @@ function getData(vm) {
 /**
  * @param vm
  * @param {ServiceApi} api
- * @param {function} [callback]
  */
-function getAccountData(vm, api, callback) {
+function getAccountData(vm, api) {
     vm.accounts = [];
-    vm.accountsLoaded = false;
     api.serviceAccounts(getServiceId(vm), (error, data) => {
         if (!error) {
-            vm.accountsLoaded = true;
-            vm.accounts = data;
+            sortAccounts(vm, data);
         }
-        if (typeof callback === typeof Function) {
-            callback();
-        }
+        vm.registerButtonDisabled = false;
+        vm.resetPasswordButtonDisabled = false;
     });
 }
 
-function getMainAccount(vm) {
-    for (const account of vm.accounts) {
+function sortAccounts(vm, accounts) {
+    vm.accounts = [];
+    for (const account of accounts) {
         if (account.characterId === vm.getMainCharacterId()) {
-            return account;
+            vm.accounts.push(account);
+            break;
         }
     }
-    return null;
+    if (vm.accounts.length === 0) {
+        vm.accounts.push({
+            characterId: vm.getMainCharacterId(),
+            username: null,
+            password: null,
+            email: null,
+            status: null,
+        });
+    }
+    for (const account of accounts) {
+        if (account.characterId !== vm.getMainCharacterId()) {
+            vm.accounts.push(account);
+        }
+    }
 }
 </script>
