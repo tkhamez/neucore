@@ -121,6 +121,7 @@ class SessionMiddleware implements MiddlewareInterface
                     (bool) $this->options[self::OPTION_SECURE] :
                     true,
                 'cookie_httponly' => true,
+                'cookie_samesite' => 'Lax', // cannot be strict or EVE SSO will not work
             ]);
 
             // write something to the session so that the Set-Cookie header is send

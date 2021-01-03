@@ -5,6 +5,7 @@
 - Compatibility with PHP 8.0
 - Navigation: Do not show "Groups" link if there are no public groups.
 - Rate limit: Always log if the configured limit was reached, even if it's not active.
+- Set SameSite attribute for session cookie.
 - Other small improvements.
 
 ## 1.15.2
