@@ -19,6 +19,10 @@ use Tests\Logger;
 
 class ServiceControllerTest extends WebTestCase
 {
+    private const ERROR_NO_SERVICE_OBJECT =
+        'ServiceController: The configured service class does not exist of does not implement '.
+        'Neucore\Plugin\ServiceInterface.';
+
     /**
      * @var Helper
      */
@@ -96,6 +100,72 @@ class ServiceControllerTest extends WebTestCase
             ],
             $this->parseJsonBody($response)
         );
+    }
+
+    public function testAccounts403()
+    {
+        $response = $this->runApp('GET', "/api/user/service/1/accounts");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAccounts403_MissingGroup()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/accounts");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAccounts404()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', '/api/user/service/'.($this->s1 + 100).'/accounts');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testAccounts200()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([
+            ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e',
+                'status' => ServiceAccountData::STATUS_ACTIVE],
+            ['characterId' => 3, 'username' => null, 'password' => null, 'email' => null, 'status' => null],
+        ], $this->parseJsonBody($response));
+    }
+
+    public function testAccounts500_NoServiceObject()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s2}/accounts", null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
+    }
+
+    public function testAccounts500()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // and add a group, so that ServiceControllerTest_TestService can throw an exception
+        $group4 = (new Group())->setName('G4');
+        $this->player->addGroup($group4);
+        $this->em->persist($group4);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $this->assertEquals(500, $response->getStatusCode());
     }
 
     public function testRegister403()
@@ -215,11 +285,7 @@ class ServiceControllerTest extends WebTestCase
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertSame(
-            "ServiceController: The configured service class does not exist of does not implement ".
-            "Neucore\Plugin\ServiceInterface.",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
+        $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
     }
 
     public function testRegister500_GetAccountsFailed()
@@ -241,72 +307,92 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    public function testAccounts403()
+    public function testResetPassword403_NotLoggedIn()
     {
-        $response = $this->runApp('GET', "/api/user/service/1/accounts");
+        $response = $this->runApp('PUT', "/api/user/service/1/resetPassword/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testAccounts403_MissingGroup()
+    public function testResetPassword403_MissingGroup()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/accounts");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/resetPassword/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testAccounts404()
+    public function testResetPassword404_NoService()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', '/api/user/service/'.($this->s1 + 100).'/accounts');
+        $response = $this->runApp('PUT', '/api/user/service/'.($this->s1+99).'/resetPassword/1');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testAccounts200()
+    public function testResetPassword404_NoCharacter()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([
-            ['characterId' => 1, 'username' => 'u', 'password' => 'p',
-                'email' => 'e', 'status' => ServiceAccountData::STATUS_ACTIVE]
-        ], $this->parseJsonBody($response));
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/7");
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testAccounts500_NoServiceObject()
+    public function testResetPassword404_NoAccount()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s2}/accounts", null, null, [
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/2");
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testResetPassword200()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/1");
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('new-pass', $this->parseJsonBody($response));
+    }
+
+    public function testResetPassword500_NoServiceObject()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s2}/resetPassword/1", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertSame(
-            "ServiceController: The configured service class does not exist of does not implement ".
-            "Neucore\Plugin\ServiceInterface.",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
+        $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
     }
 
-    public function testAccounts500()
+    public function testResetPassword500_GetAccountsFailed()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        // and add a group, so that ServiceControllerTest_TestService can throw an exception
+        // and add a group, so that ServiceControllerTest_TestService throws an exception
         $group4 = (new Group())->setName('G4');
         $this->player->addGroup($group4);
         $this->em->persist($group4);
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/1");
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testResetPassword500_ChangePasswordFailed()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/3");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -337,6 +423,7 @@ class ServiceControllerTest extends WebTestCase
         $this->player = $this->helper->addCharacterMain('Char1', 1, [Role::USER], [$group1->getName()])
             ->getPlayer();
         $this->helper->addCharacterToPlayer('Char2', 2, $this->player);
+        $this->helper->addCharacterToPlayer('Char3', 3, $this->player);
 
         $this->g1 = $group1->getId();
         $this->s1 = $service1->getId();

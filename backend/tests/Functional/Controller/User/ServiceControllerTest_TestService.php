@@ -30,12 +30,13 @@ class ServiceControllerTest_TestService implements ServiceInterface
         }
         return [
             new ServiceAccountData(1, 'u', 'p', 'e', ServiceAccountData::STATUS_ACTIVE),
+            new ServiceAccountData(3),
         ];
     }
 
     /**
      * @param CoreGroup[] $groups
-     * @param int[] $otherCharacterIds
+     * @param int[] $allCharacterIds
      * @return ServiceAccountData
      * @throws Exception
      */
@@ -43,7 +44,7 @@ class ServiceControllerTest_TestService implements ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $otherCharacterIds
+        array $allCharacterIds
     ): ServiceAccountData {
         if (count($groups) === 2 && $groups[1]->name === 'G3') {
             throw new Exception();
@@ -51,6 +52,15 @@ class ServiceControllerTest_TestService implements ServiceInterface
             throw new Exception('test');
         } else {
             return new ServiceAccountData($character->id, 'u2', 'p2', 'e2', ServiceAccountData::STATUS_ACTIVE);
+        }
+    }
+
+    public function resetPassword(int $characterId): string
+    {
+        if ($characterId === 3) {
+            throw new Exception();
+        } else {
+            return 'new-pass';
         }
     }
 }

@@ -195,7 +195,8 @@ return [
     '/api/user/watchlist/{id}/allowlist-alliance/add/{alliance}'          => ['PUT',  WatchlistController::class.'::allowlistAllianceAdd'],
     '/api/user/watchlist/{id}/allowlist-alliance/remove/{alliance}'       => ['PUT',  WatchlistController::class.'::allowlistAllianceRemove'],
 
-    '/api/user/service/{id}/get'                => ['GET',  ServiceController::class.'::get'],
-    '/api/user/service/{id}/register'           => ['POST', ServiceController::class.'::register'],
-    '/api/user/service/{id}/accounts'           => ['GET',  ServiceController::class.'::accounts'],
+    '/api/user/service/{id}/get'                            => ['GET',  ServiceController::class.'::get'],
+    '/api/user/service/{id}/accounts'                       => ['GET',  ServiceController::class.'::accounts'],
+    '/api/user/service/{id}/register'                       => ['POST', ServiceController::class.'::register'],
+    '/api/user/service/{id}/resetPassword/{characterId}'    => ['PUT', ServiceController::class.'::resetPassword'],
 ];

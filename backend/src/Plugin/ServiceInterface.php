@@ -23,6 +23,11 @@ interface ServiceInterface
      */
     public const ERROR_INVITE_WAIT = 'invite_wait';
 
+    /**
+     * The account for the character was not found.
+     */
+    public const ERROR_ACCOUNT_NOT_FOUND = 'account_not_found';
+
     public function __construct(LoggerInterface $logger);
 
     /**
@@ -36,12 +41,12 @@ interface ServiceInterface
     public function getAccounts(array $characters, array $groups): array;
 
     /**
-     * Creates new account and returns account data or null on error.
+     * Creates new account and returns account data.
      *
      * This is not called if there is already an account for the character.
      *
      * @param CoreGroup[] $groups All groups from the player of the characters.
-     * @param int[] $otherCharacterIds All other character IDs from the same player account.
+     * @param int[] $allCharacterIds All character IDs from the same player account.
      * @return ServiceAccountData
      * @throws Exception On error, the message should be one of the self::ERROR_* constants
      *                   (it will be shown to the user with a 409 response code) or empty (500 response code).
@@ -50,6 +55,16 @@ interface ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $otherCharacterIds
+        array $allCharacterIds
     ): ServiceAccountData;
+
+    /**
+     * Resets and returns the password for the account of the provided character.
+     *
+     * This is not called if there is no account for the character.
+     *
+     * @throws Exception On error, the message should be one of the self::ERROR_* constants
+     *                   (it will be shown to the user with a 409 response code) or empty (500 response code).
+     */
+    public function resetPassword(int $characterId): string;
 }

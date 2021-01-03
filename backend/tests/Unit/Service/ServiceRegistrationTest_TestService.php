@@ -38,7 +38,7 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     /**
      * @param CoreGroup[] $groups
-     * @param int[] $otherCharacterIds
+     * @param int[] $allCharacterIds
      * @return ServiceAccountData
      * @throws Exception
      */
@@ -46,8 +46,13 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
         CoreCharacter $character,
         array $groups,
         string $emailAddress,
-        array $otherCharacterIds
+        array $allCharacterIds
     ): ServiceAccountData {
+        throw new Exception();
+    }
+
+    public function resetPassword(int $characterId): string
+    {
         throw new Exception();
     }
 }

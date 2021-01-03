@@ -111,6 +111,70 @@ class ServiceController extends BaseController
     }
 
     /**
+     * @OA\Get(
+     *     path="/user/service/{id}/accounts",
+     *     operationId="serviceAccounts",
+     *     summary="Returns all player's service accounts for a service.",
+     *     description="Needs role: user",
+     *     tags={"Service"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Service ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Service accounts.",
+     *         description="The player property contains only the id and name.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ServiceAccountData"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Service not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="In the event of an error when retrieving accounts."
+     *     )
+     * )
+     */
+    public function accounts(string $id, UserAuth $userAuth): ResponseInterface
+    {
+        $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
+        if ($service === null) {
+            return $this->response->withStatus(404);
+        }
+
+        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
+            return $this->response->withStatus(403);
+        }
+
+        $serviceObject = $this->serviceRegistration->getServiceObject($service);
+        if ($serviceObject === null) {
+            $this->log->error(self::SERVICE_OBJECT_ERROR);
+            return $this->response->withStatus(500);
+        }
+
+        try {
+            $accountData = $this->serviceRegistration->getAccounts(
+                $serviceObject,
+                $this->getUser($userAuth)->getPlayer()->getCharacters()
+            );
+        } catch (Exception $e) {
+            return $this->response->withStatus(500);
+        }
+
+        return $this->withJson($accountData);
+    }
+
+    /**
      * @OA\Post(
      *     path="/user/service/{id}/register",
      *     operationId="serviceRegister",
@@ -188,6 +252,8 @@ class ServiceController extends BaseController
             $this->log->error(self::SERVICE_OBJECT_ERROR);
             return $this->response->withStatus(500);
         }
+
+        // check if account exists and has a valid state
         try {
             $accounts = $this->serviceRegistration->getAccounts($serviceObject, [$main], false);
         } catch (Exception $e) {
@@ -227,10 +293,10 @@ class ServiceController extends BaseController
     }
 
     /**
-     * @OA\Get(
-     *     path="/user/service/{id}/accounts",
-     *     operationId="serviceAccounts",
-     *     summary="Returns all player's service accounts for a service.",
+     * @OA\Put(
+     *     path="/user/service/{id}/resetPassword/{characterId}",
+     *     operationId="serviceResetPassword",
+     *     summary="Resets password for one account.",
      *     description="Needs role: user",
      *     tags={"Service"},
      *     security={{"Session"={}}},
@@ -241,11 +307,17 @@ class ServiceController extends BaseController
      *         description="Service ID.",
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="Character ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="Service accounts.",
-     *         description="The player property contains only the id and name.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/ServiceAccountData"))
+     *         description="Password changed, returns the new password.",
+     *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -253,40 +325,64 @@ class ServiceController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Service not found."
+     *         description="Service, character or service account not found."
      *     ),
      *     @OA\Response(
      *         response="500",
-     *         description="In the event of an error when retrieving accounts."
+     *         description="Password change failed."
      *     )
      * )
      */
-    public function accounts(string $id, UserAuth $userAuth): ResponseInterface
+    public function resetPassword(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
+        // get service
         $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
         if ($service === null) {
             return $this->response->withStatus(404);
         }
 
+        // check service permission
         if (!$this->serviceRegistration->hasRequiredGroups($service)) {
             return $this->response->withStatus(403);
         }
 
+        // validate character
+        $validCharacter = null;
+        $player = $this->getUser($userAuth)->getPlayer();
+        foreach ($player->getCharacters() as $character) {
+            if ($character->getId() === (int)$characterId) {
+                $validCharacter = $character;
+                break;
+            }
+        }
+        if ($validCharacter === null) {
+            return $this->response->withStatus(404);
+        }
+
+        // get service object
         $serviceObject = $this->serviceRegistration->getServiceObject($service);
         if ($serviceObject === null) {
             $this->log->error(self::SERVICE_OBJECT_ERROR);
             return $this->response->withStatus(500);
         }
 
+        // check if account exists
         try {
-            $accountData = $this->serviceRegistration->getAccounts(
-                $serviceObject,
-                $this->getUser($userAuth)->getPlayer()->getCharacters()
-            );
+            $accounts = $this->serviceRegistration->getAccounts($serviceObject, [$validCharacter], false);
+        } catch (Exception $e) {
+            return $this->response->withStatus(500);
+        }
+        if (empty($accounts)) {
+            return $this->response->withStatus(404);
+        }
+
+        // change password
+        try {
+            $newPassword = $serviceObject->resetPassword($validCharacter->getId());
         } catch (Exception $e) {
             return $this->response->withStatus(500);
         }
 
-        return $this->withJson($accountData);
+        return $this->withJson($newPassword);
     }
 }
