@@ -140,7 +140,7 @@ class ServiceControllerTest extends WebTestCase
         ], $this->parseJsonBody($response));
     }
 
-    public function testAccounts500_NoServiceObject()
+    public function testAccounts500_NoServiceImplementation()
     {
         $this->setupDb();
         $this->loginUser(1);
@@ -276,7 +276,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    public function testRegister500_NoServiceObject()
+    public function testRegister500_NoServiceImplementation()
     {
         $this->setupDb();
         $this->loginUser(1);
@@ -307,9 +307,97 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
+    public function testUpdateAccount403_NotLoggedIn()
+    {
+        $response = $this->runApp('PUT', "/api/user/service/1/update-account/1");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount403_MissingGroup()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/update-account/1");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount404_NoService()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', '/api/user/service/'.($this->s1+99).'/update-account/1');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount404_NoCharacter()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/7");
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount404_NoAccount()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/2");
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount200()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $this->assertEquals(201, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount500_NoServiceImplementation()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s2}/update-account/1", null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame(self::ERROR_NO_SERVICE_OBJECT, $this->log->getHandler()->getRecords()[0]['message']);
+    }
+
+    public function testUpdateAccount500_GetAccountsFailed()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // and add a group, so that ServiceControllerTest_TestService throws an exception
+        $group4 = (new Group())->setName('G4');
+        $this->player->addGroup($group4);
+        $this->em->persist($group4);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testUpdateAccount500_ChangePasswordFailed()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/3");
+        $this->assertEquals(500, $response->getStatusCode());
+    }
+
     public function testResetPassword403_NotLoggedIn()
     {
-        $response = $this->runApp('PUT', "/api/user/service/1/resetPassword/1");
+        $response = $this->runApp('PUT', "/api/user/service/1/reset-password/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -318,7 +406,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/resetPassword/1");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/reset-password/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -327,7 +415,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', '/api/user/service/'.($this->s1+99).'/resetPassword/1');
+        $response = $this->runApp('PUT', '/api/user/service/'.($this->s1+99).'/reset-password/1');
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -336,7 +424,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/7");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/7");
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -345,7 +433,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/2");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/2");
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -354,17 +442,17 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/1");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/1");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('new-pass', $this->parseJsonBody($response));
     }
 
-    public function testResetPassword500_NoServiceObject()
+    public function testResetPassword500_NoServiceImplementation()
     {
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s2}/resetPassword/1", null, null, [
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s2}/reset-password/1", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
@@ -383,7 +471,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/1");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/1");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -392,7 +480,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/resetPassword/3");
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/3");
         $this->assertEquals(500, $response->getStatusCode());
     }
 

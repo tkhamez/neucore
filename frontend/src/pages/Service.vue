@@ -14,6 +14,7 @@
                     </div>
                     <div class="card-body">
 
+                        <!-- new password -->
                         <div v-if="newPassword[account.characterId]">
                             new password: {{ newPassword[account.characterId] }}
                         </div>
@@ -25,6 +26,14 @@
                             email: {{ account.email }}<br>
                             status: {{ account.status }}<br>
                         </div>
+
+                        <!-- update account -->
+                        <button v-if="isAccount(account) && isActive(account)"
+                                type="submit" class="btn btn-sm btn-primary"
+                                v-on:click.prevent="updateAccount(account.characterId)"
+                                :disabled="updateAccountButtonDisabled">
+                            Update Account
+                        </button>
 
                         <!-- Reset Password -->
                         <button v-if="isAccount(account) && isActive(account)"
@@ -69,8 +78,9 @@ export default {
             service: null,
             accounts: [],
             mainCharacterId: null,
-            registerButtonDisabled: false,
+            updateAccountButtonDisabled: false,
             resetPasswordButtonDisabled: false,
+            registerButtonDisabled: false,
             newPassword: {},
             formEmail: null,
         }
@@ -157,6 +167,19 @@ export default {
                 }
             });
         },
+        updateAccount(characterId) {
+            const vm = this;
+            vm.updateAccountButtonDisabled = true;
+            vm.newPassword = {}
+            new ServiceApi().serviceUpdateAccount(getServiceId(vm), characterId, (error, data, response) => {
+                if (error) {
+                    vm.message('Error. Please try again.', 'error');
+                } else {
+                    vm.message('Account successfully updated.', 'success');
+                }
+                vm.updateAccountButtonDisabled = false;
+            });
+        },
         resetPassword(characterId) {
             const vm = this;
             vm.resetPasswordButtonDisabled = true;
@@ -206,8 +229,9 @@ function getAccountData(vm, api) {
         if (!error) {
             sortAccounts(vm, data);
         }
-        vm.registerButtonDisabled = false;
+        vm.updateAccountButtonDisabled = false;
         vm.resetPasswordButtonDisabled = false;
+        vm.registerButtonDisabled = false;
     });
 }
 

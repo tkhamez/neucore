@@ -6,11 +6,11 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
-use Neucore\Entity\Group;
+use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
@@ -39,10 +39,6 @@ use Psr\Log\LoggerInterface;
  */
 class ServiceController extends BaseController
 {
-    private const SERVICE_OBJECT_ERROR =
-        "ServiceController: The configured service class does not exist of " .
-        "does not implement Neucore\Plugin\ServiceInterface.";
-
     /**
      * @var LoggerInterface
      */
@@ -52,6 +48,26 @@ class ServiceController extends BaseController
      * @var ServiceRegistration
      */
     private $serviceRegistration;
+
+    /**
+     * @var Character
+     */
+    private $validCharacter;
+
+    /**
+     * @var Service
+     */
+    private $service;
+
+    /**
+     * @var ServiceInterface
+     */
+    private $serviceImplementation;
+
+    /**
+     * @var ServiceAccountData
+     */
+    private $account;
 
     public function __construct(
         ResponseInterface $response,
@@ -97,17 +113,12 @@ class ServiceController extends BaseController
      */
     public function get(string $id): ResponseInterface
     {
-        $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
-
-        if ($service === null) {
-            return $this->response->withStatus(404);
+        $response = $this->getService((int) $id);
+        if ($response instanceof ResponseInterface) {
+            return $response;
         }
 
-        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
-            return $this->response->withStatus(403);
-        }
-
-        return $this->withJson($service->jsonSerialize(false));
+        return $this->withJson($this->service->jsonSerialize(false));
     }
 
     /**
@@ -147,24 +158,14 @@ class ServiceController extends BaseController
      */
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
-        if ($service === null) {
-            return $this->response->withStatus(404);
-        }
-
-        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
-            return $this->response->withStatus(403);
-        }
-
-        $serviceObject = $this->serviceRegistration->getServiceObject($service);
-        if ($serviceObject === null) {
-            $this->log->error(self::SERVICE_OBJECT_ERROR);
-            return $this->response->withStatus(500);
+        $response = $this->getServiceAndServiceImplementation((int) $id);
+        if ($response instanceof ResponseInterface) {
+            return $response;
         }
 
         try {
             $accountData = $this->serviceRegistration->getAccounts(
-                $serviceObject,
+                $this->serviceImplementation,
                 $this->getUser($userAuth)->getPlayer()->getCharacters()
             );
         } catch (Exception $e) {
@@ -230,32 +231,21 @@ class ServiceController extends BaseController
     {
         $emailAddress = $this->sanitizePrintable($this->getBodyParam($request, 'email', ''));
 
-        $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
-        if ($service === null) {
-            return $this->response->withStatus(404);
-        }
-
-        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
-            return $this->response->withStatus(403);
-        }
-
-        $player = $this->getUser($userAuth)->getPlayer();
-
         // get main character
+        $player = $this->getUser($userAuth)->getPlayer();
         $main = $player->getMain();
         if (!$main) {
             return $this->response->withStatus(409, 'no_main');
         }
 
-        $serviceObject = $this->serviceRegistration->getServiceObject($service);
-        if ($serviceObject === null) {
-            $this->log->error(self::SERVICE_OBJECT_ERROR);
-            return $this->response->withStatus(500);
+        $result = $this->getServiceAndServiceImplementation((int) $id);
+        if ($result instanceof ResponseInterface) {
+            return $result;
         }
 
         // check if account exists and has a valid state
         try {
-            $accounts = $this->serviceRegistration->getAccounts($serviceObject, [$main], false);
+            $accounts = $this->serviceRegistration->getAccounts($this->serviceImplementation, [$main], false);
         } catch (Exception $e) {
             return $this->response->withStatus(500);
         }
@@ -269,18 +259,12 @@ class ServiceController extends BaseController
             return $this->response->withStatus(409, 'already_registered');
         }
 
-        $coreGroups = array_map(function (Group $group) {
-            return new CoreGroup($group->getId(), $group->getName());
-        }, $player->getGroups());
-        $otherCharacterIds = array_map(function (Character $character) {
-            return $character->getId();
-        }, $player->getCharacters());
         try {
-            $accountData = $serviceObject->register(
+            $accountData = $this->serviceImplementation->register(
                 $main->toCoreCharacter(),
-                $coreGroups,
+                $player->getCoreGroups(),
                 $emailAddress,
-                $otherCharacterIds
+                $player->getCharactersId()
             );
         } catch (Exception $e) {
             if ($e->getMessage() !== '') {
@@ -294,7 +278,67 @@ class ServiceController extends BaseController
 
     /**
      * @OA\Put(
-     *     path="/user/service/{id}/resetPassword/{characterId}",
+     *     path="/user/service/{id}/update-account/{characterId}",
+     *     operationId="serviceUpdateAccount",
+     *     summary="Update an account.",
+     *     description="Needs role: user",
+     *     tags={"Service"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Service ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="characterId",
+     *         in="path",
+     *         required=true,
+     *         description="A character ID from the player's account.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="201",
+     *         description="Account updated."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Service, character or character's service account not found."
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Error during update."
+     *     )
+     * )
+     */
+    public function updateAccount(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
+    {
+        $response = $this->validateCharacterGetServiceImplementationAndAccount((int)$id, (int)$characterId, $userAuth);
+        if ($response instanceof ResponseInterface) {
+            return $response;
+        }
+
+        // update account
+        try {
+            $this->serviceImplementation->updateAccount(
+                $this->validCharacter->toCoreCharacter(),
+                $this->validCharacter->getPlayer()->getCoreGroups()
+            );
+        } catch (Exception $e) {
+            return $this->response->withStatus(500);
+        }
+
+        return $this->response->withStatus(201);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/user/service/{id}/reset-password/{characterId}",
      *     operationId="serviceResetPassword",
      *     summary="Resets password for one account.",
      *     description="Needs role: user",
@@ -311,7 +355,7 @@ class ServiceController extends BaseController
      *         name="characterId",
      *         in="path",
      *         required=true,
-     *         description="Character ID.",
+     *         description="A character ID from the player's account.",
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
@@ -325,7 +369,7 @@ class ServiceController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Service, character or service account not found."
+     *         description="Service, character or character's service account not found."
      *     ),
      *     @OA\Response(
      *         response="500",
@@ -335,21 +379,66 @@ class ServiceController extends BaseController
      */
     public function resetPassword(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
+        $response = $this->validateCharacterGetServiceImplementationAndAccount((int)$id, (int)$characterId, $userAuth);
+        if ($response instanceof ResponseInterface) {
+            return $response;
+        }
+
+        // change password
+        try {
+            $newPassword = $this->serviceImplementation->resetPassword($this->account->getCharacterId());
+        } catch (Exception $e) {
+            return $this->response->withStatus(500);
+        }
+
+        return $this->withJson($newPassword);
+    }
+
+    private function getService(int $id): ?ResponseInterface
+    {
         // get service
-        $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
+        $service = $this->repositoryFactory->getServiceRepository()->find($id);
         if ($service === null) {
             return $this->response->withStatus(404);
         }
+        $this->service = $service;
 
         // check service permission
-        if (!$this->serviceRegistration->hasRequiredGroups($service)) {
+        if (!$this->serviceRegistration->hasRequiredGroups($this->service)) {
             return $this->response->withStatus(403);
         }
 
-        // validate character
+        return null;
+    }
+
+    private function getServiceAndServiceImplementation(int $id): ?ResponseInterface
+    {
+        $response = $this->getService((int) $id);
+        if ($response instanceof ResponseInterface) {
+            return $response;
+        }
+
+        // get service object
+        $serviceImplementation = $this->serviceRegistration->getServiceImplementation($this->service);
+        if ($serviceImplementation === null) {
+            $this->log->error(
+                "ServiceController: The configured service class does not exist of " .
+                "does not implement Neucore\Plugin\ServiceInterface."
+            );
+            return $this->response->withStatus(500);
+        }
+        $this->serviceImplementation = $serviceImplementation;
+
+        return null;
+    }
+
+    private function validateCharacterGetServiceImplementationAndAccount(
+        int $id,
+        int $characterId,
+        UserAuth $userAuth
+    ): ?ResponseInterface {
         $validCharacter = null;
-        $player = $this->getUser($userAuth)->getPlayer();
-        foreach ($player->getCharacters() as $character) {
+        foreach ($this->getUser($userAuth)->getPlayer()->getCharacters() as $character) {
             if ($character->getId() === (int)$characterId) {
                 $validCharacter = $character;
                 break;
@@ -358,31 +447,28 @@ class ServiceController extends BaseController
         if ($validCharacter === null) {
             return $this->response->withStatus(404);
         }
+        $this->validCharacter = $validCharacter;
 
-        // get service object
-        $serviceObject = $this->serviceRegistration->getServiceObject($service);
-        if ($serviceObject === null) {
-            $this->log->error(self::SERVICE_OBJECT_ERROR);
-            return $this->response->withStatus(500);
+        $response1 = $this->getServiceAndServiceImplementation((int) $id);
+        if ($response1 instanceof ResponseInterface) {
+            return $response1;
         }
 
-        // check if account exists
+        // get account
         try {
-            $accounts = $this->serviceRegistration->getAccounts($serviceObject, [$validCharacter], false);
+            $account = $this->serviceRegistration->getAccounts(
+                $this->serviceImplementation,
+                [$this->validCharacter],
+                false
+            );
         } catch (Exception $e) {
             return $this->response->withStatus(500);
         }
-        if (empty($accounts)) {
+        if (empty($account)) {
             return $this->response->withStatus(404);
         }
+        $this->account = $account[0];
 
-        // change password
-        try {
-            $newPassword = $serviceObject->resetPassword($validCharacter->getId());
-        } catch (Exception $e) {
-            return $this->response->withStatus(500);
-        }
-
-        return $this->withJson($newPassword);
+        return null;
     }
 }

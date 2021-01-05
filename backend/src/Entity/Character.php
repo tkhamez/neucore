@@ -416,6 +416,7 @@ class Character implements \JsonSerializable
             null;
         return new CoreCharacter(
             $this->getId(),
+            $this->getMain(),
             $this->getName() !== '' ? $this->getName() : null,
             $this->getCharacterOwnerHash(),
             $this->getCorporation() !== null ? $this->getCorporation()->getId() : null,

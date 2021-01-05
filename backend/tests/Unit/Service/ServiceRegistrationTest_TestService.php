@@ -51,6 +51,10 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
         throw new Exception();
     }
 
+    public function updateAccount(CoreCharacter $character, array $groups): void
+    {
+    }
+
     public function resetPassword(int $characterId): string
     {
         throw new Exception();

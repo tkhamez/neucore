@@ -198,5 +198,6 @@ return [
     '/api/user/service/{id}/get'                            => ['GET',  ServiceController::class.'::get'],
     '/api/user/service/{id}/accounts'                       => ['GET',  ServiceController::class.'::accounts'],
     '/api/user/service/{id}/register'                       => ['POST', ServiceController::class.'::register'],
-    '/api/user/service/{id}/resetPassword/{characterId}'    => ['PUT', ServiceController::class.'::resetPassword'],
+    '/api/user/service/{id}/update-account/{characterId}'   => ['PUT', ServiceController::class.'::updateAccount'],
+    '/api/user/service/{id}/reset-password/{characterId}'   => ['PUT', ServiceController::class.'::resetPassword'],
 ];

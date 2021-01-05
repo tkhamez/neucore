@@ -92,25 +92,25 @@ class ServiceRegistrationTest extends TestCase
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
     }
 
-    public function testGetServiceObject_MissingPhpClass()
+    public function testGetServiceImplementation_MissingPhpClass()
     {
         $service = new Service();
         $service->setConfiguration((string)\json_encode(['phpClass' => 'Test\TestService']));
 
-        $this->assertNull($this->serviceRegistration->getServiceObject($service));
+        $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
 
-    public function testGetServiceObject_PhpClassMissingImplementation()
+    public function testGetServiceImplementation_PhpClassMissingImplementation()
     {
         $service = new Service();
         $service->setConfiguration((string)\json_encode([
             'phpClass' => ServiceRegistrationTest_TestServiceInvalid::class
         ]));
 
-        $this->assertNull($this->serviceRegistration->getServiceObject($service));
+        $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
 
-    public function testGetServiceObject()
+    public function testGetServiceImplementation()
     {
         // add same prefix to test that the new path is added, not replaced
         self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
@@ -122,7 +122,10 @@ class ServiceRegistrationTest extends TestCase
             'psr4Path' => __DIR__ .  '/ServiceRegistration_AutoloadTest',
         ]));
 
-        $this->assertInstanceOf(ServiceInterface::class, $this->serviceRegistration->getServiceObject($service));
+        $this->assertInstanceOf(
+            ServiceInterface::class,
+            $this->serviceRegistration->getServiceImplementation($service)
+        );
 
         $this->assertSame(
             ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest'],

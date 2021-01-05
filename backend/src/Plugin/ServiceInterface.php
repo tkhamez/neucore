@@ -65,12 +65,20 @@ interface ServiceInterface
     ): ServiceAccountData;
 
     /**
+     * Updates account information.
+     *
+     * This is not called if there is no account for the character.
+     *
+     * @throws Exception On error
+     */
+    public function updateAccount(CoreCharacter $character, array $groups): void;
+
+    /**
      * Resets and returns the password for the account of the provided character.
      *
      * This is not called if there is no account for the character.
      *
-     * @throws Exception On error, the message should be one of the self::ERROR_* constants
-     *                   (it will be shown to the user with a 409 response code) or empty (500 response code).
+     * @throws Exception
      */
     public function resetPassword(int $characterId): string;
 }

@@ -12,6 +12,11 @@ class CoreCharacter
     public $id;
 
     /**
+     * @var bool|null
+     */
+    public $main;
+
+    /**
      * @var string|null
      */
     public $name;
@@ -53,6 +58,7 @@ class CoreCharacter
 
     public function __construct(
         int $id,
+        bool $main = null,
         string $name = null,
         string $ownerHash = null,
         int $corporationId = null,
@@ -63,6 +69,7 @@ class CoreCharacter
         string $allianceTicker = null
     ) {
         $this->id = $id;
+        $this->main = $main;
         $this->name = $name;
         $this->ownerHash = $ownerHash;
         $this->corporationId = $corporationId;

@@ -14,6 +14,7 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Plugin\CoreGroup;
 use PHPUnit\Framework\TestCase;
 
 class PlayerTest extends TestCase
@@ -176,9 +177,6 @@ class PlayerTest extends TestCase
         $this->assertSame([$c1], $play->getCharacters());
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function testHasCharacter()
     {
         $char1 = new Character();
@@ -302,9 +300,24 @@ class PlayerTest extends TestCase
         $this->assertSame([$g1], $play->getGroups());
     }
 
-    /**
-     * @throws \ReflectionException
-     */
+    public function testGetCoreGroups()
+    {
+        $player = (new Player())
+            ->addGroup((new Group())->setName('g1'))
+            ->addGroup((new Group())->setName('g2'))
+        ;
+
+        $coreGroups = $player->getCoreGroups();
+
+        $this->assertSame(2, count($coreGroups));
+        $this->assertInstanceOf(CoreGroup::class, $coreGroups[0]);
+        $this->assertInstanceOf(CoreGroup::class, $coreGroups[1]);
+        $this->assertSame('g1', $coreGroups[0]->name);
+        $this->assertSame('g2', $coreGroups[1]->name);
+        $this->assertSame(0, $coreGroups[0]->identifier);
+        $this->assertSame(0, $coreGroups[1]->identifier);
+    }
+
     public function testFindGroupById()
     {
         $group1 = new Group();
@@ -323,9 +336,6 @@ class PlayerTest extends TestCase
         $this->assertNull($player->findGroupById(3));
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function testGetGroupIds()
     {
         $group1 = new Group();
@@ -343,9 +353,6 @@ class PlayerTest extends TestCase
         $this->assertSame([1, 2], $player->getGroupIds());
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function testHasGroup()
     {
         $group1 = new Group();
@@ -363,9 +370,6 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->hasGroup($group2->getId()));
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function testHasAnyGroup()
     {
         $group1 = new Group();

@@ -55,6 +55,13 @@ class ServiceControllerTest_TestService implements ServiceInterface
         }
     }
 
+    public function updateAccount(CoreCharacter $character, array $groups): void
+    {
+        if ($character->id === 3) {
+            throw new Exception();
+        }
+    }
+
     public function resetPassword(int $characterId): string
     {
         if ($characterId === 3) {

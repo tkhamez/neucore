@@ -6,9 +6,7 @@ namespace Neucore\Service;
 
 use Neucore\Application;
 use Neucore\Entity\Character;
-use Neucore\Entity\Group;
 use Neucore\Entity\Service;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
@@ -50,7 +48,7 @@ class ServiceRegistration
         return true;
     }
 
-    public function getServiceObject(Service $service): ?ServiceInterface
+    public function getServiceImplementation(Service $service): ?ServiceInterface
     {
         $serviceConfig = json_decode((string)$service->getConfiguration(), true);
 
@@ -104,17 +102,13 @@ class ServiceRegistration
 
         $accountData = [];
 
-        $coreGroups = array_map(function (Group $group) {
-            return new CoreGroup($group->getId(), $group->getName());
-        }, $characters[0]->getPlayer()->getGroups());
-
         $coreCharacters = [];
         $characterIds = [];
         foreach ($characters as $character) {
             $coreCharacters[] = $character->toCoreCharacter();
             $characterIds[] = $character->getId();
         }
-
+        $coreGroups = $characters[0]->getPlayer()->getCoreGroups();
         foreach ($service->getAccounts($coreCharacters, $coreGroups) as $account) {
             if (!$account instanceof ServiceAccountData) {
                 $this->log->error(

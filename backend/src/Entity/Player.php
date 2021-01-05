@@ -7,6 +7,7 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Plugin\CoreGroup;
 use OpenApi\Annotations as OA;
 
 /**
@@ -53,13 +54,13 @@ class Player implements \JsonSerializable
      * @ORM\Column(type="string", length=255)
      * @var string
      */
-    private $name;
+    private $name = '';
 
     /**
      * Last automatic group assignment.
      *
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $lastUpdate;
 
@@ -165,9 +166,6 @@ class Player implements \JsonSerializable
 
     /**
      * Contains only information that is of interest for clients.
-     *
-     * {@inheritDoc}
-     * @see \JsonSerializable::jsonSerialize()
      */
     public function jsonSerialize(bool $minimum = false): array
     {
@@ -191,9 +189,6 @@ class Player implements \JsonSerializable
         ];
     }
 
-    /**
-     * Constructor
-     */
     public function __construct()
     {
         $this->roles = new ArrayCollection();
@@ -206,27 +201,21 @@ class Player implements \JsonSerializable
         $this->incomingCharacters = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return "$this->name #$this->id";
     }
 
     /**
      * Setter for identifier (autoincrement).
-     *
-     * @param int $id
-     * @return $this
      */
     public function setId(int $id): self
     {
         $this->id = $id;
-
         return $this;
     }
 
     /**
-     * Get id.
-     *
      * @return int
      */
     public function getId()
@@ -234,50 +223,24 @@ class Player implements \JsonSerializable
         return $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Player
-     */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Set lastUpdate.
-     *
-     * @param \DateTime $lastUpdate
-     *
-     * @return Player
-     */
-    public function setLastUpdate($lastUpdate)
+    public function setLastUpdate(\DateTime $lastUpdate): self
     {
         $this->lastUpdate = clone $lastUpdate;
-
         return $this;
     }
 
-    /**
-     * Get lastUpdate.
-     *
-     * @return \DateTime|null
-     */
-    public function getLastUpdate()
+    public function getLastUpdate(): ?\DateTime
     {
         return $this->lastUpdate;
     }
@@ -285,7 +248,6 @@ class Player implements \JsonSerializable
     public function setStatus(string $status): Player
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -294,119 +256,83 @@ class Player implements \JsonSerializable
         return $this->status;
     }
 
-    /**
-     * @return bool
-     */
     public function getDeactivationMailSent(): bool
     {
         return $this->deactivationMailSent;
     }
 
-    /**
-     * @param bool $deactivationMailSent
-     * @return Player
-     */
     public function setDeactivationMailSent(bool $deactivationMailSent): self
     {
         $this->deactivationMailSent = $deactivationMailSent;
-
         return $this;
     }
 
-    /**
-     * Add role.
-     *
-     * @param Role $role
-     *
-     * @return Player
-     */
-    public function addRole(Role $role)
+    public function addRole(Role $role): self
     {
         $this->roles[] = $role;
-
         return $this;
     }
 
     /**
-     * Remove role.
-     *
-     * @param Role $role
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeRole(Role $role)
+    public function removeRole(Role $role): bool
     {
         return $this->roles->removeElement($role);
     }
 
     /**
-     * Get roles.
-     *
      * @return Role[]
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles->toArray();
     }
 
     /**
-     *
      * @return string[]
      */
-    public function getRoleNames()
+    public function getRoleNames(): array
     {
         $names = [];
         foreach ($this->getRoles() as $role) {
             $names[] = $role->getName();
         }
-
         return $names;
     }
 
-    /**
-     *
-     * @param string $name
-     * @return boolean
-     */
-    public function hasRole(string $name)
+    public function hasRole(string $name): bool
     {
         return in_array($name, $this->getRoleNames());
     }
 
-    /**
-     * Add character.
-     *
-     * @param Character $character
-     *
-     * @return Player
-     */
-    public function addCharacter(Character $character)
+    public function addCharacter(Character $character): self
     {
         $this->characters[] = $character;
-
         return $this;
     }
 
     /**
-     * Remove character.
-     *
-     * @param Character $character
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCharacter(Character $character)
+    public function removeCharacter(Character $character): bool
     {
         return $this->characters->removeElement($character);
     }
 
     /**
-     * Get characters.
-     *
      * @return Character[]
      */
-    public function getCharacters()
+    public function getCharacters(): array
     {
         return $this->characters->toArray();
+    }
+
+    public function getCharactersId(): array
+    {
+        return array_map(function (Character $character) {
+            return $character->getId();
+        }, $this->getCharacters());
     }
 
     public function hasCharacter(int $charId): bool
@@ -444,10 +370,6 @@ class Player implements \JsonSerializable
         return $isMember;
     }
 
-    /**
-     * @param int $hours
-     * @return bool
-     */
     public function hasCharacterWithInvalidTokenOlderThan(int $hours): bool
     {
         foreach ($this->getCharacters() as $char) {
@@ -475,64 +397,38 @@ class Player implements \JsonSerializable
         return null;
     }
 
-    /**
-     * Add group application.
-     *
-     * @param GroupApplication $groupApplication
-     *
-     * @return Player
-     */
-    public function addGroupApplication(GroupApplication $groupApplication)
+    public function addGroupApplication(GroupApplication $groupApplication): self
     {
         $this->groupApplications[] = $groupApplication;
-
         return $this;
     }
 
     /**
-     * Remove group application.
-     *
-     * @param GroupApplication $groupApplication
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeGroupApplication(GroupApplication $groupApplication)
+    public function removeGroupApplication(GroupApplication $groupApplication): bool
     {
         return $this->groupApplications->removeElement($groupApplication);
     }
 
     /**
-     * Get group applications.
-     *
      * @return GroupApplication[]
      */
-    public function getGroupApplications()
+    public function getGroupApplications(): array
     {
         return $this->groupApplications->toArray();
     }
 
-    /**
-     * Add group.
-     *
-     * @param Group $group
-     *
-     * @return Player
-     */
-    public function addGroup(Group $group)
+    public function addGroup(Group $group): self
     {
         $this->groups[] = $group;
-
         return $this;
     }
 
     /**
-     * Remove group.
-     *
-     * @param Group $group
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeGroup(Group $group)
+    public function removeGroup(Group $group): bool
     {
         return $this->groups->removeElement($group);
     }
@@ -548,26 +444,33 @@ class Player implements \JsonSerializable
     }
 
     /**
-     * Get groups.
-     *
      * @return Group[]
      */
-    public function getGroups()
+    public function getGroups(): array
     {
         return $this->groups->toArray();
     }
 
     /**
-     *
      * @return int[]
      */
-    public function getGroupIds()
+    public function getGroupIds(): array
     {
         $groupIds = [];
         foreach ($this->getGroups() as $group) {
             $groupIds[] = $group->getId();
         }
         return $groupIds;
+    }
+
+    /**
+     * @return CoreGroup[]
+     */
+    public function getCoreGroups(): array
+    {
+        return array_map(function (Group $group) {
+            return new CoreGroup((int)$group->getId(), (string)$group->getName());
+        }, $this->getGroups());
     }
 
     public function hasGroup(int $groupId): bool
@@ -590,39 +493,25 @@ class Player implements \JsonSerializable
     {
         return ! empty(array_intersect($groupIds, $this->getGroupIds()));
     }
-    
-    /**
-     * Add managerGroup.
-     *
-     * @param Group $managerGroup
-     *
-     * @return Player
-     */
-    public function addManagerGroup(Group $managerGroup)
+
+    public function addManagerGroup(Group $managerGroup): self
     {
         $this->managerGroups[] = $managerGroup;
-
         return $this;
     }
 
     /**
-     * Remove managerGroup.
-     *
-     * @param Group $managerGroup
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeManagerGroup(Group $managerGroup)
+    public function removeManagerGroup(Group $managerGroup): bool
     {
         return $this->managerGroups->removeElement($managerGroup);
     }
 
     /**
-     * Get managerGroups.
-     *
      * @return Group[]
      */
-    public function getManagerGroups()
+    public function getManagerGroups(): array
     {
         return $this->managerGroups->toArray();
     }
@@ -638,38 +527,24 @@ class Player implements \JsonSerializable
         return false;
     }
 
-    /**
-     * Add managerApp.
-     *
-     * @param App $managerApp
-     *
-     * @return Player
-     */
-    public function addManagerApp(App $managerApp)
+    public function addManagerApp(App $managerApp): self
     {
         $this->managerApps[] = $managerApp;
-
         return $this;
     }
 
     /**
-     * Remove managerApp.
-     *
-     * @param App $managerApp
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeManagerApp(App $managerApp)
+    public function removeManagerApp(App $managerApp): bool
     {
         return $this->managerApps->removeElement($managerApp);
     }
 
     /**
-     * Get managerApps.
-     *
      * @return App[]
      */
-    public function getManagerApps()
+    public function getManagerApps(): array
     {
         return $this->managerApps->toArray();
     }
@@ -677,7 +552,6 @@ class Player implements \JsonSerializable
     public function addRemovedCharacter(RemovedCharacter $removedCharacter): self
     {
         $this->removedCharacters[] = $removedCharacter;
-
         return $this;
     }
 
@@ -700,7 +574,6 @@ class Player implements \JsonSerializable
     public function addIncomingCharacters(RemovedCharacter $incomingCharacters): self
     {
         $this->incomingCharacters[] = $incomingCharacters;
-
         return $this;
     }
 
