@@ -1,6 +1,6 @@
-![build](https://github.com/tkhamez/neucore/workflows/build/badge.svg)
-[![Build Status](https://travis-ci.com/tkhamez/neucore.svg?branch=master)](https://travis-ci.com/tkhamez/neucore)
+[![build](https://github.com/tkhamez/neucore/workflows/build/badge.svg)](https://github.com/tkhamez/neucore/actions)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=brvneucore&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=brvneucore)
+[![](https://www.openhub.net/p/neucore/widgets/project_thin_badge?format=gif)](https://www.openhub.net/p/neucore/)
 
 # Neucore
 
