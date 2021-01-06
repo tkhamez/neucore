@@ -33,6 +33,7 @@ Objectives:
 - Access to [ESI](http://esi.evetech.net) data of all members.
 - Member tracking and watch lists.
 - Login via EVE SSO.
+- EXPERIMENTAL: Service registration plugins.
 
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
 an [**API**](doc/API.md) overview, and some [screenshots](doc/screenshots).
@@ -83,6 +84,11 @@ This is also where the name "Neucore" comes from.
 
 ### Related Software
 
+- Neucore plugin package https://github.com/tkhamez/neucore-plugin
+- Neucore plugins: Brave Collective
+  [Slack](https://github.com/bravecollective/neucore-plugin-slack),
+  [Mumble](https://github.com/bravecollective/neucore-plugin-mumble),
+  [Forum](https://github.com/bravecollective/neucore-plugin-forum)
 - [neucore-api](https://github.com/bravecollective/neucore-api) PHP OpenAPI client.
 - [neucore-api-python](https://github.com/bravecollective/neucore-api-python) Python OpenAPI client.
 - [neucore-api-go](https://github.com/bravecollective/neucore-api-go) Go OpenAPI client.
