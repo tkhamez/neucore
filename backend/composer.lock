@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2bc9bbd2054f33792b06a75495076d0e",
+    "content-hash": "be32d5fae7d712ffb66008cb3b925464",
     "packages": [
         {
             "name": "brick/math",
@@ -4040,6 +4040,41 @@
                 "MIT"
             ],
             "time": "2020-11-17T12:22:51+00:00"
+        },
+        {
+            "name": "tkhamez/neucore-plugin",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tkhamez/neucore-plugin.git",
+                "reference": "84050683f9892e4d220874623a1d7ecfc5aaf5f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/84050683f9892e4d220874623a1d7ecfc5aaf5f8",
+                "reference": "84050683f9892e4d220874623a1d7ecfc5aaf5f8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0",
+                "psr/log": "^1.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Neucore\\Plugin\\": "src/",
+                    "Tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Necessary classes to write a Neucore plugin.",
+            "time": "2021-01-06T16:51:56+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",
