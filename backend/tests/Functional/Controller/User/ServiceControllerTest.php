@@ -349,13 +349,13 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testUpdateAccount200()
+    public function testUpdateAccount204()
     {
         $this->setupDb();
         $this->loginUser(1);
 
         $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
-        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(204, $response->getStatusCode());
     }
 
     public function testUpdateAccount500_NoServiceImplementation()

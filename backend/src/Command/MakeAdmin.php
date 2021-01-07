@@ -66,6 +66,7 @@ class MakeAdmin extends Command
             Role::USER_CHARS,
             Role::APP_ADMIN,
             Role::GROUP_ADMIN,
+            Role::SERVICE_ADMIN,
             Role::ESI,
             Role::SETTINGS,
             Role::TRACKING_ADMIN,

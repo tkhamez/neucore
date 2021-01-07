@@ -55,6 +55,12 @@ This role is assigned automatically depending on whether the player is a manager
 
 {group-manager}
 
+#### service-admin
+
+Allows players to create and edit services.
+
+{service-admin}
+
 #### app-admin
 
 Allows a player to create apps and add and remove managers and roles.

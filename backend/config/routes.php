@@ -15,6 +15,7 @@ use Neucore\Controller\User\CorporationController;
 use Neucore\Controller\User\EsiController;
 use Neucore\Controller\User\GroupController;
 use Neucore\Controller\User\PlayerController;
+use Neucore\Controller\User\ServiceAdminController;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
 use Neucore\Controller\User\WatchlistController;
@@ -200,4 +201,10 @@ return [
     '/api/user/service/{id}/register'                       => ['POST', ServiceController::class.'::register'],
     '/api/user/service/{id}/update-account/{characterId}'   => ['PUT', ServiceController::class.'::updateAccount'],
     '/api/user/service/{id}/reset-password/{characterId}'   => ['PUT', ServiceController::class.'::resetPassword'],
+
+    '/api/user/service-admin/list'                      => ['GET',    ServiceAdminController::class.'::list'],
+    '/api/user/service-admin/create'                    => ['POST',   ServiceAdminController::class.'::create'],
+    '/api/user/service-admin/{id}/rename'               => ['PUT',    ServiceAdminController::class.'::rename'],
+    '/api/user/service-admin/{id}/delete'               => ['DELETE', ServiceAdminController::class.'::delete'],
+    '/api/user/service-admin/{id}/save-configuration'   => ['PUT',    ServiceAdminController::class.'::saveConfiguration'],
 ];

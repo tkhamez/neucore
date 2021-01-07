@@ -17,6 +17,7 @@ The API is documented with OpenAPI, it is available at
   * [user-chars](#user-chars)
   * [group-admin](#group-admin)
   * [group-manager](#group-manager)
+  * [service-admin](#service-admin)
   * [app-admin](#app-admin)
   * [app-manager](#app-manager)
   * [esi](#esi)
@@ -77,7 +78,11 @@ Settings API
 - List all settings. `GET /user/settings/system/list`
 
 Service API
-- Returns service. `GET /user/service/{id}`
+- Returns service. `GET /user/service/{id}/get`
+- Returns all player's service accounts for a service. `GET /user/service/{id}/accounts`
+- Registers a new account with a service. `POST /user/service/{id}/register`
+- Update an account. `PUT /user/service/{id}/update-account/{characterId}`
+- Resets password for one account. `PUT /user/service/{id}/reset-password/{characterId}`
 
 #### user-admin
 
@@ -185,6 +190,17 @@ Group API
 - Adds a player to a group. `PUT /user/group/{id}/add-member/{pid}`
 - Remove player from a group. `PUT /user/group/{id}/remove-member/{pid}`
 - List all members of a group. `GET /user/group/{id}/members`
+
+#### service-admin
+
+Allows players to create and edit services.
+
+ServiceAdmin API
+- List all services. `GET /user/service-admin/list`
+- Create a service. `POST /user/service-admin/create`
+- Rename a service. `PUT /user/service-admin/{id}/rename`
+- Delete a service. `DELETE /user/service-admin/{id}/delete`
+- Save the service configuration. `PUT /user/service-admin/{id}/save-configuration`
 
 #### app-admin
 

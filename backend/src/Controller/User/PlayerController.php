@@ -63,6 +63,7 @@ class PlayerController extends BaseController
     private $assignableRoles = [
         Role::APP_ADMIN,
         Role::GROUP_ADMIN,
+        Role::SERVICE_ADMIN,
         Role::USER_ADMIN,
         Role::USER_MANAGER,
         Role::USER_CHARS,
@@ -650,8 +651,8 @@ class PlayerController extends BaseController
      *         @OA\Schema(
      *             type="string",
      *             enum={"user", "user-admin", "user-manager", "user-chars", "group-admin", "group-manager",
-     *                   "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin", "watchlist",
-     *                   "watchlist-manager", "watchlist-admin"}
+     *                   "service-admin", "app-admin", "app-manager", "esi", "settings", "tracking", "tracking-admin",
+     *                   "watchlist", "watchlist-manager", "watchlist-admin"}
      *         ),
      *     ),
      *     @OA\Response(
@@ -676,6 +677,7 @@ class PlayerController extends BaseController
             Role::USER_MANAGER,
             Role::USER_CHARS,
             Role::GROUP_ADMIN,
+            Role::SERVICE_ADMIN,
             Role::APP_ADMIN,
             Role::ESI,
             Role::SETTINGS,
@@ -754,8 +756,8 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "user-admin", "app-admin",
-     *                   "esi", "settings", "tracking-admin", "watchlist-admin"}
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "service-admin", "user-admin",
+     *                   "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
      *     @OA\Response(
@@ -811,8 +813,8 @@ class PlayerController extends BaseController
      *         description="Name of the role.",
      *         @OA\Schema(
      *             type="string",
-     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "user-admin", "app-admin",
-     *                   "esi", "settings", "tracking-admin", "watchlist-admin"}
+     *             enum={"app-admin", "user-manager", "user-chars", "group-admin", "service-admin", "user-admin",
+     *                   "app-admin", "esi", "settings", "tracking-admin", "watchlist-admin"}
      *         )
      *     ),
      *     @OA\Response(

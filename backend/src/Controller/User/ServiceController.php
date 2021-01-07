@@ -299,7 +299,7 @@ class ServiceController extends BaseController
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
-     *         response="201",
+     *         response="200",
      *         description="Account updated."
      *     ),
      *     @OA\Response(
@@ -333,7 +333,7 @@ class ServiceController extends BaseController
             return $this->response->withStatus(500);
         }
 
-        return $this->response->withStatus(201);
+        return $this->response->withStatus(204);
     }
 
     /**

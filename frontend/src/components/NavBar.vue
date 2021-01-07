@@ -57,6 +57,9 @@
                         <a v-if="hasRole('group-admin')"
                             class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
                             href="#GroupAdmin">Groups</a>
+                        <a v-if="hasRole('service-admin')"
+                            class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
+                            href="#ServiceAdmin">Services</a>
                         <a v-if="hasRole('app-admin')"
                             class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
@@ -132,7 +135,7 @@ export default {
     data: function() {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
-            adminPages: ['GroupAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
+            adminPages: ['GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'FindAlts'],
             page: '',
             selectedTheme: '',
