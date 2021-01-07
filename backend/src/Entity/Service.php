@@ -32,7 +32,13 @@ class Service implements \JsonSerializable
     private $name;
 
     /**
-     * TODO split into individual properties: phpClass, psr4Prefix, psr4Path, groups, ...
+     * TODO split into individual properties?
+     * phpClass, psr4Prefix, psr4Path, requiredGroups - TODO do not return unless admin?
+     * properties [username,password,email,status]
+     * actions [update-account,reset-password]
+     * URLs [[url,title,target],[...]], placeholder: {username}, {password}, {email}
+     * accountText, topText
+     *
      * @OA\Property()
      * @ORM\Column(type="text", length=16777215, nullable=true)
      * @var string|null

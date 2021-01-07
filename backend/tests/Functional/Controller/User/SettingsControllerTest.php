@@ -399,9 +399,9 @@ class SettingsControllerTest extends WebTestCase
 
         $this->service1 = (new Service())->setName('s1');
         $this->service2 = (new Service())->setName('s2')
-            ->setConfiguration((string)json_encode(['groups' => $group->getId()]));
+            ->setConfiguration((string)json_encode(['requiredGroups' => $group->getId()]));
         $service3 = (new Service())->setName('s3')
-            ->setConfiguration((string)json_encode(['groups' => $group->getId()+99]));
+            ->setConfiguration((string)json_encode(['requiredGroups' => $group->getId()+99]));
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);

@@ -80,7 +80,7 @@ class ServiceRegistrationTest extends TestCase
         $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
 
         // add require group
-        $service->setConfiguration((string)json_encode(['groups' => $group->getId()]));
+        $service->setConfiguration((string)json_encode(['requiredGroups' => $group->getId()]));
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
 
         // add group to player
@@ -88,7 +88,7 @@ class ServiceRegistrationTest extends TestCase
         $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
 
         // add another require group
-        $service->setConfiguration((string)json_encode(['groups' => implode(',', [$group->getId(), '2'])]));
+        $service->setConfiguration((string)json_encode(['requiredGroups' => implode(',', [$group->getId(), '2'])]));
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
     }
 

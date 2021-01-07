@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
+use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
@@ -50,6 +51,11 @@ class ServiceController extends BaseController
     private $serviceRegistration;
 
     /**
+     * @var UserAuth
+     */
+    private $userAuth;
+
+    /**
      * @var Character
      */
     private $validCharacter;
@@ -74,11 +80,13 @@ class ServiceController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
-        ServiceRegistration $serviceRegistration
+        ServiceRegistration $serviceRegistration,
+        UserAuth $userAuth
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         $this->log = $log;
         $this->serviceRegistration = $serviceRegistration;
+        $this->userAuth = $userAuth;
     }
 
     /**
@@ -404,7 +412,8 @@ class ServiceController extends BaseController
         $this->service = $service;
 
         // check service permission
-        if (!$this->serviceRegistration->hasRequiredGroups($this->service)) {
+        $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+        if (!$isAdmin && !$this->serviceRegistration->hasRequiredGroups($this->service)) {
             return $this->response->withStatus(403);
         }
 

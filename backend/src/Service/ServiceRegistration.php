@@ -38,7 +38,7 @@ class ServiceRegistration
         }
 
         $serviceConfig = json_decode((string)$service->getConfiguration(), true);
-        $groups = array_map('intval', explode(',', (string)($serviceConfig['groups'] ?? '')));
+        $groups = array_map('intval', explode(',', (string)($serviceConfig['requiredGroups'] ?? '')));
 
         foreach ($groups as $group) {
             if ($group > 0 && !$character->getPlayer()->hasGroup($group)) {

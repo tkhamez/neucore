@@ -1,59 +1,59 @@
 <template>
-    <div class="container-fluid">
+<div class="container-fluid">
 
-        <edit :type="'Service'" ref="editModal"
-              :functionCreate="create"
-              :functionDelete="deleteIt"
-              :functionRename="rename"></edit>
+    <edit :type="'Service'" ref="editModal"
+          :functionCreate="create"
+          :functionDelete="deleteIt"
+          :functionRename="rename"></edit>
 
-        <div class="row mt-3">
-            <div class="col-lg-4 sticky-column">
-                <div class="card border-secondary mb-3">
-                    <h4 class="card-header">
-                        Services
-                        <span class="far fa-plus-square add-service" title="Add group"
-                              @mouseover="mouseover" @mouseleave="mouseleave"
-                              v-on:click="showCreateModal()"></span>
-                    </h4>
-                    <div class="list-group">
-                        <span v-for="service in services" class="list-item-wrap"
-                              :class="{ active: activeService && activeService.id === service.id }">
-                            <a class="list-group-item list-group-item-action"
-                               :class="{ active: activeService && activeService.id === service.id }"
-                               :href="'#ServiceAdmin/' + service.id">
-                                {{ service.name }}
-                            </a>
-                            <span class="entity-actions">
-                                <span role="img" aria-label="edit" title="edit"
-                                      class="fas fa-pencil-alt mr-1"
-                                      @mouseover="mouseover" @mouseleave="mouseleave"
-                                      v-on:click="showEditModal(service)"></span>
-                                <span role="img" aria-label="delete" title="delete"
-                                      class="far fa-trash-alt mr-1"
-                                      @mouseover="mouseover" @mouseleave="mouseleave"
-                                      v-on:click="showDeleteModal(service)"></span>
-                            </span>
+    <div class="row mt-3">
+        <div class="col-lg-4 sticky-column">
+            <div class="card border-secondary mb-3">
+                <h4 class="card-header">
+                    Services
+                    <span class="far fa-plus-square add-service" title="Add group"
+                          @mouseover="mouseover" @mouseleave="mouseleave"
+                          v-on:click="showCreateModal()"></span>
+                </h4>
+                <div class="list-group">
+                    <span v-for="service in services" class="list-item-wrap"
+                          :class="{ active: activeService && activeService.id === service.id }">
+                        <a class="list-group-item list-group-item-action"
+                           :class="{ active: activeService && activeService.id === service.id }"
+                           :href="'#ServiceAdmin/' + service.id">
+                            {{ service.name }}
+                        </a>
+                        <span class="entity-actions">
+                            <span role="img" aria-label="edit" title="edit"
+                                  class="fas fa-pencil-alt mr-1"
+                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  v-on:click="showEditModal(service)"></span>
+                            <span role="img" aria-label="delete" title="delete"
+                                  class="far fa-trash-alt mr-1"
+                                  @mouseover="mouseover" @mouseleave="mouseleave"
+                                  v-on:click="showDeleteModal(service)"></span>
                         </span>
-                    </div>
+                    </span>
                 </div>
             </div>
-            <div v-if="activeService" v-cloak class="col-lg-8">
-                <div class="card border-secondary mb-3" >
-                    <h4 class="card-header">{{ activeService.name }}</h4>
-                </div>
-                <div class="card border-secondary mb-3">
-                    <div v-cloak class="card-body">
-                        <div class="form-group">
-                            <label for="configuration" class="col-form-label">Configuration</label><br>
-                            <textarea v-model="configuration" class="form-control"
-                                      id="configuration" rows="15"></textarea>
-                            <button class="btn btn-success" v-on:click="saveConfiguration">save</button>
-                        </div>
+        </div>
+        <div v-if="activeService" v-cloak class="col-lg-8">
+            <div class="card border-secondary mb-3" >
+                <h4 class="card-header">{{ activeService.name }}</h4>
+            </div>
+            <div class="card border-secondary mb-3">
+                <div v-cloak class="card-body">
+                    <div class="form-group">
+                        <label for="configuration" class="col-form-label">Configuration</label><br>
+                        <textarea v-model="configuration" class="form-control"
+                                  id="configuration" rows="15"></textarea>
+                        <button class="btn btn-success" v-on:click="saveConfiguration">save</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </template>
 
 <script>
@@ -99,6 +99,7 @@ export default {
                 } else if (error) {
                     vm.message('Error creating service.', 'error');
                 } else {
+                    this.$root.$emit('settingsChange');
                     vm.$refs.editModal.hideModal();
                     vm.message('Service created.', 'success');
                     window.location.hash = `#ServiceAdmin/${data.id}`;
@@ -112,6 +113,7 @@ export default {
                 if (error) {
                     vm.message('Error deleting service', 'error');
                 } else {
+                    this.$root.$emit('settingsChange');
                     vm.$refs.editModal.hideModal();
                     vm.message('Service deleted.', 'success');
                     window.location.hash = '#ServiceAdmin';
@@ -127,6 +129,7 @@ export default {
                 } else if (error) {
                     vm.message('Error renaming service.', 'error');
                 } else {
+                    this.$root.$emit('settingsChange');
                     vm.$refs.editModal.hideModal();
                     vm.message('Service renamed.', 'success');
                     getList(vm);
@@ -143,10 +146,11 @@ export default {
                     if (response.status === 400) {
                         vm.message('Missing name.', 'error');
                     } else if (error) {
-                        vm.message('Error renaming service.', 'error');
+                        vm.message('Error updating configuration.', 'error');
                     } else {
+                        this.$root.$emit('settingsChange');
                         vm.$refs.editModal.hideModal();
-                        vm.message('Service renamed.', 'success');
+                        vm.message('Configuration updated.', 'success');
                         getList(vm);
                         getService(vm);
                     }

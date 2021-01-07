@@ -124,7 +124,7 @@ the database host is `db`.
 - Start services: `export UID && docker-compose up`
 - Install the app: `export UID && ./install-docker.sh`
 - Run tests and other commands in the php-fpm and node containers:  
-    `export UID && docker-compose exec php-fpm /bin/sh`
+    `export UID && docker-compose exec php-fpm /bin/sh`  
     `export UID && docker-compose run node /bin/sh`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 

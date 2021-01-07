@@ -82,6 +82,15 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    public function testGet200Admin()
+    {
+        $this->setupDb();
+        $this->loginUser(4);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get");
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testGet200()
     {
         $this->setupDb();
@@ -95,7 +104,7 @@ class ServiceControllerTest extends WebTestCase
                 'name' => 'S1',
                 'configuration' => json_encode([
                     'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-                    'groups' => $this->g1,
+                    'requiredGroups' => $this->g1,
                 ])
             ],
             $this->parseJsonBody($response)
@@ -494,14 +503,14 @@ class ServiceControllerTest extends WebTestCase
 
         $service1 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
             'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-            'groups' => $group1->getId(),
+            'requiredGroups' => $group1->getId(),
         ]));
         $service2 = (new Service())->setName('S2')->setConfiguration((string)json_encode([
             'phpClass' => ServiceController::class
         ]));
         $service3 = (new Service())->setName('S3')->setConfiguration((string)json_encode([
             'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-            'groups' => implode(',', [$group1->getId(), $group2->getId()]),
+            'requiredGroups' => implode(',', [$group1->getId(), $group2->getId()]),
         ]));
         $this->em->persist($service1);
         $this->em->persist($service2);
@@ -512,6 +521,7 @@ class ServiceControllerTest extends WebTestCase
             ->getPlayer();
         $this->helper->addCharacterToPlayer('Char2', 2, $this->player);
         $this->helper->addCharacterToPlayer('Char3', 3, $this->player);
+        $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::SERVICE_ADMIN]);
 
         $this->g1 = $group1->getId();
         $this->s1 = $service1->getId();
