@@ -96,8 +96,8 @@
                     </div>
 
                     <p class="mb-0">Link Buttons</p>
-                    <small class="text-muted">Placeholder for URL: {username}, {password}, {email}</small>
-                    <div class="form-group row" v-for="(url, idx) in activeService.configuration.URLs">
+                    <small class="text-muted">Placeholder for URL: {username}, {password}, {email}</small><br>
+                    <div class="form-group row" v-for="(url, idx) in URLs">
                         <label class="text-muted col-sm-2 col-form-label" :for="'configUrl'+idx">URL</label>
                         <div class="col-sm-10">
                             <!--suppress HtmlFormInputWithoutLabel -->
@@ -162,6 +162,7 @@ export default {
 
     props: {
         route: Array,
+        player: Object,
     },
 
     data () {
@@ -171,6 +172,7 @@ export default {
             requiredGroups: '',
             properties: '',
             actions: '',
+            URLs: [],
         }
     },
 
@@ -181,6 +183,9 @@ export default {
     },
 
     watch: {
+        player () {
+            getService(this);
+        },
         route () {
             getService(this);
         },
@@ -236,7 +241,7 @@ export default {
         saveConfiguration () {
             const vm = this;
             const configuration = vm.activeService.configuration;
-            configuration.URLs = vm.activeService.configuration.URLs.filter(url => url.url || url.title || url.target);
+            configuration.URLs = vm.URLs.filter(url => url.url || url.title || url.target);
             configuration.requiredGroups = vm.requiredGroups ? vm.requiredGroups.split(',') : [];
             configuration.properties = vm.properties ? vm.properties.split(',') : [];
             configuration.actions = vm.actions ? vm.actions.split(',') : [];
@@ -260,7 +265,7 @@ export default {
         },
 
         addUrl() {
-            this.activeService.configuration.URLs.push({ url: '', title: '', target: '' });
+            this.URLs.push({ url: '', title: '', target: '' });
         },
 
         mouseover (ele) {
@@ -294,15 +299,21 @@ function getService(vm) {
     vm.requiredGroups = '';
     vm.properties = '';
     vm.actions = '';
+    vm.URLs = [];
     if (!vm.route[1] || !vm.hasRole('service-admin')) { // configuration object is incomplete without this role
         return;
     }
     new ServiceApi().serviceGet(vm.route[1], (error, data) => {
         if (!error) {
             vm.activeService = data;
-            vm.requiredGroups = vm.activeService.configuration.requiredGroups.join(',');
-            vm.properties = vm.activeService.configuration.properties.join(',');
-            vm.actions = vm.activeService.configuration.actions.join(',');
+            if (vm.activeService.configuration) {
+                vm.requiredGroups = vm.activeService.configuration.requiredGroups.join(',');
+                vm.properties = vm.activeService.configuration.properties.join(',');
+                vm.actions = vm.activeService.configuration.actions.join(',');
+                vm.URLs = vm.activeService.configuration.URLs;
+            } else {
+                vm.activeService.configuration = {};
+            }
         }
     });
 }
