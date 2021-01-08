@@ -35,6 +35,7 @@
 * Automatic group assignment for players based on corporations and alliances from all of their characters.
 * Optional automatic account deactivation when ESI tokens are invalid.
 * Manually managed accounts that do not require any ESI scopes.
+* Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
 * Corporation member tracking.
 * Watchlist with accounts that have characters in other alliances or corporations.
 * Optional EVE mail notifications for invalid ESI tokens and missing characters.

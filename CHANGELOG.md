@@ -1,12 +1,15 @@
 # Changelog
 
-## next
+## 1.16.0
 
-- Compatibility with PHP 8.0
+9 Jan 2021
+
+- Experimental: Service registration plugins.
 - Navigation: Do not show "Groups" link if there are no public groups.
 - Rate limit: Always log if the configured limit was reached, even if it's not active.
 - Set SameSite attribute for session cookie.
 - Other small improvements.
+- Compatibility with PHP 8.0
 
 ## 1.15.2
 

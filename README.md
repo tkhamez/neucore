@@ -29,11 +29,11 @@ of an alliance.
 Objectives:
 
 - Management of groups for players.
+- Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (Experimental).
 - An API for applications to read these groups (and more).
 - Access to [ESI](http://esi.evetech.net) data of all members.
 - Member tracking and watch lists.
 - Login via EVE SSO.
-- EXPERIMENTAL: Service registration plugins.
 
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
 an [**API**](doc/API.md) overview, and some [screenshots](doc/screenshots).
