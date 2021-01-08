@@ -13,6 +13,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
@@ -398,10 +399,12 @@ class SettingsControllerTest extends WebTestCase
         $admin = $this->helper->addCharacterMain('Admin', 6, [Role::USER, Role::SETTINGS]);
 
         $this->service1 = (new Service())->setName('s1');
-        $this->service2 = (new Service())->setName('s2')
-            ->setConfiguration((string)json_encode(['requiredGroups' => $group->getId()]));
-        $service3 = (new Service())->setName('s3')
-            ->setConfiguration((string)json_encode(['requiredGroups' => $group->getId()+99]));
+        $conf2 = new ServiceConfiguration();
+        $conf2->requiredGroups = [$group->getId()];
+        $this->service2 = (new Service())->setName('s2')->setConfiguration($conf2);
+        $conf3 = new ServiceConfiguration();
+        $conf3->requiredGroups = [$group->getId()+99];
+        $service3 = (new Service())->setName('s3')->setConfiguration($conf3);
         $alli = (new Alliance())->setId(456);
         $corp = (new Corporation())->setId(2020)->setAlliance($alli);
         $admin->setCorporation($corp);

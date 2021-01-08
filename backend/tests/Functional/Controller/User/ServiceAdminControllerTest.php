@@ -209,14 +209,35 @@ class ServiceAdminControllerTest extends WebTestCase
         $response = $this->runApp(
             'PUT',
             "/api/user/service-admin/{$this->serviceId}/save-configuration",
-            ['configuration' => \json_encode(['a' => '1'])],
+            ['configuration' => \json_encode(['phpClass' => 'class'])],
             ['Content-Type' => 'application/x-www-form-urlencoded']
         );
 
         $this->assertEquals(204, $response->getStatusCode());
 
         $service = $this->repository->find($this->serviceId);
-        $this->assertSame(['a' => '1'], \json_decode((string)$service->getConfiguration(), true));
+        $this->assertSame('class', $service->getConfiguration()->phpClass);
+    }
+
+    public function testSaveConfiguration400()
+    {
+        $this->loginUser(1);
+
+        $response1 = $this->runApp(
+            'PUT',
+            "/api/user/service-admin/{$this->serviceId}/save-configuration",
+            ['configuration' => ['invalid']],
+            ['Content-Type' => 'application/x-www-form-urlencoded']
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            "/api/user/service-admin/{$this->serviceId}/save-configuration",
+            ['configuration' => "invalid"],
+            ['Content-Type' => 'application/x-www-form-urlencoded']
+        );
+
+        $this->assertEquals(400, $response1->getStatusCode());
+        $this->assertEquals(400, $response2->getStatusCode());
     }
 
     private function setupDb(): void

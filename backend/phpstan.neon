@@ -8,11 +8,17 @@ parameters:
 			message: '#Call to an undefined method(.*)fetchAllAssociative#'
 			path: %currentWorkingDirectory%/src/Command/DBVerifySSL.php
 		-
-			message: '#(.*)Watchlist::getExemptionList\(\) should return(.*)but returns(.*)#'
-			path: %currentWorkingDirectory%/src/Service/Watchlist.php
-		-
 			message: '#(.*)BaseController::getUser\(\)(.*)but returns Neucore\\Entity\\Character\|null.#'
 			path: %currentWorkingDirectory%/src/Controller/BaseController.php
+		-
+			message: '#invalid type(.*)only iterables are supported#'
+			path: %currentWorkingDirectory%/src/Entity/ServiceConfiguration.php
+		-
+			message: '#invalid type(.*)only iterables are supported#'
+			path: %currentWorkingDirectory%/src/Entity/ServiceConfigurationURL.php
+		-
+			message: '#(.*)Watchlist::getExemptionList\(\) should return(.*)but returns(.*)#'
+			path: %currentWorkingDirectory%/src/Service/Watchlist.php
 		-
 			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
 			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php

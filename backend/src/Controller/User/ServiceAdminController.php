@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -223,8 +224,7 @@ class ServiceAdminController extends BaseController
      *                 type="object",
      *                 @OA\Property(
      *                     property="configuration",
-     *                     description="JSON encoded configuration",
-     *                     type="string"
+     *                     ref="#/components/schemas/ServiceConfiguration"
      *                 )
      *             )
      *         )
@@ -232,6 +232,10 @@ class ServiceAdminController extends BaseController
      *     @OA\Response(
      *         response="204",
      *         description="Configuration changed.",
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid input."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -251,7 +255,16 @@ class ServiceAdminController extends BaseController
         }
 
         $configuration = $this->getBodyParam($request, 'configuration', '');
-        $service->setConfiguration($configuration);
+
+        if (!is_string($configuration)) {
+            return $this->response->withStatus(400);
+        }
+        $data = \json_decode($configuration, true);
+        if (is_array($data)) {
+            $service->setConfiguration(ServiceConfiguration::fromArray($data));
+        } else {
+            return $this->response->withStatus(400);
+        }
 
         return $this->flushAndReturn(204);
     }

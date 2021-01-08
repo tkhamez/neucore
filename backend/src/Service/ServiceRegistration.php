@@ -37,10 +37,9 @@ class ServiceRegistration
             return false;
         }
 
-        $serviceConfig = json_decode((string)$service->getConfiguration(), true);
-        $groups = array_map('intval', explode(',', (string)($serviceConfig['requiredGroups'] ?? '')));
-
-        foreach ($groups as $group) {
+        $serviceConfig = $service->getConfiguration();
+        foreach ($serviceConfig->requiredGroups as $group) {
+            $group = (int)$group;
             if ($group > 0 && !$character->getPlayer()->hasGroup($group)) {
                 return false;
             }
@@ -50,38 +49,36 @@ class ServiceRegistration
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
     {
-        $serviceConfig = json_decode((string)$service->getConfiguration(), true);
+        $serviceConfig = $service->getConfiguration();
 
         // configure autoloader
-        $psr4Prefix = $serviceConfig['psr4Prefix'] ?? '';
-        $psr4Paths = (array) ($serviceConfig['psr4Path'] ?? []);
-        if ($psr4Prefix !== '' && $psr4Paths !== []) {
-            if (substr($psr4Prefix, -1) !== '\\') {
-                $psr4Prefix .= '\\';
+        $psr4Paths = (array) $serviceConfig->psr4Path;
+        if ($serviceConfig->psr4Prefix !== '' && $psr4Paths !== []) {
+            if (substr($serviceConfig->psr4Prefix, -1) !== '\\') {
+                $serviceConfig->psr4Prefix .= '\\';
             }
             /** @noinspection PhpFullyQualifiedNameUsageInspection */
             /* @var \Composer\Autoload\ClassLoader $loader */
             /** @noinspection PhpIncludeInspection */
             $loader = require Application::ROOT_DIR . '/vendor/autoload.php';
             foreach ($loader->getPrefixesPsr4() as $existingPrefix => $paths) {
-                if ($existingPrefix === $psr4Prefix) {
+                if ($existingPrefix === $serviceConfig->psr4Prefix) {
                     $psr4Paths = array_merge($paths, $psr4Paths);
                 }
             }
-            $loader->setPsr4($psr4Prefix, $psr4Paths);
+            $loader->setPsr4($serviceConfig->psr4Prefix, $psr4Paths);
         }
 
-        $serviceClass = $serviceConfig['phpClass'] ?? '';
-        if (!class_exists($serviceClass)) {
+        if (!class_exists($serviceConfig->phpClass)) {
             return null;
         }
 
-        $implements = class_implements($serviceClass);
+        $implements = class_implements($serviceConfig->phpClass);
         if (!is_array($implements) || !in_array(ServiceInterface::class, $implements)) {
             return null;
         }
 
-        return new $serviceClass($this->log);
+        return new $serviceConfig->phpClass($this->log);
     }
 
     /**

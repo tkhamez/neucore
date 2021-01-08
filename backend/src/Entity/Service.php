@@ -32,27 +32,30 @@ class Service implements \JsonSerializable
     private $name;
 
     /**
-     * TODO split into individual properties?
-     * phpClass, psr4Prefix, psr4Path, requiredGroups - TODO do not return unless admin?
-     * properties [username,password,email,status]
-     * actions [update-account,reset-password]
-     * URLs [[url,title,target],[...]], placeholder: {username}, {password}, {email}
-     * textAccount, textTop, textRegister, textPending
+     * JSON serialized ServiceConfiguration class.
      *
-     * @OA\Property()
+     * @OA\Property(ref="#/components/schemas/ServiceConfiguration")
      * @ORM\Column(type="text", length=16777215, nullable=true)
      * @var string|null
+     * @see ServiceConfiguration
      */
     private $configuration;
 
-    public function jsonSerialize(bool $onlyRequired = true): array
+    public function jsonSerialize(bool $onlyRequired = true, bool $onlyRequiredConfiguration = true): array
     {
         $data = [
             'id' => (int) $this->id,
             'name' => $this->name,
         ];
         if (! $onlyRequired) {
-            $data['configuration'] = $this->configuration;
+            $configuration = \json_decode((string)$this->configuration, true);
+            if ($onlyRequiredConfiguration) {
+                unset($configuration['phpClass']);
+                unset($configuration['psr4Prefix']);
+                unset($configuration['psr4Path']);
+                unset($configuration['requiredGroups']);
+            }
+            $data['configuration'] = $configuration;
         }
         return $data;
     }
@@ -73,14 +76,22 @@ class Service implements \JsonSerializable
         return (string) $this->name;
     }
 
-    public function setConfiguration(string $configuration): self
+    public function setConfiguration(ServiceConfiguration $configuration): self
     {
-        $this->configuration = $configuration;
+        $this->configuration = (string)\json_encode($configuration);
         return $this;
     }
 
-    public function getConfiguration(): ?string
+    public function getConfiguration(): ServiceConfiguration
     {
-        return $this->configuration;
+        $data = \json_decode((string)$this->configuration, true);
+
+        if (is_array($data)) {
+            $class = ServiceConfiguration::fromArray($data);
+        } else {
+            $class = new ServiceConfiguration();
+        }
+
+        return $class;
     }
 }

@@ -30,7 +30,7 @@ use Psr\Log\LoggerInterface;
  * @OA\Schema(
  *     schema="ServiceAccountData",
  *     required={"characterId", "username", "password", "email", "status"},
- *     @OA\Property(property="characterId", type="int", format="int64"),
+ *     @OA\Property(property="characterId", type="integer", format="int64"),
  *     @OA\Property(property="username", type="string", nullable=true),
  *     @OA\Property(property="password", type="string", nullable=true),
  *     @OA\Property(property="email", type="string", nullable=true),
@@ -119,14 +119,16 @@ class ServiceController extends BaseController
      *     )
      * )
      */
-    public function get(string $id): ResponseInterface
+    public function get(string $id, UserAuth $userAuth): ResponseInterface
     {
         $response = $this->getService((int) $id);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
 
-        return $this->withJson($this->service->jsonSerialize(false));
+        $isAdmin = $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+
+        return $this->withJson($this->service->jsonSerialize(false, !$isAdmin));
     }
 
     /**

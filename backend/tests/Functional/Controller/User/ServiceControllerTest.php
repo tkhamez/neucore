@@ -11,6 +11,7 @@ use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use Neucore\Plugin\ServiceAccountData;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
@@ -45,6 +46,7 @@ class ServiceControllerTest extends WebTestCase
 
     // entity IDs
     private $g1;
+    private $g2;
     private $s1;
     private $s2;
     private $s3;
@@ -89,6 +91,27 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get");
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(
+            [
+                'id' => $this->s3,
+                'name' => 'S3',
+                'configuration' => [
+                    'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
+                    'psr4Prefix' => '',
+                    'psr4Path' => '',
+                    'requiredGroups' => [$this->g1, $this->g2],
+                    'properties' => [],
+                    'showPassword' => false,
+                    'actions' => [],
+                    'URLs' => [],
+                    'textAccount' => '',
+                    'textTop' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                ]
+            ],
+            $this->parseJsonBody($response)
+        );
     }
 
     public function testGet200()
@@ -102,10 +125,16 @@ class ServiceControllerTest extends WebTestCase
             [
                 'id' => $this->s1,
                 'name' => 'S1',
-                'configuration' => json_encode([
-                    'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-                    'requiredGroups' => $this->g1,
-                ])
+                'configuration' => [
+                    'properties' => [],
+                    'showPassword' => false,
+                    'actions' => [],
+                    'URLs' => [],
+                    'textAccount' => '',
+                    'textTop' => '',
+                    'textRegister' => '',
+                    'textPending' => '',
+                ]
             ],
             $this->parseJsonBody($response)
         );
@@ -501,17 +530,20 @@ class ServiceControllerTest extends WebTestCase
         $this->em->persist($group2);
         $this->em->flush();
 
-        $service1 = (new Service())->setName('S1')->setConfiguration((string)json_encode([
-            'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-            'requiredGroups' => $group1->getId(),
-        ]));
-        $service2 = (new Service())->setName('S2')->setConfiguration((string)json_encode([
-            'phpClass' => ServiceController::class
-        ]));
-        $service3 = (new Service())->setName('S3')->setConfiguration((string)json_encode([
-            'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
-            'requiredGroups' => implode(',', [$group1->getId(), $group2->getId()]),
-        ]));
+        $conf1 = new ServiceConfiguration();
+        $conf1->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
+        $conf1->requiredGroups = [$group1->getId()];
+        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+
+        $conf2 = new ServiceConfiguration();
+        $conf2->phpClass = ServiceController::class;
+        $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
+
+        $conf3 = new ServiceConfiguration();
+        $conf3->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
+        $conf3->requiredGroups = [$group1->getId(), $group2->getId()];
+        $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
+
         $this->em->persist($service1);
         $this->em->persist($service2);
         $this->em->persist($service3);
@@ -524,6 +556,7 @@ class ServiceControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::SERVICE_ADMIN]);
 
         $this->g1 = $group1->getId();
+        $this->g2 = $group2->getId();
         $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
         $this->s3 = $service3->getId();

@@ -43,15 +43,109 @@
             </div>
             <div class="card border-secondary mb-3">
                 <div v-cloak class="card-body">
+                    <h5>Configuration</h5>
                     <div class="form-group">
-                        <label for="configuration" class="col-form-label">Configuration</label><br>
-                        <textarea v-model="configuration" class="form-control"
-                                  id="configuration" rows="15"></textarea>
-                        <button class="btn btn-success" v-on:click="saveConfiguration">save</button>
+                        <label class="col-form-label w-100">
+                            PHP Class
+                            <input type="text" class="form-control" v-model="activeService.configuration.phpClass">
+                            <small class="form-text text-muted">
+                                Full class name of class implementing Neucore\Plugin\ServiceInterface.
+                            </small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            PSR-4 Prefix
+                            <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
+                            <small class="form-text text-muted">Namespace that should be autoloaded.</small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            PSR-4 Path
+                            <input type="text" class="form-control" v-model="activeService.configuration.psr4Path">
+                            <small class="form-text text-muted">
+                                Full path to directory containing the classes for the autoloader.
+                            </small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Required Groups
+                            <input type="text" class="form-control" v-model="requiredGroups">
+                            <small class="form-text text-muted">Comma separated list of Group IDs</small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Account Data Properties
+                            <input type="text" class="form-control" v-model="properties">
+                            <small class="form-text text-muted">
+                                Comma separated list of properties:
+                                username, password, email, status
+                            </small>
+                        </label>
                     </div>
-                </div>
-            </div>
-        </div>
+
+                    <div class="custom-control custom-checkbox mb-2">
+                        <input class="custom-control-input" type="checkbox" id="configShowPassword"
+                               v-model="activeService.configuration.showPassword">
+                        <label class="custom-control-label" for="configShowPassword">Show password to user</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-form-label w-100">
+                            Service Account Actions
+                            <input type="text" class="form-control" v-model="actions">
+                            <small class="form-text text-muted">
+                                Comma separated list of actions: update-account, reset-password
+                            </small>
+                        </label>
+                    </div>
+
+                    <p class="mb-0">Link Buttons</p>
+                    <small class="text-muted">Placeholder for URL: {username}, {password}, {email}</small>
+                    <div class="form-group row" v-for="(url, idx) in activeService.configuration.URLs">
+                        <label class="text-muted col-sm-2 col-form-label" :for="'configUrl'+idx">URL</label>
+                        <div class="col-sm-10">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input type="text" class="form-control" :id="'configUrl'+idx" v-model="url.url">
+                        </div>
+                        <label class="text-muted col-sm-2 col-form-label" :for="'configTitle'+idx">Title</label>
+                        <div class="col-sm-10">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input type="text" class="form-control" :id="'configTitle'+idx" v-model="url.title">
+                        </div>
+                        <label class="text-muted col-sm-2 col-form-label" :for="'configTarget'+idx">Target</label>
+                        <div class="col-sm-10">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input type="text" class="form-control" :id="'configTarget'+idx" v-model="url.target">
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button>
+
+                    <div class="form-group">
+                        <label class="col-form-label w-100">
+                            Text Top
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textTop"></textarea>
+                            <small class="form-text text-muted">Text above the list of accounts.</small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Text Account
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textAccount"></textarea>
+                            <small class="form-text text-muted">Text below account table.</small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Text Register
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textRegister"></textarea>
+                            <small class="form-text text-muted">Text below the registration form/button.</small>
+                        </label>
+                        <label class="col-form-label w-100">
+                            Text Pending
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.textPending"></textarea>
+                            <small class="form-text text-muted">Text below an account with status "pending"</small>
+                        </label>
+                    </div>
+                    <button class="btn btn-success" v-on:click.prevent="saveConfiguration">save</button>
+                </div> <!-- card-body -->
+            </div> <!-- card -->
+        </div> <!-- col -->
     </div>
 </div>
 </template>
@@ -74,7 +168,9 @@ export default {
         return {
             services: [],
             activeService: null,
-            configuration: '',
+            requiredGroups: '',
+            properties: '',
+            actions: '',
         }
     },
 
@@ -139,9 +235,14 @@ export default {
         },
         saveConfiguration () {
             const vm = this;
+            const configuration = vm.activeService.configuration;
+            configuration.URLs = vm.activeService.configuration.URLs.filter(url => url.url || url.title || url.target);
+            configuration.requiredGroups = vm.requiredGroups ? vm.requiredGroups.split(',') : [];
+            configuration.properties = vm.properties ? vm.properties.split(',') : [];
+            configuration.actions = vm.actions ? vm.actions.split(',') : [];
             new ServiceAdminApi().serviceAdminSaveConfiguration(
                 this.activeService.id,
-                {configuration: vm.configuration},
+                {configuration: JSON.stringify(configuration)},
                 (error, data, response) => {
                     if (response.status === 400) {
                         vm.message('Missing name.', 'error');
@@ -156,6 +257,10 @@ export default {
                     }
                 }
             );
+        },
+
+        addUrl() {
+            this.activeService.configuration.URLs.push({ url: '', title: '', target: '' });
         },
 
         mouseover (ele) {
@@ -186,14 +291,18 @@ function getList(vm) {
 
 function getService(vm) {
     vm.activeService = null;
-    vm.configuration = '';
-    if (!vm.route[1]) {
+    vm.requiredGroups = '';
+    vm.properties = '';
+    vm.actions = '';
+    if (!vm.route[1] || !vm.hasRole('service-admin')) { // configuration object is incomplete without this role
         return;
     }
     new ServiceApi().serviceGet(vm.route[1], (error, data) => {
         if (!error) {
             vm.activeService = data;
-            vm.configuration = data.configuration;
+            vm.requiredGroups = vm.activeService.configuration.requiredGroups.join(',');
+            vm.properties = vm.activeService.configuration.properties.join(',');
+            vm.actions = vm.activeService.configuration.actions.join(',');
         }
     });
 }

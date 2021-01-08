@@ -12,8 +12,8 @@
                 Failed to load Accounts. Please try again.
             </div>
             <p>A new account can only be registered for your main character.</p>
-            <p v-if="service && service.textTop">
-                <span style="white-space: pre-line;">{{ service.textTop }}</span>
+            <p v-if="service && service.configuration.textTop">
+                <span style="white-space: pre-line;">{{ service.configuration.textTop }}</span>
             </p>
         </div>
     </div>
@@ -28,7 +28,7 @@
             <!-- register -->
             <div v-if="account.characterId === getMainCharacterId() &&
                        (!isAccount(account) || isInactive(account))">
-                <div v-if="property('email')" class="form-group">
+                <div v-if="hasProperty('email')" class="form-group">
                     <label class="col-form-label col-form-label-sm" for="formEmail">E-Mail address</label>
                     <input class="form-control form-control-sm" type="text" id="formEmail"
                            v-model="formEmail">
@@ -39,13 +39,14 @@
                 </button>
                 <p v-if="!isAccount(account)" class="small text-muted">Create or request a new account.</p>
                 <p v-if="isInactive(account)" class="small text-muted">Reactivate account.</p>
-                <p v-if="service.textRegister" class="mt-3">
-                    <span style="white-space: pre-line;">{{ service.textRegister }}</span>
+                <p v-if="service.configuration.textRegister" class="mt-3">
+                    <span style="white-space: pre-line;">{{ service.configuration.textRegister }}</span>
                 </p>
             </div>
 
             <!-- new password -->
-            <div v-if="!service.showPassword && newPassword[account.characterId]" class="alert alert-success">
+            <div v-if="!service.configuration.showPassword && newPassword[account.characterId]"
+                 class="alert alert-success">
                 New password:
                 <strong>{{ newPassword[account.characterId] }}</strong><br>
                 <small>Make a note of the password, it will not be displayed again!</small>
@@ -56,29 +57,33 @@
                    aria-describedby="Account data">
                 <thead class="thead-light">
                     <tr class="table-active">
-                        <th scope="col" v-if="property('username')">Username</th>
-                        <th scope="col" v-if="property('password') && service.showPassword">Password</th>
-                        <th scope="col" v-if="property('email')">E-mail</th>
-                        <th scope="col" v-if="property('status')">Status</th>
-                        <th scope="col" v-if="service.URLs.length > 0"></th>
-                        <th scope="col" v-if="service.actions.length > 0"></th>
+                        <th scope="col" v-if="hasProperty('username')">Username</th>
+                        <th scope="col" v-if="hasProperty('password') && service.configuration.showPassword">
+                            Password
+                        </th>
+                        <th scope="col" v-if="hasProperty('email')">E-mail</th>
+                        <th scope="col" v-if="hasProperty('status')">Status</th>
+                        <th scope="col" v-if="service.configuration.URLs.length > 0"></th>
+                        <th scope="col" v-if="service.configuration.actions.length > 0"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td v-if="property('username')">{{ account.username }}</td>
-                        <td v-if="property('password') && service.showPassword">{{ account.password }}</td>
-                        <td v-if="property('email')">{{ account.email }}</td>
-                        <td v-if="property('status')">{{ account.status }}</td>
-                        <td v-if="service.URLs.length > 0">
-                            <a v-for="url in service.URLs" :href="urlReplace(url.url, account)"
+                        <td v-if="hasProperty('username')">{{ account.username }}</td>
+                        <td v-if="hasProperty('password') && service.configuration.showPassword">
+                            {{ account.password }}
+                        </td>
+                        <td v-if="hasProperty('email')">{{ account.email }}</td>
+                        <td v-if="hasProperty('status')">{{ account.status }}</td>
+                        <td v-if="service.configuration.URLs.length > 0">
+                            <a v-for="url in service.configuration.URLs" :href="urlReplace(url.url, account)"
                                class="btn btn-sm btn-primary mr-1 mb-1"
                                :target="url.target" rel="noopener noreferrer">
                                 {{ url.title }}
                             </a>
                         </td>
-                        <td v-if="service.actions.length > 0">
-                            <button v-if="isActive(account) && action('update-account')"
+                        <td v-if="service.configuration.actions.length > 0">
+                            <button v-if="isActive(account) && hasAction('update-account')"
                                     type="submit" class="btn btn-sm btn-info"
                                     v-on:click.prevent="updateAccount(account.characterId)"
                                     :disabled="updateAccountButtonDisabled">
@@ -90,7 +95,7 @@
                             </small>
                             <br>
                             <br>
-                            <button v-if="isActive(account) && action('reset-password')"
+                            <button v-if="isActive(account) && hasAction('reset-password')"
                                     type="submit" class="btn btn-sm btn-warning"
                                     v-on:click.prevent="resetPassword(account.characterId)"
                                     :disabled="resetPasswordButtonDisabled">
@@ -104,11 +109,13 @@
                     </tr>
                 </tbody>
             </table>
-            <p v-if="isAccount(account) && service.textAccount" class="mt-3 mb-0">
-                <span style="white-space: pre-line;">{{ service.textAccount }}</span>
+            <p v-if="isAccount(account) && service.configuration.textAccount" class="mt-3 mb-0">
+                <span style="white-space: pre-line;">{{ service.configuration.textAccount }}</span>
             </p>
-            <p v-if="isAccount(account) && account.status === 'Pending' && service.textPending" class="mt-3 mb-0">
-                <span style="white-space: pre-line;">{{ service.textPending }}</span>
+            <p v-if="isAccount(account) &&
+                    account.status === 'Pending' &&
+                    service.configuration.textPending" class="mt-3 mb-0">
+                <span style="white-space: pre-line;">{{ service.configuration.textPending }}</span>
             </p>
 
         </div>
@@ -157,11 +164,11 @@ export default {
     },
 
     methods: {
-        property(name) {
-            return this.service.properties.indexOf(name) !== -1;
+        hasProperty(name) {
+            return this.service.configuration.properties.indexOf(name) !== -1;
         },
-        action(name) {
-            return this.service.actions.indexOf(name) !== -1;
+        hasAction(name) {
+            return this.service.configuration.actions.indexOf(name) !== -1;
         },
         urlReplace(url, account) {
             url = url.replace('{username}', encodeURIComponent(account.username));
@@ -257,7 +264,7 @@ export default {
             const api = new ServiceApi();
             api.serviceResetPassword(getServiceId(vm), characterId, (error, data, response) => {
                 if (response.statusCode === 200) {
-                    if (vm.service.showPassword) {
+                    if (vm.service.configuration.showPassword) {
                         vm.message('Password successfully changed.', 'success', 2500);
                     }
                     vm.newPassword[characterId] = data;
@@ -285,20 +292,6 @@ function getData(vm) {
     api.serviceGet(getServiceId(vm), (error, data) => {
         if (!error) {
             vm.service = data;
-
-            // TODO move to backend
-            const configuration = JSON.parse(data.configuration);
-            vm.service.properties = configuration.properties.split(',');
-            vm.service.showPassword = configuration.showPassword;
-            vm.service.actions = [];
-            if (configuration.actions) {
-                vm.service.actions = configuration.actions.split(',');
-            }
-            vm.service.URLs = configuration.URLs;
-            vm.service.textAccount = configuration.textAccount;
-            vm.service.textTop = configuration.textTop;
-            vm.service.textRegister = configuration.textRegister;
-            vm.service.textPending = configuration.textPending;
         }
     });
 

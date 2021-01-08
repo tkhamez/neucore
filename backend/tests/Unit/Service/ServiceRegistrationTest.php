@@ -11,6 +11,7 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
@@ -80,7 +81,9 @@ class ServiceRegistrationTest extends TestCase
         $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
 
         // add require group
-        $service->setConfiguration((string)json_encode(['requiredGroups' => $group->getId()]));
+        $conf = new ServiceConfiguration();
+        $conf->requiredGroups = [$group->getId()];
+        $service->setConfiguration($conf);
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
 
         // add group to player
@@ -88,14 +91,17 @@ class ServiceRegistrationTest extends TestCase
         $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
 
         // add another require group
-        $service->setConfiguration((string)json_encode(['requiredGroups' => implode(',', [$group->getId(), '2'])]));
+        $conf->requiredGroups[] = 2;
+        $service->setConfiguration($conf);
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
     }
 
     public function testGetServiceImplementation_MissingPhpClass()
     {
         $service = new Service();
-        $service->setConfiguration((string)\json_encode(['phpClass' => 'Test\TestService']));
+        $conf = new ServiceConfiguration();
+        $conf->phpClass = 'Test\TestService';
+        $service->setConfiguration($conf);
 
         $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
@@ -103,9 +109,9 @@ class ServiceRegistrationTest extends TestCase
     public function testGetServiceImplementation_PhpClassMissingImplementation()
     {
         $service = new Service();
-        $service->setConfiguration((string)\json_encode([
-            'phpClass' => ServiceRegistrationTest_TestServiceInvalid::class
-        ]));
+        $conf = new ServiceConfiguration();
+        $conf->phpClass = ServiceRegistrationTest_TestServiceInvalid::class;
+        $service->setConfiguration($conf);
 
         $this->assertNull($this->serviceRegistration->getServiceImplementation($service));
     }
@@ -116,11 +122,11 @@ class ServiceRegistrationTest extends TestCase
         self::$loader->setPsr4(self::PSR_PREFIX.'\\', ['/some/path']);
 
         $service = new Service();
-        $service->setConfiguration((string)\json_encode([
-            'phpClass' => 'Tests\ServiceRegistration_AutoloadTest\TestService',
-            'psr4Prefix' => self::PSR_PREFIX, // no \ at the end to test that it is added
-            'psr4Path' => __DIR__ .  '/ServiceRegistration_AutoloadTest',
-        ]));
+        $conf = new ServiceConfiguration();
+        $conf->phpClass = 'Tests\ServiceRegistration_AutoloadTest\TestService';
+        $conf->psr4Prefix = self::PSR_PREFIX;
+        $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest';
+        $service->setConfiguration($conf);
 
         $this->assertInstanceOf(
             ServiceInterface::class,
