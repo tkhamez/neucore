@@ -8,9 +8,12 @@
 
     <div class="card mb-3">
         <div class="card-body pb-0">
+            <div v-if="failedToLoadAccounts" class="alert alert-danger">
+                Failed to load Accounts. Please try again.
+            </div>
             <p>A new account can only be registered for your main character.</p>
-            <p v-if="service && service.topText">
-                <span style="white-space: pre-line;">{{ service.topText }}</span>
+            <p v-if="service && service.textTop">
+                <span style="white-space: pre-line;">{{ service.textTop }}</span>
             </p>
         </div>
     </div>
@@ -22,7 +25,7 @@
         </div>
         <div class="card-body">
 
-            <!-- Register -->
+            <!-- register -->
             <div v-if="account.characterId === getMainCharacterId() &&
                        (!isAccount(account) || isInactive(account))">
                 <div v-if="property('email')" class="form-group">
@@ -30,21 +33,19 @@
                     <input class="form-control form-control-sm" type="text" id="formEmail"
                            v-model="formEmail">
                 </div>
-                <button type="submit" class="btn btn-success" v-on:click.prevent="register()"
+                <button type="submit" class="btn btn-success mb-1" v-on:click.prevent="register()"
                         :disabled="registerButtonDisabled">
                     Register
                 </button>
-                <br>
-                <small v-if="!isAccount(account)" class="text-muted">Create or request a new account.</small>
-                <small v-if="isInactive(account)" class="text-muted">
-                    Reactivate account.
-                    <br><br>
-                </small>
+                <p v-if="!isAccount(account)" class="small text-muted">Create or request a new account.</p>
+                <p v-if="isInactive(account)" class="small text-muted">Reactivate account.</p>
+                <p v-if="service.textRegister" class="mt-3">
+                    <span style="white-space: pre-line;">{{ service.textRegister }}</span>
+                </p>
             </div>
 
             <!-- new password -->
-            <div v-if="!service.showPassword && newPassword[account.characterId]"
-                 class="alert alert-dismissible alert-success">
+            <div v-if="!service.showPassword && newPassword[account.characterId]" class="alert alert-success">
                 New password:
                 <strong>{{ newPassword[account.characterId] }}</strong><br>
                 <small>Make a note of the password, it will not be displayed again!</small>
@@ -103,8 +104,11 @@
                     </tr>
                 </tbody>
             </table>
-            <p v-if="isAccount(account) && service.accountText" class="mt-3 mb-0">
-                <span style="white-space: pre-line;">{{ service.accountText }}</span>
+            <p v-if="isAccount(account) && service.textAccount" class="mt-3 mb-0">
+                <span style="white-space: pre-line;">{{ service.textAccount }}</span>
+            </p>
+            <p v-if="isAccount(account) && account.status === 'Pending' && service.textPending" class="mt-3 mb-0">
+                <span style="white-space: pre-line;">{{ service.textPending }}</span>
             </p>
 
         </div>
@@ -126,6 +130,8 @@ export default {
         return {
             service: null,
             accounts: [],
+            failedToLoadAccounts: false,
+            registerSuccess: false,
             mainCharacterId: null,
             updateAccountButtonDisabled: false,
             resetPasswordButtonDisabled: false,
@@ -137,6 +143,7 @@ export default {
 
     mounted () {
         window.scrollTo(0, 0);
+        this.registerSuccess = false;
         getData(this);
     },
 
@@ -144,6 +151,7 @@ export default {
         route () {
             this.newPassword = {};
             this.formEmail = null;
+            this.registerSuccess = false;
             getData(this);
         },
     },
@@ -202,6 +210,7 @@ export default {
             api.serviceRegister(getServiceId(vm), {email: vm.formEmail}, (error, data, response) => {
                 if (response.statusCode === 200) {
                     vm.message('Successfully registered with service.', 'success', 2500);
+                    vm.registerSuccess = true;
                     vm.newPassword[data.characterId] = data.password;
                     getAccountData(vm, api);
                 } else if ([403, 404].indexOf(response.statusCode) !== -1) {
@@ -286,8 +295,10 @@ function getData(vm) {
                 vm.service.actions = configuration.actions.split(',');
             }
             vm.service.URLs = configuration.URLs;
-            vm.service.accountText = configuration.accountText;
-            vm.service.topText = configuration.topText;
+            vm.service.textAccount = configuration.textAccount;
+            vm.service.textTop = configuration.textTop;
+            vm.service.textRegister = configuration.textRegister;
+            vm.service.textPending = configuration.textPending;
         }
     });
 
@@ -300,8 +311,11 @@ function getData(vm) {
  */
 function getAccountData(vm, api) {
     vm.accounts = [];
+    vm.failedToLoadAccounts = false;
     api.serviceAccounts(getServiceId(vm), (error, data) => {
-        if (!error) {
+        if (error) {
+            vm.failedToLoadAccounts = true;
+        } else {
             sortAccounts(vm, data);
         }
         vm.updateAccountButtonDisabled = false;

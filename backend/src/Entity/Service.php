@@ -37,7 +37,7 @@ class Service implements \JsonSerializable
      * properties [username,password,email,status]
      * actions [update-account,reset-password]
      * URLs [[url,title,target],[...]], placeholder: {username}, {password}, {email}
-     * accountText, topText
+     * textAccount, textTop, textRegister, textPending
      *
      * @OA\Property()
      * @ORM\Column(type="text", length=16777215, nullable=true)
