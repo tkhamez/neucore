@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Add configurable text (markdown) on the login page below the login button.
+
 ## 1.16.0
 
 9 Jan 2021

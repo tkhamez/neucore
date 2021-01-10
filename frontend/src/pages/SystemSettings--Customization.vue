@@ -62,6 +62,16 @@
         </div>
         <hr>
         <div class="form-group">
+            <label class="col-form-label" for="customizationLoginText">Login Text</label>
+            <input id="customizationLoginText" type="text" class="form-control"
+                   v-model="settings.customization_login_text"
+                   v-on:input="$emit('changeSettingDelayed', 'customization_login_text', $event.target.value)">
+            <small class="form-text text-muted">
+                Optional text below the login button, supports Markdown (see below).
+            </small>
+        </div>
+        <hr>
+        <div class="form-group">
             <label for="customizationHomeMarkdown" class="col-form-label">Home Page Text Area</label><br>
             <textarea v-model="settings.customization_home_markdown" class="form-control"
                       id="customizationHomeMarkdown" rows="9"></textarea>

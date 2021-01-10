@@ -56,9 +56,9 @@
         </div>
 
         <div v-cloak v-if="! authChar" class="jumbotron mt-3">
-            <!--suppress HtmlUnknownTag -->
             <title-logo :settings="settings"></title-logo>
             <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
+            <!--suppress HtmlUnknownTarget -->
             <a href="/login">
                 <img src="/static/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
             </a>
@@ -68,16 +68,20 @@
                 <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
                     target="_blank" rel="noopener noreferrer">dev-blog</a> article.
             </p>
+            <span v-if="markdownLoginText">
+                <br>
+                <span v-html="markdownLoginText"></span>
+            </span>
         </div>
         <div v-cloak v-if="authChar" class="card mt-3 mb-3">
             <div class="card-body">
-                <!--suppress HtmlUnknownTag -->
                 <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
                 <p>
                     <a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
                     <span v-if="player && player.status === 'managed'">
                         <br>
+                        <!--suppress HtmlUnknownTarget -->
                         <a href="/login-managed-alt">Login without scopes</a>
                     </span>
                 </p>
@@ -202,6 +206,7 @@ export default {
             deactivated: false,
             charToDelete: null,
             markdownHtml: '',
+            markdownLoginText: '',
             loginAltUrl: '/login-alt',
         }
     },
@@ -224,6 +229,7 @@ export default {
 
         this.checkDeactivated();
         this.markdownHtml = md.render(this.settings.customization_home_markdown);
+        this.markdownLoginText = md.render(this.settings.customization_login_text);
     },
 
     watch: {

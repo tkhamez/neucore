@@ -248,6 +248,13 @@ class SystemVariable implements \JsonSerializable
     const CUSTOMIZATION_HOME_LOGO = 'customization_home_logo';
 
     /**
+     * Text below the login button.
+     *
+     * Scope = public
+     */
+    const CUSTOMIZATION_LOGIN_TEXT = 'customization_login_text';
+
+    /**
      * Text area on the home page.
      *
      * Scope = public
