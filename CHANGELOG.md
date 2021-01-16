@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Fix "There is no active transaction" error during DB migrations with PHP 8.
+
 ## 1.16.1
 
 10 Jan 2021

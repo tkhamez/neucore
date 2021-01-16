@@ -28,6 +28,7 @@ $config = Setup::createAnnotationMetadataConfiguration(
 AnnotationRegistry::registerLoader('class_exists');
 
 $em = EntityManager::create($conf['connection'], $config);
+$em->getConnection()->setAutoCommit(false);
 
 return new HelperSet(array(
     'db' => new ConnectionHelper($em->getConnection()), # TODO what's the replacement?
