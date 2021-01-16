@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.16.2
 
-dd mm yyyy
+16 Jan 2021
 
 - Services: It is now checked whether groups are deactivated.
 - Fix "There is no active transaction" error during DB migrations with PHP 8.
