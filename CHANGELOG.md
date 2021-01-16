@@ -4,6 +4,7 @@
 
 dd mm yyyy
 
+- Services: It is now checked whether groups are deactivated.
 - Fix "There is no active transaction" error during DB migrations with PHP 8.
 
 ## 1.16.1

@@ -14,6 +14,8 @@ use Psr\Log\LoggerInterface;
 
 class ServiceRegistrationTest_TestService implements ServiceInterface
 {
+    public static $lastGroup;
+
     public function __construct(LoggerInterface $logger)
     {
     }
@@ -26,6 +28,7 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
      */
     public function getAccounts(array $characters, array $groups): array
     {
+        self::$lastGroup = $groups;
         if ($characters[0]->id === 999) {
             throw new Exception();
         }

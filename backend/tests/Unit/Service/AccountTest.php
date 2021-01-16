@@ -20,7 +20,6 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
-use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
@@ -28,9 +27,7 @@ use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
-use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
-use Neucore\Service\EsiData;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -173,19 +170,9 @@ class AccountTest extends TestCase
             new Config([])
         );
 
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $repoFactory = new RepositoryFactory($this->om);
 
-        $esi = new EsiData(
-            $this->log,
-            new EsiApiFactory($this->client, $config),
-            $objectManager,
-            $repoFactory,
-            $config
-        );
-        $autoGroups = new AutoGroupAssignment($objectManager, $repoFactory, $this->log);
-
-        $this->service = new Account($this->log, $objectManager, $repoFactory, $esi, $autoGroups);
+        $this->service = $this->helper->getAccountService($this->log, $this->client);
         $this->charRepo = $repoFactory->getCharacterRepository();
         $this->playerRepo = $repoFactory->getPlayerRepository();
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();

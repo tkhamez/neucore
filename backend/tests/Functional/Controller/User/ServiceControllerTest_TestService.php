@@ -13,6 +13,8 @@ use Psr\Log\LoggerInterface;
 
 class ServiceControllerTest_TestService implements ServiceInterface
 {
+    public static $lastGroups;
+
     public function __construct(LoggerInterface $logger)
     {
     }
@@ -25,6 +27,7 @@ class ServiceControllerTest_TestService implements ServiceInterface
      */
     public function getAccounts(array $characters, array $groups): array
     {
+        self::$lastGroups = $groups;
         if (count($groups) === 2 && $groups[1]->name === 'G4') {
             throw new Exception();
         }
@@ -46,6 +49,7 @@ class ServiceControllerTest_TestService implements ServiceInterface
         string $emailAddress,
         array $allCharacterIds
     ): ServiceAccountData {
+        self::$lastGroups = $groups;
         if (count($groups) === 2 && $groups[1]->name === 'G3') {
             throw new Exception();
         } elseif (count($groups) === 2 && $groups[1]->name === 'G5') {
@@ -57,6 +61,7 @@ class ServiceControllerTest_TestService implements ServiceInterface
 
     public function updateAccount(CoreCharacter $character, array $groups): void
     {
+        self::$lastGroups = $groups;
         if ($character->id === 3) {
             throw new Exception();
         }

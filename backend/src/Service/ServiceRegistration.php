@@ -6,7 +6,9 @@ namespace Neucore\Service;
 
 use Neucore\Application;
 use Neucore\Entity\Character;
+use Neucore\Entity\Player;
 use Neucore\Entity\Service;
+use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
@@ -24,10 +26,16 @@ class ServiceRegistration
      */
     private $userAuth;
 
-    public function __construct(LoggerInterface $log, UserAuth $userAuth)
+    /**
+     * @var Account
+     */
+    private $account;
+
+    public function __construct(LoggerInterface $log, UserAuth $userAuth, Account $account)
     {
         $this->log = $log;
         $this->userAuth = $userAuth;
+        $this->account = $account;
     }
 
     public function hasRequiredGroups(Service $service): bool
@@ -38,13 +46,34 @@ class ServiceRegistration
         }
 
         $serviceConfig = $service->getConfiguration();
+
+        if (
+            !empty($serviceConfig->requiredGroups) &&
+            $this->account->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
+        ) {
+            return false;
+        }
+
         foreach ($serviceConfig->requiredGroups as $group) {
             $group = (int)$group;
             if ($group > 0 && !$character->getPlayer()->hasGroup($group)) {
                 return false;
             }
         }
+
         return true;
+    }
+
+    /**
+     * @param Player $player
+     * @return CoreGroup[]
+     */
+    public function getCoreGroups(Player $player): array
+    {
+        if ($this->account->groupsDeactivated($player)) { // do not ignore delay
+            return [];
+        }
+        return $player->getCoreGroups();
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface
@@ -105,7 +134,7 @@ class ServiceRegistration
             $coreCharacters[] = $character->toCoreCharacter();
             $characterIds[] = $character->getId();
         }
-        $coreGroups = $characters[0]->getPlayer()->getCoreGroups();
+        $coreGroups = $this->getCoreGroups($characters[0]->getPlayer());
         foreach ($service->getAccounts($coreCharacters, $coreGroups) as $account) {
             if (!$account instanceof ServiceAccountData) {
                 $this->log->error(

@@ -8,10 +8,13 @@ namespace Tests\Unit\Service;
 use Composer\Autoload\ClassLoader;
 use Neucore\Application;
 use Neucore\Entity\Character;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
 use Neucore\Entity\ServiceConfiguration;
+use Neucore\Entity\SystemVariable;
+use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
@@ -55,8 +58,9 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->log = new Logger('Test');
         $this->helper = new Helper();
+        $account = $this->helper->getAccountService($this->log, new Client());
         $userAuth = $this->helper->getUserAuthService($this->log, new Client());
-        $this->serviceRegistration = new ServiceRegistration($this->log, $userAuth);
+        $this->serviceRegistration = new ServiceRegistration($this->log, $userAuth, $account);
     }
 
     protected function tearDown(): void
@@ -94,6 +98,32 @@ class ServiceRegistrationTest extends TestCase
         $conf->requiredGroups[] = 2;
         $service->setConfiguration($conf);
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
+
+        // remove 2nd group again and "deactivate" account
+        unset($conf->requiredGroups[1]);
+        $service->setConfiguration($conf);
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $corporation = (new Corporation())->setId(101);
+        $character->setValidToken(false)->setCorporation($corporation);
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->persist($corporation);
+        $this->helper->getEm()->flush();
+        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
+    }
+
+    public function testGetCoreGroups()
+    {
+        $character = $this->setupDeactivateAccount();
+
+        $player = (new Player())->addGroup(new Group());
+        $this->assertEquals([new CoreGroup(0, '')], $this->serviceRegistration->getCoreGroups($player));
+
+        $player->addCharacter($character); // character with invalid ESI token
+        $this->assertEquals([], $this->serviceRegistration->getCoreGroups($player));
     }
 
     public function testGetServiceImplementation_MissingPhpClass()
@@ -149,15 +179,16 @@ class ServiceRegistrationTest extends TestCase
 
     public function testGetAccounts()
     {
-        $p = new Player();
+        $player = (new Player())->addGroup(new Group());
         $actual = $this->serviceRegistration->getAccounts(
             new ServiceRegistrationTest_TestService($this->log),
-            [(new Character())->setId(123)->setPlayer($p), (new Character())->setId(456)->setPlayer($p)]
+            [(new Character())->setId(123)->setPlayer($player)]
         );
 
         $this->assertSame(1, count($actual));
         $this->assertInstanceOf(ServiceAccountData::class, $actual[0]);
         $this->assertSame(123, $actual[0]->getCharacterId());
+        $this->assertEquals([new CoreGroup(0, '')], ServiceRegistrationTest_TestService::$lastGroup);
 
         $this->assertSame(
             "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects.",
@@ -169,6 +200,20 @@ class ServiceRegistrationTest extends TestCase
         );
     }
 
+    public function testGetAccounts_DeactivatedGroups()
+    {
+        $character = $this->setupDeactivateAccount();
+
+        $player = (new Player())->addGroup(new Group())->addCharacter($character);
+        $actual = $this->serviceRegistration->getAccounts(
+            new ServiceRegistrationTest_TestService($this->log),
+            [(new Character())->setId(123)->setPlayer($player)]
+        );
+
+        $this->assertSame(1, count($actual));
+        $this->assertEquals([], ServiceRegistrationTest_TestService::$lastGroup);
+    }
+
     public function testGetAccounts_Exception()
     {
         $this->expectException(Exception::class);
@@ -176,5 +221,19 @@ class ServiceRegistrationTest extends TestCase
             new ServiceRegistrationTest_TestService($this->log),
             [(new Character())->setId(999)->setPlayer(new Player())]
         );
+    }
+
+    private function setupDeactivateAccount(): Character
+    {
+        $this->helper->emptyDb();
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->flush();
+        $corporation = (new Corporation())->setId(101);
+        return (new Character())->setValidToken(false)->setCorporation($corporation);
     }
 }

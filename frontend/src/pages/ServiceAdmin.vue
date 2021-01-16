@@ -303,7 +303,7 @@ function getService(vm) {
     if (!vm.route[1] || !vm.hasRole('service-admin')) { // configuration object is incomplete without this role
         return;
     }
-    new ServiceApi().serviceGet(vm.route[1], (error, data) => {
+    new ServiceApi().serviceGet(vm.route[1], {allowAdmin: 'true'}, (error, data) => {
         if (!error) {
             vm.activeService = data;
             if (vm.activeService.configuration) {

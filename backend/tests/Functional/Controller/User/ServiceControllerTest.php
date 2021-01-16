@@ -7,11 +7,14 @@ namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Controller\User\ServiceController;
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
 use Neucore\Entity\ServiceConfiguration;
+use Neucore\Entity\SystemVariable;
+use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\ServiceAccountData;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
@@ -69,10 +72,21 @@ class ServiceControllerTest extends WebTestCase
     public function testGet403_MissingGroup()
     {
         $this->setupDb();
-        $this->loginUser(1);
+        $this->setupDeactivateAccount();
+        $this->loginUser(4);
 
         $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get");
         $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testGet403_DeactivatedGroups()
+    {
+        $this->setupDb();
+        $this->setupDeactivateAccount();
+        $this->loginUser(4);
+
+        $response1 = $this->runApp('GET', "/api/user/service/{$this->s1}/get");
+        $this->assertEquals(403, $response1->getStatusCode());
     }
 
     public function testGet404()
@@ -84,12 +98,22 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testGet200Admin()
+    public function testGet200_DeactivatedGroups_Admin()
+    {
+        $this->setupDb();
+        $this->setupDeactivateAccount();
+        $this->loginUser(4);
+
+        $response2 = $this->runApp('GET', "/api/user/service/{$this->s1}/get?allowAdmin=true");
+        $this->assertEquals(200, $response2->getStatusCode());
+    }
+
+    public function testGet200_MissingGroups_Admin()
     {
         $this->setupDb();
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get");
+        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get?allowAdmin=true");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
@@ -155,6 +179,16 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    public function testAccounts403_DeactivatedGroups()
+    {
+        $this->setupDb();
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testAccounts404()
     {
         $this->setupDb();
@@ -176,6 +210,18 @@ class ServiceControllerTest extends WebTestCase
                 'status' => ServiceAccountData::STATUS_ACTIVE],
             ['characterId' => 3, 'username' => null, 'password' => null, 'email' => null, 'status' => null],
         ], $this->parseJsonBody($response));
+        $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
+    }
+
+    public function testAccounts200_DeactivatedGroups()
+    {
+        $this->setupDb(true);
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
 
     public function testAccounts500_NoServiceImplementation()
@@ -221,6 +267,16 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    public function testRegister403_DeactivatedGroups()
+    {
+        $this->setupDb();
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testRegister404()
     {
         $this->setupDb();
@@ -249,6 +305,23 @@ class ServiceControllerTest extends WebTestCase
             'email' => 'e2',
             'status' => ServiceAccountData::STATUS_ACTIVE,
         ], $this->parseJsonBody($response));
+        $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
+    }
+
+    public function testRegister200_DeactivatedGroups()
+    {
+        $this->setupDb(true);
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->player->getCharacters()[1]->setMain(true);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
 
     public function testRegister409_noMain()
@@ -360,6 +433,16 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
+    public function testUpdateAccount403_DeactivatedGroups()
+    {
+        $this->setupDb();
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testUpdateAccount404_NoService()
     {
         $this->setupDb();
@@ -394,6 +477,18 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
         $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
+    }
+
+    public function testUpdateAccount204_DeactivatedGroups()
+    {
+        $this->setupDb(true);
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
 
     public function testUpdateAccount500_NoServiceImplementation()
@@ -445,6 +540,16 @@ class ServiceControllerTest extends WebTestCase
         $this->loginUser(1);
 
         $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/reset-password/1");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testResetPassword403_DeactivatedGroups()
+    {
+        $this->setupDb();
+        $this->setupDeactivateAccount();
+        $this->loginUser(1);
+
+        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -522,7 +627,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    private function setupDb(): void
+    private function setupDb($noRequiredGroupsForService1 = false): void
     {
         $group1 = (new Group())->setName('G1');
         $group2 = (new Group())->setName('G2');
@@ -532,7 +637,9 @@ class ServiceControllerTest extends WebTestCase
 
         $conf1 = new ServiceConfiguration();
         $conf1->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
-        $conf1->requiredGroups = [$group1->getId()];
+        if (!$noRequiredGroupsForService1) {
+            $conf1->requiredGroups = [$group1->getId()];
+        }
         $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
 
         $conf2 = new ServiceConfiguration();
@@ -560,5 +667,19 @@ class ServiceControllerTest extends WebTestCase
         $this->s1 = $service1->getId();
         $this->s2 = $service2->getId();
         $this->s3 = $service3->getId();
+    }
+
+    private function setupDeactivateAccount(): void
+    {
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $corporation = (new Corporation())->setId(101);
+        $this->player->getCharacters()[0]->setValidToken(false)->setCorporation($corporation); // char ID = 1
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->persist($corporation);
+        $this->helper->getEm()->flush();
     }
 }

@@ -154,15 +154,21 @@ class Helper
         return self::$em;
     }
 
-    public function getUserAuthService(Logger $logger, Client $client): UserAuth
+    public function getAccountService(Logger $logger, Client $client): Account
     {
         $repoFactory = new RepositoryFactory($this->getObjectManager());
         $objManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $esi = new EsiData($logger, new EsiApiFactory($client, $config), $objManager, $repoFactory, $config);
+        $esiData = new EsiData($logger, new EsiApiFactory($client, $config), $objManager, $repoFactory, $config);
         $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $logger);
-        $characterService = new Account($logger, $objManager, $repoFactory, $esi, $autoGroups);
-        return new UserAuth(new SessionData(), $characterService, $repoFactory, $logger);
+        return new Account($logger, $objManager, $repoFactory, $esiData, $autoGroups);
+    }
+
+    public function getUserAuthService(Logger $logger, Client $client): UserAuth
+    {
+        $repoFactory = new RepositoryFactory($this->getObjectManager());
+        $accountService = $this->getAccountService($logger, $client);
+        return new UserAuth(new SessionData(), $accountService, $repoFactory, $logger);
     }
 
     public function getDbName(): string

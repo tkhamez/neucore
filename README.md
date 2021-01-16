@@ -80,7 +80,7 @@ Watchlist
 The software was originally developed for the [Brave Collective](https://www.bravecollective.com), 
 when CCP shut down the old API and we had to replace our Core system.
 
-This is also where the name "Neucore" comes from.
+This is also where the name "Neucore" (new Core) comes from.
 
 ### Related Software
 

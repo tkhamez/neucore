@@ -94,7 +94,7 @@ class ServiceController extends BaseController
      *     path="/user/service/{id}/get",
      *     operationId="serviceGet",
      *     summary="Returns service.",
-     *     description="Needs role: user",
+     *     description="Needs role: user, service-admin",
      *     tags={"Service"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -103,6 +103,12 @@ class ServiceController extends BaseController
      *         required=true,
      *         description="ID of the service.",
      *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="allowAdmin",
+     *         in="query",
+     *         description="Do not check required groups if player is a service admin.",
+     *         @OA\Schema(type="string", enum={"true", "false"})
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -119,9 +125,10 @@ class ServiceController extends BaseController
      *     )
      * )
      */
-    public function get(string $id, UserAuth $userAuth): ResponseInterface
+    public function get(string $id, ServerRequestInterface $request, UserAuth $userAuth): ResponseInterface
     {
-        $response = $this->getService((int) $id);
+        $allowAdmin = $this->getQueryParam($request, 'allowAdmin') === 'true';
+        $response = $this->getService((int) $id, $allowAdmin);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
@@ -168,7 +175,7 @@ class ServiceController extends BaseController
      */
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $response = $this->getServiceAndServiceImplementation((int) $id);
+        $response = $this->getServiceAndServiceImplementation((int) $id, false);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
@@ -248,7 +255,7 @@ class ServiceController extends BaseController
             return $this->response->withStatus(409, 'no_main');
         }
 
-        $result = $this->getServiceAndServiceImplementation((int) $id);
+        $result = $this->getServiceAndServiceImplementation((int) $id, false);
         if ($result instanceof ResponseInterface) {
             return $result;
         }
@@ -268,11 +275,10 @@ class ServiceController extends BaseController
         ) {
             return $this->response->withStatus(409, 'already_registered');
         }
-
         try {
             $accountData = $this->serviceImplementation->register(
                 $main->toCoreCharacter(),
-                $player->getCoreGroups(),
+                $this->serviceRegistration->getCoreGroups($player),
                 $emailAddress,
                 $player->getCharactersId()
             );
@@ -337,7 +343,7 @@ class ServiceController extends BaseController
         try {
             $this->serviceImplementation->updateAccount(
                 $this->validCharacter->toCoreCharacter(),
-                $this->validCharacter->getPlayer()->getCoreGroups()
+                $this->serviceRegistration->getCoreGroups($this->validCharacter->getPlayer())
             );
         } catch (Exception $e) {
             return $this->response->withStatus(500);
@@ -404,7 +410,7 @@ class ServiceController extends BaseController
         return $this->withJson($newPassword);
     }
 
-    private function getService(int $id): ?ResponseInterface
+    private function getService(int $id, bool $allowAdmin): ?ResponseInterface
     {
         // get service
         $service = $this->repositoryFactory->getServiceRepository()->find($id);
@@ -414,7 +420,10 @@ class ServiceController extends BaseController
         $this->service = $service;
 
         // check service permission
-        $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+        $isAdmin = false;
+        if ($allowAdmin) {
+            $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
+        }
         if (!$isAdmin && !$this->serviceRegistration->hasRequiredGroups($this->service)) {
             return $this->response->withStatus(403);
         }
@@ -422,9 +431,9 @@ class ServiceController extends BaseController
         return null;
     }
 
-    private function getServiceAndServiceImplementation(int $id): ?ResponseInterface
+    private function getServiceAndServiceImplementation(int $id, bool $allowAdmin): ?ResponseInterface
     {
-        $response = $this->getService((int) $id);
+        $response = $this->getService((int) $id, $allowAdmin);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
@@ -460,7 +469,7 @@ class ServiceController extends BaseController
         }
         $this->validCharacter = $validCharacter;
 
-        $response1 = $this->getServiceAndServiceImplementation((int) $id);
+        $response1 = $this->getServiceAndServiceImplementation((int) $id, false);
         if ($response1 instanceof ResponseInterface) {
             return $response1;
         }
