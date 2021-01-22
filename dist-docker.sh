@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ ! -f dist.sh ]]; then
+if [[ ! -f dist-docker.sh ]]; then
     echo "The script must be called from the same directory where it is located."
     exit 1
 fi
@@ -14,21 +14,17 @@ if [[ -f backend/.env ]]; then
     cp backend/.env dist/build/backend/.env
 fi
 
-cd dist/build/backend || exit
-composer install --no-dev --optimize-autoloader --no-interaction
-vendor/bin/doctrine orm:generate-proxies
-composer openapi
+docker-compose exec php-fpm sh -c "cd ../dist/build/backend && composer install --no-dev --optimize-autoloader --no-interaction"
+docker-compose exec php-fpm sh -c "cd ../dist/build/backend && vendor/bin/doctrine orm:generate-proxies"
+docker-compose exec php-fpm sh -c "cd ../dist/build/backend && composer openapi"
 
-cd ../frontend || exit
-./openapi.sh
-cd neucore-js-client || exit
-npm install
-npm run build
-cd ..
-npm install
-npm run build:prod
+docker-compose run java /app/dist/build/frontend/openapi.sh
+docker-compose run node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
+docker-compose run node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
+docker-compose run node sh -c "cd ../dist/build/frontend && npm install"
+docker-compose run node sh -c "cd ../dist/build/frontend && npm run build:prod"
 
-cd ../.. || exit
+cd dist || exit
 mkdir neucore
 mv build/backend neucore/backend
 rm neucore/backend/.env
