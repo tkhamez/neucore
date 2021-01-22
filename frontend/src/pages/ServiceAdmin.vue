@@ -96,7 +96,7 @@
                     </div>
 
                     <p class="mb-0">Link Buttons</p>
-                    <small class="text-muted">Placeholder for URL: {username}, {password}, {email}</small><br>
+                    <small class="text-muted">Placeholders for URL: {username}, {password}, {email}</small><br>
                     <div class="form-group row" v-for="(url, idx) in URLs">
                         <label class="text-muted col-sm-2 col-form-label" :for="'configUrl'+idx">URL</label>
                         <div class="col-sm-10">
