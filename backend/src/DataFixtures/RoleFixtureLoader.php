@@ -36,6 +36,7 @@ class RoleFixtureLoader
             19 => Role::WATCHLIST_MANAGER,
             20 => Role::USER_CHARS,
             21 => Role::SERVICE_ADMIN,
+            22 => Role::STATISTICS,
         ];
 
         foreach ($roles as $id => $name) {

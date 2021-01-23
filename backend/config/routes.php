@@ -18,6 +18,7 @@ use Neucore\Controller\User\PlayerController;
 use Neucore\Controller\User\ServiceAdminController;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
+use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
 
 return [
@@ -207,4 +208,9 @@ return [
     '/api/user/service-admin/{id}/rename'               => ['PUT',    ServiceAdminController::class.'::rename'],
     '/api/user/service-admin/{id}/delete'               => ['DELETE', ServiceAdminController::class.'::delete'],
     '/api/user/service-admin/{id}/save-configuration'   => ['PUT',    ServiceAdminController::class.'::saveConfiguration'],
+
+    '/api/user/statistics/player-logins'                => ['GET', StatisticsController::class.'::playerLogins'],
+    '/api/user/statistics/total-monthly-app-requests'   => ['GET', StatisticsController::class.'::totalMonthlyAppRequests'],
+    '/api/user/statistics/monthly-app-requests'         => ['GET', StatisticsController::class.'::monthlyAppRequests'],
+    '/api/user/statistics/total-daily-app-requests'     => ['GET', StatisticsController::class.'::totalDailyAppRequests'],
 ];

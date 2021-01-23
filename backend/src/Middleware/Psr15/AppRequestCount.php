@@ -48,13 +48,22 @@ class AppRequestCount implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $day = date('Y-m-d');
+        $year = (int)date('Y');
+        $month = (int)date('m');
+        $day = (int)date('d');
 
-        $requests = $this->repositoryFactory->getAppRequestsRepository()->findOneBy(['app' => $app, 'day' => $day]);
+        $requests = $this->repositoryFactory->getAppRequestsRepository()->findOneBy([
+            'app' => $app,
+            'year' => $year,
+            'month' => $month,
+            'dayOfMonth' => $day
+        ]);
         if ($requests === null) {
             $requests = new AppRequests();
             $requests->setApp($app);
-            $requests->setDay($day);
+            $requests->setYear($year);
+            $requests->setMonth($month);
+            $requests->setDayOfMonth($day);
             $requests->setCount(0);
             $this->om->persist($requests);
         }

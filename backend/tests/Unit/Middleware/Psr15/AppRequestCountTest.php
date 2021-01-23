@@ -56,7 +56,9 @@ class AppRequestCountTest extends TestCase
         $requests = $this->repoFactory->getAppRequestsRepository()->findBy([]);
         $this->assertSame(1, count($requests));
         $this->assertSame($this->appId, $requests[0]->getApp()->getId());
-        $this->assertSame(date('Y-m-d'), $requests[0]->getDay());
+        $this->assertSame((int)date('Y'), $requests[0]->getYear());
+        $this->assertSame((int)date('m'), $requests[0]->getMonth());
+        $this->assertSame((int)date('d'), $requests[0]->getDayOfMonth());
         $this->assertSame(2, $requests[0]->getCount());
     }
 }

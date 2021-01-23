@@ -18,6 +18,7 @@ The API is documented with OpenAPI, it is available at
   * [group-admin](#group-admin)
   * [group-manager](#group-manager)
   * [service-admin](#service-admin)
+  * [statistics](#statistics)
   * [app-admin](#app-admin)
   * [app-manager](#app-manager)
   * [esi](#esi)
@@ -201,6 +202,16 @@ ServiceAdmin API
 - Rename a service. `PUT /user/service-admin/{id}/rename`
 - Delete a service. `DELETE /user/service-admin/{id}/delete`
 - Save the service configuration. `PUT /user/service-admin/{id}/save-configuration`
+
+#### statistics
+
+Allows players to view statistics.
+
+Statistics API
+- Returns player login numbers. `GET /user/statistics/player-logins`
+- Returns total monthly app request numbers. `GET /user/statistics/total-monthly-app-requests`
+- Returns monthly app request numbers. `GET /user/statistics/monthly-app-requests`
+- Returns total daily app request numbers. `GET /user/statistics/total-daily-app-requests`
 
 #### app-admin
 

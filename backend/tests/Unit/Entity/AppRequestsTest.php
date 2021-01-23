@@ -25,13 +25,25 @@ class AppRequestsTest extends TestCase
         $this->assertSame('a', $pl->getApp()->getName());
     }
 
-    public function testSetGetDay()
+    public function testSetGetYear()
     {
         $pl = new AppRequests();
-        $this->assertNull($pl->getDay());
+        $this->assertNull($pl->getYear());
+        $this->assertSame(2020, $pl->setYear(2020)->getYear());
+    }
 
-        $pl->setDay('2020-11-22');
-        $this->assertSame('2020-11-22', $pl->getDay());
+    public function testSetGetMonth()
+    {
+        $pl = new AppRequests();
+        $this->assertNull($pl->getMonth());
+        $this->assertSame(8, $pl->setMonth(8)->getMonth());
+    }
+
+    public function testSetGetDayOfMonth()
+    {
+        $pl = new AppRequests();
+        $this->assertNull($pl->getDayOfMonth());
+        $this->assertSame(16, $pl->setDayOfMonth(16)->getDayOfMonth());
     }
 
     public function testSetGetCount()

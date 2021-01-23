@@ -169,9 +169,15 @@ vendor/bin/doctrine orm:validate-schema
 
 Generate a migration by comparing the current database to the mapping information.  
 Set the server version to something below 5.7 to generate MariaDB 10.2 compatible syntax, e.g. 
-`mysql://neucore:password@127.0.0.1/core?serverVersion=5.6`:
+`mysql://neucore:password@127.0.0.1/core?mariadb-10.2.7`:
 ```
 vendor/bin/doctrine-migrations migrations:diff
+```
+
+Execute a single migration:
+```
+vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --up
+vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --down
 ```
 
 Check reserved words:

@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(
  *     name="player_logins",
  *     indexes={
- *         @ORM\Index(name="year_idx", columns={"year"}),
- *         @ORM\Index(name="month_idx", columns={"month"})
+ *         @ORM\Index(name="pl_year_idx", columns={"year"}),
+ *         @ORM\Index(name="pl_month_idx", columns={"month"})
  *     }
  * )
  */

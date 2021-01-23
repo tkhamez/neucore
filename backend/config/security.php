@@ -123,5 +123,7 @@ return [
     '/api/user/service-admin/'  => [Role::SERVICE_ADMIN],
     '/api/user/service/'        => [Role::USER],
 
+    '/api/user/statistics/'     => [Role::STATISTICS],
+
     '/api/user' => [Role::USER],
 ];

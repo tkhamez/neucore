@@ -61,6 +61,12 @@ Allows players to create and edit services.
 
 {service-admin}
 
+#### statistics
+
+Allows players to view statistics.
+
+{statistics}
+
 #### app-admin
 
 Allows a player to create apps and add and remove managers and roles.

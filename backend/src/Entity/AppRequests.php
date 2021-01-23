@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(
  *     name="app_requests",
- *     indexes={ @ORM\Index(name="day_idx", columns={"day"}) }
+ *     indexes={
+ *         @ORM\Index(name="ar_year_idx", columns={"year"}),
+ *         @ORM\Index(name="ar_month_idx", columns={"month"})
+ *     },
  * )
  */
 class AppRequests
@@ -31,10 +34,22 @@ class AppRequests
     private $app;
 
     /**
-     * @ORM\Column(type="string", length=10)
-     * @var string
+     * @ORM\Column(type="integer")
+     * @var int|null
      */
-    private $day;
+    private $year;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @var int|null
+     */
+    private $month;
+
+    /**
+     * @ORM\Column(name="day_of_month", type="integer")
+     * @var int|null
+     */
+    private $dayOfMonth;
 
     /**
      * @ORM\Column(type="integer")
@@ -58,14 +73,36 @@ class AppRequests
         return $this;
     }
 
-    public function getDay(): ?string
+    public function getYear(): ?int
     {
-        return $this->day;
+        return $this->year;
     }
 
-    public function setDay(string $day): self
+    public function setYear(int $year): AppRequests
     {
-        $this->day = $day;
+        $this->year = $year;
+        return $this;
+    }
+
+    public function getMonth(): ?int
+    {
+        return $this->month;
+    }
+
+    public function setMonth(int $month): AppRequests
+    {
+        $this->month = $month;
+        return $this;
+    }
+
+    public function getDayOfMonth(): ?int
+    {
+        return $this->dayOfMonth;
+    }
+
+    public function setDayOfMonth(int $dayOfMonth): AppRequests
+    {
+        $this->dayOfMonth = $dayOfMonth;
         return $this;
     }
 
