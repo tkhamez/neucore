@@ -49,7 +49,9 @@
                            href="#PlayerGroupManagement">Player Groups</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings'])"
+                <li v-if="hasAnyRole([
+                        'group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings', 'statistics'
+                    ])"
                     class="nav-item dropdown" :class="{ active: adminPages.indexOf(page) !== -1 }">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>
@@ -75,6 +77,9 @@
                         <a v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
+                        <a v-if="hasRole('statistics')"
+                           class="dropdown-item" :class="{ active: page === 'Statistics' }"
+                           href="#Statistics">Statistics</a>
                     </div>
                 </li>
                 <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
@@ -135,7 +140,9 @@ export default {
     data: function() {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
-            adminPages: ['GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings'],
+            adminPages: [
+                'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings', 'Statistics'
+            ],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'FindAlts'],
             page: '',
             selectedTheme: '',

@@ -51,6 +51,7 @@ import AppAdmin from './pages/AppAdmin.vue';
 import UserAdmin from './pages/UserAdmin.vue';
 import TrackingAdmin from './pages/TrackingAdmin.vue';
 import ServiceAdmin from './pages/ServiceAdmin.vue';
+import Statistics from './pages/Statistics.vue';
 import Esi from './pages/Esi.vue';
 import SystemSettings from './pages/SystemSettings.vue';
 import Tracking from './pages/Tracking.vue';
@@ -75,6 +76,7 @@ export default {
         UserAdmin,
         TrackingAdmin,
         ServiceAdmin,
+        Statistics,
         SystemSettings,
         Esi,
         Tracking,
@@ -111,6 +113,7 @@ export default {
                 'UserAdmin',
                 'TrackingAdmin',
                 'ServiceAdmin',
+                'Statistics',
                 'Esi',
                 'SystemSettings',
                 'Tracking',

@@ -452,6 +452,7 @@ export default {
                 'user-chars',
                 'esi',
                 'service-admin',
+                'statistics',
                 'settings',
                 'tracking',
                 'tracking-admin',
