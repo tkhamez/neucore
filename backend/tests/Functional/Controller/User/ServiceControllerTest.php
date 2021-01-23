@@ -627,7 +627,7 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    private function setupDb($noRequiredGroupsForService1 = false): void
+    private function setupDb(bool $noRequiredGroupsForService1 = false): void
     {
         $group1 = (new Group())->setName('G1');
         $group2 = (new Group())->setName('G2');
