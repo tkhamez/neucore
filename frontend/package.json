@@ -12,6 +12,7 @@
         "core-js": "^3.8.1",
         "datatables.net": "^1.10.23",
         "datatables.net-bs4": "^1.10.23",
+        "echarts": "^5.0.1",
         "fontsource-cabin-sketch": "^3.1.5",
         "fontsource-lato": "^3.1.5",
         "fontsource-montserrat": "^3.1.5",
