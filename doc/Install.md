@@ -153,7 +153,7 @@ heroku buildpacks:add heroku/php
 
 NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outdated as Neucore requires PHP 7.3 now.
 
-A more recent configuration for Amazon Linux 2 is available at 
+A current configuration for Amazon Linux 2 is available at 
 [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk).
 
 - Add an IAM user with Policy "AWSElasticBeanstalkFullAccess"
