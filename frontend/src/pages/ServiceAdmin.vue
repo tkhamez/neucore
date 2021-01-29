@@ -7,6 +7,12 @@
           :functionRename="rename"></edit>
 
     <div class="row mt-3">
+        <div class="col-lg-12">
+            <h1>Service Administration</h1>
+        </div>
+    </div>
+
+    <div class="row mt-3">
         <div class="col-lg-4 sticky-column">
             <div class="card border-secondary mb-3">
                 <h4 class="card-header">
