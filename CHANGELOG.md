@@ -4,7 +4,9 @@
 
 dd mm yyyy
 
+- New: Charts with statistics on player logins and app requests.
 - Services: Service accounts are now reloaded after a manual update.
+- Added shell script to build the distribution with docker.
 
 ## 1.16.2
 
