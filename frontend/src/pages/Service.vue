@@ -248,11 +248,13 @@ export default {
             const vm = this;
             vm.updateAccountButtonDisabled = true;
             vm.newPassword = {}
-            new ServiceApi().serviceUpdateAccount(getServiceId(vm), characterId, (error) => {
+            const api = new ServiceApi();
+            api.serviceUpdateAccount(getServiceId(vm), characterId, (error) => {
                 if (error) {
                     vm.message('Error. Please try again.', 'error');
                 } else {
                     vm.message('Account successfully updated.', 'success', 2500);
+                    getAccountData(vm, api);
                 }
                 vm.updateAccountButtonDisabled = false;
             });

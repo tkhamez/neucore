@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Services: Service accounts are now reloaded after a manual update.
+
 ## 1.16.2
 
 16 Jan 2021
