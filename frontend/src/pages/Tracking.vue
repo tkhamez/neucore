@@ -279,7 +279,7 @@ function setPathFromOptions(vm) {
 
 function configureDataTable(vm) {
     $.fn.dataTable.ext.search.push((settings, searchData) => {
-        const term = $('.dataTables_filter input').val().toLowerCase();
+        const term = $('.dataTables_filter input').val().toLowerCase().trim();
         for (let index = 0; index < vm.columns.length; index++) {
             if (! vm.columns[index].searchable) {
                 continue;

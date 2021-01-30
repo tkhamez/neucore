@@ -9,6 +9,7 @@ dd mm yyyy
 - Services: Added "update-service-accounts" command and added it to `bin/run-jobs.sh`.
 - Services: Service accounts are now reloaded after a manual update (frontend).
 - New: Charts with statistics on player logins and app requests.
+- Tracking: Trim search.
 - Added shell script to build the distribution with docker.
 
 ## 1.16.2
