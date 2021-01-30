@@ -35,10 +35,18 @@ class CSRFToken implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $sessionValue = null;
+        try {
+            $sessionValue = $this->sessionData->get(self::CSRF_SESSION_NAME);
+        } catch (\RuntimeException$e) {
+            // session not started, e.g. API calls
+            return $handler->handle($request);
+        }
+
         if (
             in_array($request->getMethod(), ['POST', 'PUT', 'DELETE']) &&
             (
-                empty($this->sessionData->get(self::CSRF_SESSION_NAME)) ||
+                empty($sessionValue) ||
                 !$request->hasHeader(self::CSRF_HEADER_NAME) ||
                 $request->getHeader(self::CSRF_HEADER_NAME)[0] !== $this->sessionData->get(self::CSRF_SESSION_NAME)
             )
