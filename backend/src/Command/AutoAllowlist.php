@@ -250,7 +250,7 @@ class AutoAllowlist extends Command
                     continue;
                 }
 
-                $this->checkErrorLimit();
+                $this->checkForErrors();
 
                 try {
                     $token = $this->tokenService->refreshAccessToken($characters[self::KEY_TOKEN]);

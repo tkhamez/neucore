@@ -129,7 +129,7 @@ class SendMissingCharacterMail extends Command
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->checkErrorLimit();
+                $this->checkForErrors();
 
                 $mayNotSendReason = $this->eveMail->missingCharacterMaySend($memberId);
                 if ($mayNotSendReason !== '') {

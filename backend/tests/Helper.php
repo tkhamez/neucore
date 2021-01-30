@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
+use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\RS256;
@@ -369,5 +370,22 @@ class Helper
         $this->getObjectManager()->flush();
 
         return $app;
+    }
+
+    public function getGuzzleHandler(Response $response): callable
+    {
+        return function () use ($response) {
+            return new class($response) {
+                private $response;
+                public function __construct(Response $response)
+                {
+                    $this->response = $response;
+                }
+                public function then(callable $onFulfilled): void
+                {
+                    $onFulfilled($this->response);
+                }
+            };
+        };
     }
 }

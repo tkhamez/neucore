@@ -104,7 +104,7 @@ class UpdateMemberTracking extends Command
         $corporationRepository = $this->repositoryFactory->getCorporationRepository();
         $processedCorporations = [];
         foreach ($systemVariableRepository->getDirectors() as $characterVariable) {
-            $this->checkErrorLimit();
+            $this->checkForErrors();
 
             $character = \json_decode($characterVariable->getValue());
             if ($character === null) {
@@ -238,7 +238,7 @@ class UpdateMemberTracking extends Command
                 $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                 break;
             }
-            $this->checkErrorLimit();
+            $this->checkForErrors();
 
             $this->memberTracking->updateStructure($memberData, $token);
 

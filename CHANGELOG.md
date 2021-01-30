@@ -9,8 +9,9 @@ dd mm yyyy
 - Services: Added "update-service-accounts" command and added it to `bin/run-jobs.sh`.
 - Services: Service accounts are now reloaded after a manual update (frontend).
 - New: Charts with statistics on player logins and app requests.
+- ESI: Added check for "Undefined 429 response", see also https://github.com/esi/esi-issues/issues/1227
 - Tracking: Trim search.
-- Added shell script to build the distribution with docker.
+- Tools: Added shell script to build the distribution with docker.
 
 ## 1.16.2
 

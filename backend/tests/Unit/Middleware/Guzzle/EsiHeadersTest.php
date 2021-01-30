@@ -18,6 +18,11 @@ use Tests\Logger;
 class EsiHeadersTest extends TestCase
 {
     /**
+     * @var Helper
+     */
+    private $helper;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -34,9 +39,9 @@ class EsiHeadersTest extends TestCase
 
     protected function setUp(): void
     {
-        $helper = new Helper();
-        $helper->emptyDb();
-        $om = $helper->getObjectManager();
+        $this->helper = new Helper();
+        $this->helper->emptyDb();
+        $om = $this->helper->getObjectManager();
 
         $this->logger = new Logger('test');
 
@@ -54,7 +59,7 @@ class EsiHeadersTest extends TestCase
             ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
         );
 
-        $function = $this->obj->__invoke($this->getHandler($response));
+        $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
         $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
@@ -72,29 +77,12 @@ class EsiHeadersTest extends TestCase
             ['warning' => ['299 - This route is deprecated']]
         );
 
-        $function = $this->obj->__invoke($this->getHandler($response));
+        $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
         $this->assertSame(
             'https://local.host/esi/path: 299 - This route is deprecated',
             $this->logger->getHandler()->getRecords()[0]['message']
         );
-    }
-
-    private function getHandler(Response $response): callable
-    {
-        return function () use ($response) {
-            return new class($response) {
-                private $response;
-                public function __construct(Response $response)
-                {
-                    $this->response = $response;
-                }
-                public function then(callable $onFulfilled): void
-                {
-                    $onFulfilled($this->response);
-                }
-            };
-        };
     }
 }

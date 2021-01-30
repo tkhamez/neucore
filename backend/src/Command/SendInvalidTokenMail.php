@@ -112,7 +112,7 @@ class SendInvalidTokenMail extends Command
                     $this->logger->critical('SendInvalidTokenMail: cannot continue without an open entity manager.');
                     break;
                 }
-                $this->checkErrorLimit();
+                $this->checkForErrors();
 
                 $characterId = $this->eveMail->invalidTokenFindCharacter($playerId);
                 if ($characterId === null) {

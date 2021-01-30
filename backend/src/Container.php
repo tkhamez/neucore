@@ -29,6 +29,7 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
+use Neucore\Middleware\Guzzle\Esi429Response;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
@@ -170,6 +171,7 @@ class Container
                 )));
                 $stack->push($cache, 'cache');
                 $stack->push($c->get(EsiHeaders::class));
+                $stack->push($c->get(Esi429Response::class));
                 #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
 
                 return new Client([

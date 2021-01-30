@@ -121,7 +121,7 @@ class CheckTokens extends Command
                     break;
                 }
                 $this->entityManager->clear(); // detaches all objects from Doctrine
-                $this->checkErrorLimit();
+                $this->checkForErrors();
 
                 $char = $this->charRepo->find($charId);
                 if ($char === null) {

@@ -17,30 +17,63 @@ class EsiRateLimitedTest extends TestCase
 {
     use EsiRateLimited;
 
-    public function testCheckErrorLimit()
+    /**
+     * @var Logger
+     */
+    private $testLogger;
+
+    /**
+     * @var SystemVariableStorage
+     */
+    private $testStorage;
+
+    protected function setUp(): void
     {
         $helper = new Helper();
         $helper->emptyDb();
         $om = $helper->getObjectManager();
 
-        $logger = new Logger('Test');
-        $storage = new SystemVariableStorage(new RepositoryFactory($om), new ObjectManager($om, $logger));
+        $this->testLogger = new Logger('Test');
+        $this->testStorage = new SystemVariableStorage(
+            new RepositoryFactory($om),
+            new ObjectManager($om, $this->testLogger)
+        );
         #apcu_clear_cache();
-        #$storage = new \Neucore\Storage\ApcuStorage();
-        $storage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode([
+        #self::$testStorage = new \Neucore\Storage\ApcuStorage();
+    }
+
+    public function testCheckForErrors_Throttled()
+    {
+        $this->testStorage->set(Variables::ESI_THROTTLED, '1');
+
+        $this->esiRateLimited($this->testStorage, $this->testLogger, true);
+
+        $this->checkForErrors();
+
+        $this->assertSame(60, $this->getSleepInSeconds());
+        $this->assertSame(
+            'EsiRateLimited: hit "throttled", sleeping 60 seconds',
+            $this->testLogger->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testCheckForErrors_ErrorLimit()
+    {
+        $this->testStorage->set(Variables::ESI_ERROR_LIMIT, (string) \json_encode([
             'updated' => time(),
             'remain' => 9,
             'reset' => 20,
         ]));
-        $this->esiRateLimited($storage, $logger, true);
 
-        $this->checkErrorLimit();
+        $this->esiRateLimited($this->testStorage, $this->testLogger, true);
+
+        $this->checkForErrors();
 
         $this->assertGreaterThanOrEqual(20, $this->getSleepInSeconds());
         $this->assertStringStartsWith(
-            'EsiRateLimited: hit limit, sleeping ',
-            $logger->getHandler()->getRecords()[0]['message']
+            'EsiRateLimited: hit error limit, sleeping ',
+            $this->testLogger->getHandler()->getRecords()[0]['message']
         );
-        $this->assertStringEndsWith(' seconds',$logger->getHandler()->getRecords()[0]['message']);
+        $this->assertStringEndsWith(' seconds', $this->testLogger->getHandler()->getRecords()[0]['message']);
     }
 }

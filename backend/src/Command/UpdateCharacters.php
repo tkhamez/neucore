@@ -110,7 +110,7 @@ class UpdateCharacters extends Command
                 }, $characters);
             }
 
-            $this->checkErrorLimit();
+            $this->checkForErrors();
 
             $names = [];
             foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {

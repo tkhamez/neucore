@@ -129,7 +129,7 @@ class UpdateCorporations extends Command
                     break;
                 }
                 $this->entityManager->clear();
-                $this->checkErrorLimit();
+                $this->checkForErrors();
 
                 $updatedCorp = $this->esiData->fetchCorporation($corpId);
                 if ($updatedCorp === null) {
@@ -155,7 +155,7 @@ class UpdateCorporations extends Command
                 break;
             }
             $this->entityManager->clear();
-            $this->checkErrorLimit();
+            $this->checkForErrors();
 
             $updatedAlli = $this->esiData->fetchAlliance($alliId);
             if ($updatedAlli === null) {

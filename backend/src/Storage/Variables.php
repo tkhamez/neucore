@@ -18,5 +18,10 @@ class Variables
      */
     const ESI_ERROR_LIMIT = 'esi_error_limit';
 
+    /**
+     * https://github.com/esi/esi-issues/issues/1227
+     */
+    const ESI_THROTTLED = 'esi_throttled';
+
     const API_RATE_LIMIT = 'api_rate_limit';
 }
