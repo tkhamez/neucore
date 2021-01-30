@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.17.0
 
-dd mm yyyy
+30 Jan 2021
 
 - **BC break**: Service registration plugins must implemented [v0.2.0](https://github.com/tkhamez/neucore-plugin) 
   now, updated from 0.1.0.
