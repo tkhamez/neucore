@@ -26,7 +26,7 @@ use Tests\Logger;
 
 class ServiceRegistrationTest extends TestCase
 {
-    private const PSR_PREFIX = 'Tests\ServiceRegistration_AutoloadTest';
+    private const PSR_PREFIX = 'Tests\Unit\Service\ServiceRegistration_AutoloadTest';
 
     /**
      * @var ClassLoader
@@ -153,7 +153,7 @@ class ServiceRegistrationTest extends TestCase
 
         $service = new Service();
         $conf = new ServiceConfiguration();
-        $conf->phpClass = 'Tests\ServiceRegistration_AutoloadTest\TestService';
+        $conf->phpClass = self::PSR_PREFIX.'\TestService';
         $conf->psr4Prefix = self::PSR_PREFIX;
         $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest';
         $service->setConfiguration($conf);

@@ -6,7 +6,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Service;
 
 use Neucore\Plugin\CoreCharacter;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
@@ -20,12 +19,6 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
     {
     }
 
-    /**
-     * @param CoreCharacter[] $characters
-     * @param CoreGroup[] $groups
-     * @return ServiceAccountData[]
-     * @throws Exception
-     */
     public function getAccounts(array $characters, array $groups): array
     {
         self::$lastGroup = $groups;
@@ -39,12 +32,6 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
         ];
     }
 
-    /**
-     * @param CoreGroup[] $groups
-     * @param int[] $allCharacterIds
-     * @return ServiceAccountData
-     * @throws Exception
-     */
     public function register(
         CoreCharacter $character,
         array $groups,

@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\ServiceRegistration_AutoloadTest;
+namespace Tests\Unit\Service\ServiceRegistration_AutoloadTest;
 
 use Neucore\Plugin\CoreCharacter;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
@@ -17,22 +16,11 @@ class TestService implements ServiceInterface
     {
     }
 
-    /**
-     * @param CoreCharacter[] $characters
-     * @param CoreGroup[] $groups
-     * @return ServiceAccountData[]
-     */
     public function getAccounts(array $characters, array $groups): array
     {
         return [];
     }
 
-    /**
-     * @param CoreGroup[] $groups
-     * @param int[] $allCharacterIds
-     * @return ServiceAccountData
-     * @throws Exception
-     */
     public function register(
         CoreCharacter $character,
         array $groups,
