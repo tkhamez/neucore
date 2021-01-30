@@ -29,17 +29,16 @@ use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
 use Neucore\Command\UpdateServiceAccounts;
 use Neucore\Exception\RuntimeException;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Middleware\Psr15\AppRequestCount;
 use Neucore\Middleware\Psr15\Cors;
 use Neucore\Middleware\Psr15\BodyParams;
+use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\RateLimit;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
-use Neucore\Storage\StorageInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
@@ -272,19 +271,9 @@ class Application
     {
         // Add middleware, last added are executed first.
 
-        $app->add(new RateLimit(
-            $this->container->get(AppAuth::class),
-            $this->container->get(StorageInterface::class),
-            $this->container->get(ResponseFactoryInterface::class),
-            $this->container->get(LoggerInterface::class),
-            $this->container->get(RepositoryFactory::class)
-        ));
-
-        $app->add(new AppRequestCount(
-            $this->container->get(AppAuth::class),
-            $this->container->get(RepositoryFactory::class),
-            $this->container->get(EntityManagerInterface::class)
-        ));
+        $app->add($this->container->get(RateLimit::class));
+        $app->add($this->container->get(AppRequestCount::class));
+        $app->add($this->container->get(CSRFToken::class));
 
         /** @noinspection PhpIncludeInspection */
         $app->add(new SecureRouteMiddleware(
@@ -307,12 +296,10 @@ class Application
         $app->addRoutingMiddleware();
 
         if ($this->container->get(Config::class)['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new Cors(
-                explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])
-            ));
+            $app->add(new Cors(explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])));
         }
 
-        $app->add(new BodyParams());
+        $app->add($this->container->get(BodyParams::class));
 
         // add error handler last
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);

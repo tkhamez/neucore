@@ -44,8 +44,9 @@ return [
     '/api/user/app/{id}/show'          => [Role::APP_MANAGER, Role::APP_ADMIN],
     '/api/user/app'                    => [Role::APP_ADMIN],
 
-    '/api/user/auth/callback' => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility
-    '/api/user/auth/result'   => [Role::ANONYMOUS, Role::USER],
+    '/api/user/auth/callback'   => [Role::ANONYMOUS, Role::USER], // only for backwards compatibility
+    '/api/user/auth/result'     => [Role::ANONYMOUS, Role::USER],
+    '/api/user/auth/csrf-token' => [Role::USER],
 
     '/api/user/character/find-character' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::USER_CHARS],
     '/api/user/character/find-player'    => [Role::GROUP_MANAGER],

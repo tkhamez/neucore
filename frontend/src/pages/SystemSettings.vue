@@ -91,8 +91,11 @@ export default {
 
         changeSetting (name, value) {
             const vm = this;
-            new SettingsApi().systemChange(name, value, (error) => {
+            new SettingsApi().systemChange(name, value, (error, data, response) => {
                 if (error) { // 403 usually
+                    if (response.statusCode === 403) {
+                        vm.message('Unauthorized.', 'error');
+                    }
                     return;
                 }
 

@@ -8,7 +8,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\Esi429Response;
-use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\SystemVariableStorage;
 use Neucore\Storage\Variables;

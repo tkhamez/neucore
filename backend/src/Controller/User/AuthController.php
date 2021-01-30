@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -10,6 +11,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
@@ -306,6 +308,36 @@ class AuthController extends BaseController
         $this->session->destroy();
 
         return $this->response->withStatus(204);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/auth/csrf-token",
+     *     operationId="authCsrfToken",
+     *     summary="The CSRF token to use in POST, PUT and DELETE requests.",
+     *     description="Needs role: user",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response="200",
+     *         description="The CSRF token.",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function csrfToken(SessionData $sessionData): ResponseInterface
+    {
+        $token = $sessionData->get(CSRFToken::CSRF_SESSION_NAME);
+        if (empty($token)) {
+            try {
+                $token = Random::chars(39);
+            } catch (\Exception $e) {
+                $this->response->getBody()->write('Error.');
+                return $this->response->withStatus(500);
+            }
+            $sessionData->set(CSRFToken::CSRF_SESSION_NAME, $token);
+        }
+
+        return $this->withJson($token);
     }
 
     private function redirectToLoginUrl(string $prefix, string $redirect): ResponseInterface

@@ -30,9 +30,10 @@ return [
     '/login-director'    => ['GET', AuthController::class.'::loginDirector'],
     '/login-callback'    => ['GET', AuthController::class.'::callback'],
 
-    '/api/user/auth/callback' => ['GET',  AuthController::class.'::callback'], // only for backwards compatibility
-    '/api/user/auth/result'   => ['GET',  AuthController::class.'::result'],
-    '/api/user/auth/logout'   => ['POST', AuthController::class.'::logout'],
+    '/api/user/auth/callback'   => ['GET',  AuthController::class.'::callback'], // only for backwards compatibility
+    '/api/user/auth/result'     => ['GET',  AuthController::class.'::result'],
+    '/api/user/auth/logout'     => ['POST', AuthController::class.'::logout'],
+    '/api/user/auth/csrf-token' => ['GET',  AuthController::class.'::csrfToken'],
 
     '/api/app/v1/show' => ['GET', ApplicationController::class.'::showV1'],
 

@@ -504,4 +504,25 @@ class AuthControllerTest extends WebTestCase
         $response = $this->runApp('POST', '/api/user/auth/logout');
         $this->assertSame(204, $response->getStatusCode());
     }
+
+    public function testCsrfToken403()
+    {
+        $response = $this->runApp('GET', '/api/user/auth/csrf-token');
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testCsrfToken200()
+    {
+        $h = new Helper();
+        $h->emptyDb();
+        $h->addCharacterMain('Test User', 123456, [Role::USER]);
+        $this->loginUser(123456);
+
+        $response1 = $this->runApp('GET', '/api/user/auth/csrf-token');
+        $response2 = $this->runApp('GET', '/api/user/auth/csrf-token');
+        $this->assertSame(200, $response1->getStatusCode());
+        $this->assertSame(200, $response2->getStatusCode());
+        $this->assertSame($this->parseJsonBody($response1), $this->parseJsonBody($response2));
+        $this->assertSame(39, strlen($this->parseJsonBody($response1)));
+    }
 }

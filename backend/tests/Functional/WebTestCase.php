@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use Neucore\Application;
+use Neucore\Middleware\Psr15\CSRFToken;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Tests\Helper;
@@ -27,8 +28,8 @@ class WebTestCase extends TestCase
      * @return ResponseInterface|null
      */
     protected function runApp(
-        $requestMethod,
-        $requestUri,
+        string $requestMethod,
+        string $requestUri,
         $requestData = null,
         array $headers = null,
         array $mocks = [],
@@ -66,6 +67,19 @@ class WebTestCase extends TestCase
         if (is_array($headers)) {
             foreach ($headers as $name => $value) {
                 $request = $request->withHeader($name, $value);
+            }
+        }
+
+        // add CSRF token
+        if (in_array($requestMethod, ['POST', 'PUT', 'DELETE'])) {
+            if (!isset($_SESSION)) {
+                $_SESSION = [];
+            }
+            if (!isset($_SESSION[CSRFToken::CSRF_SESSION_NAME])) {
+                $_SESSION[CSRFToken::CSRF_SESSION_NAME] = 'csrf';
+            }
+            if (!$request->hasHeader(CSRFToken::CSRF_HEADER_NAME)) {
+                $request = $request->withHeader(CSRFToken::CSRF_HEADER_NAME, 'csrf');
             }
         }
 

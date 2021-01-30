@@ -57,6 +57,7 @@ This role is added to all player accounts.
 Auth API
 - Result of last SSO attempt. `GET /user/auth/result`
 - User logout. `POST /user/auth/logout`
+- The CSRF token to use in POST, PUT and DELETE requests. `GET /user/auth/csrf-token`
 
 Character API
 - Return the logged in EVE character. `GET /user/character/show`
@@ -208,8 +209,8 @@ ServiceAdmin API
 Allows players to view statistics.
 
 Statistics API
-- Returns player login numbers. `GET /user/statistics/player-logins`
-- Returns total monthly app request numbers. `GET /user/statistics/total-monthly-app-requests`
+- Returns player login numbers, max. last 13 months. `GET /user/statistics/player-logins`
+- Returns total monthly app request numbers, max. last 13 months. `GET /user/statistics/total-monthly-app-requests`
 - Returns monthly app request numbers. `GET /user/statistics/monthly-app-requests`
 - Returns total daily app request numbers. `GET /user/statistics/total-daily-app-requests`
 

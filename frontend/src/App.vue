@@ -137,6 +137,8 @@ export default {
             messageType: '',
 
             settingsLoaded: false,
+
+            csrfToken: '',
         }
     },
 
@@ -144,7 +146,7 @@ export default {
         // configure neucore-js-client
         ApiClient.instance.basePath =
             `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api`;
-        ApiClient.instance.plugins = [superAgentPlugin(this)];
+        ApiClient.instance.plugins = [superAgentPlugin(this, setCsrfHeader)];
 
         // initial route
         this.updateRoute();
@@ -177,6 +179,7 @@ export default {
 
         // get initial data
         this.getSettings();
+        getCsrfHeader(this);
         this.getAuthenticatedCharacter();
         this.getPlayer();
     },
@@ -206,6 +209,7 @@ export default {
             const vm = this;
             if (this.route[0] === 'logout') {
                 this.logout();
+                window.location.hash = '';
             } else if (['login', 'login-alt'].indexOf(this.route[0]) !== -1) {
                 authResult();
                 // Remove the hash value so that it does not appear in bookmarks, for example.
@@ -291,8 +295,11 @@ export default {
 
         logout: function() {
             const vm = this;
-            new AuthApi().logout(function(error) {
+            new AuthApi().logout(function(error, data, response) {
                 if (error) { // 403 usually
+                    if (response.statusCode === 403) {
+                        vm.message('Unauthorized.', 'error');
+                    }
                     return;
                 }
                 vm.authChar = null;
@@ -300,6 +307,22 @@ export default {
             });
         },
     },
+}
+
+function getCsrfHeader(vm) {
+    new AuthApi().authCsrfToken(function(error, data) {
+        if (error) {
+            vm.csrfToken = '';
+        } else {
+            vm.csrfToken = data;
+        }
+    });
+}
+
+function setCsrfHeader(vm, request) {
+    if (['POST', 'PUT', 'DELETE'].indexOf(request.method) !== -1) {
+        request.set('X-CSRF-Token', vm.csrfToken);
+    }
 }
 </script>
 
