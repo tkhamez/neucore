@@ -457,17 +457,17 @@ class ServiceController extends BaseController
         int $characterId,
         UserAuth $userAuth
     ): ?ResponseInterface {
-        $validCharacter = null;
-        foreach ($this->getUser($userAuth)->getPlayer()->getCharacters() as $character) {
-            if ($character->getId() === (int)$characterId) {
-                $validCharacter = $character;
+        $character = null;
+        foreach ($this->getUser($userAuth)->getPlayer()->getCharacters() as $char) {
+            if ($char->getId() === (int)$characterId) {
+                $character = $char;
                 break;
             }
         }
-        if ($validCharacter === null) {
+        if ($character === null) {
             return $this->response->withStatus(404);
         }
-        $this->validCharacter = $validCharacter;
+        $this->validCharacter = $character;
 
         $response1 = $this->getServiceAndServiceImplementation((int) $id, false);
         if ($response1 instanceof ResponseInterface) {
