@@ -49,4 +49,9 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
     {
         throw new Exception();
     }
+
+    public function getAllAccounts(): array
+    {
+        throw new Exception();
+    }
 }

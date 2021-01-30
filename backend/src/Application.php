@@ -27,6 +27,7 @@ use Neucore\Command\UpdateCharacters;
 use Neucore\Command\UpdateCorporations;
 use Neucore\Command\UpdateMemberTracking;
 use Neucore\Command\UpdatePlayerGroups;
+use Neucore\Command\UpdateServiceAccounts;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
@@ -443,6 +444,7 @@ class Application
         $console->add($this->container->get(RevokeToken::class));
         $console->add($this->container->get(AutoAllowlist::class));
         $console->add($this->container->get(AssureMain::class));
+        $console->add($this->container->get(UpdateServiceAccounts::class));
     }
 
     private function logException(\Throwable $e): void

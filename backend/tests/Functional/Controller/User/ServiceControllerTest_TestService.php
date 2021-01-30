@@ -62,4 +62,9 @@ class ServiceControllerTest_TestService implements ServiceInterface
             return 'new-pass';
         }
     }
+
+    public function getAllAccounts(): array
+    {
+        throw new Exception();
+    }
 }

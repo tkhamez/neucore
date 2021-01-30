@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service\ServiceRegistration_AutoloadTest;
+namespace Tests\Functional\Command;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -10,7 +10,7 @@ use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService implements ServiceInterface
+class UpdateServiceAccountsTest_TestService implements ServiceInterface
 {
     public function __construct(LoggerInterface $logger)
     {
@@ -18,20 +18,19 @@ class TestService implements ServiceInterface
 
     public function getAccounts(array $characters, array $groups): array
     {
-        return [];
+        throw new Exception();
     }
 
-    public function register(
-        CoreCharacter $character,
-        array $groups,
-        string $emailAddress,
-        array $allCharacterIds
-    ): ServiceAccountData {
+    public function register(CoreCharacter $character, array $groups, string $emailAddress, array $allCharacterIds): ServiceAccountData
+    {
         throw new Exception();
     }
 
     public function updateAccount(CoreCharacter $character, array $groups): void
     {
+        if ($character->id === 102) {
+            throw new Exception();
+        }
     }
 
     public function resetPassword(int $characterId): string
@@ -41,6 +40,6 @@ class TestService implements ServiceInterface
 
     public function getAllAccounts(): array
     {
-        throw new Exception();
+        return [101, 102];
     }
 }

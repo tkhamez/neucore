@@ -4,8 +4,11 @@
 
 dd mm yyyy
 
+- **BC break**: Service registration plugins must implemented [v0.2.0](https://github.com/tkhamez/neucore-plugin) 
+  now, updated from 0.1.0.
+- Services: Added "update-service-accounts" command and added it to `bin/run-jobs.sh`.
+- Services: Service accounts are now reloaded after a manual update (frontend).
 - New: Charts with statistics on player logins and app requests.
-- Services: Service accounts are now reloaded after a manual update.
 - Added shell script to build the distribution with docker.
 
 ## 1.16.2
