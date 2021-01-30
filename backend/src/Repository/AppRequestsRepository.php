@@ -113,12 +113,12 @@ class AppRequestsRepository extends EntityRepository
 
         $qb = $this->createQueryBuilder('ar');
         $qb->select(
-                'SUM(ar.count) AS requests',
-                'ar.year',
-                'ar.month',
-                'ar.dayOfMonth AS day_of_month',
-                //'(ar.year * 100) + ar.month',
-            )
+            'SUM(ar.count) AS requests',
+            'ar.year',
+            'ar.month',
+            'ar.dayOfMonth AS day_of_month',
+            //'(ar.year * 100) + ar.month',
+        )
             ->where($qb->expr()->gt('(ar.year * 100) + ar.month', ':yearMonth'))
             ->setParameter('yearMonth', $yearMonthMinus2)
             ->groupBy('ar.year', 'ar.month', 'ar.dayOfMonth')
