@@ -275,7 +275,13 @@ class MemberTracking
     {
         // get ESI data
         $esiNames = []; /* @var PostUniverseNames200Ok[] $esiNames */
-        foreach ($this->esiData->fetchUniverseNames(array_merge($typeIds, $systemIds, $stationIds)) as $name) {
+
+        // Do not request different types at once, that may lead to errors from ESI.
+        $typeNames = $this->esiData->fetchUniverseNames($typeIds);
+        $systemNames = $this->esiData->fetchUniverseNames($systemIds);
+        $stationNames = $this->esiData->fetchUniverseNames($stationIds);
+
+        foreach (array_merge($typeNames, $systemNames, $stationNames) as $name) {
             if (! in_array($name->getCategory(), [
                 PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE,
                 PostUniverseNames200Ok::CATEGORY_SOLAR_SYSTEM,
