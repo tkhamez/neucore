@@ -70,8 +70,8 @@ class WebTestCase extends TestCase
             }
         }
 
-        // add CSRF token
-        if (in_array($requestMethod, ['POST', 'PUT', 'DELETE'])) {
+        // add CSRF token, but only for "user" API, not apps
+        if (strpos($requestUri, '/api/user/') === 0 && in_array($requestMethod, ['POST', 'PUT', 'DELETE'])) {
             if (!isset($_SESSION)) {
                 $_SESSION = [];
             }

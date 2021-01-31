@@ -5,6 +5,7 @@
 31 Jan 2021
 
 - Reduce memory usage of update-service-accounts job.
+- Added path checking for CSRF token middleware so that it does not run for the "app" API.
 
 ## 1.17.0
 

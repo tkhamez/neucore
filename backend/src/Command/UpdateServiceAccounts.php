@@ -104,7 +104,7 @@ class UpdateServiceAccounts extends Command
         return 0;
     }
 
-    private function updateService(Service $service, int $sleep)
+    private function updateService(Service $service, int $sleep): void
     {
         $implementation = $this->serviceRegistration->getServiceImplementation($service);
         if ($implementation === null) {
@@ -139,7 +139,7 @@ class UpdateServiceAccounts extends Command
         );
     }
 
-    private function updateAccount(int $characterId, ServiceInterface $implementation)
+    private function updateAccount(int $characterId, ServiceInterface $implementation): void
     {
         $character = $this->characterRepository->find($characterId);
         if ($character) {

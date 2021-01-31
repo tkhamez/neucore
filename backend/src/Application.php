@@ -36,6 +36,7 @@ use Neucore\Middleware\Psr15\BodyParams;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Middleware\Psr15\HSTS;
 use Neucore\Middleware\Psr15\RateLimit;
+use Neucore\Service\SessionData;
 use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
@@ -274,7 +275,11 @@ class Application
 
         $app->add($this->container->get(RateLimit::class));
         $app->add($this->container->get(AppRequestCount::class));
-        $app->add($this->container->get(CSRFToken::class));
+        $app->add(new CSRFToken(
+            $this->container->get(ResponseFactoryInterface::class),
+            $this->container->get(SessionData::class),
+            '/api/user'
+        ));
 
         /** @noinspection PhpIncludeInspection */
         $app->add(new SecureRouteMiddleware(
@@ -293,8 +298,8 @@ class Application
         $app->add(new SessionMiddleware([
             'name' => 'neucore',
             'secure' => $this->container->get(Config::class)['session']['secure'],
-            'route_include_pattern' => ['/api/user', '/login'],
-            'route_blocking_pattern' => ['/api/user/auth', '/login'],
+            SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN => ['/api/user', '/login'],
+            SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login'],
         ]));
 
         // Add routing middleware after SecureRouteMiddleware, RoleMiddleware and NonBlockingSession,

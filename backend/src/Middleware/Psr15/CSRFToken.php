@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Routing\RouteContext;
 
 class CSRFToken implements MiddlewareInterface
 {
@@ -27,26 +28,37 @@ class CSRFToken implements MiddlewareInterface
      */
     private $sessionData;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, SessionData $sessionData)
-    {
+    /**
+     * @var string
+     */
+    private $includeRoute;
+
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        SessionData $sessionData,
+        string $includeRoute
+    ) {
         $this->responseFactory = $responseFactory;
         $this->sessionData = $sessionData;
+        $this->includeRoute = $includeRoute;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $sessionValue = null;
-        try {
-            $sessionValue = $this->sessionData->get(self::CSRF_SESSION_NAME);
-        } catch (\RuntimeException$e) {
-            // session not started, e.g. API calls
+        // check if current route matches configuration
+        $route = RouteContext::fromRequest($request)->getRoute();
+        if ($route === null) {
+            return $handler->handle($request);
+        }
+        if (strpos($route->getPattern(), $this->includeRoute) !== 0) {
             return $handler->handle($request);
         }
 
+        // check token
         if (
             in_array($request->getMethod(), ['POST', 'PUT', 'DELETE']) &&
             (
-                empty($sessionValue) ||
+                empty($this->sessionData->get(self::CSRF_SESSION_NAME)) ||
                 !$request->hasHeader(self::CSRF_HEADER_NAME) ||
                 $request->getHeader(self::CSRF_HEADER_NAME)[0] !== $this->sessionData->get(self::CSRF_SESSION_NAME)
             )

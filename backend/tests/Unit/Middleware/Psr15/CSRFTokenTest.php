@@ -6,11 +6,10 @@ namespace Tests\Unit\Middleware\Psr15;
 
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\SessionData;
-use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Factory\ResponseFactory;
 use Tests\Helper;
-use Tests\RequestFactory;
 use Tests\RequestHandler;
+use Tests\Unit\TestCase;
 
 class CSRFTokenTest extends TestCase
 {
@@ -21,11 +20,11 @@ class CSRFTokenTest extends TestCase
 
     public function testProcess()
     {
-        $request = RequestFactory::createRequest('POST');
+        $request = $this->createRequestWithRoute('POST', '/include-route/something');
         $_SESSION = [];
         SessionData::setReadOnly(false);
         $sessionData = new SessionData();
-        $middleware = new CSRFToken(new ResponseFactory(), $sessionData);
+        $middleware = new CSRFToken(new ResponseFactory(), $sessionData, '/include-route');
 
         $response = $middleware->process($request, new RequestHandler());
         $this->assertSame(403, $response->getStatusCode());
