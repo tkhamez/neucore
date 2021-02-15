@@ -77,6 +77,7 @@ return [
     '/api/user/group/{id}/remove-member'      => [Role::GROUP_MANAGER, Role::USER_MANAGER],
     '/api/user/group/{id}/members'            => [Role::GROUP_ADMIN, Role::GROUP_MANAGER],
     '/api/user/group/{id}/required-groups'    => [Role::GROUP_MANAGER, Role::GROUP_ADMIN],
+    '/api/user/group/{id}/managers'           => [Role::GROUP_MANAGER, Role::GROUP_ADMIN],
     '/api/user/group'                         => [Role::GROUP_ADMIN],
 
     '/api/user/player/show'                        => [Role::USER], // includes /show-applications

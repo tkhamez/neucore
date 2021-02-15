@@ -356,7 +356,7 @@ class GroupController extends BaseController
      *     path="/user/group/{id}/managers",
      *     operationId="managers",
      *     summary="List all managers of a group.",
-     *     description="Needs role: group-admin",
+     *     description="Needs role: group-admin, group-manager",
      *     tags={"Group"},
      *     security={{"Session"={}}},
      *     @OA\Parameter(
@@ -368,7 +368,8 @@ class GroupController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id, name and roles properties are returned.",
+     *         description="List of players ordered by name. Only id and name, and roles for users with group-admin
+                           role, properties are returned.",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
      *     @OA\Response(
@@ -383,7 +384,10 @@ class GroupController extends BaseController
      */
     public function managers(string $id): ResponseInterface
     {
-        return $this->getPlayersFromGroup($id, self::TYPE_MANAGERS, false);
+        $user = $this->getUser($this->userAuth)->getPlayer();
+        $withRole = $user->hasRole(Role::GROUP_ADMIN);
+
+        return $this->getPlayersFromGroup($id, self::TYPE_MANAGERS, false, $withRole);
     }
 
     /**
@@ -943,7 +947,7 @@ class GroupController extends BaseController
         $user = $this->getUser($this->userAuth)->getPlayer();
         $onlyIfManager = ! $user->hasRole(Role::GROUP_ADMIN);
 
-        return $this->getPlayersFromGroup($id, self::TYPE_MEMBERS, $onlyIfManager);
+        return $this->getPlayersFromGroup($id, self::TYPE_MEMBERS, $onlyIfManager, false);
     }
 
     /**
@@ -968,8 +972,12 @@ class GroupController extends BaseController
         return true;
     }
 
-    private function getPlayersFromGroup(string $groupId, string $type, bool $onlyIfManager): ResponseInterface
-    {
+    private function getPlayersFromGroup(
+        string $groupId,
+        string $type,
+        bool $onlyIfManager,
+        bool $withRoles
+    ): ResponseInterface {
         if (! $this->findGroup($groupId)) {
             return $this->response->withStatus(404);
         }
@@ -988,7 +996,7 @@ class GroupController extends BaseController
         $ret = [];
         foreach ($players as $player) {
             $result = $player->jsonSerialize(true);
-            if ($type === self::TYPE_MANAGERS) {
+            if ($withRoles) {
                 $result['roles'] = $player->getRoles();
             }
             $ret[] = $result;

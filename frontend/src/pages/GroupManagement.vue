@@ -41,9 +41,13 @@
             <div v-if="contentType === 'members'" class="card border-secondary mb-3">
                 <div v-cloak v-if="groupId" class="card-body">
                     <p class="small">
+                        Managers:
+                        <span v-for="groupManager in groupManagers" class="text-info">{{ groupManager.name }}, </span>
+                    </p>
+                    <p class="small">
                         Groups that are a prerequisite for being a member of this group:
                         <span v-for="requiredGroup in requiredGroups" class="text-info">
-                            {{requiredGroup.name}},
+                            {{ requiredGroup.name }},
                         </span>
                         <span v-if="requiredGroups.length === 0">none</span>
                         <br>
@@ -149,6 +153,7 @@ export default {
             groupApplications: [],
             searchResult: [],
             requiredGroups: [],
+            groupManagers: [],
             contentType: ''
         }
     },
@@ -173,8 +178,8 @@ export default {
             this.groupName = '';
             this.groupMembers = [];
             this.searchResult = [];
-            this.groupMembers = [];
             this.requiredGroups = [];
+            this.groupManagers = [];
             this.contentType = '';
 
             this.groupId = this.route[1] ? parseInt(this.route[1], 10) : null;
@@ -190,41 +195,12 @@ export default {
 
             this.contentType = this.route[2] ? this.route[2] : 'members';
             if (this.contentType === 'members') {
-                this.getMembers();
-                this.getRequiredGroups();
+                getMembers(this);
+                getRequiredGroups(this);
+                getGroupManager(this);
             } else if (this.contentType === 'applications') {
-                this.getApplications();
+                getApplications(this);
             }
-        },
-
-        getMembers: function() {
-            const vm = this;
-            new GroupApi().members(this.groupId, function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.groupMembers = data;
-            });
-        },
-
-        getApplications: function() {
-            const vm = this;
-            new GroupApi().applications(this.groupId, function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.groupApplications = data;
-            });
-        },
-
-        getRequiredGroups: function() {
-            const vm = this;
-            new GroupApi().requiredGroups(this.groupId, function(error, data) {
-                if (error) {
-                    return;
-                }
-                vm.requiredGroups = data;
-            });
         },
 
         addPlayer: function(playerId) {
@@ -269,6 +245,42 @@ export default {
     },
 }
 
+function getMembers(vm) {
+    new GroupApi().members(vm.groupId, function(error, data) {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.groupMembers = data;
+    });
+}
+
+function getRequiredGroups(vm) {
+    new GroupApi().requiredGroups(vm.groupId, function(error, data) {
+        if (error) {
+            return;
+        }
+        vm.requiredGroups = data;
+    });
+}
+
+function getGroupManager(vm) {
+    new GroupApi().managers(vm.groupId, function(error, data) {
+        if (error) {
+            return;
+        }
+        vm.groupManagers = data;
+    });
+}
+
+function getApplications(vm) {
+    new GroupApi().applications(vm.groupId, function(error, data) {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.groupApplications = data;
+    });
+}
+
 function addRemoveResult(vm, playerId, error) {
     if (error) {
         return;
@@ -276,7 +288,7 @@ function addRemoveResult(vm, playerId, error) {
     if (playerId === vm.player.id) {
         vm.$root.$emit('playerChange');
     } else {
-        vm.getMembers();
+        getMembers(vm);
     }
 }
 </script>

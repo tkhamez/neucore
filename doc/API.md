@@ -185,6 +185,7 @@ Character API
 - Return a list of players that matches the main character name (partial matching). `GET /user/character/find-player/{name}`
 
 Group API
+- List all managers of a group. `GET /user/group/{id}/managers`
 - List all required groups of a group. `GET /user/group/{id}/required-groups`
 - List all applications of a group. `GET /user/group/{id}/applications`
 - Accept a player's request to join a group. `PUT /user/group/accept-application/{id}`

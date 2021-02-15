@@ -384,6 +384,20 @@ class GroupControllerTest extends WebTestCase
         );
     }
 
+    public function testManagers200_RoleManager()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $response = $this->runApp('GET', '/api/user/group/'.$this->gid.'/managers');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $this->pid, 'name' => 'Admin']],
+            $this->parseJsonBody($response)
+        );
+    }
+
     public function testCorporations403()
     {
         $response = $this->runApp('GET', '/api/user/group/1/corporations');
