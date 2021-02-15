@@ -13,7 +13,14 @@ use OpenApi\Annotations as OA;
 /**
  *
  * @OA\Schema(
- *     required={"id", "name"}
+ *     schema="Player",
+ *     required={"id", "name"},
+ *     @OA\Property(
+ *         property="serviceAccounts",
+ *         type="array",
+ *         description="External service accounts (API: not included by default)",
+ *         @OA\Items(ref="#/components/schemas/ServiceAccount")
+ *     )
  * )
  *
  * @ORM\Entity

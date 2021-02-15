@@ -12,8 +12,10 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\Exception;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
+use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
 use Neucore\Service\Watchlist;
 use OpenApi\Annotations as OA;
@@ -878,7 +880,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function showById(string $id): ResponseInterface
+    public function showById(string $id, ServiceRegistration $serviceRegistration): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -889,6 +891,7 @@ class PlayerController extends BaseController
         $json = $player->jsonSerialize();
         $json['removedCharacters'] = $player->getRemovedCharacters();
         $json['incomingCharacters'] = $player->getIncomingCharacters();
+        $json['serviceAccounts'] = $this->getServiceAccounts($player, $serviceRegistration);
 
         return $this->withJson($json);
     }
@@ -1197,5 +1200,35 @@ class PlayerController extends BaseController
         }
 
         return false;
+    }
+
+    private function getServiceAccounts(Player $player, ServiceRegistration $serviceRegistration): array
+    {
+        $result = [];
+
+        $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
+        foreach ($services as $service) {
+            $implementation = $serviceRegistration->getServiceImplementation($service);
+            $accounts = [];
+            if ($implementation) {
+                try {
+                    $accounts = $serviceRegistration->getAccounts($implementation, $player->getCharacters());
+                } catch (Exception $e) {
+                    // do nothing, service needs to log it's errors
+                }
+            }
+            foreach ($accounts as $account) {
+                // This is the OpenAPI schema defined in Neucore\Api class
+                $result[] = [
+                    'serviceId' => $service->getId(),
+                    'serviceName' => $service->getName(),
+                    'characterId' => $account->getCharacterId(),
+                    'username' => $account->getUsername(),
+                    'status' => $account->getStatus(),
+                ];
+            }
+        }
+
+        return $result;
     }
 }

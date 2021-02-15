@@ -14,8 +14,11 @@ use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
+use Neucore\Plugin\ServiceAccountData;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\GroupApplicationRepository;
@@ -876,6 +879,13 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
+        // add service with account
+        $conf = new ServiceConfiguration();
+        $conf->phpClass = 'Tests\Functional\Controller\User\PlayerControllerTest_TestService';
+        $service = (new Service())->setName('A Service')->setConfiguration($conf);
+        $this->em->persist($service);
+        $this->em->flush();
+
         $response = $this->runApp('GET', '/api/user/player/'.$this->player3Id.'/show');
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -915,6 +925,15 @@ class PlayerControllerTest extends WebTestCase
             'managerApps' => [],
             'removedCharacters' => [],
             'incomingCharacters' => [],
+            'serviceAccounts' => [
+                [
+                    'serviceId' => $service->getId(),
+                    'serviceName' => $service->getName(),
+                    'characterId' => 12,
+                    'username' => 'user_name',
+                    'status' => ServiceAccountData::STATUS_ACTIVE,
+                ]
+            ],
         ], $this->parseJsonBody($response));
     }
 

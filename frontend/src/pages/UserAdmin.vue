@@ -277,6 +277,65 @@
                     </div>
                     <p class="small text-muted">* Time is GMT</p>
 
+                    <div>
+                        <h4>Moved Characters</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Character ID</th>
+                                    <th scope="col">Character Name</th>
+                                    <th scope="col">Date moved (GMT)</th>
+                                    <th scope="col">Reason</th>
+                                    <th scope="col">Old/New Player</th>
+                                    <th scope="col">Deleted by</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="movedCharacter in characterMovements">
+                                    <td>{{ movedCharacter.characterId }}</td>
+                                    <td>
+                                        <a :href="'https://evewho.com/character/' + movedCharacter.characterId"
+                                           title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                            {{ movedCharacter.characterName }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                            <span v-if="movedCharacter.removedDate">
+                                                {{ formatDate(movedCharacter.removedDate) }}
+                                            </span>
+                                    </td>
+                                    <td>
+                                            <span v-if="movedCharacter.reason === 'moved'">
+                                                <span v-if="movedCharacter.player.id !== playerEdit.id">incoming</span>
+                                                <span v-else>removed</span>
+                                            </span>
+                                        <span v-else>{{ movedCharacter.reason }}</span>
+
+                                    </td>
+                                    <td>
+                                        <a v-if="movedCharacter.player.id !== playerEdit.id"
+                                           :href="'#UserAdmin/' + movedCharacter.player.id">
+                                            {{ movedCharacter.player.name }} #{{ movedCharacter.player.id }}
+                                        </a>
+                                        <a v-if="movedCharacter.newPlayerId &&
+                                                     movedCharacter.newPlayerId !== playerEdit.id"
+                                           :href="'#UserAdmin/' + movedCharacter.newPlayerId">
+                                            {{ movedCharacter.newPlayerName }} #{{ movedCharacter.newPlayerId }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a v-if="movedCharacter.deletedBy"
+                                           :href="'#UserAdmin/' + movedCharacter.deletedBy.id">
+                                            {{ movedCharacter.deletedBy.name }} #{{ movedCharacter.deletedBy.id }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <h4>Group Membership</h4>
                     <p v-if="playerEditDeactivated" class="small text-info">
                         Groups for this account are disabled (or will be disabled soon)
@@ -343,69 +402,30 @@
                         </tbody>
                     </table>
 
-                    <div>
-                        <h4>Moved Characters</h4>
-                        <div class="table-responsive">
-                            <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Character ID</th>
-                                        <th scope="col">Character Name</th>
-                                        <th scope="col">Date moved (GMT)</th>
-                                        <th scope="col">Reason</th>
-                                        <th scope="col">Old/New Player</th>
-                                        <th scope="col">Deleted by</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="movedCharacter in characterMovements">
-                                        <td>{{ movedCharacter.characterId }}</td>
-                                        <td>
-                                            <a :href="'https://evewho.com/character/' + movedCharacter.characterId"
-                                               title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                                {{ movedCharacter.characterName }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <span v-if="movedCharacter.removedDate">
-                                                {{ formatDate(movedCharacter.removedDate) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span v-if="movedCharacter.reason === 'moved'">
-                                                <span v-if="movedCharacter.player.id !== playerEdit.id">incoming</span>
-                                                <span v-else>removed</span>
-                                            </span>
-                                            <span v-else>{{ movedCharacter.reason }}</span>
+                    <h4>Service Accounts</h4>
+                    <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Service</th>
+                                <th scope="col">Character</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="serviceAccount in playerEdit.serviceAccounts">
+                                <td>[{{ serviceAccount.serviceId }}] {{ serviceAccount.serviceName }}</td>
+                                <td>[{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}</td>
+                                <td>{{ serviceAccount.username }}</td>
+                                <td>{{ serviceAccount.status }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                                        </td>
-                                        <td>
-                                            <a v-if="movedCharacter.player.id !== playerEdit.id"
-                                               :href="'#UserAdmin/' + movedCharacter.player.id">
-                                                {{ movedCharacter.player.name }} #{{ movedCharacter.player.id }}
-                                            </a>
-                                            <a v-if="movedCharacter.newPlayerId &&
-                                                     movedCharacter.newPlayerId !== playerEdit.id"
-                                               :href="'#UserAdmin/' + movedCharacter.newPlayerId">
-                                                {{ movedCharacter.newPlayerName }} #{{ movedCharacter.newPlayerId }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a v-if="movedCharacter.deletedBy"
-                                               :href="'#UserAdmin/' + movedCharacter.deletedBy.id">
-                                                {{ movedCharacter.deletedBy.name }} #{{ movedCharacter.deletedBy.id }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
+                </div> <!-- card-body -->
+            </div> <!-- card -->
+        </div> <!-- col -->
+    </div> <!-- row -->
 </div>
 </template>
 
@@ -513,6 +533,15 @@ export default {
                 }
             }
             return false;
+        },
+
+        characterName: function(characterId) {
+            for (const character of this.playerEdit.characters) {
+                if (characterId === character.id) {
+                    return character.name;
+                }
+            }
+            return '';
         },
 
         loadPlayer: function(playerId) {
@@ -656,6 +685,7 @@ function buildCharacterMovements(data) {
 }
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
     .update-char {
         float: right;

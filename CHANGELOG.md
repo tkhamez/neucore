@@ -2,6 +2,7 @@
 
 ## next
 
+- Overview of service accounts added for user admin.
 - Renamed "Update ESI data" button to "Update corporation".
 - Added "player" option to "update-player-groups" command.
 - The "update player groups" function now also synchronizes the manager role, just in case there was an error before.

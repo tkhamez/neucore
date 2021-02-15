@@ -115,7 +115,7 @@ class ServiceRegistration
      * @param Character[] $characters All character must belong to the same player.
      * @param bool $logErrorOnCharacterMismatch
      * @return ServiceAccountData[]
-     * @throws Exception
+     * @throws Exception from the service implementation
      */
     public function getAccounts(
         ServiceInterface $service,
