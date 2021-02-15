@@ -17,7 +17,6 @@ use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
-use Neucore\Service\Watchlist;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -932,7 +931,6 @@ class PlayerController extends BaseController
     public function characters(
         string $id,
         UserAuth $userAuth,
-        Watchlist $watchlistService,
         ServiceRegistration $serviceRegistration
     ): ResponseInterface {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
@@ -945,7 +943,7 @@ class PlayerController extends BaseController
         if (
             $this->needsTrackingOrWatchlistPermission($userAuth) &&
             ! $this->hasTrackingPermission($userAuth, $player) &&
-            ! $this->hasWatchlistPermission($userAuth, $player, $watchlistService)
+            ! $this->hasWatchlistPermission($userAuth, $player)
         ) {
             return $this->response->withStatus(403);
         }
@@ -1182,7 +1180,7 @@ class PlayerController extends BaseController
         return true;
     }
 
-    private function hasWatchlistPermission(UserAuth $userAuth, Player $player, Watchlist $watchlistService): bool
+    private function hasWatchlistPermission(UserAuth $userAuth, Player $player): bool
     {
         // Collect all watchlists that the user can view
         $watchlistsWithAccess = [];
@@ -1197,14 +1195,36 @@ class PlayerController extends BaseController
             }
         }
 
-        // Check if player is on one of those watchlists
+        // collect corporations and alliances from configuration
+        $watchlistsCorporationIds = [];
+        $watchlistsAllianceIds = [];
         foreach ($watchlistsWithAccess as $watchlistWithAccess) {
-            // Get all players including kicklist and allowlist
-            foreach ($watchlistService->getWarningList($watchlistWithAccess->getId(), true, true) as $playerOnList) {
-                if ($playerOnList->getId() === $player->getId()) {
-                    return true;
+            foreach ($watchlistWithAccess->getCorporations() as $corporation) {
+                $watchlistsCorporationIds[] = $corporation->getId();
+            }
+            foreach ($watchlistWithAccess->getAlliances() as $alliance) {
+                $watchlistsAllianceIds[] = $alliance->getId();
+            }
+        }
+
+        // collect corporations and alliances from player
+        $playerCorporationIds = [];
+        $playerAllianceIds = [];
+        foreach ($player->getCharacters() as $character) {
+            if ($character->getCorporation()) {
+                $playerCorporationIds[] = $character->getCorporation()->getId();
+                if ($character->getCorporation()->getAlliance()) {
+                    $playerAllianceIds[] = $character->getCorporation()->getAlliance()->getId();
                 }
             }
+        }
+
+        // allow if player if part of the watchlist
+        if (array_intersect($watchlistsAllianceIds, $playerAllianceIds)) {
+            return true;
+        }
+        if (array_intersect($watchlistsCorporationIds, $playerCorporationIds)) {
+            return true;
         }
 
         return false;
