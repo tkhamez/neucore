@@ -4,6 +4,10 @@
 
 - Added groups and service accounts to character modal.
 - Overview of service accounts added on user admin page.
+- Tracking Admin: Added the ticker to corporations in the list
+- Player Groups Management: The left column is sticky now
+- Watchlist: Sort dropdown by name
+- Settings - Directors: sort corporation by name
 - Renamed "Update ESI data" button to "Update corporation".
 - Added "player" option to "update-player-groups" command.
 - The "update player groups" function now also synchronizes the manager role, just in case there was an error before.

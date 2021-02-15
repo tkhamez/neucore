@@ -16,7 +16,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-4">
+            <div class="col-lg-4 sticky-column">
                 <div class="card border-secondary mb-3" >
                     <h4 class="card-header">Characters</h4>
                     <div class="card-body">

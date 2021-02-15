@@ -11,7 +11,7 @@
             <thead>
                 <tr>
                     <th scope="col">Character</th>
-                    <th scope="col" colspan="2">Corporation</th>
+                    <th scope="col" colspan="3">Corporation</th>
                     <th scope="col" colspan="2">Actions</th>
                 </tr>
             </thead>
@@ -23,11 +23,8 @@
                             {{ director.value['character_name'] }}
                         </a>
                     </td>
-                    <td>{{ director.value['corporation_id'] }}</td>
-                    <td>
-                        [{{ director.value['corporation_ticker'] }}]
-                        {{ director.value['corporation_name'] }}
-                    </td>
+                    <td>{{ director.value['corporation_ticker'] }}</td>
+                    <td :title="director.value['corporation_id']">{{ director.value['corporation_name'] }}</td>
                     <td>
                         <button type="button" class="btn btn-info"
                                 v-on:click="validateDirector(director.name)">
@@ -116,9 +113,21 @@ function readSettings(vm) {
         try {
             vm.directors.push({
                 'name': name,
-                'value': JSON.parse(value)
+                'value': JSON.parse(""+value)
             });
         } catch(err) {}
     }
+
+    function compare(a, b) {
+        if (a.value.corporation_name < b.value.corporation_name) {
+            return -1;
+        }
+        if (a.value.corporation_name > b.value.corporation_name) {
+            return 1;
+        }
+        return 0;
+    }
+
+    vm.directors.sort(compare);
 }
 </script>

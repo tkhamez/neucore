@@ -310,7 +310,7 @@ class WatchlistController extends BaseController
     public function listAvailable(UserAuth $userAuth): ResponseInterface
     {
         $result = [];
-        foreach ($this->watchlistRepository->findBy([]) as $list) {
+        foreach ($this->watchlistRepository->findBy([], ['name' => 'ASC']) as $list) {
             if ($this->checkPermission($list->getId(), $userAuth, Role::WATCHLIST)) {
                 $result[] = $list;
             }
