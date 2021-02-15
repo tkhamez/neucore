@@ -1010,6 +1010,8 @@ class PlayerControllerTest extends WebTestCase
                     'corporation' => null
                 ],
             ],
+            'groups' => [],
+            'serviceAccounts' => [],
         ], $this->parseJsonBody($response1));
     }
 

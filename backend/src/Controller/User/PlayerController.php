@@ -900,7 +900,7 @@ class PlayerController extends BaseController
      * @OA\Get(
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
-     *     summary="Show player with characters.",
+     *     summary="Show player with characters, groups and service accounts.",
      *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking<br>
                         If a user only has the tracking or watchlist roles, the player must have a character in a
                         corporation for which the user has access to the member tracking data or the player must
@@ -929,8 +929,12 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function characters(string $id, UserAuth $userAuth, Watchlist $watchlistService): ResponseInterface
-    {
+    public function characters(
+        string $id,
+        UserAuth $userAuth,
+        Watchlist $watchlistService,
+        ServiceRegistration $serviceRegistration
+    ): ResponseInterface {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
         if ($player === null) {
@@ -950,6 +954,8 @@ class PlayerController extends BaseController
             'id' => $player->getId(),
             'name' => $player->getName(),
             'characters' => $player->getCharacters(),
+            'groups' => $player->getGroups(),
+            'serviceAccounts' => $this->getServiceAccounts($player, $serviceRegistration),
         ]);
     }
 

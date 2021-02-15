@@ -4,7 +4,7 @@ Modal window with all characters of one player.
 
 <template>
 <div v-cloak v-if="selectedPlayer" class="modal fade" id="playerModal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ selectedPlayer.name }} #{{ selectedPlayer.id }}</h5>
@@ -12,49 +12,75 @@ Modal window with all characters of one player.
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <ul class="list-group">
-                <li v-for="character in selectedPlayer.characters" class="list-group-item">
+            <div class="modal-body">
+                <div class="container-fluid">
                     <div class="row">
-                        <div class="col-6">
-                            <img :src="characterPortrait(character.id, 32)" alt="portrait">
-                            {{ character.name }}
-                            <span v-if="character.main" role="img" class="fas fa-star text-warning" title="Main"></span>
-                        </div>
-                        <div class="col-6 text-right">
-                            <span v-if="character.validToken" class="badge badge-success ml-1">Valid token</span>
-                            <span v-if="character.validToken === false" class="badge badge-danger ml-1">
-                                Invalid token
-                            </span>
-                            <span v-if="character.validToken === null" class="badge badge-info ml-1">No token</span>
-                            <a class="badge badge-secondary ml-1"
-                               :href="'https://evewho.com/character/' + character.id"
-                               target="_blank" rel="noopener noreferrer">Eve Who</a>
-                        </div>
+                        <div class="col-lg-7">
+        <ul class="list-group">
+            <li v-for="character in selectedPlayer.characters" class="list-group-item">
+                <div class="row">
+                    <div class="col-6">
+                        <img :src="characterPortrait(character.id, 32)" alt="portrait">
+                        {{ character.name }}
+                        <span v-if="character.main" role="img" class="fas fa-star text-warning" title="Main"></span>
                     </div>
-                    <div class="small row">
-                        <div class="col-2 text-muted">
-                            Corporation:<br>
-                            Alliance:
+                    <div class="col-6 text-right">
+                        <span v-if="character.validToken" class="badge badge-success ml-1">Valid token</span>
+                        <span v-if="character.validToken === false" class="badge badge-danger ml-1">
+                    Invalid token
+                </span>
+                        <span v-if="character.validToken === null" class="badge badge-info ml-1">No token</span>
+                        <a class="badge badge-secondary ml-1"
+                           :href="'https://evewho.com/character/' + character.id"
+                           target="_blank" rel="noopener noreferrer">Eve Who</a>
+                    </div>
+                </div>
+                <div class="small row">
+                    <div class="col-2 text-muted">
+                        Corporation:<br>
+                        Alliance:
+                    </div>
+                    <div class="col-6">
+                <span v-if="character.corporation">
+                    [{{ character.corporation.ticker }}]
+                    {{ character.corporation.name }}
+                    <span v-if="character.corporation.id < 2000000" class="badge badge-info">NPC</span>
+                </span>
+                        <br>
+                        <span v-if="character.corporation && character.corporation.alliance">
+                    [{{ character.corporation.alliance.ticker }}]
+                    {{ character.corporation.alliance.name }}
+                </span>
+                    </div>
+                    <div class="col-4 text-right">
+                        <span class="text-muted">Added:</span>
+                        <span v-if="character.created">{{ formatDate(character.created) }}</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
                         </div>
-                        <div class="col-6">
-                            <span v-if="character.corporation">
-                                [{{ character.corporation.ticker }}]
-                                {{ character.corporation.name }}
-                                <span v-if="character.corporation.id < 2000000" class="badge badge-info">NPC</span>
-                            </span>
+                        <div class="col-lg-5">
+                            <h4>Groups</h4>
+                            <ul class="">
+                                <li v-for="group in selectedPlayer.groups" class="">
+                                    {{ group.name }}
+                                </li>
+                            </ul>
                             <br>
-                            <span v-if="character.corporation && character.corporation.alliance">
-                                [{{ character.corporation.alliance.ticker }}]
-                                {{ character.corporation.alliance.name }}
-                            </span>
-                        </div>
-                        <div class="col-4 text-right">
-                            <span class="text-muted">Added:</span>
-                            <span v-if="character.created">{{ formatDate(character.created) }}</span>
+                            <h4>Service Accounts</h4>
+                            <ul class="list-group">
+                                <li v-for="serviceAccount in selectedPlayer.serviceAccounts" class="list-group-item">
+                                    Service: {{ serviceAccount.serviceName }}<br>
+                                    Character: {{ characterName(serviceAccount.characterId) }}<br>
+                                    Username:  {{ serviceAccount.username }}<br>
+                                    Status: {{ serviceAccount.status }}<br>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                </li>
-            </ul>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button v-cloak
                         v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])"
@@ -82,6 +108,15 @@ export default {
     },
 
     methods: {
+        characterName: function(characterId) {
+            for (const character of this.selectedPlayer.characters) {
+                if (characterId === character.id) {
+                    return character.name;
+                }
+            }
+            return '';
+        },
+
         showCharacters: function(playerId) {
             const vm = this;
             new PlayerApi().characters(playerId, function(error, data) {
@@ -107,3 +142,11 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    @media (max-width: 991px) {
+        .list-group {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
