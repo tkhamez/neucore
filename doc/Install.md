@@ -32,7 +32,7 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.3.0, <8, see `composer.json` in the root directory and `backend/composer.json` for necessary and suggested 
+* PHP >=7.3.0, see `composer.json` in the root directory and `backend/composer.json` for necessary and suggested 
   extensions (APCu highly recommended).
 * MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5).  
   Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
@@ -101,7 +101,7 @@ Set up necessary cron jobs, e.g. update characters every 2 hours and the rest 3 
 using a lock file (adjust user and paths):
 
 ```
-0 0,2,6,8,10,14,16,18,22 * * * neucore /var/www/neucore/backend/bin/console update-chars --log --hide-details
+0 0,2,6,8,10,14,16,18,22 * * * neucore /var/www/neucore/backend/bin/run-jobs2.sh
 0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-run-jobs.lock /var/www/neucore/backend/bin/run-jobs.sh
 ```
 
@@ -117,7 +117,7 @@ See [Vagrantfile](../Vagrantfile) for an outdated example.
 
 Only tested on Linux and once on macOS.
 
-Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`
+Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`,
 the database host is `db`.
 
 - Build the containers with `export UID && docker-compose build`
@@ -129,9 +129,6 @@ the database host is `db`.
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
 the data is stored in the `.db` subdirectory.
-
-Known problems:
-- Composer install is very slow.
 
 ### Deploy on Heroku
 
