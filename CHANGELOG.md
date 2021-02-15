@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.18.0
+
+15 Feb 2021
 
 - Character modal: Added groups, moved characters and service accounts.
 - Group Management: Added list of managers.
