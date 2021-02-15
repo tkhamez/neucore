@@ -160,7 +160,7 @@ class Account
         if (! empty($char->getScopesFromToken())) {
             $char->setValidToken(true);
         } else {
-            $char->setValidToken(null);
+            $char->setValidToken();
         }
 
         // update account name
@@ -241,7 +241,7 @@ class Account
         // does the char have a token?
         if ($char->getRefreshToken() === null) {
             // Only true for SSOv1 without scopes or if the character was added by an admin.
-            $char->setValidToken(null);
+            $char->setValidToken();
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NA;
         }
@@ -276,7 +276,7 @@ class Account
         // token is valid here, check scopes
         // (scopes should not change after login since you cannot revoke individual scopes)
         if (empty($eveAuth->getScopes())) {
-            $char->setValidToken(null);
+            $char->setValidToken();
             $result = self::CHECK_TOKEN_NOK;
         } else {
             $char->setValidToken(true);
@@ -345,7 +345,7 @@ class Account
         // remove corporation member reference
         $corporationMember = $this->repositoryFactory->getCorporationMemberRepository()->find($character->getId());
         if ($corporationMember !== null) {
-            $corporationMember->setCharacter(null);
+            $corporationMember->setCharacter();
         }
 
         $this->objectManager->remove($character);
@@ -448,6 +448,7 @@ class Account
 
         $this->autoGroupAssignment->assign($player);
         $this->autoGroupAssignment->checkRequiredGroups($player);
+        $this->syncManagerRole($player, Role::GROUP_MANAGER); // fix roles that were not remove due to errors
         $this->syncTrackingRole($player);
         $this->syncWatchlistRole($player);
         $this->syncWatchlistManagerRole($player);

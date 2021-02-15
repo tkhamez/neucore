@@ -802,6 +802,19 @@ class AccountTest extends TestCase
         $this->assertFalse($this->service->groupsDeactivated($player));
     }
 
+    public function testUpdateGroups()
+    {
+        $player = $this->helper->addCharacterMain('Player 1', 1, [Role::GROUP_MANAGER])->getPlayer();
+        $this->assertSame([Role::GROUP_MANAGER], $player->getRoleNames());
+
+        $result = $this->service->updateGroups($player->getId());
+        $this->om->clear();
+
+        $this->assertTrue($result);
+        $player = $this->playerRepo->find($player->getId());
+        $this->assertSame([], $player->getRoleNames());
+    }
+
     public function testSyncTrackingRoleInvalidCall()
     {
         $this->service->syncTrackingRole();

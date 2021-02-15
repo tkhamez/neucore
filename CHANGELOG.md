@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- Added "player" option to "update-player-groups" command.
+- The "update player groups" function now also synchronizes the manager role, just in case there was an error before.
+
 ## 1.17.1
 
 31 Jan 2021

@@ -12,6 +12,7 @@ use Neucore\Repository\PlayerRepository;
 use Neucore\Service\Account;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,6 +54,7 @@ class UpdatePlayerGroups extends Command
     {
         $this->setName('update-player-groups')
             ->setDescription('Assigns groups to players based on corporation configuration.')
+            ->addArgument('player', InputArgument::OPTIONAL, 'Update one player account.')
             ->addOption(
                 'sleep',
                 's',
@@ -63,10 +65,11 @@ class UpdatePlayerGroups extends Command
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->executeLogOutput($input, $output);
+        $player = intval($input->getArgument('player'));
         $sleep = intval($input->getOption('sleep'));
+        $this->executeLogOutput($input, $output);
 
         $this->writeLine('Started "update-player-groups"', false);
 
@@ -74,14 +77,21 @@ class UpdatePlayerGroups extends Command
         $offset = $dbResultLimit * -1;
         do {
             $offset += $dbResultLimit;
-            $playerIds = array_map(function (Player $player) {
-                return $player->getId();
-            }, $this->playerRepo->findBy(
-                ['status' => Player::STATUS_STANDARD],
-                ['lastUpdate' => 'ASC'],
-                $dbResultLimit,
-                $offset
-            ));
+            $playerIds = [];
+            if ($player === 0) {
+                $playerIds = array_map(function (Player $player) {
+                    return $player->getId();
+                }, $this->playerRepo->findBy(
+                    ['status' => Player::STATUS_STANDARD],
+                    ['lastUpdate' => 'ASC'],
+                    $dbResultLimit,
+                    $offset
+                ));
+           } else {
+                if (($player = $this->playerRepo->find($player)) !== null) {
+                    $playerIds = [$player->getId()];
+                }
+            }
 
             $this->entityManager->clear(); // detaches all objects from Doctrine
 
