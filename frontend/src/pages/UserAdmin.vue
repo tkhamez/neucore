@@ -282,55 +282,43 @@
                         <div class="table-responsive">
                             <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
                                 <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Character ID</th>
-                                    <th scope="col">Character Name</th>
-                                    <th scope="col">Date moved (GMT)</th>
-                                    <th scope="col">Reason</th>
-                                    <th scope="col">Old/New Player</th>
-                                    <th scope="col">Deleted by</th>
-                                </tr>
+                                    <tr>
+                                        <th scope="col">Character ID</th>
+                                        <th scope="col">Character Name</th>
+                                        <th scope="col">Date moved (GMT)</th>
+                                        <th scope="col">Reason</th>
+                                        <th scope="col">Old/New Player</th>
+                                        <th scope="col">Deleted by</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="movedCharacter in characterMovements">
-                                    <td>{{ movedCharacter.characterId }}</td>
-                                    <td>
-                                        <a :href="'https://evewho.com/character/' + movedCharacter.characterId"
-                                           title="Eve Who" target="_blank" rel="noopener noreferrer">
-                                            {{ movedCharacter.characterName }}
-                                        </a>
-                                    </td>
-                                    <td>
+                                    <tr v-for="movedCharacter in characterMovements">
+                                        <td>{{ movedCharacter.characterId }}</td>
+                                        <td>
+                                            <a :href="'https://evewho.com/character/' + movedCharacter.characterId"
+                                               title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                                {{ movedCharacter.characterName }}
+                                            </a>
+                                        </td>
+                                        <td>
                                             <span v-if="movedCharacter.removedDate">
                                                 {{ formatDate(movedCharacter.removedDate) }}
                                             </span>
-                                    </td>
-                                    <td>
-                                            <span v-if="movedCharacter.reason === 'moved'">
-                                                <span v-if="movedCharacter.player.id !== playerEdit.id">incoming</span>
-                                                <span v-else>removed</span>
-                                            </span>
-                                        <span v-else>{{ movedCharacter.reason }}</span>
-
-                                    </td>
-                                    <td>
-                                        <a v-if="movedCharacter.player.id !== playerEdit.id"
-                                           :href="'#UserAdmin/' + movedCharacter.player.id">
-                                            {{ movedCharacter.player.name }} #{{ movedCharacter.player.id }}
-                                        </a>
-                                        <a v-if="movedCharacter.newPlayerId &&
-                                                     movedCharacter.newPlayerId !== playerEdit.id"
-                                           :href="'#UserAdmin/' + movedCharacter.newPlayerId">
-                                            {{ movedCharacter.newPlayerName }} #{{ movedCharacter.newPlayerId }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a v-if="movedCharacter.deletedBy"
-                                           :href="'#UserAdmin/' + movedCharacter.deletedBy.id">
-                                            {{ movedCharacter.deletedBy.name }} #{{ movedCharacter.deletedBy.id }}
-                                        </a>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>{{ movedCharacter.reason }}</td>
+                                        <td>
+                                            <a v-if="movedCharacter.playerName"
+                                               :href="'#UserAdmin/' + movedCharacter.playerId">
+                                                {{ movedCharacter.playerName }} #{{ movedCharacter.playerId }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a v-if="movedCharacter.deletedBy"
+                                               :href="'#UserAdmin/' + movedCharacter.deletedBy.id">
+                                                {{ movedCharacter.deletedBy.name }} #{{ movedCharacter.deletedBy.id }}
+                                            </a>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -603,7 +591,7 @@ export default {
                     return;
                 }
                 vm.playerEdit = data;
-                vm.characterMovements = buildCharacterMovements(data);
+                vm.characterMovements = vm.buildCharacterMovements(data);
             });
 
             api.groupsDisabledById(this.playerId, function(error, data) {
@@ -671,17 +659,6 @@ export default {
             this.charToDelete = null;
         },
     },
-}
-
-function buildCharacterMovements(data) {
-    const movements = [];
-    for (const removed of data.removedCharacters) {
-        movements.push(removed);
-    }
-    for (const incoming of data.incomingCharacters) {
-        movements.push(incoming);
-    }
-    return movements.sort((a, b) => a.removedDate - b.removedDate);
 }
 </script>
 

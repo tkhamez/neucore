@@ -2,7 +2,7 @@
 
 ## next
 
-- Character modal: Added groups and service accounts.
+- Character modal: Added groups, moved characters and service accounts.
 - Group Management: Added list of managers.
 - User Admin: Overview of service accounts added.
 - Tracking Admin: Added the ticker to corporations in the list

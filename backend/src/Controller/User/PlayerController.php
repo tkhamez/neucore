@@ -900,7 +900,7 @@ class PlayerController extends BaseController
      * @OA\Get(
      *     path="/user/player/{id}/characters",
      *     operationId="characters",
-     *     summary="Show player with characters, groups and service accounts.",
+     *     summary="Show player with characters, moved characters, groups and service accounts.",
      *     description="Needs role: app-admin, group-admin, user-manager, user-chars, watchlist, tracking<br>
                         If a user only has the tracking or watchlist roles, the player must have a character in a
                         corporation for which the user has access to the member tracking data or the player must
@@ -916,7 +916,7 @@ class PlayerController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The player with id, name and characters properties only.",
+     *         description="The player.",
      *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
      *     @OA\Response(
@@ -955,6 +955,8 @@ class PlayerController extends BaseController
             'name' => $player->getName(),
             'characters' => $player->getCharacters(),
             'groups' => $player->getGroups(),
+            'removedCharacters' => $player->getRemovedCharacters(),
+            'incomingCharacters' => $player->getIncomingCharacters(),
             'serviceAccounts' => $this->getServiceAccounts($player, $serviceRegistration),
         ]);
     }
