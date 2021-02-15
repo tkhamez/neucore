@@ -114,7 +114,7 @@ class AppRequestsRepositoryTest extends TestCase
             ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 1, 'year' => 2020, 'month' => 2],
             ['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 1, 'year' => 2020, 'month' => 1],
             //['app_id' => self::$app1->getId(), 'app_name' => 'a1', 'requests' => 45, 'year' => 2019, 'month' => 12],
-        ], self::$repository->monthlySummaryByApp());
+        ], self::$repository->monthlySummaryByApp(strtotime('2021-01-15')));
     }
 
     public function testDailySummary()
@@ -136,6 +136,6 @@ class AppRequestsRepositoryTest extends TestCase
             ['requests' => 1, 'year' => 2020, 'month' => 2, 'day_of_month' => 15],
             ['requests' => 1, 'year' => 2020, 'month' => 1, 'day_of_month' => 15],
             ['requests' => 45, 'year' => 2019, 'month' => 12, 'day_of_month' => 15],*/
-        ], self::$repository->dailySummary());
+        ], self::$repository->dailySummary(strtotime('2021-01-15')));
     }
 }

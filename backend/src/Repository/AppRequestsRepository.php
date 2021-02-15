@@ -58,10 +58,10 @@ class AppRequestsRepository extends EntityRepository
      *
      * Returns max. 13 months, newest first.
      */
-    public function monthlySummaryByApp(): array
+    public function monthlySummaryByApp(int $startTime = null): array
     {
-        $year = (int)date('Y');
-        $month = (int)date('m');
+        $year = (int)date('Y', $startTime ?? time());
+        $month = (int)date('m', $startTime ?? time());
         $monthBeforeMin = $month === 1 ? 12 : $month - 1;
         $yearOfMonthBeforeMin = $month === 1 ? $year - 2 : $year - 1;
         $yearMonthBeforeMin = ($yearOfMonthBeforeMin * 100) + $monthBeforeMin;
@@ -103,10 +103,10 @@ class AppRequestsRepository extends EntityRepository
      *
      * Returns max. 2 months, newest first.
      */
-    public function dailySummary(): array
+    public function dailySummary(int $startTime = null): array
     {
-        $year = (int)date('Y');
-        $month = (int)date('m');
+        $year = (int)date('Y', $startTime ?? time());
+        $month = (int)date('m', $startTime ?? time());
         $monthMinus2 = $month <= 2 ? 10 + $month : $month - 2;
         $yearOfMonthMinus2 = $month <= 2 ? $year - 1 : $year;
         $yearMonthMinus2 = ($yearOfMonthMinus2 * 100) + $monthMinus2;
