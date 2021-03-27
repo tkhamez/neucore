@@ -123,7 +123,7 @@ Group API
 Player API
 - Change the player's account status. `PUT /user/player/{id}/set-status/{status}`
 - Show all data from a player. `GET /user/player/{id}/show`
-- Show player with characters. `GET /user/player/{id}/characters`
+- Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 - Lists all players with characters who have a certain status. `GET /user/player/with-status/{name}`
 
 #### user-chars
@@ -135,7 +135,7 @@ Character API
                     that matches the name (partial matching). `GET /user/character/find-character/{name}`
 
 Player API
-- Show player with characters. `GET /user/player/{id}/characters`
+- Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 - Accepts a list of character names and returns them grouped by account. `POST /user/player/group-characters-by-account`
 
 #### group-admin
@@ -174,7 +174,7 @@ Group API
 
 Player API
 - List all players with the role group-manger. `GET /user/player/group-managers`
-- Show player with characters. `GET /user/player/{id}/characters`
+- Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
 #### group-manager
 
@@ -211,7 +211,7 @@ Allows players to view statistics.
 
 Statistics API
 - Returns player login numbers, max. last 13 months. `GET /user/statistics/player-logins`
-- Returns total monthly app request numbers, max. last 13 months. `GET /user/statistics/total-monthly-app-requests`
+- Returns total monthly app request numbers, max. last 13 entries. `GET /user/statistics/total-monthly-app-requests`
 - Returns monthly app request numbers. `GET /user/statistics/monthly-app-requests`
 - Returns total daily app request numbers. `GET /user/statistics/total-daily-app-requests`
 
@@ -238,7 +238,7 @@ Group API
 
 Player API
 - List all players with the role app-manger. `GET /user/player/app-managers`
-- Show player with characters. `GET /user/player/{id}/characters`
+- Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
 #### app-manager
 
@@ -284,7 +284,7 @@ Corporation API
 - Returns tracking data of corporation members. `GET /user/corporation/{id}/members`
 
 Player API
-- Show player with characters. `GET /user/player/{id}/characters`
+- Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
 #### tracking-admin
 
@@ -303,7 +303,7 @@ Allows players to view the watchlist if they are also member of an appropriate g
 This role is assigned automatically based on group membership.
 
 Player API
-- Show player with characters. `GET /user/player/{id}/characters`
+- Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 
 Watchlist API
 - Lists all watchlists with view permission. `GET /user/watchlist/list-available`
