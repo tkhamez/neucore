@@ -16,6 +16,7 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 
 class Account
@@ -70,18 +71,25 @@ class Account
      */
     private $autoGroupAssignment;
 
+    /**
+     * @var \Neucore\Service\Character
+     */
+    private $characterService;
+
     public function __construct(
         LoggerInterface $log,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
-        AutoGroupAssignment $autoGroupAssignment
+        AutoGroupAssignment $autoGroupAssignment,
+        CharacterService $characterService
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->esiData = $esiData;
         $this->autoGroupAssignment = $autoGroupAssignment;
+        $this->characterService = $characterService;
     }
 
     /**
@@ -145,9 +153,7 @@ class Account
     ): bool {
         // update character
         $token = $eveAuth->getToken();
-        if ($eveAuth->getCharacterName() !== '') { // don't update name if it is empty
-            $char->setName($eveAuth->getCharacterName());
-        }
+        $this->characterService->setCharacterName($char, $eveAuth->getCharacterName());
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception $e) {

@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- New: Log character name changes.
+
 ## 1.18.0
 
 15 Feb 2021

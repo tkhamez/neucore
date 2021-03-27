@@ -12,6 +12,7 @@ use Neucore\Exception\RuntimeException;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Entity\Corporation;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Service\Character;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
@@ -78,11 +79,13 @@ class EsiDataTest extends TestCase
         $this->client = new Client();
         $this->repoFactory = new RepositoryFactory($this->em);
 
+        $om = new ObjectManager($this->em, $this->log);
         $this->cs = new EsiData(
             $this->log,
             new EsiApiFactory($this->client, $config),
-            new ObjectManager($this->em, $this->log),
+            $om,
             $this->repoFactory,
+            new Character($om),
             $config
         );
     }
@@ -247,13 +250,13 @@ class EsiDataTest extends TestCase
     public function testFetchCharacter()
     {
         $this->testHelper->emptyDb();
-        $char = $this->testHelper->addCharacterMain('newChar', 123, []);
+        $char = $this->testHelper->addCharacterMain('old char name', 123, []);
         $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
         $this->em->flush();
 
         $this->client->setResponse(
             new Response(200, [], '{
-                "name": "new corp",
+                "name": "new char name",
                 "corporation_id": 234
             }'),
             new Response(200, [], '[{
@@ -264,7 +267,8 @@ class EsiDataTest extends TestCase
 
         $char = $this->cs->fetchCharacter(123);
         $this->assertSame(123, $char->getId());
-        $this->assertSame('new corp', $char->getName());
+        $this->assertSame('new char name', $char->getName());
+        $this->assertSame('old char name', $char->getCharacterNameChanges()[0]->getOldName());
         $this->assertSame(234, $char->getCorporation()->getId());
         $this->assertNull($char->getCorporation()->getName());
 
@@ -273,6 +277,9 @@ class EsiDataTest extends TestCase
         $this->assertSame(234, $charDb->getCorporation()->getId());
         $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2018-03-26 17:24:30', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
+        $this->assertSame('new char name', $charDb->getName());
+        $this->assertSame(1, count($charDb->getCharacterNameChanges()));
+        $this->assertSame('old char name', $charDb->getCharacterNameChanges()[0]->getOldName());
     }
 
     public function testFetchCharactersAffiliation()

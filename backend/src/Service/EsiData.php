@@ -11,6 +11,7 @@ use Neucore\Entity\EsiLocation;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
+use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
@@ -45,6 +46,11 @@ class EsiData
     private $repositoryFactory;
 
     /**
+     * @var \Neucore\Service\Character
+     */
+    private $characterService;
+
+    /**
      * @var int|null
      */
     private $lastErrorCode;
@@ -59,12 +65,14 @@ class EsiData
         EsiApiFactory $esiApiFactory,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
+        CharacterService $characterService,
         Config $config
     ) {
         $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
+        $this->characterService = $characterService;
 
         $this->datasource = $config['eve']['datasource'];
     }
@@ -124,7 +132,7 @@ class EsiData
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Character An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchCharacter(?int $id, bool $flush = true)
+    public function fetchCharacter(?int $id, bool $flush = true): ?Character
     {
         if ($id === null || $id <= 0) {
             return null;
@@ -151,9 +159,7 @@ class EsiData
         }
 
         // update char (and player) name
-        if ((string)$eveChar->getName() !== '') { // don't update name if it is empty
-            $char->setName($eveChar->getName());
-        }
+        $this->characterService->setCharacterName($char, (string)$eveChar->getName());
         if ($char->getMain()) {
             $char->getPlayer()->setName($char->getName());
         }
@@ -259,7 +265,7 @@ class EsiData
             $corp->setAlliance($alliance);
             $alliance->addCorporation($corp);
         } else {
-            $corp->setAlliance(null);
+            $corp->setAlliance();
         }
 
         // flush

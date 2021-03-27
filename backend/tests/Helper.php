@@ -22,6 +22,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\AppRequests;
 use Neucore\Entity\Character;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
@@ -63,6 +64,7 @@ class Helper
         AppRequests::class,
         App::class,
         CorporationMember::class,
+        CharacterNameChange::class,
         Character::class,
         RemovedCharacter::class,
         PlayerLogins::class,
@@ -160,9 +162,11 @@ class Helper
         $repoFactory = new RepositoryFactory($this->getObjectManager());
         $objManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $esiData = new EsiData($logger, new EsiApiFactory($client, $config), $objManager, $repoFactory, $config);
+        $characterService = new \Neucore\Service\Character($objManager);
+        $esiApiFactory = new EsiApiFactory($client, $config);
+        $esiData = new EsiData($logger, $esiApiFactory, $objManager, $repoFactory, $characterService, $config);
         $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $logger);
-        return new Account($logger, $objManager, $repoFactory, $esiData, $autoGroups);
+        return new Account($logger, $objManager, $repoFactory, $esiData, $autoGroups, $characterService);
     }
 
     public function getUserAuthService(Logger $logger, Client $client): UserAuth

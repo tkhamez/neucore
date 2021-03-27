@@ -304,6 +304,8 @@ class AccountTest extends TestCase
         $this->assertSame('char name changed', $character->getName());
         $this->assertNull($character->getRefreshToken());
         $this->assertNull($character->getValidToken());
+        $this->assertSame(1, count($character->getCharacterNameChanges()));
+        $this->assertSame('c-name', $character->getCharacterNameChanges()[0]->getOldName());
     }
 
     public function testIncreaseLoginCount()

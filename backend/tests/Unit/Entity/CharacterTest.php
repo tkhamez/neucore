@@ -6,6 +6,7 @@ namespace Tests\Unit\Entity;
 
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Corporation;
@@ -129,7 +130,7 @@ class CharacterTest extends TestCase
         $this->assertNull($char->getValidToken());
         $this->assertTrue($char->setValidToken(true)->getValidToken());
         $this->assertFalse($char->setValidToken(false)->getValidToken());
-        $this->assertNull($char->setValidToken(null)->getValidToken());
+        $this->assertNull($char->setValidToken()->getValidToken());
     }
 
     public function testSetValidTokenUpdatesTime()
@@ -139,7 +140,7 @@ class CharacterTest extends TestCase
         $this->assertNull($char->getValidTokenTime());
         $this->assertNull($char->getValidToken());
 
-        $char->setValidToken(null);
+        $char->setValidToken();
         $this->assertNull($char->getValidTokenTime());
 
         $char->setValidToken(false);
@@ -151,7 +152,7 @@ class CharacterTest extends TestCase
         $this->assertNotSame($time1, $time2);
         $this->assertNotNull($time2);
 
-        $char->setValidToken(null);
+        $char->setValidToken();
         $time3 = $char->getValidTokenTime();
         $this->assertNotSame($time2, $time3);
         $this->assertNotNull($char->getValidTokenTime());
@@ -217,6 +218,22 @@ class CharacterTest extends TestCase
 
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+    }
+
+    public function testAddGetRemoveCharacterNameChanges()
+    {
+        $play = new Character();
+        $cnc1 = new CharacterNameChange();
+        $cnc2 = new CharacterNameChange();
+
+        $this->assertSame([], $play->getCharacterNameChanges());
+
+        $play->addCharacterNameChange($cnc1);
+        $play->addCharacterNameChange($cnc2);
+        $this->assertSame([$cnc1, $cnc2], $play->getCharacterNameChanges());
+
+        $play->removeCharacterNameChange($cnc2);
+        $this->assertSame([$cnc1], $play->getCharacterNameChanges());
     }
 
     public function testCreateAccessTokenFromCharacter()

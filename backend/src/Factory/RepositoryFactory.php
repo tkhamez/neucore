@@ -9,6 +9,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\AppRequests;
 use Neucore\Entity\Character;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
@@ -25,6 +26,7 @@ use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\AppRepository;
 use Neucore\Repository\AppRequestsRepository;
+use Neucore\Repository\CharacterNameChangeRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
@@ -89,6 +91,11 @@ class RepositoryFactory
     public function getCharacterRepository(): CharacterRepository
     {
         return $this->getRepository(CharacterRepository::class, Character::class);
+    }
+
+    public function getCharacterNameChangeRepository(): CharacterNameChangeRepository
+    {
+        return $this->getRepository(CharacterNameChangeRepository::class, CharacterNameChange::class);
     }
 
     public function getCorporationRepository(): CorporationRepository

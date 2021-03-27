@@ -9,6 +9,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\AppRequests;
 use Neucore\Entity\Character;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
@@ -25,6 +26,7 @@ use Neucore\Entity\Watchlist;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\AppRepository;
 use Neucore\Repository\AppRequestsRepository;
+use Neucore\Repository\CharacterNameChangeRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
@@ -92,6 +94,13 @@ class RepositoryFactoryTest extends TestCase
         $repo = $this->factory->getCharacterRepository();
         $this->assertInstanceOf(CharacterRepository::class, $repo);
         $this->assertSame(Character::class, $repo->getClassName());
+    }
+
+    public function testGetCharacterNameChangeRepository()
+    {
+        $repo = $this->factory->getCharacterNameChangeRepository();
+        $this->assertInstanceOf(CharacterNameChangeRepository::class, $repo);
+        $this->assertSame(CharacterNameChange::class, $repo->getClassName());
     }
 
     public function testGetCorporationRepository()

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Eve\Sso\JsonWebToken;
 use League\OAuth2\Client\Token\AccessToken;
@@ -147,6 +149,14 @@ class Character implements \JsonSerializable
     private $corporationMember;
 
     /**
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
+     * @ORM\OneToMany(targetEntity="CharacterNameChange", mappedBy="character")
+     * @ORM\OrderBy({"changeDate" = "DESC"})
+     * @var Collection
+     */
+    private $characterNameChanges;
+
+    /**
      * Contains only information that is of interest for clients.
      *
      * {@inheritDoc}
@@ -176,6 +186,11 @@ class Character implements \JsonSerializable
         }
 
         return $result;
+    }
+
+    public function __construct()
+    {
+        $this->characterNameChanges = new ArrayCollection();
     }
 
     public function setId(int $id): self
@@ -376,6 +391,25 @@ class Character implements \JsonSerializable
     public function getCorporationMember(): ?CorporationMember
     {
         return $this->corporationMember;
+    }
+
+    public function addCharacterNameChange(CharacterNameChange $characterNameChange): self
+    {
+        $this->characterNameChanges[] = $characterNameChange;
+        return $this;
+    }
+
+    public function removeCharacterNameChange(CharacterNameChange $characterNameChange): bool
+    {
+        return $this->characterNameChanges->removeElement($characterNameChange);
+    }
+
+    /**
+     * @return CharacterNameChange[]
+     */
+    public function getCharacterNameChanges(): array
+    {
+        return $this->characterNameChanges->toArray();
     }
 
     public function createAccessToken(): ?AccessTokenInterface
