@@ -1,6 +1,7 @@
 {
     "name": "tkhamez/neucore",
     "type": "project",
+    "description": "",
     "license": "MIT",
     "require": {
         "php-64bit": "^7.3",

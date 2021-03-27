@@ -87,7 +87,7 @@ class UpdatePlayerGroups extends Command
                     $dbResultLimit,
                     $offset
                 ));
-           } else {
+            } else {
                 if (($player = $this->playerRepo->find($player)) !== null) {
                     $playerIds = [$player->getId()];
                 }

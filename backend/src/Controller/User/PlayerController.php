@@ -1211,9 +1211,9 @@ class PlayerController extends BaseController
         $playerCorporationIds = [];
         $playerAllianceIds = [];
         foreach ($player->getCharacters() as $character) {
-            if ($character->getCorporation()) {
+            if ($character->getCorporation() !== null) {
                 $playerCorporationIds[] = $character->getCorporation()->getId();
-                if ($character->getCorporation()->getAlliance()) {
+                if ($character->getCorporation()->getAlliance() !== null) {
                     $playerAllianceIds[] = $character->getCorporation()->getAlliance()->getId();
                 }
             }

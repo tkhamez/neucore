@@ -169,6 +169,7 @@ class Container
                 $cache = new CacheMiddleware(new PrivateCacheStrategy(new DoctrineCacheStorage(
                     new FilesystemCache($c->get(Config::class)['guzzle']['cache']['dir'])
                 )));
+                /* @phan-suppress-next-line PhanTypeMismatchArgument */
                 $stack->push($cache, 'cache');
                 $stack->push($c->get(EsiHeaders::class));
                 $stack->push($c->get(Esi429Response::class));
