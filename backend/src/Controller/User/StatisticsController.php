@@ -8,6 +8,7 @@ namespace Neucore\Controller\User;
 use Neucore\Controller\BaseController;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -45,7 +46,7 @@ class StatisticsController extends BaseController
      * @OA\Get(
      *     path="/user/statistics/total-monthly-app-requests",
      *     operationId="statisticsTotalMonthlyAppRequests",
-     *     summary="Returns total monthly app request numbers, max. last 13 months.",
+     *     summary="Returns total monthly app request numbers, max. last 13 entries.",
      *     description="Needs role: statistics",
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
@@ -73,6 +74,12 @@ class StatisticsController extends BaseController
      *     description="Needs role: statistics",
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="start-time",
+     *         in="query",
+     *         description="Unix Timestamp",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="App requests.",
@@ -84,9 +91,11 @@ class StatisticsController extends BaseController
      *     )
      * )
      */
-    public function monthlyAppRequests(): ResponseInterface
+    public function monthlyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->monthlySummaryByApp());
+        $startTime = $this->getQueryParam($request, 'start-time', time());
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()
+            ->monthlySummaryByApp((int)$startTime));
     }
 
     /**
@@ -97,6 +106,12 @@ class StatisticsController extends BaseController
      *     description="Needs role: statistics",
      *     tags={"Statistics"},
      *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="start-time",
+     *         in="query",
+     *         description="Unix Timestamp",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="App requests.",
@@ -108,8 +123,9 @@ class StatisticsController extends BaseController
      *     )
      * )
      */
-    public function totalDailyAppRequests(): ResponseInterface
+    public function totalDailyAppRequests(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary());
+        $startTime = $this->getQueryParam($request, 'start-time', time());
+        return $this->withJson($this->repositoryFactory->getAppRequestsRepository()->dailySummary((int)$startTime));
     }
 }

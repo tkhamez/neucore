@@ -105,7 +105,8 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $response = $this->runApp('GET', '/api/user/statistics/monthly-app-requests');
+        $startTime = strtotime('2021-03-27');
+        $response = $this->runApp('GET', '/api/user/statistics/monthly-app-requests?start-time='.$startTime);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
@@ -129,7 +130,8 @@ class StatisticsControllerTest extends WebTestCase
     {
         $this->loginUser(2);
 
-        $response = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests');
+        $startTime = strtotime('2021-01-15');
+        $response = $this->runApp('GET', '/api/user/statistics/total-daily-app-requests?start-time='.$startTime);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
