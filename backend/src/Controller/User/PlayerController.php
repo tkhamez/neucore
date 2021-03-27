@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\Character;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -866,7 +867,8 @@ class PlayerController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="The player (this includes the removedCharacters and incomingCharacters properties).",
+     *         description="The player (this includes the removedCharacters, incomingCharacters
+                            and serviceAccounts properties).",
      *         @OA\JsonContent(ref="#/components/schemas/Player")
      *     ),
      *     @OA\Response(
@@ -887,7 +889,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $json = $player->jsonSerialize();
+        $json = $player->jsonSerialize(false, true); // with character name changes
         $json['removedCharacters'] = $player->getRemovedCharacters();
         $json['incomingCharacters'] = $player->getIncomingCharacters();
         $json['serviceAccounts'] = $this->getServiceAccounts($player, $serviceRegistration);
@@ -951,7 +953,9 @@ class PlayerController extends BaseController
         return $this->withJson([
             'id' => $player->getId(),
             'name' => $player->getName(),
-            'characters' => $player->getCharacters(),
+            'characters' => array_map(function (Character $character) {
+                return $character->jsonSerialize(false, true, true);
+            }, $player->getCharacters()),
             'groups' => $player->getGroups(),
             'removedCharacters' => $player->getRemovedCharacters(),
             'incomingCharacters' => $player->getIncomingCharacters(),

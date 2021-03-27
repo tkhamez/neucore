@@ -149,6 +149,8 @@ class Character implements \JsonSerializable
     private $corporationMember;
 
     /**
+     * List of previous character names (API: not included by default).
+     *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
      * @ORM\OneToMany(targetEntity="CharacterNameChange", mappedBy="character")
      * @ORM\OrderBy({"changeDate" = "DESC"})
@@ -162,8 +164,11 @@ class Character implements \JsonSerializable
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
      */
-    public function jsonSerialize(bool $minimum = false, bool $withRelations = true): array
-    {
+    public function jsonSerialize(
+        bool $minimum = false,
+        bool $withRelations = true,
+        bool $withNameChanges = false
+    ): array {
         if ($minimum) {
             return [
                 'id' => $this->getId(),
@@ -183,6 +188,9 @@ class Character implements \JsonSerializable
         ];
         if ($withRelations) {
             $result['corporation'] = $this->corporation;
+        }
+        if ($withNameChanges) {
+            $result['characterNameChanges'] = $this->getCharacterNameChanges();
         }
 
         return $result;

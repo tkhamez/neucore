@@ -8,6 +8,7 @@ namespace Tests\Functional\Controller\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
@@ -907,7 +908,8 @@ class PlayerControllerTest extends WebTestCase
                         'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                             'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
                         ]
-                    ]
+                    ],
+                    'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => '2021-08-27T21:48:03Z']],
                 ],
                 [
                     'id' => 13,
@@ -917,7 +919,8 @@ class PlayerControllerTest extends WebTestCase
                     'lastUpdate' => null,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
-                    'corporation' => null
+                    'corporation' => null,
+                    'characterNameChanges' => [],
                 ],
             ],
             'groups' => [],
@@ -997,7 +1000,8 @@ class PlayerControllerTest extends WebTestCase
                         'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                             'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
                         ]
-                    ]
+                    ],
+                    'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => '2021-08-27T21:48:03Z']],
                 ],
                 [
                     'id' => 13,
@@ -1007,7 +1011,8 @@ class PlayerControllerTest extends WebTestCase
                     'lastUpdate' => null,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
-                    'corporation' => null
+                    'corporation' => null,
+                    'characterNameChanges' => [],
                 ],
             ],
             'groups' => [],
@@ -1468,6 +1473,11 @@ class PlayerControllerTest extends WebTestCase
         $char3a->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
         $char3a->setCorporation($corp);
         $this->player3Id = $char3a->getPlayer()->getId();
+
+        $charNameChange = (new CharacterNameChange())->setOldName('old name')
+            ->setChangeDate(new \DateTime('2021-08-27 21:48:03'));
+        $charNameChange->setCharacter($char3a);
+        $this->em->persist($charNameChange);
 
         $emptyAcc = (new Player())->setName('empty account');
 

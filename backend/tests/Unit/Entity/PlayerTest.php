@@ -8,6 +8,7 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\Character;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
@@ -39,12 +40,13 @@ class PlayerTest extends TestCase
         $c2->setName('eve two');
         $c1->setCorporation((new Corporation())->setName('corp1')->setTicker('ABC')
             ->setAlliance((new Alliance())->setName('alli1')->setTicker('DEF')));
+        $c1->addCharacterNameChange((new CharacterNameChange())->setOldName('old name'));
         $play->addCharacter($c1);
         $play->addCharacter($c2);
         $play->addManagerGroup($g1);
         $play->addManagerApp($a1);
 
-        $this->assertSame([
+        $expected = [
             'id' => null,
             'name' => 'test user',
             'status' => Player::STATUS_STANDARD,
@@ -59,7 +61,8 @@ class PlayerTest extends TestCase
                 'validTokenTime' => null,
                 'corporation' => ['id' => 0, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
                     'id' => 0, 'name' => 'alli1', 'ticker' => 'DEF'
-                ]]
+                ]],
+               #'characterNameChanges' => [],
             ], [
                 'id' => 234,
                 'name' => 'eve two',
@@ -68,16 +71,22 @@ class PlayerTest extends TestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
-                'corporation' => null
+                'corporation' => null,
+                #'characterNameChanges' => [],
             ]],
             'groups' => [
                 ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE]
             ],
             'managerGroups' => [['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [],]],
-        ], json_decode((string) json_encode($play), true));
+        ];
+        $this->assertSame($expected, json_decode((string) json_encode($play), true));
 
         $this->assertSame(['id' => null, 'name' => 'test user'], $play->jsonSerialize(true));
+
+        $expected['characters'][0]['characterNameChanges'] = [['oldName' => 'old name', 'changeDate' => null]];
+        $expected['characters'][1]['characterNameChanges'] = [];
+        $this->assertSame($expected, json_decode((string) json_encode($play->jsonSerialize(false, true)), true));
     }
 
     public function testToString()

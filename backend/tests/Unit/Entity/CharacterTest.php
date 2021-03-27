@@ -21,6 +21,7 @@ class CharacterTest extends TestCase
         $char->setId(123);
         $char->setName('test char');
         $char->setMain(false);
+        $char->addCharacterNameChange((new CharacterNameChange())->setOldName('old name'));
 
         $this->assertSame([
             'id' => 123,
@@ -32,6 +33,17 @@ class CharacterTest extends TestCase
             'validTokenTime' => null,
             'corporation' => null
         ], json_decode((string) json_encode($char), true));
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'main' => false,
+            'created' => null,
+            'lastUpdate' => null,
+            'validToken' => null,
+            'validTokenTime' => null,
+            'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => null]],
+        ], json_decode((string) json_encode($char->jsonSerialize(false, false, true)), true));
 
         $this->assertSame([
             'id' => 123,
