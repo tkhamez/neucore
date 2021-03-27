@@ -29,10 +29,10 @@ of an alliance.
 Objectives:
 
 - Management of groups for players.
-- Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (Experimental).
 - An API for applications to read these groups (and more).
+- Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (Experimental).
 - Access to [ESI](http://esi.evetech.net) data of all members.
-- Member tracking and watch lists.
+- Member tracking and watchlists.
 - Login via EVE SSO.
 
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
@@ -97,11 +97,7 @@ This is also where the name "Neucore" (new Core) comes from.
   An example application that uses EVE SSO and Neucore groups for access control.
 - A [TimerBoard](https://github.com/tkhamez/neucore-timerboard) (based on the boilerplate).
 - A [Ping](https://github.com/bravecollective/ping-app) app for Slack.
-- Neucore integration with other apps:
-  [EVE-SRP](https://github.com/eve-n0rman/evesrp/tree/feature/braveneucore),
-  [phpBB](https://github.com/bravecollective/forum-auth),
-  [Mumble](https://github.com/bravecollective/mumble-sso),
-  [Slack](https://github.com/bravecollective/slack-signup).
+- [EVE-SRP](https://github.com/bravecollective/evesrp/tree/feature/braveneucore) integration.
 
 ### Contact
 
