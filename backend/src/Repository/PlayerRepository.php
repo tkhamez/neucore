@@ -246,7 +246,7 @@ class PlayerRepository extends EntityRepository
         $result = array_merge($result, $query2->getQuery()->getResult());
         $result = array_merge($result, $query3->getQuery()->getResult());
 
-        uasort($result, function($a, $b) {
+        uasort($result, function ($a, $b) {
             $nameA = mb_strtolower($a['character_name']);
             $nameB = mb_strtolower($b['character_name']);
             if ($nameA < $nameB) {
