@@ -77,7 +77,7 @@ class PlayerRepositoryTest extends TestCase
         $char1b = (new Character())->setId(12)->setName('C1b')->setValidToken(false);
         $char1b->setPlayer(self::$player1);
         $char1b->setCorporation($corp2);
-        $char1c = (new Character())->setId(13)->setName('c1c')->setValidToken(false);
+        $char1c = (new Character())->setId(1313)->setName('c1c')->setValidToken(false);
         $char1c->setPlayer(self::$player1);
         $char1c->setCorporation($corp4);
         self::$player1->addCharacter($char1b);
@@ -255,9 +255,9 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame('c1', $actual[0]->getName());
     }
 
-    public function testFindByCharacterNames()
+    public function testFindCharacters_byName()
     {
-        $actual = $this->repo->findByCharacterNames('1');
+        $actual = $this->repo->findCharacters('1');
 
         $this->assertSame(7, count($actual));
         $this->assertSame([ // existing char
@@ -273,7 +273,7 @@ class PlayerRepositoryTest extends TestCase
             'player_name' => 'c1',
         ], $actual[1]);
         $this->assertSame([ // existing char
-            'character_id' => 13,
+            'character_id' => 1313,
             'character_name' => 'c1c',
             'player_id' => self::$player1->getId(),
             'player_name' => 'c1',
@@ -302,5 +302,17 @@ class PlayerRepositoryTest extends TestCase
             'player_id' => self::$player4->getId(),
             'player_name' => 'c4',
         ], $actual[6]);
+    }
+
+    public function testFindCharacters_byId()
+    {
+        $this->assertSame([], $this->repo->findCharacters('13'));
+
+        $this->assertSame([[
+            'character_id' => 1313,
+            'character_name' => 'c1c',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ]], $this->repo->findCharacters('1313'));
     }
 }

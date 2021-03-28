@@ -197,7 +197,7 @@ class PlayerRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findByCharacterNames(string $name): array
+    public function findCharacters(string $nameOrId): array
     {
         $query1 = $this
             ->createQueryBuilder('p')
@@ -209,8 +209,10 @@ class PlayerRepository extends EntityRepository
             )
             ->leftJoin('p.characters', 'c')
             ->where('c.name LIKE :name')
+            ->orWhere('c.id = :id')
             ->addOrderBy('c.name', 'ASC')
-            ->setParameter('name', "%$name%");
+            ->setParameter('name', "%$nameOrId%")
+            ->setParameter('id', $nameOrId);
 
         $query2 = $this
             ->createQueryBuilder('p')
@@ -223,7 +225,7 @@ class PlayerRepository extends EntityRepository
             ->leftJoin('p.removedCharacters', 'rc')
             ->where('rc.characterName LIKE :name')
             ->addOrderBy('rc.characterName', 'ASC')
-            ->setParameter('name', "%$name%");
+            ->setParameter('name', "%$nameOrId%");
 
         $query3 = $this
             ->createQueryBuilder('p')
@@ -238,7 +240,7 @@ class PlayerRepository extends EntityRepository
             ->leftJoin('c.characterNameChanges', 'ccn')
             ->where('ccn.oldName LIKE :name')
             ->addOrderBy('ccn.oldName', 'ASC')
-            ->setParameter('name', "%$name%");
+            ->setParameter('name', "%$nameOrId%");
 
         $result = $query1->getQuery()->getResult();
         $result = array_merge($result, $query2->getQuery()->getResult());

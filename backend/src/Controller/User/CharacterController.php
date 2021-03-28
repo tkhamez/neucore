@@ -133,7 +133,7 @@ class CharacterController extends BaseController
             return $this->withJson([]);
         }
 
-        $retVal = $this->repositoryFactory->getPlayerRepository()->findByCharacterNames($name);
+        $retVal = $this->repositoryFactory->getPlayerRepository()->findCharacters($name);
 
         return $this->withJson($retVal);
     }
