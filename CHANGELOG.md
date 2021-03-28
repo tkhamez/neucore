@@ -7,6 +7,7 @@ dd mm yyyy
 - New: Log character name changes.
 - Character search now includes removed and renamed characters and can find characters by ID.
 - Focus input field for character search after clicking the "Clear input" button.
+- Minor dependency updates.
 
 ## 1.18.0
 

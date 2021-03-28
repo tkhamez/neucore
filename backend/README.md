@@ -133,11 +133,6 @@ Generate OpenAPI interface description files:
 composer openapi
 ```
 
-Security check of packages from composer.lock:
-```
-composer security-checker
-```
-
 Check code with PHPStan, Phan and Psalm:
 ```
 composer phpstan
