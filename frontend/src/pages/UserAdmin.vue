@@ -84,7 +84,7 @@
                 <div class="list-group">
                     <button v-for="char in searchResult"
                         class="list-group-item list-group-item-action"
-                        :class="{ active: isCharacterOfPlayer(char.character_id) }"
+                        :class="{ active: belongsToActivePlayer(char) }"
                         @click="loadPlayer(char.player_id)">
                         {{ char.character_name }}
                     </button>
@@ -514,16 +514,11 @@ export default {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
 
-        isCharacterOfPlayer(charId) {
+        belongsToActivePlayer(charId) {
             if (! this.playerEdit) {
                 return false;
             }
-            for (const char of this.playerEdit.characters) {
-                if (char.id === charId) {
-                    return true;
-                }
-            }
-            return false;
+            return this.playerEdit.id === charId.player_id;
         },
 
         characterName(characterId) {
