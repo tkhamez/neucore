@@ -88,13 +88,17 @@ Vue.mixin({
 
         /**
          * @param {Date} date
+         * @param {boolean} [dateOnly]
          * @returns {string}
          */
-        formatDate: function(date) {
+        formatDate: function(date, dateOnly) {
             let str = date.toISOString();
-            str = str.replace('T', ' ');
-            str = str.replace('.000Z', '');
-            return str.substr(0, str.length - 3);
+            str = str.replace('T', ' ').replace('.000Z', '');
+            str = str.substr(0, str.length - 3); // remove seconds
+            if (dateOnly) {
+                str = str.substr(0, 10); // remove time
+            }
+            return str;
         },
 
         characterPortrait(id, size) {

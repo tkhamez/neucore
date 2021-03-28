@@ -26,6 +26,7 @@ Modal window with all characters of one player.
                                         <div class="col-6">
                                             <img :src="characterPortrait(character.id, 32)" alt="portrait">
                                             {{ character.name }}
+                                            <character-name-changes :character="character"></character-name-changes>
                                             <span v-if="character.main" role="img"
                                                   class="fas fa-star text-warning" title="Main"></span>
                                         </div>
@@ -135,10 +136,15 @@ Modal window with all characters of one player.
 <script>
 import $ from 'jquery';
 import {PlayerApi} from 'neucore-js-client';
+import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Character from '../classes/Character.js';
 
 export default {
-    data: function() {
+    components: {
+        CharacterNameChanges,
+    },
+
+    data() {
         return {
             selectedPlayer: null,
             characterMovements: [],
@@ -147,7 +153,7 @@ export default {
     },
 
     methods: {
-        characterName: function(characterId) {
+        characterName(characterId) {
             for (const character of this.selectedPlayer.characters) {
                 if (characterId === character.id) {
                     return character.name;
@@ -156,17 +162,17 @@ export default {
             return '';
         },
 
-        showCharacters: function(playerId) {
+        showCharacters(playerId) {
             $('#playerModal').modal('show');
             this.fetchCharacters(playerId);
         },
 
-        fetchCharacters: function(playerId) {
+        fetchCharacters(playerId) {
             const vm = this;
             vm.selectedPlayer = null;
             vm.characterMovements = [];
             vm.unauthorized = null;
-            new PlayerApi().characters(playerId, function(error, data, response) {
+            new PlayerApi().characters(playerId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 403) {
                         vm.unauthorized = true;
@@ -178,12 +184,12 @@ export default {
             });
         },
 
-        updateCharacters: function() {
+        updateCharacters() {
             const vm = this;
             if (! vm.selectedPlayer) {
                 return;
             }
-            (new Character(vm)).updatePlayer(vm.selectedPlayer, function () {
+            (new Character(vm)).updatePlayer(vm.selectedPlayer, () => {
                 vm.fetchCharacters(vm.selectedPlayer.id);
             });
         },

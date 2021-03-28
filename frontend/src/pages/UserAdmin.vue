@@ -230,6 +230,7 @@
                                            title="Eve Who" target="_blank" rel="noopener noreferrer">
                                             {{ character.name }}
                                         </a>
+                                        <character-name-changes :character="character"></character-name-changes>
                                     </td>
                                     <td>
                                         <span v-if="character.corporation">
@@ -421,11 +422,13 @@
 import $ from 'jquery';
 import {PlayerApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
+import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Character from "../classes/Character";
 
 export default {
     components: {
         CharacterSearch,
+        CharacterNameChanges,
     },
 
     props: {
@@ -435,7 +438,7 @@ export default {
         settings: Object,
     },
 
-    data: function() {
+    data() {
         return {
             playersRole: [],
             playersChars: [],
@@ -482,23 +485,23 @@ export default {
         }
     },
 
-    mounted: function() {
+    mounted() {
         window.scrollTo(0,0);
         this.setPlayerId();
     },
 
     watch: {
-        route: function() {
+        route() {
             this.setPlayerId();
         },
 
-        playerId: function() {
+        playerId() {
             if (this.playerId) {
                 this.getPlayer();
             }
         },
 
-        newRole: function() {
+        newRole() {
             if (this.playerEdit && this.newRole) {
                 this.addRole(this.newRole);
                 this.newRole = '';
@@ -507,11 +510,11 @@ export default {
     },
 
     methods: {
-        setPlayerId: function() {
+        setPlayerId() {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
 
-        isCharacterOfPlayer: function(charId) {
+        isCharacterOfPlayer(charId) {
             if (! this.playerEdit) {
                 return false;
             }
@@ -523,7 +526,7 @@ export default {
             return false;
         },
 
-        characterName: function(characterId) {
+        characterName(characterId) {
             for (const character of this.playerEdit.characters) {
                 if (characterId === character.id) {
                     return character.name;
@@ -532,11 +535,11 @@ export default {
             return '';
         },
 
-        loadPlayer: function(playerId) {
+        loadPlayer(playerId) {
             window.location.hash = `#UserAdmin/${playerId}`;
         },
 
-        onSearchResult: function(result) {
+        onSearchResult(result) {
             this.searchResult = result;
             if (result.length > 0) {
                 this.playersRole = [];
@@ -546,7 +549,7 @@ export default {
             }
         },
 
-        getPlayerByRole: function(roleName) {
+        getPlayerByRole(roleName) {
             const vm = this;
             if (roleName === '') {
                 vm.playersRole = [];
@@ -555,7 +558,7 @@ export default {
             vm.activeList = '';
             vm.playersChars = [];
             vm.searchResult = [];
-            new PlayerApi().withRole(roleName, function(error, data) {
+            new PlayerApi().withRole(roleName, (error, data) => {
                 if (error) {
                     return;
                 }
@@ -563,7 +566,7 @@ export default {
             });
         },
 
-        getPlayers: function(listName) {
+        getPlayers(listName) {
             const vm = this;
             if (listName === '') {
                 vm.playersChars = [];
@@ -573,7 +576,7 @@ export default {
             vm.playersRole = [];
             vm.searchResult = [];
             const api = new PlayerApi();
-            api[listName].apply(api, [function(error, data) {
+            api[listName].apply(api, [(error, data) => {
                 if (error) {
                     return;
                 }
@@ -581,11 +584,11 @@ export default {
             }]);
         },
 
-        getPlayer: function() {
+        getPlayer() {
             const vm = this;
             const api = new PlayerApi();
 
-            api.showById(this.playerId, function(error, data) {
+            api.showById(this.playerId, (error, data) => {
                 if (error) {
                     vm.playerEdit = null;
                     return;
@@ -594,7 +597,7 @@ export default {
                 vm.characterMovements = vm.buildCharacterMovements(data);
             });
 
-            api.groupsDisabledById(this.playerId, function(error, data) {
+            api.groupsDisabledById(this.playerId, (error, data) => {
                 if (error) {
                     return;
                 }
@@ -602,22 +605,22 @@ export default {
             });
         },
 
-        addRole: function(roleName) {
+        addRole(roleName) {
             this.changePlayerAttribute('addRole', roleName);
         },
 
-        removeRole: function(roleName) {
+        removeRole(roleName) {
             this.changePlayerAttribute('removeRole', roleName);
         },
 
-        changePlayerAttribute: function(method, param) {
+        changePlayerAttribute(method, param) {
             if (! this.playerEdit) {
                 return;
             }
             const playerId = this.playerEdit.id;
             const api = new PlayerApi();
             const vm = this;
-            api[method].apply(api, [playerId, param, function(error) {
+            api[method].apply(api, [playerId, param, (error) => {
                 if (error) {
                     return;
                 }
@@ -628,7 +631,7 @@ export default {
             }]);
         },
 
-        updateCharacters: function() {
+        updateCharacters() {
             if (! this.playerEdit) {
                 return;
             }
@@ -647,10 +650,10 @@ export default {
         deleteChar() {
             const vm = this;
             const character = (new Character(vm));
-            character.deleteCharacter(this.charToDelete.id, this.deleteReason, function() {
+            character.deleteCharacter(this.charToDelete.id, this.deleteReason, () => {
                 vm.getPlayer();
                 if (vm.playerEdit.id === vm.player.id) {
-                    character.updateCharacter(vm.authChar.id, function() {
+                    character.updateCharacter(vm.authChar.id, () => {
                         vm.$root.$emit('playerChange');
                     });
                 }
@@ -663,7 +666,7 @@ export default {
 </script>
 
 <!--suppress CssUnusedSymbol -->
-<style scoped>
+<style type="text/css" scoped>
     .update-char {
         float: right;
         cursor: pointer;

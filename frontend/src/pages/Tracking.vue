@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid page-tracking">
         <div class="row mb-3 mt-3">
             <div class="col-lg-12">
                 <h1>Member Tracking</h1>
@@ -308,7 +308,7 @@ function configureDataTable(vm) {
         deferRender: true,
         order: [[3, "desc"]],
         'drawCallback': function() {
-            $('[data-toggle="tooltip"]').tooltip();
+            $('.page-tracking [data-toggle="tooltip"]').tooltip();
             $('a[data-player-id]').on('click', (evt) => {
                 $.Event(evt).preventDefault();
                 vm.showCharacters(evt.target.dataset.playerId);
@@ -394,12 +394,14 @@ function configureDataTable(vm) {
 }
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style type="text/scss">
     .member-table .with-tooltip {
         text-decoration: underline;
         text-decoration-style: dotted;
     }
 </style>
+
 <style type="text/scss" scoped>
     .member-table {
         th:nth-child(2) {
