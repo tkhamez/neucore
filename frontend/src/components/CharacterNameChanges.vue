@@ -19,10 +19,12 @@ export default {
     },
 
     mounted () {
-        $('.character-name-changes[data-toggle="tooltip"]').tooltip({
-            html: true,
-            customClass: 'character-name-changes'
-        });
+        window.setTimeout(() => {
+            $('.character-name-changes[data-toggle="tooltip"]').tooltip({
+                html: true,
+                customClass: 'character-name-changes'
+            });
+        }, 100);
     },
 
     methods: {
