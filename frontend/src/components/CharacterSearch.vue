@@ -9,11 +9,11 @@ Input element to search for characters
             Search {{ admin ? 'Character' : 'Player' }}
         </label>
     </div>
-    <input type="text" class="form-control" id="characterSearchInput"
+    <input type="text" class="form-control" id="characterSearchInput" ref="searchInput"
            placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
            v-model="searchTerm" v-on:click="findCharacter" v-on:input="findCharacter($event.target.value)">
     <div class="input-group-append">
-        <button class="btn" type="button" v-on:click="findCharacter('')">&times;</button>
+        <button class="btn" type="button" v-on:click="findCharacter('')" title="Clear input">&times;</button>
     </div>
 </div>
 </template>
@@ -41,6 +41,7 @@ export default {
 
             if (this.searchTerm === '') {
                 this.$emit('result', []);
+                this.$refs.searchInput.focus();
             } else {
                 findCharacter(this);
             }
