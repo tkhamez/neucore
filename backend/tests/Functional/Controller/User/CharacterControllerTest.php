@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
+use Tests\Logger;
 
 class CharacterControllerTest extends WebTestCase
 {
@@ -36,11 +37,17 @@ class CharacterControllerTest extends WebTestCase
      */
     private $client;
 
+    /**
+     * @var Logger
+     */
+    private $log;
+
     protected function setUp(): void
     {
         $_SESSION = null;
         $this->helper = new Helper();
         $this->client = new Client();
+        $this->log = new Logger('Test');
     }
 
     public function testShow403()
@@ -96,12 +103,22 @@ class CharacterControllerTest extends WebTestCase
             'character_id' => 456,
             'character_name' => 'Another USER',
             'player_id' => $this->playerId,
-            'player_name' => 'User'
+            'player_name' => 'User',
+        ], [
+            'character_id' => 615,
+            'character_name' => 'Removed from User',
+            'player_id' => $this->playerId,
+            'player_name' => 'User',
         ], [
             'character_id' => 96061222,
             'character_name' => 'User',
             'player_id' => $this->playerId,
-            'player_name' => 'User'
+            'player_name' => 'User',
+        ], [
+            'character_id' => 96061222,
+            'character_name' => "User's previous name",
+            'player_id' => $this->playerId,
+            'player_name' => 'User',
         ]], $this->parseJsonBody($response));
     }
 
@@ -166,7 +183,7 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
+            LoggerInterface::class => $this->log
         ]);
 
         $this->assertEquals(503, $response->getStatusCode());
@@ -183,7 +200,7 @@ class CharacterControllerTest extends WebTestCase
 
         $this->client->setResponse(
             new Response(200, [], '{
-                "name": "Char 96061222",
+                "name": "Char 96061222", // creates a new CharacterNameChange
                 "corporation_id": '.$this->corpId.'
             }'),
             new Response(200, [], '[{
@@ -201,12 +218,13 @@ class CharacterControllerTest extends WebTestCase
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
             ClientInterface::class => $this->client,
-            LoggerInterface::class => (new Logger('Test'))->pushHandler(new TestHandler())
+            LoggerInterface::class => $this->log
         ]);
 
         $this->assertEquals(204, $response->getStatusCode());
+        $this->assertSame(0, count($this->log->getHandler()->getRecords()));
 
-        // check that char was deleted
+        // check that char was deleted (because owner hash changed)
         $this->helper->getObjectManager()->clear();
         $char = (new RepositoryFactory($this->helper->getObjectManager()))->getCharacterRepository()->find(96061222);
         $this->assertNull($char);
@@ -327,7 +345,20 @@ class CharacterControllerTest extends WebTestCase
         $corp = (new Corporation())->setId($this->corpId)->setName($this->corpName)->setTicker($this->corpTicker);
         $corp->addGroup($groups[0]);
 
+        $removedChar = (new RemovedCharacter())
+            ->setCharacterId(615)
+            ->setCharacterName('Removed from User')
+            ->setRemovedDate(new \DateTime())
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
+        $removedChar->setPlayer($char->getPlayer());
+        $renamed = (new CharacterNameChange())
+            ->setCharacter($char)
+            ->setOldName("User's previous name")
+            ->setChangeDate(new \DateTime());
+
         $this->helper->getObjectManager()->persist($corp);
+        $this->helper->getObjectManager()->persist($removedChar);
+        $this->helper->getObjectManager()->persist($renamed);
         $this->helper->getObjectManager()->flush();
     }
 }

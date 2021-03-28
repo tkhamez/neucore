@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: Log character name changes.
+- Change: Character search now includes removed and renamed characters.
 
 ## 1.18.0
 

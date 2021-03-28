@@ -34,19 +34,9 @@ class CharacterRepositoryTest extends TestCase
         self::$repository = (new RepositoryFactory($om))->getCharacterRepository();
     }
 
-    public function testFindByNamePartialMatch()
+    public function testFindMainByNamePartialMatch()
     {
-        $actual = self::$repository->findByNamePartialMatch('har', false);
-        $this->assertSame(2, count($actual));
-        $this->assertSame('char one', $actual[0]->getName());
-        $this->assertSame('char two', $actual[1]->getName());
-        $this->assertSame(20, $actual[0]->getID());
-        $this->assertSame(10, $actual[1]->getID());
-    }
-
-    public function testFindByNamePartialMatch_MainOnly()
-    {
-        $actual = self::$repository->findByNamePartialMatch('har', true);
+        $actual = self::$repository->findMainByNamePartialMatch('har');
         $this->assertSame(1, count($actual));
         $this->assertSame('char two', $actual[0]->getName());
         $this->assertSame(10, $actual[0]->getID());

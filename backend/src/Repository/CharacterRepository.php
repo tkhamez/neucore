@@ -22,16 +22,15 @@ class CharacterRepository extends EntityRepository
     /**
      * @return Character[]
      */
-    public function findByNamePartialMatch(string $name, bool $mainOnly): array
+    public function findMainByNamePartialMatch(string $name): array
     {
         $query = $this->createQueryBuilder('c')
             ->where('c.name LIKE :name')
             ->addOrderBy('c.name', 'ASC')
-            ->setParameter('name', "%$name%");
-        if ($mainOnly) {
-            $query->andWhere('c.main = :main')
-                ->setParameter('main', true);
-        }
+            ->setParameter('name', "%$name%")
+            ->andWhere('c.main = :main')
+            ->setParameter('main', true);
+
         return $query->getQuery()->getResult();
     }
 }

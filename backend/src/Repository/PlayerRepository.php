@@ -22,7 +22,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithoutCharacters()
+    public function findWithoutCharacters(): array
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -35,7 +35,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithCharacters()
+    public function findWithCharacters(): array
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -48,7 +48,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithCharactersAndStatus(string $status)
+    public function findWithCharactersAndStatus(string $status): array
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -63,7 +63,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithInvalidToken()
+    public function findWithInvalidToken(): array
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -78,7 +78,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithNoToken()
+    public function findWithNoToken(): array
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -92,7 +92,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findInCorporation(int $corporationId)
+    public function findInCorporation(int $corporationId): array
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
@@ -108,7 +108,7 @@ class PlayerRepository extends EntityRepository
      * @param int[] $groupIds
      * @return Player[]
      */
-    public function findWithGroups(array $groupIds)
+    public function findWithGroups(array $groupIds): array
     {
         $qb = $this->createQueryBuilder('p');
         return $qb
@@ -123,7 +123,7 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithRole(int $roleId)
+    public function findWithRole(int $roleId): array
     {
         $qb = $this->createQueryBuilder('p');
         return $qb
@@ -143,7 +143,7 @@ class PlayerRepository extends EntityRepository
      * @param Player[] $players Exclude these players
      * @return Player[]
      */
-    public function findInCorporationsWithExcludes(array $corporationIds, array $players)
+    public function findInCorporationsWithExcludes(array $corporationIds, array $players): array
     {
         if (empty($corporationIds)) {
             return [];
@@ -174,7 +174,7 @@ class PlayerRepository extends EntityRepository
      * @param Player[] $players Exclude these players
      * @return Player[]
      */
-    public function findNotInNpcCorporationsWithExcludes(array $corporationIds, array $players)
+    public function findNotInNpcCorporationsWithExcludes(array $corporationIds, array $players): array
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c');
@@ -195,5 +195,73 @@ class PlayerRepository extends EntityRepository
         $qb->orderBy('p.name');
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findByCharacterNames(string $name): array
+    {
+        $query1 = $this
+            ->createQueryBuilder('p')
+            ->select(
+                'c.id AS character_id',
+                'c.name AS character_name',
+                'p.id AS player_id',
+                'p.name AS player_name',
+            )
+            ->leftJoin('p.characters', 'c')
+            ->where('c.name LIKE :name')
+            ->addOrderBy('c.name', 'ASC')
+            ->setParameter('name', "%$name%");
+
+        $query2 = $this
+            ->createQueryBuilder('p')
+            ->select(
+                'rc.characterId AS character_id',
+                'rc.characterName AS character_name',
+                'p.id AS player_id',
+                'p.name AS player_name',
+            )
+            ->leftJoin('p.removedCharacters', 'rc')
+            ->where('rc.characterName LIKE :name')
+            ->addOrderBy('rc.characterName', 'ASC')
+            ->setParameter('name', "%$name%");
+
+        $query3 = $this
+            ->createQueryBuilder('p')
+            ->select(
+                'c.id AS character_id',
+                #'IDENTITY(ccn.character) AS character_id',
+                'ccn.oldName AS character_name',
+                'p.id AS player_id',
+                'p.name AS player_name',
+            )
+            ->leftJoin('p.characters', 'c')
+            ->leftJoin('c.characterNameChanges', 'ccn')
+            ->where('ccn.oldName LIKE :name')
+            ->addOrderBy('ccn.oldName', 'ASC')
+            ->setParameter('name', "%$name%");
+
+        $result = $query1->getQuery()->getResult();
+        $result = array_merge($result, $query2->getQuery()->getResult());
+        $result = array_merge($result, $query3->getQuery()->getResult());
+
+        uasort($result, function($a, $b) {
+            $nameA = mb_strtolower($a['character_name']);
+            $nameB = mb_strtolower($b['character_name']);
+            if ($nameA < $nameB) {
+                return -1;
+            } elseif ($nameA > $nameB) {
+                return 1;
+            }
+            return 0;
+        });
+
+        return array_map(function ($row) {
+            return [
+                'character_id' => (int) $row['character_id'],
+                'character_name' => $row['character_name'],
+                'player_id' => $row['player_id'],
+                'player_name' => $row['player_name'],
+            ];
+        }, array_values($result));
     }
 }

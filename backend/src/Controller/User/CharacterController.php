@@ -126,23 +126,14 @@ class CharacterController extends BaseController
      * )
      * @noinspection PhpUnused
      */
-    public function findCharacter(string $name, bool $mainOnly = false): ResponseInterface
+    public function findCharacter(string $name): ResponseInterface
     {
         $name = trim($name);
         if (mb_strlen($name) < 3) {
             return $this->withJson([]);
         }
 
-        $retVal = [];
-        $result = $this->repositoryFactory->getCharacterRepository()->findByNamePartialMatch($name, $mainOnly);
-        foreach ($result as $char) {
-            $retVal[] = [
-                'character_id' => $char->getId(),
-                'character_name' => $char->getName(),
-                'player_id' => $char->getPlayer()->getId(),
-                'player_name' => $char->getPlayer()->getName(),
-            ];
-        }
+        $retVal = $this->repositoryFactory->getPlayerRepository()->findByCharacterNames($name);
 
         return $this->withJson($retVal);
     }
@@ -176,7 +167,23 @@ class CharacterController extends BaseController
      */
     public function findPlayer(string $name): ResponseInterface
     {
-        return $this->findCharacter($name, true);
+        $name = trim($name);
+        if (mb_strlen($name) < 3) {
+            return $this->withJson([]);
+        }
+
+        $retVal = [];
+        $result = $this->repositoryFactory->getCharacterRepository()->findMainByNamePartialMatch($name);
+        foreach ($result as $char) {
+            $retVal[] = [
+                'character_id' => $char->getId(),
+                'character_name' => $char->getName(),
+                'player_id' => $char->getPlayer()->getId(),
+                'player_name' => $char->getPlayer()->getName(),
+            ];
+        }
+
+        return $this->withJson($retVal);
     }
 
     /**

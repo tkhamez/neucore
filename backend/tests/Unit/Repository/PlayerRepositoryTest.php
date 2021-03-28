@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Repository;
 
 use Neucore\Entity\Character;
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
+use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\PlayerRepository;
@@ -25,6 +27,11 @@ class PlayerRepositoryTest extends TestCase
      * @var Group
      */
     private static $group2;
+
+    /**
+     * @var Player
+     */
+    private static $player1;
 
     /**
      * @var Player
@@ -64,17 +71,17 @@ class PlayerRepositoryTest extends TestCase
         $om->persist($corp3);
         $om->persist($corp4);
 
-        $player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
-        $player1->getCharacters()[0]->setValidToken(true);
-        $player1->getCharacters()[0]->setCorporation($corp1);
-        $char1b = (new Character())->setId(12)->setName('c1b')->setValidToken(false);
-        $char1b->setPlayer($player1);
+        self::$player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
+        self::$player1->getCharacters()[0]->setValidToken(true);
+        self::$player1->getCharacters()[0]->setCorporation($corp1);
+        $char1b = (new Character())->setId(12)->setName('C1b')->setValidToken(false);
+        $char1b->setPlayer(self::$player1);
         $char1b->setCorporation($corp2);
         $char1c = (new Character())->setId(13)->setName('c1c')->setValidToken(false);
-        $char1c->setPlayer($player1);
+        $char1c->setPlayer(self::$player1);
         $char1c->setCorporation($corp4);
-        $player1->addCharacter($char1b);
-        $player1->addCharacter($char1c);
+        self::$player1->addCharacter($char1b);
+        self::$player1->addCharacter($char1c);
         $om->persist($char1b);
         $om->persist($char1c);
 
@@ -97,12 +104,40 @@ class PlayerRepositoryTest extends TestCase
         self::$player6 = $helper->addCharacterMain('c6', 6)->getPlayer();
         self::$player6->getCharacters()[0]->setCorporation($corp4)->setValidToken(true);
 
-        $player1->setStatus(Player::STATUS_MANAGED);
+        self::$player1->setStatus(Player::STATUS_MANAGED);
         $player3->setStatus(Player::STATUS_MANAGED);
         self::$player4->setStatus(Player::STATUS_MANAGED);
 
         $om->persist($player3);
         $om->persist($player5);
+
+        // additional data for search by name
+        $removedChar1 = (new RemovedCharacter())
+            ->setCharacterId(21)
+            ->setCharacterName('removed-21')
+            ->setRemovedDate(new \DateTime())
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
+        $removedChar1->setPlayer(self::$player4);
+        $removedChar2 = (new RemovedCharacter())
+            ->setCharacterId(31)
+            ->setCharacterName('removed-31')
+            ->setRemovedDate(new \DateTime())
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
+        $removedChar2->setPlayer(self::$player4);
+        self::$player1->addRemovedCharacter($removedChar1);
+        self::$player1->addRemovedCharacter($removedChar2);
+        $renamed1 = (new CharacterNameChange())
+            ->setCharacter(self::$player6->getCharacters()[0])
+            ->setOldName('c6-41')
+            ->setChangeDate(new \DateTime());
+        $renamed2 = (new CharacterNameChange())
+            ->setCharacter(self::$player6->getCharacters()[0])
+            ->setOldName('c6-51')
+            ->setChangeDate(new \DateTime());
+        $om->persist($removedChar1);
+        $om->persist($removedChar2);
+        $om->persist($renamed1);
+        $om->persist($renamed2);
 
         $om->flush();
     }
@@ -119,7 +154,7 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame(4, count($actual));
         $this->assertSame('c1', $actual[0]->getName());
         $this->assertSame('c1', $actual[0]->getCharacters()[0]->getName());
-        $this->assertSame('c1b', $actual[0]->getCharacters()[1]->getName());
+        $this->assertSame('C1b', $actual[0]->getCharacters()[1]->getName());
         $this->assertSame('c2', $actual[1]->getName());
         $this->assertSame('c4', $actual[2]->getName());
         $this->assertSame('c6', $actual[3]->getName());
@@ -218,5 +253,54 @@ class PlayerRepositoryTest extends TestCase
 
         $this->assertSame(1, count($actual));
         $this->assertSame('c1', $actual[0]->getName());
+    }
+
+    public function testFindByCharacterNames()
+    {
+        $actual = $this->repo->findByCharacterNames('1');
+
+        $this->assertSame(7, count($actual));
+        $this->assertSame([ // existing char
+            'character_id' => 1,
+            'character_name' => 'c1',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ], $actual[0]);
+        $this->assertSame([ // existing char
+            'character_id' => 12,
+            'character_name' => 'C1b',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ], $actual[1]);
+        $this->assertSame([ // existing char
+            'character_id' => 13,
+            'character_name' => 'c1c',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ], $actual[2]);
+        $this->assertSame([ // renamed character
+            'character_id' => 6,
+            'character_name' => 'c6-41',
+            'player_id' => self::$player6->getId(),
+            'player_name' => 'c6',
+        ], $actual[3]);
+        $this->assertSame([ // renamed character
+            'character_id' => 6,
+            'character_name' => 'c6-51',
+            'player_id' => self::$player6->getId(),
+            'player_name' => 'c6',
+        ], $actual[4]);
+        $this->assertSame([ // removed character
+            'character_id' => 21,
+            'character_name' => 'removed-21',
+            'player_id' => self::$player4->getId(),
+            'player_name' => 'c4',
+        ], $actual[5]);
+        $this->assertSame([ // removed character
+            'character_id' => 31,
+            'character_name' => 'removed-31',
+            'player_id' => self::$player4->getId(),
+            'player_name' => 'c4',
+        ], $actual[6]);
     }
 }
