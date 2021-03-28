@@ -29,7 +29,7 @@ class CharacterNameChange implements \JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="Character", inversedBy="characterNameChanges")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @var Character
      */
     private $character;
