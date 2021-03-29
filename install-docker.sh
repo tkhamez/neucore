@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
 # Install backend and generate OpenAPI files
-docker-compose exec php-fpm composer install
+if [[ $1 = prod ]]; then
+    docker-compose exec php-fpm composer install --no-dev --optimize-autoloader --no-interaction
+else
+    docker-compose exec php-fpm composer install
+fi
 docker-compose exec php-fpm bin/console clear-cache
+if [[ $1 = prod ]]; then
+    docker-compose exec php-fpm vendor/bin/doctrine orm:generate-proxies
+fi
 docker-compose exec php-fpm composer openapi
 
 # Generate and build OpenAPI JavaScript client
@@ -12,7 +19,11 @@ docker-compose run node npm run build --prefix /app/frontend/neucore-js-client
 
 # Build frontend
 docker-compose run node npm install
-docker-compose run node npm run build
+if [[ $1 = prod ]]; then
+    docker-compose run node npm run build:prod
+else
+   docker-compose run node npm run build
+fi
 
 # Update the database schema and seed data
 docker-compose exec php-fpm vendor/bin/doctrine-migrations migrations:migrate --no-interaction
