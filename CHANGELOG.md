@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.19.0
 
-dd mm yyyy
+29 Mar 2021
 
 - New: Log character name changes.
 - Character search now includes removed and renamed characters and can find characters by ID.
