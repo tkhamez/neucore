@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a936787965d3b45a7bcacb0347c01e73",
+    "content-hash": "3ab231f346eb57240ce4f4c791f3ff2f",
     "packages": [
         {
             "name": "brick/math",
@@ -4370,16 +4370,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "5.0.2",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "a9d00fd1be8751738fe2e087b777de09df3caab8"
+                "reference": "17bd09289e1d1c8c56f19175980acd74059df9bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/a9d00fd1be8751738fe2e087b777de09df3caab8",
-                "reference": "a9d00fd1be8751738fe2e087b777de09df3caab8",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/17bd09289e1d1c8c56f19175980acd74059df9bd",
+                "reference": "17bd09289e1d1c8c56f19175980acd74059df9bd",
                 "shasum": ""
             },
             "require": {
@@ -4387,12 +4387,11 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^6.2 || ^7.2",
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "~2.12",
-                "phpunit/phpunit": "^7.4",
-                "squizlabs/php_codesniffer": "~2.6"
+                "friendsofphp/php-cs-fixer": "^2.12",
+                "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
             "autoload": {
@@ -4421,7 +4420,7 @@
                 "rest",
                 "sdk"
             ],
-            "time": "2020-11-25T20:33:50+00:00"
+            "time": "2021-03-30T12:03:56+00:00"
         },
         {
             "name": "web-token/jwt-core",
