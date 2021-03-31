@@ -62,13 +62,13 @@ function getData(vm) {
             chartRequestsMonthly(vm);
         }
     });
-    api.statisticsMonthlyAppRequests((error, data) => {
+    api.statisticsMonthlyAppRequests({startTime: 0}, (error, data) => {
         if (!error) {
             vm.requestsMonthlyPerApp = data.reverse();
             chartRequestsMonthlyPerApp(vm);
         }
     });
-    api.statisticsTotalDailyAppRequests((error, data) => {
+    api.statisticsTotalDailyAppRequests({startTime: 0}, (error, data) => {
         if (!error) {
             vm.requestsDaily = data.reverse();
             chartRequestsDaily(vm);

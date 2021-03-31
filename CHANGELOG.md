@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Fixed broken charts.
+
 ## 1.19.0
 
 29 Mar 2021
