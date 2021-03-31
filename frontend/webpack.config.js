@@ -130,9 +130,7 @@ module.exports = (env, argv) => {
             compressionOptions: { level: 6 },
         }));
         config.plugins.push(new LicenseWebpackPlugin({
-            // TODO This fixes "ERROR in Conflict: Multiple assets emit different content to the same
-            // filename mini-css-extract-plugin.licenses.txt", but produces a lot of duplicates.
-            outputFilename: '[name].[fullhash].licenses.txt',
+            perChunkOutput: false,
         }));
     }
     return config;
