@@ -112,5 +112,10 @@ class UpdateCharactersTest extends ConsoleTestCase
         $actualCorps = $repositoryFactory->getCorporationRepository()->findBy([]);
         $this->assertSame(1, count($actualCorps));
         $this->assertSame(101, $actualCorps[0]->getId());
+
+        $renamed = $repositoryFactory->getCharacterNameChangeRepository()->findBy([]);
+        $this->assertSame(1, count($renamed));
+        $this->assertSame(6, $renamed[0]->getCharacter()->getId());
+        $this->assertSame('char2', $renamed[0]->getOldName());
     }
 }

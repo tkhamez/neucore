@@ -1,8 +1,11 @@
 # Changelog
 
-## next
+## 1.19.1
 
-- Fixed broken charts.
+dd mm yyyy
+
+- Fix: App request charts were broken.
+- Fix: The new function for character renames was not used for cron job.
 
 ## 1.19.0
 

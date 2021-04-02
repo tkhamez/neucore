@@ -9,6 +9,7 @@ use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
+use Neucore\Service\Character as CharacterService;
 use Neucore\Service\EntityManager;
 use Neucore\Service\EsiData;
 use Neucore\Storage\StorageInterface;
@@ -35,6 +36,11 @@ class UpdateCharacters extends Command
     private $esiData;
 
     /**
+     * @var CharacterService
+     */
+    private $characterService;
+
+    /**
      * @var EntityManager
      */
     private $entityManager;
@@ -47,6 +53,7 @@ class UpdateCharacters extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
+        CharacterService $characterService,
         EntityManager $entityManager,
         LoggerInterface $logger,
         StorageInterface $storage
@@ -57,6 +64,7 @@ class UpdateCharacters extends Command
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->esiData = $esiData;
+        $this->characterService = $characterService;
         $this->entityManager = $entityManager;
     }
 
@@ -138,9 +146,7 @@ class UpdateCharacters extends Command
                 }
 
                 if (isset($names[$char->getId()])) {
-                    if ($names[$char->getId()] !== '') { // empty character name from ESI happened
-                        $char->setName($names[$char->getId()]);
-                    }
+                    $this->characterService->setCharacterName($char, $names[$char->getId()]);
                     if ($char->getMain()) {
                         $char->getPlayer()->setName($char->getName());
                     }
