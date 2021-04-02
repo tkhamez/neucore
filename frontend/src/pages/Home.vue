@@ -125,7 +125,7 @@
                                 <a v-if="! char.main" class="badge badge-primary" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
                                 <a class="badge badge-primary" href="#"
-                                   v-on:click.prevent="update(char.id)">Update corporation</a>
+                                   v-on:click.prevent="update(char.id)">Update character</a>
                                 <a v-if="authChar && authChar.id !== char.id
                                         && settings.allow_character_deletion === '1'"
                                    class="badge badge-danger"
