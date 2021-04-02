@@ -2,10 +2,12 @@
 
 ## 1.19.1
 
-dd mm yyyy
+2 Apr 2021
 
 - Fix: App request charts were broken.
 - Fix: The new function for character renames was not used for cron job.
+- Change: The name of a character is no longer updated with the name from the OAuth data after a login, 
+  because after a character name change, this name can be the old name.
 
 ## 1.19.0
 

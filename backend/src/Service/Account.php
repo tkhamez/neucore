@@ -141,6 +141,8 @@ class Account
      * Updates character with the data provided and persists player
      * and character in the database. Both Entities can be new.
      *
+     * Does *not* update the character name, see comment in code.
+     *
      * @param Character $char Character with Player object attached.
      * @param EveAuthentication $eveAuth
      * @param bool $updateAutoGroups Update "auto groups" if the character is new or was moved to another account
@@ -153,7 +155,7 @@ class Account
     ): bool {
         // update character
         $token = $eveAuth->getToken();
-        $this->characterService->setCharacterName($char, $eveAuth->getCharacterName());
+        // Do not update the character name: after a character rename the name from SSO is/can be? the old name.
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception $e) {

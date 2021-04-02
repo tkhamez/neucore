@@ -301,11 +301,10 @@ class AccountTest extends TestCase
         $this->om->clear();
 
         $character = $this->charRepo->find(12);
-        $this->assertSame('char name changed', $character->getName());
+        $this->assertSame('c-name', $character->getName()); // the name is *not* updated here
         $this->assertNull($character->getRefreshToken());
         $this->assertNull($character->getValidToken());
-        $this->assertSame(1, count($character->getCharacterNameChanges()));
-        $this->assertSame('c-name', $character->getCharacterNameChanges()[0]->getOldName());
+        $this->assertSame(0, count($character->getCharacterNameChanges()));
     }
 
     public function testIncreaseLoginCount()

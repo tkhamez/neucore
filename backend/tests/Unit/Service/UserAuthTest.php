@@ -182,7 +182,7 @@ class UserAuthTest extends TestCase
         $this->assertTrue($result);
         $this->assertSame(9013, $_SESSION['character_id']);
         $this->assertSame(9013, $user->getId());
-        $this->assertSame('Test User Changed Name', $user->getName());
+        $this->assertSame('Test User', $user->getName()); // name is *not* updated here
         $this->assertSame('123', $user->getCharacterOwnerHash());
         $this->assertSame($accessToken, $user->getAccessToken());
         $this->assertSame(1525456785, $user->getExpires());
@@ -283,7 +283,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(2, count($chars));
 
         $this->assertSame($main2, $chars[1]);
-        $this->assertSame('Main2 renamed', $chars[1]->getName());
+        $this->assertSame('Main2', $chars[1]->getName()); // name is *not* updated here
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertSame($accessToken, $chars[1]->getAccessToken());
         $this->assertSame(1525456785, $chars[1]->getExpires());
@@ -316,7 +316,7 @@ class UserAuthTest extends TestCase
 
         $chars = $main->getPlayer()->getCharacters();
         $this->assertSame(1, count($chars));
-        $this->assertSame('Main1 renamed', $chars[0]->getName()); // name changed
+        $this->assertSame('Main1', $chars[0]->getName()); // name changed but is *not* updated here
     }
 
     public function testAddAltNotAuthenticated()
