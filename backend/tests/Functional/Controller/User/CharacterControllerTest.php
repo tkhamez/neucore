@@ -298,9 +298,15 @@ class CharacterControllerTest extends WebTestCase
         $this->assertTrue($player->getCharacters()[1]->getValidToken());
         $nameChanges = $player->getCharacters()[1]->getCharacterNameChanges();
         $this->assertSame(3, count($nameChanges)); // 1 from setup, 1 from test
-        $this->assertSame("User's previous name", $nameChanges[0]->getOldName()); // from setup
-        $this->assertSame('User', $nameChanges[1]->getOldName()); // from ESI update
-        $this->assertSame('Old Name', $nameChanges[2]->getOldName()); // from access token check (token from setup)
+        if ($nameChanges[0]->getOldName() === 'User') {
+            // ordered by date, which can be the same for the first 2
+            $this->assertSame('User', $nameChanges[0]->getOldName()); // from ESI update
+            $this->assertSame('Old Name', $nameChanges[1]->getOldName()); // from access token check (token from setup)
+        } else {
+            $this->assertSame('Old Name', $nameChanges[0]->getOldName());
+            $this->assertSame('User', $nameChanges[1]->getOldName());
+        }
+        $this->assertSame("User's previous name", $nameChanges[2]->getOldName()); // from setup
     }
 
     public function testUpdate200_Admin()
@@ -361,7 +367,7 @@ class CharacterControllerTest extends WebTestCase
         $renamed = (new CharacterNameChange())
             ->setCharacter($char)
             ->setOldName("User's previous name")
-            ->setChangeDate(new \DateTime());
+            ->setChangeDate(new \DateTime('2021-04-07 15:07:00'));
 
         $this->helper->getObjectManager()->persist($corp);
         $this->helper->getObjectManager()->persist($removedChar);
