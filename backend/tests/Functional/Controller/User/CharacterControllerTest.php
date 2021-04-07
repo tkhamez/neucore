@@ -194,46 +194,8 @@ class CharacterControllerTest extends WebTestCase
      */
     public function testUpdate204()
     {
-        list($token, $keySet) = Helper::generateToken();
+        list($token) = Helper::generateToken();
         $this->setupDb($token);
-        $this->loginUser(96061222);
-
-        $this->client->setResponse(
-            new Response(200, [], '{
-                "name": "Char 96061222", // creates a new CharacterNameChange
-                "corporation_id": '.$this->corpId.'
-            }'),
-            new Response(200, [], '[{
-                "character_id": 96061222,
-                "corporation_id": '.$this->corpId.'
-            }]'), // affiliation
-            new Response(200, [], '{
-                "name": "The Corp updated.",
-                "ticker": "TICK",
-                "alliance_id": null
-            }'),
-            // getAccessToken() not called because token is not expired
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
-        );
-
-        $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
-            ClientInterface::class => $this->client,
-            LoggerInterface::class => $this->log
-        ]);
-
-        $this->assertEquals(204, $response->getStatusCode());
-        $this->assertSame(0, count($this->log->getHandler()->getRecords()));
-
-        // check that char was deleted (because owner hash changed)
-        $this->helper->getObjectManager()->clear();
-        $char = (new RepositoryFactory($this->helper->getObjectManager()))->getCharacterRepository()->find(96061222);
-        $this->assertNull($char);
-    }
-
-    public function testUpdate200_LoggedInUser()
-    {
-        $this->setupDb();
-        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
         $this->loginUser(96061222);
 
         $this->client->setResponse(
@@ -251,7 +213,47 @@ class CharacterControllerTest extends WebTestCase
                 "alliance_id": null
             }'),
             // getAccessToken() not called because token is not expired
-            new Response(200, [], '{"CharacterOwnerHash": "coh1"}') // for getResourceOwner()
+        );
+
+        $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
+            ClientInterface::class => $this->client,
+            LoggerInterface::class => $this->log
+        ]);
+
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertSame(0, count($this->log->getHandler()->getRecords()));
+
+        // check that char was deleted (because owner hash changed)
+        $this->helper->getObjectManager()->clear();
+        $char = (new RepositoryFactory($this->helper->getObjectManager()))->getCharacterRepository()->find(96061222);
+        $this->assertNull($char);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testUpdate200_LoggedInUser()
+    {
+        list($token) = Helper::generateToken(['scope1'], 'Old Name', 'coh1');
+        $this->setupDb($token);
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
+        $this->loginUser(96061222);
+
+        $this->client->setResponse(
+            new Response(200, [], /* creates a new CharacterNameChange */ '{
+                "name": "Char 96061222",
+                "corporation_id": '.$this->corpId.'
+            }'),
+            new Response(200, [], '[{
+                "character_id": 96061222,
+                "corporation_id": '.$this->corpId.'
+            }]'), // affiliation
+            new Response(200, [], '{
+                "name": "The Corp updated.",
+                "ticker": "TICK",
+                "alliance_id": null
+            }'),
+            // getAccessToken() not called because token is not expired
         );
 
         $response = $this->runApp('PUT', '/api/user/character/96061222/update', [], [], [
@@ -290,10 +292,15 @@ class CharacterControllerTest extends WebTestCase
             ->getPlayerRepository()->find($this->playerId);
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
-        // check char, corp
+        // check char, corp, name change
         $this->assertSame(96061222, $player->getCharacters()[1]->getId());
         $this->assertSame('The Corp updated.', $player->getCharacters()[1]->getCorporation()->getName());
         $this->assertTrue($player->getCharacters()[1]->getValidToken());
+        $nameChanges = $player->getCharacters()[1]->getCharacterNameChanges();
+        $this->assertSame(3, count($nameChanges)); // 1 from setup, 1 from test
+        $this->assertSame("User's previous name", $nameChanges[0]->getOldName()); // from setup
+        $this->assertSame('User', $nameChanges[1]->getOldName()); // from ESI update
+        $this->assertSame('Old Name', $nameChanges[2]->getOldName()); // from access token check (token from setup)
     }
 
     public function testUpdate200_Admin()

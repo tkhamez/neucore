@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Log a missing character name change if the access token still contains the old name. See also 
+  https://github.com/ccpgames/sso-issues/issues/68
+
 ## 1.19.1
 
 2 Apr 2021

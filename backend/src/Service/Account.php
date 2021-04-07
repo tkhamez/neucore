@@ -156,6 +156,7 @@ class Account
         // update character
         $token = $eveAuth->getToken();
         // Do not update the character name: after a character rename the name from SSO is/can be? the old name.
+        // https://github.com/ccpgames/sso-issues/issues/68
         try {
             $char->setLastLogin(new \DateTime());
         } catch (\Exception $e) {
@@ -293,6 +294,10 @@ class Account
             $char->setRefreshToken($token->getRefreshToken());
             $result = self::CHECK_TOKEN_OK;
         }
+
+        // Check name change: because of a bug the access token may still contain the old name after
+        // a recent name change, see also https://github.com/ccpgames/sso-issues/issues/68
+        $this->characterService->addCharacterNameChange($char, $eveAuth->getCharacterName());
 
         // Check owner change
         if ($eveAuth->getCharacterOwnerHash() !== '') {

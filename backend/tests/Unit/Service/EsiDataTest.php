@@ -85,7 +85,7 @@ class EsiDataTest extends TestCase
             new EsiApiFactory($this->client, $config),
             $om,
             $this->repoFactory,
-            new Character($om),
+            new Character($om, $this->repoFactory),
             $config
         );
     }

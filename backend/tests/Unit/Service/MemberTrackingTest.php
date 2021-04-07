@@ -73,8 +73,12 @@ class MemberTrackingTest extends TestCase
             $this->repositoryFactory,
             new EntityManager($this->helper->getEm(), $logger),
             new EsiData(
-                $logger, $esiApiFactory, $objectManager, $this->repositoryFactory,
-                new \Neucore\Service\Character($objectManager), $config
+                $logger,
+                $esiApiFactory,
+                $objectManager,
+                $this->repositoryFactory,
+                new \Neucore\Service\Character($objectManager, $this->repositoryFactory),
+                $config
             ),
             new OAuthToken(
                 new OAuthProvider($this->client),

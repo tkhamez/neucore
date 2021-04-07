@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterNameChangeRepository;
@@ -15,6 +16,11 @@ use Tests\Logger;
 
 class CharacterTest extends TestCase
 {
+    /**
+     * @var Helper
+     */
+    private $helper;
+
     /**
      * @var ObjectManager
      */
@@ -32,12 +38,13 @@ class CharacterTest extends TestCase
 
     protected function setUp(): void
     {
-        $helper = new Helper();
+        $this->helper = new Helper();
         $logger = new Logger('test');
-        $om = $helper->getObjectManager();
+        $om = $this->helper->getObjectManager();
         $this->om = new ObjectManager($om, $logger);
-        $this->service = new Character($this->om);
-        $this->repository = RepositoryFactory::getInstance($om)->getCharacterNameChangeRepository();
+        $repositoryFactory = RepositoryFactory::getInstance($om);
+        $this->service = new Character($this->om, $repositoryFactory);
+        $this->repository = $repositoryFactory->getCharacterNameChangeRepository();
     }
 
     public function testSetCharacterName_NoChange()
@@ -51,6 +58,8 @@ class CharacterTest extends TestCase
 
     public function testSetCharacterName_NoChangedEntry()
     {
+        $this->helper->emptyDb();
+
         $character = new \Neucore\Entity\Character();
         $character->setName('old name');
 
@@ -64,6 +73,8 @@ class CharacterTest extends TestCase
 
     public function testSetCharacterName_Changed()
     {
+        $this->helper->emptyDb();
+
         $player = new Player();
         $character = new \Neucore\Entity\Character();
         $character->setId(100);
@@ -76,6 +87,70 @@ class CharacterTest extends TestCase
 
         $this->om->persist($character);
         $this->om->persist($player);
+        $this->om->flush();
+
+        $actual = $this->repository->findBy([]);
+        $this->assertSame(1, count($actual));
+        $this->assertSame('old name', $actual[0]->getOldName());
+    }
+
+    public function testAddCharacterNameChange_NoChange()
+    {
+        $this->helper->emptyDb();
+
+        $player = new Player();
+        $character = new \Neucore\Entity\Character();
+        $character->setId(100);
+        $character->setName('new name');
+        $character->setPlayer($player);
+        $this->om->persist($player);
+        $this->om->persist($character);
+
+        $this->service->addCharacterNameChange($character, 'new name');
+        $this->om->flush();
+
+        $actual = $this->repository->findBy([]);
+        $this->assertSame(0, count($actual));
+    }
+
+    public function testAddCharacterNameChange_ExistingRecord()
+    {
+        $this->helper->emptyDb();
+
+        $player = new Player();
+        $character = new \Neucore\Entity\Character();
+        $character->setId(100);
+        $character->setName('new name');
+        $character->setPlayer($player);
+        $nameChange = (new CharacterNameChange())->setCharacter($character)->setOldName('old name')
+            ->setChangeDate(new \DateTime());
+        $character->addCharacterNameChange($nameChange);
+        $this->om->persist($player);
+        $this->om->persist($character);
+        $this->om->persist($nameChange);
+        $this->om->flush();
+
+        $this->service->addCharacterNameChange($character, 'old name');
+        $this->om->flush();
+
+        $actual = $this->repository->findBy([]);
+        $this->assertSame(1, count($actual));
+        $this->assertSame('old name', $actual[0]->getOldName());
+    }
+
+    public function testAddCharacterNameChange_AddRecord()
+    {
+        $this->helper->emptyDb();
+
+        $player = new Player();
+        $character = new \Neucore\Entity\Character();
+        $character->setId(100);
+        $character->setName('new name');
+        $character->setPlayer($player);
+        $this->om->persist($player);
+        $this->om->persist($character);
+
+        $this->service->addCharacterNameChange($character, 'old name');
         $this->om->flush();
 
         $actual = $this->repository->findBy([]);

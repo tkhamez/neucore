@@ -162,7 +162,7 @@ class Helper
         $repoFactory = new RepositoryFactory($this->getObjectManager());
         $objManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $characterService = new \Neucore\Service\Character($objManager);
+        $characterService = new \Neucore\Service\Character($objManager, $repoFactory);
         $esiApiFactory = new EsiApiFactory($client, $config);
         $esiData = new EsiData($logger, $esiApiFactory, $objManager, $repoFactory, $characterService, $config);
         $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $logger);

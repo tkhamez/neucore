@@ -21,6 +21,7 @@ use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CharacterNameChangeRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\PlayerLoginsRepository;
@@ -92,6 +93,11 @@ class AccountTest extends TestCase
      * @var PlayerLoginsRepository
      */
     private $playerLoginsRepo;
+
+    /**
+     * @var CharacterNameChangeRepository
+     */
+    private $characterNameChangeRepo;
 
     /**
      * @var Player
@@ -178,6 +184,7 @@ class AccountTest extends TestCase
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->corpMemberRepo = $repoFactory->getCorporationMemberRepository();
         $this->playerLoginsRepo = $repoFactory->getPlayerLoginsRepository();
+        $this->characterNameChangeRepo = $repoFactory->getCharacterNameChangeRepository();
     }
 
     public function testCreateNewPlayerWithMain()
@@ -348,7 +355,7 @@ class AccountTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_BIOMASSED, $removedChar->getReason());
     }
 
-    public function testCheckCharacterNoToken()
+    public function testCheckCharacter_NoToken()
     {
         $char = (new Character())->setId(100)->setName('name')->setValidToken(false);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
@@ -361,7 +368,7 @@ class AccountTest extends TestCase
         $this->assertNull($charLoaded->getValidToken()); // no token = NULL
     }
 
-    public function testCheckCharacterInvalidToken()
+    public function testCheckCharacter_InvalidToken()
     {
         $char = (new Character())
             ->setId(31)->setName('n31')
@@ -385,7 +392,7 @@ class AccountTest extends TestCase
         $this->assertFalse($charLoaded->getValidToken());
     }
 
-    public function testCheckCharacterRequestError()
+    public function testCheckCharacter_RequestError()
     {
         $this->client->setResponse(
             // for refreshAccessToken()
@@ -411,7 +418,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacterValidTokenNoScopes()
+    public function testCheckCharacter_ValidTokenNoScopes()
     {
         list($token, $keySet) = Helper::generateToken([]);
         $this->client->setResponse(
@@ -441,9 +448,9 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacterValid()
+    public function testCheckCharacter_ValidWithScopes()
     {
-        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2']);
+        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Old Name');
         $this->client->setResponse(
             // for getAccessToken()
             new Response(200, [], '{
@@ -469,15 +476,19 @@ class AccountTest extends TestCase
         $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertTrue($character->getValidToken());
+        $this->assertSame('n31', $character->getName());
         $this->assertSame($token, $character->getAccessToken()); // updated
         $this->assertGreaterThan($expires, $character->getExpires()); // updated
         $this->assertSame('gEy...fM0', $character->getRefreshToken()); // updated
+        $characterNameChange = $this->characterNameChangeRepo->findBy([]);
+        $this->assertSame(1, count($characterNameChange));
+        $this->assertSame('Old Name', $characterNameChange[0]->getOldName());
     }
 
     /**
      * @throws \Exception
      */
-    public function testCheckCharacterDeletesMovedChar()
+    public function testCheckCharacter_DeletesMovedChar()
     {
         list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
