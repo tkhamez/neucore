@@ -271,6 +271,8 @@ class Application
      */
     private function addMiddleware(App $app): void
     {
+        $config = $this->container->get(Config::class);
+
         // Add middleware, last added are executed first.
 
         $app->add($this->container->get(RateLimit::class));
@@ -290,15 +292,16 @@ class Application
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
         $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
 
-        $hsts = $this->container->get(Config::class)['HSTS']['max_age'];
+        $hsts = $config['HSTS']['max_age'];
         if (trim($hsts) !== '') {
             $app->add(new HSTS((int)$hsts));
         }
 
         $app->add(new SessionMiddleware([
-            'name' => 'neucore',
-            'secure' => $this->container->get(Config::class)['session']['secure'],
-            SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN => ['/api/user', '/login'],
+            SessionMiddleware::OPTION_NAME                   => 'neucore',
+            SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
+            SessionMiddleware::OPTION_SAME_SITE              => $config['session']['same_site'],
+            SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login'],
             SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login'],
         ]));
 
@@ -306,8 +309,11 @@ class Application
         // so the `route` attribute is available from the ServerRequestInterface object
         $app->addRoutingMiddleware();
 
-        if ($this->container->get(Config::class)['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new Cors(explode(',', $this->container->get(Config::class)['CORS']['allow_origin'])));
+        if ($config['CORS']['allow_origin']) { // not false or empty string
+            $app->add(new Cors(
+                $this->container->get(ResponseFactoryInterface::class),
+                explode(',', $config['CORS']['allow_origin'])
+            ));
         }
 
         $app->add($this->container->get(BodyParams::class));

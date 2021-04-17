@@ -14,6 +14,7 @@ return [
         'NEUCORE_LOG_FORMAT'     => 'multiline',
         'NEUCORE_CACHE_DIR'      => Application::ROOT_DIR . '/var/cache',
         'NEUCORE_SESSION_SECURE' => 1,
+        'NEUCORE_SESSION_SAME_SITE' => 'Lax',
     ],
 
     'monolog' => [
@@ -48,7 +49,8 @@ return [
     ],
 
     'session' => [
-        'secure' => '${NEUCORE_SESSION_SECURE}',
+        'secure'    => '${NEUCORE_SESSION_SECURE}',
+        'same_site' => '${NEUCORE_SESSION_SAME_SITE}',
     ],
 
     'eve' => [

@@ -30,6 +30,8 @@ class SessionMiddleware implements MiddlewareInterface
 
     const OPTION_SECURE  = 'secure';
 
+    const OPTION_SAME_SITE  = 'same_site';
+
     const OPTION_NAME  = 'name';
 
     /**
@@ -42,6 +44,7 @@ class SessionMiddleware implements MiddlewareInterface
      * Available options (all optional):
      * name <string>: the session name
      * secure <bool>: session.cookie_secure option runtime configuration
+     * same_site <bool>: session.same_site option runtime configuration
      * route_blocking_pattern <array>: patterns of routes that allow writing to the session, matched by "starts-with"
      * route_include_pattern <array>: if provided only start sessions for this routes, matched by "starts-with"
      *
@@ -51,6 +54,7 @@ class SessionMiddleware implements MiddlewareInterface
      * [
      *      'name' => 'MY_SESS',
      *      'secure' => true,
+     *      'same_site' => 'Lax',
      *      'route_include_pattern' => ['/path/one'],
      *      'route_blocking_pattern' => ['/path/one/set', '/path/one/delete'],
      * ]
@@ -121,7 +125,10 @@ class SessionMiddleware implements MiddlewareInterface
                     (bool) $this->options[self::OPTION_SECURE] :
                     true,
                 'cookie_httponly' => true,
-                'cookie_samesite' => 'Lax', // cannot be strict or EVE SSO will not work
+                'cookie_samesite' =>
+                    isset($this->options[self::OPTION_SAME_SITE]) ?
+                    $this->options[self::OPTION_SAME_SITE] :
+                    'Lax',
             ]);
 
             // write something to the session so that the Set-Cookie header is send
