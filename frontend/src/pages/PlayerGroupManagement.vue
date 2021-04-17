@@ -134,11 +134,7 @@ export default {
         this.setPlayerId();
 
         // login URL for managed accounts
-        let port = '';
-        if (location.port !== "" && `${location.port}` !== '80' && `${location.port}` !== '443') {
-            port = `:${location.port}`;
-        }
-        this.httpBaseUrl = `${location.protocol}//${location.hostname}${port}`
+        this.httpBaseUrl = this.$root.backendHost;
     },
 
     watch: {

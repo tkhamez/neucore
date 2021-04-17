@@ -1,6 +1,4 @@
 
-import "core-js";
-
 // bootstrap JS (css is included via theme* entry point) with required jquery and popper.js
 import $ from 'jquery';
 import 'popper.js'; // initialization needs o be done after the component was rendered
@@ -17,6 +15,7 @@ import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 
 // Vue.js
 import Vue from 'vue'
+Vue.config.productionTip = false
 
 // vue-multiselect
 import Multiselect from 'vue-multiselect';
@@ -45,6 +44,8 @@ new Vue({
         settings: {},
 
         loadingCount: 0,
+
+        backendHost: null,
     },
 
     render(h) {

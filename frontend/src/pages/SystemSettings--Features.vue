@@ -174,7 +174,7 @@ function readSettings(vm) {
 }
 </script>
 
-<style type="text/scss" scoped>
+<style scoped>
     .input-inline {
         display: inline;
         width: 100px;

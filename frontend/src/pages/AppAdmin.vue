@@ -217,7 +217,7 @@ function setAppName(vm) {
 
 </script>
 
-<style type="text/scss" scoped>
+<style scoped>
     .add-app {
         float: right;
         cursor: pointer;

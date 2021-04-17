@@ -41,7 +41,7 @@ steps:
       - npm run build
       - cd ..
       - npm install
-      - npm run build:prod
+      - npm run build
 
   - name: code-analysis
     image: aosapps/drone-sonar-plugin:1.0

@@ -395,14 +395,14 @@ function configureDataTable(vm) {
 </script>
 
 <!--suppress CssUnusedSymbol -->
-<style type="text/scss">
+<style>
     .member-table .with-tooltip {
         text-decoration: underline;
         text-decoration-style: dotted;
     }
 </style>
 
-<style type="text/scss" scoped>
+<style lang="scss" scoped>
     .member-table {
         th:nth-child(2) {
           width: 15%; // +2.5

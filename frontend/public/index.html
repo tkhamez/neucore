@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--suppress ES6ConvertVarToLetConst, HtmlUnknownTarget -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="<%= BASE_URL %>favicon.ico">
+        <title></title>
+        <%
+        // Handle theme CSS files
+        const cssFiles = [];
+        for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
+            const file = htmlWebpackPlugin.files.css[i];
+            if (file.match(/css\/theme-/)) {
+                %><link href="/<%= file %>" rel="alternate stylesheet" disabled><%
+            } else {
+                cssFiles.push(file);
+            }
+        }
+        htmlWebpackPlugin.files.css = cssFiles;
+        %>
+        <script type="text/javascript">
+            // noinspection JSUnusedGlobalSymbols
+            function setTheme(theme) {
+                window.APP_DEFAULT_THEME = theme;
+                var links = document.getElementsByTagName('link');
+                for (var i = 0; i < links.length; i++) {
+                    if (links[i].getAttribute('href').indexOf('css/theme-' + theme.toLowerCase()) !== -1) {
+                        links[i].disabled = false;
+                        links[i].setAttribute('rel', 'stylesheet');
+                        break;
+                    }
+                }
+            }
+        </script>
+        <script type="text/javascript" src="<%= BASE_URL %>theme.js"></script>
+    </head>
+    <body class="neucore">
+        <p id="unsupportedBrowser">
+            You are using an <strong>outdated</strong> browser. Please
+            <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
+            to improve your experience and security.
+        </p>
+
+        <div id="app"></div>
+
+        <script type="text/javascript">
+            // check for unsupported browsers
+            var supported = true;
+            try {
+                // noinspection JSUnusedLocalSymbols
+                eval('const a = true;');
+            } catch (e) {
+                supported = false;
+            }
+            if (!supported || (!(window.ActiveXObject) && 'ActiveXObject' in window)) { // also check for IE 11
+                document.getElementById('unsupportedBrowser').style.display = 'block';
+            }
+        </script>
+        <%
+        // Handle theme JS files (remove them)
+        const jsFiles = [];
+        for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
+            const file = htmlWebpackPlugin.files.js[i];
+            if (!file.match(/js\/theme-/)) {
+                jsFiles.push(file);
+            }
+        }
+        htmlWebpackPlugin.files.js = jsFiles;
+        %>
+    </body>
+</html>

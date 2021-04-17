@@ -1,5 +1,6 @@
 
 import Vue from 'vue';
+import portrait from './assets/portrait_32.jpg';
 
 Vue.mixin({
     data: function () {
@@ -104,7 +105,7 @@ Vue.mixin({
         characterPortrait(id, size) {
             if (this.$root.settings.esiDataSource === 'singularity') {
                 // there are no character images on Sisi at the moment.
-                return '/static/portrait_32.jpg';
+                return portrait;
             }
             return `https://images.evetech.net/characters/${id}/portrait?size=${size}&tenant=tranquility`;
         },
@@ -129,5 +130,5 @@ Vue.mixin({
             }
             return movements.sort((a, b) => a.removedDate - b.removedDate);
         },
-    }
+    },
 });

@@ -35,41 +35,27 @@
         "markdown-it-sup": "^1.0.0",
         "neucore-js-client": "file:neucore-js-client",
         "popper.js": "^1.16.1",
-        "querystring-es3": "^0.2.1",
         "swagger-ui-dist": "^3.45.1",
         "vue": "^2.6.12",
         "vue-multiselect": "^2.1.6"
     },
     "devDependencies": {
-        "@babel/core": "^7.13.13",
-        "@babel/preset-env": "^7.13.12",
-        "babel-loader": "^8.2.2",
-        "browserslist": "^4.16.3",
-        "caniuse-lite": "^1.0.30001204",
-        "clean-webpack-plugin": "^3.0.0",
-        "compression-webpack-plugin": "^7.1.2",
-        "css-loader": "^5.2.0",
-        "file-loader": "^6.2.0",
-        "html-webpack-plugin": "^4.5.2",
+        "@vue/cli-plugin-babel": "~4.5.0",
+        "@vue/cli-service": "~4.5.0",
+        "compression-webpack-plugin": "^6.0.5",
         "imports-loader": "^1.2.0",
         "license-webpack-plugin": "^2.3.16",
-        "mini-css-extract-plugin": "^1.4.0",
-        "optimize-css-assets-webpack-plugin": "^5.0.4",
         "sass": "^1.32.8",
         "sass-loader": "^10.1.1",
-        "terser-webpack-plugin": "^5.1.1",
-        "vue-loader": "^15.9.6",
-        "vue-template-compiler": "^2.6.12",
-        "webpack": "^5.28.0",
-        "webpack-cli": "^4.6.0"
+        "vue-template-compiler": "^2.6.12"
     },
     "scripts": {
-        "build": "webpack --mode development --progress",
-        "build:prod": "webpack --mode production --progress",
-        "watch": "webpack --mode development --watch --progress"
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "watch": "vue-cli-service build --watch"
     },
     "engines": {
-        "node": ">=10.13.0",
-        "npm": ">=6.4.1"
+        "node": ">=12.13.0",
+        "npm": ">=6.12.0"
     }
 }

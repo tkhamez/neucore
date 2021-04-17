@@ -8,10 +8,10 @@
   * [Install/Update](#installupdate)
     + [Pre-built Distribution file](#pre-built-distribution-file)
     + [Git](#git)
-  * [Cron Job](#cron-job)
+  * [Post Installation](#post-installation)
 - [Other Installation Methods](#other-installation-methods)
   * [Vagrant](#vagrant)
-  * [Docker](#docker)
+  * [Docker - Development Environment](#docker---development-environment)
   * [Deploy on Heroku](#deploy-on-heroku)
   * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
 
@@ -44,8 +44,8 @@ To run the application:
 
 Additionally, to build the application:
 * Composer 1.x.
-* Node.js >=10.16.0 <15 with npm >=6.9.0 <7 (only tested with LTS releases v10, 12 and 14).
-* Java 8+ runtime to generate the OpenAPI JavaScript client.
+* Node.js >=12.13.0 <15 with npm >=6.12.0 <7 (only tested with LTS releases v12 and v14).
+* Java runtime to generate the OpenAPI JavaScript client.
 
 ### Install/Update
 
@@ -53,8 +53,6 @@ Clone the repository or [download](https://github.com/tkhamez/neucore/releases) 
 
 Copy `backend/.env.dist` file to `backend/.env` and adjust values or
 set the required environment variables accordingly.
-
-Adjust `web/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user tracking.
 
 Make sure that the web server can write to the log and cache directories, by default 
 `backend/var/logs` and `backend/var/cache`.
@@ -95,7 +93,9 @@ If you have cloned the repository, you must install the dependencies and build t
 ./install.sh prod
 ```
 
-### Cron Job
+### Post Installation
+
+Adjust `web/dist/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user tracking.
 
 Set up necessary cron jobs, e.g. update characters every 2 hours and the rest 3 times daily 
 using a lock file (adjust user and paths):
@@ -113,7 +113,7 @@ The output is logged to backend/var/logs.
 
 See [Vagrantfile](../Vagrantfile) for an outdated example.
 
-### Docker
+### Docker - Development Environment
 
 Only tested on Linux and once on macOS.
 
@@ -125,7 +125,7 @@ the database host is `db`.
 - Install the app: `export UID && ./install-docker.sh`
 - Run tests and other commands in the php-fpm and node containers:  
     `export UID && docker-compose exec php-fpm /bin/sh`  
-    `export UID && docker-compose run node /bin/sh`
+    `export UID && docker-compose run --service-ports node /bin/sh`
 
 The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
 the data is stored in the `.db` subdirectory.

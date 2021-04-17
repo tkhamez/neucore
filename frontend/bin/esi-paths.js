@@ -32,11 +32,11 @@ function fetchDone(def) {
 }
 
 function writeFiles(get, post) {
-    fs.writeFile(__dirname + "/../../web/static/esi-paths-http-get.json", JSON.stringify(get), function(err) {
-        result(err, 'web/static/esi-paths-http-get.json');
+    fs.writeFile(__dirname + "/../../frontend/public/esi-paths-http-get.json", JSON.stringify(get), function(err) {
+        result(err, 'frontend/public/esi-paths-http-get.json');
     });
-    fs.writeFile(__dirname + "/../../web/static/esi-paths-http-post.json", JSON.stringify(post), function(err) {
-        result(err, 'web/static/esi-paths-http-post.json');
+    fs.writeFile(__dirname + "/../../frontend/public/esi-paths-http-post.json", JSON.stringify(post), function(err) {
+        result(err, 'frontend/public/esi-paths-http-post.json');
     });
     function result(err, file) {
         if (! err) {

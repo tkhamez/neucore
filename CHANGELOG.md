@@ -4,6 +4,12 @@
 
 dd mm yyyy
 
+- **BC break**: The file `web/theme.js` has been moved to `web/dist/theme.js` (source location: 
+  `frontend/public/theme.js`).
+- **BC break**: Drop support for IE 11.
+- **BC break** (dev only): Drop support for Node.js 10.
+- Backend: Fixed CORS middleware, added "SameSite" configuration option to Session middleware.
+- Frontend: vue-cli added, which changes the build process and downgrades Webpack to v4, from v5.
 - New: Log a missing character name change if the access token still contains the old name. See also 
   https://github.com/ccpgames/sso-issues/issues/68
 - Fix: Group Management accept/deny buttons.
@@ -110,7 +116,7 @@ dd mm yyyy
 
 - **BC break**: Raised minimum required PHP version to 7.3.0
 - **BC break** (dev only): Raised minimum Node.js version to 10.16.0 (with npm 6.9.0)
-- **BC break** The default theme has been removed from the settings. Instead there is now a configuration file 
+- **BC break** The default theme has been removed from the settings. Instead, there is now a configuration file 
   `web/theme.js`.
 - Added statistics with number of logins per account and month.
 - Added statistics with number of requests per app and day.

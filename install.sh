@@ -27,7 +27,5 @@ npm run build
 cd .. || exit
 npm install
 if [[ $1 = prod ]]; then
-    npm run build:prod
-else
     npm run build
 fi

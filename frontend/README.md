@@ -17,20 +17,19 @@ The frontend is based on [Vue.js](https://vuejs.org) and
 
 ## Install
 
-Install dependencies and build:
+Install dependencies:
 ```
 npm install
+```
+
+Compiles and minifies for production, this will also build the Swagger UI (api.html):
+```
 npm run build
 ```
 
-For production use:
+Compiles and hot-reloads for development:
 ```
-npm run build:prod
-```
-
-Rebuild on change:
-```
-npm run watch
+npm run serve
 ```
 
 ## Style Guide

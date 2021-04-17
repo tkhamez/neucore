@@ -23,9 +23,6 @@ const ui = SwaggerUIBundle({
 });
 
 ui.getConfigs().requestInterceptor = function(e) {
-    e.url = e.url.replace(
-        /http(s)?:\/\/localhost\//i,
-        `${location.protocol}//${location.hostname}:${location.port}/`
-    );
+    e.url = e.url.replace(/http(s)?:\/\/localhost\//i, baseUrl);
     return e;
 };

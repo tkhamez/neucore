@@ -22,7 +22,7 @@ docker-compose run java /app/dist/build/frontend/openapi.sh
 docker-compose run node sh -c "cd ../dist/build/frontend/neucore-js-client && npm install"
 docker-compose run node sh -c "cd ../dist/build/frontend/neucore-js-client && npm run build"
 docker-compose run node sh -c "cd ../dist/build/frontend && npm install"
-docker-compose run node sh -c "cd ../dist/build/frontend && npm run build:prod"
+docker-compose run node sh -c "cd ../dist/build/frontend && npm run build"
 
 cd dist || exit
 mkdir neucore

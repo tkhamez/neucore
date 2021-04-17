@@ -26,7 +26,7 @@ npm install
 npm run build
 cd ..
 npm install
-npm run build:prod
+npm run build
 
 cd ../.. || exit
 mkdir neucore

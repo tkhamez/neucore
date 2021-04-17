@@ -113,11 +113,11 @@ export default {
 
         const vm = this;
         vm.ajaxLoading(true);
-        $.get('/static/esi-paths-http-get.json').then(data => {
+        $.get(process.env.BASE_URL+'esi-paths-http-get.json').then(data => {
             vm.pathsGet = data;
             result();
         });
-        $.get('/static/esi-paths-http-post.json').then(data => {
+        $.get(process.env.BASE_URL+'esi-paths-http-post.json').then(data => {
             vm.pathsPost = data;
             result();
         });

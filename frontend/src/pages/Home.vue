@@ -17,7 +17,9 @@
                             again to create a new token.
                         </p>
                         <p class="align-center">
-                            <a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                            <a :href="loginHost + '/login-alt'">
+                                <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
+                            </a>
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -58,9 +60,8 @@
         <div v-cloak v-if="! authChar" class="jumbotron mt-3">
             <title-logo :settings="settings"></title-logo>
             <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
-            <!--suppress HtmlUnknownTarget -->
-            <a href="/login">
-                <img src="/static/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
+            <a :href="loginHost + '/login'">
+                <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
             </a>
             <p class="small">
                 <br>
@@ -78,11 +79,12 @@
                 <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
                 <p>
-                    <a :href="loginAltUrl"><img src="/static/eve_sso.png" alt="LOG IN with EVE Online"></a>
+                    <a :href="loginHost + '/login-alt'">
+                        <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
+                    </a>
                     <span v-if="player && player.status === 'managed'">
                         <br>
-                        <!--suppress HtmlUnknownTarget -->
-                        <a href="/login-managed-alt">Login without scopes</a>
+                        <a :href="loginHost + '/login-managed-alt'">Login without scopes</a>
                     </span>
                 </p>
             </div>
@@ -122,26 +124,29 @@
                             </div>
                             <div class="card-footer">
                                 <span v-if="char.main" class="badge badge-warning">Main</span>
+                                &nbsp;
                                 <a v-if="! char.main" class="badge badge-primary" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
+                                &nbsp;
                                 <a class="badge badge-primary" href="#"
                                    v-on:click.prevent="update(char.id)">Update character</a>
-                                <a v-if="authChar && authChar.id !== char.id
-                                        && settings.allow_character_deletion === '1'"
+                                &nbsp;
+                                <a v-if="authChar && authChar.id !== char.id &&
+                                        settings.allow_character_deletion === '1'"
                                    class="badge badge-danger"
                                    v-on:click.prevent="askDeleteChar(char.id, char.name)"
                                    href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
                                 <br>
                                 <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
-                                <span v-if="char.validToken === null"
-                                      class="badge badge-warning">No ESI token</span>
+                                <span v-if="char.validToken === null" class="badge badge-warning">No ESI token</span>
                                 <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                <a v-if="char.validToken === false" :href="loginAltUrl">
-                                    <img src="/static/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                &nbsp;
+                                <a v-if="char.validToken === false" :href="loginHost + '/login-alt'">
+                                    <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>
                             </div>
                         </div>
@@ -207,12 +212,16 @@ export default {
             charToDelete: null,
             markdownHtml: '',
             markdownLoginText: '',
-            loginAltUrl: '/login-alt',
+            loginHost: '',
         }
     },
 
     mounted: function() { // after "redirect" from another page
         window.scrollTo(0, 0);
+
+        if (this.$root.backendHost) {
+            this.loginHost = this.$root.backendHost;
+        }
 
         const md = markdownIt({ typographer: true })
             .use(mdEmoji)

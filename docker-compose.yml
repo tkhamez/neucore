@@ -22,10 +22,14 @@ services:
 
   node:
     container_name: neucore_node
-    image: node:10.16.0-alpine
-    #image: node:12.19.0-alpine
-    #image: node:14.15.0-alpine
+    build:
+      context: doc
+      dockerfile: Dockerfile-node12
+      #dockerfile: Dockerfile-node14
     volumes: [".:/app"]
+    environment:
+      BACKEND_HOST: http://localhost:8080
+    ports: [ "3000:8080" ]
     user: node
     working_dir: /app/frontend
 

@@ -5,7 +5,8 @@
 /vendor/
 /.phpunit.result.cache
 
-# IDEs
+# OS, IDEs
+.DS_Store
 /.settings
 /.buildpath
 /.jshintrc

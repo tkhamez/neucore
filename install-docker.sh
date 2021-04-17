@@ -20,9 +20,7 @@ docker-compose run node npm run build --prefix /app/frontend/neucore-js-client
 # Build frontend
 docker-compose run node npm install
 if [[ $1 = prod ]]; then
-    docker-compose run node npm run build:prod
-else
-   docker-compose run node npm run build
+    docker-compose run node npm run build
 fi
 
 # Update the database schema and seed data
