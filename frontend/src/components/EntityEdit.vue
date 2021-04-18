@@ -161,8 +161,8 @@ export default {
                     vm.message('Error saving visibility.', 'error');
                 } else {
                     vm.message('Visibility saved.', 'success');
-                    vm.$root.$emit('settingsChange');
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('settingsChange');
+                    vm.emitter.emit('playerChange');
                 }
             });
         },

@@ -162,7 +162,7 @@ export default {
                     vm.$refs.editModal.hideModal();
                     vm.message('App deleted.', 'success');
                     window.location.hash = '#AppAdmin';
-                    vm.$root.$emit('playerChange'); // current player could have been a manager
+                    vm.emitter.emit('playerChange'); // current player could have been a manager
                     vm.appId = null;
                     vm.contentType = '';
                     getApps(vm);
@@ -182,7 +182,7 @@ export default {
                 } else {
                     vm.message('App renamed.', 'success');
                     vm.$refs.editModal.hideModal();
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('playerChange');
                     getApps(vm);
                 }
             });

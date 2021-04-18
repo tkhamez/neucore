@@ -99,7 +99,7 @@
             because one or more characters do not have a valid ESI token.
         </div>
 
-        <div v-cloak v-if="this.player">
+        <div v-cloak v-if="player">
             <div class="row">
                 <div class="col-lg-8">
                     <h2>Characters</h2>
@@ -124,19 +124,19 @@
                             </div>
                             <div class="card-footer">
                                 <span v-if="char.main" class="badge badge-warning">Main</span>
-                                &nbsp;
                                 <a v-if="! char.main" class="badge badge-primary" href="#"
                                    v-on:click.prevent="makeMain(char.id)">Make Main</a>
-                                &nbsp;
-                                <a class="badge badge-primary" href="#"
+
+                                <a class="badge badge-primary ml-1" href="#"
                                    v-on:click.prevent="update(char.id)">Update character</a>
-                                &nbsp;
                                 <a v-if="authChar && authChar.id !== char.id &&
-                                        settings.allow_character_deletion === '1'"
-                                   class="badge badge-danger"
+                                         settings.allow_character_deletion === '1'"
+                                   class="badge badge-danger ml-1"
                                    v-on:click.prevent="askDeleteChar(char.id, char.name)"
                                    href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
+
                                 <br>
+
                                 <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
                                 <span v-if="char.validToken === null" class="badge badge-warning">No ESI token</span>
                                 <button v-if="char.validToken === false"
@@ -144,8 +144,9 @@
                                         data-toggle="modal" data-target="#tokenModal">
                                     Invalid ESI token
                                 </button>
-                                &nbsp;
-                                <a v-if="char.validToken === false" :href="loginHost + '/login-alt'">
+
+                                <a v-if="char.validToken === false" :href="loginHost + '/login-alt'"
+                                   class="ml-1 char-login-button">
                                     <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>
                             </div>
@@ -169,7 +170,7 @@
                     <div v-if="player.roles.length > 1" class="card border-secondary mb-3" >
                         <h3 class="card-header">Roles</h3>
                         <ul class="list-group list-group-flush">
-                            <li v-if="role !== 'user'" v-for="role in player.roles" class="list-group-item">
+                            <li v-for="role in playerRoles" class="list-group-item">
                                 {{ role }}
                             </li>
                         </ul>
@@ -213,6 +214,12 @@ export default {
             markdownHtml: '',
             markdownLoginText: '',
             loginHost: '',
+        }
+    },
+
+    computed: {
+        playerRoles() {
+            return this.player.roles.filter(role => role !== 'user');
         }
     },
 
@@ -276,14 +283,14 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.$root.$emit('playerChange');
+                vm.emitter.emit('playerChange');
             });
         },
 
         update: function(characterId) {
             const vm = this;
             (new Character(this)).updateCharacter(characterId, function() {
-                vm.$root.$emit('playerChange');
+                vm.emitter.emit('playerChange');
             });
         },
 
@@ -314,6 +321,11 @@ export default {
     .player-hdl h2 {
         display: inline-block;
         margin-right: 10px;
+    }
+
+    .char-login-button img {
+        position: relative;
+        top: 2px;
     }
 
     .groups-disabled {

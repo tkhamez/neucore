@@ -57,7 +57,7 @@ export default class Character {
                     callback();
                 }
                 if (player.id === self.vm.$root.player.id) {
-                    self.vm.$root.$emit('playerChange');
+                    self.vm.emitter.emit('playerChange');
                 }
             }
         }

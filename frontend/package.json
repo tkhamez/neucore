@@ -1,61 +1,62 @@
 {
-    "name": "tkhamez-neucore",
-    "private": true,
-    "license": "MIT",
-    "bundledDependencies": [
-        "neucore-js-client"
-    ],
-    "dependencies": {
-        "@fontsource/cabin-sketch": "^4.0.0",
-        "@fontsource/lato": "^4.0.0",
-        "@fontsource/montserrat": "^4.0.0",
-        "@fontsource/neucha": "^4.0.0",
-        "@fontsource/news-cycle": "^4.0.0",
-        "@fontsource/nunito-sans": "^4.0.0",
-        "@fontsource/open-sans": "^4.0.0",
-        "@fontsource/roboto": "^4.0.0",
-        "@fontsource/source-sans-pro": "^4.0.0",
-        "@fontsource/ubuntu": "^4.0.0",
-        "@fortawesome/fontawesome-free": "^5.15.3",
-        "bootstrap": "^4.6.0",
-        "bootswatch": "^4.6.0",
-        "core-js": "^3.9.1",
-        "datatables.net": "^1.10.24",
-        "datatables.net-bs4": "^1.10.24",
-        "echarts": "^5.1.0",
-        "jquery": "^3.6.0",
-        "lodash": "^4.17.21",
-        "markdown-it": "^12.0.6",
-        "markdown-it-abbr": "^1.0.4",
-        "markdown-it-attrs": "^4.0.0",
-        "markdown-it-emoji": "^2.0.0",
-        "markdown-it-ins": "^3.0.1",
-        "markdown-it-mark": "^3.0.1",
-        "markdown-it-sub": "^1.0.0",
-        "markdown-it-sup": "^1.0.0",
-        "neucore-js-client": "file:neucore-js-client",
-        "popper.js": "^1.16.1",
-        "swagger-ui-dist": "^3.47.1",
-        "vue": "^2.6.12",
-        "vue-multiselect": "^2.1.6"
-    },
-    "devDependencies": {
-        "@vue/cli-plugin-babel": "~4.5.0",
-        "@vue/cli-service": "~4.5.0",
-        "compression-webpack-plugin": "^6.0.5",
-        "imports-loader": "^1.2.0",
-        "license-webpack-plugin": "^2.3.16",
-        "sass": "^1.32.10",
-        "sass-loader": "^10.1.1",
-        "vue-template-compiler": "^2.6.12"
-    },
-    "scripts": {
-        "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
-        "watch": "vue-cli-service build --watch"
-    },
-    "engines": {
-        "node": ">=12.13.0",
-        "npm": ">=6.12.0"
-    }
+  "name": "tkhamez-neucore",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "watch": "vue-cli-service build --watch"
+  },
+  "dependencies": {
+    "@fontsource/cabin-sketch": "^4.0.0",
+    "@fontsource/lato": "^4.0.0",
+    "@fontsource/montserrat": "^4.0.0",
+    "@fontsource/neucha": "^4.0.0",
+    "@fontsource/news-cycle": "^4.0.0",
+    "@fontsource/nunito-sans": "^4.0.0",
+    "@fontsource/open-sans": "^4.0.0",
+    "@fontsource/roboto": "^4.0.0",
+    "@fontsource/source-sans-pro": "^4.0.0",
+    "@fontsource/ubuntu": "^4.0.0",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@suadelabs/vue3-multiselect": "^1.0.0",
+    "bootstrap": "^4.6.0",
+    "bootswatch": "^4.6.0",
+    "core-js": "^3.9.1",
+    "datatables.net": "^1.10.24",
+    "datatables.net-bs4": "^1.10.24",
+    "echarts": "^5.1.0",
+    "jquery": "^3.6.0",
+    "lodash": "^4.17.21",
+    "markdown-it": "^12.0.6",
+    "markdown-it-abbr": "^1.0.4",
+    "markdown-it-attrs": "^4.0.0",
+    "markdown-it-emoji": "^2.0.0",
+    "markdown-it-ins": "^3.0.1",
+    "markdown-it-mark": "^3.0.1",
+    "markdown-it-sub": "^1.0.0",
+    "markdown-it-sup": "^1.0.0",
+    "mitt": "^2.1.0",
+    "neucore-js-client": "file:neucore-js-client",
+    "popper.js": "^1.16.1",
+    "swagger-ui-dist": "^3.47.1",
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "compression-webpack-plugin": "^6.0.5",
+    "imports-loader": "^1.2.0",
+    "license-webpack-plugin": "^2.3.16",
+    "sass": "^1.32.10",
+    "sass-loader": "^10.1.1"
+  },
+  "bundledDependencies": [
+    "neucore-js-client"
+  ],
+  "engines": {
+    "node": ">=12.13.0",
+    "npm": ">=6.12.0"
+  },
+  "license": "MIT"
 }

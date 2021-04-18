@@ -206,7 +206,7 @@ export default {
                 } else if (error) {
                     vm.message('Error creating service.', 'error');
                 } else {
-                    this.$root.$emit('settingsChange');
+                    this.emitter.emit('settingsChange');
                     vm.$refs.editModal.hideModal();
                     vm.message('Service created.', 'success');
                     window.location.hash = `#ServiceAdmin/${data.id}`;
@@ -220,7 +220,7 @@ export default {
                 if (error) {
                     vm.message('Error deleting service', 'error');
                 } else {
-                    this.$root.$emit('settingsChange');
+                    this.emitter.emit('settingsChange');
                     vm.$refs.editModal.hideModal();
                     vm.message('Service deleted.', 'success');
                     window.location.hash = '#ServiceAdmin';
@@ -236,7 +236,7 @@ export default {
                 } else if (error) {
                     vm.message('Error renaming service.', 'error');
                 } else {
-                    this.$root.$emit('settingsChange');
+                    this.emitter.emit('settingsChange');
                     vm.$refs.editModal.hideModal();
                     vm.message('Service renamed.', 'success');
                     getList(vm);
@@ -260,7 +260,7 @@ export default {
                     } else if (error) {
                         vm.message('Error updating configuration.', 'error');
                     } else {
-                        this.$root.$emit('settingsChange');
+                        this.emitter.emit('settingsChange');
                         vm.$refs.editModal.hideModal();
                         vm.message('Configuration updated.', 'success');
                         getList(vm);

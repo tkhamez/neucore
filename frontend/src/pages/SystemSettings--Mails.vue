@@ -116,14 +116,14 @@ import {CorporationApi, SettingsApi} from 'neucore-js-client';
 export default {
     props: {
         settings: Object,
+        allAlliances: Array,
+        allCorporations: Array,
     },
 
     data () {
         return {
             loginHost: '',
-            allAlliances: [],
             allAlliancesLoaded: false,
-            allCorporations: [],
             allCorporationsLoaded: false,
             trackingCorporations: [],
             trackingCorporationsLoaded: false,
@@ -140,22 +140,20 @@ export default {
 
         this.$parent.loadLists();
         getCorporations(this);
-
-        this.$parent.$on('alliancesLoaded', (data) => {
-            this.allAlliances = data;
-            this.allAlliancesLoaded = true;
-            readSettings(this);
-        });
-
-        this.$parent.$on('corporationsLoaded', (data) => {
-            this.allCorporations = data;
-            this.allCorporationsLoaded = true;
-            readSettings(this);
-        });
     },
 
     watch: {
-        settings () {
+        settings() {
+            readSettings(this);
+        },
+
+        allAlliances() {
+            this.allAlliancesLoaded = true;
+            readSettings(this);
+        },
+
+        allCorporations() {
+            this.allCorporationsLoaded = true;
             readSettings(this);
         },
 

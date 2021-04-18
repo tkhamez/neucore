@@ -75,11 +75,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="entity in listContent[listName]"
-                            v-if="
-                                listName !== 'Corporation' ||
-                                (index === 1 && ! entity.autoAllowlist) ||
-                                (index === 2 && entity.autoAllowlist)">
+                        <tr v-for="entity in getListContentFor(listName, index)">
                             <td>{{ entity.ticker }}</td>
                             <td>
                                 <a v-if="listName === 'Alliance'"
@@ -161,6 +157,14 @@ export default {
     },
 
     methods: {
+        getListContentFor(listName, index) {
+            return this.listContent[listName].filter(entity =>
+                listName !== 'Corporation' ||
+                (index === 1 && !entity.autoAllowlist) ||
+                (index === 2 && entity.autoAllowlist)
+            );
+        },
+
         addToAllowlist (playerId) {
             if (! this.id) {
                 return;

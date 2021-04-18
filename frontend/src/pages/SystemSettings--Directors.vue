@@ -85,7 +85,7 @@ export default {
                     data ? 'The Token is valid and character has the director role.' : 'Validation failed.',
                     data ? 'info' : 'warning'
                 );
-                vm.$root.$emit('settingsChange');
+                vm.emitter.emit('settingsChange');
             });
         },
 

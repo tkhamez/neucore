@@ -28,7 +28,11 @@
 
     <div class="row mb-3">
         <div class="col-lg-12">
-            <component v-bind:is="tab" :settings="settings"
+            <!-- "allAlliances" and "allCorporations" are only for "Features" and "Mails" tabs -->
+            <component v-bind:is="tab"
+                       :settings="settings"
+                       :allAlliances="alliances"
+                       :allCorporations="corporations"
                        @changeSettingDelayed="changeSettingDelayed"
                        @changeSetting="changeSetting"
             ></component>
@@ -62,19 +66,21 @@ export default {
     data () {
         return {
             tab: 'Customization',
+            alliances: [],
+            corporations: [],
         }
     },
 
     mounted () {
         window.scrollTo(0,0);
         setTab(this);
-        this.$root.$emit('settingsChange'); // make sure the data is up to date
+        this.emitter.emit('settingsChange'); // make sure the data is up to date
     },
 
     watch: {
         route () {
             setTab(this);
-            this.$root.$emit('settingsChange'); // make sure the data is up to date
+            this.emitter.emit('settingsChange'); // make sure the data is up to date
         },
     },
 
@@ -109,7 +115,7 @@ export default {
                     ].indexOf(name) !== -1 ||
                     name.indexOf('director_char_') !== -1
                 ) {
-                    vm.$root.$emit('settingsChange');
+                    vm.emitter.emit('settingsChange');
                 }
             });
         },
@@ -125,7 +131,7 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.$emit('alliancesLoaded', data);
+                vm.alliances = data;
             });
 
             // get corporations
@@ -133,7 +139,7 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.$emit('corporationsLoaded', data);
+                vm.corporations = data;
             });
         },
 

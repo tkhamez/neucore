@@ -44,9 +44,10 @@
                             <span v-else>[no player account]</span>
                         </td>
                         <td>
-                            <span v-for="(character, index) in group.characters"
-                                  v-if="index > 0 || ! group.player_id">
-                                {{ character.name }},
+                            <span v-for="(character, index) in group.characters">
+                                <span v-if="index > 0 || !group.player_id">
+                                    {{ character.name }},
+                                </span>
                             </span>
                         </td>
                     </tr>

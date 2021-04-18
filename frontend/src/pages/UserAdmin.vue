@@ -158,9 +158,7 @@
                         </div>
                         <select class="custom-select" v-model="newRole" id="userAdminSelectRole">
                             <option value="">Select role ...</option>
-                            <option v-for="role in availableRoles"
-                                    v-if="! hasRole(role, playerEdit) && autoRoles.indexOf(role) === -1"
-                                    v-bind:value="role">
+                            <option v-for="role in assignableRoles" v-bind:value="role">
                                 {{ role }}
                             </option>
                         </select>
@@ -174,7 +172,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="role in playerEdit.roles" v-if="role !== 'user'">
+                            <tr v-for="role in playerEditRoles">
                                 <td>{{ role }}</td>
                                 <td>
                                     <button v-if="autoRoles.indexOf(role) === -1"
@@ -485,6 +483,19 @@ export default {
         }
     },
 
+    computed: {
+        assignableRoles() {
+            return this.availableRoles.filter(role =>
+                !this.hasRole(role, this.playerEdit) &&
+                this.autoRoles.indexOf(role) === -1
+            );
+        },
+
+        playerEditRoles() {
+            return this.playerEdit.roles.filter(role => role !== 'user');
+        },
+    },
+
     mounted() {
         window.scrollTo(0,0);
         this.setPlayerId();
@@ -621,7 +632,7 @@ export default {
                 }
                 vm.getPlayer();
                 if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('playerChange');
                 }
             }]);
         },
@@ -649,7 +660,7 @@ export default {
                 vm.getPlayer();
                 if (vm.playerEdit.id === vm.player.id) {
                     character.updateCharacter(vm.authChar.id, () => {
-                        vm.$root.$emit('playerChange');
+                        vm.emitter.emit('playerChange');
                     });
                 }
             });

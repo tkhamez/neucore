@@ -607,7 +607,7 @@ export default {
                     ) ||
                     (vm.type === 'Corporation' && vm.contentType === 'groups') // Tracking Admin
                 ) {
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('playerChange');
                 }
                 if (vm.type === 'Group' && (vm.contentType === 'corporations' || vm.contentType === 'alliances')) {
                     vm.getWithGroups();

@@ -1,8 +1,7 @@
 
-import Vue from 'vue';
 import portrait from './assets/portrait_32.jpg';
 
-Vue.mixin({
+export default {
     data: function () {
         return {
             themes: [
@@ -63,11 +62,11 @@ Vue.mixin({
                     timeout = timeout || 1500;
                     break;
             }
-            this.$root.$emit('message', text, type, timeout);
+            this.emitter.emit('message', { text: text, type: type, timeout: timeout });
         },
 
         showCharacters: function(playerId) {
-            this.$root.$emit('showCharacters', playerId);
+            this.emitter.emit('showCharacters', playerId);
         },
 
         hasRole: function(name, player) {
@@ -131,4 +130,4 @@ Vue.mixin({
             return movements.sort((a, b) => a.removedDate - b.removedDate);
         },
     },
-});
+};

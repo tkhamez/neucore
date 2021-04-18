@@ -14,48 +14,53 @@ import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
 import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 
 // Vue.js
-import Vue from 'vue'
-Vue.config.productionTip = false
+import{ createApp, h } from 'vue';
 
 // vue-multiselect
-import Multiselect from 'vue-multiselect';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
-Vue.component('multiselect', Multiselect);
+import Multiselect from '@suadelabs/vue3-multiselect'
+import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
 
 
 // app
 
 import "./index.scss";
 import App from './App.vue';
-import './mixin';
+import mixin from './mixin';
+import mitt from 'mitt';
 
-new Vue({
+const app = createApp({
 
-    data: {
+    data() {
+        return {
 
-        /**
-         * The player object
-         */
-        player: null,
+            /**
+             * The player object
+             */
+            player: null,
 
-        /**
-         * System settings from backend
-         */
-        settings: {},
+            /**
+             * System settings from backend
+             */
+            settings: {},
 
-        loadingCount: 0,
+            loadingCount: 0,
 
-        backendHost: null,
+            backendHost: null,
+        }
     },
 
-    render(h) {
+    render() {
         return h(App, {
-            props: {
-                player: this.player,
-                settings: this.settings,
-                loadingCount: this.loadingCount,
-            }
-        })
+            player: this.$data.player,
+            settings: this.$data.settings,
+            loadingCount: this.$data.loadingCount,
+        });
     },
 
-}).$mount('#app');
+})
+.component('multiselect', Multiselect)
+.mixin(mixin);
+
+app.config.globalProperties.emitter = mitt();
+
+app.mount('#app');

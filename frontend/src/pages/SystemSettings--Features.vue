@@ -101,13 +101,13 @@
 export default {
     props: {
         settings: Object,
+        allAlliances: Array,
+        allCorporations: Array,
     },
 
     data () {
         return {
-            allAlliances: [],
             allAlliancesLoaded: false,
-            allCorporations: [],
             allCorporationsLoaded: false,
             accountDeactivationAlliances: null,
             accountDeactivationCorporations: null,
@@ -116,22 +116,20 @@ export default {
 
     mounted () {
         this.$parent.loadLists();
-
-        this.$parent.$on('alliancesLoaded', (data) => {
-            this.allAlliances = data;
-            this.allAlliancesLoaded = true;
-            readSettings(this);
-        });
-
-        this.$parent.$on('corporationsLoaded', (data) => {
-            this.allCorporations = data;
-            this.allCorporationsLoaded = true;
-            readSettings(this);
-        });
     },
 
     watch: {
-        settings () {
+        settings() {
+            readSettings(this);
+        },
+
+        allAlliances() {
+            this.allAlliancesLoaded = true;
+            readSettings(this);
+        },
+
+        allCorporations() {
+            this.allCorporationsLoaded = true;
             readSettings(this);
         },
 

@@ -91,7 +91,7 @@ export default {
         loadingCount: Number,
     },
 
-    data: function() {
+    data() {
         return {
             /**
              * Current route (hash splitted by /), first element is the current page.
@@ -167,17 +167,17 @@ export default {
         });
 
         // event listeners
-        this.$root.$on('playerChange', () => {
+        this.emitter.on('playerChange', () => {
             this.getPlayer();
             this.getSettings(); // roles and groups of a player can affect settings
         });
-        this.$root.$on('settingsChange', () => {
+        this.emitter.on('settingsChange', () => {
             this.getSettings();
         });
-        this.$root.$on('message', (text, type, timeout) => {
-            this.showMessage(text, type, timeout);
+        this.emitter.on('message', (data) => {
+            this.showMessage(data.text, data.type, data.timeout);
         });
-        this.$root.$on('showCharacters', (playerId) => {
+        this.emitter.on('showCharacters', (playerId) => {
             this.$refs.charactersModal.showCharacters(playerId);
         });
 

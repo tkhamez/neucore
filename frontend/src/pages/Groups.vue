@@ -155,7 +155,7 @@ export default {
         leave: function() {
             const vm = this;
             new PlayerApi().leaveGroup(this.groupToLeave.id, function() {
-                vm.$root.$emit('playerChange');
+                vm.emitter.emit('playerChange');
             });
             $('#leaveGroupModal').modal('hide');
             this.groupToLeave = null;

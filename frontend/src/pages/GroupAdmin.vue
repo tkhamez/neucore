@@ -225,7 +225,7 @@ export default {
                     vm.groupId = null;
                     vm.contentType = '';
                     getGroups(vm);
-                    vm.$root.$emit('playerChange'); // current player could have been a manager or member
+                    vm.emitter.emit('playerChange'); // current player could have been a manager or member
                 }
             });
         },
@@ -242,7 +242,7 @@ export default {
                 } else {
                     vm.message('Group renamed.', 'success');
                     vm.$refs.editModal.hideModal();
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('playerChange');
                     getGroups(vm);
                 }
             });

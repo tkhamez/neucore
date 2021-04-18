@@ -184,7 +184,7 @@ export default {
                     vm.currentWatchlist = null;
                     vm.contentType = '';
                     getWatchlists(vm);
-                    vm.$root.$emit('playerChange'); // current player could have been a manager or "viewer"
+                    vm.emitter.emit('playerChange'); // current player could have been a manager or "viewer"
                 }
             });
         },

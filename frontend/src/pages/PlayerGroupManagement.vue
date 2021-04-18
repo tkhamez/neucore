@@ -173,7 +173,7 @@ export default {
                 vm.$refs.admin.getSelectContent();
                 vm.$refs.admin.getTableContent();
                 if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('playerChange');
                 }
             });
         },

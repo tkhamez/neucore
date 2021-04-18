@@ -102,7 +102,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="application in groupApplications" v-if=" application.status === status">
+                        <tr v-for="application in groupApplicationsByStatus(status)">
                             <td>{{ application.player.name + ' #' + application.player.id }}</td>
                             <td>{{ formatDate(application.created) }}</td>
                             <td>
@@ -226,12 +226,16 @@ export default {
             });
         },
 
+        groupApplicationsByStatus(status) {
+            return this.groupApplications.filter(app => app.status === status);
+        },
+
         accept: function(applicationId, playerId) {
             const vm = this;
             new GroupApi().acceptApplication(applicationId, function() {
                 getApplications(vm);
                 if (playerId === vm.player.id) {
-                    vm.$root.$emit('playerChange');
+                    vm.emitter.emit('playerChange');
                 }
             });
         },
@@ -286,7 +290,7 @@ function addRemoveResult(vm, playerId, error) {
         return;
     }
     if (playerId === vm.player.id) {
-        vm.$root.$emit('playerChange');
+        vm.emitter.emit('playerChange');
     } else {
         getMembers(vm);
     }

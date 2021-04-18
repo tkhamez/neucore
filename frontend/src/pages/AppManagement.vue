@@ -81,7 +81,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="role in app.roles" v-if="role !== 'app'">
+                                <tr v-for="role in appRoles">
                                     <td>{{ role }}</td>
                                 </tr>
                             </tbody>
@@ -108,6 +108,12 @@ export default {
         return {
             app: null,
             secret: null,
+        }
+    },
+
+    computed: {
+        appRoles() {
+            return this.app.roles.filter(role => role !== 'app');
         }
     },
 
