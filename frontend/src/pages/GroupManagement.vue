@@ -229,7 +229,7 @@ export default {
         accept: function(applicationId, playerId) {
             const vm = this;
             new GroupApi().acceptApplication(applicationId, function() {
-                vm.getApplications();
+                getApplications(vm);
                 if (playerId === vm.player.id) {
                     vm.$root.$emit('playerChange');
                 }
@@ -239,7 +239,7 @@ export default {
         deny: function(applicationId) {
             const vm = this;
             new GroupApi().denyApplication(applicationId, function() {
-                vm.getApplications()
+                getApplications(vm);
             });
         },
     },
