@@ -127,8 +127,8 @@ the database host is `db`.
     `export UID && docker-compose exec php-fpm /bin/sh`  
     `export UID && docker-compose run --service-ports node /bin/sh`
 
-The web application is available at http://localhost:8080. The database is also available at `127.0.0.1:30306`, 
-the data is stored in the `.db` subdirectory.
+The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
+The database is also available at `127.0.0.1:30306`, the data is stored in the `.db` subdirectory.
 
 ### Deploy on Heroku
 
