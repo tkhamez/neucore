@@ -676,7 +676,7 @@ function fetchDirector(vm) {
 }
 </script>
 
-<style type="text/css" scoped>
+<style scoped>
     table thead.sticky th {
         position: sticky;
     }

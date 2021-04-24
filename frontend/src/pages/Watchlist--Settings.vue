@@ -86,7 +86,7 @@ export default {
 }
 </script>
 
-<style type="text/css" scoped>
+<style scoped>
     .card-header {
         position: sticky;
         top: 51px;

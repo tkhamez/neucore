@@ -50,7 +50,7 @@ export default {
 </script>
 
 <!--suppress CssUnusedSymbol -->
-<style type="text/css">
+<style>
     .character-name-changes .tooltip-inner {
         max-width: initial;
         text-align: left;

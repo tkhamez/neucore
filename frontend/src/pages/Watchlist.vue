@@ -153,7 +153,7 @@ function setTab(vm) {
 }
 </script>
 
-<style type="text/css" scoped>
+<style scoped>
     h1 {
         display: inline-block;
     }

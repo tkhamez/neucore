@@ -672,7 +672,7 @@ export default {
 </script>
 
 <!--suppress CssUnusedSymbol -->
-<style type="text/css" scoped>
+<style scoped>
     .update-char {
         float: right;
         cursor: pointer;

@@ -297,7 +297,7 @@ function loadList(vm, onlyPlayers) {
 }
 </script>
 
-<style type="text/css" scoped>
+<style scoped>
     table thead th {
         position: sticky;
         top: 51px;
