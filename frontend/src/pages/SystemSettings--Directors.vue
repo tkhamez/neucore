@@ -65,7 +65,7 @@ export default {
         readSettings(this);
 
         // login URL for director chars
-        this.loginUrlDirector = `${this.$root.backendHost}/login-director`
+        this.loginUrlDirector = `${this.$root.envVars.backendHost}/login-director`
     },
 
     watch: {

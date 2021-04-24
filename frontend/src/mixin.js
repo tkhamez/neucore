@@ -106,7 +106,7 @@ export default {
                 // there are no character images on Sisi at the moment.
                 return portrait;
             }
-            return `https://images.evetech.net/characters/${id}/portrait?size=${size}&tenant=tranquility`;
+            return `${this.$root.envVars.eveImageServer}/characters/${id}/portrait?size=${size}&tenant=tranquility`;
         },
 
         buildCharacterMovements(data) {

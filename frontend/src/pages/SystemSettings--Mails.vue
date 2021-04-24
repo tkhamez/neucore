@@ -139,9 +139,7 @@ export default {
     },
 
     mounted () {
-        if (this.$root.backendHost) {
-            this.loginHost = this.$root.backendHost;
-        }
+        this.loginHost = this.$root.envVars.backendHost;
 
         this.$parent.loadLists();
         getCorporations(this);

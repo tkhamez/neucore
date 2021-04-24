@@ -143,19 +143,22 @@ export default {
     },
 
     created: function() {
-        // set backend URL
-        this.$root.backendHost = process.env.VUE_APP_BACKEND_HOST;
-        if (!this.$root.backendHost) {
+        // environment variables
+        this.$root.envVars = {
+            eveImageServer: process.env.VUE_APP_EVE_IMAGE_SERVER,
+            backendHost: process.env.VUE_APP_BACKEND_HOST,
+        };
+        if (!this.$root.envVars.backendHost) {
             const winLocation = window.location;
             let port = '';
             if (winLocation.port !== '' && `${winLocation.port}` !== '80' && `${winLocation.port}` !== '443') {
                 port = `:${winLocation.port}`;
             }
-            this.$root.backendHost = `${winLocation.protocol}//${winLocation.hostname}${port}`;
+            this.$root.envVars.backendHost = `${winLocation.protocol}//${winLocation.hostname}${port}`;
         }
 
         // configure neucore-js-client
-        ApiClient.instance.basePath = `${this.$root.backendHost}/api`;
+        ApiClient.instance.basePath = `${this.$root.envVars.backendHost}/api`;
         ApiClient.instance.plugins = [superAgentPlugin(this, setCsrfHeader)];
 
         // initial route

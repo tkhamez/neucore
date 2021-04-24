@@ -42,9 +42,12 @@ const app = createApp({
              */
             settings: {},
 
-            loadingCount: 0,
+            /**
+             * Configuration form .env files
+             */
+            envVars: {},
 
-            backendHost: null,
+            loadingCount: 0,
         }
     },
 

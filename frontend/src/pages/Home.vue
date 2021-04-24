@@ -226,9 +226,7 @@ export default {
     mounted: function() { // after "redirect" from another page
         window.scrollTo(0, 0);
 
-        if (this.$root.backendHost) {
-            this.loginHost = this.$root.backendHost;
-        }
+        this.loginHost = this.$root.envVars.backendHost;
 
         const md = markdownIt({ typographer: true })
             .use(mdEmoji)

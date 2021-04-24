@@ -134,7 +134,7 @@ export default {
         this.setPlayerId();
 
         // login URL for managed accounts
-        this.httpBaseUrl = this.$root.backendHost;
+        this.httpBaseUrl = this.$root.envVars.backendHost;
     },
 
     watch: {
