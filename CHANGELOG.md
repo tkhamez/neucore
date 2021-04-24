@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.20.0
 
-dd mm yyyy
+24 Apr 2021
 
 - **BC break**: The file `web/theme.js` has been moved to `web/dist/theme.js` (source location: 
   `frontend/public/theme.js`).
