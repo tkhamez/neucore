@@ -47,9 +47,14 @@ Modal window to add alliances or corporations to the database.
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from 'neucore-js-client';
 
 export default {
+    components: {
+        Multiselect,
+    },
+
     props: {
         settings: Object,
     },

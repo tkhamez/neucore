@@ -8,7 +8,7 @@ dd mm yyyy
   `frontend/public/theme.js`).
 - **BC break**: Drop support for IE 11.
 - **BC break** (dev only): Drop support for Node.js 10.
-- Frontend: vue-cli added, which changes the build process and downgrades Webpack to v4, from v5.
+- Frontend: vue-cli 4 added, which changes the build process and downgrades Webpack to v4, from v5.
 - Frontend: Update vue.js to version 3.
 - Backend: Fixed CORS middleware, added "SameSite" configuration option to Session middleware.
 - New: Log a missing character name change if the access token still contains the old name. See also 

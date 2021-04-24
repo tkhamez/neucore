@@ -184,6 +184,7 @@ Select and table to add and remove objects from other objects.
 
 <script>
 import $ from 'jquery';
+import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, WatchlistApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
@@ -192,6 +193,7 @@ export default {
     components: {
         CharacterSearch,
         CharacterResult,
+        Multiselect,
     },
 
     props: {

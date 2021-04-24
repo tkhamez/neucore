@@ -86,9 +86,14 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import Multiselect from '@suadelabs/vue3-multiselect';
 import {ESIApi, CharacterApi} from 'neucore-js-client';
 
 export default {
+    components: {
+        Multiselect,
+    },
+
     data: function() {
         return {
             status: null,

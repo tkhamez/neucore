@@ -98,7 +98,13 @@
 </template>
 
 <script>
+import Multiselect from '@suadelabs/vue3-multiselect';
+
 export default {
+    components: {
+        Multiselect,
+    },
+
     props: {
         settings: Object,
         allAlliances: Array,

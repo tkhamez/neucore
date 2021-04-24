@@ -111,9 +111,14 @@
 </template>
 
 <script>
+import Multiselect from '@suadelabs/vue3-multiselect';
 import {CorporationApi, SettingsApi} from 'neucore-js-client';
 
 export default {
+    components: {
+        Multiselect,
+    },
+
     props: {
         settings: Object,
         allAlliances: Array,

@@ -16,8 +16,7 @@ import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 // Vue.js
 import{ createApp, h } from 'vue';
 
-// vue-multiselect
-import Multiselect from '@suadelabs/vue3-multiselect'
+// vue3-multiselect (Component is imported where it is used)
 import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
 
 
@@ -58,7 +57,6 @@ const app = createApp({
     },
 
 })
-.component('multiselect', Multiselect)
 .mixin(mixin);
 
 app.config.globalProperties.emitter = mitt();
