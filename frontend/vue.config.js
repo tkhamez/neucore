@@ -42,7 +42,7 @@ module.exports = () => {
         },
         configureWebpack: config => {
             config.entry = themes;
-            config.entry.main =  './src/main.js';
+            config.entry.main =  './src/main.ts';
             if (production || watch) {
                 config.entry.api =  './src/swagger-ui.js';
             }
@@ -93,7 +93,7 @@ module.exports = () => {
             main: {
                 filename: production ? path.resolve(__dirname, '../web/index.html') : '',
                 template: 'public/index.html',
-                entry: 'src/main.js',
+                entry: 'src/main.ts',
                 chunks: ['chunk-vendors', 'chunk-common', 'main'].concat(Object.getOwnPropertyNames(themes))
             },
             api: {

@@ -36,6 +36,8 @@
 </template>
 
 <script>
+//<script lang="ts">
+//import { defineComponent } from 'vue';
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
 import NavBar from './components/NavBar.vue';
@@ -60,8 +62,8 @@ import WatchlistAdmin from './pages/WatchlistAdmin.vue';
 import FindAlts from './pages/FindAlts.vue';
 
 export default {
-    name: 'app',
-
+//export default defineComponent({
+    name: 'App',
     components: {
         NavBar,
         Characters,
@@ -321,7 +323,8 @@ export default {
             });
         },
     },
-}
+};
+//});
 
 function getCsrfHeader(vm) {
     new AuthApi().authCsrfToken(function(error, data) {
