@@ -5,7 +5,7 @@ import 'popper.js'; // initialization needs o be done after the component was re
 import 'bootstrap';
 
 // data tables
-import 'datatables.net';
+//import df from 'datatables.net';
 import bs4 from 'datatables.net-bs4';
 bs4(window, $);
 import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
