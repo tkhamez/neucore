@@ -145,6 +145,7 @@ export default {
     created: function() {
         // environment variables
         this.$root.envVars = {
+            baseUrl: process.env.BASE_URL,
             eveImageServer: process.env.VUE_APP_EVE_IMAGE_SERVER,
             backendHost: process.env.VUE_APP_BACKEND_HOST,
         };
