@@ -12,7 +12,7 @@
         for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
             const file = htmlWebpackPlugin.files.css[i];
             if (file.match(/css\/theme-/)) {
-                %><link href="/<%= file %>" rel="alternate stylesheet" disabled><%
+                %><link href="/<%= file %>" rel="alternate stylesheet"><%
             } else {
                 cssFiles.push(file);
             }
@@ -35,28 +35,27 @@
         </script>
         <script type="text/javascript" src="<%= BASE_URL %>theme.js"></script>
     </head>
-    <body class="neucore">
-        <p id="unsupportedBrowser">
+    <body class="neucore" style="background-color: #333333; color: #dddddd">
+
+        <h1 id="headline">Neucore - Alliance Services</h1>
+        <noscript>You need to enable JavaScript to run this application.</noscript>
+        <p id="unsupportedBrowser" style="display: none">
             You are using an <strong>outdated</strong> browser. Please
-            <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer">upgrade your browser</a>
-            to improve your experience and security.
+            <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer"
+               style="color: #3291CB">upgrade your browser</a> to improve your experience and security.
         </p>
+        <script type="text/javascript">
+            document.getElementById('unsupportedBrowser').style.display = 'block';
+        </script>
+        <script type="text/javascript">
+            const supported = () => function () {};
+            document.getElementById('headline').remove();
+            document.getElementById('unsupportedBrowser').remove();
+            document.body.removeAttribute('style');
+        </script>
 
         <div id="app"></div>
 
-        <script type="text/javascript">
-            // check for unsupported browsers
-            var supported = true;
-            try {
-                // noinspection JSUnusedLocalSymbols
-                eval('const a = true;');
-            } catch (e) {
-                supported = false;
-            }
-            if (!supported || (!(window.ActiveXObject) && 'ActiveXObject' in window)) { // also check for IE 11
-                document.getElementById('unsupportedBrowser').style.display = 'block';
-            }
-        </script>
         <%
         // Handle theme JS files (remove them)
         const jsFiles = [];

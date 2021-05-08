@@ -184,9 +184,7 @@ export default {
             }
             const $disable = $("head link[href*='css/theme-']");
             $disable.attr('rel', 'alternate stylesheet');
-            $disable.attr('disabled', true);
             $enable.attr('rel', 'stylesheet');
-            $enable.attr('disabled', false);
         }
     },
 }
