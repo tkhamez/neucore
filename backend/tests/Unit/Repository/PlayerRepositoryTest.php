@@ -315,4 +315,12 @@ class PlayerRepositoryTest extends TestCase
             'player_name' => 'c1',
         ]], $this->repo->findCharacters('1313'));
     }
+
+    public function testFindPlayersOfCharacters()
+    {
+        $this->assertSame(
+            [self::$player1->getId(), self::$player4->getId()],
+            $this->repo->findPlayersOfCharacters([1, 12, 3])
+        );
+    }
 }

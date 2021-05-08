@@ -33,4 +33,43 @@ class CharacterRepository extends EntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    /**
+     * @return int[] Character IDs
+     */
+    public function getGroupMembersMainCharacter(int $groupId): array
+    {
+        $query = $this->createQueryBuilder('c')
+            ->select('c.id')
+            ->leftJoin('c.player', 'p')
+            ->innerJoin('p.groups', 'g', 'WITH', 'g.id = :groupId')
+            ->where('c.main = :main')
+            ->setParameter('groupId', $groupId)
+            ->setParameter('main', true);
+
+        return array_map(function (array $char) {
+            return (int) $char['id'];
+        }, $query->getQuery()->getResult());
+    }
+
+    /**
+     * @param int[] $playerIds
+     */
+    public function getAllCharactersFromPlayers(array $playerIds): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select(
+            'c.id',
+            'IDENTITY(c.player) AS playerId'
+        )
+            ->where($qb->expr()->in('c.player', ':ids'))
+            ->setParameter('ids', $playerIds);
+
+        return array_map(function (array $row) {
+            return [
+                'id' => (int) $row['id'],
+                'playerId' => (int) $row['playerId'],
+            ];
+        }, $qb->getQuery()->getResult());
+    }
 }

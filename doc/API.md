@@ -405,6 +405,7 @@ Application - Groups API
 - Return groups of the alliance. `GET /app/v2/alliance-groups/{aid}`
 - Return groups of multiple alliances. `POST /app/v1/alliance-groups`
 - Returns groups from the character's account, if available, or the corporation and alliance. `GET /app/v1/groups-with-fallback`
+- Returns the main character IDs from all group members. `GET /app/v1/group-members/{groupId}`
 
 #### app-chars
 
@@ -414,6 +415,7 @@ Application - Characters API
 - Returns the main character of the player account to which the character ID belongs. `GET /app/v2/main/{cid}`
 - Returns the player account to which the character ID belongs. `GET /app/v1/player/{characterId}`
 - Returns all characters of the player account to which the character ID belongs. `GET /app/v1/characters/{characterId}`
+- Returns all characters from multiple player accounts identified by character IDs. `POST /app/v1/characters`
 - Returns all known characters from the parameter list. `POST /app/v1/character-list`
 - Returns all characters from the player account. `GET /app/v1/player-chars/{playerId}`
 - Returns the player account to which the character ID belongs with all characters. `GET /app/v1/player-with-characters/{characterId}`

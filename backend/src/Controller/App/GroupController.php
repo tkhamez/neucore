@@ -506,6 +506,51 @@ class GroupController extends BaseController
         return $this->withJson($fallbackGroups);
     }
 
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/app/v1/group-members/{groupId}",
+     *     operationId="groupMembersV1",
+     *     summary="Returns the main character IDs from all group members.",
+     *     description="Needs role: app-groups.",
+     *     tags={"Application - Groups"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of character IDs.",
+     *         @OA\JsonContent(type="array", @OA\Items(type="integer"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group was not found or app may not see it."
+     *     )
+     * )
+     */
+    public function members(string $groupId, ServerRequestInterface $request): ResponseInterface
+    {
+        $group = $this->getGroup((int) $groupId, $request);
+        if ($group === null) {
+            return $this->response->withStatus(404, 'Group not found.');
+        }
+
+        $members = $this->repositoryFactory
+            ->getCharacterRepository()
+            ->getGroupMembersMainCharacter($group->getId());
+
+        return $this->withJson($members);
+    }
+
     private function corpOrAllianceGroups(string $id, string $type, ServerRequestInterface $request): ResponseInterface
     {
         $appGroups = $this->getAppGroups($request);
@@ -520,7 +565,6 @@ class GroupController extends BaseController
 
     /**
      * @param string $type "Player", "Corporation" or "Alliance"
-     * @return ResponseInterface
      */
     private function groupsBulkFor(string $type, ServerRequestInterface $request): ResponseInterface
     {
@@ -631,6 +675,25 @@ class GroupController extends BaseController
         }
 
         return $result;
+    }
+
+    /**
+     * Returns groups if it exists and app may see it.
+     */
+    private function getGroup(int $groupId, ServerRequestInterface $request): ?Group
+    {
+        $group = $this->repositoryFactory->getGroupRepository()->find($groupId);
+        if ($group === null) {
+            return null;
+        }
+
+        foreach ($this->getAppGroups($request) as $appGroup) {
+            if ($appGroup->getId() === $group->getId()) {
+                return $group;
+            }
+        }
+
+        return null;
     }
 
     /**

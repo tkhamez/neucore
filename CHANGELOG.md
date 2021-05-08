@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+- New API endpoints for apps: 
+  - GET /app/v1/group-members/{groupId} Returns the main character IDs from all group members.
+  - POST /app/v1/characters Returns all characters from multiple player accounts identified by character IDs.
+
 ## 1.20.0
 
 24 Apr 2021

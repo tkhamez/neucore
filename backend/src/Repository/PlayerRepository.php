@@ -266,4 +266,17 @@ class PlayerRepository extends EntityRepository
             ];
         }, array_values($result));
     }
+
+    public function findPlayersOfCharacters(array $characterIds): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id')->distinct()
+            ->leftJoin('p.characters', 'c')
+            ->where($qb->expr()->in('c.id', ':ids'))
+            ->setParameter('ids', $characterIds);
+
+        return array_map(function (array $char) {
+            return (int) $char['id'];
+        }, $qb->getQuery()->getResult());
+    }
 }

@@ -218,6 +218,44 @@ class CharControllerTest extends WebTestCase
         );
     }
 
+    public function testCharactersBulk403()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->app0Id.':s0')];
+        $response = $this->runApp('POST', '/api/app/v1/characters', [], $headers);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testCharactersBulk400()
+    {
+        $this->setUpDb();
+
+        $response = $this->runApp('POST', '/api/app/v1/characters', '123', [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json',
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testCharactersBulk200()
+    {
+        $this->setUpDb();
+        $this->helper->addCharacterMain('C1', 987, [Role::USER]);
+        $char = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $this->helper->addCharacterToPlayer('C2', 456, $char->getPlayer());
+
+        $response = $this->runApp('POST', '/api/app/v1/characters', [123, 456, 987], [
+            'Authorization' => 'Bearer '.base64_encode($this->appId.':s1'),
+            'Content-Type' => 'application/json',
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([[987], [123, 456]], $this->parseJsonBody($response));
+    }
+
     public function testCharacterListV1403()
     {
         $this->setUpDb();

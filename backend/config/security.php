@@ -33,6 +33,7 @@ return [
     '/api/app/v1/alliance-groups'                  => [Role::APP_GROUPS],
     '/api/app/v2/alliance-groups'                  => [Role::APP_GROUPS],
     '/api/app/v1/groups-with-fallback'             => [Role::APP_GROUPS],
+    '/api/app/v1/group-members/{groupId}'          => [Role::APP_GROUPS],
 
     '/api/app'                                     => [Role::APP], // only showV1
 

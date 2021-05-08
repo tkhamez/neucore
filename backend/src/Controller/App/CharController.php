@@ -198,6 +198,55 @@ class CharController extends BaseController
 
     /**
      * @OA\Post(
+     *     path="/app/v1/characters",
+     *     operationId="charactersBulkV1",
+     *     summary="Returns all characters from multiple player accounts identified by character IDs.",
+     *     description="Needs role: app-chars.",
+     *     tags={"Application - Characters"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="EVE character IDs array.",
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(type="array", @OA\Items(type="integer"))
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid body."
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="All characters from the player account.",
+     *         @OA\JsonContent(type="array", @OA\Items(type="array", @OA\Items(type="integer")))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     )
+     * )
+     */
+    public function charactersBulk(ServerRequestInterface $request): ResponseInterface
+    {
+        $ids = $this->getIntegerArrayFromBody($request);
+        if ($ids === null) {
+            return $this->response->withStatus(400);
+        }
+
+        $playerIds = $this->repositoryFactory->getPlayerRepository()->findPlayersOfCharacters($ids);
+        $characters = $this->repositoryFactory->getCharacterRepository()->getAllCharactersFromPlayers($playerIds);
+
+        $result = [];
+        foreach ($characters as $character) {
+            $result[$character['playerId']][] = (int) $character['id'];
+        }
+
+        return $this->withJson(array_values($result));
+    }
+
+    /**
+     * @OA\Post(
      *     path="/app/v1/character-list",
      *     operationId="characterListV1",
      *     summary="Returns all known characters from the parameter list.",

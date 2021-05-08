@@ -8,7 +8,6 @@ namespace Tests\Functional\Controller\App;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Entity\Group;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -22,16 +21,13 @@ class GroupControllerTest extends WebTestCase
      */
     private $helper;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
-
     private $appId;
 
     private $group0Id;
 
     private $group1Id;
+
+    private $group2Id;
 
     private $group4Id;
 
@@ -40,7 +36,6 @@ class GroupControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testGroupsV1403()
@@ -543,6 +538,40 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame([], $body);
     }
 
+    public function testMembers403()
+    {
+        $this->setUpDb();
+
+        $response = $this->runApp('GET', '/api/app/v1/group-members/'.$this->group1Id);
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testMembers404()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+
+        $response1 = $this->runApp('GET', '/api/app/v1/group-members/'.($this->group1Id+100), null, $headers);
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals('Group not found.', $response1->getReasonPhrase());
+
+        $response2 = $this->runApp('GET', '/api/app/v1/group-members/'.$this->group2Id, null, $headers);
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testMembers200()
+    {
+        $this->setUpDb();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/group-members/'.$this->group1Id, null, $headers);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([123, 789], $this->parseJsonBody($response));
+    }
+
     private function setUpDb(int $invalidHours = 0): void
     {
         $this->helper->emptyDb();
@@ -550,6 +579,7 @@ class GroupControllerTest extends WebTestCase
         $groups = $this->helper->addGroups(['g0', 'g1', 'g2', 'g3', 'g4', 'g5']);
         $this->group0Id = $groups[0]->getId();
         $this->group1Id = $groups[1]->getId();
+        $this->group2Id = $groups[2]->getId();
         $this->group4Id = $groups[4]->getId();
         $this->group5Id = $groups[5]->getId();
 

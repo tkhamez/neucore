@@ -345,13 +345,15 @@ class Helper
         return $alt;
     }
 
-    public function addNewPlayerToCharacterAndFlush(Character $character): void
+    public function addNewPlayerToCharacterAndFlush(Character $character): Player
     {
         $player = (new Player())->setName('Player');
         $character->setPlayer($player);
         $this->getObjectManager()->persist($player);
         $this->getObjectManager()->persist($character);
         $this->getObjectManager()->flush();
+
+        return $player;
     }
 
     /**
