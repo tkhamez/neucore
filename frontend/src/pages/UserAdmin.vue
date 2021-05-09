@@ -499,6 +499,12 @@ export default {
     mounted() {
         window.scrollTo(0,0);
         this.setPlayerId();
+
+        // TODO watch "playerId" is not triggered when following a link to this page, why??
+        // This will load it twice, but better than not at all.
+        if (this.playerId) {
+            this.getPlayer();
+        }
     },
 
     watch: {
