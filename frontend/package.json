@@ -49,7 +49,8 @@
     "imports-loader": "^1.2.0",
     "license-webpack-plugin": "^2.3.18",
     "sass": "^1.32.12",
-    "sass-loader": "^10.1.1"
+    "sass-loader": "^10.1.1",
+    "vue-loader-v16": "^16.0.0-beta.5.4"
   },
   "bundledDependencies": [
     "neucore-js-client"
