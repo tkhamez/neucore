@@ -1,6 +1,8 @@
 # Changelog
 
-## next
+## 1.21.0
+
+9 Mai 2021
 
 - New API endpoints for apps: 
   - GET /app/v1/group-members/{groupId} Returns the main character IDs from all group members.
