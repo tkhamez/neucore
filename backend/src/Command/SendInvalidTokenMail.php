@@ -68,7 +68,7 @@ class SendInvalidTokenMail extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in seconds after each mail sent (ESI rate limit is 4/min)',
-                20
+                '20'
             );
         $this->configureLogOutput($this);
     }

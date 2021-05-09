@@ -87,7 +87,7 @@ class UpdateMemberTracking extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                50
+                '50'
             );
         $this->configureLogOutput($this);
     }

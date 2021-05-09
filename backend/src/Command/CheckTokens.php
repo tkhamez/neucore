@@ -83,7 +83,7 @@ class CheckTokens extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each check',
-                50
+                '50'
             );
         $this->configureLogOutput($this);
     }

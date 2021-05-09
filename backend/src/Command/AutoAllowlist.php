@@ -114,7 +114,7 @@ class AutoAllowlist extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each player and check',
-                50
+                '50'
             );
         $this->configureLogOutput($this);
     }

@@ -167,6 +167,8 @@ class Container
                 $stack = HandlerStack::create();
                 #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
                 $cache = new CacheMiddleware(new PrivateCacheStrategy(new DoctrineCacheStorage(
+                    # TODO find replacement
+                    /* @phan-suppress-next-line PhanDeprecatedClass */
                     new FilesystemCache($c->get(Config::class)['guzzle']['cache']['dir'])
                 )));
                 /* @phan-suppress-next-line PhanTypeMismatchArgument */

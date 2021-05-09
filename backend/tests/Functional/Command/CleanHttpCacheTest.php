@@ -34,6 +34,7 @@ class CleanHttpCacheTest extends ConsoleTestCase
     public function testExecute()
     {
         $dir = __DIR__ . '/cache';
+        /* @phan-suppress-next-line PhanDeprecatedClass */
         $cache = new FilesystemCache($dir . '/http');
         $entry1 = new CacheEntry(new Request('GET', '/1'), new Response(), new \DateTime('+ 100 seconds'));
         $entry2 = new CacheEntry(new Request('GET', '/2'), new Response(), new \DateTime('- 100 seconds'));

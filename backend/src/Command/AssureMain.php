@@ -46,7 +46,7 @@ class AssureMain extends Command
         $this
             ->setName('assure-main')
             ->setDescription('')
-            ->addOption('db-result-limit', null, InputOption::VALUE_OPTIONAL, '', 1000);
+            ->addOption('db-result-limit', null, InputOption::VALUE_OPTIONAL, '', '1000');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

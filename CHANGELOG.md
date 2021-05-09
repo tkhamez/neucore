@@ -8,6 +8,7 @@
 - Changed check for supported browsers.
 - Removed duplicate character search results (from character movements).
 - Small bug fixes.
+- Updated backend dependencies.
 
 ## 1.20.0
 
