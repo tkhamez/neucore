@@ -112,20 +112,32 @@ class PlayerRepositoryTest extends TestCase
         $om->persist($player5);
 
         // additional data for search by name
-        $removedChar1 = (new RemovedCharacter())
+        $moveOutChar1 = (new RemovedCharacter())
             ->setCharacterId(21)
             ->setCharacterName('removed-21')
             ->setRemovedDate(new \DateTime())
-            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
-        $removedChar1->setPlayer(self::$player4);
+            ->setReason(RemovedCharacter::REASON_MOVED)
+            ->setPlayer(self::$player4)
+            ->setNewPlayer(self::$player6);
+        $moveBackChar1 = (new RemovedCharacter())
+            ->setCharacterId(21)
+            ->setCharacterName('removed-21')
+            ->setRemovedDate(new \DateTime())
+            ->setReason(RemovedCharacter::REASON_MOVED)
+            ->setPlayer(self::$player6)
+            ->setNewPlayer(self::$player4);
+        $deletedChar1 = (new RemovedCharacter())
+            ->setCharacterId(21)
+            ->setCharacterName('removed-21')
+            ->setRemovedDate(new \DateTime())
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY)
+            ->setPlayer(self::$player4);
         $removedChar2 = (new RemovedCharacter())
             ->setCharacterId(31)
             ->setCharacterName('removed-31')
             ->setRemovedDate(new \DateTime())
-            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY);
-        $removedChar2->setPlayer(self::$player4);
-        self::$player1->addRemovedCharacter($removedChar1);
-        self::$player1->addRemovedCharacter($removedChar2);
+            ->setReason(RemovedCharacter::REASON_DELETED_MANUALLY)
+            ->setPlayer(self::$player4);
         $renamed1 = (new CharacterNameChange())
             ->setCharacter(self::$player6->getCharacters()[0])
             ->setOldName('c6-41')
@@ -134,7 +146,9 @@ class PlayerRepositoryTest extends TestCase
             ->setCharacter(self::$player6->getCharacters()[0])
             ->setOldName('c6-51')
             ->setChangeDate(new \DateTime());
-        $om->persist($removedChar1);
+        $om->persist($moveOutChar1);
+        $om->persist($moveBackChar1);
+        $om->persist($deletedChar1);
         $om->persist($removedChar2);
         $om->persist($renamed1);
         $om->persist($renamed2);
@@ -257,9 +271,9 @@ class PlayerRepositoryTest extends TestCase
 
     public function testFindCharacters_byName()
     {
-        $actual = $this->repo->findCharacters('1');
+        $actual = $this->repo->findCharacters('1', false);
 
-        $this->assertSame(7, count($actual));
+        $this->assertSame(9, count($actual));
         $this->assertSame([ // existing char
             'character_id' => 1,
             'character_name' => 'c1',
@@ -290,18 +304,33 @@ class PlayerRepositoryTest extends TestCase
             'player_id' => self::$player6->getId(),
             'player_name' => 'c6',
         ], $actual[4]);
-        $this->assertSame([ // removed character
+        $this->assertSame([ // moved out character - same as next
             'character_id' => 21,
             'character_name' => 'removed-21',
             'player_id' => self::$player4->getId(),
             'player_name' => 'c4',
         ], $actual[5]);
+        $this->assertSame([ // deleted character - same as previous
+            'character_id' => 21,
+            'character_name' => 'removed-21',
+            'player_id' => self::$player4->getId(),
+            'player_name' => 'c4',
+        ], $actual[6]);
+        $this->assertSame([ // moved back character
+            'character_id' => 21,
+            'character_name' => 'removed-21',
+            'player_id' => self::$player6->getId(),
+            'player_name' => 'c6',
+        ], $actual[7]);
         $this->assertSame([ // removed character
             'character_id' => 31,
             'character_name' => 'removed-31',
             'player_id' => self::$player4->getId(),
             'player_name' => 'c4',
-        ], $actual[6]);
+        ], $actual[8]);
+
+        // select distinct
+        $this->assertSame(8, count($this->repo->findCharacters('1', true)));
     }
 
     public function testFindCharacters_byId()

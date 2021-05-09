@@ -197,8 +197,9 @@ class PlayerRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findCharacters(string $nameOrId): array
+    public function findCharacters(string $nameOrId, bool $distinct = true): array
     {
+        // current characters
         $query1 = $this
             ->createQueryBuilder('p')
             ->select(
@@ -214,6 +215,7 @@ class PlayerRepository extends EntityRepository
             ->setParameter('name', "%$nameOrId%")
             ->setParameter('id', $nameOrId);
 
+        // removed characters
         $query2 = $this
             ->createQueryBuilder('p')
             ->select(
@@ -221,12 +223,16 @@ class PlayerRepository extends EntityRepository
                 'rc.characterName AS character_name',
                 'p.id AS player_id',
                 'p.name AS player_name',
-            )
-            ->leftJoin('p.removedCharacters', 'rc')
+            );
+        if ($distinct) {
+            $query2->distinct();
+        }
+        $query2->leftJoin('p.removedCharacters', 'rc')
             ->where('rc.characterName LIKE :name')
             ->addOrderBy('rc.characterName', 'ASC')
             ->setParameter('name', "%$nameOrId%");
 
+        // character name changes
         $query3 = $this
             ->createQueryBuilder('p')
             ->select(
@@ -249,9 +255,15 @@ class PlayerRepository extends EntityRepository
         uasort($result, function ($a, $b) {
             $nameA = mb_strtolower($a['character_name']);
             $nameB = mb_strtolower($b['character_name']);
+            $playerNameA = mb_strtolower($a['player_name']);
+            $playerNameB = mb_strtolower($b['player_name']);
             if ($nameA < $nameB) {
                 return -1;
             } elseif ($nameA > $nameB) {
+                return 1;
+            } elseif ($playerNameA < $playerNameB) {
+                return -1;
+            } elseif ($playerNameA > $playerNameB) {
                 return 1;
             }
             return 0;
