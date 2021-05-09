@@ -25,17 +25,17 @@ class GroupApplication implements \JsonSerializable
     /**
      * @var string
      */
-    const STATUS_PENDING = 'pending';
+    public const STATUS_PENDING = 'pending';
 
     /**
      * @var string
      */
-    const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_ACCEPTED = 'accepted';
 
     /**
      * @var string
      */
-    const STATUS_DENIED = 'denied';
+    public const STATUS_DENIED = 'denied';
 
     /**
      * @OA\Property()

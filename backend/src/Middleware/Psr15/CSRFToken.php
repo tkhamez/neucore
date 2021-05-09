@@ -14,9 +14,9 @@ use Slim\Routing\RouteContext;
 
 class CSRFToken implements MiddlewareInterface
 {
-    const CSRF_HEADER_NAME = 'X-CSRF-Token';
+    public const CSRF_HEADER_NAME = 'X-CSRF-Token';
 
-    const CSRF_SESSION_NAME = 'csrfToken';
+    public const CSRF_SESSION_NAME = 'csrfToken';
 
     /**
      * @var ResponseFactoryInterface

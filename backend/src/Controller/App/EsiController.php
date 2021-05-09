@@ -31,9 +31,9 @@ use Psr\Log\LoggerInterface;
  */
 class EsiController extends BaseController
 {
-    const ERROR_MESSAGE_PREFIX = 'App\EsiController: ';
+    private const ERROR_MESSAGE_PREFIX = 'App\EsiController: ';
 
-    const PARAM_DATASOURCE = 'datasource';
+    private const PARAM_DATASOURCE = 'datasource';
 
     /**
      * @var StorageInterface
@@ -82,7 +82,7 @@ class EsiController extends BaseController
         AppAuth $appAuth
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
-        
+
         $this->storage = $storage;
         $this->log = $log;
         $this->tokenService = $tokenService;

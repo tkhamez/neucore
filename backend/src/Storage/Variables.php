@@ -16,12 +16,12 @@ class Variables
     /**
      * Time, remain and reset from X-Esi-Error-Limit-* HTTP headers.
      */
-    const ESI_ERROR_LIMIT = 'esi_error_limit';
+    public const ESI_ERROR_LIMIT = 'esi_error_limit';
 
     /**
      * https://github.com/esi/esi-issues/issues/1227
      */
-    const ESI_THROTTLED = 'esi_throttled';
+    public const ESI_THROTTLED = 'esi_throttled';
 
-    const API_RATE_LIMIT = 'api_rate_limit';
+    public const API_RATE_LIMIT = 'api_rate_limit';
 }

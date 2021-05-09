@@ -12,12 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20200801163459 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
 
@@ -62,7 +62,7 @@ final class Version20200801163459 extends AbstractMigration
         $this->addSql('SET FOREIGN_KEY_CHECKS = 1;');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('SET FOREIGN_KEY_CHECKS = 0;');
 

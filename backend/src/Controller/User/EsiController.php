@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -52,7 +53,7 @@ class EsiController extends BaseController
         Config $config
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
-        
+
         $this->tokenService = $tokenService;
         $this->httpClient = $httpClient;
         $this->config = $config;

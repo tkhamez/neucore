@@ -12,12 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20181120205730 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // setting variable(s) were inserted here
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // nothing to do
     }

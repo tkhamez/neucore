@@ -61,22 +61,22 @@ class Application
     /**
      * @var string
      */
-    const ENV_PROD = 'prod';
+    private const ENV_PROD = 'prod';
 
     /**
      * @var string
      */
-    const ENV_DEV = 'dev';
+    private const ENV_DEV = 'dev';
 
     /**
      * @var string
      */
-    const RUN_WEB = 'web';
+    private const RUN_WEB = 'web';
 
     /**
      * @var string
      */
-    const RUN_CONSOLE = 'console';
+    private const RUN_CONSOLE = 'console';
 
     /**
      * Path to application root directory.
@@ -85,7 +85,7 @@ class Application
      *
      * @var string
      */
-    const ROOT_DIR = __DIR__ . '/..';
+    public const ROOT_DIR = __DIR__ . '/..';
 
     /**
      * App setting from the config dir.

@@ -135,7 +135,7 @@ class UpdateMemberTracking extends Command
             }
 
             $this->writeLine('  Start updating ' . $corporation->getId(), false);
-            
+
             $trackingData = $this->memberTracking->fetchData($token->getToken(), (int) $corporation->getId());
             if (! is_array($trackingData)) {
                 $this->writeLine(

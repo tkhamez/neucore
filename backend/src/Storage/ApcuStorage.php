@@ -6,7 +6,7 @@ use Neucore\Exception\RuntimeException;
 
 class ApcuStorage implements StorageInterface
 {
-    const PREFIX = '__neucore__';
+    public const PREFIX = '__neucore__';
 
     public function set(string $key, string $value): bool
     {

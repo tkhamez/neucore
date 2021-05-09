@@ -25,17 +25,17 @@ class SystemVariable implements \JsonSerializable
     /**
      * Public variables.
      */
-    const SCOPE_PUBLIC = 'public';
+    public const SCOPE_PUBLIC = 'public';
 
     /**
      * Variables that are only visible on the settings page.
      */
-    const SCOPE_SETTINGS = 'settings';
+    public const SCOPE_SETTINGS = 'settings';
 
     /**
      * Variables that are not exposed to the frontend.
      */
-    const SCOPE_BACKEND = 'backend';
+    public const SCOPE_BACKEND = 'backend';
 
     /**
      * System settings variable, "0" or "1".
@@ -44,7 +44,7 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = public
      */
-    const ALLOW_CHARACTER_DELETION = 'allow_character_deletion';
+    public const ALLOW_CHARACTER_DELETION = 'allow_character_deletion';
 
     /**
      * System settings variable, "0" or "1".
@@ -53,7 +53,7 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const ALLOW_LOGIN_MANAGED = 'allow_login_managed';
+    public const ALLOW_LOGIN_MANAGED = 'allow_login_managed';
 
     /**
      * System settings variable, "0" or "1".
@@ -65,14 +65,14 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const GROUPS_REQUIRE_VALID_TOKEN = 'groups_require_valid_token';
+    public const GROUPS_REQUIRE_VALID_TOKEN = 'groups_require_valid_token';
 
     /**
      * How long the deactivation of the account will be delayed after a token became invalid.
      *
      * Scope = settings
      */
-    const ACCOUNT_DEACTIVATION_DELAY = 'account_deactivation_delay';
+    public const ACCOUNT_DEACTIVATION_DELAY = 'account_deactivation_delay';
 
     /**
      * Limit deactivation of groups to players that have a character in these alliances,
@@ -80,7 +80,7 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const ACCOUNT_DEACTIVATION_ALLIANCES = 'account_deactivation_alliances';
+    public const ACCOUNT_DEACTIVATION_ALLIANCES = 'account_deactivation_alliances';
 
     /**
      * Limit deactivation of groups to players that have a character in these corporations,
@@ -88,14 +88,14 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const ACCOUNT_DEACTIVATION_CORPORATIONS = 'account_deactivation_corporations';
+    public const ACCOUNT_DEACTIVATION_CORPORATIONS = 'account_deactivation_corporations';
 
     /**
      * EVE character name for the character that can be used to send mails.
      *
      * Scope = settings
      */
-    const MAIL_CHARACTER = 'mail_character';
+    public const MAIL_CHARACTER = 'mail_character';
 
     /**
      * ESI token to send mails.
@@ -104,14 +104,14 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = backend
      */
-    const MAIL_TOKEN = 'mail_token';
+    public const MAIL_TOKEN = 'mail_token';
 
     /**
      * Activate the "invalid ESI token" EVE mail notification
      *
      * Scope = settings
      */
-    const MAIL_INVALID_TOKEN_ACTIVE = 'mail_invalid_token_active';
+    public const MAIL_INVALID_TOKEN_ACTIVE = 'mail_invalid_token_active';
 
     /**
      * The "invalid ESI token" EVE mail is only send to accounts that have a character in one of these alliances
@@ -119,7 +119,7 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const MAIL_INVALID_TOKEN_ALLIANCES = 'mail_invalid_token_alliances';
+    public const MAIL_INVALID_TOKEN_ALLIANCES = 'mail_invalid_token_alliances';
 
     /**
      * The "invalid ESI token" EVE mail is only send to accounts that have a character in one of these corporations
@@ -127,43 +127,43 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const MAIL_INVALID_TOKEN_CORPORATIONS = 'mail_invalid_token_corporations';
+    public const MAIL_INVALID_TOKEN_CORPORATIONS = 'mail_invalid_token_corporations';
 
     /**
      * Subject for "invalid ESI token" EVE mail notification
      *
      * Scope = settings
      */
-    const MAIL_INVALID_TOKEN_SUBJECT = 'mail_invalid_token_subject';
+    public const MAIL_INVALID_TOKEN_SUBJECT = 'mail_invalid_token_subject';
 
     /**
      * Body for "invalid ESI token" EVE mail notification
      *
      * Scope = settings
      */
-    const MAIL_INVALID_TOKEN_BODY = 'mail_invalid_token_body';
+    public const MAIL_INVALID_TOKEN_BODY = 'mail_invalid_token_body';
 
     /**
      * Scope = settings
      */
-    const MAIL_MISSING_CHARACTER_ACTIVE = 'mail_missing_character_active';
+    public const MAIL_MISSING_CHARACTER_ACTIVE = 'mail_missing_character_active';
 
     /**
      * Corporations with member tracking enabled.
      *
      * Scope = settings
      */
-    const MAIL_MISSING_CHARACTER_CORPORATIONS = 'mail_missing_character_corporations';
+    public const MAIL_MISSING_CHARACTER_CORPORATIONS = 'mail_missing_character_corporations';
 
     /**
      * Scope = settings
      */
-    const MAIL_MISSING_CHARACTER_SUBJECT = 'mail_missing_character_subject';
+    public const MAIL_MISSING_CHARACTER_SUBJECT = 'mail_missing_character_subject';
 
     /**
      * Scope = settings
      */
-    const MAIL_MISSING_CHARACTER_BODY = 'mail_missing_character_body';
+    public const MAIL_MISSING_CHARACTER_BODY = 'mail_missing_character_body';
 
     /**
      * Defines the minimum number of days that must pass before the mail is resent.
@@ -172,7 +172,7 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const MAIL_MISSING_CHARACTER_RESEND = 'mail_missing_character_resend';
+    public const MAIL_MISSING_CHARACTER_RESEND = 'mail_missing_character_resend';
 
     /**
      * Character with director role for member tracking.
@@ -182,106 +182,106 @@ class SystemVariable implements \JsonSerializable
      *
      * Scope = settings
      */
-    const DIRECTOR_CHAR = 'director_char_';
+    public const DIRECTOR_CHAR = 'director_char_';
 
     /**
      * Tokens for DIRECTOR_CHAR
      *
      * Scope = backend
      */
-    const DIRECTOR_TOKEN = 'director_token_';
+    public const DIRECTOR_TOKEN = 'director_token_';
 
     /**
      * Value for HTML head title tag.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_DOCUMENT_TITLE = 'customization_document_title';
+    public const CUSTOMIZATION_DOCUMENT_TITLE = 'customization_document_title';
 
     /**
      * URL for the links of the logos in the navigation bar and on the home page.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_WEBSITE = 'customization_website';
+    public const CUSTOMIZATION_WEBSITE = 'customization_website';
 
     /**
      * URL of GitHub repository for various links to the documentation.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_GITHUB = 'customization_github';
+    public const CUSTOMIZATION_GITHUB = 'customization_github';
 
     /**
      * Organization name used in navigation bar.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_NAV_TITLE = 'customization_nav_title';
+    public const CUSTOMIZATION_NAV_TITLE = 'customization_nav_title';
 
     /**
      * Organization logo used in navigation bar (Base64 encoded).
      *
      * Scope = public
      */
-    const CUSTOMIZATION_NAV_LOGO = 'customization_nav_logo';
+    public const CUSTOMIZATION_NAV_LOGO = 'customization_nav_logo';
 
     /**
      * Headline on the home page.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_HOME_HEADLINE = 'customization_home_headline';
+    public const CUSTOMIZATION_HOME_HEADLINE = 'customization_home_headline';
 
     /**
      * Text below the headline on the homepage.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_HOME_DESCRIPTION = 'customization_home_description';
+    public const CUSTOMIZATION_HOME_DESCRIPTION = 'customization_home_description';
 
     /**
      * Organization logo used on the home page (Base64 encoded).
      *
      * Scope = public
      */
-    const CUSTOMIZATION_HOME_LOGO = 'customization_home_logo';
+    public const CUSTOMIZATION_HOME_LOGO = 'customization_home_logo';
 
     /**
      * Text below the login button.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_LOGIN_TEXT = 'customization_login_text';
+    public const CUSTOMIZATION_LOGIN_TEXT = 'customization_login_text';
 
     /**
      * Text area on the home page.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_HOME_MARKDOWN = 'customization_home_markdown';
+    public const CUSTOMIZATION_HOME_MARKDOWN = 'customization_home_markdown';
 
     /**
      * Text for the footer.
      *
      * Scope = public
      */
-    const CUSTOMIZATION_FOOTER_TEXT = 'customization_footer_text';
+    public const CUSTOMIZATION_FOOTER_TEXT = 'customization_footer_text';
 
     /**
      * Scope = settings
      */
-    const API_RATE_LIMIT_MAX_REQUESTS = 'api_rate_limit_max_requests';
+    public const API_RATE_LIMIT_MAX_REQUESTS = 'api_rate_limit_max_requests';
 
     /**
      * Scope = settings
      */
-    const API_RATE_LIMIT_RESET_TIME = 'api_rate_limit_reset_time';
+    public const API_RATE_LIMIT_RESET_TIME = 'api_rate_limit_reset_time';
 
     /**
      * Scope = settings
      */
-    const API_RATE_LIMIT_ACTIVE = 'api_rate_limit_active';
+    public const API_RATE_LIMIT_ACTIVE = 'api_rate_limit_active';
 
     public const TOKEN_ID = 'id';
     public const TOKEN_ACCESS = 'access';

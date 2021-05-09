@@ -68,7 +68,7 @@ class CharacterController extends BaseController
         OAuthToken $tokenService
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
-        
+
         $this->userAuth = $userAuth;
         $this->esiData = $esiData;
         $this->tokenService = $tokenService;

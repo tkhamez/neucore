@@ -22,27 +22,27 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * Character was moved to another player account.
      */
-    const REASON_MOVED = 'moved';
+    public const REASON_MOVED = 'moved';
 
     /**
      * User has deleted the character from their player account..
      */
-    const REASON_DELETED_MANUALLY = 'deleted-manually';
+    public const REASON_DELETED_MANUALLY = 'deleted-manually';
 
     /**
      * EVE character was deleted/biomassed.
      */
-    const REASON_DELETED_BIOMASSED = 'deleted-biomassed';
+    public const REASON_DELETED_BIOMASSED = 'deleted-biomassed';
 
     /**
      * Character was moved to another EVE account (owner hash changed).
      */
-    const REASON_DELETED_OWNER_CHANGED = 'deleted-owner-changed';
+    public const REASON_DELETED_OWNER_CHANGED = 'deleted-owner-changed';
 
     /**
      * Character was deleted by an admin, this does not create a RemovedCharacter database entry.
      */
-    const REASON_DELETED_BY_ADMIN = 'deleted-by-admin';
+    public const REASON_DELETED_BY_ADMIN = 'deleted-by-admin';
 
     /**
      * @ORM\Id
@@ -169,7 +169,7 @@ class RemovedCharacter implements \JsonSerializable
     {
         return $this->newPlayer;
     }
-    
+
     public function setCharacterId(int $characterId): self
     {
         $this->characterId = $characterId;

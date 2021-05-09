@@ -24,27 +24,27 @@ class Account
     /**
      * Result for checkCharacter() if token is valid.
      */
-    const CHECK_TOKEN_OK = 1;
+    public const CHECK_TOKEN_OK = 1;
 
     /**
      * Result for checkCharacter() if token is invalid.
      */
-    const CHECK_TOKEN_NOK = 2;
+    public const CHECK_TOKEN_NOK = 2;
 
     /**
      * Result for checkCharacter() if the character was deleted.
      */
-    const CHECK_CHAR_DELETED = 3;
+    public const CHECK_CHAR_DELETED = 3;
 
     /**
      * Result for checkCharacter() if token could not be parsed.
      */
-    const CHECK_TOKEN_PARSE_ERROR = 4;
+    public const CHECK_TOKEN_PARSE_ERROR = 4;
 
     /**
      * Result for checkCharacter() if there is no refresh token.
      */
-    const CHECK_TOKEN_NA = 5;
+    public const CHECK_TOKEN_NA = 5;
 
     /**
      * @var LoggerInterface
@@ -281,7 +281,7 @@ class Account
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
         $eveAuth = $jwt->getEveAuthentication();
-        
+
         // token is valid here, check scopes
         // (scopes should not change after login since you cannot revoke individual scopes)
         if (empty($eveAuth->getScopes())) {

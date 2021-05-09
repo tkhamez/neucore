@@ -15,23 +15,23 @@ use Neucore\Repository\WatchlistRepository;
 
 class Watchlist
 {
-    const GROUP = 'group';
+    public const GROUP = 'group';
 
-    const MANAGER_GROUP = 'managerGroup';
+    public const MANAGER_GROUP = 'managerGroup';
 
-    const ALLIANCE = 'alliance';
+    public const ALLIANCE = 'alliance';
 
-    const CORPORATION = 'corporation';
+    public const CORPORATION = 'corporation';
 
-    const EXEMPTION = 'exemption';
+    public const EXEMPTION = 'exemption';
 
-    const KICKLIST_CORPORATION = 'kicklistCorporation';
+    public const KICKLIST_CORPORATION = 'kicklistCorporation';
 
-    const KICKLIST_ALLIANCE = 'kicklistAlliance';
+    public const KICKLIST_ALLIANCE = 'kicklistAlliance';
 
-    const ALLOWLIST_CORPORATION = 'allowlistCorporation';
+    public const ALLOWLIST_CORPORATION = 'allowlistCorporation';
 
-    const ALLOWLIST_ALLIANCE = 'allowlistAlliance';
+    public const ALLOWLIST_ALLIANCE = 'allowlistAlliance';
 
     /**
      * @var PlayerRepository

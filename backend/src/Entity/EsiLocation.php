@@ -18,11 +18,11 @@ use OpenApi\Annotations as OA;
  */
 class EsiLocation implements \JsonSerializable
 {
-    const CATEGORY_SYSTEM = 'system';
+    public const CATEGORY_SYSTEM = 'system';
 
-    const CATEGORY_STATION = 'station';
+    public const CATEGORY_STATION = 'station';
 
-    const CATEGORY_STRUCTURE = 'structure';
+    public const CATEGORY_STRUCTURE = 'structure';
 
     /**
      * @OA\Property(format="int64")

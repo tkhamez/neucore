@@ -29,9 +29,9 @@ class AutoAllowlist extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    const KEY_TOKEN = 'token';
+    private const KEY_TOKEN = 'token';
 
-    const KEY_IDS = 'ids';
+    private const KEY_IDS = 'ids';
 
     /**
      * @var Watchlist

@@ -27,9 +27,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SettingsController extends BaseController
 {
-    const COLUMN_NAME = 'name';
+    private const COLUMN_NAME = 'name';
 
-    const COLUMN_VALUE = 'value';
+    private const COLUMN_VALUE = 'value';
 
     /**
      * @var array

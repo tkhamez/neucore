@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -19,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CharController extends BaseController
 {
-    const ERROR_CHARACTER_NOT_FOUND = 'Character not found.';
+    public const ERROR_CHARACTER_NOT_FOUND = 'Character not found.';
 
     /**
      * @OA\Get(

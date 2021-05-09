@@ -18,13 +18,13 @@ use Psr\Log\LoggerInterface;
  */
 class OAuthToken
 {
-    const OPTION_ACCESS_TOKEN = 'access_token';
+    public const OPTION_ACCESS_TOKEN = 'access_token';
 
-    const OPTION_REFRESH_TOKEN = 'refresh_token';
+    public const OPTION_REFRESH_TOKEN = 'refresh_token';
 
-    const OPTION_EXPIRES = 'expires';
+    public const OPTION_EXPIRES = 'expires';
 
-    const OPTION_RESOURCE_OWNER_ID = 'resource_owner_id';
+    public const OPTION_RESOURCE_OWNER_ID = 'resource_owner_id';
 
     /**
      * @var GenericProvider

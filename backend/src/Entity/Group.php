@@ -18,11 +18,11 @@ use OpenApi\Annotations as OA;
  */
 class Group implements \JsonSerializable
 {
-    const VISIBILITY_PRIVATE = 'private';
+    public const VISIBILITY_PRIVATE = 'private';
 
-    const VISIBILITY_PUBLIC = 'public';
+    public const VISIBILITY_PUBLIC = 'public';
 
-    const VISIBILITY_CONDITIONED = 'conditioned';
+    private const VISIBILITY_CONDITIONED = 'conditioned';
 
     /**
      * Group ID.

@@ -45,9 +45,9 @@ use Psr\Log\LoggerInterface;
  */
 class PlayerController extends BaseController
 {
-    const COLUMN_PLAYER = 'player';
+    private const COLUMN_PLAYER = 'player';
 
-    const COLUMN_GROUP = 'group';
+    private const COLUMN_GROUP = 'group';
 
     /**
      * @var LoggerInterface

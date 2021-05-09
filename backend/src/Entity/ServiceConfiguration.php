@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -86,7 +87,7 @@ class ServiceConfiguration implements \JsonSerializable
 
     public static function fromArray(array $data): self
     {
-        $obj = new self;
+        $obj = new self();
         foreach ($data as $name => $value) {
             if ($name === 'URLs') {
                 $urlValues = [];

@@ -10,7 +10,7 @@ use Neucore\Service\ObjectManager;
 
 class SystemVariableStorage implements StorageInterface
 {
-    const PREFIX = '__storage__';
+    public const PREFIX = '__storage__';
 
     /**
      * @var SystemVariableRepository

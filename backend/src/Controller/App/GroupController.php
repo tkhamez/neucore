@@ -35,13 +35,13 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class GroupController extends BaseController
 {
-    const KEY_GROUPS = 'groups';
+    private const KEY_GROUPS = 'groups';
 
-    const KEY_ALLIANCE = 'alliance';
+    private const KEY_ALLIANCE = 'alliance';
 
-    const TYPE_CORPORATION = 'Corporation';
+    private const TYPE_CORPORATION = 'Corporation';
 
-    const TYPE_ALLIANCE = 'Alliance';
+    private const TYPE_ALLIANCE = 'Alliance';
 
     /**
      * @var AppAuth
@@ -61,7 +61,7 @@ class GroupController extends BaseController
         Account $accountService
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
-        
+
         $this->appAuthService = $appAuthService;
         $this->accountService = $accountService;
     }

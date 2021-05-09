@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -50,36 +51,36 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AuthController extends BaseController
 {
-    const SESS_AUTH_REDIRECT = 'auth_redirect';
+    private const SESS_AUTH_REDIRECT = 'auth_redirect';
 
-    const SESS_AUTH_STATE = 'auth_state';
+    private const SESS_AUTH_STATE = 'auth_state';
 
-    const SESS_AUTH_RESULT = 'auth_result';
+    private const SESS_AUTH_RESULT = 'auth_result';
 
-    const KEY_RESULT_SUCCESS = 'success';
+    private const KEY_RESULT_SUCCESS = 'success';
 
-    const KEY_RESULT_MESSAGE = 'message';
+    private const KEY_RESULT_MESSAGE = 'message';
 
     /**
      * A prefix for the OAuth state parameter that identifies a login of "managed" accounts.
      *
      * @var string
      */
-    const STATE_PREFIX_STATUS_MANAGED = 's.';
+    public const STATE_PREFIX_STATUS_MANAGED = 's.';
 
     /**
      * A prefix for the OAuth state parameter that identifies a login of "managed" alt.
      *
      * @var string
      */
-    const STATE_PREFIX_STATUS_MANAGED_ALT = 'z.';
+    public const STATE_PREFIX_STATUS_MANAGED_ALT = 'z.';
 
     /**
      * A prefix for the OAuth state parameter that identifies an alt login.
      *
      * @var string
      */
-    const STATE_PREFIX_ALT = 'a.';
+    public const STATE_PREFIX_ALT = 'a.';
 
     /**
      * A prefix for the OAuth state parameter that identifies an login
@@ -87,7 +88,7 @@ class AuthController extends BaseController
      *
      * @var string
      */
-    const STATE_PREFIX_MAIL = 'm.';
+    public const STATE_PREFIX_MAIL = 'm.';
 
     /**
      * A prefix for the OAuth state parameter that identifies an login
@@ -95,7 +96,7 @@ class AuthController extends BaseController
      *
      * @var string
      */
-    const STATE_PREFIX_DIRECTOR = 'd.';
+    public const STATE_PREFIX_DIRECTOR = 'd.';
 
     /**
      * @var SessionData
@@ -121,7 +122,7 @@ class AuthController extends BaseController
         Config $config
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
-        
+
         $this->session = $session;
         $this->authProvider = $authProvider;
         $this->config = $config;

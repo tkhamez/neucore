@@ -24,7 +24,6 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
-
     /**
      * @var LoggerInterface
      */

@@ -37,8 +37,8 @@
     },
     "require-dev": {
         "drenso/phan-extensions": "~3.1.0",
-        "friendsofphp/php-cs-fixer": "^2.14",
-        "phan/phan": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "phan/phan": "^4.0",
         "phpstan/phpstan": "^0.12.2",
         "phpunit/phpunit": "^9.4",
         "vimeo/psalm": "^4.0"
@@ -85,7 +85,7 @@
         "psalm": "psalm",
         "test": "phpunit --colors=always",
         "test:cov": "phpunit --colors=always --coverage-html var/phpunit",
-        "style:check": "php-cs-fixer fix src --dry-run --diff --diff-format udiff --ansi",
+        "style:check": "php-cs-fixer fix src --dry-run --diff --ansi",
         "style:fix": "php-cs-fixer fix src --ansi",
         "start": "php -d max_execution_time=0 -S 0.0.0.0:8080 -t ../web ../web/app.php"
     },

@@ -6,5 +6,5 @@ namespace Neucore\Log;
 
 class Context
 {
-    const EXCEPTION = 'exception';
+    public const EXCEPTION = 'exception';
 }

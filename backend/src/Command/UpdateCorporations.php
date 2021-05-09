@@ -26,9 +26,9 @@ class UpdateCorporations extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    const UPDATE_OK = 'update OK';
+    public const UPDATE_OK = 'update OK';
 
-    const UPDATE_NOK = 'update NOK';
+    public const UPDATE_NOK = 'update NOK';
 
     /**
      * @var CorporationRepository

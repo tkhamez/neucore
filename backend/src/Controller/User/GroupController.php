@@ -25,11 +25,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class GroupController extends BaseController
 {
-    const ERROR_GROUP_NOT_FOUND = 'Group not found.';
+    private const ERROR_GROUP_NOT_FOUND = 'Group not found.';
 
-    const TYPE_MANAGERS = 'managers';
+    private const TYPE_MANAGERS = 'managers';
 
-    const TYPE_MEMBERS = 'members';
+    private const TYPE_MEMBERS = 'members';
 
     /**
      * @var UserAuth

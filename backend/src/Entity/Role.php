@@ -26,32 +26,32 @@ use OpenApi\Annotations as OA;
  */
 class Role implements \JsonSerializable
 {
-    const APP = 'app';
-    const APP_GROUPS = 'app-groups';
-    const APP_CHARS = 'app-chars';
-    const APP_TRACKING = 'app-tracking';
-    const APP_ESI = 'app-esi';
+    public const APP = 'app';
+    public const APP_GROUPS = 'app-groups';
+    public const APP_CHARS = 'app-chars';
+    public const APP_TRACKING = 'app-tracking';
+    public const APP_ESI = 'app-esi';
 
-    const ANONYMOUS = 'anonymous';
+    public const ANONYMOUS = 'anonymous';
 
-    const USER = 'user';
-    const USER_ADMIN = 'user-admin';
-    const USER_MANAGER = 'user-manager';
-    const USER_CHARS = 'user-chars';
-    const GROUP_ADMIN = 'group-admin';
-    const SERVICE_ADMIN = 'service-admin';
-    const STATISTICS = 'statistics';
-    const APP_ADMIN = 'app-admin';
-    const ESI = 'esi';
-    const SETTINGS = 'settings';
-    const TRACKING_ADMIN = 'tracking-admin';
-    const WATCHLIST_ADMIN = 'watchlist-admin';
+    public const USER = 'user';
+    public const USER_ADMIN = 'user-admin';
+    public const USER_MANAGER = 'user-manager';
+    public const USER_CHARS = 'user-chars';
+    public const GROUP_ADMIN = 'group-admin';
+    public const SERVICE_ADMIN = 'service-admin';
+    public const STATISTICS = 'statistics';
+    public const APP_ADMIN = 'app-admin';
+    public const ESI = 'esi';
+    public const SETTINGS = 'settings';
+    public const TRACKING_ADMIN = 'tracking-admin';
+    public const WATCHLIST_ADMIN = 'watchlist-admin';
 
-    const GROUP_MANAGER = 'group-manager';
-    const APP_MANAGER = 'app-manager';
-    const TRACKING = 'tracking';
-    const WATCHLIST = 'watchlist';
-    const WATCHLIST_MANAGER = 'watchlist-manager';
+    public const GROUP_MANAGER = 'group-manager';
+    public const APP_MANAGER = 'app-manager';
+    public const TRACKING = 'tracking';
+    public const WATCHLIST = 'watchlist';
+    public const WATCHLIST_MANAGER = 'watchlist-manager';
 
     /**
      * @ORM\Id

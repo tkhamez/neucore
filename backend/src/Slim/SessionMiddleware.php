@@ -24,15 +24,15 @@ use Slim\Routing\RouteContext;
  */
 class SessionMiddleware implements MiddlewareInterface
 {
-    const OPTION_ROUTE_INCLUDE_PATTERN  = 'route_include_pattern';
+    public const OPTION_ROUTE_INCLUDE_PATTERN  = 'route_include_pattern';
 
-    const OPTION_ROUTE_BLOCKING_PATTERN  = 'route_blocking_pattern';
+    public const OPTION_ROUTE_BLOCKING_PATTERN  = 'route_blocking_pattern';
 
-    const OPTION_SECURE  = 'secure';
+    public const OPTION_SECURE  = 'secure';
 
-    const OPTION_SAME_SITE  = 'same_site';
+    public const OPTION_SAME_SITE  = 'same_site';
 
-    const OPTION_NAME  = 'name';
+    public const OPTION_NAME  = 'name';
 
     /**
      * @var array

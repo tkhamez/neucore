@@ -11,12 +11,12 @@ use Neucore\Entity\SystemVariable;
 /** @noinspection PhpUnused */
 final class Version20191110161947 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(
             'UPDATE system_variables SET name = ? WHERE name = ?',
@@ -42,7 +42,7 @@ final class Version20191110161947 extends AbstractMigration
         );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(
             'UPDATE system_variables SET name = ? WHERE name = ?',

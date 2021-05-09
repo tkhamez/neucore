@@ -33,14 +33,14 @@ class Player implements \JsonSerializable
      *
      * @var string
      */
-    const STATUS_STANDARD = 'standard';
+    public const STATUS_STANDARD = 'standard';
 
     /**
      * Manually managed account.
      *
      * @var string
      */
-    const STATUS_MANAGED = 'managed';
+    public const STATUS_MANAGED = 'managed';
 
     /**
      * @OA\Property()
