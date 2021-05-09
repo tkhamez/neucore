@@ -5,6 +5,9 @@
 - New API endpoints for apps: 
   - GET /app/v1/group-members/{groupId} Returns the main character IDs from all group members.
   - POST /app/v1/characters Returns all characters from multiple player accounts identified by character IDs.
+- Changed check for supported browsers.
+- Removed duplicate character search results (from character movements).
+- Small bug fixes.
 
 ## 1.20.0
 
