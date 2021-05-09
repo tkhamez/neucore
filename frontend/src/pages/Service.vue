@@ -38,7 +38,7 @@
                     Register
                 </button>
                 <p v-if="!isAccount(account)" class="small text-muted">Create or request a new account.</p>
-                <p v-if="isInactive(account)" class="small text-muted">Reactivate account.</p>
+                <p v-if="isInactive(account)" class="small text-muted">Reactivate account or request new account.</p>
                 <p v-if="service.configuration.textRegister" class="mt-3">
                     <span style="white-space: pre-line;">{{ service.configuration.textRegister }}</span>
                 </p>
