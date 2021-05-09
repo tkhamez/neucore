@@ -27,7 +27,7 @@ class GroupTest extends TestCase
 
     public function testGetId()
     {
-        $this->assertNull((new Group)->getId());
+        $this->assertSame(0, (new Group)->getId());
     }
 
     public function testSetGetName()

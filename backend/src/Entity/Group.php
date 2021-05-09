@@ -31,7 +31,7 @@ class Group implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
+     * @var integer|null
      */
     private $id;
 
@@ -40,7 +40,7 @@ class Group implements \JsonSerializable
      *
      * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
      * @ORM\Column(type="string", unique=true, length=64)
-     * @var string
+     * @var string|null
      */
     private $name;
 
@@ -137,9 +137,6 @@ class Group implements \JsonSerializable
         ];
     }
 
-    /**
-     * Constructor
-     */
     public function __construct()
     {
         $this->applications = new ArrayCollection();
@@ -152,48 +149,28 @@ class Group implements \JsonSerializable
         $this->requiredBy = new ArrayCollection();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Group
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     /**
-     * Set visibility.
-     *
      * @param string $visibility elf::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC or self::VISIBILITY_CONDITIONED
      * @throws \InvalidArgumentException if parameter is invalid
-     * @return Group
      */
-    public function setVisibility(string $visibility)
+    public function setVisibility(string $visibility): self
     {
         $valid = [self::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC, self::VISIBILITY_CONDITIONED];
         if (! in_array($visibility, $valid)) {
@@ -205,24 +182,12 @@ class Group implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * Get visibility.
-     *
-     * @return string
-     */
-    public function getVisibility()
+    public function getVisibility(): string
     {
         return $this->visibility;
     }
 
-    /**
-     * Add group application.
-     *
-     * @param GroupApplication $application
-     *
-     * @return Group
-     */
-    public function addApplication(GroupApplication $application)
+    public function addApplication(GroupApplication $application): self
     {
         $this->applications[] = $application;
 
@@ -230,45 +195,30 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove group application.
-     *
-     * @param GroupApplication $application
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApplication(GroupApplication $application)
+    public function removeApplication(GroupApplication $application): bool
     {
         return $this->applications->removeElement($application);
     }
 
     /**
-     * Get group applications.
-     *
      * @return GroupApplication[]
      */
-    public function getApplications()
+    public function getApplications(): array
     {
         return $this->applications->toArray();
     }
 
     /**
-     * Get players.
-     *
      * @return Player[]
      */
-    public function getPlayers()
+    public function getPlayers(): array
     {
         return $this->players->toArray();
     }
 
-    /**
-     * Add manager.
-     *
-     * @param Player $manager
-     *
-     * @return Group
-     */
-    public function addManager(Player $manager)
+    public function addManager(Player $manager): self
     {
         $this->managers[] = $manager;
 
@@ -276,35 +226,22 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove manager.
-     *
-     * @param Player $manager
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeManager(Player $manager)
+    public function removeManager(Player $manager): bool
     {
         return $this->managers->removeElement($manager);
     }
 
     /**
-     * Get managers.
-     *
      * @return Player[]
      */
-    public function getManagers()
+    public function getManagers(): array
     {
         return $this->managers->toArray();
     }
 
-    /**
-     * Add app.
-     *
-     * @param App $app
-     *
-     * @return Group
-     */
-    public function addApp(App $app)
+    public function addApp(App $app): self
     {
         $this->apps[] = $app;
 
@@ -312,35 +249,23 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove app.
-     *
-     * @param App $app
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeApp(App $app)
+    public function removeApp(App $app): bool
     {
         return $this->apps->removeElement($app);
     }
 
     /**
-     * Get apps.
-     *
      * @return App[]
      */
-    public function getApps()
+    public function getApps(): array
     {
         return $this->apps->toArray();
     }
 
-    /**
-     * Add corporation.
-     *
-     * @param Corporation $corporation
-     *
-     * @return Group
-     */
-    public function addCorporation(Corporation $corporation)
+    public function addCorporation(Corporation $corporation): self
     {
         $this->corporations[] = $corporation;
 
@@ -348,35 +273,19 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove corporation.
-     *
-     * @param Corporation $corporation
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCorporation(Corporation $corporation)
+    public function removeCorporation(Corporation $corporation): bool
     {
         return $this->corporations->removeElement($corporation);
     }
 
-    /**
-     * Get corporations.
-     *
-     * @return Corporation[]
-     */
-    public function getCorporations()
+    public function getCorporations(): array
     {
         return $this->corporations->toArray();
     }
 
-    /**
-     * Add alliance.
-     *
-     * @param Alliance $alliance
-     *
-     * @return Group
-     */
-    public function addAlliance(Alliance $alliance)
+    public function addAlliance(Alliance $alliance): self
     {
         $this->alliances[] = $alliance;
 
@@ -384,35 +293,23 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove alliance.
-     *
-     * @param Alliance $alliance
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeAlliance(Alliance $alliance)
+    public function removeAlliance(Alliance $alliance): bool
     {
         return $this->alliances->removeElement($alliance);
     }
 
     /**
-     * Get alliances.
-     *
      * @return Alliance[]
      */
-    public function getAlliances()
+    public function getAlliances(): array
     {
         return $this->alliances->toArray();
     }
 
-    /**
-     * Add requiredGroup.
-     *
-     * @param Group $requiredGroup
-     *
-     * @return Group
-     */
-    public function addRequiredGroup(Group $requiredGroup)
+    public function addRequiredGroup(Group $requiredGroup): self
     {
         $this->requiredGroups[] = $requiredGroup;
 
@@ -420,13 +317,9 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove requiredGroup.
-     *
-     * @param Group $requiredGroup
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeRequiredGroup(Group $requiredGroup)
+    public function removeRequiredGroup(Group $requiredGroup): bool
     {
         return $this->requiredGroups->removeElement($requiredGroup);
     }
@@ -441,14 +334,7 @@ class Group implements \JsonSerializable
         return $this->requiredGroups->toArray();
     }
 
-    /**
-     * Add requiredBy.
-     *
-     * @param Group $requiredBy
-     *
-     * @return Group
-     */
-    public function addRequiredBy(Group $requiredBy)
+    public function addRequiredBy(Group $requiredBy): self
     {
         $this->requiredBy[] = $requiredBy;
 
@@ -456,20 +342,14 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * Remove requiredBy.
-     *
-     * @param Group $requiredBy
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeRequiredBy(Group $requiredBy)
+    public function removeRequiredBy(Group $requiredBy): bool
     {
         return $this->requiredBy->removeElement($requiredBy);
     }
 
     /**
-     * Get requiredBy.
-     *
      * @return Group[]
      */
     public function getRequiredBy(): array
