@@ -76,7 +76,7 @@ abstract class BaseController
             return null;
         }
 
-        return array_unique(array_map('intVal', $ids));
+        return array_unique(array_map('intVal', array_values($ids)));
     }
 
     /**
