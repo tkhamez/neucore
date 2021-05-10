@@ -19,9 +19,7 @@ docker-compose run node npm run build --prefix /app/frontend/neucore-js-client
 
 # Build frontend
 docker-compose run node npm install
-if [[ $1 = prod ]]; then
-    docker-compose run node npm run build
-fi
+docker-compose run node npm run build
 
 # Update the database schema and seed data
 docker-compose exec php-fpm vendor/bin/doctrine-migrations migrations:migrate --no-interaction
