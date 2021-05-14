@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: Groups can now be set to "automatically accept" so that applications do not have to be approved.
+- Some improvements and bug fixes for the group application process.
 
 ## 1.21.0
 

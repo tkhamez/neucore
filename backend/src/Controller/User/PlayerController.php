@@ -399,6 +399,9 @@ class PlayerController extends BaseController
 
         $this->getUser($this->userAuth)->getPlayer()->removeGroup($group);
 
+        // also remove the application
+        $this->removeApplication($gid);
+
         return $this->flushAndReturn(204);
     }
 

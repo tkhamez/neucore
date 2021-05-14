@@ -368,6 +368,12 @@ class PlayerControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(12);
 
+        $ga = new GroupApplication();
+        $ga->setGroup($this->fetchGroup($this->groupId));
+        $ga->setPlayer($this->fetchPlayer($this->player3Id));
+        $this->em->persist($ga);
+        $this->em->flush();
+
         $this->fetchPlayer($this->player3Id)->addGroup($this->fetchGroup($this->groupId));
         $this->em->flush();
 
@@ -377,6 +383,8 @@ class PlayerControllerTest extends WebTestCase
         $this->em->clear();
         $p = $this->fetchPlayer($this->player3Id);
         $this->assertSame(1, count($p->getGroups()));
+        $groupApps = $this->groupAppRepo->findBy([]);
+        $this->assertSame(0, count($groupApps));
     }
 
     public function testSetMain403()

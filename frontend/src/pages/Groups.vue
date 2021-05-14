@@ -44,7 +44,7 @@
                             :set="status = getStatus(group.id)">
 
                             <td>{{ group.name }}</td>
-                            <td>{{ status }} <span v-if="status === 'accepted'">(but not a member)</span></td>
+                            <td>{{ status }}</td>
                             <td>
                                 <button v-if="status === 'Member'"
                                         type="button" class="btn btn-warning btn-sm"
@@ -161,6 +161,7 @@ export default {
             const vm = this;
             new PlayerApi().leaveGroup(this.groupToLeave.id, function() {
                 vm.emitter.emit('playerChange');
+                vm.getApplications();
             });
             $('#leaveGroupModal').modal('hide');
             this.groupToLeave = null;

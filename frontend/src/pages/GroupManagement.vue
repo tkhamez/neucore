@@ -87,9 +87,6 @@
                  v-for="status in ['pending', 'denied', 'accepted']">
                 <div class="card-body">
                     <h5>{{ status }}</h5>
-                    <span v-if="status === 'accepted'" class="small">
-                        The player no longer has to be a member of the group.
-                    </span>
                 </div>
                 <table v-cloak v-if="groupId" class="table table-hover mb-0"
                        :aria-describedby="status + ' applications'">
