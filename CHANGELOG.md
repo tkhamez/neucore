@@ -7,7 +7,7 @@
 - Groups can now be set to "automatically accept" so that applications do not have to be approved.
 - Added description to groups.
 - Some improvements and bug fixes for the group application process.
-- Exclude renamed and move characters from some character searches.
+- Exclude renamed and moved characters from some character searches.
 - Added corporation filter to the group members endpoint (app API).
 - Added CSRF Token to the API description.
 
