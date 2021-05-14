@@ -49,7 +49,8 @@ class ApplicationControllerTest extends WebTestCase
         $this->assertSame([
             'id' => $app->getId(),
             'name' => 'Test App',
-            'groups' => [['id' => $group->getId(), 'name' => 'g1', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            'groups' => [['id' => $group->getId(), 'name' => 'g1',
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
             'roles' => ['app'],
         ], $this->parseJsonBody($response));
     }

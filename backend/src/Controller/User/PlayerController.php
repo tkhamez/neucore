@@ -60,6 +60,11 @@ class PlayerController extends BaseController
     private $userAuth;
 
     /**
+     * @var Account
+     */
+    private $account;
+
+    /**
      * @var array
      */
     private $assignableRoles = [
@@ -89,12 +94,14 @@ class PlayerController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
-        UserAuth $userAuth
+        UserAuth $userAuth,
+        Account $account
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->log = $log;
         $this->userAuth = $userAuth;
+        $this->account = $account;
     }
 
     /**
@@ -254,14 +261,24 @@ class PlayerController extends BaseController
             self::COLUMN_PLAYER => $player->getId(),
             self::COLUMN_GROUP => $group->getId()
         ]);
-        if (! $groupApplication) {
+        if (!$groupApplication) {
             $groupApplication = new GroupApplication();
             $groupApplication->setPlayer($player);
             $groupApplication->setGroup($group);
             $this->objectManager->persist($groupApplication);
         }
-        $groupApplication->setStatus(GroupApplication::STATUS_PENDING);
         $groupApplication->setCreated(new \DateTime());
+        if ($group->getAutoAccept()) {
+            $groupApplication->setStatus(GroupApplication::STATUS_ACCEPTED);
+            if (!$player->hasGroup($group->getId())) {
+                $player->addGroup($group);
+                $this->account->syncTrackingRole($groupApplication->getPlayer());
+                $this->account->syncWatchlistRole($groupApplication->getPlayer());
+                $this->account->syncWatchlistManagerRole($groupApplication->getPlayer());
+            }
+        } else {
+            $groupApplication->setStatus(GroupApplication::STATUS_PENDING);
+        }
 
         return $this->flushAndReturn(204);
     }

@@ -117,6 +117,7 @@ return [
     '/api/user/group/create'                         => ['POST',   GroupController::class.'::create'],
     '/api/user/group/{id}/rename'                    => ['PUT',    GroupController::class.'::rename'],
     '/api/user/group/{id}/set-visibility/{choice}'   => ['PUT',    GroupController::class.'::setVisibility'],
+    '/api/user/group/{id}/set-auto-accept/{choice}'  => ['PUT',    GroupController::class.'::setAutoAccept'],
     '/api/user/group/{id}/delete'                    => ['DELETE', GroupController::class.'::delete'],
     '/api/user/group/{id}/managers'                  => ['GET',    GroupController::class.'::managers'],
     '/api/user/group/{id}/corporations'              => ['GET',    GroupController::class.'::corporations'],

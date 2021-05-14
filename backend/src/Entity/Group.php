@@ -50,6 +50,13 @@ class Group implements \JsonSerializable
     private $visibility = self::VISIBILITY_PRIVATE;
 
     /**
+     * @OA\Property()
+     * @ORM\Column(type="boolean", name="auto_accept")
+     * @var bool
+     */
+    private $autoAccept = false;
+
+    /**
      * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
      * @ORM\OrderBy({"created" = "DESC"})
      * @var Collection
@@ -130,7 +137,8 @@ class Group implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'visibility' => $this->visibility
+            'visibility' => $this->visibility,
+            'autoAccept' => $this->autoAccept,
         ];
     }
 
@@ -182,6 +190,18 @@ class Group implements \JsonSerializable
     public function getVisibility(): string
     {
         return $this->visibility;
+    }
+
+    public function setAutoAccept(bool $autoAccept): self
+    {
+        $this->autoAccept = $autoAccept;
+
+        return $this;
+    }
+
+    public function getAutoAccept(): bool
+    {
+        return $this->autoAccept;
     }
 
     public function addApplication(GroupApplication $application): self

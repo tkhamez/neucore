@@ -75,9 +75,10 @@ class PlayerTest extends TestCase
                 #'characterNameChanges' => [],
             ]],
             'groups' => [
-                ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE]
+                ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
             ],
-            'managerGroups' => [['id' => null, 'name' => 'gName', 'visibility' => Group::VISIBILITY_PRIVATE]],
+            'managerGroups' => [['id' => null, 'name' => 'gName',
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [],]],
         ];
         $this->assertSame($expected, json_decode((string) json_encode($play), true));

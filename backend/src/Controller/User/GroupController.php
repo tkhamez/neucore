@@ -184,7 +184,7 @@ class GroupController extends BaseController
     public function create(ServerRequestInterface $request): ResponseInterface
     {
         $name = $this->getBodyParam($request, 'name', '');
-        if (! preg_match($this->namePattern, $name)) {
+        if (!preg_match($this->namePattern, $name)) {
             return $this->response->withStatus(400);
         }
 
@@ -256,12 +256,12 @@ class GroupController extends BaseController
      */
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
         $name = $this->getBodyParam($request, 'name', '');
-        if (! preg_match($this->namePattern, $name)) {
+        if (!preg_match($this->namePattern, $name)) {
             return $this->response->withStatus(400);
         }
 
@@ -316,7 +316,7 @@ class GroupController extends BaseController
      */
     public function setVisibility(string $id, string $choice): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
@@ -325,6 +325,61 @@ class GroupController extends BaseController
         } catch (\Exception $e) {
             return $this->response->withStatus(400);
         }
+
+        return $this->flushAndReturn(200, $this->group);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/user/group/{id}/set-auto-accept/{choice}",
+     *     operationId="userGroupSetAutoAccept",
+     *     summary="Change the auto-accept setting of a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="choice",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"on", "off"})
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Auto-accept changed.",
+     *         @OA\JsonContent(ref="#/components/schemas/Group")
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid 'choice' parameter."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     )
+     * )
+     */
+    public function setAutoAccept(string $id, string $choice): ResponseInterface
+    {
+        if (!$this->findGroup($id)) {
+            return $this->response->withStatus(404);
+        }
+
+        if (!in_array($choice, ['on', 'off'])) {
+            return $this->response->withStatus(400);
+        }
+
+        $this->group->setAutoAccept($choice === 'on');
 
         return $this->flushAndReturn(200, $this->group);
     }
@@ -360,7 +415,7 @@ class GroupController extends BaseController
      */
     public function delete(string $id): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
@@ -440,7 +495,7 @@ class GroupController extends BaseController
      */
     public function corporations(string $id): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
@@ -479,7 +534,7 @@ class GroupController extends BaseController
      */
     public function alliances(string $id): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
@@ -519,7 +574,7 @@ class GroupController extends BaseController
      */
     public function requiredGroups(string $id): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
         }
 
@@ -566,7 +621,7 @@ class GroupController extends BaseController
     public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
-        if (! $this->findGroup($id) || ! $requiredGroup) {
+        if (!$this->findGroup($id) || ! $requiredGroup) {
             return $this->response->withStatus(404, 'Group(s) not found.');
         }
 
@@ -577,7 +632,7 @@ class GroupController extends BaseController
                 break;
             }
         }
-        if (! $hasGroup) {
+        if (!$hasGroup) {
             $this->group->addRequiredGroup($requiredGroup);
         }
 
@@ -623,7 +678,7 @@ class GroupController extends BaseController
      */
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
         }
 
@@ -636,7 +691,7 @@ class GroupController extends BaseController
             }
         }
 
-        if (! $removed) {
+        if (!$removed) {
             return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
         }
 
@@ -759,11 +814,11 @@ class GroupController extends BaseController
      */
     public function applications(string $id): ResponseInterface
     {
-        if (! $this->findGroup($id)) {
+        if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
-        if (! $this->checkManager($this->group)) {
+        if (!$this->checkManager($this->group)) {
             return $this->response->withStatus(403);
         }
 
@@ -996,7 +1051,7 @@ class GroupController extends BaseController
         bool $onlyIfManager,
         bool $withRoles
     ): ResponseInterface {
-        if (! $this->findGroup($groupId)) {
+        if (!$this->findGroup($groupId)) {
             return $this->response->withStatus(404);
         }
 
@@ -1030,7 +1085,7 @@ class GroupController extends BaseController
         bool $onlyIfManager,
         Account $account
     ): ResponseInterface {
-        if (! $this->findGroupAndPlayer($groupId, $playerId)) {
+        if (!$this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
 
@@ -1044,7 +1099,7 @@ class GroupController extends BaseController
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === 'member' && !$this->player->hasGroup($this->group->getId())) {
             foreach ($this->group->getRequiredGroups() as $requiredGroup) {
-                if (! $this->player->hasGroup($requiredGroup->getId())) {
+                if (!$this->player->hasGroup($requiredGroup->getId())) {
                     return $this->response->withStatus(400);
                 }
             }
@@ -1064,7 +1119,7 @@ class GroupController extends BaseController
         bool $onlyIfManager,
         Account $account
     ): ResponseInterface {
-        if (! $this->findGroupAndPlayer($groupId, $playerId)) {
+        if (!$this->findGroupAndPlayer($groupId, $playerId)) {
             return $this->response->withStatus(404);
         }
 
@@ -1095,17 +1150,17 @@ class GroupController extends BaseController
     {
         $app = $this->repositoryFactory->getGroupApplicationRepository()->find($id);
 
-        if (! $app) {
+        if (!$app) {
             return $this->response->withStatus(404);
         }
 
-        if (! $this->checkManager($app->getGroup())) {
+        if (!$this->checkManager($app->getGroup())) {
             return $this->response->withStatus(403);
         }
 
         if ($action === 'accept') {
             $app->setStatus(GroupApplication::STATUS_ACCEPTED);
-            if (! $app->getPlayer()->hasGroup($app->getGroup()->getId())) {
+            if (!$app->getPlayer()->hasGroup($app->getGroup()->getId())) {
                 $app->getPlayer()->addGroup($app->getGroup());
                 $this->account->syncTrackingRole($app->getPlayer());
                 $this->account->syncWatchlistRole($app->getPlayer());
@@ -1132,7 +1187,7 @@ class GroupController extends BaseController
     private function findGroupAndPlayer(string $groupId, string $playerId): bool
     {
         $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
-        if (! $this->findGroup($groupId) || $playerEntity === null) {
+        if (!$this->findGroup($groupId) || $playerEntity === null) {
             return false;
         }
         $this->player = $playerEntity;

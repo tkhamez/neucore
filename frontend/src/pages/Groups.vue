@@ -48,13 +48,13 @@
                             <td>
                                 <button v-if="status === 'Member'"
                                         type="button" class="btn btn-warning btn-sm"
-                                        v-on:click="askLeave(group.id, group.name)">
+                                        v-on:click="askLeave(group.id, group.name, group.autoAccept)">
                                     Leave group
                                 </button>
                                 <button v-if="status === ''"
                                         type="button" class="btn btn-primary btn-sm"
                                         v-on:click="apply(group.id)">
-                                    Apply
+                                    {{group.autoAccept ? 'Join' : 'Apply'}}
                                 </button>
                                 <button v-if="status === 'pending' || status === 'denied' || status === 'accepted'"
                                         type="button" class="btn btn-secondary btn-sm"
@@ -133,6 +133,7 @@ export default {
         apply: function(groupId) {
             const vm = this;
             new PlayerApi().addApplication(groupId, function() {
+                vm.emitter.emit('playerChange');
                 vm.getApplications();
             });
         },
@@ -144,12 +145,16 @@ export default {
             });
         },
 
-        askLeave: function(groupId, groupName) {
+        askLeave: function(groupId, groupName, autoAccept) {
             this.groupToLeave = {
                 id: groupId,
                 name: groupName,
             };
-            $('#leaveGroupModal').modal('show');
+            if (autoAccept) {
+                this.leave();
+            } else {
+                $('#leaveGroupModal').modal('show');
+            }
         },
 
         leave: function() {

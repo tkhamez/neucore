@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- New: Groups can now be set to "automatically accept" so that applications do not have to be approved.
+
 ## 1.21.0
 
 9 Mai 2021

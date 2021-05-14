@@ -88,10 +88,18 @@ Modal windows to create, delete and edit entities
                             <option value="public">public</option>
                         </select>
                     </div>
+                    <div v-cloak v-if="type === 'Group'" class="custom-control custom-checkbox mb-2">
+                        <input class="custom-control-input" type="checkbox" id="entityEditAutoAccept"
+                               v-model="groupAutoAccept" v-on:change="setAutoAccept()">
+                        <label class="custom-control-label" for="entityEditAutoAccept">
+                            Automatically accept applications
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -114,6 +122,7 @@ export default {
         return {
             newName: '',
             groupVisibility: '',
+            groupAutoAccept: '',
             groupNameHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
             item: null,
         }
@@ -142,7 +151,8 @@ export default {
                 name: item.name,
             };
             if (this.type === 'Group') {
-                this.groupVisibility = item.visibility
+                this.groupVisibility = item.visibility;
+                this.groupAutoAccept = item.autoAccept;
             }
             $('#editModal').modal('show');
         },
@@ -153,7 +163,7 @@ export default {
             $('#editModal').modal('hide');
         },
 
-        setVisibility: function() {
+        setVisibility() {
             const vm = this;
             new GroupApi().setVisibility(this.item.id, this.groupVisibility, function(error) {
                 if (error) {
@@ -166,6 +176,18 @@ export default {
                 }
             });
         },
+
+        setAutoAccept() {
+            const vm = this;
+            new GroupApi().userGroupSetAutoAccept(this.item.id, this.groupAutoAccept ? 'on' : 'off', (error) => {
+                if (error) {
+                    vm.message('Error saving auto-accept.', 'error');
+                } else {
+                    vm.message('Auto-accept saved.', 'success');
+                    vm.$emit('groupChange');
+                }
+            });
+        }
     },
 }
 </script>

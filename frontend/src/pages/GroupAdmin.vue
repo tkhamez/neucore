@@ -31,7 +31,9 @@
                            :class="{ active: groupId === group.id }"
                            :href="'#GroupAdmin/' + group.id + '/' + contentType">
                             {{ group.name }}
-                            <span class="text-muted small">{{ group.visibility }}</span>
+                            <span class="text-muted small">
+                                {{ group.visibility }} {{ group.autoAccept ? 'auto-accept' : '' }}
+                            </span>
                         </a>
                         <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"

@@ -87,6 +87,11 @@ class PlayerControllerTest extends WebTestCase
     private $requiredGroupId;
 
     /**
+     * @var int
+     */
+    private $autoAcceptGroupId;
+
+    /**
      * @var PlayerRepository
      */
     private $playerRepo;
@@ -199,8 +204,10 @@ class PlayerControllerTest extends WebTestCase
                 ],
             ],
             'groups' => [
-                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'visibility' => Group::VISIBILITY_PRIVATE],
-                ['id' => $groups[0]->getId(), 'name' => 'group1', 'visibility' => Group::VISIBILITY_PRIVATE]
+                ['id' => $groups[1]->getId(), 'name' => 'another-group',
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                ['id' => $groups[0]->getId(), 'name' => 'group1',
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
             ],
             'managerGroups' => [],
             'managerApps' => [],
@@ -251,10 +258,31 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
         $groupApps = $this->groupAppRepo->findBy([]);
+        $player = $this->playerRepo->find($this->player3Id);
         $this->assertSame(1, count($groupApps));
         $this->assertSame($this->groupId, $groupApps[0]->getGroup()->getId());
+        $this->assertSame(GroupApplication::STATUS_PENDING, $groupApps[0]->getStatus());
+        $this->assertSame([$this->requiredGroupId], $player->getGroupIds());
         $this->assertSame($this->player3Id, $groupApps[0]->getPlayer()->getId());
         $this->assertLessThanOrEqual(time(), $groupApps[0]->getCreated()->getTimestamp());
+    }
+
+    public function testAddApplication204_AutoAccept()
+    {
+        $this->setupDb();
+        $this->loginUser(12);
+
+        // creates application
+        $response = $this->runApp('PUT', '/api/user/player/add-application/'. $this->autoAcceptGroupId);
+        $this->assertEquals(204, $response->getStatusCode());
+
+        $this->em->clear();
+        $groupApps = $this->groupAppRepo->findBy([]);
+        $player = $this->playerRepo->find($this->player3Id);
+        $this->assertSame(1, count($groupApps));
+        $this->assertSame($this->autoAcceptGroupId, $groupApps[0]->getGroup()->getId());
+        $this->assertSame(GroupApplication::STATUS_ACCEPTED, $groupApps[0]->getStatus());
+        $this->assertSame([$this->autoAcceptGroupId, $this->requiredGroupId], $player->getGroupIds());
     }
 
     public function testRemoveApplication403()
@@ -313,7 +341,8 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => $ga->getId(),
             'player' => ['id' => $this->player3Id, 'name' => 'Admin'],
-            'group' => ['id' => $this->groupId, 'name' => 'test-pub', 'visibility' => Group::VISIBILITY_PUBLIC],
+            'group' => ['id' => $this->groupId, 'name' => 'test-pub',
+                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => null,
         ]], $this->parseJsonBody($response));
@@ -944,6 +973,7 @@ class PlayerControllerTest extends WebTestCase
                 'id' => $this->requiredGroupId,
                 'name' => 'required-group',
                 'visibility' => Group::VISIBILITY_PRIVATE,
+                'autoAccept' => false,
             ]],
             'managerGroups' => [],
             'managerApps' => [],
@@ -1040,6 +1070,7 @@ class PlayerControllerTest extends WebTestCase
                 'id' => $this->requiredGroupId,
                 'name' => 'required-group',
                 'visibility' => Group::VISIBILITY_PRIVATE,
+                'autoAccept' => false,
             ]],
             'removedCharacters' => [],
             'incomingCharacters' => [],
@@ -1468,12 +1499,15 @@ class PlayerControllerTest extends WebTestCase
             Role::WATCHLIST_ADMIN,
         ]);
 
-        $gs = $this->h->addGroups(['test-pub', 'test-private', 'required-group']);
+        $gs = $this->h->addGroups(['test-pub', 'test-private', 'required-group', 'auto-accept']);
         $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
+        $gs[3]->setVisibility(Group::VISIBILITY_PUBLIC);
+        $gs[3]->setAutoAccept(true);
         $gs[0]->addRequiredGroup($gs[2]);
         $this->groupId = $gs[0]->getId();
         $this->gPrivateId = $gs[1]->getId();
         $this->requiredGroupId = $gs[2]->getId();
+        $this->autoAcceptGroupId = $gs[3]->getId();
 
         $player1 = $this->h->addCharacterMain('User', 10, [Role::USER, Role::USER_CHARS])->getPlayer();
         $this->player1Id = $player1->getId();

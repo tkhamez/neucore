@@ -221,7 +221,8 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
 
-        $expectedGroup = ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE];
+        $expectedGroup = ['id' => $this->gid, 'name' => 'group-one',
+            'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false];
         $this->assertSame(
             ['id' => $this->aid, 'name' => 'n a n', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
             $this->parseJsonBody($response1)
@@ -428,7 +429,8 @@ class AppControllerTest extends WebTestCase
             [
                 'id' => $this->aid,
                 'name' => 'app one',
-                'groups' => [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+                'groups' => [['id' => $this->gid, 'name' => 'group-one',
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
                 'roles' => [Role::APP]
             ],
             $this->parseJsonBody($response)
@@ -447,7 +449,8 @@ class AppControllerTest extends WebTestCase
             [
                 'id' => $this->aid,
                 'name' => 'app one',
-                'groups' => [['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE]],
+                'groups' => [['id' => $this->gid, 'name' => 'group-one',
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
                 'roles' => [Role::APP]
             ],
             $this->parseJsonBody($response)
