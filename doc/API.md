@@ -160,6 +160,7 @@ Group API
 - List all groups. `GET /user/group/all`
 - Create a group. `POST /user/group/create`
 - Rename a group. `PUT /user/group/{id}/rename`
+- Update group description. `PUT /user/group/{id}/update-description`
 - Change visibility of a group. `PUT /user/group/{id}/set-visibility/{choice}`
 - Change the auto-accept setting of a group. `PUT /user/group/{id}/set-auto-accept/{choice}`
 - Delete a group. `DELETE /user/group/{id}/delete`
