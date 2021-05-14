@@ -63,6 +63,8 @@ class GroupControllerTest extends WebTestCase
 
     private $gidReq;
 
+    private $gid4;
+
     private $pid;
 
     private $pid2;
@@ -114,6 +116,7 @@ class GroupControllerTest extends WebTestCase
             [
                 ['id' => $this->gid, 'name' => 'group-one', 'visibility' => Group::VISIBILITY_PRIVATE],
                 ['id' => $this->gid2, 'name' => 'group-public', 'visibility' => Group::VISIBILITY_PUBLIC],
+                ['id' => $this->gid4, 'name' => 'group-public2', 'visibility' => Group::VISIBILITY_PUBLIC],
                 ['id' => $this->gidReq, 'name' => 'required-group', 'visibility' => Group::VISIBILITY_PRIVATE],
             ],
             $this->parseJsonBody($response1)
@@ -988,12 +991,15 @@ class GroupControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $g = $this->helper->addGroups(['group-one', 'group-public', 'required-group']);
+        $g = $this->helper->addGroups(['group-one', 'group-public', 'required-group', 'group-public2']);
         $this->gid = $g[0]->getId();
         $this->gid2 = $g[1]->getId();
         $this->gidReq = $g[2]->getId();
+        $this->gid4 = $g[3]->getId();
         $g[0]->addRequiredGroup($g[2]);
+        $g[3]->addRequiredGroup($g[2]);
         $g[1]->setVisibility(Group::VISIBILITY_PUBLIC);
+        $g[3]->setVisibility(Group::VISIBILITY_PUBLIC);
 
         $this->helper->addCharacterMain('User', 6, [Role::USER]);
 

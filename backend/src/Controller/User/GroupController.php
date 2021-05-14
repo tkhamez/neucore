@@ -96,7 +96,7 @@ class GroupController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/group/public",
-     *     operationId="public",
+     *     operationId="userGroupPublic",
      *     summary="List all public groups.",
      *     description="Needs role: user",
      *     tags={"Group"},
@@ -114,10 +114,28 @@ class GroupController extends BaseController
      */
     public function public(): ResponseInterface
     {
-        return $this->withJson($this->repositoryFactory->getGroupRepository()->findBy(
+        $publicGroups = $this->repositoryFactory->getGroupRepository()->findBy(
             ['visibility' => Group::VISIBILITY_PUBLIC],
             ['name' => 'ASC']
-        ));
+        );
+
+        // check required groups
+        $groups = [];
+        $player = $this->getUser($this->userAuth)->getPlayer();
+        foreach ($publicGroups as $publicGroup) {
+            $allowed = true;
+            foreach ($publicGroup->getRequiredGroups() as $requiredGroup) {
+                if (!$player->hasGroup($requiredGroup->getId())) {
+                    $allowed = false;
+                    break;
+                }
+            }
+            if ($allowed) {
+                $groups[] = $publicGroup;
+            }
+        }
+
+        return $this->withJson($groups);
     }
 
     /**
@@ -1024,10 +1042,10 @@ class GroupController extends BaseController
             $this->group->addManager($this->player); // needed to persist
             $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
-        } elseif ($type === 'member' && ! $this->player->hasGroup($this->group->getId())) {
+        } elseif ($type === 'member' && !$this->player->hasGroup($this->group->getId())) {
             foreach ($this->group->getRequiredGroups() as $requiredGroup) {
                 if (! $this->player->hasGroup($requiredGroup->getId())) {
-                    return $this->flushAndReturn(400);
+                    return $this->response->withStatus(400);
                 }
             }
             $this->player->addGroup($this->group);

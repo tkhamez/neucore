@@ -76,7 +76,15 @@ class PlayerControllerTest extends WebTestCase
      */
     private $groupId;
 
+    /**
+     * @var int
+     */
     private $gPrivateId;
+
+    /**
+     * @var int
+     */
+    private $requiredGroupId;
 
     /**
      * @var PlayerRepository
@@ -217,6 +225,15 @@ class PlayerControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    public function testAddApplication400()
+    {
+        $this->setupDb();
+        $this->loginUser(10);
+
+        $response = $this->runApp('PUT', '/api/user/player/add-application/'. $this->groupId);
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
     public function testAddApplication204()
     {
         $this->setupDb();
@@ -330,7 +347,7 @@ class PlayerControllerTest extends WebTestCase
 
         $this->em->clear();
         $p = $this->fetchPlayer($this->player3Id);
-        $this->assertSame(0, count($p->getGroups()));
+        $this->assertSame(1, count($p->getGroups()));
     }
 
     public function testSetMain403()
@@ -923,7 +940,11 @@ class PlayerControllerTest extends WebTestCase
                     'characterNameChanges' => [],
                 ],
             ],
-            'groups' => [],
+            'groups' => [[
+                'id' => $this->requiredGroupId,
+                'name' => 'required-group',
+                'visibility' => Group::VISIBILITY_PRIVATE,
+            ]],
             'managerGroups' => [],
             'managerApps' => [],
             'removedCharacters' => [],
@@ -1015,7 +1036,11 @@ class PlayerControllerTest extends WebTestCase
                     'characterNameChanges' => [],
                 ],
             ],
-            'groups' => [],
+            'groups' => [[
+                'id' => $this->requiredGroupId,
+                'name' => 'required-group',
+                'visibility' => Group::VISIBILITY_PRIVATE,
+            ]],
             'removedCharacters' => [],
             'incomingCharacters' => [],
             'serviceAccounts' => [],
@@ -1443,10 +1468,12 @@ class PlayerControllerTest extends WebTestCase
             Role::WATCHLIST_ADMIN,
         ]);
 
-        $gs = $this->h->addGroups(['test-pub', 'test-private']);
+        $gs = $this->h->addGroups(['test-pub', 'test-private', 'required-group']);
         $gs[0]->setVisibility(Group::VISIBILITY_PUBLIC);
+        $gs[0]->addRequiredGroup($gs[2]);
         $this->groupId = $gs[0]->getId();
         $this->gPrivateId = $gs[1]->getId();
+        $this->requiredGroupId = $gs[2]->getId();
 
         $player1 = $this->h->addCharacterMain('User', 10, [Role::USER, Role::USER_CHARS])->getPlayer();
         $this->player1Id = $player1->getId();
@@ -1472,6 +1499,7 @@ class PlayerControllerTest extends WebTestCase
         );
         $char3a->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
         $char3a->setCorporation($corp);
+        $char3a->getPlayer()->addGroup($gs[2]);
         $this->player3Id = $char3a->getPlayer()->getId();
 
         $charNameChange = (new CharacterNameChange())->setOldName('old name')

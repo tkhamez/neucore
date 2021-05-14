@@ -96,7 +96,7 @@ export default {
     methods: {
         getPublicGroups: function() {
             const vm = this;
-            new GroupApi().callPublic(function(error, data) {
+            new GroupApi().userGroupPublic(function(error, data) {
                 if (error) { // 403 usually
                     vm.groups = null;
                     return;

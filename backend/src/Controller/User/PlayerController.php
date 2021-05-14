@@ -218,6 +218,10 @@ class PlayerController extends BaseController
      *         description="Application submitted."
      *     ),
      *     @OA\Response(
+     *         response="400",
+     *         description="This player is not a member of the required group(s)."
+     *     ),
+     *     @OA\Response(
      *         response="403",
      *         description="Not authorized."
      *     ),
@@ -237,6 +241,13 @@ class PlayerController extends BaseController
         }
 
         $player = $this->getUser($this->userAuth)->getPlayer();
+
+        // check if player has all required groups
+        foreach ($group->getRequiredGroups() as $requiredGroup) {
+            if (!$player->hasGroup($requiredGroup->getId())) {
+                return $this->response->withStatus(400);
+            }
+        }
 
         // update existing or create new application
         $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
@@ -1114,7 +1125,7 @@ class PlayerController extends BaseController
             RemovedCharacter::REASON_DELETED_BY_ADMIN,
         ])) {
             return $this->response->withStatus(403);
-        } elseif (! $admin && $this->getUser($this->userAuth)->getPlayer()->hasCharacter((int) $char->getId())) {
+        } elseif (!$admin && $this->getUser($this->userAuth)->getPlayer()->hasCharacter($char->getId())) {
             $reason = RemovedCharacter::REASON_DELETED_MANUALLY;
         } elseif (! $admin) {
             return $this->response->withStatus(403);
