@@ -275,7 +275,7 @@ class GroupController extends BaseController
      *         name="choice",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", enum={"private", "public", "conditioned"})
+     *         @OA\Schema(type="string", enum={"private", "public"})
      *     ),
      *     @OA\Response(
      *         response="200",

@@ -117,7 +117,6 @@ There a two account status: standard and managed.
 Visibility
 - public: everyone can see them and apply to them.
 - private: hidden from non-members
-- conditioned: only visible to non-members if they meet certain criteria - not yet implemented
 
 ### Automatic Group Assignment
 

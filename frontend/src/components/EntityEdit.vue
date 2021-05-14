@@ -86,7 +86,6 @@ Modal windows to create, delete and edit entities
                                 v-model="groupVisibility" v-on:change="setVisibility()">
                             <option value="private">private</option>
                             <option value="public">public</option>
-                            <option value="conditioned">conditioned</option>
                         </select>
                     </div>
                 </div>

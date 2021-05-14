@@ -22,8 +22,6 @@ class Group implements \JsonSerializable
 
     public const VISIBILITY_PUBLIC = 'public';
 
-    private const VISIBILITY_CONDITIONED = 'conditioned';
-
     /**
      * Group ID.
      *
@@ -45,8 +43,7 @@ class Group implements \JsonSerializable
     private $name;
 
     /**
-     *
-     * @OA\Property(enum={"private", "public", "conditioned"})
+     * @OA\Property(enum={"private", "public"})
      * @ORM\Column(type="string", length=16, options={"default" : "private"})
      * @var string
      */
@@ -167,12 +164,12 @@ class Group implements \JsonSerializable
     }
 
     /**
-     * @param string $visibility elf::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC or self::VISIBILITY_CONDITIONED
+     * @param string $visibility self::VISIBILITY_PRIVATE or self::VISIBILITY_PUBLIC
      * @throws \InvalidArgumentException if parameter is invalid
      */
     public function setVisibility(string $visibility): self
     {
-        $valid = [self::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC, self::VISIBILITY_CONDITIONED];
+        $valid = [self::VISIBILITY_PRIVATE, self::VISIBILITY_PUBLIC];
         if (! in_array($visibility, $valid)) {
             throw new \InvalidArgumentException('Parameter must be one of ' . implode(', ', $valid));
         }
