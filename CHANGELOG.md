@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.22.0
 
-dd mm yyyy
+14 May 2021
 
 - Groups can now be set to "automatically accept" so that applications do not have to be approved.
 - Added description to groups.
@@ -13,7 +13,7 @@ dd mm yyyy
 
 ## 1.21.0
 
-9 Mai 2021
+9 May 2021
 
 - New API endpoints for apps: 
   - GET /app/v1/group-members/{groupId} Returns the main character IDs from all group members.
