@@ -162,6 +162,7 @@ export default {
                     vm.message('Visibility saved.', 'success');
                     vm.emitter.emit('settingsChange');
                     vm.emitter.emit('playerChange');
+                    vm.$emit('groupChange');
                 }
             });
         },

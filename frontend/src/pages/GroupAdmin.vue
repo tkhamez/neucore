@@ -4,7 +4,8 @@
     <edit :type="'Group'" ref="editModal"
           :functionCreate="create"
           :functionDelete="deleteIt"
-          :functionRename="rename"></edit>
+          :functionRename="rename"
+          v-on:groupChange="reloadGroups"></edit>
 
     <add-entity ref="addEntityModal" :settings="settings" v-on:success="addAlliCorpSuccess()"></add-entity>
 
@@ -247,6 +248,10 @@ export default {
                 }
             });
         },
+
+        reloadGroups () {
+            getGroups(this);
+        }
     },
 }
 
