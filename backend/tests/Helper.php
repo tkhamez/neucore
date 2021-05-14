@@ -357,8 +357,7 @@ class Helper
     }
 
     /**
-     * @param int|string $hashAlgorithm
-     * @return App
+     * @param mixed $hashAlgorithm
      */
     public function addApp(string $name, string $secret, array $roles, $hashAlgorithm = PASSWORD_BCRYPT): App
     {
