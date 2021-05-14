@@ -522,6 +522,12 @@ class GroupController extends BaseController
      *         description="Group ID.",
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\Parameter(
+     *         name="corporation",
+     *         in="query",
+     *         description="Limit to characters that are a member of this corporation.",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of character IDs.",
@@ -544,9 +550,14 @@ class GroupController extends BaseController
             return $this->response->withStatus(404, 'Group not found.');
         }
 
+        $corporationId = $this->getQueryParam($request, 'corporation');
+        if ($corporationId !== null) {
+            $corporationId = (int) $corporationId;
+        }
+
         $members = $this->repositoryFactory
             ->getCharacterRepository()
-            ->getGroupMembersMainCharacter($group->getId());
+            ->getGroupMembersMainCharacter($group->getId(), $corporationId);
 
         return $this->withJson($members);
     }

@@ -588,10 +588,10 @@ class GroupControllerTest extends WebTestCase
         $this->setUpDb();
 
         $headers = ['Authorization' => 'Bearer '.base64_encode($this->appId.':s1')];
-        $response = $this->runApp('GET', '/api/app/v1/group-members/'.$this->group1Id, null, $headers);
+        $response = $this->runApp('GET', "/api/app/v1/group-members/$this->group1Id?corporation=500", null, $headers);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame([123, 789], $this->parseJsonBody($response));
+        $this->assertSame([789], $this->parseJsonBody($response));
     }
 
     private function setUpDb(int $invalidHours = 0): void
@@ -648,13 +648,13 @@ class GroupControllerTest extends WebTestCase
         $char3->setValidToken(false)->setCorporation($corp);
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
-        $char3->setValidTokenTime(new \DateTime("now -{$invalidHours} hours"));
+        $char3->setValidTokenTime(new \DateTime("now -$invalidHours hours"));
 
         $char4 = $this->helper->addCharacterMain('C3', 780); // managed account
         $char4->setValidToken(false)->setCorporation($corp);
         $char4->getPlayer()->setStatus(Player::STATUS_MANAGED);
         $char4->getPlayer()->addGroup($groups[0]);
-        $char4->setValidTokenTime(new \DateTime("now -{$invalidHours} hours"));
+        $char4->setValidTokenTime(new \DateTime("now -$invalidHours hours"));
 
         $this->helper->addCharacterMain('C4', 1010, [Role::USER]); // no groups
 

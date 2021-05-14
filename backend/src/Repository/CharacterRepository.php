@@ -37,7 +37,7 @@ class CharacterRepository extends EntityRepository
     /**
      * @return int[] Character IDs
      */
-    public function getGroupMembersMainCharacter(int $groupId): array
+    public function getGroupMembersMainCharacter(int $groupId, ?int $corporationId = null): array
     {
         $query = $this->createQueryBuilder('c')
             ->select('c.id')
@@ -46,6 +46,9 @@ class CharacterRepository extends EntityRepository
             ->where('c.main = :main')
             ->setParameter('groupId', $groupId)
             ->setParameter('main', true);
+        if ($corporationId !== null) {
+            $query->andWhere('c.corporation = :corporation')->setParameter('corporation', $corporationId);
+        }
 
         return array_map(function (array $char) {
             return (int) $char['id'];

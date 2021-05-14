@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
+use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
@@ -40,13 +41,20 @@ class CharacterRepositoryTest extends TestCase
         $h->emptyDb();
         $om = $h->getObjectManager();
 
-        $char1 = (new Character())->setId(10)->setName('char two')->setMain(true);
-        $char2 = (new Character())->setId(20)->setName('char one');
+        $corporation1 = (new Corporation())->setId(100);
+        $corporation2 = (new Corporation())->setId(200);
+        $om->persist($corporation1);
+        $om->persist($corporation2);
+
+        $char1 = (new Character())->setId(10)->setName('char two')->setMain(true)->setCorporation($corporation1);
+        $char2 = (new Character())->setId(20)->setName('char one')->setCorporation();
         $char3 = (new Character())->setId(30)->setName('three')->setMain(true);
+        $char4 = (new Character())->setId(40)->setName('four')->setMain(true)->setCorporation($corporation2);
 
         self::$player1 = $h->addNewPlayerToCharacterAndFlush($char1);
         self::$player2 = $h->addNewPlayerToCharacterAndFlush($char2);
         $h->addNewPlayerToCharacterAndFlush($char3);
+        $player4 = $h->addNewPlayerToCharacterAndFlush($char4);
 
         $h->addCharacterToPlayer('char two alt', 101, self::$player1);
 
@@ -55,6 +63,7 @@ class CharacterRepositoryTest extends TestCase
 
         self::$player1->addGroup(self::$group);
         self::$player2->addGroup(self::$group);
+        $player4->addGroup(self::$group);
 
         $om->flush();
 
@@ -71,9 +80,11 @@ class CharacterRepositoryTest extends TestCase
 
     public function testGetGroupMembersMainCharacter()
     {
-        $actual = self::$repository->getGroupMembersMainCharacter(self::$group->getId());
+        $actual1 = self::$repository->getGroupMembersMainCharacter(self::$group->getId());
+        $actual2 = self::$repository->getGroupMembersMainCharacter(self::$group->getId(), 100);
 
-        $this->assertSame([10], $actual);
+        $this->assertSame([10, 40], $actual1);
+        $this->assertSame([10], $actual2);
     }
 
     public function testGetAllCharactersFromPlayers()
