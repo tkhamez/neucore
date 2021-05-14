@@ -84,7 +84,7 @@ Select and table to add and remove objects from other objects.
                          :custom-label="customLabel">
             </multiselect>
 
-            <character-search v-if="useSearch" :admin="searchAdmin"
+            <character-search v-if="useSearch" :admin="searchAdmin" :currentOnly="searchCurrentOnly"
                               v-on:result="searchResult = $event"></character-search>
             <character-result v-if="useSearch" :admin="searchAdmin"
                               :searchResult="searchResult"
@@ -216,6 +216,8 @@ export default {
          * Optional offset top for a sticky table head.
          */
         sticky: Number,
+
+        searchCurrentOnly: Boolean,
 
         player: Object,
 

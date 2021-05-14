@@ -161,7 +161,7 @@ export default {
         charSearchDelayed: _.debounce((vm, searchTerm) => {
             vm.charSearchResult = [];
             vm.charSearchIsLoading = true;
-            new CharacterApi().findCharacter(searchTerm, function(error, data) {
+            new CharacterApi().findCharacter(searchTerm, { currentOnly: 'true' }, function(error, data) {
                 vm.charSearchIsLoading = false;
                 if (error) {
                     return;

@@ -67,7 +67,7 @@
 
             <admin v-cloak v-if="appId" ref="admin"
                    :player="player" :contentType="contentType" :typeId="appId" :settings="settings"
-                   :type="'App'"></admin>
+                   :type="'App'" :searchCurrentOnly="true"></admin>
 
         </div>
     </div>

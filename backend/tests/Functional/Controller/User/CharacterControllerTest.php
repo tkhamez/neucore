@@ -96,9 +96,8 @@ class CharacterControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(9); // admin
 
-        $response = $this->runApp('GET', '/api/user/character/find-character/ser');
-        $this->assertSame(200, $response->getStatusCode());
-
+        $response1 = $this->runApp('GET', '/api/user/character/find-character/ser');
+        $this->assertSame(200, $response1->getStatusCode());
         $this->assertSame([[
             'character_id' => 456,
             'character_name' => 'Another USER',
@@ -119,7 +118,20 @@ class CharacterControllerTest extends WebTestCase
             'character_name' => "User's previous name",
             'player_id' => $this->playerId,
             'player_name' => 'User',
-        ]], $this->parseJsonBody($response));
+        ]], $this->parseJsonBody($response1));
+
+        $response2 = $this->runApp('GET', '/api/user/character/find-character/ser?currentOnly=true');
+        $this->assertSame([[
+            'character_id' => 456,
+            'character_name' => 'Another USER',
+            'player_id' => $this->playerId,
+            'player_name' => 'User',
+        ], [
+            'character_id' => 96061222,
+            'character_name' => 'User',
+            'player_id' => $this->playerId,
+            'player_name' => 'User',
+        ]], $this->parseJsonBody($response2));
     }
 
     public function testFindPlayer403()

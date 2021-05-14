@@ -14,6 +14,7 @@ use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @OA\Tag(
@@ -114,6 +115,12 @@ class CharacterController extends BaseController
      *         description="Name of the character (min. 3 characters).",
      *         @OA\Schema(type="string", minLength=3)
      *     ),
+     *     @OA\Parameter(
+     *         name="currentOnly",
+     *         in="query",
+     *         description="Do not include old character names or moved characters. Defaults to false.",
+     *         @OA\Schema(type="string", enum={"true", "false"})
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="List of characters.",
@@ -126,14 +133,15 @@ class CharacterController extends BaseController
      * )
      * @noinspection PhpUnused
      */
-    public function findCharacter(string $name): ResponseInterface
+    public function findCharacter(string $name, ServerRequestInterface $request): ResponseInterface
     {
         $name = trim($name);
         if (mb_strlen($name) < 3) {
             return $this->withJson([]);
         }
 
-        $retVal = $this->repositoryFactory->getPlayerRepository()->findCharacters($name);
+        $currentOnly = $this->getQueryParam($request, 'currentOnly') === 'true';
+        $retVal = $this->repositoryFactory->getPlayerRepository()->findCharacters($name, $currentOnly);
 
         return $this->withJson($retVal);
     }

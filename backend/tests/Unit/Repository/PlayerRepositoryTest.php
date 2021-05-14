@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -74,7 +75,7 @@ class PlayerRepositoryTest extends TestCase
         self::$player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
         self::$player1->getCharacters()[0]->setValidToken(true);
         self::$player1->getCharacters()[0]->setCorporation($corp1);
-        $char1b = (new Character())->setId(12)->setName('C1b')->setValidToken(false);
+        $char1b = (new Character())->setId(12)->setName('c1b')->setValidToken(false);
         $char1b->setPlayer(self::$player1);
         $char1b->setCorporation($corp2);
         $char1c = (new Character())->setId(1313)->setName('c1c')->setValidToken(false);
@@ -168,7 +169,7 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame(4, count($actual));
         $this->assertSame('c1', $actual[0]->getName());
         $this->assertSame('c1', $actual[0]->getCharacters()[0]->getName());
-        $this->assertSame('C1b', $actual[0]->getCharacters()[1]->getName());
+        $this->assertSame('c1b', $actual[0]->getCharacters()[1]->getName());
         $this->assertSame('c2', $actual[1]->getName());
         $this->assertSame('c4', $actual[2]->getName());
         $this->assertSame('c6', $actual[3]->getName());
@@ -273,7 +274,7 @@ class PlayerRepositoryTest extends TestCase
     {
         $actual = $this->repo->findCharacters('1', false);
 
-        $this->assertSame(9, count($actual));
+        $this->assertSame(8, count($actual));
         $this->assertSame([ // existing char
             'character_id' => 1,
             'character_name' => 'c1',
@@ -282,7 +283,7 @@ class PlayerRepositoryTest extends TestCase
         ], $actual[0]);
         $this->assertSame([ // existing char
             'character_id' => 12,
-            'character_name' => 'C1b',
+            'character_name' => 'c1b',
             'player_id' => self::$player1->getId(),
             'player_name' => 'c1',
         ], $actual[1]);
@@ -304,45 +305,61 @@ class PlayerRepositoryTest extends TestCase
             'player_id' => self::$player6->getId(),
             'player_name' => 'c6',
         ], $actual[4]);
-        $this->assertSame([ // moved out character - same as next
+        $this->assertSame([ // moved out/deleted character - there are two entries, filtered by "distinct"
             'character_id' => 21,
             'character_name' => 'removed-21',
             'player_id' => self::$player4->getId(),
             'player_name' => 'c4',
         ], $actual[5]);
-        $this->assertSame([ // deleted character - same as previous
-            'character_id' => 21,
-            'character_name' => 'removed-21',
-            'player_id' => self::$player4->getId(),
-            'player_name' => 'c4',
-        ], $actual[6]);
         $this->assertSame([ // moved back character
             'character_id' => 21,
             'character_name' => 'removed-21',
             'player_id' => self::$player6->getId(),
             'player_name' => 'c6',
-        ], $actual[7]);
+        ], $actual[6]);
         $this->assertSame([ // removed character
             'character_id' => 31,
             'character_name' => 'removed-31',
             'player_id' => self::$player4->getId(),
             'player_name' => 'c4',
-        ], $actual[8]);
+        ], $actual[7]);
+    }
 
-        // select distinct
-        $this->assertSame(8, count($this->repo->findCharacters('1', true)));
+    public function testFindCharacters_CurrentOnly()
+    {
+        $actual = $this->repo->findCharacters('1', true);
+
+        $this->assertSame(3, count($actual));
+        $this->assertSame([ // existing char
+            'character_id' => 1,
+            'character_name' => 'c1',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ], $actual[0]);
+        $this->assertSame([ // existing char
+            'character_id' => 12,
+            'character_name' => 'c1b',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ], $actual[1]);
+        $this->assertSame([ // existing char
+            'character_id' => 1313,
+            'character_name' => 'c1c',
+            'player_id' => self::$player1->getId(),
+            'player_name' => 'c1',
+        ], $actual[2]);
     }
 
     public function testFindCharacters_byId()
     {
-        $this->assertSame([], $this->repo->findCharacters('13'));
+        $this->assertSame([], $this->repo->findCharacters('13', false));
 
         $this->assertSame([[
             'character_id' => 1313,
             'character_name' => 'c1c',
             'player_id' => self::$player1->getId(),
             'player_name' => 'c1',
-        ]], $this->repo->findCharacters('1313'));
+        ]], $this->repo->findCharacters('1313', false));
     }
 
     public function testFindPlayersOfCharacters()

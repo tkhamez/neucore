@@ -100,7 +100,7 @@
 
             <admin v-cloak v-if="groupId && contentType !== 'members'" ref="admin"
                    :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
-                   :type="'Group'"></admin>
+                   :type="'Group'" :searchCurrentOnly="true"></admin>
 
             <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3">
                 <table class="table table-hover mb-0 nc-table-sm" aria-describedby="Members">

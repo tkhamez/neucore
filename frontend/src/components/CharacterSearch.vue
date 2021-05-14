@@ -25,6 +25,7 @@ import {CharacterApi} from 'neucore-js-client';
 export default {
     props: {
         admin: Boolean, // false = search only for mains, otherwise all characters
+        currentOnly: Boolean, // false = include renamed and moved characters or not (only for admin=true)
     },
 
     data: function() {
@@ -54,13 +55,17 @@ const findCharacter = _.debounce((vm) => {
         return;
     }
     const api = new CharacterApi();
-    const method = vm.admin ? 'findCharacter' : 'findPlayer';
-    api[method].apply(api, [vm.searchTerm, function(error, data) {
+    const callback = (error, data) => {
         if (error) {
             vm.$emit('result', []);
             return;
         }
         vm.$emit('result', data);
-    }]);
+    };
+    if (vm.admin) {
+        api.findCharacter(vm.searchTerm, { currentOnly: vm.currentOnly ? 'true' : 'false' }, callback);
+    } else {
+        api.findPlayer(vm.searchTerm, callback);
+    }
 }, 250);
 </script>

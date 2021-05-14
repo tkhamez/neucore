@@ -197,7 +197,7 @@ class PlayerRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findCharacters(string $nameOrId, bool $distinct = true): array
+    public function findCharacters(string $nameOrId, bool $currentOnly): array
     {
         // current characters
         $query1 = $this
@@ -211,63 +211,67 @@ class PlayerRepository extends EntityRepository
             ->leftJoin('p.characters', 'c')
             ->where('c.name LIKE :name')
             ->orWhere('c.id = :id')
-            ->addOrderBy('c.name', 'ASC')
+            ->orderBy('c.name', 'ASC')
             ->setParameter('name', "%$nameOrId%")
             ->setParameter('id', $nameOrId);
 
-        // removed characters
-        $query2 = $this
-            ->createQueryBuilder('p')
-            ->select(
-                'rc.characterId AS character_id',
-                'rc.characterName AS character_name',
-                'p.id AS player_id',
-                'p.name AS player_name',
-            );
-        if ($distinct) {
-            $query2->distinct();
-        }
-        $query2->leftJoin('p.removedCharacters', 'rc')
-            ->where('rc.characterName LIKE :name')
-            ->addOrderBy('rc.characterName', 'ASC')
-            ->setParameter('name', "%$nameOrId%");
+        if (!$currentOnly) {
+            // removed characters
+            $query2 = $this
+                ->createQueryBuilder('p')
+                ->select(
+                    'rc.characterId AS character_id',
+                    'rc.characterName AS character_name',
+                    'p.id AS player_id',
+                    'p.name AS player_name',
+                )
+                ->distinct()
+                ->leftJoin('p.removedCharacters', 'rc')
+                ->where('rc.characterName LIKE :name')
+                ->orderBy('rc.characterName', 'ASC')
+                ->setParameter('name', "%$nameOrId%");
 
-        // character name changes
-        $query3 = $this
-            ->createQueryBuilder('p')
-            ->select(
-                'c.id AS character_id',
-                #'IDENTITY(ccn.character) AS character_id',
-                'ccn.oldName AS character_name',
-                'p.id AS player_id',
-                'p.name AS player_name',
-            )
-            ->leftJoin('p.characters', 'c')
-            ->leftJoin('c.characterNameChanges', 'ccn')
-            ->where('ccn.oldName LIKE :name')
-            ->addOrderBy('ccn.oldName', 'ASC')
-            ->setParameter('name', "%$nameOrId%");
+            // character name changes
+            $query3 = $this
+                ->createQueryBuilder('p')
+                ->select(
+                    'c.id AS character_id',
+                    #'IDENTITY(ccn.character) AS character_id',
+                    'ccn.oldName AS character_name',
+                    'p.id AS player_id',
+                    'p.name AS player_name',
+                )
+                ->leftJoin('p.characters', 'c')
+                ->leftJoin('c.characterNameChanges', 'ccn')
+                ->where('ccn.oldName LIKE :name')
+                ->orderBy('ccn.oldName', 'ASC')
+                ->setParameter('name', "%$nameOrId%");
+        }
 
         $result = $query1->getQuery()->getResult();
-        $result = array_merge($result, $query2->getQuery()->getResult());
-        $result = array_merge($result, $query3->getQuery()->getResult());
+        if (!$currentOnly) {
+            $result = array_merge($result, $query2->getQuery()->getResult());
+            $result = array_merge($result, $query3->getQuery()->getResult());
+        }
 
-        uasort($result, function ($a, $b) {
-            $nameA = mb_strtolower($a['character_name']);
-            $nameB = mb_strtolower($b['character_name']);
-            $playerNameA = mb_strtolower($a['player_name']);
-            $playerNameB = mb_strtolower($b['player_name']);
-            if ($nameA < $nameB) {
-                return -1;
-            } elseif ($nameA > $nameB) {
-                return 1;
-            } elseif ($playerNameA < $playerNameB) {
-                return -1;
-            } elseif ($playerNameA > $playerNameB) {
-                return 1;
-            }
-            return 0;
-        });
+        if (!$currentOnly) {
+            uasort($result, function ($a, $b) {
+                $nameA = mb_strtolower($a['character_name']);
+                $nameB = mb_strtolower($b['character_name']);
+                $playerNameA = mb_strtolower($a['player_name']);
+                $playerNameB = mb_strtolower($b['player_name']);
+                if ($nameA < $nameB) {
+                    return -1;
+                } elseif ($nameA > $nameB) {
+                    return 1;
+                } elseif ($playerNameA < $playerNameB) {
+                    return -1;
+                } elseif ($playerNameA > $playerNameB) {
+                    return 1;
+                }
+                return 0;
+            });
+        }
 
         return array_map(function ($row) {
             return [
