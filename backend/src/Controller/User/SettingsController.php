@@ -102,7 +102,7 @@ class SettingsController extends BaseController
      *     summary="Change a system settings variable.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="name",
      *         in="path",
@@ -188,7 +188,7 @@ class SettingsController extends BaseController
      *     summary="Sends a 'invalid ESI token' test mail to the logged-in character.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Response(
      *         response="200",
      *         description="Error message, if available.",
@@ -223,7 +223,7 @@ class SettingsController extends BaseController
      *     summary="Sends a 'missing character' test mail to the logged-in character.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Response(
      *         response="200",
      *         description="Error message, if available.",
@@ -258,7 +258,7 @@ class SettingsController extends BaseController
      *     summary="Validates ESI token from a director and updates name and corporation.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="name",
      *         in="path",

@@ -145,7 +145,7 @@ class GroupController extends BaseController
      *     summary="Create a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
@@ -207,7 +207,7 @@ class GroupController extends BaseController
      *     summary="Rename a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -281,7 +281,7 @@ class GroupController extends BaseController
      *     summary="Change visibility of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -336,7 +336,7 @@ class GroupController extends BaseController
      *     summary="Change the auto-accept setting of a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -391,7 +391,7 @@ class GroupController extends BaseController
      *     summary="Delete a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -589,7 +589,7 @@ class GroupController extends BaseController
      *     summary="Add required group to a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -647,7 +647,7 @@ class GroupController extends BaseController
      *     summary="Remove required group from a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -706,7 +706,7 @@ class GroupController extends BaseController
      *     summary="Assign a player as manager to a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -748,7 +748,7 @@ class GroupController extends BaseController
      *     summary="Remove a manager (player) from a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -835,7 +835,7 @@ class GroupController extends BaseController
      *     summary="Accept a player's request to join a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -870,7 +870,7 @@ class GroupController extends BaseController
      *     summary="Deny a player's request to join a group.",
      *     description="Needs role: group-manager",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -905,7 +905,7 @@ class GroupController extends BaseController
      *     summary="Adds a player to a group.",
      *     description="Needs role: group-manager or user-manager",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -951,7 +951,7 @@ class GroupController extends BaseController
      *     summary="Remove player from a group.",
      *     description="Needs role: group-manager or user-manager",
      *     tags={"Group"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

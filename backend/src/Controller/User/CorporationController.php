@@ -138,7 +138,7 @@ class CorporationController extends BaseController
      *                  This makes an ESI request and adds the corporation only if it exists.
      *                  Also adds the corresponding alliance, if there is one.",
      *     tags={"Corporation"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -207,7 +207,7 @@ class CorporationController extends BaseController
      *     summary="Add a group to the corporation.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -256,7 +256,7 @@ class CorporationController extends BaseController
      *     summary="Remove a group from the corporation.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -391,7 +391,7 @@ class CorporationController extends BaseController
      *     summary="Add a group to the corporation for member tracking permission.",
      *     description="Needs role: tracking-admin",
      *     tags={"Corporation"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -442,7 +442,7 @@ class CorporationController extends BaseController
      *     summary="Remove a group for member tracking permission from the corporation.",
      *     description="Needs role: tracking-admin",
      *     tags={"Corporation"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

@@ -199,7 +199,7 @@ class ServiceController extends BaseController
      *     summary="Registers a new account with a service.",
      *     description="Needs role: group-user",
      *     tags={"Service"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
@@ -299,7 +299,7 @@ class ServiceController extends BaseController
      *     summary="Update an account.",
      *     description="Needs role: user",
      *     tags={"Service"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -359,7 +359,7 @@ class ServiceController extends BaseController
      *     summary="Resets password for one account.",
      *     description="Needs role: user",
      *     tags={"Service"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

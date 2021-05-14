@@ -31,6 +31,13 @@ use Psr\Http\Message\ServerRequestInterface;
  *     name="neucore",
  *     in="cookie"
  * )
+ * @OA\SecurityScheme(
+ *     securityScheme="CSRF",
+ *     type="apiKey",
+ *     name="X-CSRF-Token",
+ *     in="header",
+ *     description="The CSRF token for POST, PUT and DELETE requests."
+ * )
  *
  * @OA\Tag(
  *     name="Auth",
@@ -293,7 +300,7 @@ class AuthController extends BaseController
      *     summary="User logout.",
      *     description="Needs role: user",
      *     tags={"Auth"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Response(
      *         response="204",
      *         description="User was logged out."

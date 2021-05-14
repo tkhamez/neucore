@@ -65,7 +65,7 @@ class WatchlistController extends BaseController
      *     summary="Create a watchlist.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
@@ -117,7 +117,7 @@ class WatchlistController extends BaseController
      *     summary="Rename a watchlist.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -183,7 +183,7 @@ class WatchlistController extends BaseController
      *     summary="Delete a watchlist.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -224,7 +224,7 @@ class WatchlistController extends BaseController
      *     summary="Lock or unlock the watchlist settings.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -472,7 +472,7 @@ class WatchlistController extends BaseController
      *     summary="Add player to exemption list.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -517,7 +517,7 @@ class WatchlistController extends BaseController
      *     summary="Remove player from exemption list.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -597,7 +597,7 @@ class WatchlistController extends BaseController
      *     summary="Add corporation to the list.",
      *     description="Needs role: watchlist-manager, watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -642,7 +642,7 @@ class WatchlistController extends BaseController
      *     summary="Remove corporation from the list.",
      *     description="Needs role: watchlist-manager, watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -722,7 +722,7 @@ class WatchlistController extends BaseController
      *     summary="Add alliance to the list.",
      *     description="Needs role: watchlist-manager, watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -767,7 +767,7 @@ class WatchlistController extends BaseController
      *     summary="Remove alliance from the list.",
      *     description="Needs role: watchlist-manager, watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -843,7 +843,7 @@ class WatchlistController extends BaseController
      *     summary="Add access group to the list.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -887,7 +887,7 @@ class WatchlistController extends BaseController
      *     summary="Remove access group from the list.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -962,7 +962,7 @@ class WatchlistController extends BaseController
      *     summary="Add manager access group to the list.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1006,7 +1006,7 @@ class WatchlistController extends BaseController
      *     summary="Remove manager access group from the list.",
      *     description="Needs role: watchlist-admin",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1085,7 +1085,7 @@ class WatchlistController extends BaseController
      *     summary="Add corporation to the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1136,7 +1136,7 @@ class WatchlistController extends BaseController
      *     summary="Remove corporation from the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1221,7 +1221,7 @@ class WatchlistController extends BaseController
      *     summary="Add alliance to the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1266,7 +1266,7 @@ class WatchlistController extends BaseController
      *     summary="Remove alliance from the kicklist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1355,7 +1355,7 @@ class WatchlistController extends BaseController
      *     summary="Add corporation to the corporation allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1405,7 +1405,7 @@ class WatchlistController extends BaseController
      *     summary="Remove corporation from the corporation allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1490,7 +1490,7 @@ class WatchlistController extends BaseController
      *     summary="Add alliance to the alliance allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1535,7 +1535,7 @@ class WatchlistController extends BaseController
      *     summary="Remove alliance from the alliance allowlist.",
      *     description="Needs role: watchlist-manager",
      *     tags={"Watchlist"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

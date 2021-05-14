@@ -50,7 +50,7 @@ class ServiceAdminController extends BaseController
      *     summary="Create a service.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
@@ -101,7 +101,7 @@ class ServiceAdminController extends BaseController
      *     summary="Rename a service.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -167,7 +167,7 @@ class ServiceAdminController extends BaseController
      *     summary="Delete a service.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -209,7 +209,7 @@ class ServiceAdminController extends BaseController
      *     summary="Save the service configuration.",
      *     description="Needs role: service-admin",
      *     tags={"ServiceAdmin"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

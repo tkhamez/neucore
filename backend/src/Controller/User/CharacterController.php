@@ -194,7 +194,7 @@ class CharacterController extends BaseController
      *     description="Needs role: user to update own characters or user-admin, user-manager, group-admin, app-admin
                         or user-chars to update any character. It also updates groups and verifies the OAuth token.",
      *     tags={"Character"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

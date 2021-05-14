@@ -96,7 +96,7 @@ class AllianceController extends BaseController
      *     description="Needs role: group-admin, watchlist-manager
      *                  This makes an ESI request and adds the alliance only if it exists",
      *     tags={"Alliance"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -160,7 +160,7 @@ class AllianceController extends BaseController
      *     summary="Add a group to the alliance.",
      *     description="Needs role: group-admin",
      *     tags={"Alliance"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -209,7 +209,7 @@ class AllianceController extends BaseController
      *     summary="Remove a group from the alliance.",
      *     description="Needs role: group-admin",
      *     tags={"Alliance"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

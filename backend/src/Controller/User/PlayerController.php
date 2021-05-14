@@ -212,7 +212,7 @@ class PlayerController extends BaseController
      *     summary="Submit a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="gid",
      *         in="path",
@@ -291,7 +291,7 @@ class PlayerController extends BaseController
      *     summary="Cancel a group application.",
      *     description="Needs role: user",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="gid",
      *         in="path",
@@ -368,7 +368,7 @@ class PlayerController extends BaseController
      *     summary="Leave a group.",
      *     description="Needs role: user",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="gid",
      *         in="path",
@@ -412,7 +412,7 @@ class PlayerController extends BaseController
      *     summary="Change the main character from the player account.",
      *     description="Needs role: user",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="cid",
      *         in="path",
@@ -463,7 +463,7 @@ class PlayerController extends BaseController
      *     summary="Change the player's account status.",
      *     description="Needs role: user-manager",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -776,7 +776,7 @@ class PlayerController extends BaseController
      *     summary="Add a role to the player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -833,7 +833,7 @@ class PlayerController extends BaseController
      *     summary="Remove a role from a player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -1005,7 +1005,7 @@ class PlayerController extends BaseController
                         in the list. Characters that do not exist will all be added to a separate group as the
                         last element of the result list.",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         required=true,
      *         description="List of character names, one per line.",
@@ -1075,7 +1075,7 @@ class PlayerController extends BaseController
      *     summary="Delete a character.",
      *     description="Needs role: user, user-admin",
      *     tags={"Player"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

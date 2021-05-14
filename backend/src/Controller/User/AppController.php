@@ -93,7 +93,7 @@ class AppController extends BaseController
      *     summary="Create an app.",
      *     description="Needs role: app-admin<br>Generates a random secret that must be changed by an app manager.",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
@@ -168,7 +168,7 @@ class AppController extends BaseController
      *     summary="Rename an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -234,7 +234,7 @@ class AppController extends BaseController
      *     summary="Delete an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -326,7 +326,7 @@ class AppController extends BaseController
      *     summary="Assign a player as manager to an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -382,7 +382,7 @@ class AppController extends BaseController
      *     summary="Remove a manager (player) from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -478,7 +478,7 @@ class AppController extends BaseController
      *     summary="Add a group to an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -531,7 +531,7 @@ class AppController extends BaseController
      *     summary="Remove a group from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -578,7 +578,7 @@ class AppController extends BaseController
      *     summary="Add a role to the app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -628,7 +628,7 @@ class AppController extends BaseController
      *     summary="Remove a role from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -676,7 +676,7 @@ class AppController extends BaseController
      *     summary="Generates a new application secret. The new secret is returned, it cannot be retrieved afterwards.",
      *     description="Needs role: app-manager",
      *     tags={"App"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

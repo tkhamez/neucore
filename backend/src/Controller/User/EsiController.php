@@ -184,7 +184,7 @@ class EsiController extends BaseController
      *     operationId="requestPost",
      *     summary="Same as GET /user/esi/request, but for POST requests.",
      *     tags={"ESI"},
-     *     security={{"Session"={}}},
+     *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
      *         name="character",
      *         in="query",
