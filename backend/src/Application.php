@@ -309,22 +309,22 @@ class Application
         // so the `route` attribute is available from the ServerRequestInterface object
         $app->addRoutingMiddleware();
 
-        if ($config['CORS']['allow_origin']) { // not false or empty string
-            $app->add(new Cors(
-                $this->container->get(ResponseFactoryInterface::class),
-                explode(',', $config['CORS']['allow_origin'])
-            ));
-        }
-
         $app->add($this->container->get(BodyParams::class));
 
-        // add error handler last
         $errorMiddleware = $app->addErrorMiddleware(false, true, true);
         $errorMiddleware->setDefaultErrorHandler(new Slim\ErrorHandler(
             $app->getCallableResolver(),
             $app->getResponseFactory(),
             $this->container->get(LoggerInterface::class)
         ));
+
+        // add CORS last, so it is executed first, especially before the error handler.
+        if ($config['CORS']['allow_origin']) { // not false or empty string
+            $app->add(new Cors(
+                $this->container->get(ResponseFactoryInterface::class),
+                explode(',', $config['CORS']['allow_origin'])
+            ));
+        }
     }
 
     /**
