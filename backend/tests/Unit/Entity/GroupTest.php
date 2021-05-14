@@ -20,7 +20,8 @@ class GroupTest extends TestCase
         $group->setName('g.name');
 
         $this->assertSame(
-            ['id' => null, 'name' => 'g.name', 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+            ['id' => null, 'name' => 'g.name', 'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
             json_decode((string) json_encode($group), true)
         );
     }
@@ -35,6 +36,13 @@ class GroupTest extends TestCase
         $group = new Group();
         $group->setName('nam');
         $this->assertSame('nam', $group->getName());
+    }
+
+    public function testSetGetDescription()
+    {
+        $group = new Group();
+        $group->setDescription("Hell\no");
+        $this->assertSame("Hell\no", $group->getDescription());
     }
 
     public function testSetVisibilityException()

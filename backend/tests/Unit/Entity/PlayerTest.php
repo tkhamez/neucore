@@ -75,9 +75,10 @@ class PlayerTest extends TestCase
                 #'characterNameChanges' => [],
             ]],
             'groups' => [
-                ['id' => null, 'name' => 'group2', 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                ['id' => null, 'name' => 'group2', 'description' => null,
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
             ],
-            'managerGroups' => [['id' => null, 'name' => 'gName',
+            'managerGroups' => [['id' => null, 'name' => 'gName', 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [],]],
         ];

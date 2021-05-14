@@ -137,13 +137,13 @@ class AllianceControllerTest extends WebTestCase
         $this->assertSame(
             [
                 ['id' => 111, 'name' => 'alli 1', 'ticker' => 'a1', 'groups' => [
-                    ['id' => $this->groupId1, 'name' => 'group 1',
+                    ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
                 ]],
                 ['id' => 222, 'name' => 'alli 2', 'ticker' => 'a2', 'groups' => [
-                    ['id' => $this->groupId1, 'name' => 'group 1',
+                    ['id' => $this->groupId1, 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
-                    ['id' => $this->groupId2, 'name' => 'group 2',
+                    ['id' => $this->groupId2, 'name' => 'group 2', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
                 ]]
             ],

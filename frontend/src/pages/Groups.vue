@@ -34,6 +34,7 @@
                     <thead class="thead-light">
                         <tr>
                             <th scope="col">Name</th>
+                            <th scope="col">Description</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -44,6 +45,7 @@
                             :set="status = getStatus(group.id)">
 
                             <td>{{ group.name }}</td>
+                            <td style="white-space: pre-wrap;">{{ group.description }}</td>
                             <td>{{ status }}</td>
                             <td>
                                 <button v-if="status === 'Member'"
@@ -54,7 +56,7 @@
                                 <button v-if="status === ''"
                                         type="button" class="btn btn-primary btn-sm"
                                         v-on:click="apply(group.id)">
-                                    {{group.autoAccept ? 'Join' : 'Apply'}}
+                                    {{ group.autoAccept ? 'Join' : 'Apply' }}
                                 </button>
                                 <button v-if="status === 'pending' || status === 'denied' || status === 'accepted'"
                                         type="button" class="btn btn-secondary btn-sm"

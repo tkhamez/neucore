@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: Groups can now be set to "automatically accept" so that applications do not have to be approved.
+- New: Added description to groups.
 - Some improvements and bug fixes for the group application process.
 - Fix: Add CSRF Token to API description.
 

@@ -221,7 +221,7 @@ class AppControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertEquals(200, $response2->getStatusCode());
 
-        $expectedGroup = ['id' => $this->gid, 'name' => 'group-one',
+        $expectedGroup = ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
             'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false];
         $this->assertSame(
             ['id' => $this->aid, 'name' => 'n a n', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
@@ -429,7 +429,7 @@ class AppControllerTest extends WebTestCase
             [
                 'id' => $this->aid,
                 'name' => 'app one',
-                'groups' => [['id' => $this->gid, 'name' => 'group-one',
+                'groups' => [['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
                 'roles' => [Role::APP]
             ],
@@ -449,7 +449,7 @@ class AppControllerTest extends WebTestCase
             [
                 'id' => $this->aid,
                 'name' => 'app one',
-                'groups' => [['id' => $this->gid, 'name' => 'group-one',
+                'groups' => [['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
                 'roles' => [Role::APP]
             ],

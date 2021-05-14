@@ -24,7 +24,10 @@
 
         <div class="col-lg-8">
             <div class="card border-secondary mb-3" >
-                <h4 class="card-header">{{groupName}}</h4>
+                <div class="card-header">
+                    <h4>{{ groupName }}</h4>
+                    <span style="white-space: pre-wrap;">{{ groupDescription }}</span>
+                </div>
             </div>
 
             <ul v-if="groupId" class="nav nav-pills nav-fill">
@@ -146,6 +149,7 @@ export default {
         return {
             groupId: null,
             groupName: '',
+            groupDescription: '',
             groupMembers: [],
             groupApplications: [],
             searchResult: [],
@@ -173,6 +177,7 @@ export default {
         getData: function() {
             // reset variables
             this.groupName = '';
+            this.groupDescription = '';
             this.groupMembers = [];
             this.searchResult = [];
             this.requiredGroups = [];
@@ -188,7 +193,9 @@ export default {
                 return;
             }
 
-            this.groupName = this.player.managerGroups.filter(group => group.id === this.groupId)[0].name;
+            const group = this.player.managerGroups.filter(group => group.id === this.groupId)[0];
+            this.groupName = group.name;
+            this.groupDescription = group.description;
 
             this.contentType = this.route[2] ? this.route[2] : 'members';
             if (this.contentType === 'members') {

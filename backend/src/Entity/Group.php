@@ -43,6 +43,13 @@ class Group implements \JsonSerializable
     private $name;
 
     /**
+     * @OA\Property(maxLength=1024)
+     * @ORM\Column(type="string", length=1024, nullable=true)
+     * @var string|null
+     */
+    private $description;
+
+    /**
      * @OA\Property(enum={"private", "public"})
      * @ORM\Column(type="string", length=16, options={"default" : "private"})
      * @var string
@@ -137,6 +144,7 @@ class Group implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'description' => $this->description,
             'visibility' => $this->visibility,
             'autoAccept' => $this->autoAccept,
         ];
@@ -169,6 +177,18 @@ class Group implements \JsonSerializable
     public function getName(): string
     {
         return (string) $this->name;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return (string) $this->description;
     }
 
     /**

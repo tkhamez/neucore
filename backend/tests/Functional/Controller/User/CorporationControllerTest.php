@@ -152,13 +152,13 @@ class CorporationControllerTest extends WebTestCase
         $this->assertSame(
             [
                 ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null, 'groups' => [
-                    ['id' => $this->group1->getId(), 'name' => 'group 1',
+                    ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
                 ]],
                 ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null, 'groups' => [
-                    ['id' => $this->group1->getId(), 'name' => 'group 1',
+                    ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
-                    ['id' => $this->gid2, 'name' => 'group 2',
+                    ['id' => $this->gid2, 'name' => 'group 2', 'description' => null,
                         'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
                 ]]
             ],
@@ -517,7 +517,7 @@ class CorporationControllerTest extends WebTestCase
         $response = $this->runApp('GET', '/api/user/corporation/222/get-groups-tracking');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
-            [['id' => $this->group1->getId(), 'name' => 'group 1',
+            [['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
             $this->parseJsonBody($response)
         );

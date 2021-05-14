@@ -51,7 +51,12 @@
         </div>
         <div class="col-lg-8">
             <div class="card border-secondary mb-3" >
-                <h4 class="card-header">{{groupName}}</h4>
+                <div class="card-header">
+                    <h4>{{groupName}}</h4>
+                    <label for="groupDescription">Description</label>
+                    <textarea maxlength="1024" v-model="groupDescription" class="form-control"
+                              v-on:input="changeDescriptionDelayed($event.target.value)" id="groupDescription" rows="2"></textarea>
+                </div>
             </div>
             <ul class="nav nav-pills nav-fill">
                 <li class="nav-item">
@@ -127,6 +132,7 @@
 
 <script>
 import $ from 'jquery';
+import _ from "lodash";
 import {GroupApi} from 'neucore-js-client';
 import AddEntity  from '../components/EntityAdd.vue';
 import Edit       from '../components/EntityEdit.vue';
@@ -150,6 +156,7 @@ export default {
             groups: [],
             groupId: null, // current group
             groupName: '',
+            groupDescription: '',
             contentType: '',
             members: [],
         }
@@ -164,6 +171,7 @@ export default {
     watch: {
         route: function() {
             setGroupIdAndContentType(this);
+            getGroups(this); // TODO need API endpoint to load one group only
         },
     },
 
@@ -253,14 +261,26 @@ export default {
 
         reloadGroups () {
             getGroups(this);
-        }
+        },
+
+        changeDescriptionDelayed (value) {
+            changeDescriptionDebounced(this, value);
+        },
     },
 }
+
+const changeDescriptionDebounced = _.debounce((vm, value) => {
+    new GroupApi().userGroupUpdateDescription(vm.groupId, value, (error, data, response) => {
+        if (error && response.statusCode === 403) {
+            vm.message('Unauthorized.', 'error');
+        }
+    });
+}, 250);
 
 function setGroupIdAndContentType(vm) {
     vm.groupId = vm.route[1] ? parseInt(vm.route[1], 10) : null;
     if (vm.groupId) {
-        setGroupName(vm);
+        setActiveGroupData(vm);
         vm.contentType = vm.route[2] ? vm.route[2] : 'managers';
     }
     if (vm.contentType === 'members') {
@@ -274,14 +294,15 @@ function getGroups(vm) {
             return;
         }
         vm.groups = data;
-        setGroupName(vm);
+        setActiveGroupData(vm);
     });
 }
 
-function setGroupName(vm) {
+function setActiveGroupData(vm) {
     const activeGroup = vm.groups.filter(group => group.id === vm.groupId);
     if (activeGroup.length === 1) { // not yet there on page refresh
         vm.groupName = activeGroup[0].name;
+        vm.groupDescription = activeGroup[0].description;
     }
 }
 

@@ -276,6 +276,63 @@ class GroupController extends BaseController
 
     /**
      * @OA\Put(
+     *     path="/user/group/{id}/update-description",
+     *     operationId="userGroupUpdateDescription",
+     *     summary="Update group description.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"description"},
+     *                 @OA\Property(
+     *                     property="description",
+     *                     description="The description for the group.",
+     *                     type="string",
+     *                     maxLength=1024
+     *                 )
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Description was updated.",
+     *         @OA\JsonContent(ref="#/components/schemas/Group")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     )
+     * )
+     */
+    public function updateDescription(string $id, ServerRequestInterface $request): ResponseInterface
+    {
+        if (!$this->findGroup($id)) {
+            return $this->response->withStatus(404);
+        }
+
+        $description = $this->getBodyParam($request, 'description', '');
+        $this->group->setDescription($description);
+
+        return $this->flushAndReturn(200, $this->group);
+    }
+
+    /**
+     * @OA\Put(
      *     path="/user/group/{id}/set-visibility/{choice}",
      *     operationId="setVisibility",
      *     summary="Change visibility of a group.",

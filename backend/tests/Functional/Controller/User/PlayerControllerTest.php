@@ -204,9 +204,9 @@ class PlayerControllerTest extends WebTestCase
                 ],
             ],
             'groups' => [
-                ['id' => $groups[1]->getId(), 'name' => 'another-group',
+                ['id' => $groups[1]->getId(), 'name' => 'another-group', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
-                ['id' => $groups[0]->getId(), 'name' => 'group1',
+                ['id' => $groups[0]->getId(), 'name' => 'group1', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
             ],
             'managerGroups' => [],
@@ -341,7 +341,7 @@ class PlayerControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => $ga->getId(),
             'player' => ['id' => $this->player3Id, 'name' => 'Admin'],
-            'group' => ['id' => $this->groupId, 'name' => 'test-pub',
+            'group' => ['id' => $this->groupId, 'name' => 'test-pub', 'description' => null,
                 'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => null,
@@ -980,6 +980,7 @@ class PlayerControllerTest extends WebTestCase
             'groups' => [[
                 'id' => $this->requiredGroupId,
                 'name' => 'required-group',
+                'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
             ]],
@@ -1077,6 +1078,7 @@ class PlayerControllerTest extends WebTestCase
             'groups' => [[
                 'id' => $this->requiredGroupId,
                 'name' => 'required-group',
+                'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
             ]],

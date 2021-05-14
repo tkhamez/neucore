@@ -907,6 +907,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => $this->group1->getId(),
             'name' => 'g1',
+            'description' => null,
             'visibility' => Group::VISIBILITY_PRIVATE,
             'autoAccept' => false,
         ]], $this->parseJsonBody($response));
@@ -1013,6 +1014,7 @@ class WatchlistControllerTest extends WebTestCase
         $this->assertSame([[
             'id' => $this->group3->getId(),
             'name' => 'g3',
+            'description' => null,
             'visibility' => Group::VISIBILITY_PRIVATE,
             'autoAccept' => false,
         ]], $this->parseJsonBody($response));
