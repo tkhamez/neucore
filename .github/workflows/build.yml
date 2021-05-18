@@ -16,7 +16,7 @@ jobs:
           php-version: '7.4'
           extensions: gmp, xdebug, apcu
           ini-values: apc.enable_cli=1
-          tools: composer:v1
+          tools: composer:v2
       - name: Install
         run: cd backend && composer install
       - name: PHPUnit

@@ -4,7 +4,7 @@ name: default
 
 steps:
   - name: backend-build
-    image: composer:1
+    image: composer:2
     commands:
       - cd backend
       - composer install --ignore-platform-reqs
@@ -53,7 +53,7 @@ steps:
       sources: backend/src,frontend/src
 
   - name: distribution
-    image: composer:1
+    image: composer:2
     environment:
       NEUCORE_APP_ENV: prod
       NEUCORE_DATABASE_URL: mysql://root:@database/test?serverVersion=5.7

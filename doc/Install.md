@@ -43,7 +43,7 @@ To run the application:
     * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
 
 Additionally, to build the application:
-* Composer 1.x.
+* Composer 2.
 * Node.js >=12.13.0 <15 with npm >=6.12.0 <7 (only tested with LTS releases v12 and v14).
 * Java runtime to generate the OpenAPI JavaScript client.
 
