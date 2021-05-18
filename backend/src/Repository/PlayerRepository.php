@@ -250,8 +250,8 @@ class PlayerRepository extends EntityRepository
 
         $result = $query1->getQuery()->getResult();
         if (!$currentOnly) {
-            $result = array_merge($result, $query2->getQuery()->getResult());
-            $result = array_merge($result, $query3->getQuery()->getResult());
+            /* @phan-suppress-next-line PhanPossiblyUndeclaredVariable */
+            $result = array_merge($result, $query2->getQuery()->getResult(), $query3->getQuery()->getResult());
         }
 
         if (!$currentOnly) {
