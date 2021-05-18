@@ -37,7 +37,7 @@ class Watchlist implements \JsonSerializable
 
     /**
      * @OA\Property()
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", name="lock_watchlist_settings")
      * @var bool
      */
     private $lockWatchlistSettings = false;
