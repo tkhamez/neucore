@@ -26,6 +26,7 @@ services:
       context: doc
       dockerfile: Dockerfile-node12
       #dockerfile: Dockerfile-node14
+      #dockerfile: Dockerfile-node16
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080
