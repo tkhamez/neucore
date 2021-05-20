@@ -76,13 +76,19 @@
                         <tr>
                             <th scope="col">Player ID</th>
                             <th scope="col">Name</th>
-                            <th scope="col"></th>
+                            <th scope="col" v-if="hasRole('user-chars')">Characters</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="member in groupMembers">
                             <td>{{ member.id }}</td>
                             <td>{{ member.name }}</td>
+                            <td v-if="hasRole('user-chars')">
+                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
+                                    Show characters
+                                </button>
+                            </td>
                             <td>
                                 <button class="btn btn-danger btn-sm" v-on:click="removePlayer(member.id)">
                                     Remove from group
