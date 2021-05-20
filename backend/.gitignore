@@ -6,5 +6,7 @@
 !/var/cache/.gitkeep
 /var/logs/*
 !/var/logs/.gitkeep
+/var/xdebug/*
+!/var/xdebug/.gitkeep
 /var/phpunit
 /vendor
