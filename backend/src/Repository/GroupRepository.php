@@ -30,7 +30,7 @@ class GroupRepository extends EntityRepository
                 'c.id AS corporation_id',
                 'c.name AS corporation_name',
             )
-            ->leftJoin('g.players', 'p')
+            ->innerJoin('g.players', 'p')
             ->leftJoin('p.characters', 'char', Join::WITH, 'char.main = :main')
             ->leftJoin('char.corporation', 'c')
             ->where('g.id = :groupId')

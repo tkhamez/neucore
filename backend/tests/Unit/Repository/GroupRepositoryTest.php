@@ -45,6 +45,11 @@ class GroupRepositoryTest extends TestCase
     /**
      * @var int
      */
+    private static $group1Id;
+
+    /**
+     * @var int
+     */
     private static $group2Id;
 
     public static function setUpBeforeClass(): void
@@ -81,6 +86,7 @@ class GroupRepositoryTest extends TestCase
         $om->persist($character3);
         $om->flush();
 
+        self::$group1Id = $group1->getId();
         self::$group2Id = $group2->getId();
         self::$p1Id = $player1->getId();
         self::$p2Id = $player2->getId();
@@ -90,7 +96,7 @@ class GroupRepositoryTest extends TestCase
 
     public function testGetMembersWithCorporation()
     {
-        $this->assertSame([], self::$repository->getMembersWithCorporation(self::$group2Id + 1));
+        $this->assertSame([], self::$repository->getMembersWithCorporation(self::$group1Id));
 
         $this->assertSame([
             ['player_id' => self::$p1Id, 'player_name' => 'p1', 'corporation_id' => 100, 'corporation_name' => 'corp'],
