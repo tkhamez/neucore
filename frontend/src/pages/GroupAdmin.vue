@@ -239,6 +239,7 @@ export default {
                     window.location.hash = '#GroupAdmin';
                     vm.groupId = null;
                     vm.contentType = '';
+                    vm.groupDescription = '';
                     getGroups(vm);
                     vm.emitter.emit('playerChange'); // current player could have been a manager or member
                 }
