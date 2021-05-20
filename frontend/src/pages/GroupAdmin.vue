@@ -55,7 +55,8 @@
                     <h4>{{groupName}}</h4>
                     <label for="groupDescription">Description</label>
                     <textarea maxlength="1024" v-model="groupDescription" class="form-control"
-                              v-on:input="changeDescriptionDelayed($event.target.value)" id="groupDescription" rows="2"></textarea>
+                              v-on:input="changeDescriptionDelayed($event.target.value)"
+                              id="groupDescription" rows="2"></textarea>
                 </div>
             </div>
             <ul class="nav nav-pills nav-fill">
@@ -111,6 +112,7 @@
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Name</th>
+                            <th scope="col">Corporation</th>
                             <th scope="col">Characters</th>
                         </tr>
                     </thead>
@@ -118,6 +120,7 @@
                         <tr v-for="member in members">
                             <td>{{ member.id }}</td>
                             <td>{{ member.name }}</td>
+                            <td>{{ member.corporationName }}</td>
                             <td>
                                 <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
                                     Show characters

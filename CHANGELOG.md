@@ -6,8 +6,9 @@ dd mm yyyy
 
 - **BC break**: If a group has other groups as prerequisites, the player now only needs to be a member of 
   one of those groups instead of all of them.
-- New: Display the number of members of groups.
 - New: Display public/private and auto-accept flag for group managers.
+- New: Display the number of members of groups.
+- New: Show the player's corporation in the group members list.
 - New: Show character modal button for user managers if they have the "user-chars" role.
 - Change: When a player is removed from a group, their application is now also removed, if there is one.
 - Fix: Delete group description from input field when group was deleted.

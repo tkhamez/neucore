@@ -76,6 +76,7 @@
                         <tr>
                             <th scope="col">Player ID</th>
                             <th scope="col">Name</th>
+                            <th scope="col">Corporation</th>
                             <th scope="col" v-if="hasRole('user-chars')">Characters</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -84,6 +85,7 @@
                         <tr v-for="member in groupMembers">
                             <td>{{ member.id }}</td>
                             <td>{{ member.name }}</td>
+                            <td>{{ member.corporationName }}</td>
                             <td v-if="hasRole('user-chars')">
                                 <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
                                     Show characters

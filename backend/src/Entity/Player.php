@@ -20,6 +20,11 @@ use OpenApi\Annotations as OA;
  *         type="array",
  *         description="External service accounts (API: not included by default)",
  *         @OA\Items(ref="#/components/schemas/ServiceAccount")
+ *     ),
+ *     @OA\Property(
+ *         property="corporationName",
+ *         description="Corporation of main character (API: not included by default)",
+ *         type="string",
  *     )
  * )
  *

@@ -1059,7 +1059,7 @@ class GroupController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
+     *         description="List of players ordered by name. Id, name and corporationName properties are returned.",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
      *     ),
      *     @OA\Response(
@@ -1120,12 +1120,21 @@ class GroupController extends BaseController
         if ($type === self::TYPE_MANAGERS) {
             $players = $this->group->getManagers();
         } elseif ($type === self::TYPE_MEMBERS) {
-            $players = $this->group->getPlayers();
+            $players = $this->repositoryFactory->getGroupRepository()
+                ->getMembersWithCorporation($this->group->getId());
         }
 
         $ret = [];
         foreach ($players as $player) {
-            $result = $player->jsonSerialize(true);
+            if ($player instanceof Player) {
+                $result = $player->jsonSerialize(true);
+            } else { // result from getMembersWithCorporation()
+                $result = [
+                    'id' => $player['player_id'],
+                    'name' => $player['player_name'],
+                    'corporationName' => $player['corporation_name'],
+                ];
+            }
             if ($withRoles) {
                 $result['roles'] = $player->getRoles();
             }

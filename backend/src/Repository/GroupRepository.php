@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Neucore\Entity\Group;
 
 /**
@@ -19,4 +20,28 @@ use Neucore\Entity\Group;
  */
 class GroupRepository extends EntityRepository
 {
+    public function getMembersWithCorporation(int $groupId): array
+    {
+        $query = $this
+            ->createQueryBuilder('g')
+            ->select(
+                'p.id AS player_id',
+                'p.name AS player_name',
+                'c.id AS corporation_id',
+                'c.name AS corporation_name',
+            )
+            ->leftJoin('g.players', 'p')
+            ->leftJoin('p.characters', 'char', Join::WITH, 'char.main = :main')
+            ->leftJoin('char.corporation', 'c')
+            ->where('g.id = :groupId')
+            ->orderBy('p.name', 'ASC')
+            ->setParameter('groupId', $groupId)
+            ->setParameter('main', true)
+        ;
+
+        return array_map(function ($item) {
+            $item['corporation_id'] = $item['corporation_id'] !== null ? (int) $item['corporation_id'] : null;
+            return $item;
+        }, $query->getQuery()->getResult());
+    }
 }

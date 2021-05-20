@@ -1099,7 +1099,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertSame(
-            [['id' => $this->pid2, 'name' => 'Group']],
+            [['id' => $this->pid2, 'name' => 'Group', 'corporationName' => 'corp 2']],
             $this->parseJsonBody($response)
         );
     }
@@ -1124,11 +1124,7 @@ class GroupControllerTest extends WebTestCase
         $user = $this->helper->addCharacterMain('Group', 7, [Role::USER, Role::GROUP_MANAGER], ['group-one']);
         $this->pid2 = $user->getPlayer()->getId();
 
-        $admin = $this->helper->addCharacterMain(
-            'Admin',
-            8,
-            [Role::USER, Role::GROUP_MANAGER, Role::GROUP_ADMIN]
-        );
+        $admin = $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::GROUP_MANAGER, Role::GROUP_ADMIN]);
         $this->pid = $admin->getPlayer()->getId();
 
         $this->helper->addCharacterMain('UA', 9, [Role::USER_MANAGER]);
@@ -1146,6 +1142,7 @@ class GroupControllerTest extends WebTestCase
         $corp = (new Corporation())->setId(200)->setTicker('c2')->setName('corp 2')->setAlliance($alli);
         $alli->addGroup($g[0]);
         $corp->addGroup($g[0]);
+        $user->setCorporation($corp);
         $this->em->persist($alli);
         $this->em->persist($corp);
 
