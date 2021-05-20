@@ -1190,6 +1190,16 @@ class GroupController extends BaseController
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === self::TYPE_MEMBERS) {
             $this->player->removeGroup($this->group);
+
+            // Remove application if one exists.
+            $groupApplication = $this->repositoryFactory->getGroupApplicationRepository()->findOneBy([
+                'player' => $this->player->getId(),
+                'group' => $this->group->getId()
+            ]);
+            if ($groupApplication) {
+                $this->objectManager->remove($groupApplication);
+            }
+
             $this->account->syncTrackingRole($this->player);
             $this->account->syncWatchlistRole($this->player);
             $this->account->syncWatchlistManagerRole($this->player);

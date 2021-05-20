@@ -58,7 +58,7 @@
                                         v-on:click="apply(group.id)">
                                     {{ group.autoAccept ? 'Join' : 'Apply' }}
                                 </button>
-                                <button v-if="status === 'pending' || status === 'denied' || status === 'accepted'"
+                                <button v-if="status === 'pending' || status === 'denied'"
                                         type="button" class="btn btn-secondary btn-sm"
                                         v-on:click="cancel(group.id)">
                                     {{ status === 'pending' ? 'Cancel' : 'Remove' }} application

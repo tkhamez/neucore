@@ -867,7 +867,7 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2, 'group' => $this->gid2]);
         $this->assertSame(1, count($appsBefore));
         $this->assertSame(GroupApplication::STATUS_PENDING, $appsBefore[0]->getStatus());
         $this->assertFalse($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
@@ -879,7 +879,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2, 'group' => $this->gid2]);
         $this->assertSame(1, count($appsAfter));
         $this->assertSame(GroupApplication::STATUS_DENIED, $appsAfter[0]->getStatus());
         $this->assertFalse($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
@@ -911,7 +911,7 @@ class GroupControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(8);
 
-        $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $appsBefore = $this->groupAppRepo->findBy(['player' => $this->pid2, 'group' => $this->gid2]);
         $this->assertSame(1, count($appsBefore));
         $this->assertSame(GroupApplication::STATUS_PENDING, $appsBefore[0]->getStatus());
         $this->assertFalse($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
@@ -923,7 +923,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->em->clear();
 
-        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2]);
+        $appsAfter = $this->groupAppRepo->findBy(['player' => $this->pid2, 'group' => $this->gid2]);
         $this->assertSame(1, count($appsAfter));
         $this->assertSame(GroupApplication::STATUS_ACCEPTED, $appsAfter[0]->getStatus());
         $this->assertTrue($this->playerRepo->find($this->pid2)->hasGroup($this->gid2));
@@ -1051,6 +1051,7 @@ class GroupControllerTest extends WebTestCase
 
         $group = $this->groupRepo->find($this->gid);
         $this->assertSame(0, count($group->getPlayers()));
+        $this->assertSame(1, count($this->groupAppRepo->findBy(['player' => $this->pid2])));
     }
 
     public function testRemoveMember204AsManager()
@@ -1135,10 +1136,10 @@ class GroupControllerTest extends WebTestCase
         $g[0]->addManager($admin->getPlayer());
         $g[1]->addManager($admin->getPlayer());
 
-        $groupApp = new GroupApplication();
-        $groupApp->setPlayer($user->getPlayer());
-        $groupApp->setGroup($g[1]);
-        $this->em->persist($groupApp);
+        $groupApp1 = (new GroupApplication())->setPlayer($user->getPlayer())->setGroup($g[1]);
+        $groupApp2 = (new GroupApplication())->setPlayer($user->getPlayer())->setGroup($g[0]);
+        $this->em->persist($groupApp1);
+        $this->em->persist($groupApp2);
 
         // corps and alliances
         $alli = (new Alliance())->setId(10)->setTicker('a1')->setName('alli 1');
@@ -1153,6 +1154,6 @@ class GroupControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->groupAppID = $groupApp->getId();
+        $this->groupAppID = $groupApp1->getId();
     }
 }

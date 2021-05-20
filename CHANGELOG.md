@@ -6,6 +6,7 @@ dd mm yyyy
 
 - New: Display the number of members of groups.
 - New: Display public/private and auto-accept flag for group managers.
+- Change: When a player is removed from a group, their application is now also removed, if there is one.
 - Fix: Delete group description from input field when group was deleted.
 
 ## 1.22.0
