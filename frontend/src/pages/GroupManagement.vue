@@ -17,6 +17,9 @@
                         :class="{ active: groupId === group.id }"
                         :href="'#GroupManagement/' + group.id + '/' + contentType">
                         {{ group.name }}
+                        <span class="text-muted small">
+                            {{ group.visibility }} {{ group.autoAccept ? 'auto-accept' : '' }}
+                        </span>
                     </a>
                 </div>
             </div>

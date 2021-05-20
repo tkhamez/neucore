@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: Display the number of members of groups.
+- New: Display public/private and auto-accept flag for group managers.
 - Fix: Delete group description from input field when group was deleted.
 
 ## 1.22.0
