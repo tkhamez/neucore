@@ -33,7 +33,10 @@
             <ul v-if="groupId" class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link" :class="{ 'active': contentType === 'members' }"
-                       :href="'#GroupManagement/' + groupId + '/members'">Members</a>
+                       :href="'#GroupManagement/' + groupId + '/members'">
+                        Members
+                        <span v-if="groupMembersLoaded && contentType === 'members'">({{ groupMembers.length }})</span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" :class="{ 'active': contentType === 'applications' }"
@@ -89,7 +92,7 @@
             <div v-if="contentType === 'applications'" class="card border-secondary mb-3"
                  v-for="status in ['pending', 'denied', 'accepted']">
                 <div class="card-body">
-                    <h5>{{ status }}</h5>
+                    <h5>{{ status }} ({{ groupApplicationsByStatus(status).length }})</h5>
                 </div>
                 <table v-cloak v-if="groupId" class="table table-hover mb-0"
                        :aria-describedby="status + ' applications'">
@@ -151,6 +154,7 @@ export default {
             groupName: '',
             groupDescription: '',
             groupMembers: [],
+            groupMembersLoaded: false,
             groupApplications: [],
             searchResult: [],
             requiredGroups: [],
@@ -179,6 +183,7 @@ export default {
             this.groupName = '';
             this.groupDescription = '';
             this.groupMembers = [];
+            this.groupMembersLoaded = false;
             this.searchResult = [];
             this.requiredGroups = [];
             this.groupManagers = [];
@@ -259,6 +264,7 @@ function getMembers(vm) {
             return;
         }
         vm.groupMembers = data;
+        vm.groupMembersLoaded = true;
     });
 }
 

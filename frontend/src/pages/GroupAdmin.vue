@@ -94,7 +94,10 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'members' }"
-                       :href="'#GroupAdmin/' + groupId + '/members'">Members</a>
+                       :href="'#GroupAdmin/' + groupId + '/members'">
+                        Members
+                        <span v-if="membersLoaded && contentType === 'members'">({{ members.length }})</span>
+                    </a>
                 </li>
             </ul>
 
@@ -159,6 +162,7 @@ export default {
             groupDescription: '',
             contentType: '',
             members: [],
+            membersLoaded: false,
         }
     },
 
@@ -308,11 +312,13 @@ function setActiveGroupData(vm) {
 
 function fetchMembers(vm) {
     vm.members = [];
+    vm.membersLoaded = false;
     new GroupApi().members(vm.groupId, function(error, data) {
         if (error) {
             return;
         }
         vm.members = data;
+        vm.membersLoaded = true;
     });
 }
 </script>

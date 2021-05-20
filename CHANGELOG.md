@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Display the number of members of groups.
+
 ## 1.22.0
 
 14 May 2021
