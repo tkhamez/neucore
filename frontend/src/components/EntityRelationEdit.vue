@@ -34,7 +34,7 @@ Select and table to add and remove objects from other objects.
                 Managers can add and remove players to a group.
             </p>
             <p v-if="type === 'Group' && contentType === 'groups'">
-                Add groups that are a prerequisite (all of them) for being a member of this group.
+                Add groups that are a prerequisite (<em>one</em> of them) for being a member of this group.
             </p>
             <p v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.

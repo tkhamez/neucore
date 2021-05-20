@@ -61,7 +61,8 @@
                         <span v-if="requiredGroups.length === 0">none</span>
                         <br>
                         <span class="text-muted" v-if="requiredGroups.length > 0">
-                            Any member who is not also a member of <em>all</em> these groups is automatically removed.
+                            Any member who is not also a member of at least <em>one</em> of these groups is
+                            automatically removed.
                         </span>
                     </p>
 

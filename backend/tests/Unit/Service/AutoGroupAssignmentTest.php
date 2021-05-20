@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Group;
@@ -13,10 +14,8 @@ use Neucore\Entity\Role;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AutoGroupAssignment;
-use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
-use Tests\Logger;
 use Neucore\Entity\Alliance;
 
 class AutoGroupAssignmentTest extends TestCase
@@ -27,7 +26,7 @@ class AutoGroupAssignmentTest extends TestCase
     private $th;
 
     /**
-     * @var \Doctrine\Persistence\ObjectManager
+     * @var ObjectManager
      */
     private $om;
 
@@ -76,14 +75,10 @@ class AutoGroupAssignmentTest extends TestCase
         $this->th = new Helper();
         $this->om = $this->th->getObjectManager();
 
-        $log = new Logger('Test');
-
         $repositoryFactory = new RepositoryFactory($this->om);
         $this->playerRepo = $repositoryFactory->getPlayerRepository();
 
-        $objectManager = new ObjectManager($this->om, $log);
-
-        $this->aga = new AutoGroupAssignment($objectManager, $repositoryFactory, $log);
+        $this->aga = new AutoGroupAssignment($repositoryFactory);
     }
 
     public function testAssignManaged()
@@ -153,37 +148,31 @@ class AutoGroupAssignmentTest extends TestCase
             $playerBefore->addGroup($this->group3);
             $this->om->flush();
 
-            $this->assertSame(
-                [
-                    $this->group4->getId(),
-                    $this->group5Id,
-                    $this->group1->getId(),
-                    $this->group2->getId(),
-                    $this->group3->getId(),
-                ],
-                $playerBefore->getGroupIds()
-            );
+            $this->assertSame([
+                $this->group4->getId(),
+                $this->group5Id,
+                $this->group1->getId(),
+                $this->group2->getId(),
+                $this->group3->getId(),
+            ], $playerBefore->getGroupIds());
 
             // group1 depends on group5 -> player has g5
             // group5 depends on group6 -> player has not g6
-            // group2 depends on group3 -> player has g3
+            // group2 depends on group3 and group6 -> player has g3
             // group4 has no required groups
 
             $this->aga->checkRequiredGroups($playerBefore);
+            $this->om->flush();
         }
 
-        $this->om->flush();
         $this->om->clear();
 
         $playerAfter = $this->playerRepo->find($this->playerId);
-        $this->assertSame(
-            [
-                $this->group2->getId(),
-                $this->group3->getId(),
-                $this->group4->getId(),
-            ],
-            $playerAfter->getGroupIds()
-        );
+        $this->assertSame([
+            $this->group2->getId(),
+            $this->group3->getId(),
+            $this->group4->getId(),
+        ], $playerAfter->getGroupIds());
     }
 
     private function setUpData(): void
@@ -216,6 +205,7 @@ class AutoGroupAssignmentTest extends TestCase
         $group1->addRequiredGroup($group5);
         $group5->addRequiredGroup($group6);
         $group2->addRequiredGroup($group3);
+        $group2->addRequiredGroup($group6);
 
         $this->om->persist($group1);
         $this->om->persist($group2);

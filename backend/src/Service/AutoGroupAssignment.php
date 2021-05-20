@@ -11,16 +11,9 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\AllianceRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\GroupRepository;
-use Neucore\Repository\PlayerRepository;
-use Psr\Log\LoggerInterface;
 
 class AutoGroupAssignment
 {
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     /**
      * @var AllianceRepository
      */
@@ -35,16 +28,6 @@ class AutoGroupAssignment
      * @var GroupRepository
      */
     private $groupRepo;
-
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
 
     /**
      * Alliance ID to group IDs mapping.
@@ -67,17 +50,11 @@ class AutoGroupAssignment
      */
     private $autoGroups;
 
-    public function __construct(
-        ObjectManager $objectManager,
-        RepositoryFactory $repositoryFactory,
-        LoggerInterface $logger
-    ) {
-        $this->objectManager = $objectManager;
+    public function __construct(RepositoryFactory $repositoryFactory)
+    {
         $this->allianceRepo = $repositoryFactory->getAllianceRepository();
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->groupRepo = $repositoryFactory->getGroupRepository();
-        $this->playerRepo = $repositoryFactory->getPlayerRepository();
-        $this->log = $logger;
     }
 
     /**
@@ -155,9 +132,9 @@ class AutoGroupAssignment
     }
 
     /**
-     * Removes groups from player if they are not a member of all required groups.
+     * Removes groups from player if they are not a member of at least one of the required groups.
      *
-     * Does not flush the entity manager
+     * Does not flush the entity manager.
      */
     public function checkRequiredGroups(Player $player): void
     {
@@ -165,11 +142,16 @@ class AutoGroupAssignment
         while ($lastGroupCount !== count($player->getGroups())) {
             $groups = $player->getGroups();
             foreach ($groups as $group) {
-                foreach ($group->getRequiredGroups() as $requiredGroup) {
-                    if (! $player->hasGroup($requiredGroup->getId())) {
-                        $player->removeGroup($group);
+                $requiredGroups = $group->getRequiredGroups();
+                $remove = count($requiredGroups) > 0;
+                foreach ($requiredGroups as $requiredGroup) {
+                    if ($player->hasGroup($requiredGroup->getId())) {
+                        $remove = false;
                         break;
                     }
+                }
+                if ($remove) {
+                    $player->removeGroup($group);
                 }
             }
             $lastGroupCount = count($player->getGroups());

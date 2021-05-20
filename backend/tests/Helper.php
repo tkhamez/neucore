@@ -165,7 +165,7 @@ class Helper
         $characterService = new \Neucore\Service\Character($objManager, $repoFactory);
         $esiApiFactory = new EsiApiFactory($client, $config);
         $esiData = new EsiData($logger, $esiApiFactory, $objManager, $repoFactory, $characterService, $config);
-        $autoGroups = new AutoGroupAssignment($objManager, $repoFactory, $logger);
+        $autoGroups = new AutoGroupAssignment($repoFactory);
         return new Account($logger, $objManager, $repoFactory, $esiData, $autoGroups, $characterService);
     }
 

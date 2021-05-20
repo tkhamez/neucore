@@ -4,6 +4,8 @@
 
 dd mm yyyy
 
+- **BC break**: If a group has other groups as prerequisites, the player now only needs to be a member of 
+  one of those groups instead of all of them.
 - New: Display the number of members of groups.
 - New: Display public/private and auto-accept flag for group managers.
 - Change: When a player is removed from a group, their application is now also removed, if there is one.

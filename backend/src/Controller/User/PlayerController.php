@@ -226,7 +226,7 @@ class PlayerController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="This player is not a member of the required group(s)."
+     *         description="This player is not a member of one of the required groups."
      *     ),
      *     @OA\Response(
      *         response="403",
