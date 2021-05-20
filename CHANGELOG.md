@@ -12,6 +12,7 @@ dd mm yyyy
 - New: Show character modal button for user managers if they have the "user-chars" role.
 - Change: When a player is removed from a group, their application is now also removed, if there is one.
 - Fix: Delete group description from input field when group was deleted.
+- Update dependencies.
 
 ## 1.22.0
 

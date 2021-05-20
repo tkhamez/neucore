@@ -166,11 +166,13 @@ class RepositoryFactory
     /**
      * @param string $repositoryClass
      * @param string $entityClass
+     * @psalm-param class-string<T> $entityClass
      * @return mixed
+     * @template T of object
      */
     private function getRepository(string $repositoryClass, string $entityClass)
     {
-        if (! isset($this->factories[$repositoryClass])) {
+        if (!isset($this->factories[$repositoryClass])) {
             $metadata = $this->objectManager->getClassMetadata($entityClass);
             $repository = new $repositoryClass($this->objectManager, $metadata);
             $this->factories[$repositoryClass] = $repository;
