@@ -142,15 +142,7 @@ class AutoGroupAssignment
         while ($lastGroupCount !== count($player->getGroups())) {
             $groups = $player->getGroups();
             foreach ($groups as $group) {
-                $requiredGroups = $group->getRequiredGroups();
-                $remove = count($requiredGroups) > 0;
-                foreach ($requiredGroups as $requiredGroup) {
-                    if ($player->hasGroup($requiredGroup->getId())) {
-                        $remove = false;
-                        break;
-                    }
-                }
-                if ($remove) {
+                if (!$player->isAllowedMember($group)) {
                     $player->removeGroup($group);
                 }
             }

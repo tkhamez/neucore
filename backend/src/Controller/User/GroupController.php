@@ -123,14 +123,7 @@ class GroupController extends BaseController
         $groups = [];
         $player = $this->getUser($this->userAuth)->getPlayer();
         foreach ($publicGroups as $publicGroup) {
-            $allowed = true;
-            foreach ($publicGroup->getRequiredGroups() as $requiredGroup) {
-                if (!$player->hasGroup($requiredGroup->getId())) {
-                    $allowed = false;
-                    break;
-                }
-            }
-            if ($allowed) {
+            if ($player->isAllowedMember($publicGroup)) {
                 $groups[] = $publicGroup;
             }
         }
@@ -1164,10 +1157,8 @@ class GroupController extends BaseController
             $this->player->addManagerGroup($this->group); // needed for check in syncManagerRole()
             $account->syncManagerRole($this->player, Role::GROUP_MANAGER);
         } elseif ($type === 'member' && !$this->player->hasGroup($this->group->getId())) {
-            foreach ($this->group->getRequiredGroups() as $requiredGroup) {
-                if (!$this->player->hasGroup($requiredGroup->getId())) {
-                    return $this->response->withStatus(400);
-                }
+            if (!$this->player->isAllowedMember($this->group)) {
+                return $this->response->withStatus(400);
             }
             $this->player->addGroup($this->group);
             $this->account->syncTrackingRole($this->player);

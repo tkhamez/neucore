@@ -249,11 +249,8 @@ class PlayerController extends BaseController
 
         $player = $this->getUser($this->userAuth)->getPlayer();
 
-        // check if player has all required groups
-        foreach ($group->getRequiredGroups() as $requiredGroup) {
-            if (!$player->hasGroup($requiredGroup->getId())) {
-                return $this->response->withStatus(400);
-            }
+        if (!$player->isAllowedMember($group)) {
+            return $this->response->withStatus(400);
         }
 
         // update existing or create new application

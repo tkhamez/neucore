@@ -398,6 +398,31 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->hasAnyGroup([2, 3]));
     }
 
+    public function testIsAllowedMember()
+    {
+        $player = new Player();
+        $group1 = new Group();
+        $group2 = new Group();
+        $group3 = new Group();
+
+        $rp = new \ReflectionProperty(Group::class, 'id');
+        $rp->setAccessible(true);
+        $rp->setValue($group1, 1);
+        $rp->setValue($group2, 2);
+        $rp->setValue($group3, 2);
+
+        $this->assertTrue($player->isAllowedMember($group1));
+
+        $group1->addRequiredGroup($group2);
+        $this->assertFalse($player->isAllowedMember($group1));
+
+        $player->addGroup($group2);
+        $this->assertTrue($player->isAllowedMember($group1));
+
+        $group1->addRequiredGroup($group3);
+        $this->assertTrue($player->isAllowedMember($group1));
+    }
+
     public function testAddGetRemoveManagerGroups()
     {
         $play = new Player();

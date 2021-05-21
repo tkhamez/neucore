@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Fix required group checks.
+
 ## 1.23.0
 
 21 May 2021

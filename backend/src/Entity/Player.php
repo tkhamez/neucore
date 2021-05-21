@@ -508,6 +508,23 @@ class Player implements \JsonSerializable
         return ! empty(array_intersect($groupIds, $this->getGroupIds()));
     }
 
+    /**
+     * Returns true if the group does not have any required group of if the player is
+     * member of at least one required group.
+     */
+    public function isAllowedMember(Group $group): bool
+    {
+        $requiredGroups = $group->getRequiredGroups();
+        $notAllowed = count($requiredGroups) > 0;
+        foreach ($requiredGroups as $requiredGroup) {
+            if ($this->hasGroup($requiredGroup->getId())) {
+                $notAllowed = false;
+                break;
+            }
+        }
+        return !$notAllowed;
+    }
+
     public function addManagerGroup(Group $managerGroup): self
     {
         $this->managerGroups[] = $managerGroup;
