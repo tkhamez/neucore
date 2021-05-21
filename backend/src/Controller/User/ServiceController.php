@@ -442,8 +442,8 @@ class ServiceController extends BaseController
         $serviceImplementation = $this->serviceRegistration->getServiceImplementation($this->service);
         if ($serviceImplementation === null) {
             $this->log->error(
-                "ServiceController: The configured service class does not exist of " .
-                "does not implement Neucore\Plugin\ServiceInterface."
+                "ServiceController: The configured service class does not exist or does not implement " .
+                "Neucore\Plugin\ServiceInterface."
             );
             return $this->response->withStatus(500);
         }
