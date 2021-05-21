@@ -341,6 +341,8 @@ class Account
      * Deletes a character and creates a RemovedCharacter record.
      *
      * Does not flush the entity manager at the end.
+     *
+     * @param Character $character Entity attached to the entity manager.
      */
     public function deleteCharacter(Character $character, string $reason, Player $deletedBy = null): void
     {
@@ -353,12 +355,6 @@ class Account
             );
         } else {
             $this->createRemovedCharacter($character, null, $reason, $deletedBy);
-        }
-
-        // remove corporation member reference
-        $corporationMember = $this->repositoryFactory->getCorporationMemberRepository()->find($character->getId());
-        if ($corporationMember !== null) {
-            $corporationMember->setCharacter();
         }
 
         $this->objectManager->remove($character);
@@ -620,10 +616,7 @@ class Account
     }
 
     /**
-     * @param Character $character
-     * @param Player|null $newPlayer
      * @param string|null $reason should be string if $newPlayer is null otherwise null
-     * @return void
      */
     private function createRemovedCharacter(
         Character $character,

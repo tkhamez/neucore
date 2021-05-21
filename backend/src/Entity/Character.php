@@ -143,12 +143,6 @@ class Character implements \JsonSerializable
     private $corporation;
 
     /**
-     * @ORM\OneToOne(targetEntity="CorporationMember", mappedBy="character")
-     * @var CorporationMember|null
-     */
-    private $corporationMember;
-
-    /**
      * List of previous character names (API: not included by default).
      *
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
@@ -387,18 +381,6 @@ class Character implements \JsonSerializable
     public function getCorporation(): ?Corporation
     {
         return $this->corporation;
-    }
-
-    public function setCorporationMember(CorporationMember $corporationMember = null): self
-    {
-        $this->corporationMember = $corporationMember;
-
-        return $this;
-    }
-
-    public function getCorporationMember(): ?CorporationMember
-    {
-        return $this->corporationMember;
     }
 
     public function addCharacterNameChange(CharacterNameChange $characterNameChange): self

@@ -44,19 +44,19 @@ class CorporationMemberRepositoryTest extends TestCase
         $location = (new EsiLocation())->setId(5040)->setName('A Station')->setCategory(EsiLocation::CATEGORY_STATION);
         $ship = (new EsiType())->setId(4030)->setName('A ship');
         $player1 = (new Player())->setName('Player 1');
-        $char1 = (new Character())->setId(1)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
-        $char2 = (new Character())->setId(2)->setName('Char 2')->setPlayer($player1)
+        $char1 = (new Character())->setId(10)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
+        $char2 = (new Character())->setId(20)->setName('Char 2')->setPlayer($player1)
             ->setValidToken(false)->setValidTokenTime(self::$values->validtokenTime1)
             ->setCreated(self::$values->createdTime1)->setLastUpdate(self::$values->updatedTime1);
-        $char5 = (new Character())->setId(5)->setName('Char 5')->setPlayer($player1)->setValidToken(true);
+        $char5 = (new Character())->setId(50)->setName('Char 5')->setPlayer($player1)->setValidToken(true);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
         $corp2 = (new Corporation())->setId(2)->setName('Corp 2')->setTicker('C2');
-        $member1 = (new CorporationMember())->setId(10)->setName('Member 1')->setCorporation($corp1)
-            ->setLogonDate(new \DateTime('now -112 days +1 hour'))->setCharacter($char1);
+        $member1 = (new CorporationMember())->setId($char1->getId())->setName('Member 1')->setCorporation($corp1)
+            ->setLogonDate(new \DateTime('now -112 days +1 hour'));
         $member1a = (new CorporationMember())->setId(101)->setName('Member 1a')->setCorporation($corp1)
             ->setLogonDate(new \DateTime('now -112 days +30 minutes'));
-        $member2 = (new CorporationMember())->setId(20)->setName('Member 2')->setCorporation($corp1)
-            ->setCharacter($char2)->setLocation($location)->setShipType($ship)
+        $member2 = (new CorporationMember())->setId($char2->getId())->setName('Member 2')->setCorporation($corp1)
+            ->setLocation($location)->setShipType($ship)
             ->setLogonDate(self::$values->loginTime1)->setLogoffDate(self::$values->logoffTime1)
             ->setStartDate(new \DateTime('2019-05-26 15:51:18'))
             ->setMissingCharacterMailSentDate(new \DateTime('2019-05-27 06:45:41'))
@@ -65,8 +65,8 @@ class CorporationMemberRepositoryTest extends TestCase
             ->setLogonDate(new \DateTime('now -110 days +1 hour'));
         $member4 = (new CorporationMember())->setId(40)->setName('Member 4')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -111 days +30 minutes'));
-        $member5 = (new CorporationMember())->setId(50)->setName('Member 5')->setCorporation($corp2)
-            ->setLogonDate(new \DateTime('now -110 days +30 minutes'))->setCharacter($char5);
+        $member5 = (new CorporationMember())->setId($char5->getId())->setName('Member 5')->setCorporation($corp2)
+            ->setLogonDate(new \DateTime('now -110 days +30 minutes'));
 
         self::$om->persist($location);
         self::$om->persist($ship);
@@ -84,6 +84,7 @@ class CorporationMemberRepositoryTest extends TestCase
         self::$om->persist($member5);
 
         self::$om->flush();
+        self::$om->clear();
 
         self::$values->playerId1 = $player1->getId();
     }
@@ -177,7 +178,7 @@ class CorporationMemberRepositoryTest extends TestCase
             'missingCharacterMailSentResult' => Api::MAIL_OK,
             'missingCharacterMailSentNumber' => 2,
             'character' => [
-                'id' => 2,
+                'id' => 20,
                 'name' => 'Char 2',
                 'main' => false,
                 'created' => date_format(self::$values->createdTime1, Api::DATE_FORMAT),
@@ -260,7 +261,7 @@ class CorporationMemberRepositoryTest extends TestCase
         $this->assertSame(30, $actual0[0]->getId());
         $this->assertSame(40, $actual0[1]->getId());
 
-        $actual1 = $repository->findByCorporationsWithoutAccountAndActive([1, 2], 111, 1, 0);
+        $actual1 = $repository->findByCorporationsWithoutAccountAndActive([1, 2], 111, 1);
         $this->assertSame(1, count($actual1));
         $this->assertSame(30, $actual1[0]->getId());
 

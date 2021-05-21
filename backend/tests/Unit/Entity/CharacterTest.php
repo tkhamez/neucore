@@ -99,14 +99,6 @@ class CharacterTest extends TestCase
         $this->assertSame($corp, $char->getCorporation());
     }
 
-    public function testSetGetCorporationMember()
-    {
-        $char = new Character();
-        $member = new CorporationMember();
-        $char->setCorporationMember($member);
-        $this->assertSame($member, $char->getCorporationMember());
-    }
-
     public function testSetGetCharacterOwnerHash()
     {
         $char = new Character();

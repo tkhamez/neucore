@@ -421,7 +421,6 @@ class MemberTracking
             if ($character !== null) {
                 $corpMember->setMissingCharacterMailSentNumber(0); // reset count
             }
-            $corpMember->setCharacter($character);
             if (isset($charNames[$id])) {
                 $corpMember->setName($charNames[$id]);
             }
@@ -441,7 +440,7 @@ class MemberTracking
                 $type = $this->repositoryFactory->getEsiTypeRepository()->find($data->getShipTypeId());
                 $corpMember->setShipType($type);
             } else {
-                $corpMember->setShipType(null);
+                $corpMember->setShipType();
             }
             if ($data->getStartDate() instanceof \DateTime) {
                 $corpMember->setStartDate($data->getStartDate());

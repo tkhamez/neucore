@@ -140,7 +140,7 @@ class CorporationMemberRepository extends EntityRepository
     public function findMatching(int $corporationId): array
     {
         $qb = $this->createQueryBuilder('m')
-            ->leftJoin('m.character', 'c')
+            ->leftJoin('Neucore\Entity\Character', 'c', 'WITH', 'm.id = c.id') // join via primary IDs
             ->leftJoin('m.location', 'l')
             ->leftJoin('m.shipType', 's')
             ->leftJoin('c.player', 'p')
@@ -179,9 +179,9 @@ class CorporationMemberRepository extends EntityRepository
                 ->setParameter('inactive', $inactiveDate->format(self::DATE_FORMAT));
         }
         if ($this->account) {
-            $qb->andWhere($qb->expr()->isNotNull('m.character'));
+            $qb->andWhere($qb->expr()->isNotNull('c.id'));
         } elseif ($this->account === false) {
-            $qb->andWhere($qb->expr()->isNull('m.character'));
+            $qb->andWhere($qb->expr()->isNull('c.id'));
         }
         if ($this->validToken !== null || $this->tokenChanged > 0) {
             $qb->andWhere('c.id IS NOT NULL');
@@ -284,15 +284,13 @@ class CorporationMemberRepository extends EntityRepository
      *
      * @param int[] $corporationIds
      * @param int $loginDays days since last login, minimum = 1
-     * @param int|null $dbResultLimit
-     * @param int $offset
      * @return CorporationMember[]
      */
     public function findByCorporationsWithoutAccountAndActive(
         array $corporationIds,
         int $loginDays,
-        $dbResultLimit = null,
-        $offset = 0
+        ?int $dbResultLimit = null,
+        int $offset = 0
     ): array {
         if (empty($corporationIds)) {
             return [];
@@ -307,8 +305,9 @@ class CorporationMemberRepository extends EntityRepository
         }
 
         $qb = $this->createQueryBuilder('m');
-        $qb->where($qb->expr()->in('m.corporation', ':corporationIds'))
-            ->andWhere($qb->expr()->isNull('m.character'))
+        $qb->leftJoin('Neucore\Entity\Character', 'c', 'WITH', 'm.id = c.id')
+            ->where($qb->expr()->in('m.corporation', ':corporationIds'))
+            ->andWhere($qb->expr()->isNull('c.id'))
             ->setParameter('corporationIds', $corporationIds)
             ->andWhere('m.logonDate > :minLoginDate')
             ->setParameter('minLoginDate', $minLoginDate->format(self::DATE_FORMAT))

@@ -437,7 +437,6 @@ class MemberTrackingTest extends TestCase
 
         $this->assertSame(101, $result[0]->getId());
         $this->assertSame('char 1', $result[0]->getName());
-        $this->assertNull($result[0]->getCharacter());
         $this->assertSame(60008494, $result[0]->getLocation()->getId());
         $this->assertSame('2018-12-25T19:45:10+00:00', $result[0]->getLogoffDate()->format(\DATE_ATOM));
         $this->assertSame('2018-12-25T19:45:11+00:00', $result[0]->getLogonDate()->format(\DATE_ATOM));
@@ -447,7 +446,7 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(102, $result[1]->getId());
         $this->assertSame('char 2', $result[1]->getName());
         $this->assertSame(0, $result[1]->getMissingCharacterMailSentNumber());
-        $this->assertSame(102, $result[1]->getCharacter()->getId());
+        $this->assertNull($result[1]->getCharacter()); // this character exists but is no longer mapped with Doctrine
         $this->assertSame(1023100200300, $result[1]->getLocation()->getId());
 
         $this->assertSame(103, $result[2]->getId());

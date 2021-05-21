@@ -85,11 +85,10 @@ class CorporationMember implements \JsonSerializable
 
     /**
      * @OA\Property(ref="#/components/schemas/Character", nullable=true)
-     * @ORM\OneToOne(targetEntity="Character", inversedBy="corporationMember")
-     * @ORM\JoinColumn(onDelete="SET NULL")
      * @var Character|null
      */
-    private $character;
+    private $character; // *not* mapped to Character entity, this relation is via primary key,
+                        // although not defined for Doctrine
 
     /**
      * Date and time of the last sent mail.
@@ -317,13 +316,9 @@ class CorporationMember implements \JsonSerializable
     }
 
     /**
-     * Set character.
-     *
-     * @param Character|null $character
-     *
-     * @return CorporationMember
+     * This is not mapped with Doctrine
      */
-    public function setCharacter(Character $character = null)
+    public function setCharacter(?Character $character = null): self
     {
         $this->character = $character;
 
@@ -331,11 +326,9 @@ class CorporationMember implements \JsonSerializable
     }
 
     /**
-     * Get character.
-     *
-     * @return Character|null
+     * This is not mapped with Doctrine
      */
-    public function getCharacter()
+    public function getCharacter(): ?Character
     {
         return $this->character;
     }

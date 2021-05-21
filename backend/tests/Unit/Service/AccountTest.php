@@ -85,11 +85,6 @@ class AccountTest extends TestCase
     private $removedCharRepo;
 
     /**
-     * @var CorporationMemberRepository
-     */
-    private $corpMemberRepo;
-
-    /**
      * @var PlayerLoginsRepository
      */
     private $playerLoginsRepo;
@@ -149,16 +144,11 @@ class AccountTest extends TestCase
      */
     private $role2;
 
-    /**
-     * @var Role
-     */
-    private $role3;
-
     protected function setUp(): void
     {
         $this->helper = new Helper();
         $this->helper->emptyDb();
-        list($this->role1, $this->role2, $this->role3) =
+        list($this->role1, $this->role2) =
             $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
         $this->om = $this->helper->getObjectManager();
 
@@ -182,7 +172,6 @@ class AccountTest extends TestCase
         $this->charRepo = $repoFactory->getCharacterRepository();
         $this->playerRepo = $repoFactory->getPlayerRepository();
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
-        $this->corpMemberRepo = $repoFactory->getCorporationMemberRepository();
         $this->playerLoginsRepo = $repoFactory->getPlayerLoginsRepository();
         $this->characterNameChangeRepo = $repoFactory->getCharacterNameChangeRepository();
     }
@@ -561,7 +550,7 @@ class AccountTest extends TestCase
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player)->setMain(true);
         $char2 = (new Character())->setId(11)->setName('char2')->setPlayer($player)->setMain(false);
         $corp = (new Corporation())->setId(1)->setName('c');
-        $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
+        $member = (new CorporationMember())->setId($char->getId())->setCharacter($char)->setCorporation($corp);
         $player->addCharacter($char);
         $player->addCharacter($char2);
         $this->om->persist($player);
@@ -573,13 +562,10 @@ class AccountTest extends TestCase
 
         $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_MANUALLY, $player);
         $this->om->flush();
+        $this->om->clear(); // necessary to remove $member and create it again, so that getCharacter() is null
 
         $this->assertSame(1, count($player->getCharacters()));
         $this->assertSame(1, count($this->charRepo->findAll()));
-
-        $corpMember = $this->corpMemberRepo->findBy([]);
-        $this->assertSame(1, count($corpMember));
-        $this->assertNull($corpMember[0]->getCharacter());
 
         $removedChars = $this->removedCharRepo->findBy([]);
         $this->assertSame(1, count($removedChars));
@@ -601,7 +587,7 @@ class AccountTest extends TestCase
         $player = (new Player())->setName('player 1');
         $char = (new Character())->setId(10)->setName('char')->setPlayer($player);
         $corp = (new Corporation())->setId(1)->setName('c');
-        $member = (new CorporationMember())->setId(10)->setCharacter($char)->setCorporation($corp);
+        $member = (new CorporationMember())->setId($char->getId())->setCorporation($corp);
         $player->addCharacter($char);
         $this->om->persist($player);
         $this->om->persist($char);
@@ -611,10 +597,6 @@ class AccountTest extends TestCase
 
         $this->service->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BY_ADMIN);
         $this->om->flush();
-
-        $corpMember = $this->corpMemberRepo->findBy([]);
-        $this->assertSame(1, count($corpMember));
-        $this->assertNull($corpMember[0]->getCharacter());
 
         $this->assertSame(0, count($player->getCharacters()));
         $this->assertSame(0, count($this->charRepo->findAll()));

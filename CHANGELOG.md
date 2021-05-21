@@ -10,6 +10,8 @@ dd mm yyyy
 - New: Display the number of members of groups.
 - New: Show the player's corporation in the group members list.
 - New: Show character modal button for user managers if they have the "user-chars" role.
+- Change: Previously, the account in the member tracking list was updated only when the other data was updated 
+  as well. This is no longer the case and instead the account display is now always up-to-date.
 - Change: When a player is removed from a group, their application is now also removed, if there is one.
 - Fix: Delete group description from input field when group was deleted.
 - Update dependencies.

@@ -731,7 +731,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(200, $response2->getStatusCode());
         $result = $this->parseJsonBody($response2);
         $this->assertSame(1, count($result));
-        $this->assertSame(101, $result[0]['id']);
+        $this->assertSame(6, $result[0]['id']);
         $this->assertSame('m1', $result[0]['name']);
         $this->assertSame(null, $result[0]['location']);
         $this->assertSame(null, $result[0]['logoffDate']);
@@ -759,8 +759,8 @@ class CorporationControllerTest extends WebTestCase
         $this->group1 = (new Group())->setName('group 1');
         $group2 = (new Group())->setName('group 2');
 
-        $member = (new CorporationMember())->setId(101)->setName('m1')->setCorporation($corp2)
-            ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char)->setMissingCharacterMailSentNumber(2);
+        $member = (new CorporationMember())->setId($char->getId())->setName('m1')->setCorporation($corp2)
+            ->setLogonDate(new \DateTime('now -10 days'))->setMissingCharacterMailSentNumber(2);
 
         $corp1->addGroup($this->group1);
         $corp2->addGroup($this->group1);

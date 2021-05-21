@@ -45,10 +45,7 @@ class CorporationMemberTest extends TestCase
         $member->setShipType((new EsiType())->setId(345));
         $member->setStartDate(new \DateTime('2018-12-25 19:14:58'));
         $member->setCharacter(
-            (new Character())
-                ->setId(123)
-                ->setName('test char')
-                ->setPlayer((new Player())->setName('ply'))
+            (new Character())->setId(123)->setName('test char')->setPlayer((new Player())->setName('ply'))
         );
 
         $this->assertSame([

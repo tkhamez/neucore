@@ -50,8 +50,8 @@ class TrackingControllerTest extends WebTestCase
         $char = (new Character())->setId(1)->setName('c')->setPlayer($player);
         $member1 = (new CorporationMember())->setId(110)->setName('m1')->setCorporation($corp)
             ->setLogonDate(new \DateTime('now -5 days'));
-        $member2 = (new CorporationMember())->setId(111)->setName('m2')->setCorporation($corp)
-            ->setLogonDate(new \DateTime('now -10 days'))->setCharacter($char);
+        $member2 = (new CorporationMember())->setId($char->getId())->setName('m2')->setCorporation($corp)
+            ->setLogonDate(new \DateTime('now -10 days'));
         $member3 = (new CorporationMember())->setId(112)->setName('m3')->setCorporation($corp)
             ->setLogonDate(new \DateTime('now -15 days'));
         $this->helper->getObjectManager()->persist($player);
@@ -73,7 +73,7 @@ class TrackingControllerTest extends WebTestCase
         $this->assertEquals(200, $response2->getStatusCode());
         $result2 = $this->parseJsonBody($response2);
         $this->assertSame(1, count($result2));
-        $this->assertSame(111, $result2[0]['id']);
+        $this->assertSame($char->getId(), $result2[0]['id']);
         $this->assertSame('m2', $result2[0]['name']);
         $this->assertSame(null, $result2[0]['location']);
         $this->assertSame(null, $result2[0]['logoffDate']);

@@ -165,8 +165,8 @@ class SendMissingCharacterMailTest extends ConsoleTestCase
         $char1 = (new Character())->setId(102)->setCorporation($corp1)->setPlayer($player1);
         $member1 = (new CorporationMember())->setId(101)->setCorporation($corp1)->setLogonDate(new \DateTime())
             ->setMissingCharacterMailSentDate(new \DateTime()); // already sent
-        $member2 = (new CorporationMember())->setId(102)->setCorporation($corp1)
-            ->setLogonDate(new \DateTime())->setCharacter($char1); // has account
+        $member2 = (new CorporationMember())->setId($char1->getId())->setCorporation($corp1)
+            ->setLogonDate(new \DateTime()); // has account
         $member3 = (new CorporationMember())->setId(103)->setCorporation($corp2)
             ->setLogonDate(new \DateTime()); // not in correct corp
         $member4 = (new CorporationMember())->setId(104)->setCorporation($corp1)->setLogonDate(new \DateTime())
