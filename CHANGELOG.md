@@ -1,8 +1,10 @@
 # Changelog
 
-## next
+## 1.23.1
 
-- Fix required group checks.
+21 May 2021
+
+- Fix some required group checks.
 
 ## 1.23.0
 
