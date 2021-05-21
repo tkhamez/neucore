@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.23.0
 
-dd mm yyyy
+21 May 2021
 
 - **BC break**: If a group has other groups as prerequisites, the player now only needs to be a member of 
   one of those groups instead of all of them.
