@@ -118,7 +118,7 @@ class Account
     }
 
     /**
-     * Moves character to a new player.
+     * Moves character to a new player because the character owner hash changed.
      *
      * Does not flush the entity manager.
      */
@@ -128,7 +128,7 @@ class Account
         $newPlayer->setName($char->getName());
         $this->objectManager->persist($newPlayer);
 
-        $this->moveCharacter($char, $newPlayer);
+        $this->moveCharacter($char, $newPlayer, RemovedCharacter::REASON_MOVED_OWNER_CHANGED);
 
         $char->setMain(true);
 
@@ -306,7 +306,6 @@ class Account
             if ($char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
                 $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
                 $result = self::CHECK_CHAR_DELETED;
-                $char = null;
             }
         } else {
             // that's an error, CCP changed the JWT data
@@ -324,9 +323,9 @@ class Account
      *
      * Does not flush the entity manager at the end.
      */
-    public function moveCharacter(Character $character, Player $newPlayer): void
+    public function moveCharacter(Character $character, Player $newPlayer, string $reason): void
     {
-        $this->createRemovedCharacter($character, $newPlayer);
+        $this->createRemovedCharacter($character, $reason, $newPlayer);
 
         $oldPlayer = $character->getPlayer();
 
@@ -354,7 +353,7 @@ class Account
                 'from player "' . $oldPlayer->getName() . '" [' . $oldPlayer->getId() . ']'
             );
         } else {
-            $this->createRemovedCharacter($character, null, $reason, $deletedBy);
+            $this->createRemovedCharacter($character, $reason, null, $deletedBy);
         }
 
         $this->objectManager->remove($character);
@@ -615,13 +614,10 @@ class Account
         }
     }
 
-    /**
-     * @param string|null $reason should be string if $newPlayer is null otherwise null
-     */
     private function createRemovedCharacter(
         Character $character,
+        string $reason,
         Player $newPlayer = null,
-        string $reason = null,
         Player $deletedBy = null
     ): void {
         if ($character->getId() === 0) { // should never be true, but that's not obvious here
@@ -633,9 +629,9 @@ class Account
 
         $player = $character->getPlayer();
         $removedCharacter->setPlayer($player);
+        $removedCharacter->setReason($reason);
         $removedCharacter->setDeletedBy($deletedBy);
         $player->addRemovedCharacter($removedCharacter);
-
         $removedCharacter->setCharacterId($character->getId());
         $removedCharacter->setCharacterName($character->getName());
         try {
@@ -643,12 +639,8 @@ class Account
         } catch (\Exception $e) {
             // ignore
         }
-
         if ($newPlayer) {
             $removedCharacter->setNewPlayer($newPlayer);
-            $removedCharacter->setReason(RemovedCharacter::REASON_MOVED);
-        } elseif ($reason !== null) { // should never be null
-            $removedCharacter->setReason($reason);
         }
 
         $this->objectManager->persist($removedCharacter);

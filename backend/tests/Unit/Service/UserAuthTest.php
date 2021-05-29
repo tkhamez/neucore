@@ -225,7 +225,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($user->getId(), $removedChar->getcharacterId());
         $this->assertSame($player->getId(), $removedChar->getPlayer()->getId());
         $this->assertSame($newPlayer->getId(), $removedChar->getNewPlayer()->getId());
-        $this->assertSame(RemovedCharacter::REASON_MOVED, $removedChar->getReason());
+        $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
     }
 
     public function testAddAltNoRefreshToken()

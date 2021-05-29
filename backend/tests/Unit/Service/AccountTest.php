@@ -23,7 +23,6 @@ use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterNameChangeRepository;
 use Neucore\Repository\CharacterRepository;
-use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
@@ -217,7 +216,10 @@ class AccountTest extends TestCase
 
         $this->assertSame(100, $player->getRemovedCharacters()[0]->getCharacterId());
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
-        $this->assertSame(RemovedCharacter::REASON_MOVED, $player->getRemovedCharacters()[0]->getReason());
+        $this->assertSame(
+            RemovedCharacter::REASON_MOVED_OWNER_CHANGED,
+            $player->getRemovedCharacters()[0]->getReason()
+        );
         $this->assertSame($newPlayer, $player->getRemovedCharacters()[0]->getNewPlayer());
 
         // test relation after persist
@@ -509,7 +511,7 @@ class AccountTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_DELETED_OWNER_CHANGED, $removedChar->getReason());
     }
 
-    public function testRemoveCharacterFromPlayer()
+    public function testMoveCharacter()
     {
         $player = (new Player())->setName('player 1');
         $newPlayer = (new Player())->setName('player 2');
@@ -523,7 +525,7 @@ class AccountTest extends TestCase
         $this->om->persist($char2);
         $this->om->flush();
 
-        $this->service->moveCharacter($char1, $newPlayer);
+        $this->service->moveCharacter($char1, $newPlayer, RemovedCharacter::REASON_MOVED);
 
         $this->om->flush();
         $this->om->clear();

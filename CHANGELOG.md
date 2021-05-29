@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Add reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
+
 ## 1.23.1
 
 21 May 2021

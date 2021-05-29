@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
 
@@ -23,6 +24,11 @@ class RemovedCharacter implements \JsonSerializable
      * Character was moved to another player account.
      */
     public const REASON_MOVED = 'moved';
+
+    /**
+     * Character was moved to another player account because the character owner hash changed.
+     */
+    public const REASON_MOVED_OWNER_CHANGED = 'moved-owner-changed';
 
     /**
      * User has deleted the character from their player account..
@@ -101,7 +107,8 @@ class RemovedCharacter implements \JsonSerializable
     /**
      * How it was removed (deleted or moved to another account).
      *
-     * @OA\Property(enum={"moved", "deleted-manually", "deleted-biomassed", "deleted-owner-changed"})
+     * @OA\Property(enum={"moved", "moved-owner-changed", "deleted-manually", "deleted-biomassed",
+                          "deleted-owner-changed"})
      * @ORM\Column(type="string", length=32)
      * @var string
      */
@@ -180,6 +187,7 @@ class RemovedCharacter implements \JsonSerializable
     public function getCharacterId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
+        /** @noinspection PhpCastIsUnnecessaryInspection */
         return $this->characterId !== null ? (int) $this->characterId : null;
     }
 

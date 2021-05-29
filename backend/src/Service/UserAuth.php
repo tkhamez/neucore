@@ -6,6 +6,7 @@ namespace Neucore\Service;
 
 use Eve\Sso\EveAuthentication;
 use Neucore\Entity\Character;
+use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
@@ -105,7 +106,7 @@ class UserAuth implements RoleProviderInterface
      */
     public function authenticate(EveAuthentication $eveAuth): bool
     {
-        $characterId = (int) $eveAuth->getCharacterId();
+        $characterId = $eveAuth->getCharacterId();
         $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
 
         $updateAutoGroups = false;
@@ -146,7 +147,7 @@ class UserAuth implements RoleProviderInterface
      */
     public function addAlt(EveAuthentication $eveAuth): bool
     {
-        $characterId = (int) $eveAuth->getCharacterId();
+        $characterId = $eveAuth->getCharacterId();
 
         $this->getUser();
 
@@ -163,7 +164,7 @@ class UserAuth implements RoleProviderInterface
         $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($alt !== null && $alt->getPlayer()->getId() !== $player->getId()) {
             $oldPlayerId = $alt->getPlayer()->getId();
-            $this->accountService->moveCharacter($alt, $player);
+            $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED);
             $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
             $alt->setMain(false);
         } elseif ($alt === null) {
