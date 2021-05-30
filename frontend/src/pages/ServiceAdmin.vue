@@ -61,26 +61,28 @@
                         <label class="col-form-label w-100">
                             PSR-4 Prefix
                             <input type="text" class="form-control" v-model="activeService.configuration.psr4Prefix">
-                            <small class="form-text text-muted">Namespace that should be autoloaded.</small>
+                            <small class="form-text text-muted">PHP namespace that should be autoloaded.</small>
                         </label>
                         <label class="col-form-label w-100">
                             PSR-4 Path
                             <input type="text" class="form-control" v-model="activeService.configuration.psr4Path">
                             <small class="form-text text-muted">
-                                Full path to directory containing the classes for the autoloader.
+                                Full path to the directory containing the classes of the above namespace.
                             </small>
                         </label>
                         <label class="col-form-label w-100">
                             Required Groups
                             <input type="text" class="form-control" v-model="requiredGroups">
-                            <small class="form-text text-muted">Comma separated list of Group IDs</small>
+                            <small class="form-text text-muted">
+                                Comma-separated list of group IDs that an account must have (all of them)
+                                to see this service.
+                            </small>
                         </label>
                         <label class="col-form-label w-100">
-                            Account Data Properties
+                            Account Properties
                             <input type="text" class="form-control" v-model="properties">
                             <small class="form-text text-muted">
-                                Comma separated list of properties:
-                                username, password, email, status
+                                Comma separated list of properties, possible values: username, password, email, status
                             </small>
                         </label>
                     </div>
@@ -88,12 +90,18 @@
                     <div class="custom-control custom-checkbox mb-2">
                         <input class="custom-control-input" type="checkbox" id="configShowPassword"
                                v-model="activeService.configuration.showPassword">
-                        <label class="custom-control-label" for="configShowPassword">Show password to user</label>
+                        <label class="custom-control-label" for="configShowPassword">
+                            Show password to user<br>
+                            <small class="form-text text-muted">
+                                If this is not enabled and the account contains a password (see Account Properties),
+                                the user will be able to see it only once after it is reset (see Account Actions).
+                            </small>
+                        </label>
                     </div>
 
                     <div class="form-group">
                         <label class="col-form-label w-100">
-                            Service Account Actions
+                            Account Actions
                             <input type="text" class="form-control" v-model="actions">
                             <small class="form-text text-muted">
                                 Comma separated list of actions: update-account, reset-password

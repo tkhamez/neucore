@@ -120,9 +120,12 @@ Only tested on Linux and once on macOS.
 Copy `backend/.env.dist` file to `backend/.env` and adjust values, the database password and user are both `neucore`,
 the database host is `db`.
 
-- Build the containers with `export UID && docker-compose build`
-- Start services: `export UID && docker-compose up`
-- Install the app: `export UID && ./install-docker.sh`
+- Build the containers with  
+  `export UID && docker-compose build`
+- Start services:  
+  `export UID && docker-compose up`
+- Install the app:  
+  `export UID && ./install-docker.sh`
 - Run tests and other commands in the php-fpm and node containers:  
     `export UID && docker-compose exec php-fpm /bin/sh`  
     `export UID && docker-compose run --service-ports node /bin/sh`

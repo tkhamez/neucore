@@ -26,14 +26,14 @@ of an alliance.
 
 ## Overview
 
-Objectives:
+Main features:
 
-- Management of groups for players.
-- An API for applications to read these groups (and more).
-- Service registration via [plugins](https://github.com/tkhamez/neucore-plugin) (Experimental).
-- Access to [ESI](http://esi.evetech.net) data of all members.
+- Login via EVE SSO, no e-mail address required.
+- Group membership management (automatic and manual).
+- Service registration via [plugins](https://github.com/tkhamez/neucore-plugin).
 - Member tracking and watchlists.
-- Login via EVE SSO.
+- Access to [ESI](http://esi.evetech.net) data of all members.
+- An API for applications to read group membership, ESI data, and more.
 
 For more information, see the `doc` directory, including [**Documentation**](doc/Documentation.md), 
 an [**API**](doc/API.md) overview, and some [screenshots](doc/screenshots).

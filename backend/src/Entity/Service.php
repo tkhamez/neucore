@@ -47,7 +47,7 @@ class Service implements \JsonSerializable
             'id' => (int) $this->id,
             'name' => $this->name,
         ];
-        if (! $onlyRequired) {
+        if (!$onlyRequired && !empty($this->configuration)) {
             $configuration = \json_decode((string)$this->configuration, true);
             if ($onlyRequiredConfiguration) {
                 unset($configuration['phpClass']);

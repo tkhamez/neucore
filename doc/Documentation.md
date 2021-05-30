@@ -6,6 +6,7 @@
 - [Application API](#application-api)
   * [Authentication](#authentication)
   * [Rate Limit](#rate-limit)
+- [Service Registration Plugins](#service-registration-plugins)
 - [Player Accounts](#player-accounts)
   * [Character Registration](#character-registration)
   * [Removing Characters](#removing-characters)
@@ -73,6 +74,17 @@ curl --header "Authorization: Bearer MTpteSBhd2Vzb21lIHNlY3JldA==" https://neuco
 If the API rate limiting is configured (UI: Admin -> Settings -> Features), each response will contain 
 the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. If enabled, each request results 
 in an error 429 "Too many requests" if the limit has been exceeded.
+
+## Service Registration Plugins
+
+- Create a new PHP application with composer and install tkhamez/neucore-plugin:
+  ```shell script
+  composer init
+  composer require tkhamez/neucore-plugin
+  ```
+- Create a new class and implement `Neucore\Plugin\ServiceInterface`.
+- In Neucore, go to Administration -> Services and add a new service.
+- Configure the service, at the very least set "PHP Class", "PSR-4 Prefix" and "PSR-4 Path".
 
 ## Player Accounts
 

@@ -294,6 +294,9 @@ function getData(vm) {
     api.serviceGet(getServiceId(vm), {allowAdmin: 'false'}, (error, data) => {
         if (!error) {
             vm.service = data;
+            if (!vm.service.configuration) {
+                vm.service.configuration = {};
+            }
         }
     });
 
