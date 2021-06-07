@@ -1,7 +1,7 @@
-version: '3'
+version: '3.5'
 
 services:
-  db:
+  neucore_db:
     container_name: neucore_db
     image: mariadb:10.2
     #image: mariadb:10.5
@@ -13,44 +13,53 @@ services:
       MYSQL_PASSWORD: neucore
       MYSQL_DATABASE: neucore
     ports: ["30306:3306"]
+    networks: [neucore]
 
-  java:
+  neucore_java:
     container_name: neucore_java
     image: openjdk:11
     volumes: [".:/app"]
     user: ${UID}
 
-  node:
+  neucore_node:
     container_name: neucore_node
     build:
       context: doc
       dockerfile: Dockerfile-node12
       #dockerfile: Dockerfile-node14
       #dockerfile: Dockerfile-node16
+    depends_on: [neucore_http]
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080
     ports: [ "3000:8080" ]
     user: node
     working_dir: /app/frontend
+    networks: [neucore]
 
-  php-fpm:
-    container_name: neucore_php-fpm
+  neucore_php:
+    container_name: neucore_php
     build:
       context: doc
       dockerfile: Dockerfile-php73-fpm
       #dockerfile: Dockerfile-php74-fpm
       #dockerfile: Dockerfile-php80-fpm
-    depends_on: [db]
+    depends_on: [neucore_db]
     volumes: [
         ".:/app",
     ]
     user: ${UID}
     working_dir: /app/backend
+    networks: [neucore]
 
-  http:
+  neucore_http:
     container_name: neucore_http
     image: nginx:1
-    depends_on: [php-fpm]
+    depends_on: [neucore_php]
     volumes: [".:/app", "./doc/docker-nginx.conf:/etc/nginx/conf.d/default.conf"]
     ports: ["8080:80"]
+    networks: [neucore]
+
+networks:
+  neucore:
+    name: neucore_network
