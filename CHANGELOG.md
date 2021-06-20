@@ -6,6 +6,7 @@ dd mm yyyy
 
 - Add reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
 - Small text improvements for the service admin page and better error handling if the service configuration is invalid.
+- Update dependencies.
 
 ## 1.23.1
 
