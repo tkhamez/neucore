@@ -84,6 +84,13 @@ class Character implements \JsonSerializable
     private $refreshToken;
 
     /**
+     * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="character")
+     * @ORM\OrderBy({"id" = "ASC"})
+     * @var Collection
+     */
+    private $esiTokens;
+
+    /**
      * Shows if character's refresh token is valid or not.
      *
      * This is null if there is no refresh token (EVE SSOv1 only)
@@ -191,6 +198,7 @@ class Character implements \JsonSerializable
     public function __construct()
     {
         $this->characterNameChanges = new ArrayCollection();
+        $this->esiTokens = new ArrayCollection();
     }
 
     public function setId(int $id): self
@@ -203,6 +211,7 @@ class Character implements \JsonSerializable
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's no null
+        /** @noinspection PhpCastIsUnnecessaryInspection */
         return (int) $this->id;
     }
 
@@ -276,6 +285,25 @@ class Character implements \JsonSerializable
     public function getRefreshToken(): ?string
     {
         return $this->refreshToken;
+    }
+
+    public function addEsiToken(EsiToken $token): self
+    {
+        $this->esiTokens[] = $token;
+        return $this;
+    }
+
+    public function removeEsiToken(EsiToken $token): bool
+    {
+        return $this->esiTokens->removeElement($token);
+    }
+
+    /**
+     * @return EsiToken[]
+     */
+    public function getEsiTokens(): array
+    {
+        return $this->esiTokens->toArray();
     }
 
     /**

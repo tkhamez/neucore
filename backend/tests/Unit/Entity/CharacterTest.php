@@ -7,6 +7,7 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\CharacterNameChange;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\Player;
 use Neucore\Entity\Corporation;
 use PHPUnit\Framework\TestCase;
@@ -126,6 +127,23 @@ class CharacterTest extends TestCase
         $this->assertSame('dfg', $char->getRefreshToken());
     }
 
+    /** @noinspection DuplicatedCode */
+    public function testAddGetRemoveEsiToken()
+    {
+        $char = new Character();
+        $token1 = new EsiToken();
+        $token2 = new EsiToken();
+
+        $this->assertSame([], $char->getEsiTokens());
+
+        $char->addEsiToken($token1);
+        $char->addEsiToken($token2);
+        $this->assertSame([$token1, $token2], $char->getEsiTokens());
+
+        $char->removeEsiToken($token2);
+        $this->assertSame([$token1], $char->getEsiTokens());
+    }
+
     public function testSetGetValidToken()
     {
         $char = new Character();
@@ -225,18 +243,18 @@ class CharacterTest extends TestCase
 
     public function testAddGetRemoveCharacterNameChanges()
     {
-        $play = new Character();
+        $char = new Character();
         $cnc1 = new CharacterNameChange();
         $cnc2 = new CharacterNameChange();
 
-        $this->assertSame([], $play->getCharacterNameChanges());
+        $this->assertSame([], $char->getCharacterNameChanges());
 
-        $play->addCharacterNameChange($cnc1);
-        $play->addCharacterNameChange($cnc2);
-        $this->assertSame([$cnc1, $cnc2], $play->getCharacterNameChanges());
+        $char->addCharacterNameChange($cnc1);
+        $char->addCharacterNameChange($cnc2);
+        $this->assertSame([$cnc1, $cnc2], $char->getCharacterNameChanges());
 
-        $play->removeCharacterNameChange($cnc2);
-        $this->assertSame([$cnc1], $play->getCharacterNameChanges());
+        $char->removeCharacterNameChange($cnc2);
+        $this->assertSame([$cnc1], $char->getCharacterNameChanges());
     }
 
     public function testCreateAccessTokenFromCharacter()

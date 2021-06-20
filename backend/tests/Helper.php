@@ -24,7 +24,9 @@ use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -63,6 +65,8 @@ class Helper
         App::class,
         CorporationMember::class,
         CharacterNameChange::class,
+        EsiToken::class,
+        EveLogin::class,
         Character::class,
         RemovedCharacter::class,
         PlayerLogins::class,

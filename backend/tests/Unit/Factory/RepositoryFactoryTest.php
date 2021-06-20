@@ -13,7 +13,9 @@ use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -31,7 +33,9 @@ use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\EsiLocationRepository;
+use Neucore\Repository\EsiTokenRepository;
 use Neucore\Repository\EsiTypeRepository;
+use Neucore\Repository\EveLoginRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
 use Neucore\Repository\PlayerLoginsRepository;
@@ -124,11 +128,25 @@ class RepositoryFactoryTest extends TestCase
         $this->assertSame(EsiLocation::class, $repo->getClassName());
     }
 
+    public function testGetEsiTokenRepository()
+    {
+        $repo = $this->factory->getEsiTokenRepository();
+        $this->assertInstanceOf(EsiTokenRepository::class, $repo);
+        $this->assertSame(EsiToken::class, $repo->getClassName());
+    }
+
     public function testGetEsiTypeRepository()
     {
         $repo = $this->factory->getEsiTypeRepository();
         $this->assertInstanceOf(EsiTypeRepository::class, $repo);
         $this->assertSame(EsiType::class, $repo->getClassName());
+    }
+
+    public function testGetEveLoginRepository()
+    {
+        $repo = $this->factory->getEveLoginRepository();
+        $this->assertInstanceOf(EveLoginRepository::class, $repo);
+        $this->assertSame(EveLogin::class, $repo->getClassName());
     }
 
     public function testGetGroupRepository()

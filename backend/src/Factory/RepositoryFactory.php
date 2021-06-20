@@ -13,7 +13,9 @@ use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -31,7 +33,9 @@ use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\CorporationMemberRepository;
 use Neucore\Repository\CorporationRepository;
 use Neucore\Repository\EsiLocationRepository;
+use Neucore\Repository\EsiTokenRepository;
 use Neucore\Repository\EsiTypeRepository;
+use Neucore\Repository\EveLoginRepository;
 use Neucore\Repository\GroupApplicationRepository;
 use Neucore\Repository\GroupRepository;
 use Neucore\Repository\PlayerLoginsRepository;
@@ -113,9 +117,19 @@ class RepositoryFactory
         return $this->getRepository(EsiLocationRepository::class, EsiLocation::class);
     }
 
+    public function getEsiTokenRepository(): EsiTokenRepository
+    {
+        return $this->getRepository(EsiTokenRepository::class, EsiToken::class);
+    }
+
     public function getEsiTypeRepository(): EsiTypeRepository
     {
         return $this->getRepository(EsiTypeRepository::class, EsiType::class);
+    }
+
+    public function getEveLoginRepository(): EveLoginRepository
+    {
+        return $this->getRepository(EveLoginRepository::class, EveLogin::class);
     }
 
     public function getGroupRepository(): GroupRepository
