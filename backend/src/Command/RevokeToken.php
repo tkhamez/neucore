@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
+use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\OAuthToken;
@@ -48,9 +49,14 @@ class RevokeToken extends Command
             return 0;
         }
 
-        $token = $character->createAccessToken();
+        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        if ($esiToken === null) {
+            $output->writeln('Character has no default token.');
+            return 0;
+        }
+        $token = $this->tokenService->createAccessToken($esiToken);
         if ($token === null) {
-            $output->writeln('Character has no token.');
+            $output->writeln('Error reading token.');
             return 0;
         }
 

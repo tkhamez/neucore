@@ -18,6 +18,8 @@ use OpenApi\Annotations as OA;
  */
 class EveLogin implements \JsonSerializable
 {
+    public const ID_DEFAULT = 'default';
+
     /**
      * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
      * @ORM\Id
@@ -86,7 +88,7 @@ class EveLogin implements \JsonSerializable
 
     public function getId(): string
     {
-        return $this->id;
+        return (string) $this->id;
     }
 
     public function setName(string $name): self

@@ -27,7 +27,7 @@ class EsiToken
 
     /**
      * @ORM\ManyToOne(targetEntity="Character", inversedBy="esiTokens")
-     * @ORM\JoinColumn(nullable=false, name="character_id")
+     * @ORM\JoinColumn(nullable=false, name="character_id", onDelete="CASCADE")
      * @var Character|null
      */
     private $character;

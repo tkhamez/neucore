@@ -8,10 +8,10 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\Corporation;
 use PHPUnit\Framework\TestCase;
-use Tests\Helper;
 
 class CharacterTest extends TestCase
 {
@@ -106,27 +106,6 @@ class CharacterTest extends TestCase
         $this->assertSame('abc', $char->getCharacterOwnerHash());
     }
 
-    public function testSetGetAccessToken()
-    {
-        $char = new Character();
-        $char->setAccessToken('123');
-        $this->assertSame('123', $char->getAccessToken());
-    }
-
-    public function testSetGetExpires()
-    {
-        $char = new Character();
-        $char->setExpires(456);
-        $this->assertSame(456, $char->getExpires());
-    }
-
-    public function testSetGetRefreshToken()
-    {
-        $char = new Character();
-        $char->setRefreshToken('dfg');
-        $this->assertSame('dfg', $char->getRefreshToken());
-    }
-
     /** @noinspection DuplicatedCode */
     public function testAddGetRemoveEsiToken()
     {
@@ -142,6 +121,18 @@ class CharacterTest extends TestCase
 
         $char->removeEsiToken($token2);
         $this->assertSame([$token1], $char->getEsiTokens());
+    }
+
+    public function testGetEsiToken()
+    {
+        $char = new Character();
+        $token1 = (new EsiToken())->setEveLogin((new EveLogin())->setId(EveLogin::ID_DEFAULT));
+        $token2 = (new EsiToken())->setEveLogin((new EveLogin())->setId('another-login'));
+        $char->addEsiToken($token1);
+        $char->addEsiToken($token2);
+
+        $this->assertNull($char->getEsiToken('does-not-exist'));
+        $this->assertSame(EveLogin::ID_DEFAULT, $char->getEsiToken(EveLogin::ID_DEFAULT)->getEveLogin()->getId());
     }
 
     public function testSetGetValidToken()
@@ -255,40 +246,6 @@ class CharacterTest extends TestCase
 
         $char->removeCharacterNameChange($cnc2);
         $this->assertSame([$cnc1], $char->getCharacterNameChanges());
-    }
-
-    public function testCreateAccessTokenFromCharacter()
-    {
-        $char = new Character();
-        $char->setRefreshToken('refresh');
-        $char->setAccessToken('access');
-        $char->setExpires(1519933545);
-
-        $token = $char->createAccessToken();
-
-        $this->assertSame('refresh', $token->getRefreshToken());
-        $this->assertSame('access', $token->getToken());
-        $this->assertSame(1519933545, $token->getExpires());
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testGetScopesFromToken()
-    {
-        $char = new Character();
-
-        // no token error
-        $this->assertSame([], $char->getScopesFromToken());
-
-        // UnexpectedValueException
-        $char->setAccessToken('access-token');
-        $this->assertSame([], $char->getScopesFromToken());
-
-        // valid token
-        $token = Helper::generateToken(['s1', 's2']);
-        $char->setAccessToken($token[0]);
-        $this->assertSame(['s1', 's2'], $char->getScopesFromToken());
     }
 
     public function testToCoreCharacter()

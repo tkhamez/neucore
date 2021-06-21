@@ -178,11 +178,8 @@ class RepositoryFactory
     }
 
     /**
-     * @param string $repositoryClass
-     * @param string $entityClass
-     * @psalm-param class-string<T> $entityClass
+     * @psalm-param class-string<object> $entityClass
      * @return mixed
-     * @template T of object
      */
     private function getRepository(string $repositoryClass, string $entityClass)
     {

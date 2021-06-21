@@ -130,7 +130,7 @@ class UserAuth implements RoleProviderInterface
 
         $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth, $updateAutoGroups);
 
-        if (! $success) {
+        if (!$success) {
             return false;
         }
 

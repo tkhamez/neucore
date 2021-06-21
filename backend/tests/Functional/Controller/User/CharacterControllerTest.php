@@ -358,7 +358,7 @@ class CharacterControllerTest extends WebTestCase
         $char->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'))
             ->setCharacterOwnerHash('coh1');
         if ($token) {
-            $char->setAccessToken($token);
+            $this->helper->createOrUpdateEsiToken($char, 123456, $token);
         }
         $this->helper->addCharacterToPlayer('Another USER', 456, $char->getPlayer());
         $this->playerId = $char->getPlayer()->getId();

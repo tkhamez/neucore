@@ -7,6 +7,7 @@ namespace Tests\Functional\Controller\User;
 
 use Neucore\Api;
 use Neucore\Controller\User\AuthController;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Service\SessionData;
@@ -26,10 +27,17 @@ class AuthControllerTest extends WebTestCase
      */
     private $client;
 
+    /**
+     * @var Helper
+     */
+    private $helper;
+
     protected function setUp(): void
     {
         $_SESSION = null;
         $this->client = new Client();
+        $this->helper = new Helper();
+        $this->helper->emptyDb();
     }
 
     public function testLogin()
@@ -46,8 +54,6 @@ class AuthControllerTest extends WebTestCase
 
     public function testLoginManagedForbidden()
     {
-        (new Helper())->emptyDb();
-
         $response = $this->runApp('GET', '/login-managed');
 
         $this->assertSame(403, $response->getStatusCode());
@@ -58,12 +64,10 @@ class AuthControllerTest extends WebTestCase
     public function testLoginManaged()
     {
         // activate login "managed"
-        $helper = new Helper();
-        $helper->emptyDb();
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
         $setting->setValue('1');
-        $helper->getObjectManager()->persist($setting);
-        $helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->persist($setting);
+        $this->helper->getObjectManager()->flush();
 
         $response = $this->runApp('GET', '/login-managed');
 
@@ -78,8 +82,6 @@ class AuthControllerTest extends WebTestCase
 
     public function testLoginManagedAltForbidden()
     {
-        (new Helper())->emptyDb();
-
         $response = $this->runApp('GET', '/login-managed-alt');
 
         $this->assertSame(403, $response->getStatusCode());
@@ -90,12 +92,10 @@ class AuthControllerTest extends WebTestCase
     public function testLoginManagedAlt()
     {
         // activate login "managed"
-        $helper = new Helper();
-        $helper->emptyDb();
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
         $setting->setValue('1');
-        $helper->getObjectManager()->persist($setting);
-        $helper->getObjectManager()->flush();
+        $this->helper->getObjectManager()->persist($setting);
+        $this->helper->getObjectManager()->flush();
 
         $response = $this->runApp('GET', '/login-managed-alt');
 
@@ -167,8 +167,6 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackAuthError()
     {
-        (new Helper())->emptyDb();
-
         $state = '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
@@ -208,9 +206,10 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackSuccess()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addRoles([Role::USER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]);
+        $this->helper->getEm()->persist((new EveLogin())->setId(EveLogin::ID_DEFAULT));
+        $this->helper->addRoles(
+            [Role::USER, Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]
+        );
 
         list($token, $keySet) = Helper::generateToken(['read-this', 'and-this']);
         $state = '1jdHR64hSdYf';
@@ -242,8 +241,6 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackAltLoginError()
     {
-        (new Helper())->emptyDb();
-
         list($token, $keySet) = Helper::generateToken(['read-this']);
         $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
@@ -282,11 +279,9 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackAltLogin()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]);
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER, Role::GROUP_MANAGER]);
 
-        $h->addCharacterMain('User1', 654, [Role::USER], ['group1']);
+        $this->helper->addCharacterMain('User1', 654, [Role::USER], ['group1']);
         $this->loginUser(654);
 
         list($token, $keySet) = Helper::generateToken(['read-this']);
@@ -322,16 +317,13 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackMailLoginNotAuthorized()
     {
-        $h = new Helper();
-        $h->emptyDb();
-
         $var1 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var2 = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $h->getObjectManager()->persist($var1);
-        $h->getObjectManager()->persist($var2);
-        $h->getObjectManager()->flush();
+        $this->helper->getObjectManager()->persist($var1);
+        $this->helper->getObjectManager()->persist($var2);
+        $this->helper->getObjectManager()->flush();
 
-        $h->addCharacterMain('Test User', 123456, [Role::USER]);
+        $this->helper->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
         list($token, $keySet) = Helper::generateToken([Api::SCOPE_MAIL]);
@@ -364,16 +356,13 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackMailLogin()
     {
-        $h = new Helper();
-        $h->emptyDb();
-
         $var1 = new SystemVariable(SystemVariable::MAIL_CHARACTER);
         $var2 = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $h->getObjectManager()->persist($var1);
-        $h->getObjectManager()->persist($var2);
-        $h->getObjectManager()->flush();
+        $this->helper->getObjectManager()->persist($var1);
+        $this->helper->getObjectManager()->persist($var2);
+        $this->helper->getObjectManager()->flush();
 
-        $h->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
+        $this->helper->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
         $this->loginUser(123456);
 
         list($token, $keySet) = Helper::generateToken([Api::SCOPE_MAIL]);
@@ -441,8 +430,6 @@ class AuthControllerTest extends WebTestCase
             'hs'
         );
 
-        $h = new Helper();
-        $h->emptyDb();
         $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
         $this->client->setResponse(
@@ -496,9 +483,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testLogout204()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Test User', 123456, [Role::USER]);
+        $this->helper->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
         $response = $this->runApp('POST', '/api/user/auth/logout');
@@ -513,9 +498,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testCsrfToken200()
     {
-        $h = new Helper();
-        $h->emptyDb();
-        $h->addCharacterMain('Test User', 123456, [Role::USER]);
+        $this->helper->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
         $response1 = $this->runApp('GET', '/api/user/auth/csrf-token');

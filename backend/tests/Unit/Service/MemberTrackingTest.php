@@ -394,7 +394,7 @@ class MemberTrackingTest extends TestCase
     public function testStoreMemberData()
     {
         $corp = (new Corporation())->setId(10)->setName('corp')->setTicker('C');
-        $char = (new Character())->setId(102)->setName('char 2')->setAccessToken('at');
+        $char = (new Character())->setId(102)->setName('char 2');
         $member = (new CorporationMember())->setId(102)->setName('char 2')->setCorporation($corp)
             ->setMissingCharacterMailSentNumber(1);
         $type = (new EsiType())->setId(670);
@@ -429,7 +429,7 @@ class MemberTrackingTest extends TestCase
         ];
         $names = [101 => 'char 1', 102 => 'char 2', 103 => 'char 3'];
 
-        $this->memberTracking->storeMemberData((int) $corp->getId(), $data, $names);
+        $this->memberTracking->storeMemberData($corp->getId(), $data, $names);
 
         $this->om->clear();
         $result = $this->repositoryFactory->getCorporationMemberRepository()->findBy([], ['id' => 'ASC']);

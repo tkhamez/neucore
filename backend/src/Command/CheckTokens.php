@@ -11,7 +11,6 @@ use Neucore\Entity\Character;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Service\Account;
-use Neucore\Service\OAuthToken;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -38,11 +37,6 @@ class CheckTokens extends Command
     private $charService;
 
     /**
-     * @var OAuthToken
-     */
-    private $tokenService;
-
-    /**
      * @var EntityManagerInterface
      */
     private $entityManager;
@@ -55,7 +49,6 @@ class CheckTokens extends Command
     public function __construct(
         RepositoryFactory $repositoryFactory,
         Account $charService,
-        OAuthToken $tokenService,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
         StorageInterface $storage
@@ -66,7 +59,6 @@ class CheckTokens extends Command
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->charService = $charService;
-        $this->tokenService = $tokenService;
         $this->entityManager = $entityManager;
     }
 
@@ -129,7 +121,7 @@ class CheckTokens extends Command
                 } else {
 
                     // check token, corporation Doomheim and character owner hash - this may delete the character!
-                    $result = $this->charService->checkCharacter($char, $this->tokenService);
+                    $result = $this->charService->checkCharacter($char);
                     if ($result === Account::CHECK_TOKEN_NA) {
                         $this->writeLine(self::CHARACTER . $charId.': token N/A');
                     } elseif ($result === Account::CHECK_TOKEN_OK) {

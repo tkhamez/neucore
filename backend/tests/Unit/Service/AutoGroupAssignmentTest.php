@@ -195,11 +195,11 @@ class AutoGroupAssignmentTest extends TestCase
             ->setLastUpdate(new \DateTime('2018-04-28 17:56:54'));
         $playerManaged = (new Player())->setName('pm')->setStatus(Player::STATUS_MANAGED);
         $char1 = (new Character())->setId(1)->setName('ch1')->setMain(true)->setPlayer($player)
-            ->setCharacterOwnerHash('h1')->setAccessToken('t1')->setCorporation($corp1);
+            ->setCharacterOwnerHash('h1')->setCorporation($corp1);
         $char2 = (new Character())->setId(2)->setName('ch2')->setMain(false)->setPlayer($player)
-            ->setCharacterOwnerHash('h2')->setAccessToken('t2')->setCorporation($corp2);
+            ->setCharacterOwnerHash('h2')->setCorporation($corp2);
         $char3 = (new Character())->setId(3)->setName('ch3')->setMain(false)->setPlayer($player)
-            ->setCharacterOwnerHash('h2')->setAccessToken('t2');
+            ->setCharacterOwnerHash('h2');
         $char4 = (new Character())->setId(4)->setName('ch4')->setPlayer($playerManaged)->setCorporation($corp2);
 
         $group1->addRequiredGroup($group5);

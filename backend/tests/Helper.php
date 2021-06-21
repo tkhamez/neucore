@@ -42,6 +42,7 @@ use Neucore\Service\Account;
 use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
+use Neucore\Service\OAuthToken;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 
@@ -141,19 +142,20 @@ class Helper
 
     public function getAccountService(Logger $logger, Client $client): Account
     {
-        $repoFactory = new RepositoryFactory($this->getObjectManager());
-        $objManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
+        $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
+        $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
-        $characterService = new \Neucore\Service\Character($objManager, $repoFactory);
+        $characterService = new \Neucore\Service\Character($objectManager, $repoFactory);
         $esiApiFactory = new EsiApiFactory($client, $config);
-        $esiData = new EsiData($logger, $esiApiFactory, $objManager, $repoFactory, $characterService, $config);
+        $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
         $autoGroups = new AutoGroupAssignment($repoFactory);
-        return new Account($logger, $objManager, $repoFactory, $esiData, $autoGroups, $characterService);
+        $token = new OAuthToken(new OAuthProvider($client), $objectManager, $logger, $client, $config);
+        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $characterService, $token);
     }
 
     public function getUserAuthService(Logger $logger, Client $client): UserAuth
     {
-        $repoFactory = new RepositoryFactory($this->getObjectManager());
+        $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $accountService = $this->getAccountService($logger, $client);
         return new UserAuth(new SessionData(), $accountService, $repoFactory, $logger);
     }
@@ -234,7 +236,7 @@ class Helper
     public function addRoles(array $roles): array
     {
         $om = $this->getObjectManager();
-        $rr = (new RepositoryFactory($om))->getRoleRepository();
+        $rr = RepositoryFactory::getInstance($om)->getRoleRepository();
 
         $roleEntities = [];
         foreach ($roles as $roleName) {
@@ -259,7 +261,7 @@ class Helper
     public function addGroups(array $groups): array
     {
         $om = $this->getObjectManager();
-        $gr = (new RepositoryFactory($om))->getGroupRepository();
+        $gr = RepositoryFactory::getInstance($om)->getGroupRepository();
 
         $groupEntities = [];
         foreach ($groups as $groupName) {
@@ -282,18 +284,19 @@ class Helper
 
         $player = new Player();
         $player->setName($name);
+        $om->persist($player);
 
         $char = new Character();
         $char->setId($charId);
         $char->setName($name);
         $char->setMain(true);
         $char->setCharacterOwnerHash('123');
-        $char->setAccessToken('abc');
-        $char->setExpires(123456);
-        $char->setRefreshToken('def');
+        $om->persist($char);
 
         $char->setPlayer($player);
         $player->addCharacter($char);
+
+        $this->createOrUpdateEsiToken($char);
 
         foreach ($this->addRoles($roles) as $role) {
             $player->addRole($role);
@@ -303,8 +306,6 @@ class Helper
             $player->addGroup($group);
         }
 
-        $om->persist($player);
-        $om->persist($char);
         $om->flush();
 
         return $char;
@@ -317,7 +318,6 @@ class Helper
         $alt->setName($name);
         $alt->setMain(false);
         $alt->setCharacterOwnerHash('456');
-        $alt->setAccessToken('def');
         $alt->setPlayer($player);
         $player->addCharacter($alt);
 
@@ -336,6 +336,35 @@ class Helper
         $this->getObjectManager()->flush();
 
         return $player;
+    }
+
+    public function createOrUpdateEsiToken(
+        Character $character,
+        int $expires = 123456,
+        string $accessToken = 'at'
+    ): EsiToken {
+        $om = $this->getObjectManager();
+
+        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        if ($esiToken === null) {
+            $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()->find(EveLogin::ID_DEFAULT);
+            if ($eveLogin === null) {
+                $eveLogin = (new EveLogin())->setId(EveLogin::ID_DEFAULT);
+                $om->persist($eveLogin);
+            }
+            $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('rt');
+            $character->addEsiToken($esiToken);
+            $esiToken->setCharacter($character);
+        }
+
+        $esiToken->setExpires($expires);
+        $esiToken->setAccessToken($accessToken);
+
+        $om->persist($esiToken);
+        $om->persist($character);
+        $om->flush();
+
+        return $esiToken;
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Neucore\Command;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Api;
 use Neucore\Command\Traits\LogOutput;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CorporationRepository;
@@ -165,8 +166,8 @@ class AutoAllowlist extends Command
         $allowlist = $this->getAllowlist($accountsData);
 
         $this->writeLine(
-            "    Corporations to check: {$this->numCorporations}, checked: {$this->numCorporationsChecked}, ".
-            "allowlist: {$this->numCorporationsAllowed}",
+            "    Corporations to check: $this->numCorporations, checked: $this->numCorporationsChecked, ".
+            "allowlist: $this->numCorporationsAllowed",
             false
         );
 
@@ -215,12 +216,15 @@ class AutoAllowlist extends Command
                     $accountsData[$playerId][$corporationId] = [self::KEY_IDS => [], self::KEY_TOKEN => null];
                 }
                 $accountsData[$playerId][$corporationId][self::KEY_IDS][] = $character->getId();
+                $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
                 if (
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] === null &&
+                    $esiToken !== null &&
                     $character->getValidToken() &&
-                    in_array(Api::SCOPE_MEMBERSHIP, $character->getScopesFromToken())
+                    in_array(Api::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
                 ) {
-                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] = $character->createAccessToken();
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] =
+                        $this->tokenService->createAccessToken($esiToken);
                 }
             }
             if (empty($accountsData[$playerId])) {

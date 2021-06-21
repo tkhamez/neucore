@@ -9,6 +9,8 @@ use Eve\Sso\JsonWebToken;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\PlayerLogins;
@@ -76,13 +78,19 @@ class Account
      */
     private $characterService;
 
+    /**
+     * @var OAuthToken
+     */
+    private $tokenService;
+
     public function __construct(
         LoggerInterface $log,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
         AutoGroupAssignment $autoGroupAssignment,
-        CharacterService $characterService
+        CharacterService $characterService,
+        OAuthToken $tokenService
     ) {
         $this->log = $log;
         $this->objectManager = $objectManager;
@@ -90,6 +98,7 @@ class Account
         $this->esiData = $esiData;
         $this->autoGroupAssignment = $autoGroupAssignment;
         $this->characterService = $characterService;
+        $this->tokenService = $tokenService;
     }
 
     /**
@@ -163,13 +172,37 @@ class Account
             // ignore
         }
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
-        $char->setAccessToken($token->getToken());
-        $char->setExpires($token->getExpires());
-        $char->setRefreshToken($token->getRefreshToken());
-        if (! empty($char->getScopesFromToken())) {
+
+        // Get and update, create or remove default ESI token.
+        $esiToken = $char->getEsiToken(EveLogin::ID_DEFAULT);
+        if ($esiToken === null) {
+            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find(EveLogin::ID_DEFAULT);
+            if ($eveLogin === null) {
+                $this->log->error(
+                    'Account::updateAndStoreCharacterWithPlayer: Could not find default EveLogin entity.'
+                );
+                return false;
+            }
+            $esiToken = new EsiToken();
+            $esiToken->setEveLogin($eveLogin);
+            $esiToken->setCharacter($char);
+            $char->addEsiToken($esiToken);
+            $this->objectManager->persist($esiToken);
+        }
+        if (is_numeric($token->getExpires()) && is_string($token->getRefreshToken())) {
+            $esiToken->setAccessToken($token->getToken());
+            $esiToken->setExpires($token->getExpires());
+            $esiToken->setRefreshToken($token->getRefreshToken());
+        } else {
+            $char->removeEsiToken($esiToken);
+            $this->objectManager->remove($esiToken);
+            $esiToken = null;
+        }
+
+        if ($esiToken !== null && !empty($this->tokenService->getScopesFromToken($esiToken))) {
             $char->setValidToken(true);
         } else {
-            $char->setValidToken();
+            $char->setValidToken(); // null
         }
 
         // update account name
@@ -230,15 +263,14 @@ class Account
      * - the character owner hash changed
      * - the character was biomassed
      *
-     * This only updates the validToken property (true/false), not the access token itself.
+     * This updates the validToken property (true/false) and the token itself.
      *
      * The character is saved if it was changed.
      *
      * @param Character $char An instance that is attached to the Doctrine entity manager.
-     * @param OAuthToken $tokenService
      * @return int self::TOKEN_NOK, self::TOKEN_OK or self::CHARACTER_DELETED
      */
-    public function checkCharacter(Character $char, OAuthToken $tokenService): int
+    public function checkCharacter(Character $char): int
     {
         // check if character is in Doomheim (biomassed)
         if ($char->getCorporation() !== null && $char->getCorporation()->getId() === 1000001) {
@@ -247,8 +279,10 @@ class Account
             return self::CHECK_CHAR_DELETED;
         }
 
+        $esiToken = $char->getEsiToken(EveLogin::ID_DEFAULT);
+
         // does the char have a token?
-        if ($char->getRefreshToken() === null) {
+        if ($esiToken === null || $esiToken->getRefreshToken() === null) {
             // Only true for SSOv1 without scopes or if the character was added by an admin.
             $char->setValidToken();
             $this->objectManager->flush();
@@ -257,17 +291,17 @@ class Account
 
         // validate token
         $token = null;
-        if (($existingToken = $char->createAccessToken()) !== null) {
+        if (($existingToken = $this->tokenService->createAccessToken($esiToken)) !== null) {
             try {
-                $token = $tokenService->refreshAccessToken($existingToken);
+                $token = $this->tokenService->refreshAccessToken($existingToken);
             } catch (IdentityProviderException $e) {
                 // do nothing
             }
         }
         if ($token === null) {
-            $char->setAccessToken('');
-            $char->setRefreshToken('');
+            $char->removeEsiToken($esiToken);
             $char->setValidToken(false);
+            $this->objectManager->remove($esiToken);
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NOK;
         }
@@ -284,14 +318,18 @@ class Account
 
         // token is valid here, check scopes
         // (scopes should not change after login since you cannot revoke individual scopes)
-        if (empty($eveAuth->getScopes())) {
+        if (
+            empty($eveAuth->getScopes()) ||
+            !is_numeric($token->getExpires()) ||
+            !is_string($token->getRefreshToken())
+        ) {
             $char->setValidToken();
             $result = self::CHECK_TOKEN_NOK;
         } else {
             $char->setValidToken(true);
-            $char->setAccessToken($token->getToken());
-            $char->setExpires($token->getExpires());
-            $char->setRefreshToken($token->getRefreshToken());
+            $esiToken->setAccessToken($token->getToken());
+            $esiToken->setExpires($token->getExpires());
+            $esiToken->setRefreshToken($token->getRefreshToken());
             $result = self::CHECK_TOKEN_OK;
         }
 

@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Eve\Sso\JsonWebToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Character;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 
@@ -124,18 +128,53 @@ class OAuthToken
         return false;
     }
 
+    public function createAccessToken(EsiToken $esiToken): ?AccessTokenInterface
+    {
+        $token = null;
+        try {
+            $token = new AccessToken([
+                'access_token' => (string) $esiToken->getAccessToken(),
+                'refresh_token' => (string) $esiToken->getRefreshToken(),
+                'expires' => (int) $esiToken->getExpires()
+            ]);
+        } catch (\Exception $e) {
+            // characters without a default "access_token" are okay.
+        }
+
+        return $token;
+    }
+
+    public function getScopesFromToken(EsiToken $esiToken): array
+    {
+        $token = $this->createAccessToken($esiToken);
+        if ($token === null) {
+            return [];
+        }
+        try {
+            $jwt = new JsonWebToken($token);
+        } catch (\UnexpectedValueException $e) {
+            return [];
+        }
+
+        return $jwt->getEveAuthentication()->getScopes();
+    }
+
     /**
-     * Returns the access token for an EVE character.
+     * Returns the default access token for an EVE character.
      *
      * When the existing token has expired, a new one is fetched using the
      * refresh token and stored in the database for the character.
      *
      * @param Character $character The entity should already be saved to the database.
-     * @return string The access token or empty string on error or if the character has no token.
+     * @return string The access token or empty string on error or if the character has no default token.
      */
     public function getToken(Character $character): string
     {
-        $existingToken = $character->createAccessToken();
+        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        if ($esiToken === null) {
+            return '';
+        }
+        $existingToken = $this->createAccessToken($esiToken);
         if ($existingToken === null) {
             return '';
         }
@@ -147,10 +186,13 @@ class OAuthToken
         }
 
         if ($token->getToken() !== $existingToken->getToken()) {
-            $character->setAccessToken($token->getToken());
-            $character->setExpires($token->getExpires());
-            $character->setRefreshToken($token->getRefreshToken());
-            if (! $this->objectManager->flush()) {
+            if (!is_numeric($token->getExpires()) || !is_string($token->getRefreshToken())) {
+                return '';
+            }
+            $esiToken->setAccessToken($token->getToken());
+            $esiToken->setExpires($token->getExpires());
+            $esiToken->setRefreshToken($token->getRefreshToken());
+            if (!$this->objectManager->flush()) {
                 return ''; // old token is invalid, new token could not be saved
             }
         }

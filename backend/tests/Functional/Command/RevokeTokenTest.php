@@ -32,7 +32,7 @@ class RevokeTokenTest extends ConsoleTestCase
         $this->client = new Client();
     }
 
-    public function testExecuteNoCharacter()
+    public function testExecute_NoCharacter()
     {
         $output = $this->runConsoleApp('revoke-token', ['id' => 3]);
 
@@ -42,7 +42,7 @@ class RevokeTokenTest extends ConsoleTestCase
         $this->assertSame('', $actual[1]);
     }
 
-    public function testExecuteNoToken()
+    public function testExecute_NoToken()
     {
         $char = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($char);
@@ -51,14 +51,29 @@ class RevokeTokenTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(2, count($actual));
-        $this->assertSame('Character has no token.', $actual[0]);
+        $this->assertSame('Character has no default token.', $actual[0]);
+        $this->assertSame('', $actual[1]);
+    }
+
+    public function testExecute_InvalidToken()
+    {
+        $char = (new Character())->setId(3)->setName('char1');
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $this->helper->createOrUpdateEsiToken($char, 0, '');
+
+        $output = $this->runConsoleApp('revoke-token', ['id' => 3]);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(2, count($actual));
+        $this->assertSame('Error reading token.', $actual[0]);
         $this->assertSame('', $actual[1]);
     }
 
     public function testExecute()
     {
-        $char = (new Character())->setId(3)->setName('char1')->setAccessToken('at3')->setRefreshToken('rt3');
+        $char = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $this->helper->createOrUpdateEsiToken($char);
 
         $this->client->setResponse(new Response(200));
 
@@ -72,10 +87,11 @@ class RevokeTokenTest extends ConsoleTestCase
         $this->assertSame('', $actual[1]);
     }
 
-    public function testExecuteError()
+    public function testExecute_Error()
     {
-        $char = (new Character())->setId(3)->setName('char1')->setAccessToken('at3')->setRefreshToken('rt3');
+        $char = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $this->helper->createOrUpdateEsiToken($char);
 
         $this->client->setResponse(new Response(400));
 

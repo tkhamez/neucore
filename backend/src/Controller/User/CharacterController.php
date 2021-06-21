@@ -9,7 +9,6 @@ use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\EsiData;
-use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
@@ -55,24 +54,17 @@ class CharacterController extends BaseController
      */
     private $esiData;
 
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
-
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         UserAuth $userAuth,
-        EsiData $esiData,
-        OAuthToken $tokenService
+        EsiData $esiData
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->userAuth = $userAuth;
         $this->esiData = $esiData;
-        $this->tokenService = $tokenService;
     }
 
     /**
@@ -268,7 +260,7 @@ class CharacterController extends BaseController
         }
 
         // check token and character owner hash - this may delete the character!
-        $result = $accountService->checkCharacter($updatedChar, $this->tokenService);
+        $result = $accountService->checkCharacter($updatedChar);
         if ($result === Account::CHECK_CHAR_DELETED) {
             $updatedChar = null;
         }

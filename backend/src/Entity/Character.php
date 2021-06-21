@@ -7,9 +7,6 @@ namespace Neucore\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Eve\Sso\JsonWebToken;
-use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Api;
 use Neucore\Plugin\CoreCharacter;
 use OpenApi\Annotations as OA;
@@ -59,31 +56,6 @@ class Character implements \JsonSerializable
     private $characterOwnerHash;
 
     /**
-     * @ORM\Column(type="text", length=65535, name="access_token", nullable=true)
-     * @var string|null
-     */
-    private $accessToken;
-
-    /**
-     * Unix timestamp when access token expires.
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @var int|null
-     */
-    private $expires;
-
-    /**
-     * The OAuth refresh token.
-     *
-     * Null if there was never a token, e. g. EVE SSOv1 without scopes or a char that was added by an admin.
-     * Empty string if the token became invalid.
-     *
-     * @ORM\Column(type="text", length=65535, name="refresh_token", nullable=true)
-     * @var string|null
-     */
-    private $refreshToken;
-
-    /**
      * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="character")
      * @ORM\OrderBy({"id" = "ASC"})
      * @var Collection
@@ -91,7 +63,7 @@ class Character implements \JsonSerializable
     private $esiTokens;
 
     /**
-     * Shows if character's refresh token is valid or not.
+     * Shows if character's default refresh token is valid or not.
      *
      * This is null if there is no refresh token (EVE SSOv1 only)
      * or a valid token but without scopes (SSOv2).
@@ -251,42 +223,6 @@ class Character implements \JsonSerializable
         return $this->characterOwnerHash;
     }
 
-    public function setAccessToken(string $accessToken = null): self
-    {
-        $this->accessToken = $accessToken;
-
-        return $this;
-    }
-
-    public function getAccessToken(): ?string
-    {
-        return $this->accessToken;
-    }
-
-    public function setExpires(int $expires = null): self
-    {
-        $this->expires = $expires;
-
-        return $this;
-    }
-
-    public function getExpires(): ?int
-    {
-        return $this->expires;
-    }
-
-    public function setRefreshToken(string $refreshToken = null): self
-    {
-        $this->refreshToken = $refreshToken;
-
-        return $this;
-    }
-
-    public function getRefreshToken(): ?string
-    {
-        return $this->refreshToken;
-    }
-
     public function addEsiToken(EsiToken $token): self
     {
         $this->esiTokens[] = $token;
@@ -304,6 +240,16 @@ class Character implements \JsonSerializable
     public function getEsiTokens(): array
     {
         return $this->esiTokens->toArray();
+    }
+
+    public function getEsiToken(string $eveLoginId): ?EsiToken
+    {
+        foreach ($this->getEsiTokens() as $esiToken) {
+            if ($esiToken->getEveLogin() !== null && $esiToken->getEveLogin()->getId() === $eveLoginId) {
+                return $esiToken;
+            }
+        }
+        return null;
     }
 
     /**
@@ -426,37 +372,6 @@ class Character implements \JsonSerializable
     public function getCharacterNameChanges(): array
     {
         return $this->characterNameChanges->toArray();
-    }
-
-    public function createAccessToken(): ?AccessTokenInterface
-    {
-        $token = null;
-        try {
-            $token = new AccessToken([
-                'access_token' => $this->accessToken,
-                'refresh_token' => (string) $this->refreshToken,
-                'expires' => $this->expires
-            ]);
-        } catch (\Exception $e) {
-            // characters without an "access_token" are okay.
-        }
-
-        return $token;
-    }
-
-    public function getScopesFromToken(): array
-    {
-        $token = $this->createAccessToken();
-        if ($token === null) {
-            return [];
-        }
-        try {
-            $jwt = new JsonWebToken($token);
-        } catch (\UnexpectedValueException $e) {
-            return [];
-        }
-
-        return $jwt->getEveAuthentication()->getScopes();
     }
 
     public function toCoreCharacter(): CoreCharacter

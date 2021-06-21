@@ -5,7 +5,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\EveAuthentication;
+use Eve\Sso\JsonWebToken;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Handler\TestHandler;
@@ -14,6 +16,8 @@ use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
@@ -27,14 +31,10 @@ use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
-use Neucore\Service\Config;
-use Neucore\Service\OAuthToken;
-use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
-use Tests\OAuthProvider;
 
 class AccountTest extends TestCase
 {
@@ -44,7 +44,7 @@ class AccountTest extends TestCase
     private $helper;
 
     /**
-     * @var \Doctrine\Persistence\ObjectManager
+     * @var ObjectManager
      */
     private $om;
 
@@ -57,11 +57,6 @@ class AccountTest extends TestCase
      * @var Client
      */
     private $client;
-
-    /**
-     * @var OAuthToken
-     */
-    private $token;
 
     /**
      * @var Account
@@ -154,17 +149,7 @@ class AccountTest extends TestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
-        $objectManager = new ObjectManager($this->om, $this->log);
-
         $this->client = new Client();
-        $this->token = new OAuthToken(
-            new OAuthProvider($this->client),
-            $objectManager,
-            $this->log,
-            $this->client,
-            new Config([])
-        );
-
         $repoFactory = new RepositoryFactory($this->om);
 
         $this->service = $this->helper->getAccountService($this->log, $this->client);
@@ -229,11 +214,30 @@ class AccountTest extends TestCase
         $this->assertSame(100, $newPlayerLoaded->getIncomingCharacters()[0]->getCharacterId());
     }
 
+    public function testUpdateAndStoreCharacterWithPlayer_NoEveLogin()
+    {
+        $result = $this->service->updateAndStoreCharacterWithPlayer(
+            new Character(),
+            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'irrelevant'])),
+            false
+        );
+        $this->assertFalse($result);
+
+        $this->assertSame(
+            'Account::updateAndStoreCharacterWithPlayer: Could not find default EveLogin entity.',
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
     /**
      * @throws \Exception
      */
     public function testUpdateAndStoreCharacterWithPlayer()
     {
+        $eveLogin = (new EveLogin)->setId(EveLogin::ID_DEFAULT);
+        $this->om->persist($eveLogin);
+        $this->om->flush();
+
         $player = (new Player())->setName('name');
         $char = (new Character())->setName('char name')->setId(12)->setMain(true);
         $char->setPlayer($player);
@@ -262,23 +266,31 @@ class AccountTest extends TestCase
         $this->om->clear();
 
         $character = $this->charRepo->find(12);
+        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
 
         $this->assertSame('char name changed', $character->getName());
         $this->assertTrue($character->getMain());
         $this->assertSame('char name changed', $player->getName());
-
         $this->assertSame('character-owner-hash', $character->getCharacterOwnerHash());
-        $this->assertSame($token[0], $character->getAccessToken());
-        $this->assertSame('r-t', $character->getRefreshToken());
-        $this->assertSame($expires, $character->getExpires());
+        $this->assertSame($token[0], $esiToken->getAccessToken());
+        $this->assertSame('r-t', $esiToken->getRefreshToken());
+        $this->assertSame($expires, $esiToken->getExpires());
         $this->assertTrue($character->getValidToken());
-        $this->assertSame(['s1', 's2'], $character->getScopesFromToken());
+        $this->assertSame(['s1', 's2'], (new JsonWebToken(new AccessToken([
+            'access_token' => $esiToken->getAccessToken(),
+            'refresh_token' => $esiToken->getRefreshToken(),
+            'expires' => $esiToken->getExpires()
+        ])))->getEveAuthentication()->getScopes());
         $this->assertSame(102, $character->getCorporation()->getId());
         $this->assertSame('name corp', $character->getCorporation()->getName());
     }
 
-    public function testUpdateAndStoreCharacterWithPlayerNoToken()
+    public function testUpdateAndStoreCharacterWithPlayer_NoToken()
     {
+        $eveLogin = (new EveLogin)->setId(EveLogin::ID_DEFAULT);
+        $this->om->persist($eveLogin);
+        $this->om->flush();
+
         $corp = (new Corporation())->setId(1);
         $this->om->persist($corp);
         $player = (new Player())->setName('p-name');
@@ -300,9 +312,42 @@ class AccountTest extends TestCase
 
         $character = $this->charRepo->find(12);
         $this->assertSame('c-name', $character->getName()); // the name is *not* updated here
-        $this->assertNull($character->getRefreshToken());
+        $this->assertNull($character->getEsiToken(EveLogin::ID_DEFAULT));
         $this->assertNull($character->getValidToken());
         $this->assertSame(0, count($character->getCharacterNameChanges()));
+    }
+
+    public function testUpdateAndStoreCharacterWithPlayer_NoToken_RemovesExistingToken()
+    {
+        $eveLogin = (new EveLogin)->setId(EveLogin::ID_DEFAULT);
+        $defaultEsiToken = (new EsiToken())->setEveLogin($eveLogin)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(123);
+        $corp = (new Corporation())->setId(1);
+        $player = (new Player())->setName('p-name');
+        $char = (new Character())->setName('c-name')->setId(12)->setPlayer($player)->setCorporation($corp);
+        $defaultEsiToken->setCharacter($char);
+        $this->om->persist($eveLogin);
+        $this->om->persist($defaultEsiToken);
+        $this->om->persist($corp);
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->flush();
+        $this->om->clear();
+
+        $char = $this->charRepo->find(12);
+        $char = $char ?: new Character(); // only for PHPStan
+        $result = $this->service->updateAndStoreCharacterWithPlayer(
+            $char,
+            new EveAuthentication(100, '', '', new AccessToken(['access_token' => 'a-t'])),
+            false
+        );
+        $this->assertTrue($result);
+
+        $this->om->clear();
+
+        $character = $this->charRepo->find(12);
+        $this->assertNull($character->getEsiToken(EveLogin::ID_DEFAULT));
+        $this->assertNull($character->getValidToken());
     }
 
     public function testIncreaseLoginCount()
@@ -323,21 +368,20 @@ class AccountTest extends TestCase
         $this->assertSame((int)date('m'), $logins[0]->getMonth());
     }
 
-    public function testCheckTokenUpdateCharacterDeletesBiomassedChar()
+    public function testCheckCharacter_UpdateCharacterDeletesBiomassedChar()
     {
-        $om = $this->om;
         $corp = (new Corporation())->setId(1000001); // Doomheim
         $player = (new Player())->setName('p');
         $char = (new Character())->setId(31)->setName('n31')->setCorporation($corp)->setPlayer($player);
-        $om->persist($corp);
-        $om->persist($player);
-        $om->persist($char);
-        $om->flush();
+        $this->om->persist($corp);
+        $this->om->persist($player);
+        $this->om->persist($char);
+        $this->om->flush();
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_CHAR_DELETED, $result);
 
-        $om->clear();
+        $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character);
 
@@ -351,7 +395,7 @@ class AccountTest extends TestCase
         $char = (new Character())->setId(100)->setName('name')->setValidToken(false);
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_NA, $result);
 
         $this->om->clear();
@@ -361,25 +405,20 @@ class AccountTest extends TestCase
 
     public function testCheckCharacter_InvalidToken()
     {
-        $char = (new Character())
-            ->setId(31)->setName('n31')
-            ->setValidToken(true)
-            ->setCharacterOwnerHash('hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires(time() - 1000);
-        $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $expires = time() - 1000;
+        $char = $this->setUpCharacterWithToken($expires, true);
 
         $this->client->setResponse(
             // for refreshAccessToken()
             new Response(400, [], '{"error": "invalid_grant"}')
         );
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
 
         $this->om->clear();
         $charLoaded = $this->charRepo->find(31);
-        $this->assertSame('', $charLoaded->getRefreshToken());
-        $this->assertSame('', $charLoaded->getAccessToken());
+        $this->assertNull($charLoaded->getEsiToken(EveLogin::ID_DEFAULT));
         $this->assertFalse($charLoaded->getValidToken());
     }
 
@@ -394,14 +433,9 @@ class AccountTest extends TestCase
         );
 
         $expires = time() - 1000;
-        $char = (new Character())
-            ->setId(31)->setName('n31')
-            ->setValidToken(true)
-            ->setCharacterOwnerHash('hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-        $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $char = $this->setUpCharacterWithToken($expires, true);
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_PARSE_ERROR, $result);
         $this->assertTrue($char->getValidToken()); // not changed!
     }
@@ -418,24 +452,19 @@ class AccountTest extends TestCase
         );
 
         $expires = time() - 1000;
-        $char = (new Character())
-            ->setId(31)->setName('n31')
-            ->setValidToken(true)
-            ->setCharacterOwnerHash('hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-        $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $char = $this->setUpCharacterWithToken($expires, true);
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_NOK, $result);
 
         $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character->getValidToken());
-        $this->assertSame('at', $character->getAccessToken()); // not updated
-        $this->assertSame('rt', $character->getRefreshToken()); // not updated
-        $this->assertSame($expires, $character->getExpires()); // not updated
+        $this->assertSame('at', $character->getEsiToken(EveLogin::ID_DEFAULT)->getAccessToken()); // not updated
+        $this->assertSame('rt', $character->getEsiToken(EveLogin::ID_DEFAULT)->getRefreshToken()); // not updated
+        $this->assertSame($expires, $character->getEsiToken(EveLogin::ID_DEFAULT)->getExpires()); // not updated
     }
-    
+
     /**
      * @throws \Exception
      */
@@ -454,23 +483,18 @@ class AccountTest extends TestCase
         );
 
         $expires = time() - 1000;
-        $char = (new Character())
-            ->setId(31)->setName('n31')
-            ->setValidToken(false) // it's also the default
-            ->setCharacterOwnerHash('hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-        $this->helper->addNewPlayerToCharacterAndFlush($char);
+        $char = $this->setUpCharacterWithToken($expires, false);
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_OK, $result);
 
         $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertTrue($character->getValidToken());
         $this->assertSame('n31', $character->getName());
-        $this->assertSame($token, $character->getAccessToken()); // updated
-        $this->assertGreaterThan($expires, $character->getExpires()); // updated
-        $this->assertSame('gEy...fM0', $character->getRefreshToken()); // updated
+        $this->assertSame($token, $character->getEsiToken(EveLogin::ID_DEFAULT)->getAccessToken()); // updated
+        $this->assertGreaterThan($expires, $character->getEsiToken(EveLogin::ID_DEFAULT)->getExpires()); // updated
+        $this->assertSame('gEy...fM0', $character->getEsiToken(EveLogin::ID_DEFAULT)->getRefreshToken()); // updated
         $characterNameChange = $this->characterNameChangeRepo->findBy([]);
         $this->assertSame(1, count($characterNameChange));
         $this->assertSame('Old Name', $characterNameChange[0]->getOldName());
@@ -483,26 +507,21 @@ class AccountTest extends TestCase
     {
         list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{
+                "access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"
+            }'), // for getAccessToken()
             new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
-        $om = $this->om;
         $expires = time() - 1000;
-        $player = (new Player())->setName('p');
-        $char = (new Character())
-            ->setPlayer($player)
-            ->setId(31)->setName('n31')
-            ->setCharacterOwnerHash('old-hash')
-            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
-        $om->persist($player);
-        $om->persist($char);
-        $om->flush();
+        $char = $this->setUpCharacterWithToken($expires, null, 'old-hash');
 
-        $result = $this->service->checkCharacter($char, $this->token);
+        $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_CHAR_DELETED, $result);
 
-        $om->clear();
+        $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character);
 
@@ -1055,5 +1074,20 @@ class AccountTest extends TestCase
         $this->player1->addGroup($this->group1);
         $this->player2->addGroup($this->group2);
         $this->om->flush();
+    }
+
+    private function setUpCharacterWithToken(int $expires, ?bool $valid = null, string $hash = 'hash'): Character
+    {
+        $eveLogin = (new EveLogin())->setId(EveLogin::ID_DEFAULT);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)
+            ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+        $char = (new Character())->setId(31)->setName('n31')->setValidToken($valid)->setCharacterOwnerHash($hash)
+            ->addEsiToken($esiToken);
+        $esiToken->setCharacter($char);
+        $this->om->persist($eveLogin);
+        $this->om->persist($esiToken);
+        $this->helper->addNewPlayerToCharacterAndFlush($char);
+
+        return $char;
     }
 }

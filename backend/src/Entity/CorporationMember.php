@@ -87,8 +87,8 @@ class CorporationMember implements \JsonSerializable
      * @OA\Property(ref="#/components/schemas/Character", nullable=true)
      * @var Character|null
      */
-    private $character; // *not* mapped to Character entity, this relation is via primary key,
-                        // although not defined for Doctrine
+    private $character;
+    // *not* mapped to Character entity, this relation is via primary key, although not defined for Doctrine
 
     /**
      * Date and time of the last sent mail.
