@@ -25,7 +25,7 @@ final class Version20210620133842 extends AbstractMigration
         // Create new tables.
         $this->addSql(
             'CREATE TABLE esi_tokens (
-                id INT AUTO_INCREMENT NOT NULL, character_id BIGINT NOT NULL, eve_login_id VARCHAR(64) NOT NULL, 
+                id INT AUTO_INCREMENT NOT NULL, character_id BIGINT NOT NULL, eve_login_id VARCHAR(20) NOT NULL, 
                 refresh_token TEXT NOT NULL, access_token TEXT NOT NULL, expires INT NOT NULL, 
                 INDEX IDX_1CCBCAB11136BE75 (character_id), 
                 INDEX IDX_1CCBCAB17E063B60 (eve_login_id), 
@@ -35,8 +35,8 @@ final class Version20210620133842 extends AbstractMigration
         );
         $this->addSql(
             'CREATE TABLE eve_logins (
-                id VARCHAR(64) NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(1024) NOT NULL, 
-                esiScopes VARCHAR(8192) NOT NULL, eveRoles VARCHAR(1024) NOT NULL, 
+                id VARCHAR(20) NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(1024) NOT NULL, 
+                esi_scopes VARCHAR(8192) NOT NULL, eve_roles VARCHAR(1024) NOT NULL, 
                 PRIMARY KEY(id)
             ) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB'
         );
@@ -52,7 +52,7 @@ final class Version20210620133842 extends AbstractMigration
         // Add default EveLogin and copy character tokens
         $loginId = EveLogin::ID_DEFAULT;
         $this->addSql(
-            "INSERT INTO eve_logins (id, name, description, esiScopes, eveRoles) 
+            "INSERT INTO eve_logins (id, name, description, esi_scopes, eve_roles) 
             VALUES ('$loginId', 'Default Login', '', '', '')"
         );
         $this->addSql(

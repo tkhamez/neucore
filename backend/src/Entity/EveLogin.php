@@ -18,13 +18,52 @@ use OpenApi\Annotations as OA;
  */
 class EveLogin implements \JsonSerializable
 {
-    public const ID_DEFAULT = 'default';
+    /**
+     * Default login.
+     */
+    public const ID_DEFAULT = 'core.default';
 
     /**
-     * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
+     * Alternative character login.
+     */
+    public const ID_ALT = 'core.alt';
+
+    /**
+     * Login for "managed" accounts.
+     */
+    public const ID_MANAGED = 'core.managed';
+
+    /**
+     * Login for "managed" alt characters.
+     */
+    public const ID_MANAGED_ALT = 'core.managed-alt';
+
+    /**
+     * Login of the character that is used to send mails.
+     */
+    public const ID_MAIL = 'core.mail';
+
+    /**
+     * Login of the character with director roles for the member tracking functionality.
+     */
+    public const ID_DIRECTOR = 'core.director';
+
+    public const SCOPE_MAIL = 'esi-mail.send_mail.v1';
+    public const SCOPE_ROLES = 'esi-characters.read_corporation_roles.v1';
+    public const SCOPE_TRACKING = 'esi-corporations.track_members.v1';
+    public const SCOPE_STRUCTURES = 'esi-universe.read_structures.v1';
+    public const SCOPE_MEMBERSHIP = 'esi-corporations.read_corporation_membership.v1';
+
+    /**
+     * @OA\Property(
+     *     maxLength=20,
+     *     pattern="^[-._a-zA-Z0-9]+$",
+     *     nullable=false,
+     *     description="IDs starting with 'core.' are reserverd for internal use."
+     * )
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=20)
      * @var string|null
      */
     private $id;
@@ -45,14 +84,14 @@ class EveLogin implements \JsonSerializable
 
     /**
      * @OA\Property(maxLength=8192)
-     * @ORM\Column(type="string", length=8192)
+     * @ORM\Column(type="string", name="esi_scopes", length=8192)
      * @var string
      */
     private $esiScopes = '';
 
     /**
      * @OA\Property(maxLength=1024)
-     * @ORM\Column(type="string", length=1024)
+     * @ORM\Column(type="string", name="eve_roles", length=1024)
      * @var string
      */
     private $eveRoles = '';

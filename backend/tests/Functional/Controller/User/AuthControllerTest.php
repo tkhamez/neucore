@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
-use Neucore\Api;
 use Neucore\Controller\User\AuthController;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
@@ -40,7 +39,7 @@ class AuthControllerTest extends WebTestCase
         $this->helper->emptyDb();
     }
 
-    public function testLogin()
+    public function testLogin_Default()
     {
         $response = $this->runApp('GET', '/login');
 
@@ -52,7 +51,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame(12, strlen($sess->get('auth_state')));
     }
 
-    public function testLoginManagedForbidden()
+    public function testLogin_ManagedForbidden()
     {
         $response = $this->runApp('GET', '/login-managed');
 
@@ -61,7 +60,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame('Forbidden', $response->getBody()->__toString());
     }
 
-    public function testLoginManaged()
+    public function testLogin_Managed()
     {
         // activate login "managed"
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
@@ -76,11 +75,10 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
-        $this->assertSame(14, strlen($sess->get('auth_state')));
-        $this->assertStringStartsWith(AuthController::STATE_PREFIX_STATUS_MANAGED, $sess->get('auth_state'));
+        $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::ID_MANAGED), $sess->get('auth_state'));
     }
 
-    public function testLoginManagedAltForbidden()
+    public function testLogin_ManagedAltForbidden()
     {
         $response = $this->runApp('GET', '/login-managed-alt');
 
@@ -89,7 +87,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame('Forbidden', $response->getBody()->__toString());
     }
 
-    public function testLoginManagedAlt()
+    public function testLogin_ManagedAlt()
     {
         // activate login "managed"
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
@@ -104,11 +102,13 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame('/#login', $sess->get('auth_redirect'));
-        $this->assertSame(14, strlen($sess->get('auth_state')));
-        $this->assertStringStartsWith(AuthController::STATE_PREFIX_STATUS_MANAGED_ALT, $sess->get('auth_state'));
+        $this->assertStringStartsWith(
+            AuthController::getStatePrefix(EveLogin::ID_MANAGED_ALT),
+            $sess->get('auth_state')
+        );
     }
 
-    public function testLoginAlt()
+    public function testLogin_Alt()
     {
         $response = $this->runApp('GET', '/login-alt');
 
@@ -117,11 +117,10 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
-        $this->assertSame(14, strlen($sess->get('auth_state')));
-        $this->assertStringStartsWith(AuthController::STATE_PREFIX_ALT, $sess->get('auth_state'));
+        $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::ID_ALT), $sess->get('auth_state'));
     }
 
-    public function testLoginMail()
+    public function testLogin_Mail()
     {
         $response = $this->runApp('GET', '/login-mail');
 
@@ -130,11 +129,10 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
-        $this->assertSame(14, strlen($sess->get('auth_state')));
-        $this->assertStringStartsWith(AuthController::STATE_PREFIX_MAIL, $sess->get('auth_state'));
+        $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::ID_MAIL), $sess->get('auth_state'));
     }
 
-    public function testLoginDirector()
+    public function testLogin_Director()
     {
         $response = $this->runApp('GET', '/login-director');
 
@@ -143,8 +141,7 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertSame('/#login-director', $sess->get('auth_redirect'));
-        $this->assertSame(14, strlen($sess->get('auth_state')));
-        $this->assertStringStartsWith(AuthController::STATE_PREFIX_DIRECTOR, $sess->get('auth_state'));
+        $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::ID_DIRECTOR), $sess->get('auth_state'));
     }
 
     public function testCallbackException()
@@ -242,7 +239,7 @@ class AuthControllerTest extends WebTestCase
     public function testCallbackAltLoginError()
     {
         list($token, $keySet) = Helper::generateToken(['read-this']);
-        $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
+        $state = AuthController::getStatePrefix(EveLogin::ID_ALT) . '1jdHR64hSdYf';
         $_SESSION = ['auth_state' => $state, 'auth_result' => null];
 
         $this->client->setResponse(
@@ -285,7 +282,7 @@ class AuthControllerTest extends WebTestCase
         $this->loginUser(654);
 
         list($token, $keySet) = Helper::generateToken(['read-this']);
-        $state = AuthController::STATE_PREFIX_ALT . '1jdHR64hSdYf';
+        $state = AuthController::getStatePrefix(EveLogin::ID_ALT) . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
@@ -326,8 +323,8 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', 123456, [Role::USER]);
         $this->loginUser(123456);
 
-        list($token, $keySet) = Helper::generateToken([Api::SCOPE_MAIL]);
-        $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
+        list($token, $keySet) = Helper::generateToken([EveLogin::SCOPE_MAIL]);
+        $state = AuthController::getStatePrefix(EveLogin::ID_MAIL) . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
@@ -365,8 +362,8 @@ class AuthControllerTest extends WebTestCase
         $this->helper->addCharacterMain('Test User', 123456, [Role::USER, Role::SETTINGS]);
         $this->loginUser(123456);
 
-        list($token, $keySet) = Helper::generateToken([Api::SCOPE_MAIL]);
-        $state = AuthController::STATE_PREFIX_MAIL . '1jdHR64hSdYf';
+        list($token, $keySet) = Helper::generateToken([EveLogin::SCOPE_MAIL]);
+        $state = AuthController::getStatePrefix(EveLogin::ID_MAIL) . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
@@ -395,8 +392,8 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallbackDirectorLoginWrongScopes()
     {
-        list($token, $keySet) = Helper::generateToken([API::SCOPE_ROLES]);
-        $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
+        list($token, $keySet) = Helper::generateToken([EveLogin::SCOPE_ROLES]);
+        $state = AuthController::getStatePrefix(EveLogin::ID_DIRECTOR) . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
@@ -426,11 +423,11 @@ class AuthControllerTest extends WebTestCase
     public function testCallbackDirectorLoginSuccess()
     {
         list($token, $keySet) = Helper::generateToken(
-            [API::SCOPE_ROLES, API::SCOPE_TRACKING, Api::SCOPE_STRUCTURES],
+            [EveLogin::SCOPE_ROLES, EveLogin::SCOPE_TRACKING, EveLogin::SCOPE_STRUCTURES],
             'hs'
         );
 
-        $state = AuthController::STATE_PREFIX_DIRECTOR . '1jdHR64hSdYf';
+        $state = AuthController::getStatePrefix(EveLogin::ID_DIRECTOR) . '1jdHR64hSdYf';
         $_SESSION['auth_state'] = $state;
         $this->client->setResponse(
             // for getAccessToken()

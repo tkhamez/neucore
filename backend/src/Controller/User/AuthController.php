@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Eve\Sso\AuthenticationProvider;
-use Neucore\Api;
 use Neucore\Controller\BaseController;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
@@ -68,42 +68,7 @@ class AuthController extends BaseController
 
     private const KEY_RESULT_MESSAGE = 'message';
 
-    /**
-     * A prefix for the OAuth state parameter that identifies a login of "managed" accounts.
-     *
-     * @var string
-     */
-    public const STATE_PREFIX_STATUS_MANAGED = 's.';
-
-    /**
-     * A prefix for the OAuth state parameter that identifies a login of "managed" alt.
-     *
-     * @var string
-     */
-    public const STATE_PREFIX_STATUS_MANAGED_ALT = 'z.';
-
-    /**
-     * A prefix for the OAuth state parameter that identifies an alt login.
-     *
-     * @var string
-     */
-    public const STATE_PREFIX_ALT = 'a.';
-
-    /**
-     * A prefix for the OAuth state parameter that identifies an login
-     * of the character that is used to send mails.
-     *
-     * @var string
-     */
-    public const STATE_PREFIX_MAIL = 'm.';
-
-    /**
-     * A prefix for the OAuth state parameter that identifies an login
-     * of the character with director roles for the member tracking functionality.
-     *
-     * @var string
-     */
-    public const STATE_PREFIX_DIRECTOR = 'd.';
+    private const STATE_PREFIX_SEPARATOR = '*';
 
     /**
      * @var SessionData
@@ -119,6 +84,21 @@ class AuthController extends BaseController
      * @var Config
      */
     private $config;
+
+    /**
+     * Returns the OAuth state prefix for an EVE login.
+     *
+     * (Only public for unit tests.)
+     *
+     * @param string $eveLoginId The ID of an EveLogin record.
+     */
+    public static function getStatePrefix(string $eveLoginId): string
+    {
+        if (empty($eveLoginId) || $eveLoginId === EveLogin::ID_DEFAULT) {
+            return '';
+        }
+        return $eveLoginId . self::STATE_PREFIX_SEPARATOR;
+    }
 
     public function __construct(
         ResponseInterface $response,
@@ -146,7 +126,7 @@ class AuthController extends BaseController
     /**
      * Login for "managed" accounts, redirects to EVE SSO login.
      */
-    public function loginManaged(string $prefix = self::STATE_PREFIX_STATUS_MANAGED): ResponseInterface
+    public function loginManaged(string $prefix = EveLogin::ID_MANAGED): ResponseInterface
     {
         // check "allow managed login" settings
         $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
@@ -167,7 +147,7 @@ class AuthController extends BaseController
      */
     public function loginManagedAlt(): ResponseInterface
     {
-        return $this->loginManaged(self::STATE_PREFIX_STATUS_MANAGED_ALT);
+        return $this->loginManaged(EveLogin::ID_MANAGED_ALT);
     }
 
     /**
@@ -177,7 +157,7 @@ class AuthController extends BaseController
      */
     public function loginAlt(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_ALT, '/#login-alt');
+        return $this->redirectToLoginUrl(EveLogin::ID_ALT, '/#login-alt');
     }
 
     /**
@@ -187,7 +167,7 @@ class AuthController extends BaseController
      */
     public function loginMail(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_MAIL, '/#login-mail');
+        return $this->redirectToLoginUrl(EveLogin::ID_MAIL, '/#login-mail');
     }
 
     /**
@@ -197,7 +177,7 @@ class AuthController extends BaseController
      */
     public function loginDirector(): ResponseInterface
     {
-        return $this->redirectToLoginUrl(self::STATE_PREFIX_DIRECTOR, '/#login-director');
+        return $this->redirectToLoginUrl(EveLogin::ID_DIRECTOR, '/#login-director');
     }
 
     /**
@@ -232,14 +212,14 @@ class AuthController extends BaseController
         }
 
         // handle login
-        switch (substr($state, 0, 2)) {
-            case self::STATE_PREFIX_ALT:
-            case self::STATE_PREFIX_STATUS_MANAGED_ALT:
+        switch ($this->getLoginIdFromState($state)) {
+            case EveLogin::ID_ALT:
+            case EveLogin::ID_MANAGED_ALT:
                 $success = $userAuth->addAlt($eveAuth);
                 $successMessage = 'Character added to player account.';
                 $errorMessage = 'Failed to add alt to account.';
                 break;
-            case self::STATE_PREFIX_MAIL:
+            case EveLogin::ID_MAIL:
                 if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
                     $success = $mailService->storeMailCharacter($eveAuth);
                 } else {
@@ -248,13 +228,13 @@ class AuthController extends BaseController
                 $successMessage = 'Mail character authenticated.';
                 $errorMessage = 'Failed to store character.';
                 break;
-            case self::STATE_PREFIX_DIRECTOR:
+            case EveLogin::ID_DIRECTOR:
                 $successMessage = 'Character with director roles added.';
                 $errorMessage = 'Error adding character with director roles.';
                 $success = $memberTrackingService->verifyAndStoreDirector($eveAuth);
                 break;
-            case self::STATE_PREFIX_STATUS_MANAGED:
-            default:
+            case EveLogin::ID_MANAGED:
+            default: // empty (equals EveLogin::ID_DEFAULT)
                 $success = $userAuth->authenticate($eveAuth);
                 $successMessage = 'Login successful.';
                 $errorMessage = 'Failed to authenticate user.';
@@ -348,7 +328,7 @@ class AuthController extends BaseController
         return $this->withJson($token);
     }
 
-    private function redirectToLoginUrl(string $prefix, string $redirect): ResponseInterface
+    private function redirectToLoginUrl(string $loginId, string $redirect): ResponseInterface
     {
         try {
             $randomString = Random::chars(12);
@@ -356,7 +336,7 @@ class AuthController extends BaseController
             $this->response->getBody()->write('Error.');
             return $this->response->withStatus(500);
         }
-        $state = $prefix . $randomString;
+        $state = self::getStatePrefix($loginId) . $randomString;
 
         $this->session->set(self::SESS_AUTH_STATE, $state);
         $this->session->set(self::SESS_AUTH_REDIRECT, $redirect);
@@ -368,13 +348,13 @@ class AuthController extends BaseController
 
     private function getLoginScopes(string $state): array
     {
-        $prefix = substr($state, 0, 2);
-        if (in_array($prefix, [self::STATE_PREFIX_STATUS_MANAGED, self::STATE_PREFIX_STATUS_MANAGED_ALT])) {
+        $loginId = $this->getLoginIdFromState($state);
+        if (in_array($loginId, [EveLogin::ID_MANAGED, EveLogin::ID_MANAGED_ALT])) {
             return [];
-        } elseif ($prefix === self::STATE_PREFIX_MAIL) {
-            return [Api::SCOPE_MAIL];
-        } elseif ($prefix === self::STATE_PREFIX_DIRECTOR) {
-            return [API::SCOPE_ROLES, API::SCOPE_TRACKING, Api::SCOPE_STRUCTURES];
+        } elseif ($loginId === EveLogin::ID_MAIL) {
+            return [EveLogin::SCOPE_MAIL];
+        } elseif ($loginId === EveLogin::ID_DIRECTOR) {
+            return [EveLogin::SCOPE_ROLES, EveLogin::SCOPE_TRACKING, EveLogin::SCOPE_STRUCTURES];
         }
 
         $scopes = $this->config['eve']['scopes'];
@@ -385,6 +365,14 @@ class AuthController extends BaseController
         }
 
         return $scopes;
+    }
+
+    private function getLoginIdFromState(string $state): string
+    {
+        if (strpos($state, self::STATE_PREFIX_SEPARATOR) === false) {
+            return '';
+        }
+        return substr($state, 0, strpos($state, self::STATE_PREFIX_SEPARATOR));
     }
 
     private function redirect(string $path): ResponseInterface

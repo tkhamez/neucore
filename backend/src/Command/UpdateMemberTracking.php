@@ -6,9 +6,9 @@ namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
-use Neucore\Api;
 use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
+use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
@@ -136,7 +136,7 @@ class UpdateMemberTracking extends Command
 
             $this->writeLine('  Start updating ' . $corporation->getId(), false);
 
-            $trackingData = $this->memberTracking->fetchData($token->getToken(), (int) $corporation->getId());
+            $trackingData = $this->memberTracking->fetchData($token->getToken(), $corporation->getId());
             if (! is_array($trackingData)) {
                 $this->writeLine(
                     '  Error getting member tracking data from ESI for ' . $characterVariable->getName(),
@@ -145,10 +145,10 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            if (! isset($tokenData['scopes']) || ! in_array(Api::SCOPE_STRUCTURES, $tokenData['scopes'])) {
+            if (! isset($tokenData['scopes']) || ! in_array(EveLogin::SCOPE_STRUCTURES, $tokenData['scopes'])) {
                 $token = null;
             }
-            $this->processData((int) $corporation->getId(), $trackingData, $token);
+            $this->processData($corporation->getId(), $trackingData, $token);
 
             // set last update date - get corp again because "processData" may clear the ObjectManager
             $corporation = $corporationRepository->find($character->corporation_id);
@@ -196,6 +196,7 @@ class UpdateMemberTracking extends Command
         $stationIds = [];
         $structures = [];
         foreach ($trackingData as $item) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $charIds[] = (int) $item->getCharacterId();
             $typeIds[] = (int) $item->getShipTypeId();
 

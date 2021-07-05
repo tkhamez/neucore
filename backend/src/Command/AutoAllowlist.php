@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Neucore\Api;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
@@ -221,7 +220,7 @@ class AutoAllowlist extends Command
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] === null &&
                     $esiToken !== null &&
                     $character->getValidToken() &&
-                    in_array(Api::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
+                    in_array(EveLogin::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
                 ) {
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] =
                         $this->tokenService->createAccessToken($esiToken);
