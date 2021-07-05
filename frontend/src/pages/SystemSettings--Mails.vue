@@ -3,7 +3,7 @@
     <div class="card-header">Sender</div>
     <div class="card-body">
         <span v-if="settings.mail_character === ''">
-            <a :href="loginHost + '/login-mail'"><img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"></a>
+            <a :href="loginHost + '/login/core.mail'"><img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"></a>
         </span>
         <span v-else>
             <span class="text-info">{{ settings.mail_character }}</span>

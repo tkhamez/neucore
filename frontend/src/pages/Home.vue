@@ -17,7 +17,7 @@
                             again to create a new token.
                         </p>
                         <p class="align-center">
-                            <a :href="loginHost + '/login-alt'">
+                            <a :href="loginHost + '/login/core.alt'">
                                 <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
                             </a>
                         </p>
@@ -60,7 +60,7 @@
         <div v-cloak v-if="! authChar" class="jumbotron mt-3">
             <title-logo :settings="settings"></title-logo>
             <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
-            <a :href="loginHost + '/login'">
+            <a :href="loginHost + '/login/core.default'">
                 <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
             </a>
             <p class="small">
@@ -79,7 +79,7 @@
                 <title-logo :settings="settings"></title-logo>
                 <p>Add your other characters by logging in with EVE SSO.</p>
                 <p>
-                    <a :href="loginHost + '/login-alt'">
+                    <a :href="loginHost + '/login/core.alt'">
                         <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
                     </a>
                 </p>
@@ -139,7 +139,7 @@
                                     Invalid ESI token
                                 </button>
 
-                                <a v-if="char.validToken === false" :href="loginHost + '/login-alt'"
+                                <a v-if="char.validToken === false" :href="loginHost + '/login/core.alt'"
                                    class="ml-1 char-login-button">
                                     <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>

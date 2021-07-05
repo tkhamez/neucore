@@ -48,6 +48,18 @@ class EveLogin implements \JsonSerializable
      */
     public const ID_DIRECTOR = 'core.director';
 
+    /**
+     * All internal login IDs.
+     */
+    public const INTERNAL_LOGINS = [
+        self::ID_DEFAULT,
+        self::ID_ALT,
+        self::ID_MANAGED,
+        self::ID_MANAGED_ALT,
+        self::ID_MAIL,
+        self::ID_DIRECTOR,
+    ];
+
     public const SCOPE_MAIL = 'esi-mail.send_mail.v1';
     public const SCOPE_ROLES = 'esi-characters.read_corporation_roles.v1';
     public const SCOPE_TRACKING = 'esi-corporations.track_members.v1';

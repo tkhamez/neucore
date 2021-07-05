@@ -94,9 +94,6 @@ class AuthController extends BaseController
      */
     public static function getStatePrefix(string $eveLoginId): string
     {
-        if (empty($eveLoginId) || $eveLoginId === EveLogin::ID_DEFAULT) {
-            return '';
-        }
         return $eveLoginId . self::STATE_PREFIX_SEPARATOR;
     }
 
@@ -116,68 +113,39 @@ class AuthController extends BaseController
     }
 
     /**
-     * Main login, redirects to EVE SSO login.
+     * Eve logins, redirects to EVE SSO login page or fails with a 404 or 403 status code.
      */
-    public function login(): ResponseInterface
+    public function login(string $id): ResponseInterface
     {
-        return $this->redirectToLoginUrl('', '/#login');
-    }
-
-    /**
-     * Login for "managed" accounts, redirects to EVE SSO login.
-     */
-    public function loginManaged(string $prefix = EveLogin::ID_MANAGED): ResponseInterface
-    {
-        // check "allow managed login" settings
-        $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()->findOneBy(
-            ['name' => SystemVariable::ALLOW_LOGIN_MANAGED]
-        );
-        if (! $allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
-            $this->response->getBody()->write('Forbidden');
-            return $this->response->withStatus(403, 'Forbidden');
+        // validate login ID
+        $loginId = null;
+        if (in_array($id, EveLogin::INTERNAL_LOGINS)) {
+            $loginId = $id;
+        } else {
+            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($id);
+            if ($eveLogin) {
+                $loginId = $eveLogin->getId();
+            }
+        }
+        if (empty($loginId)) {
+            $this->response->getBody()->write(
+                'Login not found.<br><br>' .
+                '<a href="/">Home</a>'
+            );
+            return $this->response->withStatus(404, 'Login not found.');
         }
 
-        return $this->redirectToLoginUrl($prefix, '/#login');
-    }
+        // check "allow managed login" settings
+        if (in_array($loginId, [EveLogin::ID_MANAGED, EveLogin::ID_MANAGED_ALT])) {
+            $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()
+                ->findOneBy(['name' => SystemVariable::ALLOW_LOGIN_MANAGED]);
+            if (!$allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
+                $this->response->getBody()->write('Forbidden');
+                return $this->response->withStatus(403, 'Forbidden');
+            }
+        }
 
-    /**
-     * Login for "managed" alts, redirects to EVE SSO login.
-     *
-     * @noinspection PhpUnused
-     */
-    public function loginManagedAlt(): ResponseInterface
-    {
-        return $this->loginManaged(EveLogin::ID_MANAGED_ALT);
-    }
-
-    /**
-     * Alt login, redirects to EVE SSO login.
-     *
-     * @noinspection PhpUnused
-     */
-    public function loginAlt(): ResponseInterface
-    {
-        return $this->redirectToLoginUrl(EveLogin::ID_ALT, '/#login-alt');
-    }
-
-    /**
-     * Mail char login, redirects to EVE SSO login.
-     *
-     * @noinspection PhpUnused
-     */
-    public function loginMail(): ResponseInterface
-    {
-        return $this->redirectToLoginUrl(EveLogin::ID_MAIL, '/#login-mail');
-    }
-
-    /**
-     * Director char login, redirects to EVE SSO login.
-     *
-     * @noinspection PhpUnused
-     */
-    public function loginDirector(): ResponseInterface
-    {
-        return $this->redirectToLoginUrl(EveLogin::ID_DIRECTOR, '/#login-director');
+        return $this->redirectToLoginUrl($loginId);
     }
 
     /**
@@ -213,6 +181,12 @@ class AuthController extends BaseController
 
         // handle login
         switch ($this->getLoginIdFromState($state)) {
+            case EveLogin::ID_DEFAULT:
+            case EveLogin::ID_MANAGED:
+                $success = $userAuth->authenticate($eveAuth);
+                $successMessage = 'Login successful.';
+                $errorMessage = 'Failed to authenticate user.';
+                break;
             case EveLogin::ID_ALT:
             case EveLogin::ID_MANAGED_ALT:
                 $success = $userAuth->addAlt($eveAuth);
@@ -233,11 +207,11 @@ class AuthController extends BaseController
                 $errorMessage = 'Error adding character with director roles.';
                 $success = $memberTrackingService->verifyAndStoreDirector($eveAuth);
                 break;
-            case EveLogin::ID_MANAGED:
-            default: // empty (equals EveLogin::ID_DEFAULT)
-                $success = $userAuth->authenticate($eveAuth);
-                $successMessage = 'Login successful.';
-                $errorMessage = 'Failed to authenticate user.';
+            default:
+                # TODO in-game roles (scopes were already checked above) and add token to character
+                $success = false;
+                $successMessage = 'TODO';
+                $errorMessage = 'TODO';
         }
 
         $this->session->set(self::SESS_AUTH_RESULT, [
@@ -328,7 +302,21 @@ class AuthController extends BaseController
         return $this->withJson($token);
     }
 
-    private function redirectToLoginUrl(string $loginId, string $redirect): ResponseInterface
+    private function getRedirectUrl(string $loginId): string
+    {
+        if (in_array($loginId, [EveLogin::ID_DEFAULT, EveLogin::ID_MANAGED, EveLogin::ID_MANAGED_ALT])) {
+            return '/#login';
+        } elseif ($loginId === EveLogin::ID_ALT) {
+            return '/#login-alt';
+        } elseif ($loginId === EveLogin::ID_MAIL) {
+            return '/#login-mail';
+        } elseif ($loginId === EveLogin::ID_DIRECTOR) {
+            return '/#login-director';
+        }
+        return '/#login-custom';
+    }
+
+    private function redirectToLoginUrl(string $loginId): ResponseInterface
     {
         try {
             $randomString = Random::chars(12);
@@ -339,7 +327,7 @@ class AuthController extends BaseController
         $state = self::getStatePrefix($loginId) . $randomString;
 
         $this->session->set(self::SESS_AUTH_STATE, $state);
-        $this->session->set(self::SESS_AUTH_REDIRECT, $redirect);
+        $this->session->set(self::SESS_AUTH_REDIRECT, $this->getRedirectUrl($loginId));
 
         $this->authProvider->setScopes($this->getLoginScopes($state));
 

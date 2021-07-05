@@ -22,12 +22,7 @@ use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
 
 return [
-    '/login'             => ['GET', [AuthController::class, 'login']],
-    '/login-managed'     => ['GET', [AuthController::class, 'loginManaged']],
-    '/login-managed-alt' => ['GET', [AuthController::class, 'loginManagedAlt']],
-    '/login-alt'         => ['GET', [AuthController::class, 'loginAlt']],
-    '/login-mail'        => ['GET', [AuthController::class, 'loginMail']],
-    '/login-director'    => ['GET', [AuthController::class, 'loginDirector']],
+    '/login/{id}'        => ['GET', [AuthController::class, 'login']],
     '/login-callback'    => ['GET', [AuthController::class, 'callback']],
 
     '/api/user/auth/callback'   => ['GET',  [AuthController::class, 'callback']], // only for backwards compatibility
