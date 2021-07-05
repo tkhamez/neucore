@@ -32,20 +32,20 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.3.0, see `composer.json` in the root directory and `backend/composer.json` for necessary and suggested 
+* PHP >=7.3.0, see `backend/composer.json` for necessary and `composer.json` in the root directory for suggested 
   extensions (APCu highly recommended).
 * MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5).  
   Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
 * Apache or another HTTP Server.
     * Set the document root to the `web` directory.
-    * A sample Apache configuration is included in the [Vagrantfile](../Vagrantfile) file and there 
+    * A sample Apache configuration is included in the [Vagrantfile](./Vagrantfile) file and there 
       is a [.htaccess](../web/.htaccess) file in the `web` directory.
     * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
 
 Additionally, to build the application:
 * Composer 2.
-* Node.js >=12.13.0 <15 with npm >=6.12.0 <7 (only tested with LTS releases v12 and v14).
-* Java runtime to generate the OpenAPI JavaScript client.
+* Node.js >=12.13.0 with npm >=6.12.0 (only tested with LTS releases v12 and v14 and with v16).
+* Java runtime (v8 minimum) to generate the OpenAPI JavaScript client.
 
 ### Install/Update
 
@@ -109,10 +109,6 @@ The output is logged to backend/var/logs.
 
 ## Other Installation Methods
 
-### Vagrant
-
-See [Vagrantfile](../Vagrantfile) for an outdated example.
-
 ### Docker - Development Environment
 
 Only tested on Linux and once on macOS.
@@ -133,12 +129,16 @@ the database host is `db`.
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306`, the data is stored in the `.db` subdirectory.
 
+### Vagrant
+
+See [Vagrantfile](./Vagrantfile) for an outdated example.
+
 ### Deploy on Heroku
 
 You can deploy the application on a free [Heroku](https://www.heroku.com) account.
 
 - Create a new app
-- Add a compatible database, e. g. JawsDB Maria.
+- Add a compatible database, e.g. JawsDB Maria.
 - Add the necessary config vars (see `backend/.env.dist` file) and set the following:
   - NEUCORE_LOG_PATH=php://stderr
 - Add build packs in this order:
@@ -151,19 +151,4 @@ heroku buildpacks:add heroku/php
 
 ### Deploy on AWS Beanstalk
 
-NOTE: The configuration in `.ebextensions` is for a box with PHP 7.2, it's outdated as Neucore requires PHP 7.3 now.
-
-A current configuration for Amazon Linux 2 is available at 
-[bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk).
-
-- Add an IAM user with Policy "AWSElasticBeanstalkFullAccess"
-- Create a database (RDS)
-- Create app environment:
-    ```
-    eb init -i
-    eb create neucore-dev
-    ```
-- Add a security group for the database that includes the new environment
-- Add a database for Neucore
-- Add environment Variables (NEUCORE_APP_ENV, NEUCORE_DATABASE_URL etc.)
-- Deploy again: `eb deploy`
+See [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk).
