@@ -1,10 +1,14 @@
-name: build
+name: Build
 
 on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+  test:
+    name: Build
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        php-versions: ['7.3', '7.4', '8.0']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -13,21 +17,22 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php-versions }}
           extensions: gmp, xdebug, apcu
           ini-values: apc.enable_cli=1
           tools: composer:v2
       - name: Install
         run: cd backend && composer install
-      - name: PHPUnit
+      - name: Test with code coverage
         env:
           NEUCORE_APP_ENV: dev
           NEUCORE_TEST_DATABASE_URL: 'sqlite:///:memory:'
         run: cd backend && vendor/bin/phpunit --coverage-clover var/logs/clover.xml
       - name: Setup SonarQube
+        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-versions == '7.4' }}
         uses: warchant/setup-sonar-scanner@v3
-      - name: Run SonarQube
-        if: github.repository_owner == 'tkhamez'
+      - name: SonarQube
+        if: ${{ github.repository_owner == 'tkhamez' && matrix.php-versions == '7.4' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sonar-scanner
