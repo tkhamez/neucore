@@ -4,7 +4,7 @@
     "description": "",
     "license": "MIT",
     "require": {
-        "php-64bit": "^7.3",
+        "php-64bit": "^7.3|^8.0",
         "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
