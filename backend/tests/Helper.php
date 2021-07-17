@@ -88,14 +88,7 @@ class Helper
         string $ownerHashKey = 'owner'
     ): array {
         // create key
-        if (version_compare(PHP_VERSION, '8.0.0') >= 0) {
-            # TODO remove when fixed: "Function openssl_free_key() is deprecated"
-            error_reporting(E_ALL & ~E_DEPRECATED);
-        }
         $jwk = JWKFactory::createRSAKey(2048, ['alg' => 'RS256', 'use' => 'sig']);
-        if (version_compare(PHP_VERSION, '8.0.0') >= 0) {
-            error_reporting(E_ALL);
-        }
 
         // create token
         $algorithmManager = new AlgorithmManager([new RS256()]);
