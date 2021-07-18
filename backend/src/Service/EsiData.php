@@ -170,7 +170,7 @@ class EsiData
             // ignore
         }
 
-        // update char with corp entity - does not fetch data from ESI
+        // update char with corp entity
         $affiliation = $this->fetchCharactersAffiliation([$id]); // cache = 1 hour
         if (isset($affiliation[0])) {
             $corpId = (int) $affiliation[0]->getCorporationId();
