@@ -66,10 +66,10 @@ function getRoutesForRole(string $role, array $routes, array $securityDef): arra
             }
             if (in_array($role, $roles) && ! in_array($pattern, $skip)) {
                 $apiPath = substr($pattern, strlen('/api'));
-                if (isset($conf[0])) {
+                if (isset($conf[0])) { // e.g. ['GET', callable]
                     $result[] = [$apiPath, $conf[0]];
                 } else {
-                    foreach ($conf as $method => $path) {
+                    foreach (array_keys($conf) as $method) { // e.g. ['GET' => callable]
                         $result[] = [$apiPath, $method];
                     }
                 }
