@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e9f1d3e7c2bdd05046a7b39b874272d",
+    "content-hash": "07b385f4ad00c52aeb8b9f315db79c01",
     "packages": [
         {
             "name": "brick/math",
@@ -4722,16 +4722,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "6.0.2",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "185049a8201aad5dc7cd93a515ebb4eb4dcb3884"
+                "reference": "11f971c8286ecdca107fa023ccc9fbbb3940c59e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/185049a8201aad5dc7cd93a515ebb4eb4dcb3884",
-                "reference": "185049a8201aad5dc7cd93a515ebb4eb4dcb3884",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/11f971c8286ecdca107fa023ccc9fbbb3940c59e",
+                "reference": "11f971c8286ecdca107fa023ccc9fbbb3940c59e",
                 "shasum": ""
             },
             "require": {
@@ -4739,6 +4739,7 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^6.2 || ^7.2",
+                "guzzlehttp/psr7": "^1.8",
                 "php": ">=7.2"
             },
             "require-dev": {
@@ -4772,11 +4773,7 @@
                 "rest",
                 "sdk"
             ],
-            "support": {
-                "issues": "https://github.com/tkhamez/swagger-eve-php/issues",
-                "source": "https://github.com/tkhamez/swagger-eve-php/tree/6.0.2"
-            },
-            "time": "2021-06-20T12:14:53+00:00"
+            "time": "2021-07-19T18:27:30+00:00"
         },
         {
             "name": "web-token/jwt-core",
