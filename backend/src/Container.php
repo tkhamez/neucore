@@ -48,9 +48,17 @@ class Container
         return [
 
             // Doctrine
-            EntityManagerInterface::class => function (ContainerInterface $c) {
-                $conf = $c->get(Config::class)['doctrine'];
-                $config = Setup::createAnnotationMetadataConfiguration(
+
+            EntityManagerInterface::class => function (
+                ?ContainerInterface $c = null, // this is also used in unit tests where the container does not exist
+                ?Config $config = null
+            ) {
+                if ($c) {
+                    $conf = $c->get(Config::class)['doctrine'];
+                } else {
+                    $conf = $config['doctrine'];
+                }
+                $metaConfig = Setup::createAnnotationMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
                     $conf['meta']['proxy_dir'],
@@ -62,14 +70,14 @@ class Container
                 $options = $conf['driver_options'];
                 $caFile = (string) $options['mysql_ssl_ca'];
                 $verify = (bool) $options['mysql_verify_server_cert'];
-                if ($caFile !== '' && (! $verify || is_file($caFile))) {
+                if ($caFile !== '' && (!$verify || is_file($caFile))) {
                     $conf['connection']['driverOptions'] = [
                         \PDO::MYSQL_ATTR_SSL_CA => $caFile,
                         \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => $verify,
                     ];
                 }
                 /** @noinspection PhpUnnecessaryLocalVariableInspection */
-                $em = EntityManager::create($conf['connection'], $config);
+                $em = EntityManager::create($conf['connection'], $metaConfig);
                 /*$logger = new class() extends \Doctrine\DBAL\Logging\DebugStack {
                     public function startQuery($sql, ?array $params = null, ?array $types = null)
                     {

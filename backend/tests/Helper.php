@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\DBAL\Exception;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\AlgorithmManager;
@@ -18,6 +15,7 @@ use Jose\Component\Signature\Algorithm\RS256;
 use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Neucore\Application;
+use Neucore\Container;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\App;
 use Neucore\Entity\AppRequests;
@@ -128,23 +126,10 @@ class Helper
     public function getEm(): EntityManagerInterface
     {
         if (self::$em === null) {
-            $conf = (new Application())->loadSettings(true)['doctrine'];
-
-            $config = Setup::createAnnotationMetadataConfiguration(
-                $conf['meta']['entity_paths'],
-                $conf['meta']['dev_mode'],
-                $conf['meta']['proxy_dir'],
-                null,
-                false
-            );
-            /** @noinspection PhpDeprecationInspection */
-            /* @phan-suppress-next-line PhanDeprecatedFunction */
-            AnnotationRegistry::registerLoader('class_exists');
-
-            /** @noinspection PhpUnhandledExceptionInspection */
-            $em = EntityManager::create($conf['connection'], $config);
-
-            self::$em = $em;
+            // Don't build the container here to get the EntityManager, because that roughly
+            // doubles the time it takes to run all the tests (with sqlite memory db).
+            $config = (new Application())->loadSettings(true);
+            self::$em = Container::getDefinitions()[EntityManagerInterface::class](null, $config);
         }
 
         return self::$em;

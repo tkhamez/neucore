@@ -136,7 +136,7 @@ class Application
      * @throws RuntimeException
      * @return Config
      */
-    public function loadSettings(bool $unitTest = false, $forceDevMode = false): Config
+    public function loadSettings(bool $unitTest = false, bool $forceDevMode = false): Config
     {
         if ($this->config !== null) {
             return $this->config;
@@ -197,6 +197,17 @@ class Application
         return $this->config;
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function buildContainer(array $mocks = []): ContainerInterface
+    {
+        $this->loadSettings();
+        $this->createContainer($mocks);
+
+        return $this->container;
+    }
+
     public function runWebApp(): void
     {
         $this->runEnv = self::RUN_WEB;
@@ -216,7 +227,6 @@ class Application
      */
     public function getApp(array $mocks = []): App
     {
-        $this->loadSettings();
         $this->buildContainer($mocks);
         $this->errorHandling();
         $this->sessionHandler();
@@ -253,7 +263,6 @@ class Application
     {
         set_time_limit(0);
 
-        $this->loadSettings();
         $this->buildContainer($mocks);
         $this->errorHandling();
 
@@ -332,7 +341,7 @@ class Application
      *
      * @throws \Exception
      */
-    private function buildContainer(array $mocks = []): void
+    private function createContainer(array $mocks = []): void
     {
         $containerBuilder = new ContainerBuilder();
 
