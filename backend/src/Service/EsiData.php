@@ -15,6 +15,7 @@ use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
@@ -159,6 +160,7 @@ class EsiData
         }
 
         // update char (and player) name
+        /** @noinspection PhpCastIsUnnecessaryInspection */
         $this->characterService->setCharacterName($char, (string)$eveChar->getName());
         if ($char->getMain()) {
             $char->getPlayer()->setName($char->getName());
@@ -173,8 +175,10 @@ class EsiData
         // update char with corp entity
         $affiliation = $this->fetchCharactersAffiliation([$id]); // cache = 1 hour
         if (isset($affiliation[0])) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $corpId = (int) $affiliation[0]->getCorporationId();
         } else {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $corpId = (int) $eveChar->getCorporationId();
         }
         $corp = $this->getCorporationEntity($corpId);
@@ -381,8 +385,11 @@ class EsiData
                 $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
                 $this->objectManager->persist($location);
             }
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setName((string) $result->getName());
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setOwnerId((int) $result->getOwnerId());
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setSystemId((int) $result->getSolarSystemId());
             $location->setLastUpdate(new \DateTime());
 
@@ -395,10 +402,8 @@ class EsiData
     }
 
     /**
-     *
      * Needs: esi-corporations.read_corporation_membership.v1
      *
-     * @param int $id
      * @return int[] List of character IDs, empty array can also be an ESI error
      */
     public function fetchCorporationMembers(int $id, string $accessToken): array
@@ -416,6 +421,36 @@ class EsiData
         }
 
         return is_array($members) ? $members : [];
+    }
+
+    /**
+     * Needs: esi-characters.read_corporation_roles.v1
+     *
+     * @param string[] $roles
+     */
+    public function verifyRoles(array $roles, int $characterId, string $accessToken): bool
+    {
+        if (empty($roles)) {
+            return true;
+        }
+
+        $characterApi = $this->esiApiFactory->getCharacterApi($accessToken);
+        try {
+            $charRoles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->datasource);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            return false;
+        }
+
+        if (
+            !$charRoles instanceof GetCharactersCharacterIdRolesOk ||
+            !is_array($charRoles->getRoles()) ||
+            !empty(array_diff($roles, $charRoles->getRoles()))
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getCorporationEntity(int $id): Corporation

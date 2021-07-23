@@ -55,7 +55,7 @@ class EsiDataTest extends TestCase
     /**
      * @var EsiData
      */
-    private $cs;
+    private $esiData;
 
     /**
      * @var Logger
@@ -80,7 +80,7 @@ class EsiDataTest extends TestCase
         $this->repoFactory = new RepositoryFactory($this->em);
 
         $om = new ObjectManager($this->em, $this->log);
-        $this->cs = new EsiData(
+        $this->esiData = new EsiData(
             $this->log,
             new EsiApiFactory($this->client, $config),
             $om,
@@ -101,7 +101,7 @@ class EsiDataTest extends TestCase
             new Response(404)
         );
 
-        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertNull($char);
     }
 
@@ -122,7 +122,7 @@ class EsiDataTest extends TestCase
             new Response(404)
         );
 
-        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertNull($char);
     }
 
@@ -149,7 +149,7 @@ class EsiDataTest extends TestCase
             new Response(404)
         );
 
-        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertNull($char);
     }
 
@@ -179,7 +179,7 @@ class EsiDataTest extends TestCase
             }')
         );
 
-        $char = $this->cs->fetchCharacterWithCorporationAndAlliance(10);
+        $char = $this->esiData->fetchCharacterWithCorporationAndAlliance(10);
         $this->assertSame('char name', $char->getName());
         $this->assertSame('char name', $char->getPlayer()->getName());
         $this->assertSame('corp name', $char->getCorporation()->getName());
@@ -188,7 +188,7 @@ class EsiDataTest extends TestCase
 
     public function testFetchCharacterInvalidId()
     {
-        $char = $this->cs->fetchCharacter(-1);
+        $char = $this->esiData->fetchCharacter(-1);
         $this->assertNull($char);
     }
 
@@ -196,7 +196,7 @@ class EsiDataTest extends TestCase
     {
         $this->testHelper->emptyDb();
 
-        $char = $this->cs->fetchCharacter(123);
+        $char = $this->esiData->fetchCharacter(123);
         $this->assertNull($char);
     }
 
@@ -207,7 +207,7 @@ class EsiDataTest extends TestCase
 
         $this->client->setResponse(new Response(404));
 
-        $char = $this->cs->fetchCharacter(123);
+        $char = $this->esiData->fetchCharacter(123);
         $this->assertNull($char);
         $this->assertStringStartsWith('[404] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
@@ -233,7 +233,7 @@ class EsiDataTest extends TestCase
             }]')
         );
 
-        $char = $this->cs->fetchCharacter(123, false);
+        $char = $this->esiData->fetchCharacter(123, false);
         $this->assertSame(123, $char->getId());
         $this->assertSame('new corp', $char->getName());
         $this->assertSame(234, $char->getCorporation()->getId());
@@ -265,7 +265,7 @@ class EsiDataTest extends TestCase
             }]')
         );
 
-        $char = $this->cs->fetchCharacter(123);
+        $char = $this->esiData->fetchCharacter(123);
         $this->assertSame(123, $char->getId());
         $this->assertSame('new char name', $char->getName());
         $this->assertSame('old char name', $char->getCharacterNameChanges()[0]->getOldName());
@@ -293,7 +293,7 @@ class EsiDataTest extends TestCase
             "corporation_id": 102
         }]'));
 
-        $actual = $this->cs->fetchCharactersAffiliation([1001, 1002]);
+        $actual = $this->esiData->fetchCharactersAffiliation([1001, 1002]);
 
         $this->assertSame(2, count($actual));
         $this->assertSame(1001, $actual[0]->getCharacterId());
@@ -306,7 +306,7 @@ class EsiDataTest extends TestCase
 
     public function testFetchCorporationInvalidId()
     {
-        $corp = $this->cs->fetchCorporation(-1);
+        $corp = $this->esiData->fetchCorporation(-1);
         $this->assertNull($corp);
     }
 
@@ -314,7 +314,7 @@ class EsiDataTest extends TestCase
     {
         $this->client->setResponse(new Response(500));
 
-        $corp = $this->cs->fetchCorporation(123);
+        $corp = $this->esiData->fetchCorporation(123);
         $this->assertNull($corp);
         $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
@@ -329,7 +329,7 @@ class EsiDataTest extends TestCase
             "alliance_id": null
         }'));
 
-        $corp = $this->cs->fetchCorporation(234, false);
+        $corp = $this->esiData->fetchCorporation(234, false);
         $this->assertSame(234, $corp->getId());
         $this->assertSame('The Corp.', $corp->getName());
         $this->assertSame('-HAT-', $corp->getTicker());
@@ -356,7 +356,7 @@ class EsiDataTest extends TestCase
             }')
         );
 
-        $corp = $this->cs->fetchCorporation(234);
+        $corp = $this->esiData->fetchCorporation(234);
         $this->assertSame(234, $corp->getId());
         $this->assertSame('The Corp.', $corp->getName());
         $this->assertSame('-HAT-', $corp->getTicker());
@@ -388,7 +388,7 @@ class EsiDataTest extends TestCase
             "alliance_id": null
         }'));
 
-        $corpResult = $this->cs->fetchCorporation(200);
+        $corpResult = $this->esiData->fetchCorporation(200);
         $this->assertNull($corpResult->getAlliance());
         $this->em->clear();
 
@@ -401,7 +401,7 @@ class EsiDataTest extends TestCase
 
     public function testFetchAllianceInvalidId()
     {
-        $alli = $this->cs->fetchAlliance(-1);
+        $alli = $this->esiData->fetchAlliance(-1);
         $this->assertNull($alli);
     }
 
@@ -409,7 +409,7 @@ class EsiDataTest extends TestCase
     {
         $this->client->setResponse(new Response(500));
 
-        $alli = $this->cs->fetchAlliance(123);
+        $alli = $this->esiData->fetchAlliance(123);
         $this->assertNull($alli);
         $this->assertStringStartsWith('[500] Error ', $this->log->getHandler()->getRecords()[0]['message']);
     }
@@ -423,7 +423,7 @@ class EsiDataTest extends TestCase
             "ticker": "-A-"
         }'));
 
-        $alli = $this->cs->fetchAlliance(345, false);
+        $alli = $this->esiData->fetchAlliance(345, false);
         $this->assertSame(345, $alli->getId());
         $this->assertSame('The A.', $alli->getName());
         $this->assertSame('-A-', $alli->getTicker());
@@ -442,7 +442,7 @@ class EsiDataTest extends TestCase
             "ticker": "-A-"
         }'));
 
-        $alli = $this->cs->fetchAlliance(345);
+        $alli = $this->esiData->fetchAlliance(345);
         $this->assertSame(345, $alli->getId());
         $this->assertSame('The A.', $alli->getName());
         $this->assertSame('-A-', $alli->getTicker());
@@ -465,7 +465,7 @@ class EsiDataTest extends TestCase
             "ticker": "-A-"
         }'));
 
-        $alli = $this->cs->fetchAlliance(345, true);
+        $alli = $this->esiData->fetchAlliance(345, true);
         $this->assertNull($alli);
     }
 
@@ -481,7 +481,7 @@ class EsiDataTest extends TestCase
             "category": "inventory_type"
         }]'));
 
-        $names = $this->cs->fetchUniverseNames([123, 124]);
+        $names = $this->esiData->fetchUniverseNames([123, 124]);
 
         $this->assertSame(2, count($names));
         $this->assertSame(123, $names[0]->getId());
@@ -502,7 +502,7 @@ class EsiDataTest extends TestCase
             "solar_system_id": 30000142
         }'));
 
-        $location = $this->cs->fetchStructure(1023100200300, 'access-token');
+        $location = $this->esiData->fetchStructure(1023100200300, 'access-token');
 
         $this->assertSame(1023100200300, $location->getId());
         $this->assertSame('V-3YG7 VI - The Capital', $location->getName());
@@ -526,7 +526,7 @@ class EsiDataTest extends TestCase
 
     public function testFetchCorporationMembersNoToken()
     {
-        $this->assertSame([], $this->cs->fetchCorporationMembers(100200300, ''));
+        $this->assertSame([], $this->esiData->fetchCorporationMembers(100200300, ''));
     }
 
     public function testFetchCorporationMembersEsiError()
@@ -536,21 +536,58 @@ class EsiDataTest extends TestCase
         });
         $this->client->setResponse(new Response(200, [], '[100, 200]'));
 
-        $this->assertSame([], $this->cs->fetchCorporationMembers(100200300, 'access-token'));
+        $this->assertSame([], $this->esiData->fetchCorporationMembers(100200300, 'access-token'));
+    }
+
+    public function testVerifyRoles_NoRoleToVerify()
+    {
+        $this->assertTrue($this->esiData->verifyRoles([], 100, 'access-token'));
+    }
+
+    public function testVerifyRoles_Exception()
+    {
+        $this->client->setResponse(new Response(200, [], '{"roles": ["Auditor", "Role-X"]}'));
+        $this->assertFalse($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
+        $this->assertStringStartsWith(
+            "Invalid value for 'roles'",
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testVerifyRoles_CharacterNotFound()
+    {
+        $this->client->setResponse(new Response(404, [], ''));
+        $this->assertFalse($this->esiData->verifyRoles(['Accountant'], 100, 'access-token'));
+    }
+
+    public function testVerifyRoles_NotDirector()
+    {
+        $this->client->setResponse(new Response(200, [], '{"roles": ["Auditor", "Accountant"]}'));
+        $this->assertFalse($this->esiData->verifyRoles(['Accountant', 'Director'], 100, 'access-token'));
+    }
+
+    public function testVerifyRoles_OK()
+    {
+        $this->client->setResponse(
+            new Response(200, [], '{"roles": ["Director", "Auditor", "Accountant"]}'),
+            new Response(200, [], '{"roles": ["Director", "Auditor", "Accountant"]}')
+        );
+        $this->assertTrue($this->esiData->verifyRoles(['Accountant', 'Director'], 100, 'access-token'));
+        $this->assertTrue($this->esiData->verifyRoles(['Auditor'], 100, 'access-token'));
     }
 
     public function testFetchCorporationMembers()
     {
         $this->client->setResponse(new Response(200, [], '[100, 200]'));
 
-        $this->assertSame([100, 200], $this->cs->fetchCorporationMembers(100200300, 'access-token'));
+        $this->assertSame([100, 200], $this->esiData->fetchCorporationMembers(100200300, 'access-token'));
     }
 
     public function testGetCorporationEntity()
     {
         $this->testHelper->emptyDb();
 
-        $result = $this->cs->getCorporationEntity(100);
+        $result = $this->esiData->getCorporationEntity(100);
         $this->assertSame(100, $result->getId());
 
         $this->em->clear();

@@ -14,6 +14,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Psr15\CSRFToken;
 use Neucore\Service\Config;
+use Neucore\Service\EsiData;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ObjectManager;
@@ -155,7 +156,8 @@ class AuthController extends BaseController
         ServerRequestInterface $request,
         UserAuth $userAuth,
         EveMail $mailService,
-        MemberTracking $memberTrackingService
+        MemberTracking $memberTrackingService,
+        EsiData $esiData
     ): ResponseInterface {
         $redirectUrl = $this->session->get(self::SESS_AUTH_REDIRECT, '/');
         $this->session->delete(self::SESS_AUTH_REDIRECT);
@@ -205,7 +207,13 @@ class AuthController extends BaseController
             case EveLogin::ID_DIRECTOR:
                 $successMessage = 'Character with director roles added.';
                 $errorMessage = 'Error adding character with director roles.';
-                $success = $memberTrackingService->verifyAndStoreDirector($eveAuth);
+                if ($esiData->verifyRoles(
+                    [EveLogin::ROLE_DIRECTOR],
+                    $eveAuth->getCharacterId(),
+                    $eveAuth->getToken()->getToken()
+                )) {
+                    $success = $memberTrackingService->fetchCharacterAndStoreDirector($eveAuth);
+                }
                 break;
             default:
                 $successMessage = 'ESI token added.';

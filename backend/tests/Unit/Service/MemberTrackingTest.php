@@ -91,38 +91,26 @@ class MemberTrackingTest extends TestCase
         );
     }
 
-    public function testVerifyAndStoreDirectorCharError()
+    public function testFetchCharacterAndStoreDirector_CharError()
     {
-        $this->client->setResponse(new Response(404)); // getCharactersCharacterId
+        $this->client->setResponse(new Response(404));// getCharactersCharacterId
 
         $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));
-        $this->assertFalse($this->memberTracking->verifyAndStoreDirector($eveAuth));
+        $this->assertFalse($this->memberTracking->fetchCharacterAndStoreDirector($eveAuth));
     }
 
-    public function testVerifyAndStoreDirectorRoleError()
+    public function testFetchCharacterAndStoreDirector_CorpError()
     {
         $this->client->setResponse(
             new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
-            new Response(200, [], '{"roles": []}') // getCharactersCharacterIdRoles
-        );
-
-        $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));
-        $this->assertFalse($this->memberTracking->verifyAndStoreDirector($eveAuth));
-    }
-
-    public function testVerifyAndStoreDirectorCorpError()
-    {
-        $this->client->setResponse(
-            new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
-            new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
             new Response(404) // getCorporation
         );
 
         $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']));
-        $this->assertFalse($this->memberTracking->verifyAndStoreDirector($eveAuth));
+        $this->assertFalse($this->memberTracking->fetchCharacterAndStoreDirector($eveAuth));
     }
 
-    public function testVerifyAndStoreDirectorSuccess()
+    public function testFetchCharacterAndStoreDirector_Success()
     {
         $char = new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1);
         $token = new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1);
@@ -131,12 +119,11 @@ class MemberTrackingTest extends TestCase
         $this->om->flush();
         $this->client->setResponse(
             new Response(200, [], '{"corporation_id": 10}'), // getCharactersCharacterId
-            new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
             new Response(200, [], '{"name": "ten", "ticker": "-10-"}') // getCorporation
         );
 
         $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']), ['s1']);
-        $result = $this->memberTracking->verifyAndStoreDirector($eveAuth);
+        $result = $this->memberTracking->fetchCharacterAndStoreDirector($eveAuth);
 
         $this->assertTrue($result);
         $this->assertSame('ten', $this->repositoryFactory->getCorporationRepository()->find(10)->getName());
@@ -157,7 +144,7 @@ class MemberTrackingTest extends TestCase
         ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 2)->getValue(), true));
     }
 
-    public function testVerifyAndStoreDirectorUpdateExistingDirector()
+    public function testFetchCharacterAndStoreDirector_UpdateExistingDirector()
     {
         $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue((string) \json_encode([
             'character_id' => 100,
@@ -172,12 +159,11 @@ class MemberTrackingTest extends TestCase
         $this->om->flush();
         $this->client->setResponse(
             new Response(200, [], '{"corporation_id": 11}'), // getCharactersCharacterId
-            new Response(200, [], '{"roles": ["Director"]}'), // getCharactersCharacterIdRoles
             new Response(200, [], '{"name": "not ten", "ticker": "-11-"}') // getCorporation
         );
 
         $eveAuth = new EveAuthentication(100, 'cname', 'coh', new AccessToken(['access_token' => 'at']), ['s1', 's2']);
-        $result = $this->memberTracking->verifyAndStoreDirector($eveAuth);
+        $result = $this->memberTracking->fetchCharacterAndStoreDirector($eveAuth);
 
         $this->assertTrue($result);
         $sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
@@ -282,24 +268,6 @@ class MemberTrackingTest extends TestCase
             'character_id' => 100,
         ]);
         $this->assertInstanceOf(AccessTokenInterface::class, $result);
-    }
-
-    public function testVerifyDirectorRoleCharacterNotFound()
-    {
-        $this->client->setResponse(new Response(404, [], ''));
-        $this->assertFalse($this->memberTracking->verifyDirectorRole(100, 'access-token'));
-    }
-
-    public function testVerifyDirectorRoleNotDirector()
-    {
-        $this->client->setResponse(new Response(200, [], '{"roles": []}'));
-        $this->assertFalse($this->memberTracking->verifyDirectorRole(100, 'access-token'));
-    }
-
-    public function testVerifyDirectorRoleOK()
-    {
-        $this->client->setResponse(new Response(200, [], '{"roles": ["Director"]}'));
-        $this->assertTrue($this->memberTracking->verifyDirectorRole(100, 'access-token'));
     }
 
     public function testFetchDataCorpNotFound()

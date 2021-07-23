@@ -18,7 +18,6 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
@@ -81,22 +80,17 @@ class MemberTracking
     /**
      * @return bool True if character has director roles and could be stored
      */
-    public function verifyAndStoreDirector(EveAuthentication $eveAuth): bool
+    public function fetchCharacterAndStoreDirector(EveAuthentication $eveAuth): bool
     {
         // get corporation ID from character
         try {
             $char = $this->esiApiFactory->getCharacterApi()
-                ->getCharactersCharacterId((int) $eveAuth->getCharacterId(), $this->datasource);
+                ->getCharactersCharacterId($eveAuth->getCharacterId(), $this->datasource);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return false;
         }
         if (!$char instanceof GetCharactersCharacterIdOk) {
-            return false;
-        }
-
-        // check if character has required roles
-        if (! $this->verifyDirectorRole((int) $eveAuth->getCharacterId(), $eveAuth->getToken()->getToken())) {
             return false;
         }
 
@@ -215,26 +209,6 @@ class MemberTracking
         ]);
     }
 
-    public function verifyDirectorRole(int $characterId, string $accessToken): bool
-    {
-        $characterApi = $this->esiApiFactory->getCharacterApi($accessToken);
-        try {
-            $roles = $characterApi->getCharactersCharacterIdRoles($characterId, $this->datasource);
-        } catch (\Exception $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            return false;
-        }
-
-        if (! $roles instanceof GetCharactersCharacterIdRolesOk ||
-            ! is_array($roles->getRoles()) ||
-            ! in_array('Director', $roles->getRoles())
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * @return GetCorporationsCorporationIdMembertracking200Ok[]|null Null if ESI request failed
      */
@@ -255,6 +229,7 @@ class MemberTracking
     {
         $charNames = [];
         foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $charNames[(int) $name->getId()] = $name->getName();
         }
         return $charNames;
@@ -411,6 +386,7 @@ class MemberTracking
                 break;
             }
 
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $id = (int) $data->getCharacterId();
             $corpMember = $this->repositoryFactory->getCorporationMemberRepository()->find($id);
             $character = $this->repositoryFactory->getCharacterRepository()->find($id);
@@ -481,7 +457,7 @@ class MemberTracking
         $directorNumber = $maxNumber + 1;
 
         // store new director
-        $authCharacterId = (int) $eveAuth->getCharacterId();
+        $authCharacterId = $eveAuth->getCharacterId();
         $directorToken = null;
         if (isset($existingDirectors[$authCharacterId])) {
             $directorNumber = $existingDirectors[$authCharacterId]['number'];

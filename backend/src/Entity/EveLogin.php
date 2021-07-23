@@ -66,6 +66,8 @@ class EveLogin implements \JsonSerializable
     public const SCOPE_STRUCTURES = 'esi-universe.read_structures.v1';
     public const SCOPE_MEMBERSHIP = 'esi-corporations.read_corporation_membership.v1';
 
+    public const ROLE_DIRECTOR = 'Director';
+
     /**
      * @OA\Property(
      *     maxLength=20,

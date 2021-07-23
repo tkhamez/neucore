@@ -613,11 +613,11 @@ class AuthControllerTest extends WebTestCase
             // for JWT key set
             new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'),
 
+            // for getCharactersCharacterIdRoles
+            new Response(200, [], '{"roles": ["'.EveLogin::ROLE_DIRECTOR.'"]}'),
+
             // for getCharactersCharacterId
             new Response(200, [], '{"corporation_id": 123}'),
-
-            // for getCharactersCharacterIdRoles
-            new Response(200, [], '{"roles": ["Director"]}'),
 
             // for getCorporation
             new Response(200, [], '{"name": "c123", "ticker": "-c-"}')

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Service\Config;
+use Neucore\Service\EsiData;
 use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ServiceRegistration;
@@ -209,7 +211,7 @@ class SettingsController extends BaseController
             $result = $eveMail->invalidTokenMaySend($charId, true);
         }
         if ($result === '') {
-            $result = $eveMail->invalidTokenSend((int) $charId);
+            $result = $eveMail->invalidTokenSend($charId);
         }
 
         return $this->withJson($result);
@@ -277,7 +279,7 @@ class SettingsController extends BaseController
      *     )
      * )
      */
-    public function validateDirector(string $name, MemberTracking $memberTracking): ResponseInterface
+    public function validateDirector(string $name, MemberTracking $memberTracking, EsiData $esiData): ResponseInterface
     {
         $success = $memberTracking->updateDirector($name);
         if (! $success) {
@@ -292,7 +294,8 @@ class SettingsController extends BaseController
             $accessToken = $memberTracking->refreshDirectorToken($tokenData);
         }
         if ($accessToken !== null) {
-            $valid = $memberTracking->verifyDirectorRole(
+            $valid = $esiData->verifyRoles(
+                [EveLogin::ROLE_DIRECTOR],
                 (int) $accessToken->getResourceOwnerId(),
                 $accessToken->getToken()
             );
