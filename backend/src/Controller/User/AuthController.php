@@ -180,7 +180,9 @@ class AuthController extends BaseController
         }
 
         // handle login
-        switch ($this->getLoginIdFromState($state)) {
+        $loginId = $this->getLoginIdFromState($state);
+        $success = false;
+        switch ($loginId) {
             case EveLogin::ID_DEFAULT:
             case EveLogin::ID_MANAGED:
                 $success = $userAuth->authenticate($eveAuth);
@@ -196,8 +198,6 @@ class AuthController extends BaseController
             case EveLogin::ID_MAIL:
                 if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
                     $success = $mailService->storeMailCharacter($eveAuth);
-                } else {
-                    $success = false;
                 }
                 $successMessage = 'Mail character authenticated.';
                 $errorMessage = 'Failed to store character.';
@@ -208,10 +208,22 @@ class AuthController extends BaseController
                 $success = $memberTrackingService->verifyAndStoreDirector($eveAuth);
                 break;
             default:
-                # TODO in-game roles (scopes were already checked above) and add token to character
-                $success = false;
-                $successMessage = 'TODO';
-                $errorMessage = 'TODO';
+                $successMessage = 'ESI token added.';
+                $errorMessage = '';
+                $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($loginId);
+                if (!$eveLogin) {
+                    $errorMessage = 'Invalid login link.';
+                } else {
+                    # TODO check in-game roles (scopes were already checked above)
+                    if ($userAuth->addToken($eveLogin, $eveAuth)) {
+                        $success = true;
+                    } else {
+                        // Not logged in or
+                        // character not found on this account or
+                        // failed to save ESI token
+                        $errorMessage = 'Error adding the ESI token to a character on the logged in account.';
+                    }
+                }
         }
 
         $this->session->set(self::SESS_AUTH_RESULT, [
@@ -345,7 +357,15 @@ class AuthController extends BaseController
             return [EveLogin::SCOPE_ROLES, EveLogin::SCOPE_TRACKING, EveLogin::SCOPE_STRUCTURES];
         }
 
-        $scopes = $this->config['eve']['scopes'];
+        $scopes = '';
+        if (in_array($loginId, [EveLogin::ID_DEFAULT, EveLogin::ID_ALT])) {
+            $scopes = $this->config['eve']['scopes'];
+        } else {
+            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($loginId);
+            if ($eveLogin) {
+                $scopes = $eveLogin->getEsiScopes();
+            }
+        }
         if (trim($scopes) !== '') {
             $scopes = explode(' ', $scopes);
         } else {

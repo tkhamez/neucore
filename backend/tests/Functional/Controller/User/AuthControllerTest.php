@@ -9,6 +9,7 @@ use Neucore\Controller\User\AuthController;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
+use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\SessionData;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -53,8 +54,7 @@ class AuthControllerTest extends WebTestCase
     {
         // add EveLogin
         $loginId = 'custom1';
-        $eveLogin = new EveLogin();
-        $eveLogin->setId($loginId);
+        $eveLogin = (new EveLogin())->setId($loginId);
         $this->helper->getObjectManager()->persist($eveLogin);
         $this->helper->getObjectManager()->flush();
 
@@ -183,14 +183,160 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
-    public function testCallback_CustomLogin()
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_CustomLogin_MissingEveLogin()
     {
-        # TODO
+        // add EveLogin
+        $charId = 123; // the ID used in Helper::generateToken
+        $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
+        $this->loginUser($charId);
+
+        list($token, $keySet) = Helper::generateToken([]);
+        $state = AuthController::getStatePrefix('custom1') . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], // for getAccessToken()
+                '{"access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"}'),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client]
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['success' => false, 'message' => 'Invalid login link.'], $_SESSION['auth_result']);
     }
 
-    public function testCallback_CustomLoginRoleError()
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_CustomLogin_NotLoggedIn()
     {
-        # TODO
+        // add EveLogin
+        $loginId = 'custom1';
+        $charId = 123; // the ID used in Helper::generateToken
+        $this->helper->getEm()->persist((new EveLogin())->setId($loginId)->setEsiScopes('scope1'));
+        $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
+        // not logged in
+
+        list($token, $keySet) = Helper::generateToken(['scope1']);
+        $state = AuthController::getStatePrefix($loginId) . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], // for getAccessToken()
+                '{"access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"}'),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client]
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            ['success' => false, 'message' => 'Error adding the ESI token to a character on the logged in account.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_CustomLogin_CharacterNotOnAccount()
+    {
+        // add EveLogin
+        $loginId = 'custom1';
+        $charId = 456; // Not the ID used in Helper::generateToken
+        $this->helper->getEm()->persist((new EveLogin())->setId($loginId)->setEsiScopes('scope1'));
+        $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
+        $this->loginUser($charId);
+
+        list($token, $keySet) = Helper::generateToken(['scope1']);
+        $state = AuthController::getStatePrefix($loginId) . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], // for getAccessToken()
+                '{"access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"}'),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client]
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            ['success' => false, 'message' => 'Error adding the ESI token to a character on the logged in account.'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_CustomLogin_Success()
+    {
+        // add EveLogin
+        $loginId = 'custom1';
+        $charId = 123; // the ID used in Helper::generateToken
+        $this->helper->getEm()->persist((new EveLogin())->setId($loginId)->setEsiScopes('scope1'));
+        $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
+        $this->loginUser($charId);
+
+        list($token, $keySet) = Helper::generateToken(['scope1']);
+        $state = AuthController::getStatePrefix($loginId) . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], // for getAccessToken()
+                '{"access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"}'),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client]
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['success' => true, 'message' => 'ESI token added.'], $_SESSION['auth_result']);
+
+        $esiTokens = (new RepositoryFactory($this->helper->getObjectManager()))->getEsiTokenRepository()->findBy([]);
+        $this->assertSame(1, count($esiTokens));
+        $this->assertSame($charId, $esiTokens[0]->getCharacter()->getId());
+        $this->assertSame($loginId, $esiTokens[0]->getEveLogin()->getId());
+        $this->assertSame('gEy...fM0', $esiTokens[0]->getRefreshToken());
+        $this->assertSame($token, $esiTokens[0]->getAccessToken());
+        $this->assertLessThanOrEqual(time() + 1200, $esiTokens[0]->getExpires());
     }
 
     /**
@@ -257,7 +403,7 @@ class AuthControllerTest extends WebTestCase
             null,
             null,
             [ClientInterface::class => $this->client],
-            ['NEUCORE_EVE_SCOPES=read-this and-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
+            ['NEUCORE_EVE_SCOPES=read-this   and-this', 'NEUCORE_EVE_DATASOURCE=tranquility']
         );
         $this->assertSame(302, $response->getStatusCode());
 

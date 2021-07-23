@@ -6,6 +6,8 @@ namespace Neucore\Service;
 
 use Eve\Sso\EveAuthentication;
 use Neucore\Entity\Character;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Exception\RuntimeException;
@@ -35,6 +37,11 @@ class UserAuth implements RoleProviderInterface
     private $accountService;
 
     /**
+     * @var ObjectManager
+     */
+    private $objectManager;
+
+    /**
      * @var RepositoryFactory
      */
     private $repositoryFactory;
@@ -52,11 +59,13 @@ class UserAuth implements RoleProviderInterface
     public function __construct(
         SessionData $session,
         Account $charService,
+        ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log
     ) {
         $this->session = $session;
         $this->accountService = $charService;
+        $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->log = $log;
     }
@@ -181,6 +190,37 @@ class UserAuth implements RoleProviderInterface
         }
 
         return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth, true);
+    }
+
+    /**
+     * @param EveLogin $eveLogin An instance attached to the entity manager.
+     * @return bool False if user is not logged in, character was not found on the account or if save failed.
+     */
+    public function addToken(EveLogin $eveLogin, EveAuthentication $eveAuth): bool
+    {
+        $user = $this->getUser();
+        $character = $user ? $user->getPlayer()->getCharacter($eveAuth->getCharacterId()) : null;
+        if (!$user || !$character) {
+            return false;
+        }
+
+        $esiToken = $this->repositoryFactory->getEsiTokenRepository()->findOneBy([
+            'character' => $character,
+            'eveLogin' => $eveLogin
+        ]);
+        if (!$esiToken) {
+            $esiToken = new EsiToken();
+            $esiToken->setEveLogin($eveLogin);
+            $esiToken->setCharacter($character);
+            $this->objectManager->persist($esiToken);
+        }
+
+        $token = $eveAuth->getToken();
+        $esiToken->setAccessToken($token->getToken());
+        $esiToken->setRefreshToken((string)$token->getRefreshToken());
+        $esiToken->setExpires((int)$token->getExpires());
+
+        return $this->objectManager->flush();
     }
 
     /**

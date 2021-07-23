@@ -359,6 +359,16 @@ class Player implements \JsonSerializable
         return false;
     }
 
+    public function getCharacter(int $characterId): ?Character
+    {
+        foreach ($this->getCharacters() as $c) {
+            if ($c->getId() === $characterId) {
+                return $c;
+            }
+        }
+        return null;
+    }
+
     /**
      * @param int[] $alliances
      * @param int[] $corporations

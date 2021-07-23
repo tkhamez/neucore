@@ -13,6 +13,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\EsiTokenRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
@@ -49,6 +50,11 @@ class UserAuthTest extends TestCase
     private $removedCharRepo;
 
     /**
+     * @var EsiTokenRepository
+     */
+    private $esiTokenRepo;
+
+    /**
      * @var Client
      */
     private $client;
@@ -68,6 +74,7 @@ class UserAuthTest extends TestCase
         $this->service = $this->helper->getUserAuthService($this->log, $this->client);
 
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
+        $this->esiTokenRepo = $repoFactory->getEsiTokenRepository();
     }
 
     public function testGetRolesNoAuth()
@@ -326,5 +333,64 @@ class UserAuthTest extends TestCase
         $token = new AccessToken(['access_token' => 'tk']);
         $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));
         $this->assertFalse($result);
+    }
+
+    public function testAddToken_NotLoggedIn()
+    {
+        $result = $this->service->addToken(
+            new EveLogin(),
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'tk']))
+        );
+        $this->assertFalse($result);
+    }
+
+    public function testAddToken_CharacterNotFound()
+    {
+        $_SESSION['character_id'] = 100;
+        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+
+        $result = $this->service->addToken(
+            new EveLogin(),
+            new EveAuthentication(200, 'Main1', 'hash', new AccessToken(['access_token' => 'tk']))
+        );
+
+        $this->assertFalse($result);
+        $this->assertSame(0, count($this->log->getHandler()->getRecords())); //did not fail for another reason
+    }
+
+    public function testAddToken_SaveFailed()
+    {
+        $_SESSION['character_id'] = 100;
+        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+
+        $result = $this->service->addToken(
+            new EveLogin(),
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a-second-token']))
+        );
+
+        $this->assertFalse($result);
+        $this->assertSame(1, count($this->log->getHandler()->getRecords()));
+        $this->assertStringStartsWith(
+            'A new entity was found', // EveLogin was not persisted
+            $this->log->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testAddToken_Success()
+    {
+        $eveLogin = (new EveLogin())->setId('custom1');
+        $this->helper->getEm()->persist($eveLogin);
+        $_SESSION['character_id'] = 100;
+        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+
+        $result = $this->service->addToken(
+            $eveLogin,
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a-second-token']))
+        );
+
+        $this->assertTrue($result);
+        $tokens = $this->esiTokenRepo->findBy([]);
+        $this->assertSame(2, count($tokens));
+        $this->assertSame('a-second-token', $tokens[1]->getAccessToken());
     }
 }

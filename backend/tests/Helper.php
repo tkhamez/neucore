@@ -156,8 +156,9 @@ class Helper
     public function getUserAuthService(Logger $logger, Client $client): UserAuth
     {
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
+        $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $accountService = $this->getAccountService($logger, $client);
-        return new UserAuth(new SessionData(), $accountService, $repoFactory, $logger);
+        return new UserAuth(new SessionData(), $accountService, $objectManager, $repoFactory, $logger);
     }
 
     public function getDbName(): string
@@ -278,8 +279,13 @@ class Helper
         return $groupEntities;
     }
 
-    public function addCharacterMain(string $name, int $charId, array $roles = [], array $groups = []): Character
-    {
+    public function addCharacterMain(
+        string $name,
+        int $charId,
+        array $roles = [],
+        array $groups = [],
+        bool $withEsiToken = true
+    ): Character {
         $om = $this->getObjectManager();
 
         $player = new Player();
@@ -296,7 +302,9 @@ class Helper
         $char->setPlayer($player);
         $player->addCharacter($char);
 
-        $this->createOrUpdateEsiToken($char);
+        if ($withEsiToken) {
+            $this->createOrUpdateEsiToken($char);
+        }
 
         foreach ($this->addRoles($roles) as $role) {
             $player->addRole($role);

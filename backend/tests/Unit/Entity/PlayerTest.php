@@ -190,19 +190,26 @@ class PlayerTest extends TestCase
 
     public function testHasCharacter()
     {
-        $char1 = new Character();
-        $char2 = new Character();
-
-        $rp = new \ReflectionProperty(Character::class, 'id');
-        $rp->setAccessible(true);
-        $rp->setValue($char1, 1);
-        $rp->setValue($char2, 2);
+        $char1 = (new Character())->setId(1);
+        $char2 = (new Character())->setId(2);
 
         $player = new Player();
         $player->addCharacter($char1);
 
         $this->assertTrue($player->hasCharacter($char1->getId()));
         $this->assertFalse($player->hasCharacter($char2->getId()));
+    }
+
+    public function testGetCharacter()
+    {
+        $char1 = (new Character())->setId(1);
+        $char2 = (new Character())->setId(2);
+
+        $player = new Player();
+        $player->addCharacter($char1);
+
+        $this->assertSame($char1, $player->getCharacter($char1->getId()));
+        $this->assertNull($player->getCharacter($char2->getId()));
     }
 
     public function testHasCharacterInAllianceOrCorporation()
