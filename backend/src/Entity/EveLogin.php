@@ -124,7 +124,7 @@ class EveLogin implements \JsonSerializable
             'name' => $this->name,
             'description' => $this->description,
             'esiScopes' => $this->esiScopes,
-            'eveRoles' => $this->eveRoles,
+            'eveRoles' => $this->getEveRoles(),
         ];
     }
 
@@ -177,15 +177,24 @@ class EveLogin implements \JsonSerializable
         return $this->esiScopes;
     }
 
-    public function setEveRoles(string $eveRoles): self
+    /**
+     * @param string[] $eveRoles
+     */
+    public function setEveRoles(array $eveRoles): self
     {
-        $this->eveRoles = $eveRoles;
+        $this->eveRoles = implode(',', $eveRoles);
         return $this;
     }
 
-    public function getEveRoles(): string
+    /**
+     * @return string[]
+     */
+    public function getEveRoles(): array
     {
-        return $this->eveRoles;
+        if (empty($this->eveRoles)) {
+            return [];
+        }
+        return explode(',', $this->eveRoles);
     }
 
     public function addEsiToken(EsiToken $token): self

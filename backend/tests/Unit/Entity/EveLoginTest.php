@@ -18,7 +18,7 @@ class EveLoginTest extends TestCase
         $login->setName('the name');
         $login->setDescription('desc');
         $login->setEsiScopes('scope1 scope2');
-        $login->setEveRoles('role1,role2');
+        $login->setEveRoles(['role1', 'role2']);
         $login->addEsiToken(new EsiToken());
 
         $this->assertSame([
@@ -26,7 +26,7 @@ class EveLoginTest extends TestCase
             'name' => 'the name',
             'description' => 'desc',
             'esiScopes' => 'scope1 scope2',
-            'eveRoles' => 'role1,role2',
+            'eveRoles' => ['role1', 'role2'],
         ], json_decode((string) json_encode($login), true));
     }
 
@@ -57,7 +57,7 @@ class EveLoginTest extends TestCase
     public function testSetGetEveRoles()
     {
         $login = new EveLogin();
-        $this->assertSame('role1,role2', $login->setEveRoles('role1,role2')->getEveRoles());
+        $this->assertSame(['role1', 'role2'], $login->setEveRoles(['role1', 'role2'])->getEveRoles());
     }
 
     /** @noinspection DuplicatedCode */

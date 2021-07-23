@@ -221,8 +221,13 @@ class AuthController extends BaseController
                 $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($loginId);
                 if (!$eveLogin) {
                     $errorMessage = 'Invalid login link.';
+                } elseif (!$esiData->verifyRoles(
+                    $eveLogin->getEveRoles(),
+                    $eveAuth->getCharacterId(),
+                    $eveAuth->getToken()->getToken()
+                )) {
+                    $errorMessage = 'Character does not have required role(s).';
                 } else {
-                    # TODO check in-game roles (scopes were already checked above)
                     if ($userAuth->addToken($eveLogin, $eveAuth)) {
                         $success = true;
                     } else {

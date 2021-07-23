@@ -295,15 +295,14 @@ class AuthControllerTest extends WebTestCase
         );
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testCallback_CustomLogin_Success()
+    public function testCallback_CustomLogin_RoleError()
     {
         // add EveLogin
         $loginId = 'custom1';
         $charId = 123; // the ID used in Helper::generateToken
-        $this->helper->getEm()->persist((new EveLogin())->setId($loginId)->setEsiScopes('scope1'));
+        $this->helper->getEm()->persist(
+            (new EveLogin())->setId($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor'])
+        );
         $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
         $this->loginUser($charId);
 
@@ -316,7 +315,50 @@ class AuthControllerTest extends WebTestCase
                 '{"access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
                 "refresh_token": "gEy...fM0"}'),
-            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}') // for JWT key set
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"roles": []}') // getCharactersCharacterIdRoles
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/login-callback?state='.$state,
+            null,
+            null,
+            [ClientInterface::class => $this->client]
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            ['success' => false, 'message' => 'Character does not have required role(s).'],
+            $_SESSION['auth_result']
+        );
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCallback_CustomLogin_Success()
+    {
+        // add EveLogin
+        $loginId = 'custom1';
+        $charId = 123; // the ID used in Helper::generateToken
+        $this->helper->getEm()->persist(
+            (new EveLogin())->setId($loginId)->setEsiScopes('scope1')->setEveRoles(['Auditor'])
+        );
+        $this->helper->addCharacterMain('Test User', $charId, [Role::USER], [], false); // without ESI token
+        $this->loginUser($charId);
+
+        list($token, $keySet) = Helper::generateToken(['scope1']);
+        $state = AuthController::getStatePrefix($loginId) . self::$state;
+        $_SESSION['auth_state'] = $state;
+
+        $this->client->setResponse(
+            new Response(200, [], // for getAccessToken()
+                '{"access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "gEy...fM0"}'),
+            new Response(200, [], '{"keys": ' . \json_encode($keySet) . '}'), // for JWT key set
+            new Response(200, [], '{"roles": ["Auditor"]}') // getCharactersCharacterIdRoles
         );
 
         $response = $this->runApp(
