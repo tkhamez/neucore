@@ -17,8 +17,8 @@ class BodyParams implements MiddlewareInterface
 
         if (strpos($contentType, 'application/json') === 0) {
             $body = $request->getBody()->__toString();
-            $contents = json_decode($body, true);
-            if (is_array($contents)) {
+            $contents = json_decode($body);
+            if (is_array($contents) || is_object($contents)) {
                 $request = $request->withParsedBody($contents);
             }
         } elseif (strpos($contentType, 'application/x-www-form-urlencoded') === 0) {
