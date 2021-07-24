@@ -100,8 +100,10 @@ return [
     '/api/user/player/{id}/set-status/'            => [Role::USER_MANAGER],
     '/api/user/player'                             => [Role::USER_ADMIN],
 
-    '/api/user/settings/system/list'  => [Role::ANONYMOUS, Role::USER],
-    '/api/user/settings/system'       => [Role::SETTINGS],
+    '/api/user/settings/system/list'        => [Role::ANONYMOUS, Role::USER],
+    '/api/user/settings/system'             => [Role::SETTINGS],
+    '/api/user/settings/eve-login/list'     => [Role::ANONYMOUS, Role::USER],
+    '/api/user/settings/eve-login'          => [Role::SETTINGS],
 
     '/api/user/watchlist/list-available-manage'           => [Role::WATCHLIST_MANAGER],
     '/api/user/watchlist/list-available'                  => [Role::WATCHLIST],

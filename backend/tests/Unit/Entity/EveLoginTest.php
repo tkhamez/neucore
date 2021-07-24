@@ -11,6 +11,48 @@ use PHPUnit\Framework\TestCase;
 
 class EveLoginTest extends TestCase
 {
+    public function testIsValidObject()
+    {
+        $this->assertFalse(EveLogin::isValidObject(new \stdClass()));
+        $this->assertFalse(EveLogin::isValidObject((object)['id' => 'custom1']));
+        $this->assertFalse(EveLogin::isValidObject((object)[
+            'id' => 'custom1',
+            'name' => '',
+            'description' => '',
+            'esiScopes' => '',
+            'eveRoles' => '',
+        ]));
+        $this->assertFalse(EveLogin::isValidObject((object)[
+            'id' => 'custom1',
+            'name' => null,
+            'description' => '',
+            'esiScopes' => '',
+            'eveRoles' => [],
+        ]));
+
+        $this->assertTrue(EveLogin::isValidObject((object)[
+            'id' => 'custom1',
+            'name' => '',
+            'description' => '',
+            'esiScopes' => '',
+            'eveRoles' => [],
+        ]));
+        $this->assertTrue(EveLogin::isValidObject((object)[
+            'id' => 'custom1',
+            'name' => '',
+            'description' => '',
+            'esiScopes' => '',
+            'eveRoles' => [''],
+        ]));
+        $this->assertTrue(EveLogin::isValidObject((object)[
+            'id' => 'custom1',
+            'name' => 'n',
+            'description' => 'd',
+            'esiScopes' => 's',
+            'eveRoles' => ['r'],
+        ]));
+    }
+
     public function testJsonSerialize()
     {
         $login = new EveLogin();

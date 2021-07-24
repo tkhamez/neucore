@@ -49,6 +49,7 @@ Auth API
 
 Settings API
 - List all settings. `GET /user/settings/system/list`
+- List all logins. `GET /user/settings/eve-login/list`
 
 #### user
 
@@ -78,6 +79,7 @@ Player API
 
 Settings API
 - List all settings. `GET /user/settings/system/list`
+- List all logins. `GET /user/settings/eve-login/list`
 
 Service API
 - Returns service. `GET /user/service/{id}/get`
@@ -272,6 +274,9 @@ Settings API
 - Sends a 'invalid ESI token' test mail to the logged-in character. `POST /user/settings/system/send-invalid-token-mail`
 - Sends a 'missing character' test mail to the logged-in character. `POST /user/settings/system/send-missing-character-mail`
 - Validates ESI token from a director and updates name and corporation. `PUT /user/settings/system/validate-director/{name}`
+- Update login. `PUT /user/settings/eve-login`
+- Create a new login. `POST /user/settings/eve-login/{id}`
+- Delete login. `DELETE /user/settings/eve-login/{id}`
 
 #### tracking
 

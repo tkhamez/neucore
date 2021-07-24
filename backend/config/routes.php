@@ -18,6 +18,7 @@ use Neucore\Controller\User\PlayerController;
 use Neucore\Controller\User\ServiceAdminController;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Controller\User\SettingsController;
+use Neucore\Controller\User\SettingsEveLoginController;
 use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
 
@@ -153,6 +154,10 @@ return [
     '/api/user/settings/system/send-invalid-token-mail'     => ['POST', [SettingsController::class, 'sendInvalidTokenMail']],
     '/api/user/settings/system/send-missing-character-mail' => ['POST', [SettingsController::class, 'sendMissingCharacterMail']],
     '/api/user/settings/system/validate-director/{name}'    => ['PUT',  [SettingsController::class, 'validateDirector']],
+    '/api/user/settings/eve-login/list'     => ['GET'    => [SettingsEveLoginController::class, 'list']],
+    '/api/user/settings/eve-login'          => ['PUT'    => [SettingsEveLoginController::class, 'update']],
+    '/api/user/settings/eve-login/{id}'     => ['POST'   => [SettingsEveLoginController::class, 'create'],
+                                                'DELETE' => [SettingsEveLoginController::class, 'delete']],
 
     '/api/user/watchlist/create'                                => ['POST',   [WatchlistController::class, 'create']],
     '/api/user/watchlist/{id}/rename'                           => ['PUT',    [WatchlistController::class, 'rename']],

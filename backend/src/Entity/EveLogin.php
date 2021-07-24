@@ -19,34 +19,39 @@ use OpenApi\Annotations as OA;
 class EveLogin implements \JsonSerializable
 {
     /**
+     * Prefix of all internal login IDs.
+     */
+    public const INTERNAL_LOGINS_PREFIX = 'core.';
+
+    /**
      * Default login.
      */
-    public const ID_DEFAULT = 'core.default';
+    public const ID_DEFAULT = self::INTERNAL_LOGINS_PREFIX . 'default';
 
     /**
      * Alternative character login.
      */
-    public const ID_ALT = 'core.alt';
+    public const ID_ALT = self::INTERNAL_LOGINS_PREFIX . 'alt';
 
     /**
      * Login for "managed" accounts.
      */
-    public const ID_MANAGED = 'core.managed';
+    public const ID_MANAGED = self::INTERNAL_LOGINS_PREFIX . 'managed';
 
     /**
      * Login for "managed" alt characters.
      */
-    public const ID_MANAGED_ALT = 'core.managed-alt';
+    public const ID_MANAGED_ALT = self::INTERNAL_LOGINS_PREFIX . 'managed-alt';
 
     /**
      * Login of the character that is used to send mails.
      */
-    public const ID_MAIL = 'core.mail';
+    public const ID_MAIL = self::INTERNAL_LOGINS_PREFIX . 'mail';
 
     /**
      * Login of the character with director roles for the member tracking functionality.
      */
-    public const ID_DIRECTOR = 'core.director';
+    public const ID_DIRECTOR = self::INTERNAL_LOGINS_PREFIX . 'director';
 
     /**
      * All internal login IDs.
@@ -104,7 +109,11 @@ class EveLogin implements \JsonSerializable
     private $esiScopes = '';
 
     /**
-     * @OA\Property(maxLength=1024)
+     * @OA\Property(
+     *     type="array",
+     *     @OA\Items(type="string"),
+     *     description="Maximum length of all roles separated by comma: 1024."
+     * )
      * @ORM\Column(type="string", name="eve_roles", length=1024)
      * @var string
      */
@@ -116,6 +125,16 @@ class EveLogin implements \JsonSerializable
      * @var Collection
      */
     private $esiTokens;
+
+    public static function isValidObject(\stdClass $data): bool
+    {
+        return
+            property_exists($data, 'id')          && is_string($data->id) &&
+            property_exists($data, 'name')        && is_string($data->name) &&
+            property_exists($data, 'description') && is_string($data->description) &&
+            property_exists($data, 'esiScopes')   && is_string($data->esiScopes) &&
+            property_exists($data, 'eveRoles')    && is_array($data->eveRoles);
+    }
 
     public function jsonSerialize(): array
     {
