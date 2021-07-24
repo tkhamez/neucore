@@ -28,7 +28,6 @@ services:
       dockerfile: Dockerfile-node12
       #dockerfile: Dockerfile-node14
       #dockerfile: Dockerfile-node16
-    depends_on: [neucore_http]
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080
