@@ -1,7 +1,4 @@
 <?php
-/** @noinspection PhpUnhandledExceptionInspection */
-/** @noinspection PhpFullyQualifiedNameUsageInspection */
-/** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 
 declare(strict_types=1);
 
@@ -33,7 +30,7 @@ include __DIR__ . '/vendor/autoload.php';
 //
 
 $coreHttpScheme = 'http';
-$coreDomain = 'core.localhost';
+$coreDomain = 'neucore_http'; // works with docker-compose
 $coreAppToken = base64_encode('1:secret');
 $coreCharId = '96061222'; // Character with token in Neucore
 
@@ -48,12 +45,12 @@ $configuration = new \Swagger\Client\Eve\Configuration();
 $configuration->setHost($coreHttpScheme .'://'. $coreDomain . '/api/app/v1/esi');
 $configuration->setAccessToken($coreAppToken);
 
-$apiInstance = new Swagger\Client\Eve\Api\AssetsApi(null, $configuration);
+$assetsApiInstance = new Swagger\Client\Eve\Api\AssetsApi(null, $configuration);
 $itemId = 0; // used in example 2
 try {
     // The first parameter (character_id) is the EVE character ID for ESI,
     // the second (datasource) the EVE character ID for Neucore for the ESI token.
-    $result = $apiInstance->getCharactersCharacterIdAssets($coreCharId, $coreCharId);
+    $result = $assetsApiInstance->getCharactersCharacterIdAssets($coreCharId, $coreCharId);
 
     $itemId = $result[0]->getItemId();
     echo 'item id: ', $itemId, PHP_EOL;
@@ -72,9 +69,9 @@ $config = Brave\NeucoreApi\Configuration::getDefaultConfiguration();
 $config->setHost($coreHttpScheme .'://'. $coreDomain . '/api');
 $config->setAccessToken($coreAppToken);
 
-$apiInstance = new Brave\NeucoreApi\Api\ApplicationApi(null, $config);
+$esiApiInstance = new Brave\NeucoreApi\Api\ApplicationESIApi(null, $config);
 try {
-    $result = $apiInstance->esiPostV1WithHttpInfo(
+    $result = $esiApiInstance->esiPostV1WithHttpInfo(
         '/latest/characters/'.$coreCharId.'/assets/names/',
         $coreCharId,
         json_encode([$itemId])
@@ -97,7 +94,7 @@ echo PHP_EOL;
 // Example 2a: Public ESI routes are not passed through:
 
 try {
-    $apiInstance->esiV1('/lastest/alliances/', $coreCharId);
+    $esiApiInstance->esiV1('/lastest/alliances/', $coreCharId);
 } catch (\Brave\NeucoreApi\ApiException $e) {
     echo $e->getMessage(), PHP_EOL;
 }
@@ -136,7 +133,7 @@ try {
     echo 'Headers: ';
     print_r($result->headers);
     echo 'item id: ', reset($result)->item_id, PHP_EOL;
-} catch (\Exception $e) {
-    echo (string) $e, PHP_EOL;
+} catch (Exception $e) {
+    echo ((string) $e), PHP_EOL;
 }
 echo PHP_EOL;
