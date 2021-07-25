@@ -55,7 +55,7 @@ class Cors implements MiddlewareInterface
             $response = $response
                 ->withHeader('Access-Control-Allow-Origin', $origin)
                 #->withHeader('Access-Control-Allow-Headers', 'Authorization')
-                ->withHeader('Access-Control-Allow-Headers', CSRFToken::CSRF_HEADER_NAME)
+                ->withHeader('Access-Control-Allow-Headers', [CSRFToken::CSRF_HEADER_NAME, 'Content-Type'])
                 ->withHeader('Access-Control-Allow-Credentials', 'true')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
             ;
