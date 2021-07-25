@@ -17,8 +17,9 @@ Modal windows to create, delete and edit entities
                     <div class="form-group">
                         <label for="entityEditCreateName">{{ type }} name</label>
                         <input class="form-control" v-model="newName" type="text" id="entityEditCreateName">
-                        <small v-if="type === 'Group'" class="form-text text-muted">
-                            {{ groupNameHelp }}
+                        <small v-if="['Group', 'EveLogin'].indexOf(type) !== -1" class="form-text text-muted">
+                            {{ messages.itemNameAllowedCharsHelp }}<br>
+                            Maximum length: {{ type === 'EveLogin' ? '20' : '64' }}
                         </small>
                     </div>
                 </div>
@@ -41,7 +42,7 @@ Modal windows to create, delete and edit entities
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to <strong>permanently</strong> delete this {{ type }}?</p>
-                    <p class="text-warning">{{ item.name }}</p>
+                    <p class="text-warning">{{ item.name ? item.name : item.id }}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" v-on:click="functionDelete(item.id)">
@@ -67,7 +68,7 @@ Modal windows to create, delete and edit entities
                         <label for="entityEditEditName">{{ type }} name</label>
                         <input v-model="item.name" class="form-control" type="text" id="entityEditEditName">
                         <small v-if="type === 'Group'" class="form-text text-muted">
-                            {{ groupNameHelp }}
+                            {{ messages.itemNameAllowedCharsHelp }}
                         </small>
                     </div>
                     <p v-cloak v-if="type === 'Group'" class="text-warning">
@@ -123,7 +124,6 @@ export default {
             newName: '',
             groupVisibility: '',
             groupAutoAccept: '',
-            groupNameHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
             item: null,
         }
     },

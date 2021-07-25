@@ -30,7 +30,8 @@ export default {
             ],
 
             messages: {
-                errorMissingRequiredGroup: 'This player is not a member of one of the required groups.'
+                errorMissingRequiredGroup: 'This player is not a member of one of the required groups.',
+                itemNameAllowedCharsHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
             }
         }
     },

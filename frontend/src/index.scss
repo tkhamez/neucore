@@ -119,6 +119,10 @@ body.neucore {
         background-color: #444;
     }
 }
+.darkly .form-control[disabled] {
+    color: #adadad;
+    background-color: #565656;
+}
 .solar,
 .superhero {
     // colors from .solar
