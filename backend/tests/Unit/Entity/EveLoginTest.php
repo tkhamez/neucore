@@ -93,7 +93,10 @@ class EveLoginTest extends TestCase
     public function testSetGetEsiScopes()
     {
         $login = new EveLogin();
-        $this->assertSame('scope1 scope2', $login->setEsiScopes('scope1 scope2')->getEsiScopes());
+        $this->assertSame('', $login->setEsiScopes('')->getEsiScopes());
+        $this->assertSame('scope1', $login->setEsiScopes('  scope1  ')->getEsiScopes());
+        $this->assertSame('scope1 scope2', $login->setEsiScopes("\tscope1\t\t scope2\t")->getEsiScopes());
+        $this->assertSame('scope1 scope2', $login->setEsiScopes("\n scope1\t\n \nscope2 \t\n")->getEsiScopes());
     }
 
     public function testSetGetEveRoles()

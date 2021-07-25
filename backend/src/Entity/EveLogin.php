@@ -185,9 +185,13 @@ class EveLogin implements \JsonSerializable
         return $this->description;
     }
 
+    /**
+     * Validate (only whitespaces, not values) and set scopes.
+     */
     public function setEsiScopes(string $esiScopes): self
     {
-        $this->esiScopes = $esiScopes;
+        // remove extra white space characters
+        $this->esiScopes = implode(' ', preg_split('/\s+/', $esiScopes, -1, PREG_SPLIT_NO_EMPTY));
         return $this;
     }
 
