@@ -215,7 +215,7 @@ class AutoAllowlist extends Command
                     $accountsData[$playerId][$corporationId] = [self::KEY_IDS => [], self::KEY_TOKEN => null];
                 }
                 $accountsData[$playerId][$corporationId][self::KEY_IDS][] = $character->getId();
-                $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+                $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
                 if (
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] === null &&
                     $esiToken !== null &&

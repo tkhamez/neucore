@@ -16,37 +16,37 @@ class EveLoginTest extends TestCase
         $this->assertFalse(EveLogin::isValidObject(new \stdClass()));
         $this->assertFalse(EveLogin::isValidObject((object)['id' => 'custom1']));
         $this->assertFalse(EveLogin::isValidObject((object)[
-            'id' => 'custom1',
-            'name' => '',
+            'id' => 0,
+            'name' => 'custom1',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => '',
         ]));
         $this->assertFalse(EveLogin::isValidObject((object)[
-            'id' => 'custom1',
-            'name' => null,
+            'id' => null,
+            'name' => '',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => [],
         ]));
 
         $this->assertTrue(EveLogin::isValidObject((object)[
-            'id' => 'custom1',
-            'name' => '',
+            'id' => 1,
+            'name' => 'custom1',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => [],
         ]));
         $this->assertTrue(EveLogin::isValidObject((object)[
-            'id' => 'custom1',
+            'id' => 0,
             'name' => '',
             'description' => '',
             'esiScopes' => '',
             'eveRoles' => [''],
         ]));
         $this->assertTrue(EveLogin::isValidObject((object)[
-            'id' => 'custom1',
-            'name' => 'n',
+            'id' => 1,
+            'name' => 'custom1',
             'description' => 'd',
             'esiScopes' => 's',
             'eveRoles' => ['r'],
@@ -56,7 +56,7 @@ class EveLoginTest extends TestCase
     public function testJsonSerialize()
     {
         $login = new EveLogin();
-        $login->setId('the-id');
+        $login->setId(10);
         $login->setName('the name');
         $login->setDescription('desc');
         $login->setEsiScopes('scope1 scope2');
@@ -64,7 +64,7 @@ class EveLoginTest extends TestCase
         $login->addEsiToken(new EsiToken());
 
         $this->assertSame([
-            'id' => 'the-id',
+            'id' => 10,
             'name' => 'the name',
             'description' => 'desc',
             'esiScopes' => 'scope1 scope2',
@@ -75,7 +75,7 @@ class EveLoginTest extends TestCase
     public function testSetGetId()
     {
         $login = new EveLogin();
-        $this->assertSame('the-id', $login->setId('the-id')->getId());
+        $this->assertSame(10, $login->setId(10)->getId());
     }
 
     public function testSetGetName()

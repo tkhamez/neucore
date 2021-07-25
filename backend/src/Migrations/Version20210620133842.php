@@ -1,5 +1,5 @@
 <?php
-
+/** @noinspection SqlResolve */
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -25,8 +25,12 @@ final class Version20210620133842 extends AbstractMigration
         // Create new tables.
         $this->addSql(
             'CREATE TABLE esi_tokens (
-                id INT AUTO_INCREMENT NOT NULL, character_id BIGINT NOT NULL, eve_login_id VARCHAR(20) NOT NULL, 
-                refresh_token TEXT NOT NULL, access_token TEXT NOT NULL, expires INT NOT NULL, 
+                id INT AUTO_INCREMENT NOT NULL, 
+                character_id BIGINT NOT NULL, 
+                eve_login_id INT NOT NULL,
+                refresh_token TEXT NOT NULL, 
+                access_token TEXT NOT NULL, 
+                expires INT NOT NULL, 
                 INDEX IDX_1CCBCAB11136BE75 (character_id), 
                 INDEX IDX_1CCBCAB17E063B60 (eve_login_id), 
                 UNIQUE INDEX character_eve_login_idx (character_id, eve_login_id), 
@@ -35,8 +39,12 @@ final class Version20210620133842 extends AbstractMigration
         );
         $this->addSql(
             'CREATE TABLE eve_logins (
-                id VARCHAR(20) NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(1024) NOT NULL, 
-                esi_scopes VARCHAR(8192) NOT NULL, eve_roles VARCHAR(1024) NOT NULL, 
+                id INT AUTO_INCREMENT NOT NULL, 
+                name VARCHAR(20) NOT NULL, 
+                description VARCHAR(1024) NOT NULL, 
+                esi_scopes VARCHAR(8192) NOT NULL, 
+                eve_roles VARCHAR(1024) NOT NULL, 
+                UNIQUE INDEX UNIQ_ADBA5C9B5E237E06 (name), 
                 PRIMARY KEY(id)
             ) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB'
         );
@@ -50,14 +58,15 @@ final class Version20210620133842 extends AbstractMigration
         );
 
         // Add default EveLogin and copy character tokens
-        $loginId = EveLogin::ID_DEFAULT;
+        $loginId = 1;
+        $loginName = EveLogin::NAME_DEFAULT;
         $this->addSql(
             "INSERT INTO eve_logins (id, name, description, esi_scopes, eve_roles) 
-            VALUES ('$loginId', 'Default Login', '', '', '')"
+            VALUES ($loginId, '$loginName', '', '', '')"
         );
         $this->addSql(
             "INSERT INTO esi_tokens (character_id, eve_login_id, refresh_token, access_token, expires) 
-            SELECT id, '$loginId', refresh_token, access_token, expires
+            SELECT id, $loginId, refresh_token, access_token, expires
             FROM characters WHERE refresh_token IS NOT NULL AND refresh_token <> ''"
         );
 
@@ -76,18 +85,18 @@ final class Version20210620133842 extends AbstractMigration
         );
 
         // Copy data
-        $loginId = EveLogin::ID_DEFAULT;
+        $loginId = 1;
         $this->addSql(
             "UPDATE characters SET access_token = 
-            (SELECT access_token FROM esi_tokens WHERE character_id = characters.id AND eve_login_id = '$loginId');"
+            (SELECT access_token FROM esi_tokens WHERE character_id = characters.id AND eve_login_id = $loginId);"
         );
         $this->addSql(
             "UPDATE characters SET expires = 
-            (SELECT expires FROM esi_tokens WHERE character_id = characters.id AND eve_login_id = '$loginId');"
+            (SELECT expires FROM esi_tokens WHERE character_id = characters.id AND eve_login_id = $loginId);"
         );
         $this->addSql(
             "UPDATE characters SET refresh_token = 
-            (SELECT refresh_token FROM esi_tokens WHERE character_id = characters.id AND eve_login_id = '$loginId');"
+            (SELECT refresh_token FROM esi_tokens WHERE character_id = characters.id AND eve_login_id = $loginId);"
         );
 
         // Delete tables

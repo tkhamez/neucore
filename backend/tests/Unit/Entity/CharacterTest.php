@@ -126,13 +126,13 @@ class CharacterTest extends TestCase
     public function testGetEsiToken()
     {
         $char = new Character();
-        $token1 = (new EsiToken())->setEveLogin((new EveLogin())->setId(EveLogin::ID_DEFAULT));
-        $token2 = (new EsiToken())->setEveLogin((new EveLogin())->setId('another-login'));
+        $token1 = (new EsiToken())->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT));
+        $token2 = (new EsiToken())->setEveLogin((new EveLogin())->setName('another-login'));
         $char->addEsiToken($token1);
         $char->addEsiToken($token2);
 
         $this->assertNull($char->getEsiToken('does-not-exist'));
-        $this->assertSame(EveLogin::ID_DEFAULT, $char->getEsiToken(EveLogin::ID_DEFAULT)->getEveLogin()->getId());
+        $this->assertSame(EveLogin::NAME_DEFAULT, $char->getEsiToken(EveLogin::NAME_DEFAULT)->getEveLogin()->getName());
     }
 
     public function testSetGetValidToken()

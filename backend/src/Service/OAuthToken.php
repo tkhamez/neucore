@@ -170,7 +170,7 @@ class OAuthToken
      */
     public function getToken(Character $character): string
     {
-        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
         if ($esiToken === null) {
             return '';
         }

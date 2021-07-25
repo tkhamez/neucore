@@ -174,9 +174,10 @@ class Account
         $char->setCharacterOwnerHash($eveAuth->getCharacterOwnerHash());
 
         // Get and update, create or remove default ESI token.
-        $esiToken = $char->getEsiToken(EveLogin::ID_DEFAULT);
+        $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
         if ($esiToken === null) {
-            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find(EveLogin::ID_DEFAULT);
+            $eveLogin = $this->repositoryFactory->getEveLoginRepository()
+                ->findOneBy(['name' => EveLogin::NAME_DEFAULT]);
             if ($eveLogin === null) {
                 $this->log->error(
                     'Account::updateAndStoreCharacterWithPlayer: Could not find default EveLogin entity.'
@@ -279,7 +280,7 @@ class Account
             return self::CHECK_CHAR_DELETED;
         }
 
-        $esiToken = $char->getEsiToken(EveLogin::ID_DEFAULT);
+        $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
 
         // does the char have a token?
         if ($esiToken === null || $esiToken->getRefreshToken() === null) {

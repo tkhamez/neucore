@@ -23,7 +23,7 @@ use Neucore\Controller\User\StatisticsController;
 use Neucore\Controller\User\WatchlistController;
 
 return [
-    '/login/{id}'        => ['GET', [AuthController::class, 'login']],
+    '/login/{name}'      => ['GET', [AuthController::class, 'login']],
     '/login-callback'    => ['GET', [AuthController::class, 'callback']],
 
     '/api/user/auth/callback'   => ['GET',  [AuthController::class, 'callback']], // only for backwards compatibility
@@ -156,8 +156,8 @@ return [
     '/api/user/settings/system/validate-director/{name}'    => ['PUT',  [SettingsController::class, 'validateDirector']],
     '/api/user/settings/eve-login/list'     => ['GET'    => [SettingsEveLoginController::class, 'list']],
     '/api/user/settings/eve-login'          => ['PUT'    => [SettingsEveLoginController::class, 'update']],
-    '/api/user/settings/eve-login/{id}'     => ['POST'   => [SettingsEveLoginController::class, 'create'],
-                                                'DELETE' => [SettingsEveLoginController::class, 'delete']],
+    '/api/user/settings/eve-login/{name}'   => ['POST'   => [SettingsEveLoginController::class, 'create']],
+    '/api/user/settings/eve-login/{id}'     => ['DELETE'   => [SettingsEveLoginController::class, 'delete']],
 
     '/api/user/watchlist/create'                                => ['POST',   [WatchlistController::class, 'create']],
     '/api/user/watchlist/{id}/rename'                           => ['PUT',    [WatchlistController::class, 'rename']],

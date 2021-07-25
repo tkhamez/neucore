@@ -49,7 +49,7 @@ class RevokeToken extends Command
             return 0;
         }
 
-        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
         if ($esiToken === null) {
             $output->writeln('Character has no default token.');
             return 0;

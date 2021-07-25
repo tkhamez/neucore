@@ -232,9 +232,9 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testUpdateAndStoreCharacterWithPlayer()
+    public function testUpdateAndStoreCharacterWithPlayer_Success()
     {
-        $eveLogin = (new EveLogin)->setId(EveLogin::ID_DEFAULT);
+        $eveLogin = (new EveLogin)->setName(EveLogin::NAME_DEFAULT);
         $this->om->persist($eveLogin);
         $this->om->flush();
 
@@ -266,7 +266,7 @@ class AccountTest extends TestCase
         $this->om->clear();
 
         $character = $this->charRepo->find(12);
-        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
 
         $this->assertSame('char name changed', $character->getName());
         $this->assertTrue($character->getMain());
@@ -287,7 +287,7 @@ class AccountTest extends TestCase
 
     public function testUpdateAndStoreCharacterWithPlayer_NoToken()
     {
-        $eveLogin = (new EveLogin)->setId(EveLogin::ID_DEFAULT);
+        $eveLogin = (new EveLogin)->setName(EveLogin::NAME_DEFAULT);
         $this->om->persist($eveLogin);
         $this->om->flush();
 
@@ -312,14 +312,14 @@ class AccountTest extends TestCase
 
         $character = $this->charRepo->find(12);
         $this->assertSame('c-name', $character->getName()); // the name is *not* updated here
-        $this->assertNull($character->getEsiToken(EveLogin::ID_DEFAULT));
+        $this->assertNull($character->getEsiToken(EveLogin::NAME_DEFAULT));
         $this->assertNull($character->getValidToken());
         $this->assertSame(0, count($character->getCharacterNameChanges()));
     }
 
     public function testUpdateAndStoreCharacterWithPlayer_NoToken_RemovesExistingToken()
     {
-        $eveLogin = (new EveLogin)->setId(EveLogin::ID_DEFAULT);
+        $eveLogin = (new EveLogin)->setName(EveLogin::NAME_DEFAULT);
         $defaultEsiToken = (new EsiToken())->setEveLogin($eveLogin)
             ->setRefreshToken('rt')->setAccessToken('at')->setExpires(123);
         $corp = (new Corporation())->setId(1);
@@ -346,7 +346,7 @@ class AccountTest extends TestCase
         $this->om->clear();
 
         $character = $this->charRepo->find(12);
-        $this->assertNull($character->getEsiToken(EveLogin::ID_DEFAULT));
+        $this->assertNull($character->getEsiToken(EveLogin::NAME_DEFAULT));
         $this->assertNull($character->getValidToken());
     }
 
@@ -418,7 +418,7 @@ class AccountTest extends TestCase
 
         $this->om->clear();
         $charLoaded = $this->charRepo->find(31);
-        $this->assertNull($charLoaded->getEsiToken(EveLogin::ID_DEFAULT));
+        $this->assertNull($charLoaded->getEsiToken(EveLogin::NAME_DEFAULT));
         $this->assertFalse($charLoaded->getValidToken());
     }
 
@@ -460,9 +460,9 @@ class AccountTest extends TestCase
         $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character->getValidToken());
-        $this->assertSame('at', $character->getEsiToken(EveLogin::ID_DEFAULT)->getAccessToken()); // not updated
-        $this->assertSame('rt', $character->getEsiToken(EveLogin::ID_DEFAULT)->getRefreshToken()); // not updated
-        $this->assertSame($expires, $character->getEsiToken(EveLogin::ID_DEFAULT)->getExpires()); // not updated
+        $this->assertSame('at', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()); // not updated
+        $this->assertSame('rt', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken()); // not updated
+        $this->assertSame($expires, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires()); // not updated
     }
 
     /**
@@ -492,9 +492,9 @@ class AccountTest extends TestCase
         $character = $this->charRepo->find(31);
         $this->assertTrue($character->getValidToken());
         $this->assertSame('n31', $character->getName());
-        $this->assertSame($token, $character->getEsiToken(EveLogin::ID_DEFAULT)->getAccessToken()); // updated
-        $this->assertGreaterThan($expires, $character->getEsiToken(EveLogin::ID_DEFAULT)->getExpires()); // updated
-        $this->assertSame('gEy...fM0', $character->getEsiToken(EveLogin::ID_DEFAULT)->getRefreshToken()); // updated
+        $this->assertSame($token, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()); // updated
+        $this->assertGreaterThan($expires, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires()); // updated
+        $this->assertSame('gEy...fM0', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken()); // updated
         $characterNameChange = $this->characterNameChangeRepo->findBy([]);
         $this->assertSame(1, count($characterNameChange));
         $this->assertSame('Old Name', $characterNameChange[0]->getOldName());
@@ -1078,7 +1078,7 @@ class AccountTest extends TestCase
 
     private function setUpCharacterWithToken(int $expires, ?bool $valid = null, string $hash = 'hash'): Character
     {
-        $eveLogin = (new EveLogin())->setId(EveLogin::ID_DEFAULT);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
         $char = (new Character())->setId(31)->setName('n31')->setValidToken($valid)->setCharacterOwnerHash($hash)

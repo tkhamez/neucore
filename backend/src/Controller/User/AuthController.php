@@ -116,19 +116,19 @@ class AuthController extends BaseController
     /**
      * Eve logins, redirects to EVE SSO login page or fails with a 404 or 403 status code.
      */
-    public function login(string $id): ResponseInterface
+    public function login(string $name): ResponseInterface
     {
         // validate login ID
-        $loginId = null;
-        if (in_array($id, EveLogin::INTERNAL_LOGINS)) {
-            $loginId = $id;
+        $loginName = null;
+        if (in_array($name, EveLogin::INTERNAL_LOGIN_NAMES)) {
+            $loginName = $name;
         } else {
-            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($id);
+            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
             if ($eveLogin) {
-                $loginId = $eveLogin->getId();
+                $loginName = $eveLogin->getName();
             }
         }
-        if (empty($loginId)) {
+        if (empty($loginName)) {
             $this->response->getBody()->write(
                 'Login not found.<br><br>' .
                 '<a href="/">Home</a>'
@@ -137,7 +137,7 @@ class AuthController extends BaseController
         }
 
         // check "allow managed login" settings
-        if (in_array($loginId, [EveLogin::ID_MANAGED, EveLogin::ID_MANAGED_ALT])) {
+        if (in_array($loginName, [EveLogin::NAME_MANAGED, EveLogin::NAME_MANAGED_ALT])) {
             $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()
                 ->findOneBy(['name' => SystemVariable::ALLOW_LOGIN_MANAGED]);
             if (!$allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
@@ -146,7 +146,7 @@ class AuthController extends BaseController
             }
         }
 
-        return $this->redirectToLoginUrl($loginId);
+        return $this->redirectToLoginUrl($loginName);
     }
 
     /**
@@ -182,29 +182,29 @@ class AuthController extends BaseController
         }
 
         // handle login
-        $loginId = $this->getLoginIdFromState($state);
+        $loginName = $this->getLoginNameFromState($state);
         $success = false;
-        switch ($loginId) {
-            case EveLogin::ID_DEFAULT:
-            case EveLogin::ID_MANAGED:
+        switch ($loginName) {
+            case EveLogin::NAME_DEFAULT:
+            case EveLogin::NAME_MANAGED:
                 $success = $userAuth->authenticate($eveAuth);
                 $successMessage = 'Login successful.';
                 $errorMessage = 'Failed to authenticate user.';
                 break;
-            case EveLogin::ID_ALT:
-            case EveLogin::ID_MANAGED_ALT:
+            case EveLogin::NAME_ALT:
+            case EveLogin::NAME_MANAGED_ALT:
                 $success = $userAuth->addAlt($eveAuth);
                 $successMessage = 'Character added to player account.';
                 $errorMessage = 'Failed to add alt to account.';
                 break;
-            case EveLogin::ID_MAIL:
+            case EveLogin::NAME_MAIL:
                 if (in_array(Role::SETTINGS, $userAuth->getRoles())) {
                     $success = $mailService->storeMailCharacter($eveAuth);
                 }
                 $successMessage = 'Mail character authenticated.';
                 $errorMessage = 'Failed to store character.';
                 break;
-            case EveLogin::ID_DIRECTOR:
+            case EveLogin::NAME_DIRECTOR:
                 $successMessage = 'Character with director roles added.';
                 $errorMessage = 'Error adding character with director roles.';
                 if ($esiData->verifyRoles(
@@ -218,7 +218,7 @@ class AuthController extends BaseController
             default:
                 $successMessage = 'ESI token added.';
                 $errorMessage = '';
-                $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($loginId);
+                $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $loginName]);
                 if (!$eveLogin) {
                     $errorMessage = 'Invalid login link.';
                 } elseif (!$esiData->verifyRoles(
@@ -329,13 +329,13 @@ class AuthController extends BaseController
 
     private function getRedirectUrl(string $loginId): string
     {
-        if (in_array($loginId, [EveLogin::ID_DEFAULT, EveLogin::ID_MANAGED, EveLogin::ID_MANAGED_ALT])) {
+        if (in_array($loginId, [EveLogin::NAME_DEFAULT, EveLogin::NAME_MANAGED, EveLogin::NAME_MANAGED_ALT])) {
             return '/#login';
-        } elseif ($loginId === EveLogin::ID_ALT) {
+        } elseif ($loginId === EveLogin::NAME_ALT) {
             return '/#login-alt';
-        } elseif ($loginId === EveLogin::ID_MAIL) {
+        } elseif ($loginId === EveLogin::NAME_MAIL) {
             return '/#login-mail';
-        } elseif ($loginId === EveLogin::ID_DIRECTOR) {
+        } elseif ($loginId === EveLogin::NAME_DIRECTOR) {
             return '/#login-director';
         }
         return '/#login-custom';
@@ -361,20 +361,20 @@ class AuthController extends BaseController
 
     private function getLoginScopes(string $state): array
     {
-        $loginId = $this->getLoginIdFromState($state);
-        if (in_array($loginId, [EveLogin::ID_MANAGED, EveLogin::ID_MANAGED_ALT])) {
+        $loginName = $this->getLoginNameFromState($state);
+        if (in_array($loginName, [EveLogin::NAME_MANAGED, EveLogin::NAME_MANAGED_ALT])) {
             return [];
-        } elseif ($loginId === EveLogin::ID_MAIL) {
+        } elseif ($loginName === EveLogin::NAME_MAIL) {
             return [EveLogin::SCOPE_MAIL];
-        } elseif ($loginId === EveLogin::ID_DIRECTOR) {
+        } elseif ($loginName === EveLogin::NAME_DIRECTOR) {
             return [EveLogin::SCOPE_ROLES, EveLogin::SCOPE_TRACKING, EveLogin::SCOPE_STRUCTURES];
         }
 
         $scopes = '';
-        if (in_array($loginId, [EveLogin::ID_DEFAULT, EveLogin::ID_ALT])) {
+        if (in_array($loginName, [EveLogin::NAME_DEFAULT, EveLogin::NAME_ALT])) {
             $scopes = $this->config['eve']['scopes'];
         } else {
-            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($loginId);
+            $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $loginName]);
             if ($eveLogin) {
                 $scopes = $eveLogin->getEsiScopes();
             }
@@ -388,7 +388,7 @@ class AuthController extends BaseController
         return $scopes;
     }
 
-    private function getLoginIdFromState(string $state): string
+    private function getLoginNameFromState(string $state): string
     {
         if (strpos($state, self::STATE_PREFIX_SEPARATOR) === false) {
             return '';

@@ -275,7 +275,7 @@ Settings API
 - Sends a 'missing character' test mail to the logged-in character. `POST /user/settings/system/send-missing-character-mail`
 - Validates ESI token from a director and updates name and corporation. `PUT /user/settings/system/validate-director/{name}`
 - Update login. `PUT /user/settings/eve-login`
-- Create a new login. `POST /user/settings/eve-login/{id}`
+- Create a new login. `POST /user/settings/eve-login/{name}`
 - Delete login. `DELETE /user/settings/eve-login/{id}`
 
 #### tracking

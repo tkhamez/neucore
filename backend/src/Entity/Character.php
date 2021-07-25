@@ -242,10 +242,10 @@ class Character implements \JsonSerializable
         return $this->esiTokens->toArray();
     }
 
-    public function getEsiToken(string $eveLoginId): ?EsiToken
+    public function getEsiToken(string $eveLoginName): ?EsiToken
     {
         foreach ($this->getEsiTokens() as $esiToken) {
-            if ($esiToken->getEveLogin() !== null && $esiToken->getEveLogin()->getId() === $eveLoginId) {
+            if ($esiToken->getEveLogin() !== null && $esiToken->getEveLogin()->getName() === $eveLoginName) {
                 return $esiToken;
             }
         }

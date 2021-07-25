@@ -353,11 +353,12 @@ class Helper
     ): EsiToken {
         $om = $this->getObjectManager();
 
-        $esiToken = $character->getEsiToken(EveLogin::ID_DEFAULT);
+        $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
         if ($esiToken === null) {
-            $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()->find(EveLogin::ID_DEFAULT);
+            $eveLogin = RepositoryFactory::getInstance($om)->getEveLoginRepository()
+                ->findOneBy(['name' => EveLogin::NAME_DEFAULT]);
             if ($eveLogin === null) {
-                $eveLogin = (new EveLogin())->setId(EveLogin::ID_DEFAULT);
+                $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
                 $om->persist($eveLogin);
             }
             $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('rt');

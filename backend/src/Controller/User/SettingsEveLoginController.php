@@ -14,21 +14,21 @@ class SettingsEveLoginController extends BaseController
     /**
      * @var string
      */
-    private $idPattern = "/^[-._a-zA-Z0-9]+$/";
+    private $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
     /**
      * @OA\Post(
-     *     path="/user/settings/eve-login/{id}",
+     *     path="/user/settings/eve-login/{name}",
      *     operationId="userSettingsEveLoginCreate",
      *     summary="Create a new login.",
      *     description="Needs role: settings",
      *     tags={"Settings"},
      *     security={{"Session"={}, "CSRF"={}}},
      *     @OA\Parameter(
-     *         name="id",
+     *         name="name",
      *         in="path",
      *         required=true,
-     *         description="The new login ID.",
+     *         description="The new login name.",
      *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
      *     ),
      *     @OA\Response(
@@ -38,7 +38,7 @@ class SettingsEveLoginController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="Login ID is invalid."
+     *         description="Login name is invalid."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -50,18 +50,18 @@ class SettingsEveLoginController extends BaseController
      *     )
      * )
      */
-    public function create(string $id): ResponseInterface
+    public function create(string $name): ResponseInterface
     {
-        if (!preg_match($this->idPattern, $id) || strpos($id, EveLogin::INTERNAL_LOGINS_PREFIX) === 0) {
+        if (!preg_match($this->namePattern, $name) || strpos($name, EveLogin::INTERNAL_LOGIN_PREFIX) === 0) {
             return $this->response->withStatus(400);
         }
 
-        $existingLogin = $this->repositoryFactory->getEveLoginRepository()->find($id);
+        $existingLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
         if ($existingLogin) {
             return $this->response->withStatus(409);
         }
 
-        $login = (new EveLogin())->setId($id);
+        $login = (new EveLogin())->setName($name);
         $this->objectManager->persist($login);
 
         return $this->flushAndReturn(201, $login);
@@ -88,7 +88,7 @@ class SettingsEveLoginController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="Protected login ID."
+     *         description="Protected login."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -102,13 +102,13 @@ class SettingsEveLoginController extends BaseController
      */
     public function delete(string $id): ResponseInterface
     {
-        if (in_array($id, EveLogin::INTERNAL_LOGINS)) {
-            return $this->response->withStatus(400);
-        }
-
-        $login = $this->repositoryFactory->getEveLoginRepository()->find($id);
+        $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$id);
         if (!$login) {
             return $this->response->withStatus(404);
+        }
+
+        if (in_array($login->getName(), EveLogin::INTERNAL_LOGIN_NAMES)) {
+            return $this->response->withStatus(400);
         }
 
         $this->objectManager->remove($login);
@@ -133,7 +133,7 @@ class SettingsEveLoginController extends BaseController
      */
     public function list(): ResponseInterface
     {
-        $logins = $this->repositoryFactory->getEveLoginRepository()->findBy([]);
+        $logins = $this->repositoryFactory->getEveLoginRepository()->findBy([], ['name' => 'ASC']);
         return $this->withJson($logins);
     }
 
@@ -157,7 +157,7 @@ class SettingsEveLoginController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="Invalid body."
+     *         description="Invalid body or invalid login name."
      *     ),
      *     @OA\Response(
      *         response="403",
@@ -172,13 +172,20 @@ class SettingsEveLoginController extends BaseController
     public function update(ServerRequestInterface $request): ResponseInterface
     {
         $data = $request->getParsedBody();
-        if (!$data instanceof \stdClass || !EveLogin::isValidObject($data) || empty($data->id)) {
+        if (!$data instanceof \stdClass || !EveLogin::isValidObject($data) || empty($data->id) || empty($data->name)) {
             return $this->response->withStatus(400);
         }
 
-        $login = $this->repositoryFactory->getEveLoginRepository()->find($data->id);
+        $login = $this->repositoryFactory->getEveLoginRepository()->find((int)$data->id);
         if (!$login) {
             return $this->response->withStatus(404);
+        }
+
+        if (
+            !preg_match($this->namePattern, $data->name) ||
+            strpos($data->name, EveLogin::INTERNAL_LOGIN_PREFIX) === 0
+        ) {
+            return $this->response->withStatus(400);
         }
 
         $login->setName($data->name);

@@ -200,7 +200,7 @@ class OAuthTokenTest extends TestCase
 
     public function testCreateAccessToken()
     {
-        $eveLogin = (new EveLogin())->setId(EveLogin::ID_DEFAULT);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())
             ->setEveLogin($eveLogin)
             ->setRefreshToken('refresh')
@@ -220,7 +220,7 @@ class OAuthTokenTest extends TestCase
      */
     public function testGetScopesFromToken()
     {
-        $esiToken = (new EsiToken())->setEveLogin((new EveLogin())->setId(EveLogin::ID_DEFAULT));
+        $esiToken = (new EsiToken())->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT));
 
         // invalid token error
         $this->assertSame([], $this->es->getScopesFromToken($esiToken));
@@ -293,13 +293,13 @@ class OAuthTokenTest extends TestCase
         $token = $this->es->getToken($char);
 
         $this->assertSame('new-token', $token);
-        $this->assertSame('new-token', $char->getEsiToken(EveLogin::ID_DEFAULT)->getAccessToken());
-        $this->assertGreaterThan(1519933900, $char->getEsiToken(EveLogin::ID_DEFAULT)->getExpires());
-        $this->assertSame('gEy...fM0', $char->getEsiToken(EveLogin::ID_DEFAULT)->getRefreshToken());
+        $this->assertSame('new-token', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
+        $this->assertGreaterThan(1519933900, $char->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
+        $this->assertSame('gEy...fM0', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
 
         $this->em->clear();
         $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
-        $this->assertSame('new-token', $charFromDB->getEsiToken(EveLogin::ID_DEFAULT)->getAccessToken());
+        $this->assertSame('new-token', $charFromDB->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
 
         $this->assertSame(0, count($this->log->getHandler()->getRecords()));
     }
@@ -308,7 +308,7 @@ class OAuthTokenTest extends TestCase
     {
         $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
 
-        $esiToken = (new EsiToken())->setEveLogin((new EveLogin())->setId(EveLogin::ID_DEFAULT))
+        $esiToken = (new EsiToken())->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
             ->setAccessToken('old-token')->setRefreshToken('r')
             ->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
         $char = (new Character())->addEsiToken($esiToken);
@@ -329,7 +329,7 @@ class OAuthTokenTest extends TestCase
 
     private function setUpCharacterWithToken(string $accessToken = 'old-token'): Character
     {
-        $eveLogin = (new EveLogin())->setId(EveLogin::ID_DEFAULT);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setAccessToken($accessToken)->setRefreshToken('r')
             ->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
         $char = (new Character())->setId(123)->setName('n')->setMain(true)->setCharacterOwnerHash('coh')

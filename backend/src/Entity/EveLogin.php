@@ -21,48 +21,48 @@ class EveLogin implements \JsonSerializable
     /**
      * Prefix of all internal login IDs.
      */
-    public const INTERNAL_LOGINS_PREFIX = 'core.';
+    public const INTERNAL_LOGIN_PREFIX = 'core.';
 
     /**
      * Default login.
      */
-    public const ID_DEFAULT = self::INTERNAL_LOGINS_PREFIX . 'default';
+    public const NAME_DEFAULT = self::INTERNAL_LOGIN_PREFIX . 'default';
 
     /**
      * Alternative character login.
      */
-    public const ID_ALT = self::INTERNAL_LOGINS_PREFIX . 'alt';
+    public const NAME_ALT = self::INTERNAL_LOGIN_PREFIX . 'alt';
 
     /**
      * Login for "managed" accounts.
      */
-    public const ID_MANAGED = self::INTERNAL_LOGINS_PREFIX . 'managed';
+    public const NAME_MANAGED = self::INTERNAL_LOGIN_PREFIX . 'managed';
 
     /**
      * Login for "managed" alt characters.
      */
-    public const ID_MANAGED_ALT = self::INTERNAL_LOGINS_PREFIX . 'managed-alt';
+    public const NAME_MANAGED_ALT = self::INTERNAL_LOGIN_PREFIX . 'managed-alt';
 
     /**
      * Login of the character that is used to send mails.
      */
-    public const ID_MAIL = self::INTERNAL_LOGINS_PREFIX . 'mail';
+    public const NAME_MAIL = self::INTERNAL_LOGIN_PREFIX . 'mail';
 
     /**
      * Login of the character with director roles for the member tracking functionality.
      */
-    public const ID_DIRECTOR = self::INTERNAL_LOGINS_PREFIX . 'director';
+    public const NAME_DIRECTOR = self::INTERNAL_LOGIN_PREFIX . 'director';
 
     /**
      * All internal login IDs.
      */
-    public const INTERNAL_LOGINS = [
-        self::ID_DEFAULT,
-        self::ID_ALT,
-        self::ID_MANAGED,
-        self::ID_MANAGED_ALT,
-        self::ID_MAIL,
-        self::ID_DIRECTOR,
+    public const INTERNAL_LOGIN_NAMES = [
+        self::NAME_DEFAULT,
+        self::NAME_ALT,
+        self::NAME_MANAGED,
+        self::NAME_MANAGED_ALT,
+        self::NAME_MAIL,
+        self::NAME_DIRECTOR,
     ];
 
     public const SCOPE_MAIL = 'esi-mail.send_mail.v1';
@@ -74,22 +74,22 @@ class EveLogin implements \JsonSerializable
     public const ROLE_DIRECTOR = 'Director';
 
     /**
-     * @OA\Property(
-     *     maxLength=20,
-     *     pattern="^[-._a-zA-Z0-9]+$",
-     *     nullable=false,
-     *     description="IDs starting with 'core.' are reserverd for internal use."
-     * )
+     * @OA\Property()
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\Column(type="string", length=20)
-     * @var string|null
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     * @var integer|null
      */
     private $id;
 
     /**
-     * @OA\Property(maxLength=255)
-     * @ORM\Column(type="string", length=255)
+     * @OA\Property(
+     *     maxLength=20,
+     *     pattern="^[-._a-zA-Z0-9]+$",
+     *     nullable=false,
+     *     description="Names starting with 'core.' are reserverd for internal use."
+     * )
+     * @ORM\Column(type="string", unique=true, length=20)
      * @var string
      */
     private $name = '';
@@ -129,7 +129,7 @@ class EveLogin implements \JsonSerializable
     public static function isValidObject(\stdClass $data): bool
     {
         return
-            property_exists($data, 'id')          && is_string($data->id) &&
+            property_exists($data, 'id')          && is_int($data->id) &&
             property_exists($data, 'name')        && is_string($data->name) &&
             property_exists($data, 'description') && is_string($data->description) &&
             property_exists($data, 'esiScopes')   && is_string($data->esiScopes) &&
@@ -152,15 +152,15 @@ class EveLogin implements \JsonSerializable
         $this->esiTokens = new ArrayCollection();
     }
 
-    public function setId(string $id): self
+    public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    public function getId(): string
+    public function getId(): int
     {
-        return (string) $this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self
