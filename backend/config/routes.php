@@ -157,7 +157,8 @@ return [
     '/api/user/settings/eve-login/list'     => ['GET'    => [SettingsEveLoginController::class, 'list']],
     '/api/user/settings/eve-login'          => ['PUT'    => [SettingsEveLoginController::class, 'update']],
     '/api/user/settings/eve-login/{name}'   => ['POST'   => [SettingsEveLoginController::class, 'create']],
-    '/api/user/settings/eve-login/{id}'     => ['DELETE'   => [SettingsEveLoginController::class, 'delete']],
+    '/api/user/settings/eve-login/{id}'     => ['DELETE' => [SettingsEveLoginController::class, 'delete']],
+    '/api/user/settings/eve-login/roles'    => ['GET'    => [SettingsEveLoginController::class, 'roles']],
 
     '/api/user/watchlist/create'                                => ['POST',   [WatchlistController::class, 'create']],
     '/api/user/watchlist/{id}/rename'                           => ['PUT',    [WatchlistController::class, 'rename']],

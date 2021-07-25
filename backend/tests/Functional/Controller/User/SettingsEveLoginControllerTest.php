@@ -231,6 +231,24 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    public function testRoles403()
+    {
+        $response = $this->runApp('GET', '/api/user/settings/eve-login/roles');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRoles200()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        $response = $this->runApp('GET', '/api/user/settings/eve-login/roles');
+        $this->assertEquals(200, $response->getStatusCode());
+        $body =  $this->parseJsonBody($response);
+        $this->assertIsArray($body);
+        $this->assertIsString($body[0]);
+    }
+
     private function setupDb(): void
     {
         $login = (new EveLogin())

@@ -8,6 +8,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\EveLogin;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 
 class SettingsEveLoginController extends BaseController
 {
@@ -194,5 +195,25 @@ class SettingsEveLoginController extends BaseController
         $login->setEveRoles($data->eveRoles);
 
         return $this->flushAndReturn(200, $login);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/user/settings/eve-login/roles",
+     *     operationId="userSettingsEveLoginRoles",
+     *     summary="List in-game roles (without HQ, base and other 'Hangar Access' and 'Container Access' roles).",
+     *     description="Needs role: settings",
+     *     tags={"Settings"},
+     *     security={{"Session"={}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of roles.",
+     *         @OA\JsonContent(type="array", @OA\Items(type="string"))
+     *     )
+     * )
+     */
+    public function roles(): ResponseInterface
+    {
+        return $this->withJson((new GetCharactersCharacterIdRolesOk())->getRolesAllowableValues());
     }
 }
