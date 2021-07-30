@@ -175,6 +175,11 @@ vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20
 vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --down
 ```
 
+Create/sync the database schema - Don't do this unless you know what you're doing and backup your database first!
+```
+vendor/bin/doctrine orm:schema-tool:update
+```
+
 Check reserved words:
 ```
 vendor/bin/doctrine dbal:reserved-words

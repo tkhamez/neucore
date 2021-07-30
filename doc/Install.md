@@ -32,20 +32,22 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.3.0, see `backend/composer.json` for necessary and `composer.json` in the root directory for suggested 
-  extensions (APCu highly recommended).
-* MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5).  
-  Unit tests can also be run using an SQLite in-memory database, but migration files work with MySQL/MariaDB only.
-* Apache or another HTTP Server.
+* PHP >=7.3.0, see `backend/composer.json` for necessary extensions and `composer.json` in the root directory for 
+  suggested extensions (APCu highly recommended).
+* MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases 
+  supported by [Doctrine ORM](https://www.doctrine-project.org/projects/orm.html) may work if you generate the 
+  database schema yourself (see [backend README](../backend/README.md)), but there are only migration files for 
+  MySQL/MariaDB. Unit tests can also be run using an SQLite in-memory database.
+* An HTTP Server with support for PHP.
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](./Vagrantfile) file and there 
-      is a [.htaccess](../web/.htaccess) file in the `web` directory.
+      is a [.htaccess](../web/.htaccess) file in the `web` directory for Apache.
     * A sample [Nginx configuration](docker-nginx.conf) file can be found in the `doc` directory.
 
 Additionally, to build the application:
 * Composer 2.
-* Node.js >=12.13.0 with npm >=6.12.0 (only tested with LTS releases v12 and v14 and with v16).
-* Java runtime (v8 minimum) to generate the OpenAPI JavaScript client.
+* Node.js >=12.13 with npm >=6.12 (only tested with LTS releases v12 and v14 and v16).
+* Java runtime >=8 to generate the OpenAPI JavaScript client.
 
 ### Install/Update
 
@@ -66,7 +68,7 @@ depending on the setup, restart the web server or php-fpm.
 
 #### Pre-built Distribution file
 
-If you downloaded the .tar.gz file, you only need to run the database migrations and seeds and clear the cache.
+If you downloaded the pre-built app, you only need to run the database migrations and seeds and clear the cache.
 
 If you are using a different cache directory, you must first copy or generate the Doctrine proxy cache files:
 ```
