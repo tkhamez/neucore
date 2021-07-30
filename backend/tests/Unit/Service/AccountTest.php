@@ -418,7 +418,8 @@ class AccountTest extends TestCase
 
         $this->om->clear();
         $charLoaded = $this->charRepo->find(31);
-        $this->assertNull($charLoaded->getEsiToken(EveLogin::NAME_DEFAULT));
+        $this->assertEmpty($charLoaded->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
+        $this->assertEmpty($charLoaded->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
         $this->assertFalse($charLoaded->getValidToken());
     }
 

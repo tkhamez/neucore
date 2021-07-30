@@ -203,7 +203,7 @@ class Account
         if ($esiToken !== null && !empty($this->tokenService->getScopesFromToken($esiToken))) {
             $char->setValidToken(true);
         } else {
-            $char->setValidToken(); // null
+            $char->setValidToken(); // treat no scopes as if there was no token
         }
 
         // update account name
@@ -284,7 +284,7 @@ class Account
 
         // does the char have a token?
         if ($esiToken === null || $esiToken->getRefreshToken() === null) {
-            // Only true for SSOv1 without scopes or if the character was added by an admin.
+            // Only true for SSOv1 without scopes or if the character was added directly to the database.
             $char->setValidToken();
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NA;
@@ -300,9 +300,9 @@ class Account
             }
         }
         if ($token === null) {
-            $char->removeEsiToken($esiToken);
+            $esiToken->setAccessToken('');
+            $esiToken->setRefreshToken('');
             $char->setValidToken(false);
-            $this->objectManager->remove($esiToken);
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NOK;
         }
@@ -324,7 +324,7 @@ class Account
             !is_numeric($token->getExpires()) ||
             !is_string($token->getRefreshToken())
         ) {
-            $char->setValidToken();
+            $char->setValidToken(); // treat no scopes as if there was no token
             $result = self::CHECK_TOKEN_NOK;
         } else {
             $char->setValidToken(true);
