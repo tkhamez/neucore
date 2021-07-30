@@ -193,22 +193,6 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame('c4', $actual[1]->getName());
     }
 
-    public function testFindWithInvalidToken()
-    {
-        $actual = $this->repo->findWithInvalidToken();
-
-        $this->assertSame(1, count($actual));
-        $this->assertSame('c1', $actual[0]->getName());
-    }
-
-    public function testFindWithNoToken()
-    {
-        $actual = $this->repo->findWithNoToken();
-
-        $this->assertSame(1, count($actual));
-        $this->assertSame('c2', $actual[0]->getName());
-    }
-
     public function testFindInCorporation()
     {
         $actual = $this->repo->findInCorporation(98000101);

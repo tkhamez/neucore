@@ -63,35 +63,6 @@ class PlayerRepository extends EntityRepository
     /**
      * @return Player[]
      */
-    public function findWithInvalidToken(): array
-    {
-        return $this->createQueryBuilder('p')
-            ->leftJoin('p.characters', 'c')
-            ->andWhere('c.id IS NOT NULL')
-            ->andWhere('c.validToken = :valid_token')
-            ->setParameter('valid_token', false)
-            ->orderBy('p.name')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return Player[]
-     */
-    public function findWithNoToken(): array
-    {
-        return $this->createQueryBuilder('p')
-            ->leftJoin('p.characters', 'c')
-            ->andWhere('c.id IS NOT NULL')
-            ->andWhere('c.validToken IS NULL')
-            ->orderBy('p.name')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return Player[]
-     */
     public function findInCorporation(int $corporationId): array
     {
         return $this->createQueryBuilder('p')

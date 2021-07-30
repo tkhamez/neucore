@@ -543,56 +543,6 @@ class PlayerController extends BaseController
     /**
      * @noinspection PhpUnused
      * @OA\Get(
-     *     path="/user/player/invalid-token",
-     *     operationId="invalidToken",
-     *     summary="List all players with a character with an invalid token.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function invalidToken(): ResponseInterface
-    {
-        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithInvalidToken());
-    }
-
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
-     *     path="/user/player/no-token",
-     *     operationId="noToken",
-     *     summary="List all players with a character with no token.",
-     *     description="Needs role: user-admin",
-     *     tags={"Player"},
-     *     security={{"Session"={}}},
-     *     @OA\Response(
-     *         response="200",
-     *         description="List of players ordered by name. Only id and name properties are returned.",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Player"))
-     *     ),
-     *     @OA\Response(
-     *         response="403",
-     *         description="Not authorized."
-     *     )
-     * )
-     */
-    public function noToken(): ResponseInterface
-    {
-        return $this->playerList($this->repositoryFactory->getPlayerRepository()->findWithNoToken());
-    }
-
-    /**
-     * @noinspection PhpUnused
-     * @OA\Get(
      *     path="/user/player/without-characters",
      *     operationId="withoutCharacters",
      *     summary="List all players without characters.",
