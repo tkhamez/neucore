@@ -43,8 +43,8 @@ class AutoAllowlistTest extends ConsoleTestCase
         $this->om->persist($corp3);
 
         $char1a = $helper->addCharacterMain('char1a', 1011)->setCorporation($corp1);
-        $char = $helper->addCharacterToPlayer('char1b', 1012, $char1a->getPlayer())
-            ->setCorporation($corp2)->setValidToken(true);
+        $char = $helper->addCharacterToPlayer('char1b', 1012, $char1a->getPlayer(), true)->setCorporation($corp2);
+        $char->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         $helper->createOrUpdateEsiToken($char, time() + 1200, $helper::generateToken([EveLogin::SCOPE_MEMBERSHIP])[0]);
         $helper->addCharacterToPlayer('char1c', 1013, $char1a->getPlayer())->setCorporation($corp3);
 

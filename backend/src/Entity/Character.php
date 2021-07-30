@@ -15,7 +15,22 @@ use OpenApi\Annotations as OA;
  * An EVE character.
  *
  * @OA\Schema(
- *     required={"id", "name"}
+ *     required={"id", "name"},
+ *     @OA\Property(
+ *         property="validToken",
+ *         type="boolean",
+ *         nullable=true,
+ *         description="Shows if character's default refresh token is valid or not.
+                        This is null if there is no refresh token (EVE SSOv1 only)
+                        or a valid token but without scopes (SSOv2)."
+ *     ),
+ *     @OA\Property(
+ *         property="validTokenTime",
+ *         type="string",
+ *         format="date-time",
+ *         nullable=true,
+ *         description="Date and time when the valid token property was last changed."
+ *     )
  * )
  * @ORM\Entity
  * @ORM\Table(name="characters")
@@ -61,27 +76,6 @@ class Character implements \JsonSerializable
      * @var Collection
      */
     private $esiTokens;
-
-    /**
-     * Shows if character's default refresh token is valid or not.
-     *
-     * This is null if there is no refresh token (EVE SSOv1 only)
-     * or a valid token but without scopes (SSOv2).
-     *
-     * @OA\Property(type="boolean", nullable=true)
-     * @ORM\Column(type="boolean", name="valid_token", nullable=true)
-     * @var bool|null
-     */
-    private $validToken;
-
-    /**
-     * Date and time when that valid token property was last changed.
-     *
-     * @OA\Property(nullable=true)
-     * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
-     * @var \DateTime|null
-     */
-    private $validTokenTime;
 
     /**
      * @OA\Property(nullable=true)
@@ -153,9 +147,9 @@ class Character implements \JsonSerializable
             'main' => $this->main,
             'created' => $this->created ? $this->created->format(Api::DATE_FORMAT) : null,
             'lastUpdate' => $this->getLastUpdate() !== null ? $this->getLastUpdate()->format(Api::DATE_FORMAT) : null,
-            'validToken' => $this->validToken,
-            'validTokenTime' => $this->getValidTokenTime() !== null ?
-                $this->getValidTokenTime()->format(Api::DATE_FORMAT) : null,
+            'validToken' => $this->getDefaultTokenValid(),
+            'validTokenTime' => $this->getDefaultTokenValidTime() !== null ?
+                $this->getDefaultTokenValidTime()->format(Api::DATE_FORMAT) : null,
         ];
         if ($withRelations) {
             $result['corporation'] = $this->corporation;
@@ -242,6 +236,9 @@ class Character implements \JsonSerializable
         return $this->esiTokens->toArray();
     }
 
+    /**
+     * @param string $eveLoginName One of the EveLogin::NAME_* constants
+     */
     public function getEsiToken(string $eveLoginName): ?EsiToken
     {
         foreach ($this->getEsiTokens() as $esiToken) {
@@ -250,44 +247,6 @@ class Character implements \JsonSerializable
             }
         }
         return null;
-    }
-
-    /**
-     * Set validToken and updates validTokenTime.
-     *
-     * @param bool|null $validToken
-     * @return Character
-     */
-    public function setValidToken(bool $validToken = null): self
-    {
-        if ($this->validToken !== $validToken) {
-            try {
-                $this->validTokenTime = new \DateTime();
-            } catch (\Exception $e) {
-                // ignore
-            }
-        }
-
-        $this->validToken = $validToken;
-
-        return $this;
-    }
-
-    public function getValidToken(): ?bool
-    {
-        return $this->validToken;
-    }
-
-    public function setValidTokenTime(\DateTime $validTokenTime): self
-    {
-        $this->validTokenTime = clone $validTokenTime;
-
-        return $this;
-    }
-
-    public function getValidTokenTime(): ?\DateTime
-    {
-        return $this->validTokenTime;
     }
 
     public function setCreated(\DateTime $created): self
@@ -391,5 +350,17 @@ class Character implements \JsonSerializable
             $alliance !== null ? $alliance->getName() : null,
             $alliance !== null ? $alliance->getTicker() : null
         );
+    }
+
+    private function getDefaultTokenValid(): ?bool
+    {
+        $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
+        return $token ? $token->getValidToken() : null;
+    }
+
+    private function getDefaultTokenValidTime(): ?\DateTime
+    {
+        $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
+        return $token ? $token->getValidTokenTime() : null;
     }
 }

@@ -8,6 +8,7 @@ namespace Tests\Functional\Controller\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Controller\User\ServiceController;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
@@ -75,7 +76,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get");
+        $response = $this->runApp('GET', "/api/user/service/$this->s3/get");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -85,7 +86,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(4);
 
-        $response1 = $this->runApp('GET', "/api/user/service/{$this->s1}/get");
+        $response1 = $this->runApp('GET', "/api/user/service/$this->s1/get");
         $this->assertEquals(403, $response1->getStatusCode());
     }
 
@@ -104,7 +105,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(4);
 
-        $response2 = $this->runApp('GET', "/api/user/service/{$this->s1}/get?allowAdmin=true");
+        $response2 = $this->runApp('GET', "/api/user/service/$this->s1/get?allowAdmin=true");
         $this->assertEquals(200, $response2->getStatusCode());
     }
 
@@ -113,7 +114,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(4);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/get?allowAdmin=true");
+        $response = $this->runApp('GET', "/api/user/service/$this->s3/get?allowAdmin=true");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
@@ -143,7 +144,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/get");
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/get");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [
@@ -175,7 +176,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s3}/accounts");
+        $response = $this->runApp('GET', "/api/user/service/$this->s3/accounts");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -185,7 +186,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -203,7 +204,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e',
@@ -219,7 +220,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
@@ -229,7 +230,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s2}/accounts", null, null, [
+        $response = $this->runApp('GET', "/api/user/service/$this->s2/accounts", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
@@ -248,7 +249,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('GET', "/api/user/service/{$this->s1}/accounts");
+        $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -263,7 +264,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s3}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s3/register");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -273,7 +274,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -296,7 +297,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             'characterId' => 2,
@@ -319,7 +320,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
@@ -333,7 +334,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertEquals('no_main', $response->getReasonPhrase());
     }
@@ -343,7 +344,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertEquals('already_registered', $response->getReasonPhrase());
     }
@@ -363,7 +364,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertEquals('test', $response->getReasonPhrase());
     }
@@ -383,7 +384,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -392,7 +393,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s2}/register", null, null, [
+        $response = $this->runApp('POST', "/api/user/service/$this->s2/register", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
@@ -414,7 +415,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('POST', "/api/user/service/{$this->s1}/register");
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -429,7 +430,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/update-account/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s3/update-account/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -439,7 +440,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -457,7 +458,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/7");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/7");
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -466,7 +467,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/2");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/2");
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -475,7 +476,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
     }
@@ -486,7 +487,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
@@ -496,7 +497,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s2}/update-account/1", null, null, [
+        $response = $this->runApp('PUT', "/api/user/service/$this->s2/update-account/1", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
@@ -515,7 +516,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -524,7 +525,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/update-account/3");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/3");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -539,7 +540,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s3}/reset-password/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s3/reset-password/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -549,7 +550,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDeactivateAccount();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -567,7 +568,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/7");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/7");
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -576,7 +577,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/2");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/2");
         $this->assertEquals(404, $response->getStatusCode());
     }
 
@@ -585,7 +586,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('new-pass', $this->parseJsonBody($response));
     }
@@ -595,7 +596,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s2}/reset-password/1", null, null, [
+        $response = $this->runApp('PUT', "/api/user/service/$this->s2/reset-password/1", null, null, [
             LoggerInterface::class => $this->log
         ]);
         $this->assertEquals(500, $response->getStatusCode());
@@ -614,7 +615,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/1");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -623,7 +624,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        $response = $this->runApp('PUT', "/api/user/service/{$this->s1}/reset-password/3");
+        $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/3");
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -675,7 +676,8 @@ class ServiceControllerTest extends WebTestCase
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
         $corporation = (new Corporation())->setId(101);
-        $this->player->getCharacters()[0]->setValidToken(false)->setCorporation($corporation); // char ID = 1
+        $this->player->getCharacters()[0]->setCorporation($corporation); // char ID = 1
+        $this->player->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         $this->helper->getEm()->persist($setting1);
         $this->helper->getEm()->persist($setting2);
         $this->helper->getEm()->persist($setting3);

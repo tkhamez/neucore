@@ -54,4 +54,50 @@ class EsiTokenTest extends TestCase
         $this->assertSame(456, $token->getExpires());
     }
 
+    public function testSetGetValidToken()
+    {
+        $token = new EsiToken();
+
+        $this->assertNull($token->getValidToken());
+        $this->assertTrue($token->setValidToken(true)->getValidToken());
+        $this->assertFalse($token->setValidToken(false)->getValidToken());
+        $this->assertNull($token->setValidToken()->getValidToken());
+    }
+
+    public function testSetValidTokenUpdatesTime()
+    {
+        $token = new EsiToken();
+
+        $this->assertNull($token->getValidTokenTime());
+        $this->assertNull($token->getValidToken());
+
+        $token->setValidToken();
+        $this->assertNull($token->getValidTokenTime());
+
+        $token->setValidToken(false);
+        $time1 = $token->getValidTokenTime();
+        $this->assertNotNull($time1);
+
+        $token->setValidToken(true);
+        $time2 = $token->getValidTokenTime();
+        $this->assertNotSame($time1, $time2);
+        $this->assertNotNull($time2);
+
+        $token->setValidToken();
+        $time3 = $token->getValidTokenTime();
+        $this->assertNotSame($time2, $time3);
+        $this->assertNotNull($token->getValidTokenTime());
+    }
+
+    public function testSetGetValidTokenTime()
+    {
+        $dt1 = new \DateTime('2018-04-26 18:59:35');
+
+        $token = new EsiToken();
+        $token->setValidTokenTime($dt1);
+        $dt2 = $token->getValidTokenTime();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
+    }
 }

@@ -10,6 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -1489,7 +1490,8 @@ class PlayerControllerTest extends WebTestCase
             12,
             [Role::USER, Role::APP_ADMIN, Role::USER_ADMIN, Role::GROUP_ADMIN]
         );
-        $char3a->setValidToken(false)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
+        $char3a->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
         $char3a->setCorporation($corp);
         $char3a->getPlayer()->addGroup($gs[2]);
         $this->player3Id = $char3a->getPlayer()->getId();
@@ -1505,11 +1507,13 @@ class PlayerControllerTest extends WebTestCase
         $this->em->persist($alli);
         $this->em->persist($emptyAcc);
 
-        $char3b = $this->h->addCharacterToPlayer('Alt', 13, $char3a->getPlayer());
-        $char3b->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
+        $char3b = $this->h->addCharacterToPlayer('Alt', 13, $char3a->getPlayer(), true);
+        $char3b->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true)
+            ->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
 
-        $this->player4Id = $this->h->addCharacterMain('User3', 14, [Role::USER, Role::USER_MANAGER])
-            ->setValidToken(true)->getPlayer()->getId();
+        $char4 = $this->h->addCharacterMain('User3', 14, [Role::USER, Role::USER_MANAGER]);
+        $char4->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
+        $this->player4Id = $char4->getPlayer()->getId();
 
         $charNoMain = $this->h->addCharacterMain('Account with no main', 15);
         $charNoMain->setMain(false);

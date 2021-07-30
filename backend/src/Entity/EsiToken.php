@@ -56,6 +56,25 @@ class EsiToken
     private $accessToken;
 
     /**
+     * Shows if the refresh token is valid or not.
+     *
+     * This is null if there is no refresh token (EVE SSOv1 only)
+     * or a valid token but without scopes (SSOv2).
+     *
+     * @ORM\Column(type="boolean", name="valid_token", nullable=true)
+     * @var bool|null
+     */
+    private $validToken;
+
+    /**
+     * Date and time when that valid token property was last changed.
+     *
+     * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
+     * @var \DateTime|null
+     */
+    private $validTokenTime;
+
+    /**
      * Unix timestamp when access token expires.
      *
      * @ORM\Column(type="integer")
@@ -127,5 +146,37 @@ class EsiToken
     public function getExpires(): ?int
     {
         return $this->expires;
+    }
+
+    /**
+     * Set validToken and updates validTokenTime.
+     */
+    public function setValidToken(?bool $validToken = null): self
+    {
+        if ($this->validToken !== $validToken) {
+            try {
+                $this->validTokenTime = new \DateTime();
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
+        $this->validToken = $validToken;
+        return $this;
+    }
+
+    public function getValidToken(): ?bool
+    {
+        return $this->validToken;
+    }
+
+    public function setValidTokenTime(\DateTime $validTokenTime): self
+    {
+        $this->validTokenTime = clone $validTokenTime;
+        return $this;
+    }
+
+    public function getValidTokenTime(): ?\DateTime
+    {
+        return $this->validTokenTime;
     }
 }

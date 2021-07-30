@@ -397,13 +397,17 @@ class Player implements \JsonSerializable
     public function hasCharacterWithInvalidTokenOlderThan(int $hours): bool
     {
         foreach ($this->getCharacters() as $char) {
-            if ($char->getValidToken() === true) {
-                continue;
-            }
-            if ($char->getValidTokenTime() === null) {
+            $token = $char->getEsiToken(EveLogin::NAME_DEFAULT);
+            if (!$token) {
                 return true;
             }
-            $time = $char->getValidTokenTime()->getTimestamp();
+            if ($token->getValidToken() === true) {
+                continue;
+            }
+            if ($token->getValidTokenTime() === null) {
+                return true;
+            }
+            $time = $token->getValidTokenTime()->getTimestamp();
             if (time() - $time >= 60 * 60 * $hours) {
                 return true;
             }
@@ -493,7 +497,7 @@ class Player implements \JsonSerializable
     public function getCoreGroups(): array
     {
         return array_map(function (Group $group) {
-            return new CoreGroup((int)$group->getId(), (string)$group->getName());
+            return new CoreGroup($group->getId(), $group->getName());
         }, $this->getGroups());
     }
 

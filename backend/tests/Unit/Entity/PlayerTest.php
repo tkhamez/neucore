@@ -10,6 +10,8 @@ use Neucore\Entity\App;
 use Neucore\Entity\Character;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\GroupApplication;
 use Neucore\Entity\Player;
@@ -237,23 +239,34 @@ class PlayerTest extends TestCase
         $this->assertFalse($player->hasCharacterInAllianceOrCorporation([12, 13], [103, 104]));
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testHasCharacterWithInvalidTokenOlderThan()
     {
-        $char1 = (new Character())->setValidToken(true)->setValidTokenTime(new \DateTime('now -10 seconds'));
-        $char2 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now -10 seconds'));
-        $char3 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now -36 hours'));
-        $char4 = (new Character())->setValidToken(false)->setValidTokenTime(new \DateTime('now +12 hours'));
-        $char5 = (new Character())->setValidTokenTime(new \DateTime('now -36 hours')); // validToken is null
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
+        $token1 = (new EsiToken())->setEveLogin($eveLogin)->setValidToken(true)
+            ->setValidTokenTime(new \DateTime('now -10 seconds'));
+        $token2 = (new EsiToken())->setEveLogin($eveLogin)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime('now -10 seconds'));
+        $token3 = (new EsiToken())->setEveLogin($eveLogin)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime('now -36 hours'));
+        $token4 = (new EsiToken())->setEveLogin($eveLogin)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime('now +12 hours'));
+        $token5 = (new EsiToken())->setEveLogin($eveLogin)
+            ->setValidTokenTime(new \DateTime('now -36 hours')); // validToken is null
+        $token6 = (new EsiToken())->setEveLogin($eveLogin);
+        $char1 = (new Character())->addEsiToken($token1);
+        $char2 = (new Character())->addEsiToken($token2);
+        $char3 = (new Character())->addEsiToken($token3);
+        $char4 = (new Character())->addEsiToken($token4);
+        $char5 = (new Character())->addEsiToken($token5);
+        $char6 = (new Character())->addEsiToken($token6);
 
         $player1 = (new Player())->addCharacter($char1);
         $player2 = (new Player())->addCharacter($char2);
         $player3 = (new Player())->addCharacter($char1)->addCharacter($char3);
         $player4 = (new Player())->addCharacter($char1)->addCharacter($char4);
         $player5 = (new Player())->addCharacter($char5);
-        $player6 = (new Player())->addCharacter(new Character());
+        $player6 = (new Player())->addCharacter($char6);
+        $player7 = (new Player())->addCharacter(new Character());
 
         $this->assertFalse($player1->hasCharacterWithInvalidTokenOlderThan(24));
         $this->assertFalse($player2->hasCharacterWithInvalidTokenOlderThan(24)); // false because time is NOW
@@ -269,6 +282,8 @@ class PlayerTest extends TestCase
         $this->assertTrue($player2->hasCharacterWithInvalidTokenOlderThan(0)); // it's older or equal 0
 
         $this->assertTrue($player6->hasCharacterWithInvalidTokenOlderThan(123)); // no token time set
+
+        $this->assertTrue($player7->hasCharacterWithInvalidTokenOlderThan(123)); // no token
     }
 
     public function testGetMain()

@@ -201,9 +201,9 @@ class Account
         }
 
         if ($esiToken !== null && !empty($this->tokenService->getScopesFromToken($esiToken))) {
-            $char->setValidToken(true);
-        } else {
-            $char->setValidToken(); // treat no scopes as if there was no token
+            $esiToken->setValidToken(true);
+        } elseif ($esiToken) {
+            $esiToken->setValidToken(); // treat no scopes as if there was no token
         }
 
         // update account name
@@ -282,11 +282,9 @@ class Account
 
         $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
 
-        // does the char have a token?
-        if ($esiToken === null || $esiToken->getRefreshToken() === null) {
+        // does the char have a default token?
+        if ($esiToken === null) {
             // Only true for SSOv1 without scopes or if the character was added directly to the database.
-            $char->setValidToken();
-            $this->objectManager->flush();
             return self::CHECK_TOKEN_NA;
         }
 
@@ -302,7 +300,7 @@ class Account
         if ($token === null) {
             $esiToken->setAccessToken('');
             $esiToken->setRefreshToken('');
-            $char->setValidToken(false);
+            $esiToken->setValidToken(false);
             $this->objectManager->flush();
             return self::CHECK_TOKEN_NOK;
         }
@@ -324,10 +322,10 @@ class Account
             !is_numeric($token->getExpires()) ||
             !is_string($token->getRefreshToken())
         ) {
-            $char->setValidToken(); // treat no scopes as if there was no token
+            $esiToken->setValidToken(); // treat no scopes as if there was no token
             $result = self::CHECK_TOKEN_NOK;
         } else {
-            $char->setValidToken(true);
+            $esiToken->setValidToken(true);
             $esiToken->setAccessToken($token->getToken());
             $esiToken->setExpires($token->getExpires());
             $esiToken->setRefreshToken($token->getRefreshToken());

@@ -161,10 +161,9 @@ class CheckTokensTest extends ConsoleTestCase
         // tokens should already be invalid after a character transfer - right!?.
 
         $player = (new Player())->setName('p');
-        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')
-            ->setValidToken(false)->setPlayer($player);
+        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')->setPlayer($player);
         $this->om->persist($player);
-        $this->helper->createOrUpdateEsiToken($c, time() - 60*60);
+        $this->helper->createOrUpdateEsiToken($c, time() - 60*60)->setValidToken(false);
 
         list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
@@ -197,9 +196,9 @@ class CheckTokensTest extends ConsoleTestCase
      */
     public function testExecuteValidToken()
     {
-        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')->setValidToken(false);
+        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->helper->createOrUpdateEsiToken($c, time() - 60*60);
+        $this->helper->createOrUpdateEsiToken($c, time() - 60*60)->setValidToken(false);
 
         list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
         $this->client->setResponse(
@@ -244,9 +243,9 @@ class CheckTokensTest extends ConsoleTestCase
     {
         list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
 
-        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')->setValidToken(false);
+        $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->helper->createOrUpdateEsiToken($c, 123456, $token);
+        $this->helper->createOrUpdateEsiToken($c, 123456, $token)->setValidToken(false);
 
         $this->client->setResponse(
             // Token has no expire time, so no call to GenericProvider->getAccessToken()

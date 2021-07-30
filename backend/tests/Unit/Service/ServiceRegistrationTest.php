@@ -9,6 +9,8 @@ use Composer\Autoload\ClassLoader;
 use Neucore\Application;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
@@ -106,7 +108,7 @@ class ServiceRegistrationTest extends TestCase
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
         $corporation = (new Corporation())->setId(101);
-        $character->setValidToken(false)->setCorporation($corporation);
+        $character->setCorporation($corporation)->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         $this->helper->getEm()->persist($setting1);
         $this->helper->getEm()->persist($setting2);
         $this->helper->getEm()->persist($setting3);
@@ -234,6 +236,6 @@ class ServiceRegistrationTest extends TestCase
         $this->helper->getEm()->persist($setting3);
         $this->helper->getEm()->flush();
         $corporation = (new Corporation())->setId(101);
-        return (new Character())->setValidToken(false)->setCorporation($corporation);
+        return (new Character())->setCorporation($corporation)->addEsiToken((new EsiToken())->setValidToken(false));
     }
 }

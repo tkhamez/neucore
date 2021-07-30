@@ -13,6 +13,8 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
@@ -128,9 +130,13 @@ class EveMailTest extends TestCase
     {
         $player = (new Player())->setName('n');
         $char = (new Character())->setId(100100)->setName('n')->setPlayer($player);
-        $char->setValidToken(true);
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($char)->setValidToken(true)
+            ->setAccessToken('')->setRefreshToken('')->setExpires(0);
         $this->om->persist($player);
         $this->om->persist($char);
+        $this->om->persist($eveLogin);
+        $this->om->persist($esiToken);
         $this->om->flush();
         $playerId = $player->getId();
         $this->om->clear();

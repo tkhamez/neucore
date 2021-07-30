@@ -7,6 +7,7 @@ namespace Neucore\Service;
 use Eve\Sso\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
@@ -98,7 +99,8 @@ class EveMail
         // Check if a token is invalid
         $invalidChars = [];
         foreach ($player->getCharacters() as $character) {
-            if (! $character->getValidToken()) {
+            $token = $character->getEsiToken(EveLogin::NAME_DEFAULT);
+            if (!$token || !$token->getValidToken()) {
                 $invalidChars[] = $character->getId();
             }
         }

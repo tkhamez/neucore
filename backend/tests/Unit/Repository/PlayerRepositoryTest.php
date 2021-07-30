@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
-use Neucore\Entity\Character;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
@@ -73,14 +73,12 @@ class PlayerRepositoryTest extends TestCase
         $om->persist($corp4);
 
         self::$player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
-        self::$player1->getCharacters()[0]->setValidToken(true);
+        self::$player1->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         self::$player1->getCharacters()[0]->setCorporation($corp1);
-        $char1b = (new Character())->setId(12)->setName('c1b')->setValidToken(false);
-        $char1b->setPlayer(self::$player1);
-        $char1b->setCorporation($corp2);
-        $char1c = (new Character())->setId(1313)->setName('c1c')->setValidToken(false);
-        $char1c->setPlayer(self::$player1);
-        $char1c->setCorporation($corp4);
+        $char1b = $helper->addCharacterToPlayer('c1b', 12, self::$player1, true)->setCorporation($corp2);
+        $char1b->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
+        $char1c = $helper->addCharacterToPlayer('c1c', 1313, self::$player1, true)->setCorporation($corp4);
+        $char1c->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         self::$player1->addCharacter($char1b);
         self::$player1->addCharacter($char1c);
         $om->persist($char1b);
@@ -96,14 +94,15 @@ class PlayerRepositoryTest extends TestCase
         $player3->addGroup(self::$group2);
 
         self::$player4 = $helper->addCharacterMain('c4', 3)->getPlayer();
-        self::$player4->getCharacters()[0]->setValidToken(true);
+        self::$player4->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         self::$player4->addRole($roleTracking);
         self::$player4->getCharacters()[0]->setCorporation($corp3);
 
         $player5 = (new Player())->setName('p5');
 
         self::$player6 = $helper->addCharacterMain('c6', 6)->getPlayer();
-        self::$player6->getCharacters()[0]->setCorporation($corp4)->setValidToken(true);
+        self::$player6->getCharacters()[0]->setCorporation($corp4)
+            ->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
 
         self::$player1->setStatus(Player::STATUS_MANAGED);
         $player3->setStatus(Player::STATUS_MANAGED);

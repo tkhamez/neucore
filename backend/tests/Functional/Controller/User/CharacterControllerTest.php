@@ -6,6 +6,7 @@ namespace Tests\Functional\Controller\User;
 
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
@@ -307,7 +308,7 @@ class CharacterControllerTest extends WebTestCase
         // check char, corp, name change
         $this->assertSame(96061222, $player->getCharacters()[1]->getId());
         $this->assertSame('The Corp updated.', $player->getCharacters()[1]->getCorporation()->getName());
-        $this->assertTrue($player->getCharacters()[1]->getValidToken());
+        $this->assertTrue($player->getCharacters()[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
         $nameChanges = $player->getCharacters()[1]->getCharacterNameChanges();
         $this->assertSame(3, count($nameChanges)); // 1 from setup, 1 from test
         if ($nameChanges[0]->getOldName() === 'User') {
@@ -354,9 +355,9 @@ class CharacterControllerTest extends WebTestCase
     private function setupDb(string $token = null): void
     {
         $this->helper->emptyDb();
-        $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER]);
-        $char->setValidToken(true)->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'))
-            ->setCharacterOwnerHash('coh1');
+        $char = $this->helper->addCharacterMain('User', 96061222, [Role::USER])->setCharacterOwnerHash('coh1');
+        $char->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true)
+            ->setValidTokenTime(new \DateTime('2019-08-03 23:12:45'));
         if ($token) {
             $this->helper->createOrUpdateEsiToken($char, 123456, $token);
         }

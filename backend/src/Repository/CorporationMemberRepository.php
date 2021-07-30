@@ -8,7 +8,9 @@ use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\Character;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 
 /**
@@ -144,6 +146,8 @@ class CorporationMemberRepository extends EntityRepository
             ->leftJoin('m.location', 'l')
             ->leftJoin('m.shipType', 's')
             ->leftJoin('c.player', 'p')
+            ->leftJoin('Neucore\Entity\EveLogin', 'el', 'WITH', 'el.name = :loginName')
+            ->leftJoin('el.esiTokens', 'e', 'WITH', 'e.character = c.id')
             ->select(
                 'm.id',
                 'm.name',
@@ -163,13 +167,15 @@ class CorporationMemberRepository extends EntityRepository
                 'c.main',
                 'c.created',
                 'c.lastUpdate',
-                'c.validToken',
-                'c.validTokenTime',
+                'e.validToken',
+                'e.validTokenTime',
                 'p.id AS playerId',
                 'p.name AS playerName'
             )
-            ->where('m.corporation = :corporation_id')->setParameter('corporation_id', $corporationId)
-            ->orderBy('m.logonDate', 'DESC');
+            ->where('m.corporation = :corporation_id')
+            ->orderBy('m.logonDate', 'DESC')
+            ->setParameter('loginName', EveLogin::NAME_DEFAULT)
+            ->setParameter('corporation_id', $corporationId);
 
         if ($this->active > 0 && ($activeDate = date_create(self::NOW.' -'.$this->active.' '.self::DAYS))) {
             $qb->andWhere('m.logonDate >= :active')->setParameter('active', $activeDate->format(self::DATE_FORMAT));
@@ -187,15 +193,15 @@ class CorporationMemberRepository extends EntityRepository
             $qb->andWhere('c.id IS NOT NULL');
         }
         if ($this->validToken) {
-            $qb->andWhere($qb->expr()->eq('c.validToken', 1));
+            $qb->andWhere($qb->expr()->eq('e.validToken', 1));
         } elseif ($this->validToken === false) {
-            $qb->andWhere($qb->expr()->eq('c.validToken', 0));
+            $qb->andWhere($qb->expr()->eq('e.validToken', 0));
         }
         if (
             $this->tokenChanged > 0 &&
             ($tokenChangedDate = date_create(self::NOW.' -'.$this->tokenChanged.' '.self::DAYS))
         ) {
-            $qb->andWhere('c.validTokenTime < :tokenChanged')
+            $qb->andWhere('e.validTokenTime < :tokenChanged')
                 ->setParameter('tokenChanged', $tokenChangedDate->format(self::DATE_FORMAT));
         }
         if ($this->mailCount) {
@@ -240,11 +246,14 @@ class CorporationMemberRepository extends EntityRepository
             }
 
             if ($r['characterId']) {
+                $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
+                $defaultToken = (new EsiToken())->setEveLogin($eveLogin);
+                $defaultToken->setValidToken($r['validToken'] !== null ? (bool) $r['validToken'] : null);
                 $character = (new Character())
                     ->setId((int) $r['characterId'])
                     ->setName($r['characterName'])
                     ->setMain((bool) $r['main'])
-                    ->setValidToken($r['validToken'] !== null ? (bool) $r['validToken'] : null);
+                    ->addEsiToken($defaultToken);
                 if ($r['lastUpdate']) {
                     $character->setLastUpdate($r['lastUpdate']);
                 }
@@ -252,7 +261,7 @@ class CorporationMemberRepository extends EntityRepository
                     $character->setCreated($r['created']);
                 }
                 if ($r['validTokenTime']) {
-                    $character->setValidTokenTime($r['validTokenTime']);
+                    $defaultToken->setValidTokenTime($r['validTokenTime']);
                 }
                 $member->setCharacter($character);
 

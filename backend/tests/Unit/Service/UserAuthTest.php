@@ -155,7 +155,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($accessToken, $user->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
         $this->assertSame(1525456785, $user->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
         $this->assertSame('refresh', $user->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
-        $this->assertTrue($user->getValidToken());
+        $this->assertTrue($user->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
         $this->assertSame($_SESSION['character_id'], $user->getId());
         $this->assertSame([Role::USER], $this->service->getRoles());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
@@ -178,7 +178,7 @@ class UserAuthTest extends TestCase
         $this->assertSame('at', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
         $this->assertSame(123456, $char->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
         $this->assertSame('rt', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
-        $this->assertNull($char->getValidToken());
+        $this->assertNull($char->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
         $this->assertNull($char->getLastLogin());
 
         $accessToken = Helper::generateToken()[0];
@@ -196,7 +196,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($accessToken, $user->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
         $this->assertSame(1525456785, $user->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
         $this->assertSame('refresh', $user->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
-        $this->assertTrue($char->getValidToken());
+        $this->assertTrue($char->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
         $this->assertSame('UTC', $user->getLastLogin()->getTimezone()->getName());
         $this->assertEqualsWithDelta(time(), $user->getLastLogin()->getTimestamp(), 10);
         $this->assertSame($user->getPlayer()->getId(), $player->getId());
@@ -263,7 +263,6 @@ class UserAuthTest extends TestCase
         $this->assertSame('Alt 1', $chars[1]->getName());
         $this->assertSame('hash', $chars[1]->getCharacterOwnerHash());
         $this->assertNull($chars[1]->getEsiToken(EveLogin::NAME_DEFAULT));
-        $this->assertNull($chars[1]->getValidToken());
         $this->assertFalse($chars[1]->getMain());
     }
 
@@ -295,7 +294,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($accessToken, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
         $this->assertSame(1525456785, $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
         $this->assertSame('rf', $chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
-        $this->assertTrue($chars[1]->getValidToken());
+        $this->assertTrue($chars[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
 
         // check RemovedCharacter
         $removedChar = $this->removedCharRepo->findOneBy(['characterId' => 200]);

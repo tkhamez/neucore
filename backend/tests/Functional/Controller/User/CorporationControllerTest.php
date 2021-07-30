@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
 use Neucore\Entity\CorporationMember;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -744,8 +745,9 @@ class CorporationControllerTest extends WebTestCase
     {
         $this->h->emptyDb();
 
-        $char = $this->h->addCharacterMain('User', 6, [Role::USER])
-            ->setValidToken(false)->setValidTokenTime(new \DateTime('-1 day -1 minute'));
+        $char = $this->h->addCharacterMain('User', 6, [Role::USER]);
+        $char->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime('-1 day -1 minute'));
         $this->player7 = $this->h
             ->addCharacterMain('Group Admin', 7, [Role::USER, Role::GROUP_ADMIN, Role::TRACKING])
             ->getPlayer();

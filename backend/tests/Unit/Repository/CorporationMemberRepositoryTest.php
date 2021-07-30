@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -10,7 +11,9 @@ use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\EsiToken;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use PHPUnit\Framework\TestCase;
@@ -25,9 +28,6 @@ class CorporationMemberRepositoryTest extends TestCase
 
     private static $values;
 
-    /**
-     * @throws \Exception
-     */
     public static function setupBeforeClass(): void
     {
         $helper = new Helper();
@@ -41,14 +41,20 @@ class CorporationMemberRepositoryTest extends TestCase
         self::$values->createdTime1 = new \DateTime("now -30 days");
         self::$values->updatedTime1 = new \DateTime("now -30 days");
 
+        $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $location = (new EsiLocation())->setId(5040)->setName('A Station')->setCategory(EsiLocation::CATEGORY_STATION);
         $ship = (new EsiType())->setId(4030)->setName('A ship');
         $player1 = (new Player())->setName('Player 1');
-        $char1 = (new Character())->setId(10)->setName('Char 1')->setPlayer($player1)->setValidToken(true);
+        $char1 = (new Character())->setId(10)->setName('Char 1')->setPlayer($player1);
         $char2 = (new Character())->setId(20)->setName('Char 2')->setPlayer($player1)
-            ->setValidToken(false)->setValidTokenTime(self::$values->validtokenTime1)
             ->setCreated(self::$values->createdTime1)->setLastUpdate(self::$values->updatedTime1);
-        $char5 = (new Character())->setId(50)->setName('Char 5')->setPlayer($player1)->setValidToken(true);
+        $char5 = (new Character())->setId(50)->setName('Char 5')->setPlayer($player1);
+        $token1 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
+            ->setValidToken(true)->setCharacter($char1);
+        $token2 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
+            ->setValidToken(false)->setValidTokenTime(self::$values->validtokenTime1)->setCharacter($char2);
+        $token5 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
+            ->setValidToken(true)->setCharacter($char5);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
         $corp2 = (new Corporation())->setId(2)->setName('Corp 2')->setTicker('C2');
         $member1 = (new CorporationMember())->setId($char1->getId())->setName('Member 1')->setCorporation($corp1)
@@ -68,12 +74,16 @@ class CorporationMemberRepositoryTest extends TestCase
         $member5 = (new CorporationMember())->setId($char5->getId())->setName('Member 5')->setCorporation($corp2)
             ->setLogonDate(new \DateTime('now -110 days +30 minutes'));
 
+        self::$om->persist($eveLogin);
         self::$om->persist($location);
         self::$om->persist($ship);
         self::$om->persist($player1);
         self::$om->persist($char1);
         self::$om->persist($char2);
         self::$om->persist($char5);
+        self::$om->persist($token1);
+        self::$om->persist($token2);
+        self::$om->persist($token5);
         self::$om->persist($corp1);
         self::$om->persist($corp2);
         self::$om->persist($member1);

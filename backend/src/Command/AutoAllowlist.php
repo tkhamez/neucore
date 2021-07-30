@@ -219,7 +219,7 @@ class AutoAllowlist extends Command
                 if (
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] === null &&
                     $esiToken !== null &&
-                    $character->getValidToken() &&
+                    $esiToken->getValidToken() &&
                     in_array(EveLogin::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
                 ) {
                     $accountsData[$playerId][$corporationId][self::KEY_TOKEN] =

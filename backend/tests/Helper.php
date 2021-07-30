@@ -319,7 +319,7 @@ class Helper
         return $char;
     }
 
-    public function addCharacterToPlayer(string $name, int $charId, Player $player): Character
+    public function addCharacterToPlayer(string $name, int $charId, Player $player, bool $withEsiToken = false): Character
     {
         $alt = new Character();
         $alt->setId($charId);
@@ -330,7 +330,12 @@ class Helper
         $player->addCharacter($alt);
 
         $this->getObjectManager()->persist($alt);
-        $this->getObjectManager()->flush();
+
+        if ($withEsiToken) {
+            $this->createOrUpdateEsiToken($alt);
+        } else {
+            $this->getObjectManager()->flush();
+        }
 
         return $alt;
     }

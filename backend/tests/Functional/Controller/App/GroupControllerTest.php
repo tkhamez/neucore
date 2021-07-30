@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -613,9 +614,9 @@ class GroupControllerTest extends WebTestCase
         $this->appId = $app->getId();
 
         $char1 = $this->helper->addCharacterMain('C1', 123, [Role::USER]);
-        $char1->setValidToken(true);
-        $char2 = $this->helper->addCharacterToPlayer('C2', 456, $char1->getPlayer());
-        $char2->setValidToken(true);
+        $char1->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
+        $char2 = $this->helper->addCharacterToPlayer('C2', 456, $char1->getPlayer(), true);
+        $char2->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
 
         $char1->getPlayer()->addGroup($groups[1]);
         $char2->getPlayer()->addGroup($groups[2]);
@@ -644,17 +645,17 @@ class GroupControllerTest extends WebTestCase
         $this->helper->getObjectManager()->persist($corp);
         $this->helper->getObjectManager()->persist($corp2);
 
-        $char3 = $this->helper->addCharacterMain('C3', 789); // no roles
-        $char3->setValidToken(false)->setCorporation($corp);
+        $char3 = $this->helper->addCharacterMain('C3', 789)->setCorporation($corp); // no roles
         $char3->getPlayer()->addGroup($groups[0]);
         $char3->getPlayer()->addGroup($groups[1]);
-        $char3->setValidTokenTime(new \DateTime("now -$invalidHours hours"));
+        $char3->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime("now -$invalidHours hours"));
 
-        $char4 = $this->helper->addCharacterMain('C3', 780); // managed account
-        $char4->setValidToken(false)->setCorporation($corp);
+        $char4 = $this->helper->addCharacterMain('C3', 780)->setCorporation($corp); // managed account
         $char4->getPlayer()->setStatus(Player::STATUS_MANAGED);
         $char4->getPlayer()->addGroup($groups[0]);
-        $char4->setValidTokenTime(new \DateTime("now -$invalidHours hours"));
+        $char4->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false)
+            ->setValidTokenTime(new \DateTime("now -$invalidHours hours"));
 
         $this->helper->addCharacterMain('C4', 1010, [Role::USER]); // no groups
 

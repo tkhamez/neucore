@@ -135,56 +135,6 @@ class CharacterTest extends TestCase
         $this->assertSame(EveLogin::NAME_DEFAULT, $char->getEsiToken(EveLogin::NAME_DEFAULT)->getEveLogin()->getName());
     }
 
-    public function testSetGetValidToken()
-    {
-        $char = new Character();
-
-        $this->assertNull($char->getValidToken());
-        $this->assertTrue($char->setValidToken(true)->getValidToken());
-        $this->assertFalse($char->setValidToken(false)->getValidToken());
-        $this->assertNull($char->setValidToken()->getValidToken());
-    }
-
-    public function testSetValidTokenUpdatesTime()
-    {
-        $char = new Character();
-
-        $this->assertNull($char->getValidTokenTime());
-        $this->assertNull($char->getValidToken());
-
-        $char->setValidToken();
-        $this->assertNull($char->getValidTokenTime());
-
-        $char->setValidToken(false);
-        $time1 = $char->getValidTokenTime();
-        $this->assertNotNull($time1);
-
-        $char->setValidToken(true);
-        $time2 = $char->getValidTokenTime();
-        $this->assertNotSame($time1, $time2);
-        $this->assertNotNull($time2);
-
-        $char->setValidToken();
-        $time3 = $char->getValidTokenTime();
-        $this->assertNotSame($time2, $time3);
-        $this->assertNotNull($char->getValidTokenTime());
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testSetGetValidTokenTime()
-    {
-        $dt1 = new \DateTime('2018-04-26 18:59:35');
-
-        $char = new Character();
-        $char->setValidTokenTime($dt1);
-        $dt2 = $char->getValidTokenTime();
-
-        $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
-    }
-
     /**
      * @throws \Exception
      */
