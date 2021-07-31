@@ -87,7 +87,7 @@ class EveLogin implements \JsonSerializable
      *     maxLength=20,
      *     pattern="^[-._a-zA-Z0-9]+$",
      *     nullable=false,
-     *     description="Names starting with 'core.' are reserverd for internal use."
+     *     description="Names starting with 'core.' are reserved for internal use."
      * )
      * @ORM\Column(type="string", unique=true, length=20)
      * @var string

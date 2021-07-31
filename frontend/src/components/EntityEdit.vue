@@ -20,6 +20,10 @@ Modal windows to create, delete and edit entities
                         <small v-if="['Group', 'EveLogin'].indexOf(type) !== -1" class="form-text text-muted">
                             {{ messages.itemNameAllowedCharsHelp }}<br>
                             Maximum length: {{ type === 'EveLogin' ? '20' : '64' }}
+                            <span v-if="type === 'EveLogin'">
+                                <br>
+                                Names starting with 'core.' are reserved for internal use.
+                            </span>
                         </small>
                     </div>
                 </div>
