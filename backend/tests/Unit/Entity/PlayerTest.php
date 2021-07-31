@@ -121,7 +121,7 @@ class PlayerTest extends TestCase
         $dt2 = $player->getLastUpdate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetStatus()
@@ -201,8 +201,8 @@ class PlayerTest extends TestCase
         $player = new Player();
         $player->addCharacter($char1);
 
-        $this->assertTrue($player->hasCharacter((int) $char1->getId()));
-        $this->assertFalse($player->hasCharacter((int) $char2->getId()));
+        $this->assertTrue($player->hasCharacter($char1->getId()));
+        $this->assertFalse($player->hasCharacter($char2->getId()));
     }
 
     public function testHasCharacterInAllianceOrCorporation()

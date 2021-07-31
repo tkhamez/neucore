@@ -12,7 +12,6 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\SystemVariableRepository;
-use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailMail;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailRecipient;
 
@@ -44,11 +43,6 @@ class EveMail
     private $esiApiFactory;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var string
      */
     private $datasource;
@@ -58,14 +52,12 @@ class EveMail
         ObjectManager $objectManager,
         OAuthToken $oauthToken,
         EsiApiFactory $esiApiFactory,
-        LoggerInterface $logger,
         Config $config
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
         $this->oauthToken = $oauthToken;
         $this->esiApiFactory = $esiApiFactory;
-        $this->logger = $logger;
 
         $this->datasource = $config['eve']['datasource'];
         $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
@@ -82,7 +74,7 @@ class EveMail
         $char->setValue($eveAuth->getCharacterName());
 
         $token->setValue((string) json_encode([
-            SystemVariable::TOKEN_ID => (int) $eveAuth->getCharacterId(),
+            SystemVariable::TOKEN_ID => $eveAuth->getCharacterId(),
             SystemVariable::TOKEN_ACCESS => $eveAuth->getToken()->getToken(),
             SystemVariable::TOKEN_REFRESH => $eveAuth->getToken()->getRefreshToken(),
             SystemVariable::TOKEN_EXPIRES => $eveAuth->getToken()->getExpires(),
@@ -356,7 +348,6 @@ class EveMail
      * @param string $subject max length 1000
      * @param string $body max length 10000
      * @param int[] $characterRecipients EVE character IDs
-     * @param int $approvedCost
      * @return string Error message or empty string on success
      * @see OAuthToken::getToken()
      */
@@ -365,13 +356,12 @@ class EveMail
         string $token,
         string $subject,
         string $body,
-        array $characterRecipients,
-        int $approvedCost = 0
+        array $characterRecipients
     ): string {
         $recipients = [];
         foreach ($characterRecipients as $characterRecipient) {
             $recipients[] = new PostCharactersCharacterIdMailRecipient([
-                'recipient_id' => (int) $characterRecipient,
+                'recipient_id' => $characterRecipient,
                 'recipient_type' => PostCharactersCharacterIdMailRecipient::RECIPIENT_TYPE_CHARACTER,
             ]);
         }
@@ -379,7 +369,7 @@ class EveMail
             'recipients'    => $recipients,
             'subject'       => substr($subject, 0, 1000),
             'body'          => substr($body, 0, 10000),
-            'approved_cost' => $approvedCost,
+            'approved_cost' => 0,
         ]);
 
         try {

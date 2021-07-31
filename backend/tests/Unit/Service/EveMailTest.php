@@ -71,7 +71,6 @@ class EveMailTest extends TestCase
             $objManager,
             $oauthToken,
             $esiFactory,
-            $logger,
             $config
         );
     }

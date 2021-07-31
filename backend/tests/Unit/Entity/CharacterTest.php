@@ -7,7 +7,6 @@ namespace Tests\Unit\Entity;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\CharacterNameChange;
-use Neucore\Entity\CorporationMember;
 use Neucore\Entity\Player;
 use Neucore\Entity\Corporation;
 use PHPUnit\Framework\TestCase;
@@ -174,7 +173,7 @@ class CharacterTest extends TestCase
         $dt2 = $char->getValidTokenTime();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     /**
@@ -191,7 +190,7 @@ class CharacterTest extends TestCase
         $dt2 = $char->getCreated();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2019-07-06T14:56:52+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2019-07-06T14:56:52+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     /**
@@ -206,7 +205,7 @@ class CharacterTest extends TestCase
         $dt2 = $char->getLastLogin();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     /**
@@ -221,7 +220,7 @@ class CharacterTest extends TestCase
         $dt2 = $char->getLastUpdate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testAddGetRemoveCharacterNameChanges()

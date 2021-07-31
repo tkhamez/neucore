@@ -52,6 +52,6 @@ class CharacterNameChangeTest extends TestCase
         $dt2 = $cnc->getChangeDate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2031-03-27T16:52:57+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2031-03-27T16:52:57+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 }

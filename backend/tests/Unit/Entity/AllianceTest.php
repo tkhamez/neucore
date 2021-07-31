@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -58,7 +59,7 @@ class AllianceTest extends TestCase
         $dt2 = $alli->getLastUpdate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-04-26T18:59:36+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testAddGetRemoveCorporation()
@@ -93,9 +94,6 @@ class AllianceTest extends TestCase
         $this->assertSame([$g1], $alli->getGroups());
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function testHasGroup()
     {
         $group1 = new Group();

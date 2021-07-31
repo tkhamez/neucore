@@ -58,7 +58,7 @@ class GroupApplicationTest extends TestCase
         $dt2 = $groupApp->getCreated();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2019-04-06T16:09:25+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2019-04-06T16:09:25+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetStatus()

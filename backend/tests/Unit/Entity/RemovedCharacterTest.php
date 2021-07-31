@@ -84,7 +84,7 @@ class RemovedCharacterTest extends TestCase
         $dt2 = $rm->getRemovedDate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetReason()

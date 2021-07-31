@@ -112,7 +112,7 @@ class CorporationMemberTest extends TestCase
         $dt2 = $member->setLogoffDate($dt1)->getLogoffDate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-12-25T19:14:57+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-12-25T19:14:57+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     /**
@@ -126,7 +126,7 @@ class CorporationMemberTest extends TestCase
         $dt2 = $member->setLogonDate($dt1)->getLogonDate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-12-25T19:14:58+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-12-25T19:14:58+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetShipType()
@@ -148,7 +148,7 @@ class CorporationMemberTest extends TestCase
         $dt2 = $member->setStartDate($dt1)->getStartDate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-12-25T19:14:59+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-12-25T19:14:59+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetCorporation()
@@ -178,7 +178,7 @@ class CorporationMemberTest extends TestCase
         $dt2 = $member->setMissingCharacterMailSentDate($dt1)->getMissingCharacterMailSentDate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2018-12-25T19:14:59+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2018-12-25T19:14:59+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetMissingCharacterMailSentResult()

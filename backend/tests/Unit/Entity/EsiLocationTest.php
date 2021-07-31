@@ -71,6 +71,6 @@ class EsiLocationTest extends TestCase
         $dt2 = $location->getLastUpdate();
 
         $this->assertNotSame($dt1, $dt2);
-        $this->assertSame('2019-11-18T19:34:14+00:00', $dt2->format(\DateTime::ATOM));
+        $this->assertSame('2019-11-18T19:34:14+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 }
