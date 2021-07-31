@@ -132,7 +132,7 @@
                                 <br>
 
                                 <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
-                                <span v-if="char.validToken === null" class="badge badge-warning">No ESI token</span>
+                                <span v-if="char.validToken === null" class="badge badge-info">No ESI token</span>
                                 <button v-if="char.validToken === false"
                                         type="button" class="btn btn-danger btn-sm mt-1"
                                         data-toggle="modal" data-target="#tokenModal">
