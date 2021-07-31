@@ -49,7 +49,6 @@ Auth API
 
 Settings API
 - List all settings. `GET /user/settings/system/list`
-- List all logins. `GET /user/settings/eve-login/list`
 
 #### user
 

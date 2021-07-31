@@ -58,6 +58,11 @@ class PlayerControllerTest extends WebTestCase
 
     private $player5;
 
+    /**
+     * @var int
+     */
+    private $eveLoginId;
+
     private $managerId;
 
     private $emptyAccId;
@@ -188,22 +193,26 @@ class PlayerControllerTest extends WebTestCase
             'name' => 'TUser',
             'status' => Player::STATUS_STANDARD,
             'roles' => [Role::USER, Role::USER_ADMIN],
-            'characters' => [
-                [
-                    'id' => 123456,
-                    'name' => 'TUser',
-                    'main' => true,
-                    'created' => null,
-                    'lastUpdate' => null,
-                    'validToken' => null,
-                    'validTokenTime' => null,
-                    'corporation' => [
-                        'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
-                            'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
-                        ]
+            'characters' => [[
+                'id' => 123456,
+                'name' => 'TUser',
+                'main' => true,
+                'created' => null,
+                'lastUpdate' => null,
+                'validToken' => null,
+                'validTokenTime' => null,
+                'corporation' => [
+                    'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
+                        'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
                     ]
                 ],
-            ],
+                'esiTokens' => [[
+                    'eveLoginId' => $char->getEsiTokens()[0]->getEveLogin()->getId(),
+                    'validToken' => null,
+                    'validTokenTime' => null,
+                    'hasRoles' => true
+                ]],
+            ]],
             'groups' => [
                 ['id' => $groups[1]->getId(), 'name' => 'another-group', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
@@ -898,34 +907,43 @@ class PlayerControllerTest extends WebTestCase
             'name' => 'Admin',
             'status' => Player::STATUS_STANDARD,
             'roles' => [Role::APP_ADMIN, Role::GROUP_ADMIN, Role::USER, Role::USER_ADMIN],
-            'characters' => [
-                [
-                    'id' => 12,
-                    'name' => 'Admin',
-                    'main' => true,
-                    'created' => null,
-                    'lastUpdate' => null,
-                    'validToken' => false,
-                    'validTokenTime' => '2019-08-03T23:12:45Z',
-                    'corporation' => [
-                        'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
-                            'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
-                        ]
-                    ],
-                    'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => '2021-08-27T21:48:03Z']],
+            'characters' => [[
+                'id' => 12,
+                'name' => 'Admin',
+                'main' => true,
+                'created' => null,
+                'lastUpdate' => null,
+                'validToken' => false,
+                'validTokenTime' => '2019-08-03T23:12:45Z',
+                'corporation' => [
+                    'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
+                        'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
+                    ]
                 ],
-                [
-                    'id' => 13,
-                    'name' => 'Alt',
-                    'main' => false,
-                    'created' => null,
-                    'lastUpdate' => null,
+                'esiTokens' => [[
+                    'eveLoginId' => $this->eveLoginId,
+                    'validToken' => false,
+                    'validTokenTime' => '2019-08-03T23:12:45Z', // same as above (character.validTokenTime)
+                    'hasRoles' => true
+                ]],
+                'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => '2021-08-27T21:48:03Z']],
+            ], [
+                'id' => 13,
+                'name' => 'Alt',
+                'main' => false,
+                'created' => null,
+                'lastUpdate' => null,
+                'validToken' => true,
+                'validTokenTime' => '2019-08-03T23:12:45Z',
+                'corporation' => null,
+                'esiTokens' => [[
+                    'eveLoginId' => $this->eveLoginId,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
-                    'corporation' => null,
-                    'characterNameChanges' => [],
-                ],
-            ],
+                    'hasRoles' => true
+                ]],
+                'characterNameChanges' => [],
+            ]],
             'groups' => [[
                 'id' => $this->requiredGroupId,
                 'name' => 'required-group',
@@ -1470,6 +1488,7 @@ class PlayerControllerTest extends WebTestCase
 
         $player1 = $this->h->addCharacterMain('User', 10, [Role::USER, Role::USER_CHARS])->getPlayer();
         $this->player1Id = $player1->getId();
+        $this->eveLoginId = $player1->getCharacters()[0]->getEsiTokens()[0]->getEveLogin()->getId();
         $this->h->addCharacterToPlayer('Alt1', 9, $player1);
 
         $player2 = $this->h->addCharacterMain(

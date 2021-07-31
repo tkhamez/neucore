@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
+use Neucore\Api;
 use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
@@ -11,6 +12,27 @@ use PHPUnit\Framework\TestCase;
 
 class EsiTokenTest extends TestCase
 {
+    public function testJsonSerialize()
+    {
+        $type = new EsiToken();
+        $type->setValidToken(true);
+
+        $this->assertSame([
+            'eveLoginId' => 0,
+            'validToken' => true,
+            'validTokenTime' => $type->getValidTokenTime()->format(Api::DATE_FORMAT),
+            'hasRoles' => true,
+        ], json_decode((string) json_encode($type), true));
+
+        $type->setEveLogin((new EveLogin())->setId(1));
+        $this->assertSame([
+            'eveLoginId' => 1,
+            'validToken' => true,
+            'validTokenTime' => $type->getValidTokenTime()->format(Api::DATE_FORMAT),
+            'hasRoles' => true,
+        ], json_decode((string) json_encode($type), true));
+    }
+
     public function testSetGetId()
     {
         $this->assertNull((new EsiToken())->getId());

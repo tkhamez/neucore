@@ -122,7 +122,7 @@ class SettingsEveLoginController extends BaseController
      *     path="/user/settings/eve-login/list",
      *     operationId="userSettingsEveLoginList",
      *     summary="List all logins.",
-     *     description="Needs role: anonymous or user",
+     *     description="Needs role: user",
      *     tags={"Settings"},
      *     security={{"Session"={}}},
      *     @OA\Response(

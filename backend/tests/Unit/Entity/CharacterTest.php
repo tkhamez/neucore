@@ -17,11 +17,15 @@ class CharacterTest extends TestCase
 {
     public function testJsonSerialize()
     {
+        $corp = (new Corporation())->setName('c');
+        $token = (new EsiToken())->setEveLogin((new EveLogin())->setId(1));
         $char = new Character();
         $char->setId(123);
         $char->setName('test char');
         $char->setMain(false);
         $char->addCharacterNameChange((new CharacterNameChange())->setOldName('old name'));
+        $char->setCorporation($corp);
+        $char->addEsiToken($token);
 
         $this->assertSame([
             'id' => 123,
@@ -31,7 +35,7 @@ class CharacterTest extends TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'validTokenTime' => null,
-            'corporation' => null
+            'corporation' => $corp->jsonSerialize(),
         ], json_decode((string) json_encode($char), true));
 
         $this->assertSame([
@@ -59,6 +63,18 @@ class CharacterTest extends TestCase
             'id' => 123,
             'name' => 'test char',
         ], $char->jsonSerialize(true));
+
+        $this->assertSame([
+            'id' => 123,
+            'name' => 'test char',
+            'main' => false,
+            'created' => null,
+            'lastUpdate' => null,
+            'validToken' => null,
+            'validTokenTime' => null,
+            'corporation' => $corp->jsonSerialize(),
+            'esiTokens' => [$token->jsonSerialize()],
+        ], json_decode((string) json_encode($char->jsonSerialize(false, true, false, true)), true));
     }
 
     public function testSetGetId()

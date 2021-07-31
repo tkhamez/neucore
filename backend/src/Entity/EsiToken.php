@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace Neucore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Neucore\Api;
+use OpenApi\Annotations as OA;
 
 /**
+ * @OA\Schema(
+ *     required={"eveLoginId", "validToken", "validTokenTime", "hasRoles"},
+ *     @OA\Property(property="eveLoginId", type="integer", description="ID of EveLogin"),
+ * )
  * @ORM\Entity
  * @ORM\Table(
  *     name="esi_tokens",
@@ -15,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     }
  * )
  */
-class EsiToken
+class EsiToken implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -61,18 +67,30 @@ class EsiToken
      * This is null if there is no refresh token (EVE SSOv1 only)
      * or a valid token but without scopes (SSOv2).
      *
+     * @OA\Property
      * @ORM\Column(type="boolean", name="valid_token", nullable=true)
      * @var bool|null
      */
     private $validToken;
 
     /**
-     * Date and time when that valid token property was last changed.
+     * Date and time when the valid token property was last changed.
      *
+     * @OA\Property
      * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
      * @var \DateTime|null
      */
     private $validTokenTime;
+
+    /**
+     * Shows if the EVE character has all required roles for the login.
+     *
+     * Also true if the login does not require any roles.
+     *
+     * @OA\Property
+     * @var bool
+     */
+    private $hasRoles = true;
 
     /**
      * Unix timestamp when access token expires.
@@ -81,6 +99,16 @@ class EsiToken
      * @var int|null
      */
     private $expires;
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'eveLoginId' => $this->eveLogin ? $this->eveLogin->getId() : 0,
+            'validToken' => $this->validToken,
+            'validTokenTime' => $this->validTokenTime !== null ? $this->validTokenTime->format(Api::DATE_FORMAT) : null,
+            'hasRoles' => $this->hasRoles,
+        ];
+    }
 
     public function setId(int $id): self
     {

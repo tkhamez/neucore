@@ -43,12 +43,13 @@ class PlayerTest extends TestCase
         $c1->setCorporation((new Corporation())->setName('corp1')->setTicker('ABC')
             ->setAlliance((new Alliance())->setName('alli1')->setTicker('DEF')));
         $c1->addCharacterNameChange((new CharacterNameChange())->setOldName('old name'));
+        $c1->addEsiToken((new EsiToken())->setEveLogin((new EveLogin())->setId(1)));
         $play->addCharacter($c1);
         $play->addCharacter($c2);
         $play->addManagerGroup($g1);
         $play->addManagerApp($a1);
 
-        $expected = [
+        $expected1 = [
             'id' => null,
             'name' => 'test user',
             'status' => Player::STATUS_STANDARD,
@@ -84,13 +85,24 @@ class PlayerTest extends TestCase
                 'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [],]],
         ];
-        $this->assertSame($expected, json_decode((string) json_encode($play), true));
+        $this->assertSame($expected1, json_decode((string) json_encode($play), true));
 
         $this->assertSame(['id' => null, 'name' => 'test user'], $play->jsonSerialize(true));
 
-        $expected['characters'][0]['characterNameChanges'] = [['oldName' => 'old name', 'changeDate' => null]];
-        $expected['characters'][1]['characterNameChanges'] = [];
-        $this->assertSame($expected, json_decode((string) json_encode($play->jsonSerialize(false, true)), true));
+        $expected2 = $expected1;
+        $expected2['characters'][0]['characterNameChanges'] = [['oldName' => 'old name', 'changeDate' => null]];
+        $expected2['characters'][1]['characterNameChanges'] = [];
+        $this->assertSame($expected2, json_decode((string) json_encode($play->jsonSerialize(false, true)), true));
+
+        $expected3 = $expected1;
+        $expected3['characters'][0]['esiTokens'] = [
+            ['eveLoginId' => 1, 'validToken' => null, 'validTokenTime' => null, 'hasRoles' => true]
+        ];
+        $expected3['characters'][1]['esiTokens'] = [];
+        $this->assertSame(
+            $expected3,
+            json_decode((string) json_encode($play->jsonSerialize(false, false, true)), true)
+        );
     }
 
     public function testToString()

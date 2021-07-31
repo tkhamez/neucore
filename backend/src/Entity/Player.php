@@ -179,8 +179,11 @@ class Player implements \JsonSerializable
     /**
      * Contains only information that is of interest for clients.
      */
-    public function jsonSerialize(bool $minimum = false, bool $withNameChanges = false): array
-    {
+    public function jsonSerialize(
+        bool $minimum = false,
+        bool $withNameChanges = false,
+        bool $withEsiTokens = false
+    ): array {
         if ($minimum) {
             return [
                 'id' => $this->id,
@@ -193,8 +196,8 @@ class Player implements \JsonSerializable
             'name' => $this->name,
             'status' => $this->status,
             'roles' => $this->getRoles(),
-            'characters' => array_map(function (Character $character) use ($withNameChanges) {
-                return $character->jsonSerialize(false, true, $withNameChanges);
+            'characters' => array_map(function (Character $character) use ($withNameChanges, $withEsiTokens) {
+                return $character->jsonSerialize(false, true, $withNameChanges, $withEsiTokens);
             }, $this->getCharacters()),
             'groups' => $this->getGroups(),
             'managerGroups' => $this->getManagerGroups(),

@@ -125,7 +125,7 @@ class PlayerController extends BaseController
      */
     public function show(): ResponseInterface
     {
-        return $this->withJson($this->getUser($this->userAuth)->getPlayer());
+        return $this->withJson($this->getUser($this->userAuth)->getPlayer()->jsonSerialize(false, false, true));
     }
 
     /**
@@ -867,7 +867,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $json = $player->jsonSerialize(false, true); // with character name changes
+        $json = $player->jsonSerialize(false, true, true); // with character name changes and ESI tokens
         $json['removedCharacters'] = $player->getRemovedCharacters();
         $json['incomingCharacters'] = $player->getIncomingCharacters();
         $json['serviceAccounts'] = $this->getServiceAccounts($player, $serviceRegistration);

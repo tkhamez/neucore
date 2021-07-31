@@ -102,7 +102,7 @@ return [
 
     '/api/user/settings/system/list'        => [Role::ANONYMOUS, Role::USER],
     '/api/user/settings/system'             => [Role::SETTINGS],
-    '/api/user/settings/eve-login/list'     => [Role::ANONYMOUS, Role::USER],
+    '/api/user/settings/eve-login/list'     => [Role::USER],
     '/api/user/settings/eve-login'          => [Role::SETTINGS],
 
     '/api/user/watchlist/list-available-manage'           => [Role::WATCHLIST_MANAGER],

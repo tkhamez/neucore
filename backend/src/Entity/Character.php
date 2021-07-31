@@ -71,6 +71,9 @@ class Character implements \JsonSerializable
     private $characterOwnerHash;
 
     /**
+     * ESI tokens of the character (API: not included by default).
+     *
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
      * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="character")
      * @ORM\OrderBy({"id" = "ASC"})
      * @var Collection
@@ -131,8 +134,9 @@ class Character implements \JsonSerializable
      */
     public function jsonSerialize(
         bool $minimum = false,
-        bool $withRelations = true,
-        bool $withNameChanges = false
+        bool $withCorporation = true,
+        bool $withNameChanges = false,
+        bool $withEsiTokens = false
     ): array {
         if ($minimum) {
             return [
@@ -151,8 +155,11 @@ class Character implements \JsonSerializable
             'validTokenTime' => $this->getDefaultTokenValidTime() !== null ?
                 $this->getDefaultTokenValidTime()->format(Api::DATE_FORMAT) : null,
         ];
-        if ($withRelations) {
+        if ($withCorporation) {
             $result['corporation'] = $this->corporation;
+        }
+        if ($withEsiTokens) {
+            $result['esiTokens'] = $this->getEsiTokens();
         }
         if ($withNameChanges) {
             $result['characterNameChanges'] = $this->getCharacterNameChanges();

@@ -1,6 +1,48 @@
 <template>
 <div class="container-fluid">
 
+    <div v-cloak class="modal fade" id="esiTokensModal">
+        <div class="modal-dialog">
+            <div v-cloak v-if="esiTokensCharacter && eveLogins" class="modal-content">
+                <div class="modal-header">
+                    {{ esiTokensCharacter.name }} - ESI Tokens
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tr>
+                            <td>EVE Login</td>
+                            <td>Token Status</td>
+                            <td>Token Status changed*</td>
+                            <td>Has Roles</td>
+                        </tr>
+                        <tr v-for="esiToken in esiTokensCharacter.esiTokens">
+                            <td>
+                                <a href="#" v-on:click.prevent="showEveLogin(esiToken.eveLoginId)">
+                                    {{ loginName(esiToken.eveLoginId) }}
+                                </a>
+                            </td>
+                            <td>
+                                <span v-if="esiToken.validToken">valid</span>
+                                <span v-if="esiToken.validToken === false">invalid</span>
+                                <span v-if="esiToken.validToken === null">n/a</span>
+                            </td>
+                            <td>
+                                <span v-if="esiToken.validTokenTime">
+                                    {{ formatDate(esiToken.validTokenTime) }}
+                                </span>
+                            </td>
+                            <td>{{ esiToken.hasRoles }}</td>
+                        </tr>
+                    </table>
+                    <p class="small text-muted">* Time is GMT</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div v-cloak class="modal fade" id="deleteCharModal">
         <div class="modal-dialog">
             <div v-cloak v-if="charToDelete" class="modal-content">
@@ -212,10 +254,9 @@
                                     <th scope="col">Alliance</th>
                                     <th scope="col">Main</th>
                                     <th scope="col">Created*</th>
-                                    <th scope="col">Token status</th>
-                                    <th scope="col">Token status changed*</th>
+                                    <th scope="col">ESI Tokens</th>
                                     <th scope="col">Last updated*</th>
-                                    <th scope="col"></th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -247,14 +288,8 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span v-if="character.validToken">valid</span>
-                                        <span v-if="character.validToken === false">invalid</span>
-                                        <span v-if="character.validToken === null">n/a</span>
-                                    </td>
-                                    <td>
-                                        <span v-if="character.validTokenTime">
-                                            {{ formatDate(character.validTokenTime) }}
-                                        </span>
+                                        <button type="button" class="btn btn-info btn-sm mt-1"
+                                                v-on:click.prevent="showEsiTokens(character)">Show</button>
                                     </td>
                                     <td>
                                         <span v-if="character.lastUpdate">
@@ -264,7 +299,7 @@
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm mt-1"
                                                 :disabled="authChar.id === character.id"
-                                                v-on:click="askDeleteChar(character.id, character.name)">
+                                                v-on:click.prevent="askDeleteChar(character.id, character.name)">
                                             Delete
                                         </button>
                                     </td>
@@ -416,7 +451,7 @@
 
 <script>
 import $ from 'jquery';
-import {PlayerApi} from 'neucore-js-client';
+import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Character from "../classes/Character";
@@ -434,7 +469,7 @@ export default {
         settings: Object,
     },
 
-    data() {
+    data () {
         return {
             playersRole: [],
             playersChars: [],
@@ -443,10 +478,9 @@ export default {
             playerId: null, // player ID from route
             characterMovements: [],
 
-            /**
-             * {@link module:model/Player}
-             */
-            playerEdit: null,// player being edited
+            playerEdit: null, // player being edited
+
+            eveLogins: null,
 
             playerEditDeactivated: false,
             availableRoles: [
@@ -476,47 +510,49 @@ export default {
             ],
             newRole: '',
             searchResult: [],
+            esiTokensCharacter: null,
             charToDelete: null,
             deleteReason: '',
         }
     },
 
     computed: {
-        assignableRoles() {
+        assignableRoles () {
             return this.availableRoles.filter(role =>
                 !this.hasRole(role, this.playerEdit) &&
                 this.autoRoles.indexOf(role) === -1
             );
         },
 
-        playerEditRoles() {
+        playerEditRoles () {
             return this.playerEdit.roles.filter(role => role !== 'user');
         },
     },
 
-    mounted() {
+    mounted () {
         window.scrollTo(0,0);
         this.setPlayerId();
 
         // TODO watch "playerId" is not triggered when following a link to this page, why??
         // This will load it twice, but better than not at all.
         if (this.playerId) {
-            this.getPlayer();
+            getPlayer(this);
         }
+        getEveLogins(this);
     },
 
     watch: {
-        route() {
+        route () {
             this.setPlayerId();
         },
 
-        playerId() {
+        playerId () {
             if (this.playerId) {
-                this.getPlayer();
+                getPlayer(this);
             }
         },
 
-        newRole() {
+        newRole () {
             if (this.playerEdit && this.newRole) {
                 this.addRole(this.newRole);
                 this.newRole = '';
@@ -525,18 +561,18 @@ export default {
     },
 
     methods: {
-        setPlayerId() {
+        setPlayerId () {
             this.playerId = this.route[1] ? parseInt(this.route[1], 10) : null;
         },
 
-        belongsToActivePlayer(charId) {
+        belongsToActivePlayer (charId) {
             if (! this.playerEdit) {
                 return false;
             }
             return this.playerEdit.id === charId.player_id;
         },
 
-        characterName(characterId) {
+        characterName (characterId) {
             for (const character of this.playerEdit.characters) {
                 if (characterId === character.id) {
                     return character.name;
@@ -545,11 +581,11 @@ export default {
             return '';
         },
 
-        loadPlayer(playerId) {
+        loadPlayer (playerId) {
             window.location.hash = `#UserAdmin/${playerId}`;
         },
 
-        onSearchResult(result) {
+        onSearchResult (result) {
             this.searchResult = result;
             if (result.length > 0) {
                 this.playersRole = [];
@@ -559,7 +595,7 @@ export default {
             }
         },
 
-        getPlayerByRole(roleName) {
+        getPlayerByRole (roleName) {
             const vm = this;
             if (roleName === '') {
                 vm.playersRole = [];
@@ -576,7 +612,7 @@ export default {
             });
         },
 
-        getPlayers(listName) {
+        getPlayers (listName) {
             const vm = this;
             if (listName === '') {
                 vm.playersChars = [];
@@ -594,36 +630,15 @@ export default {
             }]);
         },
 
-        getPlayer() {
-            const vm = this;
-            const api = new PlayerApi();
-
-            api.showById(this.playerId, (error, data) => {
-                if (error) {
-                    vm.playerEdit = null;
-                    return;
-                }
-                vm.playerEdit = data;
-                vm.characterMovements = vm.buildCharacterMovements(data);
-            });
-
-            api.groupsDisabledById(this.playerId, (error, data) => {
-                if (error) {
-                    return;
-                }
-                vm.playerEditDeactivated = data;
-            });
-        },
-
-        addRole(roleName) {
+        addRole (roleName) {
             this.changePlayerAttribute('addRole', roleName);
         },
 
-        removeRole(roleName) {
+        removeRole (roleName) {
             this.changePlayerAttribute('removeRole', roleName);
         },
 
-        changePlayerAttribute(method, param) {
+        changePlayerAttribute (method, param) {
             if (! this.playerEdit) {
                 return;
             }
@@ -634,21 +649,40 @@ export default {
                 if (error) {
                     return;
                 }
-                vm.getPlayer();
+                getPlayer(vm);
                 if (playerId === vm.player.id) {
                     vm.emitter.emit('playerChange');
                 }
             }]);
         },
 
-        updateCharacters() {
+        updateCharacters () {
             if (! this.playerEdit) {
                 return;
             }
-            (new Character(this)).updatePlayer(this.playerEdit, this.getPlayer);
+            (new Character(this)).updatePlayer(this.playerEdit, () => { getPlayer(this) });
         },
 
-        askDeleteChar(characterId, characterName) {
+        showEsiTokens (character) {
+            this.esiTokensCharacter = character;
+            $('#esiTokensModal').modal('show');
+        },
+
+        showEveLogin (id) {
+            $('#esiTokensModal').modal('hide');
+            window.location.hash = `#SystemSettings/EveLogins/${id}`;
+        },
+
+        loginName (loginId) {
+            for (const login of this.eveLogins) {
+                if (login.id === loginId) {
+                    return login.name;
+                }
+            }
+            return `[${loginId}]`;
+        },
+
+        askDeleteChar (characterId, characterName) {
             this.charToDelete = {
                 id: characterId,
                 name: characterName,
@@ -657,11 +691,11 @@ export default {
             $('#deleteCharModal').modal('show');
         },
 
-        deleteChar() {
+        deleteChar () {
             const vm = this;
             const character = (new Character(vm));
             character.deleteCharacter(this.charToDelete.id, this.deleteReason, () => {
-                vm.getPlayer();
+                getPlayer(vm);
                 if (vm.playerEdit.id === vm.player.id) {
                     character.updateCharacter(vm.authChar.id, () => {
                         vm.emitter.emit('playerChange');
@@ -673,6 +707,36 @@ export default {
         },
     },
 }
+
+function getPlayer(vm) {
+    const api = new PlayerApi();
+
+    api.showById(vm.playerId, (error, data) => {
+        if (error) {
+            vm.playerEdit = null;
+            return;
+        }
+        vm.playerEdit = data;
+        vm.characterMovements = vm.buildCharacterMovements(data);
+    });
+
+    api.groupsDisabledById(vm.playerId, (error, data) => {
+        if (error) {
+            return;
+        }
+        vm.playerEditDeactivated = data;
+    });
+}
+
+function getEveLogins(vm) {
+    new SettingsApi().userSettingsEveLoginList((error, data) => {
+        if (error) {
+            return;
+        }
+        vm.eveLogins = data;
+    });
+}
+
 </script>
 
 <!--suppress CssUnusedSymbol -->

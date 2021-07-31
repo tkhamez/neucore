@@ -122,10 +122,16 @@ class SettingsEveLoginControllerTest extends WebTestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
+    public function testList403()
+    {
+        $response = $this->runApp('GET', '/api/user/settings/eve-login/list');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
     public function testList200()
     {
         $this->setupDb();
-        // no login!
+        $this->loginUser(1);
 
         $response = $this->runApp('GET', '/api/user/settings/eve-login/list');
         $this->assertEquals(200, $response->getStatusCode());
