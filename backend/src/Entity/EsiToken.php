@@ -85,12 +85,12 @@ class EsiToken implements \JsonSerializable
     /**
      * Shows if the EVE character has all required roles for the login.
      *
-     * Also true if the login does not require any roles.
+     * Null if the login does not require any roles or if the token is invalid.
      *
-     * @OA\Property
+     * @OA\Property(nullable=true)
      * @var bool
      */
-    private $hasRoles = true;
+    private $hasRoles = null;
 
     /**
      * Unix timestamp when access token expires.

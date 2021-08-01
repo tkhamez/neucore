@@ -21,7 +21,7 @@ class EsiTokenTest extends TestCase
             'eveLoginId' => 0,
             'validToken' => true,
             'validTokenTime' => $type->getValidTokenTime()->format(Api::DATE_FORMAT),
-            'hasRoles' => true,
+            'hasRoles' => null,
         ], json_decode((string) json_encode($type), true));
 
         $type->setEveLogin((new EveLogin())->setId(1));
@@ -29,7 +29,7 @@ class EsiTokenTest extends TestCase
             'eveLoginId' => 1,
             'validToken' => true,
             'validTokenTime' => $type->getValidTokenTime()->format(Api::DATE_FORMAT),
-            'hasRoles' => true,
+            'hasRoles' => null,
         ], json_decode((string) json_encode($type), true));
     }
 

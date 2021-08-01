@@ -210,7 +210,7 @@ class PlayerControllerTest extends WebTestCase
                     'eveLoginId' => $char->getEsiTokens()[0]->getEveLogin()->getId(),
                     'validToken' => null,
                     'validTokenTime' => null,
-                    'hasRoles' => true
+                    'hasRoles' => null
                 ]],
             ]],
             'groups' => [
@@ -924,7 +924,7 @@ class PlayerControllerTest extends WebTestCase
                     'eveLoginId' => $this->eveLoginId,
                     'validToken' => false,
                     'validTokenTime' => '2019-08-03T23:12:45Z', // same as above (character.validTokenTime)
-                    'hasRoles' => true
+                    'hasRoles' => null
                 ]],
                 'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => '2021-08-27T21:48:03Z']],
             ], [
@@ -940,7 +940,7 @@ class PlayerControllerTest extends WebTestCase
                     'eveLoginId' => $this->eveLoginId,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
-                    'hasRoles' => true
+                    'hasRoles' => null
                 ]],
                 'characterNameChanges' => [],
             ]],

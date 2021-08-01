@@ -1,184 +1,161 @@
 <template>
-    <div class="container-fluid">
 
-        <div v-cloak v-if="authChar" class="modal fade" id="tokenModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Invalid ESI token</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            The ESI token for this character is no longer valid.<br>
-                            Please use the EVE login button and login with this character
-                            again to create a new token.
-                        </p>
-                        <p class="align-center">
-                            <a :href="loginHost + '/login/core.alt'">
-                                <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
-                            </a>
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
+<esi-tokens v-if="authChar" :page="'Home'" ref="esiTokensModal"></esi-tokens>
+
+<div v-cloak v-if="authChar" class="modal fade" id="deleteCharModal">
+    <div class="modal-dialog">
+        <div v-if="charToDelete" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Character</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-
-        <div v-cloak v-if="authChar" class="modal fade" id="deleteCharModal">
-            <div class="modal-dialog">
-                <div v-if="charToDelete" class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Delete Character</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            Are you sure you want to delete this character?
-                            You will lose the associated groups.
-                        </p>
-                        <p class="text-warning">{{ charToDelete.name }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
-                            DELETE character
-                        </button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div v-cloak v-if="! authChar" class="jumbotron mt-3">
-            <title-logo :settings="settings"></title-logo>
-            <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
-            <a :href="loginHost + '/login/core.default'">
-                <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
-            </a>
-            <p class="small">
-                <br>
-                Learn more about the security of <em>EVE Online SSO</em> in this
-                <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
-                    target="_blank" rel="noopener noreferrer">dev-blog</a> article.
-            </p>
-            <span v-if="markdownLoginText">
-                <br>
-                <span v-html="markdownLoginText"></span>
-            </span>
-        </div>
-        <div v-cloak v-if="authChar" class="card mt-3 mb-3">
-            <div class="card-body">
-                <title-logo :settings="settings"></title-logo>
-                <p>Add your other characters by logging in with EVE SSO.</p>
+            <div class="modal-body">
                 <p>
-                    <a :href="loginHost + '/login/core.alt'">
-                        <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
-                    </a>
+                    Are you sure you want to delete this character?
+                    You will lose the associated groups.
                 </p>
+                <p class="text-warning">{{ charToDelete.name }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
+                    DELETE character
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
+    </div>
+</div>
 
-        <div v-cloak v-if="authChar && markdownHtml" class="card mb-3">
-            <div class="card-body pb-0" v-html="markdownHtml"></div>
+<div class="container-fluid">
+    <div v-cloak v-if="! authChar" class="jumbotron mt-3">
+        <title-logo :settings="settings"></title-logo>
+        <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
+        <a :href="loginHost + '/login/core.default'">
+            <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
+        </a>
+        <p class="small">
+            <br>
+            Learn more about the security of <em>EVE Online SSO</em> in this
+            <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
+                target="_blank" rel="noopener noreferrer">dev-blog</a> article.
+        </p>
+        <span v-if="markdownLoginText">
+            <br>
+            <span v-html="markdownLoginText"></span>
+        </span>
+    </div>
+    <div v-cloak v-if="authChar" class="card mt-3 mb-3">
+        <div class="card-body">
+            <title-logo :settings="settings"></title-logo>
+            <p>Add your other characters by logging in with EVE SSO.</p>
+            <p>
+                <a :href="loginHost + '/login/core.alt'">
+                    <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
+                </a>
+            </p>
         </div>
+    </div>
 
-        <div v-cloak v-if="deactivated" class="alert alert-danger">
-            Groups for this account are <strong>disabled</strong> (or will be disabled soon)
-            because one or more characters do not have a valid ESI token.
-        </div>
+    <div v-cloak v-if="authChar && markdownHtml" class="card mb-3">
+        <div class="card-body pb-0" v-html="markdownHtml"></div>
+    </div>
 
-        <div v-cloak v-if="player">
-            <div class="row">
-                <div class="col-lg-8">
-                    <h2>Characters</h2>
-                    <div class="card-columns">
-                        <div v-for="char in player.characters" class="card border-secondary">
-                            <div class="card-header">
-                                <img :src="characterPortrait(char.id, 32)" alt="portrait">
-                                {{ char.name }}
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">
-                                    <span class="text-muted">Corporation: </span>
+    <div v-cloak v-if="deactivated" class="alert alert-danger">
+        Groups for this account are <strong>disabled</strong> (or will be disabled soon)
+        because one or more characters do not have a valid ESI token.
+    </div>
+
+    <div v-cloak v-if="player">
+        <div class="row">
+            <div class="col-lg-8">
+                <h2>Characters</h2>
+                <div class="card-columns">
+                    <div v-for="char in player.characters" class="card border-secondary">
+                        <div class="card-header">
+                            <img :src="characterPortrait(char.id, 32)" alt="portrait">
+                            {{ char.name }}
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <span class="text-muted">Corporation:</span>
                                     <span v-if="char.corporation">{{ char.corporation.name }}</span>
-                                    <br>
-                                    <span class="text-muted">Alliance: </span>
-                                    <span v-if="char.corporation && char.corporation.alliance">
-                                        {{ char.corporation.alliance.name }}
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="card-footer">
-                                <span v-if="char.main" class="badge badge-warning">Main</span>
-                                <a v-if="! char.main" class="badge badge-primary" href="#"
-                                   v-on:click.prevent="makeMain(char.id)">Make Main</a>
-
-                                <a class="badge badge-primary ml-1" href="#"
-                                   v-on:click.prevent="update(char.id)">Update character</a>
-                                <a v-if="authChar && authChar.id !== char.id &&
-                                         settings.allow_character_deletion === '1'"
-                                   class="badge badge-danger ml-1"
-                                   v-on:click.prevent="askDeleteChar(char.id, char.name)"
-                                   href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
-
                                 <br>
+                                <span class="text-muted">Alliance:</span>
+                                <span v-if="char.corporation && char.corporation.alliance">
+                                    {{ char.corporation.alliance.name }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <span v-if="char.main" class="badge badge-warning">Main</span>
+                            <a v-if="! char.main" class="badge badge-primary" href="#"
+                               v-on:click.prevent="makeMain(char.id)">Make Main</a>
 
-                                <span v-if="char.validToken" class="badge badge-success">Valid ESI token</span>
-                                <span v-if="char.validToken === null" class="badge badge-info">No ESI token</span>
-                                <button v-if="char.validToken === false"
-                                        type="button" class="btn btn-danger btn-sm mt-1"
-                                        data-toggle="modal" data-target="#tokenModal">
-                                    Invalid ESI token
-                                </button>
+                            <a class="badge badge-primary ml-1" href="#"
+                               v-on:click.prevent="update(char.id)">Update character</a>
+                            <a v-if="authChar && authChar.id !== char.id &&
+                                     settings.allow_character_deletion === '1'"
+                               class="badge badge-danger ml-1"
+                               v-on:click.prevent="askDeleteChar(char.id, char.name)"
+                               href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
 
-                                <a v-if="char.validToken === false" :href="loginHost + '/login/core.alt'"
-                                   class="ml-1 char-login-button">
-                                    <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
-                                </a>
-                            </div>
+                            <br>
+
+                            <span type="button" class=""
+                                  :class="{
+                                      'badge badge-success': char.validToken,
+                                      'badge badge-info': char.validToken === null,
+                                      'btn btn-danger btn-sm mt-1': char.validToken === false,
+                                  }"
+                                  :title="char.validToken ? 'Valid default ESI token' :
+                                          (char.validToken === null ? 'No default ESI token' :
+                                           'Invalid default ESI token')"
+                                  v-on:click.prevent="showEsiTokens(char, char.validToken === false)">
+                                ESI token(s)
+                            </span>
+                            <a v-if="char.validToken === false" :href="loginHost + '/login/core.alt'"
+                               class="ml-1 char-login-button" :title="'Login in with: ' + char.name">
+                                <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="player-hdl">
-                        <h2>Account</h2>
-                        <span class="text-muted">{{ player.name }} #{{ player.id }}</span>
-                        <span v-if="player.status === 'managed'" class="text-muted"> (manually managed)</span>
-                    </div>
-                    <div class="card border-secondary mb-3">
-                        <h3 class="card-header">Groups</h3>
-                        <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated }">
-                            <li v-for="group in player.groups" class="list-group-item">
-                                {{ group.name }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div v-if="player.roles.length > 1" class="card border-secondary mb-3" >
-                        <h3 class="card-header">Roles</h3>
-                        <ul class="list-group list-group-flush">
-                            <li v-for="role in playerRoles" class="list-group-item">
-                                {{ role }}
-                            </li>
-                        </ul>
-                    </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="player-hdl">
+                    <h2>Account</h2>
+                    <span class="text-muted">{{ player.name }} #{{ player.id }}</span>
+                    <span v-if="player.status === 'managed'" class="text-muted">(manually managed)</span>
                 </div>
-            </div> <!-- row -->
-        </div> <!-- if authenticated -->
-    </div> <!-- container -->
+                <div class="card border-secondary mb-3">
+                    <h3 class="card-header">Groups</h3>
+                    <ul class="list-group list-group-flush" :class="{ 'groups-disabled': deactivated }">
+                        <li v-for="group in player.groups" class="list-group-item">
+                            {{ group.name }}
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="player.roles.length > 1" class="card border-secondary mb-3" >
+                    <h3 class="card-header">Roles</h3>
+                    <ul class="list-group list-group-flush">
+                        <li v-for="role in playerRoles" class="list-group-item">
+                            {{ role }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div> <!-- row -->
+    </div> <!-- if authenticated -->
+</div> <!-- container -->
 </template>
 
 <script>
 import $ from 'jquery';
 import {PlayerApi} from 'neucore-js-client';
-import TitleLogo from './Home--title-logo.vue';
 import markdownIt from 'markdown-it';
 import mdEmoji from 'markdown-it-emoji/light';
 import mdSup from 'markdown-it-sup';
@@ -188,10 +165,13 @@ import mdAbbr from 'markdown-it-abbr';
 import mdMark from 'markdown-it-mark';
 import mdAttrs from 'markdown-it-attrs';
 import Character from "../classes/Character";
+import TitleLogo from './Home--title-logo.vue';
+import EsiTokens from "../components/EsiTokens.vue";
 
 export default {
     components: {
-        TitleLogo
+        EsiTokens,
+        TitleLogo,
     },
 
     props: {
@@ -301,6 +281,10 @@ export default {
             });
             $('#deleteCharModal').modal('hide');
             this.charToDelete = null;
+        },
+
+        showEsiTokens (character, showInvalid) {
+            this.$refs.esiTokensModal.showModal(character, showInvalid);
         },
     }
 }

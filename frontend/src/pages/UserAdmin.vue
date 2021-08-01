@@ -1,48 +1,6 @@
 <template>
+<esi-tokens :page="'UserAdmin'" ref="esiTokensModal"></esi-tokens>
 <div class="container-fluid">
-
-    <div v-cloak class="modal fade" id="esiTokensModal">
-        <div class="modal-dialog">
-            <div v-cloak v-if="esiTokensCharacter && eveLogins" class="modal-content">
-                <div class="modal-header">
-                    {{ esiTokensCharacter.name }} - ESI Tokens
-                </div>
-                <div class="modal-body">
-                    <table class="table">
-                        <tr>
-                            <td>EVE Login</td>
-                            <td>Token Status</td>
-                            <td>Token Status changed*</td>
-                            <td>Has Roles</td>
-                        </tr>
-                        <tr v-for="esiToken in esiTokensCharacter.esiTokens">
-                            <td>
-                                <a href="#" v-on:click.prevent="showEveLogin(esiToken.eveLoginId)">
-                                    {{ loginName(esiToken.eveLoginId) }}
-                                </a>
-                            </td>
-                            <td>
-                                <span v-if="esiToken.validToken">valid</span>
-                                <span v-if="esiToken.validToken === false">invalid</span>
-                                <span v-if="esiToken.validToken === null">n/a</span>
-                            </td>
-                            <td>
-                                <span v-if="esiToken.validTokenTime">
-                                    {{ formatDate(esiToken.validTokenTime) }}
-                                </span>
-                            </td>
-                            <td>{{ esiToken.hasRoles }}</td>
-                        </tr>
-                    </table>
-                    <p class="small text-muted">* Time is GMT</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div v-cloak class="modal fade" id="deleteCharModal">
         <div class="modal-dialog">
             <div v-cloak v-if="charToDelete" class="modal-content">
@@ -435,7 +393,9 @@
                         <tbody>
                             <tr v-for="serviceAccount in playerEdit.serviceAccounts">
                                 <td>[{{ serviceAccount.serviceId }}] {{ serviceAccount.serviceName }}</td>
-                                <td>[{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}</td>
+                                <td>
+                                    [{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}
+                                </td>
                                 <td>{{ serviceAccount.username }}</td>
                                 <td>{{ serviceAccount.status }}</td>
                             </tr>
@@ -451,15 +411,17 @@
 
 <script>
 import $ from 'jquery';
-import {PlayerApi, SettingsApi} from 'neucore-js-client';
+import {PlayerApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
+import EsiTokens from '../components/EsiTokens.vue';
 import Character from "../classes/Character";
 
 export default {
     components: {
         CharacterSearch,
         CharacterNameChanges,
+        EsiTokens,
     },
 
     props: {
@@ -479,8 +441,6 @@ export default {
             characterMovements: [],
 
             playerEdit: null, // player being edited
-
-            eveLogins: null,
 
             playerEditDeactivated: false,
             availableRoles: [
@@ -510,7 +470,6 @@ export default {
             ],
             newRole: '',
             searchResult: [],
-            esiTokensCharacter: null,
             charToDelete: null,
             deleteReason: '',
         }
@@ -538,7 +497,6 @@ export default {
         if (this.playerId) {
             getPlayer(this);
         }
-        getEveLogins(this);
     },
 
     watch: {
@@ -664,22 +622,7 @@ export default {
         },
 
         showEsiTokens (character) {
-            this.esiTokensCharacter = character;
-            $('#esiTokensModal').modal('show');
-        },
-
-        showEveLogin (id) {
-            $('#esiTokensModal').modal('hide');
-            window.location.hash = `#SystemSettings/EveLogins/${id}`;
-        },
-
-        loginName (loginId) {
-            for (const login of this.eveLogins) {
-                if (login.id === loginId) {
-                    return login.name;
-                }
-            }
-            return `[${loginId}]`;
+            this.$refs.esiTokensModal.showModal(character);
         },
 
         askDeleteChar (characterId, characterName) {
@@ -727,16 +670,6 @@ function getPlayer(vm) {
         vm.playerEditDeactivated = data;
     });
 }
-
-function getEveLogins(vm) {
-    new SettingsApi().userSettingsEveLoginList((error, data) => {
-        if (error) {
-            return;
-        }
-        vm.eveLogins = data;
-    });
-}
-
 </script>
 
 <!--suppress CssUnusedSymbol -->

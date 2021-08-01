@@ -96,7 +96,7 @@ class PlayerTest extends TestCase
 
         $expected3 = $expected1;
         $expected3['characters'][0]['esiTokens'] = [
-            ['eveLoginId' => 1, 'validToken' => null, 'validTokenTime' => null, 'hasRoles' => true]
+            ['eveLoginId' => 1, 'validToken' => null, 'validTokenTime' => null, 'hasRoles' => null]
         ];
         $expected3['characters'][1]['esiTokens'] = [];
         $this->assertSame(
