@@ -24,15 +24,12 @@
                 </div>
 
                 <table class="table">
-                    <thead>
                     <tr>
-                        <td>EVE Login</td>
-                        <td>Token Status</td>
-                        <td v-if="page === 'UserAdmin'">Token Status changed*</td>
-                        <td>Required roles</td>
+                        <td>Name</td>
+                        <td>Status</td>
+                        <td v-if="page === 'UserAdmin'">Status changed*</td>
+                        <td>Has required roles</td>
                     </tr>
-                    </thead>
-                    <tbody>
                     <tr v-for="esiToken in character.esiTokens">
                         <td>
                             <a v-if="page === 'UserAdmin' && hasRole('settings')" href="#"
@@ -57,7 +54,6 @@
                             <span v-if="esiToken.hasRoles === null">n/a</span>
                         </td>
                     </tr>
-                    </tbody>
                 </table>
                 <p v-if="page === 'UserAdmin'" class="small text-muted">* Time is GMT</p>
             </div>
@@ -71,16 +67,15 @@
 
 <script>
 import $ from 'jquery';
-import {SettingsApi} from 'neucore-js-client';
 
 export default {
     props: {
-        page: String
+        page: String,
+        eveLogins: Array,
     },
 
     data () {
         return {
-            eveLogins: null,
             character: null,
             showInvalid: false,
             loginHost: '',
@@ -89,7 +84,6 @@ export default {
 
     mounted () {
         this.loginHost = this.$root.envVars.backendHost;
-        getEveLogins(this);
     },
 
     methods: {
@@ -117,14 +111,5 @@ export default {
             return `[${loginId}]`;
         },
     },
-}
-
-function getEveLogins(vm) {
-    new SettingsApi().userSettingsEveLoginList((error, data) => {
-        if (error) {
-            return;
-        }
-        vm.eveLogins = data;
-    });
 }
 </script>

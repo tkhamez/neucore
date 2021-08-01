@@ -166,7 +166,7 @@ body.neucore {
 }
 
 /**
- * The edit icons for the group and app admin navigation.
+ * The edit icons for the group, app etc. admin navigation.
  */
 .list-item-wrap {
     position: relative;
@@ -204,4 +204,12 @@ body.neucore {
     padding: 14px;
     border: 6px solid red;
     text-align: center;
+}
+
+/**
+ * Text classes
+ */
+.text-with-tooltip {
+    text-decoration: underline;
+    text-decoration-style: dotted;
 }

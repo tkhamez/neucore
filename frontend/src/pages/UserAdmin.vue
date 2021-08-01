@@ -1,5 +1,7 @@
 <template>
-<esi-tokens :page="'UserAdmin'" ref="esiTokensModal"></esi-tokens>
+
+<esi-tokens :eveLogins="eveLogins" :page="'UserAdmin'" ref="esiTokensModal"></esi-tokens>
+
 <div class="container-fluid">
     <div v-cloak class="modal fade" id="deleteCharModal">
         <div class="modal-dialog">
@@ -411,7 +413,7 @@
 
 <script>
 import $ from 'jquery';
-import {PlayerApi} from 'neucore-js-client';
+import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import EsiTokens from '../components/EsiTokens.vue';
@@ -441,6 +443,8 @@ export default {
             characterMovements: [],
 
             playerEdit: null, // player being edited
+
+            eveLogins: null,
 
             playerEditDeactivated: false,
             availableRoles: [
@@ -497,6 +501,7 @@ export default {
         if (this.playerId) {
             getPlayer(this);
         }
+        getEveLogins(this);
     },
 
     watch: {
@@ -668,6 +673,15 @@ function getPlayer(vm) {
             return;
         }
         vm.playerEditDeactivated = data;
+    });
+}
+
+function getEveLogins(vm) {
+    new SettingsApi().userSettingsEveLoginList((error, data) => {
+        if (error) {
+            return;
+        }
+        vm.eveLogins = data;
     });
 }
 </script>

@@ -1,6 +1,49 @@
 <template>
 
-<esi-tokens v-if="authChar" :page="'Home'" ref="esiTokensModal"></esi-tokens>
+<esi-tokens :eveLogins="eveLogins" :page="'Home'" ref="esiTokensModal"></esi-tokens>
+
+<div class="modal fade" id="eveLoginsModal">
+    <div v-cloak v-if="eveLogins" class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Additional ESI Tokens</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do not use these logins unless you were ask to do so.<br>
+                    Use the EVE login button on the main page to add your other characters!
+                </p>
+                <table class="table">
+                    <tr>
+                        <td>Name</td>
+                        <td>Description</td>
+                        <td>Scopes</td>
+                        <td title="Required roles in the game" class="text-with-tooltip">Roles</td>
+                        <td>Link</td>
+                    </tr>
+                    <tr v-for="eveLogin in filteredEveLogins()">
+                        <td>{{ eveLogin.name }}</td>
+                        <td>{{ eveLogin.description }}</td>
+                        <td>{{ eveLogin.esiScopes.split(' ').join(', ') }}</td>
+                        <td>{{ eveLogin.eveRoles.join(', ') }}</td>
+                        <td>
+                            <a :href="loginHost + '/login/' + eveLogin.name"
+                               class="ml-1 char-login-button" title="Login">
+                                <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div v-cloak v-if="authChar" class="modal fade" id="deleteCharModal">
     <div class="modal-dialog">
@@ -22,9 +65,7 @@
                 <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
                     DELETE character
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    Close
-                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -41,7 +82,7 @@
             <br>
             Learn more about the security of <em>EVE Online SSO</em> in this
             <a href="https://www.eveonline.com/article/eve-online-sso-and-what-you-need-to-know/"
-                target="_blank" rel="noopener noreferrer">dev-blog</a> article.
+               target="_blank" rel="noopener noreferrer">dev-blog</a> article.
         </p>
         <span v-if="markdownLoginText">
             <br>
@@ -54,9 +95,14 @@
             <p>Add your other characters by logging in with EVE SSO.</p>
             <p>
                 <a :href="loginHost + '/login/core.alt'">
-                    <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
+                    <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"
+                         title="Login to add another character.">
                 </a>
             </p>
+            <a href="#" class="badge badge-secondary font-weight-normal p-2"
+               data-toggle="modal" data-target="#eveLoginsModal">
+                Add additional ESI tokens
+            </a>
         </div>
     </div>
 
@@ -92,10 +138,10 @@
                         </div>
                         <div class="card-footer">
                             <span v-if="char.main" class="badge badge-warning">Main</span>
-                            <a v-if="! char.main" class="badge badge-primary" href="#"
+                            <a v-if="! char.main" class="badge badge-primary font-weight-normal" href="#"
                                v-on:click.prevent="makeMain(char.id)">Make Main</a>
 
-                            <a class="badge badge-primary ml-1" href="#"
+                            <a class="badge badge-primary ml-1 font-weight-normal" href="#"
                                v-on:click.prevent="update(char.id)">Update character</a>
                             <a v-if="authChar && authChar.id !== char.id &&
                                      settings.allow_character_deletion === '1'"
@@ -105,18 +151,19 @@
 
                             <br>
 
-                            <span type="button" class=""
-                                  :class="{
+                            <a href="#" class="font-weight-normal"
+                               v-on:click.prevent="showEsiTokens(char, char.validToken === false)"
+                               :class="{
                                       'badge badge-success': char.validToken,
                                       'badge badge-info': char.validToken === null,
                                       'btn btn-danger btn-sm mt-1': char.validToken === false,
-                                  }"
-                                  :title="char.validToken ? 'Valid default ESI token' :
-                                          (char.validToken === null ? 'No default ESI token' :
-                                           'Invalid default ESI token')"
-                                  v-on:click.prevent="showEsiTokens(char, char.validToken === false)">
-                                ESI token(s)
-                            </span>
+                               }"
+                               :title="char.validToken ? 'Valid default ESI token' :
+                                       (char.validToken === null ? 'No default ESI token' :
+                                        'Invalid default ESI token')"
+                            >
+                                ESI tokens
+                            </a>
                             <a v-if="char.validToken === false" :href="loginHost + '/login/core.alt'"
                                class="ml-1 char-login-button" :title="'Login in with: ' + char.name">
                                 <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
@@ -155,7 +202,7 @@
 
 <script>
 import $ from 'jquery';
-import {PlayerApi} from 'neucore-js-client';
+import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import markdownIt from 'markdown-it';
 import mdEmoji from 'markdown-it-emoji/light';
 import mdSup from 'markdown-it-sup';
@@ -188,6 +235,7 @@ export default {
             markdownHtml: '',
             markdownLoginText: '',
             loginHost: '',
+            eveLogins: null,
         }
     },
 
@@ -214,40 +262,27 @@ export default {
         md.renderer.rules.emoji = function(token, idx) {
             return `<span class="emoji">${token[idx].content}</span>`;
         };
-
-        this.checkDeactivated();
         this.markdownHtml = md.render(this.settings.customization_home_markdown);
         this.markdownLoginText = md.render(this.settings.customization_login_text);
+
+        checkDeactivated(this);
+        getEveLogins(this);
     },
 
     watch: {
         authChar: function() { // for primary login and logout
-            this.checkDeactivated();
+            checkDeactivated(this);
         },
 
         player: function() {
             if (! this.player) {
                 return;
             }
-            this.checkDeactivated();
+            checkDeactivated(this);
         },
     },
 
     methods: {
-        checkDeactivated: function() {
-            if (! this.player) {
-                this.deactivated = false;
-                return;
-            }
-
-            const vm = this;
-            new PlayerApi().groupsDisabled(function(error, data) {
-                if (error) { // 403 usually
-                    return;
-                }
-                vm.deactivated = data;
-            });
-        },
 
         makeMain: function(characterId) {
             const vm = this;
@@ -286,7 +321,34 @@ export default {
         showEsiTokens (character, showInvalid) {
             this.$refs.esiTokensModal.showModal(character, showInvalid);
         },
+
+        filteredEveLogins () {
+            return this.eveLogins.filter(eveLogin => eveLogin.name.indexOf('core.') !== 0);
+        },
     }
+}
+
+function checkDeactivated(vm) {
+    if (!vm.player) {
+        vm.deactivated = false;
+        return;
+    }
+
+    new PlayerApi().groupsDisabled(function(error, data) {
+        if (error) { // 403 usually
+            return;
+        }
+        vm.deactivated = data;
+    });
+}
+
+function getEveLogins(vm) {
+    new SettingsApi().userSettingsEveLoginList((error, data) => {
+        if (error) {
+            return;
+        }
+        vm.eveLogins = data;
+    });
 }
 </script>
 

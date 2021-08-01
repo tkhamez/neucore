@@ -331,7 +331,7 @@ function configureDataTable(vm) {
                         </a>`;
                 } else if (row.missingCharacterMailSentNumber > 0) {
                     return `
-                        <div class="with-tooltip" data-toggle="tooltip" data-html="true" title="
+                        <div class="text-with-tooltip" data-toggle="tooltip" data-html="true" title="
                             Number mails sent: ${row.missingCharacterMailSentNumber}<br>
                             Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
                             Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
@@ -355,7 +355,7 @@ function configureDataTable(vm) {
                 }
                 if (row.character.validTokenTime) {
                     return `
-                        <div class="with-tooltip" data-toggle="tooltip" data-html="true"
+                        <div class="text-with-tooltip" data-toggle="tooltip" data-html="true"
                               title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}">
                             ${text}
                         </div>`;
@@ -393,14 +393,6 @@ function configureDataTable(vm) {
     });
 }
 </script>
-
-<!--suppress CssUnusedSymbol -->
-<style>
-    .member-table .with-tooltip {
-        text-decoration: underline;
-        text-decoration-style: dotted;
-    }
-</style>
 
 <style lang="scss" scoped>
     .member-table {
