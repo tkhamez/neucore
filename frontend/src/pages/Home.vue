@@ -82,10 +82,6 @@
                     <a :href="loginHost + '/login-alt'">
                         <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
                     </a>
-                    <span v-if="player && player.status === 'managed'">
-                        <br>
-                        <a :href="loginHost + '/login-managed-alt'">Login without scopes</a>
-                    </span>
                 </p>
             </div>
         </div>

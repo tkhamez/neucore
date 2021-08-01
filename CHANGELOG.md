@@ -4,7 +4,8 @@
 
 dd mm yyyy
 
-- Removed "invalid token" and "no token" lists from user admin page.
+- Removed "invalid token" and "no token" account lists from user admin page.
+- Removed "managed-alt" login link on home page for managed accounts.
 - Add reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
 - Small text improvements for the service admin page and better error handling if the service configuration is invalid.
 - Update dependencies.
