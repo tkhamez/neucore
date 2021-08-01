@@ -224,13 +224,14 @@ export default {
             if (this.route[0] === 'logout') {
                 this.logout();
                 window.location.hash = '';
-            } else if (['login', 'login-alt', 'login-custom'].indexOf(this.route[0]) !== -1) {
-                authResult();
+            } else if (['login', 'login-alt', 'login-director', 'login-custom'].indexOf(this.route[0]) !== -1) {
+                authResult(
+                    ['login-director', 'login-custom'].indexOf(this.route[0]) !== -1 ?
+                        'success' :
+                        ''
+                );
                 // Remove the hash value so that it does not appear in bookmarks, for example.
                 window.location.hash = '';
-            } else if (this.route[0] === 'login-director') {
-                authResult('info');
-                // can't redirect to settings here because player may not be loaded yet for role check
             }  else if (this.route[0] === 'login-mail') {
                 window.location.hash = 'SystemSettings/Mails';
             }
@@ -252,7 +253,7 @@ export default {
                     }
                     if (data.success) {
                         if (successMessageType) {
-                            vm.message(data.message, successMessageType);
+                            vm.message(data.message, successMessageType, 5000);
                         }
                     } else {
                         vm.message(data.message, 'error');

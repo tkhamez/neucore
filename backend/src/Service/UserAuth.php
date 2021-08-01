@@ -192,18 +192,22 @@ class UserAuth implements RoleProviderInterface
         return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth, true);
     }
 
-    /**
-     * @param EveLogin $eveLogin An instance attached to the entity manager.
-     * @return bool False if user is not logged in, character was not found on the account or if save failed.
-     */
-    public function addToken(EveLogin $eveLogin, EveAuthentication $eveAuth): bool
+    public function findCharacterOnAccount(EveAuthentication $eveAuth): ?Character
     {
         $user = $this->getUser();
         $character = $user ? $user->getPlayer()->getCharacter($eveAuth->getCharacterId()) : null;
-        if (!$user || !$character) {
-            return false;
+        if ($character) {
+            return $character;
         }
+        return null;
+    }
 
+    /**
+     * @param EveLogin $eveLogin An instance attached to the entity manager.
+     * @return bool False if save failed.
+     */
+    public function addToken(EveLogin $eveLogin, EveAuthentication $eveAuth, Character $character): bool
+    {
         $esiToken = $this->repositoryFactory->getEsiTokenRepository()->findOneBy([
             'character' => $character,
             'eveLogin' => $eveLogin

@@ -59,8 +59,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AuthController extends BaseController
 {
-    private const SESS_AUTH_REDIRECT = 'auth_redirect';
-
     private const SESS_AUTH_STATE = 'auth_state';
 
     private const SESS_AUTH_RESULT = 'auth_result';
@@ -91,11 +89,11 @@ class AuthController extends BaseController
      *
      * (Only public for unit tests.)
      *
-     * @param string $eveLoginId The ID of an EveLogin record.
+     * @param string $eveLoginName The name of an EveLogin record.
      */
-    public static function getStatePrefix(string $eveLoginId): string
+    public static function getStatePrefix(string $eveLoginName): string
     {
-        return $eveLoginId . self::STATE_PREFIX_SEPARATOR;
+        return $eveLoginName . self::STATE_PREFIX_SEPARATOR;
     }
 
     public function __construct(
@@ -159,12 +157,11 @@ class AuthController extends BaseController
         MemberTracking $memberTrackingService,
         EsiData $esiData
     ): ResponseInterface {
-        $redirectUrl = $this->session->get(self::SESS_AUTH_REDIRECT, '/');
-        $this->session->delete(self::SESS_AUTH_REDIRECT);
-
         $state = (string) $this->session->get(self::SESS_AUTH_STATE);
-        $this->session->delete(self::SESS_AUTH_STATE);
+        $loginName = $this->getLoginNameFromState($state);
+        $redirectUrl = $this->getRedirectUrl($loginName);
 
+        $this->session->delete(self::SESS_AUTH_STATE);
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
         try {
@@ -178,11 +175,10 @@ class AuthController extends BaseController
                 self::KEY_RESULT_SUCCESS => false,
                 self::KEY_RESULT_MESSAGE => $e->getMessage(),
             ]);
-            return $this->redirect((string) $redirectUrl);
+            return $this->redirect($redirectUrl);
         }
 
         // handle login
-        $loginName = $this->getLoginNameFromState($state);
         $success = false;
         switch ($loginName) {
             case EveLogin::NAME_DEFAULT:
@@ -205,8 +201,8 @@ class AuthController extends BaseController
                 $errorMessage = 'Failed to store character.';
                 break;
             case EveLogin::NAME_DIRECTOR:
-                $successMessage = 'Character with director roles added.';
-                $errorMessage = 'Error adding character with director roles.';
+                $successMessage = 'ESI token for character with director role added.';
+                $errorMessage = 'Error adding ESI token for character with director role.';
                 if ($esiData->verifyRoles(
                     [EveLogin::ROLE_DIRECTOR],
                     $eveAuth->getCharacterId(),
@@ -220,21 +216,23 @@ class AuthController extends BaseController
                 $errorMessage = '';
                 $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $loginName]);
                 if (!$eveLogin) {
-                    $errorMessage = 'Invalid login link.';
+                    $errorMessage = 'Error, ESI token not added: Invalid login link.';
+                } elseif (!$userAuth->getUser()) {
+                    $errorMessage = 'Error, ESI token not added: Not logged in, login first.';
+                } elseif (!($character = $userAuth->findCharacterOnAccount($eveAuth))) {
+                    $errorMessage =
+                        'Error, ESI token not added: Character not found on this account, please add it first.';
                 } elseif (!$esiData->verifyRoles(
                     $eveLogin->getEveRoles(),
                     $eveAuth->getCharacterId(),
                     $eveAuth->getToken()->getToken()
                 )) {
-                    $errorMessage = 'Character does not have required role(s).';
+                    $errorMessage = 'Error, ESI token not added: Character does not have required role(s).';
                 } else {
-                    if ($userAuth->addToken($eveLogin, $eveAuth)) {
+                    if ($userAuth->addToken($eveLogin, $eveAuth, $character)) {
                         $success = true;
                     } else {
-                        // Not logged in or
-                        // character not found on this account or
-                        // failed to save ESI token
-                        $errorMessage = 'Error adding the ESI token to a character on the logged in account.';
+                        $errorMessage = 'Failed to add the ESI token, please try again.';
                     }
                 }
         }
@@ -244,7 +242,7 @@ class AuthController extends BaseController
             self::KEY_RESULT_MESSAGE => $success ? $successMessage : $errorMessage
         ]);
 
-        return $this->redirect((string) $redirectUrl);
+        return $this->redirect($redirectUrl);
     }
 
     /**
@@ -329,9 +327,11 @@ class AuthController extends BaseController
 
     private function getRedirectUrl(string $loginId): string
     {
-        if (in_array($loginId, [EveLogin::NAME_DEFAULT, EveLogin::NAME_MANAGED, EveLogin::NAME_MANAGED_ALT])) {
+        if (empty($loginId)) {
+            return '/';
+        } elseif (in_array($loginId, [EveLogin::NAME_DEFAULT, EveLogin::NAME_MANAGED])) {
             return '/#login';
-        } elseif ($loginId === EveLogin::NAME_ALT) {
+        } elseif (in_array($loginId, [EveLogin::NAME_ALT, EveLogin::NAME_MANAGED_ALT])) {
             return '/#login-alt';
         } elseif ($loginId === EveLogin::NAME_MAIL) {
             return '/#login-mail';
@@ -341,7 +341,7 @@ class AuthController extends BaseController
         return '/#login-custom';
     }
 
-    private function redirectToLoginUrl(string $loginId): ResponseInterface
+    private function redirectToLoginUrl(string $loginName): ResponseInterface
     {
         try {
             $randomString = Random::chars(12);
@@ -349,10 +349,9 @@ class AuthController extends BaseController
             $this->response->getBody()->write('Error.');
             return $this->response->withStatus(500);
         }
-        $state = self::getStatePrefix($loginId) . $randomString;
+        $state = self::getStatePrefix($loginName) . $randomString;
 
         $this->session->set(self::SESS_AUTH_STATE, $state);
-        $this->session->set(self::SESS_AUTH_REDIRECT, $this->getRedirectUrl($loginId));
 
         $this->authProvider->setScopes($this->getLoginScopes($state));
 

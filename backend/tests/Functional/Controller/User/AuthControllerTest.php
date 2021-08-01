@@ -64,7 +64,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login-custom', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(AuthController::getStatePrefix($loginId), $sess->get('auth_state'));
     }
 
@@ -76,7 +75,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::NAME_DEFAULT), $sess->get('auth_state'));
     }
 
@@ -88,7 +86,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login-alt', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::NAME_ALT), $sess->get('auth_state'));
     }
 
@@ -119,7 +116,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::NAME_MANAGED), $sess->get('auth_state'));
     }
 
@@ -137,7 +133,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(
             AuthController::getStatePrefix(EveLogin::NAME_MANAGED_ALT),
             $sess->get('auth_state')
@@ -152,7 +147,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login-mail', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::NAME_MAIL), $sess->get('auth_state'));
     }
 
@@ -164,7 +158,6 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
 
         $sess = new SessionData();
-        $this->assertSame('/#login-director', $sess->get('auth_redirect'));
         $this->assertStringStartsWith(AuthController::getStatePrefix(EveLogin::NAME_DIRECTOR), $sess->get('auth_state'));
     }
 
@@ -214,7 +207,10 @@ class AuthControllerTest extends WebTestCase
         );
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertSame(['success' => false, 'message' => 'Invalid login link.'], $_SESSION['auth_result']);
+        $this->assertSame(
+            ['success' => false, 'message' => 'Error, ESI token not added: Invalid login link.'],
+            $_SESSION['auth_result']
+        );
     }
 
     /**
@@ -251,7 +247,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
-            ['success' => false, 'message' => 'Error adding the ESI token to a character on the logged in account.'],
+            ['success' => false, 'message' => 'Error, ESI token not added: Not logged in, login first.'],
             $_SESSION['auth_result']
         );
     }
@@ -290,7 +286,10 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
-            ['success' => false, 'message' => 'Error adding the ESI token to a character on the logged in account.'],
+            [
+                'success' => false,
+                'message' => 'Error, ESI token not added: Character not found on this account, please add it first.'
+            ],
             $_SESSION['auth_result']
         );
     }
@@ -332,7 +331,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
-            ['success' => false, 'message' => 'Character does not have required role(s).'],
+            ['success' => false, 'message' => 'Error, ESI token not added: Character does not have required role(s).'],
             $_SESSION['auth_result']
         );
     }
@@ -681,7 +680,7 @@ class AuthControllerTest extends WebTestCase
         );
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(
-            ['success' => true, 'message' => 'Character with director roles added.'],
+            ['success' => true, 'message' => 'ESI token for character with director role added.'],
             $_SESSION['auth_result']
         );
     }

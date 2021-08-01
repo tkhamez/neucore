@@ -334,37 +334,47 @@ class UserAuthTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testAddToken_NotLoggedIn()
+    public function testFindCharacterOnAccount_NotLoggedIn()
     {
-        $result = $this->service->addToken(
-            new EveLogin(),
+        $result = $this->service->findCharacterOnAccount(
             new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'tk']))
         );
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 
-    public function testAddToken_CharacterNotFound()
+    public function testFindCharacterOnAccount_CharacterNotFound()
     {
         $_SESSION['character_id'] = 100;
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
-        $result = $this->service->addToken(
-            new EveLogin(),
+        $result = $this->service->findCharacterOnAccount(
             new EveAuthentication(200, 'Main1', 'hash', new AccessToken(['access_token' => 'tk']))
         );
 
-        $this->assertFalse($result);
-        $this->assertSame(0, count($this->log->getHandler()->getRecords())); //did not fail for another reason
+        $this->assertNull($result);
+    }
+
+    public function testFindCharacterOnAccount_Success()
+    {
+        $_SESSION['character_id'] = 100;
+        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+
+        $result = $this->service->findCharacterOnAccount(
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a',]))
+        );
+
+        $this->assertSame(100, $result->getId());
     }
 
     public function testAddToken_SaveFailed()
     {
         $_SESSION['character_id'] = 100;
-        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+        $character = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $result = $this->service->addToken(
             new EveLogin(),
-            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a-second-token']))
+            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a-second-token'])),
+            $character
         );
 
         $this->assertFalse($result);
@@ -380,13 +390,13 @@ class UserAuthTest extends TestCase
         $eveLogin = (new EveLogin())->setName('custom1')->setEveRoles(['Diplomat']);
         $this->helper->getEm()->persist($eveLogin);
         $_SESSION['character_id'] = 100;
-        $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
+        $character = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
         $result = $this->service->addToken($eveLogin, new EveAuthentication(100, 'Main1', 'hash', new AccessToken([
             'access_token' => 'a-second-token',
             'refresh_token' => 'ref.t.',
             'expires' => 1525456785,
-        ])));
+        ])), $character);
 
         $this->assertTrue($result);
         $tokens = $this->esiTokenRepo->findBy([]);
