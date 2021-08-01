@@ -382,6 +382,9 @@ class AuthControllerTest extends WebTestCase
         $this->assertSame('gEy...fM0', $esiTokens[0]->getRefreshToken());
         $this->assertSame($token, $esiTokens[0]->getAccessToken());
         $this->assertLessThanOrEqual(time() + 1200, $esiTokens[0]->getExpires());
+        $this->assertTrue($esiTokens[0]->getValidToken());
+        $this->assertLessThanOrEqual(time(), $esiTokens[0]->getValidTokenTime()->getTimestamp());
+        $this->assertTrue($esiTokens[0]->getHasRoles());
     }
 
     /**

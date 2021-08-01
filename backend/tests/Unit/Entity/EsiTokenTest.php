@@ -122,4 +122,14 @@ class EsiTokenTest extends TestCase
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
+
+    public function testSetGetHasRoles()
+    {
+        $token = new EsiToken();
+
+        $this->assertNull($token->getHasRoles());
+        $this->assertTrue($token->setHasRoles(true)->getHasRoles());
+        $this->assertFalse($token->setHasRoles(false)->getHasRoles());
+        $this->assertNull($token->setHasRoles()->getHasRoles());
+    }
 }

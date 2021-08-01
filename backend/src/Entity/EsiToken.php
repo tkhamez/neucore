@@ -87,8 +87,9 @@ class EsiToken implements \JsonSerializable
      *
      * Null if the login does not require any roles or if the token is invalid.
      *
-     * @OA\Property(nullable=true)
-     * @var bool
+     * @OA\Property
+     * @ORM\Column(type="boolean", name="has_roles", nullable=true)
+     * @var bool|null
      */
     private $hasRoles = null;
 
@@ -206,5 +207,16 @@ class EsiToken implements \JsonSerializable
     public function getValidTokenTime(): ?\DateTime
     {
         return $this->validTokenTime;
+    }
+
+    public function setHasRoles(?bool $hasRole = null): self
+    {
+        $this->hasRoles = $hasRole;
+        return $this;
+    }
+
+    public function getHasRoles(): ?bool
+    {
+        return $this->hasRoles;
     }
 }

@@ -377,19 +377,25 @@ class UserAuthTest extends TestCase
 
     public function testAddToken_Success()
     {
-        $eveLogin = (new EveLogin())->setName('custom1');
+        $eveLogin = (new EveLogin())->setName('custom1')->setEveRoles(['Diplomat']);
         $this->helper->getEm()->persist($eveLogin);
         $_SESSION['character_id'] = 100;
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
 
-        $result = $this->service->addToken(
-            $eveLogin,
-            new EveAuthentication(100, 'Main1', 'hash', new AccessToken(['access_token' => 'a-second-token']))
-        );
+        $result = $this->service->addToken($eveLogin, new EveAuthentication(100, 'Main1', 'hash', new AccessToken([
+            'access_token' => 'a-second-token',
+            'refresh_token' => 'ref.t.',
+            'expires' => 1525456785,
+        ])));
 
         $this->assertTrue($result);
         $tokens = $this->esiTokenRepo->findBy([]);
         $this->assertSame(2, count($tokens));
         $this->assertSame('a-second-token', $tokens[1]->getAccessToken());
+        $this->assertSame('ref.t.', $tokens[1]->getRefreshToken());
+        $this->assertSame(1525456785, $tokens[1]->getExpires());
+        $this->assertTrue($tokens[1]->getValidToken());
+        $this->assertLessThanOrEqual(time(), $tokens[1]->getValidTokenTime()->getTimestamp());
+        $this->assertTrue($tokens[1]->getHasRoles());
     }
 }

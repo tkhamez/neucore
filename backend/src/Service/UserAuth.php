@@ -219,6 +219,11 @@ class UserAuth implements RoleProviderInterface
         $esiToken->setAccessToken($token->getToken());
         $esiToken->setRefreshToken((string)$token->getRefreshToken());
         $esiToken->setExpires((int)$token->getExpires());
+        $esiToken->setValidToken(true);
+        $esiToken->setValidTokenTime(new \DateTime());
+        if (!empty($eveLogin->getEveRoles())) {
+            $esiToken->setHasRoles(true);
+        }
 
         return $this->objectManager->flush();
     }
