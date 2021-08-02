@@ -466,7 +466,7 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacter_ValidWithScopes_UpdateOtherTokens()
+    public function testCheckCharacter_ValidWithScopes_UpdateOtherTokens_CheckRoles()
     {
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Old Name');
         $this->client->setResponse(
@@ -476,6 +476,8 @@ class AccountTest extends TestCase
                 "expires_in": 1200,
                 "refresh_token": "fM0...gEy"
             }'),
+
+            new Response(200, [], '{"roles": ["Accountant"]}'), // read_corporation_roles
 
             // default token - for getAccessToken()
             new Response(200, [], '{
@@ -504,6 +506,7 @@ class AccountTest extends TestCase
 
         $secondToken = $character->getEsiToken('custom.1');
         $this->assertTrue($secondToken->getValidToken()); // updated
+        $this->assertTrue($secondToken->getHasRoles()); // updated
         $this->assertSame($token, $secondToken->getAccessToken()); // updated
         $this->assertGreaterThan($expires, $secondToken->getExpires()); // updated
         $this->assertSame('fM0...gEy', $secondToken->getRefreshToken()); // updated
@@ -1115,7 +1118,7 @@ class AccountTest extends TestCase
             ->addEsiToken($esiToken);
         $esiToken->setCharacter($char);
         if ($addSecondToken) {
-            $eveLogin2 = (new EveLogin())->setName('custom.1');
+            $eveLogin2 = (new EveLogin())->setName('custom.1')->setEveRoles(['Accountant']);
             $esiToken2 = (new EsiToken())->setEveLogin($eveLogin2)
                 ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
             $char->addEsiToken($esiToken2);

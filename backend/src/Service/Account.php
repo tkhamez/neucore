@@ -278,11 +278,25 @@ class Account
             return self::CHECK_CHAR_DELETED;
         }
 
-        // update all non-default tokens
+        // update all non-default tokens and check required in-game roles
         foreach ($char->getEsiTokens() as $esiToken) {
             if ($esiToken->getEveLogin()->getName() !== EveLogin::NAME_DEFAULT) {
                 $this->tokenService->updateEsiToken($esiToken);
-                # TODO check required in-game roles
+                $oldHasRoles = $esiToken->getHasRoles();
+                if (empty($esiToken->getEveLogin()->getEveRoles())) {
+                    $esiToken->setHasRoles();
+                } elseif ($this->esiData->verifyRoles(
+                    $esiToken->getEveLogin()->getEveRoles(),
+                    $char->getId(),
+                    $esiToken->getAccessToken()
+                )) {
+                    $esiToken->setHasRoles(true);
+                } else {
+                    $esiToken->setHasRoles(false);
+                }
+                if ($oldHasRoles !== $esiToken->getHasRoles()) {
+                    $this->objectManager->flush();
+                }
             }
         }
 
