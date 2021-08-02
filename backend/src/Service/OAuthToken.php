@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Eve\Sso\EveAuthentication;
 use Eve\Sso\JsonWebToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -198,5 +199,60 @@ class OAuthToken
         }
 
         return $token->getToken();
+    }
+
+    /**
+     * Modifies and persists $esiToken
+     *
+     * @param EsiToken $esiToken An object attached to the entity manager
+     */
+    public function updateEsiToken(EsiToken $esiToken): ?AccessTokenInterface
+    {
+        $token = null;
+        if (($existingToken = $this->createAccessToken($esiToken)) !== null) {
+            try {
+                $token = $this->refreshAccessToken($existingToken);
+            } catch (IdentityProviderException $e) {
+                // do nothing
+            }
+        }
+        if ($token === null) {
+            $esiToken->setAccessToken('');
+            $esiToken->setRefreshToken('');
+            $esiToken->setValidToken(false);
+            $this->objectManager->flush();
+            return null;
+        }
+
+        // token is valid here, check scopes
+        // (scopes should not change after login since you cannot revoke individual scopes)
+        $eveAuth = $this->getEveAuth($token);
+        if ($eveAuth !== null) { // null = decoding the token failed, change nothing in this case
+            if (
+                empty($eveAuth->getScopes()) ||
+                !is_numeric($token->getExpires()) ||
+                !is_string($token->getRefreshToken())
+            ) {
+                $esiToken->setValidToken(); // treat no scopes as if there was no token
+            } else {
+                $esiToken->setValidToken(true);
+                $esiToken->setAccessToken($token->getToken());
+                $esiToken->setExpires($token->getExpires());
+                $esiToken->setRefreshToken($token->getRefreshToken());
+            }
+            $this->objectManager->flush();
+        }
+
+        return $token;
+    }
+
+    public function getEveAuth(AccessTokenInterface $token): ?EveAuthentication
+    {
+        try {
+            $jwt = new JsonWebToken($token);
+        } catch (\UnexpectedValueException $e) {
+            return null;
+        }
+        return $jwt->getEveAuthentication();
     }
 }

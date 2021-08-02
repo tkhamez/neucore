@@ -366,7 +366,7 @@ class AccountTest extends TestCase
         $this->assertSame((int)date('m'), $logins[0]->getMonth());
     }
 
-    public function testCheckCharacter_UpdateCharacterDeletesBiomassedChar()
+    public function testCheckCharacter_DeletesBiomassedChar()
     {
         $corp = (new Corporation())->setId(1000001); // Doomheim
         $player = (new Player())->setName('p');
@@ -444,10 +444,9 @@ class AccountTest extends TestCase
      */
     public function testCheckCharacter_ValidTokenNoScopes()
     {
-        list($token, $keySet) = Helper::generateToken([]);
+        list($token) = Helper::generateToken([]);
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
+            new Response(200, [], '{"access_token": ' . json_encode($token) . '}') // for getAccessToken()
         );
 
         $expires = time() - 1000;
@@ -467,33 +466,48 @@ class AccountTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testCheckCharacter_ValidWithScopes()
+    public function testCheckCharacter_ValidWithScopes_UpdateOtherTokens()
     {
-        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Old Name');
+        list($token) = Helper::generateToken(['scope1', 'scope2'], 'Old Name');
         $this->client->setResponse(
-            // for getAccessToken()
+            // second token - for getAccessToken()
+            new Response(200, [], '{
+                "access_token": ' . json_encode($token) . ',
+                "expires_in": 1200,
+                "refresh_token": "fM0...gEy"
+            }'),
+
+            // default token - for getAccessToken()
             new Response(200, [], '{
                 "access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
                 "refresh_token": "gEy...fM0"
             }'),
-
-            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
         $expires = time() - 1000;
-        $char = $this->setUpCharacterWithToken($expires, false);
+        $char = $this->setUpCharacterWithToken($expires, false, 'hash', true);
 
         $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_OK, $result);
 
         $this->om->clear();
+
         $character = $this->charRepo->find(31);
-        $this->assertTrue($character->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
         $this->assertSame('n31', $character->getName());
-        $this->assertSame($token, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()); // updated
-        $this->assertGreaterThan($expires, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires()); // updated
-        $this->assertSame('gEy...fM0', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken()); // updated
+
+        $defaultToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
+        $this->assertTrue($defaultToken->getValidToken()); // updated
+        $this->assertSame($token, $defaultToken->getAccessToken()); // updated
+        $this->assertGreaterThan($expires, $defaultToken->getExpires()); // updated
+        $this->assertSame('gEy...fM0', $defaultToken->getRefreshToken()); // updated
+
+        $secondToken = $character->getEsiToken('custom.1');
+        $this->assertTrue($secondToken->getValidToken()); // updated
+        $this->assertSame($token, $secondToken->getAccessToken()); // updated
+        $this->assertGreaterThan($expires, $secondToken->getExpires()); // updated
+        $this->assertSame('fM0...gEy', $secondToken->getRefreshToken()); // updated
+
         $characterNameChange = $this->characterNameChangeRepo->findBy([]);
         $this->assertSame(1, count($characterNameChange));
         $this->assertSame('Old Name', $characterNameChange[0]->getOldName());
@@ -504,14 +518,13 @@ class AccountTest extends TestCase
      */
     public function testCheckCharacter_DeletesMovedChar()
     {
-        list($token, $keySet) = Helper::generateToken();
+        list($token) = Helper::generateToken();
         $this->client->setResponse(
             new Response(200, [], '{
                 "access_token": ' . json_encode($token) . ',
                 "expires_in": 1200,
                 "refresh_token": "gEy...fM0"
-            }'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
+            }') // for getAccessToken()
         );
 
         $expires = time() - 1000;
@@ -1089,14 +1102,27 @@ class AccountTest extends TestCase
         $this->om->flush();
     }
 
-    private function setUpCharacterWithToken(int $expires, ?bool $valid = null, string $hash = 'hash'): Character
-    {
+    private function setUpCharacterWithToken(
+        int $expires,
+        ?bool $valid = null,
+        string $hash = 'hash',
+        $addSecondToken = false
+    ): Character {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setValidToken($valid)
             ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
         $char = (new Character())->setId(31)->setName('n31')->setCharacterOwnerHash($hash)
             ->addEsiToken($esiToken);
         $esiToken->setCharacter($char);
+        if ($addSecondToken) {
+            $eveLogin2 = (new EveLogin())->setName('custom.1');
+            $esiToken2 = (new EsiToken())->setEveLogin($eveLogin2)
+                ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
+            $char->addEsiToken($esiToken2);
+            $esiToken2->setCharacter($char);
+            $this->om->persist($eveLogin2);
+            $this->om->persist($esiToken2);
+        }
         $this->om->persist($eveLogin);
         $this->om->persist($esiToken);
         $this->helper->addNewPlayerToCharacterAndFlush($char);

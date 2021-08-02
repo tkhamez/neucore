@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Neucore\Service;
 
 use Eve\Sso\EveAuthentication;
-use Eve\Sso\JsonWebToken;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiToken;
@@ -255,9 +253,9 @@ class Account
     }
 
     /**
-     * Checks if char was biomassed, the access/refresh token and the owner hash.
+     * Checks if char was biomassed, the access/refresh tokens and the owner hash.
      *
-     * The refresh token is verified by requesting a new access token
+     * The refresh tokens are verified by requesting a new access token
      * (If the access token is still valid the refresh token is not validated).
      *
      * The character is deleted if:
@@ -280,55 +278,40 @@ class Account
             return self::CHECK_CHAR_DELETED;
         }
 
-        $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
+        // update all non-default tokens
+        foreach ($char->getEsiTokens() as $esiToken) {
+            if ($esiToken->getEveLogin()->getName() !== EveLogin::NAME_DEFAULT) {
+                $this->tokenService->updateEsiToken($esiToken);
+                # TODO check required in-game roles
+            }
+        }
+
+        $defaultEsiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
 
         // does the char have a default token?
-        if ($esiToken === null) {
+        if ($defaultEsiToken === null) {
             // Only true for SSOv1 without scopes or if the character was added directly to the database.
             return self::CHECK_TOKEN_NA;
         }
 
-        // validate token
-        $token = null;
-        if (($existingToken = $this->tokenService->createAccessToken($esiToken)) !== null) {
-            try {
-                $token = $this->tokenService->refreshAccessToken($existingToken);
-            } catch (IdentityProviderException $e) {
-                // do nothing
-            }
-        }
+        // validate token - modifies $defaultEsiToken
+        $token = $this->tokenService->updateEsiToken($defaultEsiToken);
         if ($token === null) {
-            $esiToken->setAccessToken('');
-            $esiToken->setRefreshToken('');
-            $esiToken->setValidToken(false);
-            $this->objectManager->flush();
             return self::CHECK_TOKEN_NOK;
         }
 
         // get token data
-        try {
-            $jwt = new JsonWebToken($token);
-        } catch (\UnexpectedValueException $e) {
+        $eveAuth = $this->tokenService->getEveAuth($token);
+        if ($eveAuth === null) {
             // Fails if a SSOv1 access token is still valid (up to ~20 minutes after it was created).
             // Should not happen otherwise. Don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
-        $eveAuth = $jwt->getEveAuthentication();
 
-        // token is valid here, check scopes
-        // (scopes should not change after login since you cannot revoke individual scopes)
-        if (
-            empty($eveAuth->getScopes()) ||
-            !is_numeric($token->getExpires()) ||
-            !is_string($token->getRefreshToken())
-        ) {
-            $esiToken->setValidToken(); // treat no scopes as if there was no token
+        // The token is valid here, a null value means no scopes
+        if ($defaultEsiToken->getValidToken() === null) {
             $result = self::CHECK_TOKEN_NOK;
         } else {
-            $esiToken->setValidToken(true);
-            $esiToken->setAccessToken($token->getToken());
-            $esiToken->setExpires($token->getExpires());
-            $esiToken->setRefreshToken($token->getRefreshToken());
             $result = self::CHECK_TOKEN_OK;
         }
 
@@ -338,7 +321,7 @@ class Account
 
         // Check owner change
         if ($eveAuth->getCharacterOwnerHash() !== '') {
-            // This check should never be true because the token is already invalid
+            // The next check should never be true because the token is already invalid
             // after a character transfer - I hope ...
             if ($char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
                 $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_OWNER_CHANGED);
