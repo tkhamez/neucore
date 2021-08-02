@@ -15,9 +15,7 @@ use Neucore\Plugin\CoreCharacter;
 use OpenApi\Annotations as OA;
 
 /**
- * EVE character.
- *
- * This is the user that logs in via EVE SSO.
+ * An EVE character.
  *
  * @OA\Schema(
  *     required={"id", "name"}
