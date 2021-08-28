@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use Doctrine\Persistence\ObjectManager;
+use Neucore\DataFixtures\MiscFixtureLoader;
 use Neucore\DataFixtures\RoleFixtureLoader;
 use Neucore\DataFixtures\SystemVariablesFixtureLoader;
 use Symfony\Component\Console\Command\Command;
@@ -35,13 +36,16 @@ class DoctrineFixturesLoad extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('loading Neucore\DataFixtures\RoleFixtureLoader');
         (new RoleFixtureLoader())->load($this->objectManager);
 
         $output->writeln('loading Neucore\DataFixtures\SystemVariablesFixtureLoader');
         (new SystemVariablesFixtureLoader())->load($this->objectManager);
+
+        $output->writeln('loading Neucore\DataFixtures\MiscFixtureLoader');
+        (new MiscFixtureLoader())->load($this->objectManager);
 
         return 0;
     }
