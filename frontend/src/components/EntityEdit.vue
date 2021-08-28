@@ -47,6 +47,9 @@ Modal windows to create, delete and edit entities
                 <div class="modal-body">
                     <p>Are you sure you want to <strong>permanently</strong> delete this {{ type }}?</p>
                     <p class="text-warning">{{ item.name ? item.name : item.id }}</p>
+                    <p v-cloak v-if="type === 'EveLogin'">
+                        !!! This will also delete <strong>all</strong> associated existing tokens from any character.
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" v-on:click="functionDelete(item.id)">

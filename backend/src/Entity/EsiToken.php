@@ -40,7 +40,7 @@ class EsiToken implements \JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="EveLogin", inversedBy="esiTokens")
-     * @ORM\JoinColumn(nullable=false, name="eve_login_id")
+     * @ORM\JoinColumn(nullable=false, name="eve_login_id", onDelete="CASCADE")
      * @var EveLogin|null
      */
     private $eveLogin;
