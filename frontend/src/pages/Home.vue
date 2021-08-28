@@ -127,10 +127,10 @@
                         </div>
                         <div class="card-body">
                             <p class="card-text">
-                                <span class="text-muted">Corporation:</span>
+                                <span class="text-muted">Corporation: </span>
                                     <span v-if="char.corporation">{{ char.corporation.name }}</span>
                                 <br>
-                                <span class="text-muted">Alliance:</span>
+                                <span class="text-muted">Alliance: </span>
                                 <span v-if="char.corporation && char.corporation.alliance">
                                     {{ char.corporation.alliance.name }}
                                 </span>
@@ -176,7 +176,7 @@
                 <div class="player-hdl">
                     <h2>Account</h2>
                     <span class="text-muted">{{ player.name }} #{{ player.id }}</span>
-                    <span v-if="player.status === 'managed'" class="text-muted">(manually managed)</span>
+                    <span v-if="player.status === 'managed'" class="text-muted"> (manually managed)</span>
                 </div>
                 <div class="card border-secondary mb-3">
                     <h3 class="card-header">Groups</h3>
