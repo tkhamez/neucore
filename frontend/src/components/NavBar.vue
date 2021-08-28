@@ -59,12 +59,12 @@
                         <a v-if="hasRole('group-admin')"
                             class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
                             href="#GroupAdmin">Groups</a>
-                        <a v-if="hasRole('service-admin')"
-                            class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
-                            href="#ServiceAdmin">Services</a>
                         <a v-if="hasRole('app-admin')"
                             class="dropdown-item" :class="{ active: page === 'AppAdmin' }"
                             href="#AppAdmin">Apps</a>
+                        <a v-if="hasRole('service-admin')"
+                            class="dropdown-item" :class="{ active: page === 'ServiceAdmin' }"
+                            href="#ServiceAdmin">Services</a>
                         <a v-if="hasRole('user-admin')"
                            class="dropdown-item" :class="{ active: page === 'UserAdmin' }"
                            href="#UserAdmin">Users</a>

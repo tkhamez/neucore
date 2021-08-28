@@ -124,12 +124,12 @@ the database host is `db`.
   `export UID && docker-compose up`
 - Install the app:  
   `export UID && ./install-docker.sh`
-- Run tests and other commands in the php-fpm and node containers:  
+- Run tests and other commands in the php and node containers:  
     `export UID && docker-compose exec neucore_php /bin/sh`  
     `export UID && docker-compose run --service-ports neucore_node /bin/sh`
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
-The database is also available at `127.0.0.1:30306`, the data is stored in the `.db` subdirectory.
+The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
 
 ### Vagrant
 
