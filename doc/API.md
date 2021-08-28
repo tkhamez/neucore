@@ -233,6 +233,8 @@ App API
 - Remove a manager (player) from an app. `PUT /user/app/{id}/remove-manager/{pid}`
 - Add a role to the app. `PUT /user/app/{id}/add-role/{name}`
 - Remove a role from an app. `PUT /user/app/{id}/remove-role/{name}`
+- Add an EVE login to an app. `PUT /user/app/{id}/add-eve-login/{eveLoginId}`
+- Remove an EVE login from an app. `PUT /user/app/{id}/remove-eve-login/{eveLoginId}`
 
 Group API
 - List all groups. `GET /user/group/all`

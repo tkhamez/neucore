@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Entity;
 
 use Neucore\Entity\App;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
@@ -22,6 +23,7 @@ class AppTest extends TestCase
             'name' => 'test app',
             'groups' => [],
             'roles' => [],
+            'eveLogins' => [],
         ], json_decode((string) json_encode($app), true));
     }
 
@@ -137,5 +139,21 @@ class AppTest extends TestCase
 
         $this->assertTrue($app->isManager($pl1));
         $this->assertFalse($app->isManager($pl2));
+    }
+
+    public function testAddGetRemoveEveLogin()
+    {
+        $app = new App();
+        $el1 = new EveLogin();
+        $el2 = new EveLogin();
+
+        $this->assertSame([], $app->getEveLogins());
+
+        $app->addEveLogin($el1);
+        $app->addEveLogin($el2);
+        $this->assertSame([$el1, $el2], $app->getEveLogins());
+
+        $app->removeEveLogin($el2);
+        $this->assertSame([$el1], $app->getEveLogins());
     }
 }

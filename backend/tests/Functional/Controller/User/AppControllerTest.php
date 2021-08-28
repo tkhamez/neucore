@@ -7,6 +7,7 @@ namespace Tests\Functional\Controller\User;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\GroupRepository;
@@ -58,6 +59,16 @@ class AppControllerTest extends WebTestCase
     private $gid;
 
     private $aid;
+
+    /**
+     * @var int
+     */
+    private $eveLoginId1;
+
+    /**
+     * @var int
+     */
+    private $eveLoginId2;
 
     private $pid3;
 
@@ -168,7 +179,7 @@ class AppControllerTest extends WebTestCase
         $this->assertNotNull($na);
 
         $this->assertSame(
-            ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'roles' => [Role::APP]],
+            ['id' => $na->getId(), 'name' => 'new app', 'groups' => [], 'roles' => [Role::APP], 'eveLogins' => []],
             $this->parseJsonBody($response)
         );
 
@@ -224,11 +235,35 @@ class AppControllerTest extends WebTestCase
         $expectedGroup = ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
             'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false];
         $this->assertSame(
-            ['id' => $this->aid, 'name' => 'n a n', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
+            [
+                'id' => $this->aid,
+                'name' => 'n a n',
+                'groups' => [$expectedGroup],
+                'roles' => [Role::APP],
+                'eveLogins' => [[
+                    'id' => $this->eveLoginId1,
+                    'name' => 'test1',
+                    'description' => '',
+                    'esiScopes' => '',
+                    'eveRoles' => []
+                ]]
+            ],
             $this->parseJsonBody($response1)
         );
         $this->assertSame(
-            ['id' => $this->aid, 'name' => 'new name', 'groups' => [$expectedGroup], 'roles' => [Role::APP]],
+            [
+                'id' => $this->aid,
+                'name' => 'new name',
+                'groups' => [$expectedGroup],
+                'roles' => [Role::APP],
+                'eveLogins' => [[
+                    'id' => $this->eveLoginId1,
+                    'name' => 'test1',
+                    'description' => '',
+                    'esiScopes' => '',
+                    'eveRoles' => []
+                ]]
+            ],
             $this->parseJsonBody($response2)
         );
 
@@ -431,7 +466,14 @@ class AppControllerTest extends WebTestCase
                 'name' => 'app one',
                 'groups' => [['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
-                'roles' => [Role::APP]
+                'roles' => [Role::APP],
+                'eveLogins' => [[
+                    'id' => $this->eveLoginId1,
+                    'name' => 'test1',
+                    'description' => '',
+                    'esiScopes' => '',
+                    'eveRoles' => []
+                ]],
             ],
             $this->parseJsonBody($response)
         );
@@ -451,7 +493,14 @@ class AppControllerTest extends WebTestCase
                 'name' => 'app one',
                 'groups' => [['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
-                'roles' => [Role::APP]
+                'roles' => [Role::APP],
+                'eveLogins' => [[
+                    'id' => $this->eveLoginId1,
+                    'name' => 'test1',
+                    'description' => '',
+                    'esiScopes' => '',
+                    'eveRoles' => []
+                ]],
             ],
             $this->parseJsonBody($response)
         );
@@ -660,6 +709,94 @@ class AppControllerTest extends WebTestCase
         );
     }
 
+    public function testAddEveLogin403()
+    {
+        $response = $this->runApp('PUT', "/api/user/app/101d/add-eve-login/11");
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', "/api/user/app/$this->aid/add-eve-login/$this->eveLoginId2");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testAddEveLogin404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid+10).'/add-eve-login/'.$this->eveLoginId2);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/add-eve-login/'.($this->eveLoginId2+10));
+        $response3 = $this->runApp('PUT', '/api/user/app/'.($this->aid+10).'/add-eve-login/'.($this->eveLoginId2+10));
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response3->getStatusCode());
+    }
+
+    public function testAddEveLogin204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', "/api/user/app/$this->aid/add-eve-login/$this->eveLoginId2");
+        $response2 = $this->runApp('PUT', "/api/user/app/$this->aid/add-eve-login/$this->eveLoginId2");
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame($this->eveLoginId2, $app->getEveLogins()[1]->getId());
+        $this->assertSame('test2', $app->getEveLogins()[1]->getName());
+    }
+
+    public function testRemoveEveLogin403()
+    {
+        $response = $this->runApp('PUT', '/api/user/app/101/remove-eve-login/11');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(9); // not app-admin
+
+        $response = $this->runApp('PUT', "/api/user/app/$this->aid/remove-eve-login/$this->eveLoginId2");
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testRemoveEveLogin404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/app/'.($this->aid+10).'/remove-eve-login/'.$this->eveLoginId2);
+        $response2 = $this->runApp('PUT', '/api/user/app/'.$this->aid.'/remove-eve-login/'.($this->eveLoginId2+10));
+        $response3 = $this->runApp(
+            'PUT',
+            '/api/user/app/'.($this->aid+10).'/remove-eve-login/'.($this->eveLoginId2+10)
+        );
+
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+        $this->assertEquals(404, $response3->getStatusCode());
+    }
+
+    public function testRemoveEveLogin204()
+    {
+        $this->setupDb(['app', 'tracking']); // also add role APP_TRACKING to app
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', "/api/user/app/$this->aid/remove-eve-login/$this->eveLoginId1");
+        $response2 = $this->runApp('PUT', "/api/user/app/$this->aid/remove-eve-login/$this->eveLoginId1");
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $app = $this->appRepo->find($this->aid);
+        $this->assertSame([], $app->getEveLogins());
+    }
+
     public function testChangeSecret403()
     {
         $response = $this->runApp('PUT', '/api/user/app/59/change-secret');
@@ -702,10 +839,7 @@ class AppControllerTest extends WebTestCase
 
         $roles = [];
         if (count($addRoles) > 0) {
-            $roles = $this->helper->addRoles([
-                Role::APP,
-                Role::APP_TRACKING
-            ]);
+            $roles = $this->helper->addRoles([Role::APP, Role::APP_TRACKING]);
         }
 
         $g = $this->helper->addGroups(['group-one']);
@@ -722,19 +856,25 @@ class AppControllerTest extends WebTestCase
         }
         $this->em->persist($a);
 
-        $char = $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::APP_ADMIN]);
-        $char2 = $this->helper->addCharacterMain('Manager', 9, [Role::USER, Role::APP_MANAGER]);
+        $this->helper->addCharacterMain('Admin', 8, [Role::USER, Role::APP_ADMIN]);
+        $this->helper->addCharacterMain('Manager', 9, [Role::USER, Role::APP_MANAGER]);
         $char3 = $this->helper->addCharacterMain('Manager', 10, [Role::USER, Role::APP_MANAGER]);
-        $char->getPlayer()->getId();
-        $char2->getPlayer()->getId();
         $this->pid3 = $char3->getPlayer()->getId();
 
         $a->addManager($char3->getPlayer());
         $a->addGroup($g[0]);
 
+        $eveLogin1 = (new EveLogin())->setName('test1');
+        $eveLogin2 = (new EveLogin())->setName('test2');
+        $this->em->persist($eveLogin1);
+        $this->em->persist($eveLogin2);
+        $a->addEveLogin($eveLogin1);
+
         $this->em->flush();
         $this->em->clear();
 
         $this->aid = $a->getId();
+        $this->eveLoginId1 = $eveLogin1->getId();
+        $this->eveLoginId2 = $eveLogin2->getId();
     }
 }

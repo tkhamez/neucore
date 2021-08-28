@@ -30,22 +30,22 @@ Select and table to add and remove objects from other objects.
         </div>
 
         <div v-cloak class="card-body">
-            <p v-if="type === 'Group' && contentType === 'managers'">
+            <p v-cloak v-if="type === 'Group' && contentType === 'managers'">
                 Managers can add and remove players to a group.
             </p>
-            <p v-if="type === 'Group' && contentType === 'groups'">
+            <p v-cloak v-if="type === 'Group' && contentType === 'groups'">
                 Add groups that are a prerequisite (<em>one</em> of them) for being a member of this group.
             </p>
-            <p v-if="type === 'App' && contentType === 'managers'">
+            <p v-cloak v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.
             </p>
-            <p v-if="
+            <p v-cloak v-if="
                 (type === 'Group' || type === 'App') &&
                 (contentType === 'alliances' || contentType === 'corporations')
             ">
                 Players in these {{contentType}} are automatically added to the group and removed when they leave.
             </p>
-            <div class="row mb-1" v-if="type === 'App' && contentType === 'groups'">
+            <div class="row mb-1" v-cloak v-if="type === 'App' && contentType === 'groups'">
                 <p class="col-9">
                     The application can only see the membership of players to groups that are listed here.
                 </p>
@@ -55,13 +55,16 @@ Select and table to add and remove objects from other objects.
                     </button>
                 </div>
             </div>
-            <p v-cloak v-if="contentType === 'roles'">
+            <p v-cloak v-if="type === 'App' && contentType === 'roles'">
                 See
                 <a :href="settings.customization_github + '/blob/master/doc/API.md'"
                    target="_blank" rel="noopener noreferrer">doc/API.md</a>
                 for permissions for each role.
             </p>
-            <p v-if="type === 'Corporation' && contentType === 'groups'">
+            <p v-cloak v-if="type === 'App' && contentType === 'eveLogins'">
+                The app can only use ESI tokens from selected EVE logins.
+            </p>
+            <p v-cloak v-if="type === 'Corporation' && contentType === 'groups'">
                 Members of these groups can view the tracking data of the selected corporation.<br>
                 Director(s):
                 <span v-for="director in directors">
@@ -69,14 +72,14 @@ Select and table to add and remove objects from other objects.
                        rel="noopener noreferrer">{{ director.name }}</a>&nbsp;
                 </span>
             </p>
-            <p v-if="type === 'Watchlist' && contentType === 'groups'">
+            <p v-cloak v-if="type === 'Watchlist' && contentType === 'groups'">
                 Groups whose members are allowed to view the lists.
             </p>
-            <p v-if="type === 'Watchlist' && contentType === 'groupsManage'">
+            <p v-cloak v-if="type === 'Watchlist' && contentType === 'groupsManage'">
                 Groups whose members are allowed to edit the list configuration.
             </p>
 
-            <multiselect v-if="! useSearch"
+            <multiselect v-if="!useSearch"
                          v-model="newObject" :options="currentSelectContent"
                          v-bind:placeholder="placeholder"
                          label="name" track-by="id"
@@ -170,6 +173,7 @@ Select and table to add and remove objects from other objects.
                             <span v-if="contentType === 'managers'">manager</span>
                             <span v-if="contentType === 'groups'">group</span>
                             <span v-if="contentType === 'roles'">role</span>
+                            <span v-if="contentType === 'eveLogins'">EVE login</span>
                         </button>
                     </td>
                 </tr>
@@ -185,7 +189,7 @@ Select and table to add and remove objects from other objects.
 <script>
 import $ from 'jquery';
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, WatchlistApi} from 'neucore-js-client';
+import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, SettingsApi, WatchlistApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterResult from '../components/CharacterResult.vue';
 
@@ -308,6 +312,8 @@ export default {
                 this.placeholder = 'Add group';
             } else if (this.contentType === 'roles') {
                 this.placeholder = 'Add role';
+            } else if (this.contentType === 'eveLogins') {
+                this.placeholder = 'EVE login';
             }
         },
 
@@ -330,23 +336,23 @@ export default {
 
             let api;
             let method;
-            if (this.contentType === 'managers') {
+            if (vm.contentType === 'managers') {
                 api = new PlayerApi();
-                if (this.type === 'Group') {
+                if (vm.type === 'Group') {
                     method = 'groupManagers';
-                } else if (this.type === 'App') {
+                } else if (vm.type === 'App') {
                     method = 'appManagers';
                 }
-            } else if (this.contentType === 'corporations') {
+            } else if (vm.contentType === 'corporations') {
                 api = new CorporationApi();
                 method = 'all';
-            } else if (this.contentType === 'alliances') {
+            } else if (vm.contentType === 'alliances') {
                 api = new AllianceApi();
                 method = 'all';
-            } else if (this.contentType === 'groups' || this.contentType === 'groupsManage') {
+            } else if (vm.contentType === 'groups' || vm.contentType === 'groupsManage') {
                 api = new GroupApi();
                 method = 'all';
-            } else if (this.contentType === 'roles') {
+            } else if (vm.contentType === 'roles') {
                 vm.selectContent = [
                     { id: 'app-groups', name: 'app-groups' },
                     { id: 'app-chars', name: 'app-chars' },
@@ -354,8 +360,11 @@ export default {
                     { id: 'app-esi', name: 'app-esi' }
                 ];
                 return;
+            } else if (vm.contentType === 'eveLogins') {
+                api = new SettingsApi();
+                method = 'userSettingsEveLoginList';
             }
-            if (! api || ! method) {
+            if (!api || !method) {
                 return;
             }
 
@@ -363,7 +372,15 @@ export default {
                 if (error) { // 403 usually
                     return;
                 }
-                vm.selectContent = data;
+                if (vm.contentType === 'eveLogins') {
+                    for (const eveLogin of data) {
+                        if (eveLogin.name !== 'core.default') {
+                            vm.selectContent.push(eveLogin);
+                        }
+                    }
+                } else {
+                    vm.selectContent = data;
+                }
             }]);
         },
 
@@ -394,7 +411,10 @@ export default {
                 method = 'corporations';
             } else if (this.type === 'Group' && this.contentType === 'alliances') {
                 method = 'alliances';
-            } else if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
+            } else if (
+                this.type === 'App' &&
+                (this.contentType === 'groups' || this.contentType === 'roles' || this.contentType === 'eveLogins')
+            ) {
                 method = 'show';
             } else if ((this.type === 'App' || this.type === 'Player') && this.contentType === 'groups') {
                 method = 'showById';
@@ -445,6 +465,10 @@ export default {
                         }
                     }
                     vm.tableContent = roles;
+                } else if (vm.type === 'App' && vm.contentType === 'eveLogins') {
+                    for (const eveLogin of data.eveLogins) {
+                        vm.tableContent = data.eveLogins;
+                    }
                 }  else if (vm.type === 'Player') {
                     vm.tableContent = data.groups;
                     vm.$emit('activePlayer', data); // pass data to parent
@@ -516,12 +540,17 @@ export default {
             let method;
             let param1;
             let param2;
-            if (this.type === 'App' && (this.contentType === 'groups' || this.contentType === 'roles')) {
+            if (
+                this.type === 'App' &&
+                (this.contentType === 'groups' || this.contentType === 'roles' || this.contentType === 'eveLogins')
+            ) {
                 api = new AppApi();
                 if (this.contentType === 'groups') {
                     method = action === 'add' ? 'addGroup' : 'removeGroup';
-                } else {
+                } else if (this.contentType === 'roles') {
                     method = action === 'add' ? 'addRole' : 'removeRole';
+                } else if (this.contentType === 'eveLogins') {
+                    method = action === 'add' ? 'userAppAddEveLogin' : 'userAppRemoveEveLogin';
                 }
                 param1 = this.typeId;
                 param2 = id;

@@ -63,6 +63,11 @@
                        :class="{ 'active': contentType === 'roles' }"
                        :href="'#AppAdmin/' + appId + '/roles'">Roles</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{ 'active': contentType === 'eveLogins' }"
+                       :href="'#AppAdmin/' + appId + '/eveLogins'">EVE Logins</a>
+                </li>
             </ul>
 
             <admin v-cloak v-if="appId" ref="admin"

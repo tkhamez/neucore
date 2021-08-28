@@ -73,7 +73,16 @@ class App implements \JsonSerializable
     private $managers;
 
     /**
-     * Contains only information that is of interest for clients.
+     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EveLogin"))
+     * @ORM\ManyToMany(targetEntity="EveLogin")
+     * @ORM\JoinTable(name="app_eve_login")
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @var Collection
+     */
+    private $eveLogins;
+
+    /**
+     * Contains only information that is of interest to clients.
      *
      * {@inheritDoc}
      * @see \JsonSerializable::jsonSerialize()
@@ -85,6 +94,7 @@ class App implements \JsonSerializable
             'name' => $this->name,
             'groups' => $this->getGroups(),
             'roles' => $this->getRoles(),
+            'eveLogins' => $this->getEveLogins(),
         ];
     }
 
@@ -96,6 +106,7 @@ class App implements \JsonSerializable
         $this->roles = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->managers = new ArrayCollection();
+        $this->eveLogins = new ArrayCollection();
     }
 
     /**
@@ -108,38 +119,22 @@ class App implements \JsonSerializable
         return $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return App
-     */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * Set secret.
-     *
      * @param string $secret The hashed string, *not* the plain text password.
-     *
-     * @return App
      */
-    public function setSecret(string $secret)
+    public function setSecret(string $secret): self
     {
         $this->secret = $secret;
 
@@ -151,43 +146,27 @@ class App implements \JsonSerializable
      *
      * @return string
      */
-    public function getSecret()
+    public function getSecret(): ?string
     {
         return $this->secret;
     }
 
-    /**
-     * Add role.
-     *
-     * @param Role $role
-     *
-     * @return App
-     */
-    public function addRole(Role $role)
+    public function addRole(Role $role): self
     {
         $this->roles[] = $role;
 
         return $this;
     }
 
-    /**
-     * Remove role.
-     *
-     * @param Role $role
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeRole(Role $role)
+    public function removeRole(Role $role): bool
     {
         return $this->roles->removeElement($role);
     }
 
     /**
-     * Get roles.
-     *
      * @return Role[]
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles->toArray();
     }
@@ -195,7 +174,7 @@ class App implements \JsonSerializable
     /**
      * @return string[]
      */
-    public function getRoleNames()
+    public function getRoleNames(): array
     {
         $names = [];
         foreach ($this->getRoles() as $role) {
@@ -205,83 +184,47 @@ class App implements \JsonSerializable
         return $names;
     }
 
-    /**
-     * @param string $name
-     * @return boolean
-     */
-    public function hasRole(string $name)
+    public function hasRole(string $name): bool
     {
         return in_array($name, $this->getRoleNames());
     }
 
-    /**
-     * Add group.
-     *
-     * @param Group $group
-     *
-     * @return App
-     */
-    public function addGroup(Group $group)
+    public function addGroup(Group $group): self
     {
         $this->groups[] = $group;
 
         return $this;
     }
 
-    /**
-     * Remove group.
-     *
-     * @param Group $group
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeGroup(Group $group)
+    public function removeGroup(Group $group): bool
     {
         return $this->groups->removeElement($group);
     }
 
     /**
-     * Get groups.
-     *
      * @return Group[]
      */
-    public function getGroups()
+    public function getGroups(): array
     {
         return $this->groups->toArray();
     }
 
-    /**
-     * Add manager.
-     *
-     * @param Player $manager
-     *
-     * @return App
-     */
-    public function addManager(Player $manager)
+    public function addManager(Player $manager): self
     {
         $this->managers[] = $manager;
 
         return $this;
     }
 
-    /**
-     * Remove manager.
-     *
-     * @param Player $manager
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeManager(Player $manager)
+    public function removeManager(Player $manager): bool
     {
         return $this->managers->removeElement($manager);
     }
 
     /**
-     * Get managers.
-     *
      * @return Player[]
      */
-    public function getManagers()
+    public function getManagers(): array
     {
         return $this->managers->toArray();
     }
@@ -298,5 +241,25 @@ class App implements \JsonSerializable
         }
 
         return $isManager;
+    }
+
+    public function addEveLogin(EveLogin $eveLogins): self
+    {
+        $this->eveLogins[] = $eveLogins;
+
+        return $this;
+    }
+
+    public function removeEveLogin(EveLogin $eveLogins): bool
+    {
+        return $this->eveLogins->removeElement($eveLogins);
+    }
+
+    /**
+     * @return EveLogin[]
+     */
+    public function getEveLogins(): array
+    {
+        return $this->eveLogins->toArray();
     }
 }

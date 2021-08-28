@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Role;
@@ -44,6 +45,11 @@ class AppController extends BaseController
      * @var Role
      */
     private $role;
+
+    /**
+     * @var EveLogin|null
+     */
+    private $eveLogin;
 
     /**
      * @var array
@@ -669,6 +675,106 @@ class AppController extends BaseController
     }
 
     /**
+     * @OA\Put(
+     *     path="/user/app/{id}/add-eve-login/{eveLoginId}",
+     *     operationId="userAppAddEveLogin",
+     *     summary="Add an EVE login to an app.",
+     *     description="Needs role: app-admin",
+     *     tags={"App"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the app.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="eveLoginId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the EVE login.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="EVE login added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="EVE login and/or app not found."
+     *     )
+     * )
+     */
+    public function addEveLogin(string $id, string $eveLoginId): ResponseInterface
+    {
+        if (!$this->findAppAndEveLogin($id, $eveLoginId)) {
+            return $this->response->withStatus(404);
+        }
+
+        foreach ($this->application->getEveLogins() as $existingEveLogin) {
+            if ($existingEveLogin->getId() === (int) $eveLoginId) {
+                return $this->response->withStatus(204);
+            }
+        }
+
+        $this->application->addEveLogin($this->eveLogin);
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/user/app/{id}/remove-eve-login/{eveLoginId}",
+     *     operationId="userAppRemoveEveLogin",
+     *     summary="Remove an EVE login from an app.",
+     *     description="Needs role: app-admin",
+     *     tags={"App"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the app.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="eveLoginId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the EVE login.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="EVE login removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="EVE login and/or app not found."
+     *     )
+     * )
+     */
+    public function removeEveLogin(string $id, string $eveLoginId): ResponseInterface
+    {
+        if (!$this->findAppAndEveLogin($id, $eveLoginId)) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->application->removeEveLogin($this->eveLogin);
+
+        return $this->flushAndReturn(204);
+    }
+
+    /**
      * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/app/{id}/change-secret",
@@ -759,6 +865,17 @@ class AppController extends BaseController
             return false;
         }
         $this->role = $roleEntity;
+
+        return true;
+    }
+
+    private function findAppAndEveLogin(string $id, string $eveLoginId): bool
+    {
+        $eveLogin = $this->repositoryFactory->getEveLoginRepository()->find($eveLoginId);
+        if (!$this->findApp($id) || !$eveLogin) {
+            return false;
+        }
+        $this->eveLogin = $eveLogin;
 
         return true;
     }

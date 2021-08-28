@@ -29,6 +29,7 @@
 
 * EVE SSO login with configurable permission scopes.
 * Player accounts with alts.
+* Multiple ESI tokens with different configurable scopes for each character.
 * Role based permission system.
 * Creation of groups and apps.
 * Group and app manager.
@@ -123,6 +124,14 @@ There a two account status: standard and managed.
 - Groups are never deactivated for managed accounts.
 - There is a separate login URL for managed accounts that does not require ESI scopes 
   (must be allowed in the settings).
+
+## Multiple EVE Logins
+
+Any number of EVE logins with different ESI scopes can be configured. Players can add ESI tokens to their 
+characters for each of these logins.
+
+EVE logins can be added to apps so that they can use their tokens. Apps can always use the token of 
+the default login (core.default).
 
 ## Groups
 
