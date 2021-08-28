@@ -6,15 +6,15 @@
     <div v-cloak v-if="eveLogins" class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Additional ESI Tokens</h5>
+                <h5 class="modal-title">Add additional ESI Tokens</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <p>
-                    Do not use these logins unless you were ask to do so.<br>
-                    Use the EVE login button on the main page to add your other characters!
+                    <strong>Do not use these logins unless you were asked to do so</strong>.<br>
+                    If you want to add more characters to your account use the EVE login button on the main page.
                 </p>
                 <table class="table">
                     <tr>
