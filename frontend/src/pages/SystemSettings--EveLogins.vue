@@ -44,7 +44,7 @@
                         Name
                         <input type="text" class="form-control" :disabled="disabled"
                                v-model="activeLogin.name" maxlength="20">
-                        <small class="form-text text-muted">
+                        <small class="form-text text-muted small-line-height">
                             {{ messages.itemNameAllowedCharsHelp }}<br>
                             Maximum length 20.
                         </small>
@@ -67,10 +67,11 @@
                                      :disabled="disabled" :loading="false" :searchable="true" placeholder="Select roles">
                         </multiselect>
                     </label>
-                    <small class="text-muted">
-                        Select required in-game roles.
-                        This requires the <strong>esi-characters.read_corporation_roles.v1</strong> ESI scope.
-                    </small>
+                    <p class="text-muted small small-line-height">
+                        Select required in-game roles. This requires the
+                        <strong>esi-characters.read_corporation_roles.v1</strong> ESI scope.<br>
+                        This is only for "normal" roles, not roles at base/hq/other.
+                    </p>
                     <div class="mt-3">
                         <button class="btn btn-success" :disabled="disabled" v-on:click.prevent="update">save</button>
                     </div>
@@ -221,5 +222,9 @@ function getLogin(vm) {
     .add-login {
         float: right;
         cursor: pointer;
+    }
+
+    .small-line-height {
+        line-height: 1.25;
     }
 </style>
