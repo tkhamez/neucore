@@ -132,7 +132,7 @@ try {
     echo 'Status: ', $result->getErrorCode(), PHP_EOL;
     echo 'Headers: ';
     print_r($result->headers);
-    echo 'item id: ', reset($result)->item_id, PHP_EOL;
+    echo 'item id: ', $result[0]->item_id, PHP_EOL;
 } catch (Exception $e) {
     echo ((string) $e), PHP_EOL;
 }
