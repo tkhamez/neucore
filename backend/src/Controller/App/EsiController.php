@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
+use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
@@ -89,6 +90,62 @@ class EsiController extends BaseController
         $this->config = $config;
         $this->httpClient = $httpClient;
         $this->appAuth = $appAuth;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/v1/esi/eve-login/{name}/characters",
+     *     operationId="esiEveLoginCharactersV1",
+     *     summary="Returns character IDs of characters that have a valid ESI token of the specified EVE login.",
+     *     description="Needs role: app-esi.",
+     *     tags={"Application - ESI"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="path",
+     *         required=true,
+     *         description="EVE login name, 'core.default' is not allowed.",
+     *         @OA\Schema(type="string", maxLength=20, pattern="^[-._a-zA-Z0-9]+$")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="",
+     *         @OA\JsonContent(type="array", @OA\Items(type="integer"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Forbidden",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="EVE login not found.",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function eveLoginCharacters(string $name, ServerRequestInterface $request): ResponseInterface
+    {
+        if ($name === EveLogin::NAME_DEFAULT) {
+            return $this->response->withStatus(403);
+        }
+
+        $eveLogin = $this->repositoryFactory->getEveLoginRepository()->findOneBy(['name' => $name]);
+        if ($eveLogin === null) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->app = $this->appAuth->getApp($request);
+        if (!$this->hasEveLogin($eveLogin)) {
+            return $this->response->withStatus(404);
+        }
+
+        $charIds = [];
+        foreach ($eveLogin->getEsiTokens() as $token) {
+            $charIds[] = $token->getCharacter()->getId();
+        }
+
+        return $this->withJson($charIds);
     }
 
     /**
@@ -407,7 +464,6 @@ class EsiController extends BaseController
             'body' => $body
         ];
 
-        $esiResponse = null;
         try {
             $esiResponse = $this->httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
@@ -463,5 +519,20 @@ class EsiController extends BaseController
             return 'application ' . $this->app->getId() . ' "' . $this->app->getName() . '"';
         }
         return '';
+    }
+
+    private function hasEveLogin(EveLogin $eveLogin): bool
+    {
+        if ($this->app === null) {
+            return false;
+        }
+
+        foreach ($this->app->getEveLogins() as $login) {
+            if ($eveLogin->getId() === $login->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -48,8 +48,9 @@ return [
 
     '/api/app/v1/corporation/{id}/member-tracking' => ['GET', [AppCorporationController::class, 'memberTrackingV1']],
 
-    '/api/app/v1/esi[{path:.*}]' => ['GET'  => [AppEsiController::class, 'esiV1'],
-                                     'POST' => [AppEsiController::class, 'esiPostV1']],
+    '/api/app/v1/esi/eve-login/{name}/characters'   => ['GET',    [AppEsiController::class, 'eveLoginCharacters']],
+    '/api/app/v1/esi[{path:.*}]'                    => ['GET'  => [AppEsiController::class, 'esiV1'],
+                                                        'POST' => [AppEsiController::class, 'esiPostV1']],
 
     '/api/app/v1/groups/{cid}'              => ['GET',  [AppGroupController::class, 'groupsV1']],
     '/api/app/v2/groups/{cid}'              => ['GET',  [AppGroupController::class, 'groupsV2']],

@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
+use Neucore\Entity\EsiToken;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiHeaders;
@@ -49,16 +51,66 @@ class EsiControllerTest extends WebTestCase
         #$this->storage = new \Neucore\Storage\ApcuStorage();
     }
 
+    public function testEveLoginCharacters403()
+    {
+        // no app
+        $response1 = $this->runApp('GET', '/api/app/v1/esi/eve-login/name/characters');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        // "core.default" is not allowed
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+        $response2 = $this->runApp('GET', '/api/app/v1/esi/eve-login/core.default/characters', null, $headers);
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testEveLoginCharacters404()
+    {
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+
+        // login does not exist
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/name1/characters', null, $headers);
+        $this->assertSame(404, $response->getStatusCode());
+
+        // app may not use the login
+        $eveLogin = (new EveLogin())->setName('test-1');
+        $this->helper->getEm()->persist($eveLogin);
+        $this->helper->getEm()->flush();
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/characters', null, $headers);
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testEveLoginCharacters200()
+    {
+        $eveLogin = (new EveLogin())->setName('test-1');
+        $this->helper->getEm()->persist($eveLogin);
+        $app = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI]);
+        $app->addEveLogin($eveLogin);
+        $character = $this->helper->addCharacterMain('Char 1', 123456);
+        $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setCharacter($character)
+            ->setRefreshToken('rt')->setAccessToken('at')->setExpires(0);
+        $this->helper->getEm()->persist($esiToken);
+        $this->helper->getEm()->flush();
+        $this->helper->getEm()->clear();
+
+        $headers = ['Authorization' => 'Bearer '.base64_encode($app->getId().':s1')];
+        $response = $this->runApp('GET', '/api/app/v1/esi/eve-login/test-1/characters', null, $headers);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([123456], $this->parseJsonBody($response));
+    }
+
     public function testEsiV1403()
     {
         $response1 = $this->runApp('GET', '/api/app/v1/esi');
-        $this->assertEquals(403, $response1->getStatusCode());
+        $this->assertSame(403, $response1->getStatusCode());
 
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
         $response2 = $this->runApp('GET', '/api/app/v1/esi', null, $headers);
-        $this->assertEquals(403, $response2->getStatusCode());
+        $this->assertSame(403, $response2->getStatusCode());
     }
 
     public function testEsiV1400()
@@ -279,13 +331,13 @@ class EsiControllerTest extends WebTestCase
     public function testEsiPostV1403()
     {
         $response1 = $this->runApp('POST', '/api/app/v1/esi');
-        $this->assertEquals(403, $response1->getStatusCode());
+        $this->assertSame(403, $response1->getStatusCode());
 
         $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
         $response2 = $this->runApp('POST', '/api/app/v1/esi', null, $headers);
-        $this->assertEquals(403, $response2->getStatusCode());
+        $this->assertSame(403, $response2->getStatusCode());
     }
 
     public function testEsiPostV1200()
