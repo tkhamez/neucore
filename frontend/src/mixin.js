@@ -32,6 +32,15 @@ export default {
             messages: {
                 errorMissingRequiredGroup: 'This player is not a member of one of the required groups.',
                 itemNameAllowedCharsHelp: 'Allowed characters (no spaces): A-Z a-z 0-9 - . _',
+            },
+
+            loginNames: {
+                default:    'core.default',
+                alt:        'core.alt',
+                managed:    'core.managed',
+                managedAlt: 'core.managed-alt',
+                mail:       'core.mail',
+                director:   'core.director',
             }
         }
     },

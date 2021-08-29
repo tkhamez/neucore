@@ -374,7 +374,7 @@ export default {
                 }
                 if (vm.contentType === 'eveLogins') {
                     for (const eveLogin of data) {
-                        if (eveLogin.name !== 'core.default') {
+                        if (eveLogin.name !== vm.loginNames.default) {
                             vm.selectContent.push(eveLogin);
                         }
                     }

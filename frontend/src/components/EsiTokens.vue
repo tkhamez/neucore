@@ -17,7 +17,8 @@
                         again to create a new token.
                     </p>
                     <p class="align-center">
-                        <a :href="loginHost + '/login/core.alt'">
+                        <!--suppress JSUnresolvedVariable -->
+                        <a :href="loginHost + '/login/' + loginNames.alt">
                             <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
                         </a>
                     </p>

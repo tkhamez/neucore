@@ -5,8 +5,14 @@
                 <h1>Player Groups Management</h1>
                 <p class="mb-0">
                     Login URLs:
-                    <a :href="httpBaseUrl + '/login/core.managed'">{{ httpBaseUrl }}/login/core.managed</a>,
-                    <a :href="httpBaseUrl + '/login/core.managed-alt'">{{ httpBaseUrl }}/login/core.managed-alt</a>
+                    <!--suppress JSUnresolvedVariable -->
+                    <a :href="httpBaseUrl + '/login/' + loginNames.managed">
+                        {{ httpBaseUrl }}/login/{{ loginNames.managed }}
+                    </a>,
+                    <!--suppress JSUnresolvedVariable -->
+                    <a :href="httpBaseUrl + '/login/' + loginNames.managedAlt">
+                        {{ httpBaseUrl }}/login/{{ loginNames.managedAlt }}
+                    </a>
                 </p>
                 <p class="small text-muted">
                     These login URLs do not require ESI scopes. They disable groups for the player account,
