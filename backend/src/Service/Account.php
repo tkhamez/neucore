@@ -280,13 +280,17 @@ class Account
 
         // update all non-default tokens and check required in-game roles
         foreach ($char->getEsiTokens() as $esiToken) {
-            if ($esiToken->getEveLogin()->getName() !== EveLogin::NAME_DEFAULT) {
+            $eveLogin = $esiToken->getEveLogin();
+            if ($eveLogin === null) { // should not happen
+                continue;
+            }
+            if ($eveLogin->getName() !== EveLogin::NAME_DEFAULT) {
                 $this->tokenService->updateEsiToken($esiToken);
                 $oldHasRoles = $esiToken->getHasRoles();
-                if (empty($esiToken->getEveLogin()->getEveRoles())) {
+                if (empty($eveLogin->getEveRoles())) {
                     $esiToken->setHasRoles();
                 } elseif ($this->esiData->verifyRoles(
-                    $esiToken->getEveLogin()->getEveRoles(),
+                    $eveLogin->getEveRoles(),
                     $char->getId(),
                     $esiToken->getAccessToken()
                 )) {

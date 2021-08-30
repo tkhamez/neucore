@@ -191,7 +191,10 @@ class EveLogin implements \JsonSerializable
     public function setEsiScopes(string $esiScopes): self
     {
         // remove extra white space characters
-        $this->esiScopes = implode(' ', preg_split('/\s+/', $esiScopes, -1, PREG_SPLIT_NO_EMPTY));
+        $scopes = preg_split('/\s+/', $esiScopes, -1, PREG_SPLIT_NO_EMPTY);
+        if (is_array($scopes)) {
+            $this->esiScopes = implode(' ', $scopes);
+        }
         return $this;
     }
 

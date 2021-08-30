@@ -40,7 +40,7 @@ class App implements \JsonSerializable
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
+     * @var string|null
      */
     private $secret;
 
@@ -141,14 +141,9 @@ class App implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * Get secret.
-     *
-     * @return string
-     */
-    public function getSecret(): ?string
+    public function getSecret(): string
     {
-        return $this->secret;
+        return (string) $this->secret;
     }
 
     public function addRole(Role $role): self

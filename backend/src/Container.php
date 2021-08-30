@@ -50,7 +50,7 @@ class Container
                 if ($c) {
                     $conf = $c->get(Config::class)['doctrine'];
                 } else {
-                    $conf = $config['doctrine'];
+                    $conf = $config['doctrine'] ?? []; // it should always be set
                 }
                 $metaConfig = Setup::createAnnotationMetadataConfiguration(
                     $conf['meta']['entity_paths'],

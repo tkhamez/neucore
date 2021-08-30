@@ -1109,7 +1109,7 @@ class AccountTest extends TestCase
         int $expires,
         ?bool $valid = null,
         string $hash = 'hash',
-        $addSecondToken = false
+        bool $addSecondToken = false
     ): Character {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setValidToken($valid)

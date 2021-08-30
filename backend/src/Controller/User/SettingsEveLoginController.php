@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\EveLogin;
+use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;

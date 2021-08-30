@@ -332,7 +332,7 @@ class OAuthTokenTest extends TestCase
     public function testUpdateEsiToken_InvalidGrant()
     {
         $char = $this->setUpCharacterWithToken();
-        $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken = $this->getToken($char);
 
         $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
 
@@ -345,7 +345,7 @@ class OAuthTokenTest extends TestCase
     public function testUpdateEsiToken_InvalidToken()
     {
         $char = $this->setUpCharacterWithToken();
-        $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken = $this->getToken($char);
 
         $this->client->setResponse(new Response(
             200,
@@ -375,7 +375,7 @@ class OAuthTokenTest extends TestCase
     public function testUpdateEsiToken_Success()
     {
         $char = $this->setUpCharacterWithToken();
-        $esiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken = $this->getToken($char);
 
         list($token) = Helper::generateToken();
         $this->client->setResponse(new Response(
@@ -425,5 +425,11 @@ class OAuthTokenTest extends TestCase
         $this->helper->addNewPlayerToCharacterAndFlush($char);
 
         return $char;
+    }
+
+    private function getToken(Character $char): EsiToken
+    {
+        /* @phan-suppress-next-line PhanTypeMismatchReturnNullable */
+        return $char->getEsiToken(EveLogin::NAME_DEFAULT);
     }
 }

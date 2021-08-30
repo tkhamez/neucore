@@ -47,7 +47,7 @@ class AppController extends BaseController
     private $role;
 
     /**
-     * @var EveLogin|null
+     * @var EveLogin
      */
     private $eveLogin;
 

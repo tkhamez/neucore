@@ -40,3 +40,6 @@ parameters:
 		-
 			message: '#Property (.*) has no typehint specified.#'
 			path: %currentWorkingDirectory%/tests/*
+		-
+			message: '#Method (.*) should return (.*) but returns (.*)#'
+			path: %currentWorkingDirectory%/tests/Unit/Service/OAuthTokenTest.php

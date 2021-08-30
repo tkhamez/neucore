@@ -133,8 +133,8 @@ class OAuthToken
         $token = null;
         try {
             $token = new AccessToken([
-                'access_token' => (string) $esiToken->getAccessToken(),
-                'refresh_token' => (string) $esiToken->getRefreshToken(),
+                'access_token' => $esiToken->getAccessToken(),
+                'refresh_token' => $esiToken->getRefreshToken(),
                 'expires' => (int) $esiToken->getExpires()
             ]);
         } catch (\Exception $e) {

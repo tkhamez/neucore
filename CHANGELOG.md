@@ -4,11 +4,15 @@
 
 dd mm yyyy
 
+- *Note* This update includes a big database update, make sure to create a backup before updating.
+- New: Multiple ESI tokens with configurable scopes. [#32][i32]
 - Removed "invalid token" and "no token" account lists from user admin page.
 - Removed "managed-alt" login link on home page for managed accounts.
-- Add reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
+- Added reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
 - Small text improvements for the service admin page and better error handling if the service configuration is invalid.
-- Update dependencies.
+- Updated dependencies.
+
+[i32]: https://github.com/tkhamez/neucore/issues/32
 
 ## 1.23.1
 

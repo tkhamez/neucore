@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Factory;
 
 use GuzzleHttp\ClientInterface;
+use Monolog\Logger;
 use Neucore\Factory\HttpClientFactory;
 use Neucore\Middleware\Guzzle\Esi429Response;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
 
 class HttpClientFactoryTest extends TestCase
 {
@@ -24,12 +24,12 @@ class HttpClientFactoryTest extends TestCase
 
     public function testGet()
     {
-        $logger = new TestLogger();
+        $logger = new Logger('test');
         $factory = new HttpClientFactory(
             new Config(['guzzle' => ['cache' => ['dir' => __DIR__], 'user_agent' => 'Test']]),
             new EsiHeaders($logger, new ApcuStorage()),
             new Esi429Response($logger, new ApcuStorage()),
-            new TestLogger()
+            $logger
         );
 
         $actual = $factory->get('cache-key');

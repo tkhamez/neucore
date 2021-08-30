@@ -142,7 +142,9 @@ class EsiController extends BaseController
 
         $charIds = [];
         foreach ($eveLogin->getEsiTokens() as $token) {
-            $charIds[] = $token->getCharacter()->getId();
+            if ($token->getCharacter() !== null) {
+                $charIds[] = $token->getCharacter()->getId();
+            }
         }
 
         return $this->withJson($charIds);
