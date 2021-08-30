@@ -5,18 +5,12 @@ declare(strict_types=1);
 namespace Neucore;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
-use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\HandlerStack;
-use Kevinrob\GuzzleCache\CacheMiddleware;
-use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
-use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\JsonFormatter;
@@ -26,11 +20,11 @@ use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Neucore\Exception\RuntimeException;
+use Neucore\Factory\HttpClientFactory;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\FluentdFormatter;
 use Neucore\Log\GelfMessageFormatter;
-use Neucore\Middleware\Guzzle\Esi429Response;
-use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\Config;
 use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\StorageInterface;
@@ -157,40 +151,12 @@ class Container
             },
 
             // Guzzle
+            HttpClientFactoryInterface::class => function (ContainerInterface $c) {
+                return $c->get(HttpClientFactory::class);
+            },
             ClientInterface::class => function (ContainerInterface $c) {
-                /*$debugFunc = function (\Psr\Http\Message\MessageInterface $r) use ($c) {
-                    if ($r instanceof \Psr\Http\Message\RequestInterface) {
-                        $c->get(LoggerInterface::class)->debug($r->getMethod() . ' ' . $r->getUri());
-                    } elseif ($r instanceof \Psr\Http\Message\ResponseInterface) {
-                        $c->get(LoggerInterface::class)->debug('Status Code: ' . $r->getStatusCode());
-                    }
-                    $headers = [];
-                    foreach ($r->getHeaders() as $name => $val) {
-                        $headers[$name] = $val[0];
-                    }
-                    #$c->get(LoggerInterface::class)->debug(print_r($headers, true));
-                    return $r;
-                };*/
-
-                $stack = HandlerStack::create();
-                #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
-                $cache = new CacheMiddleware(new PrivateCacheStrategy(new DoctrineCacheStorage(
-                    # TODO find replacement
-                    /* @phan-suppress-next-line PhanDeprecatedClass */
-                    new FilesystemCache($c->get(Config::class)['guzzle']['cache']['dir'])
-                )));
-                /* @phan-suppress-next-line PhanTypeMismatchArgument */
-                $stack->push($cache, 'cache');
-                $stack->push($c->get(EsiHeaders::class));
-                $stack->push($c->get(Esi429Response::class));
-                #$stack->push(\GuzzleHttp\Middleware::mapResponse($debugFunc));
-
-                return new Client([
-                    'handler' => $stack,
-                    'headers' => [
-                        'User-Agent' => $c->get(Config::class)['guzzle']['user_agent'],
-                    ],
-                ]);
+                $factory = $c->get(HttpClientFactoryInterface::class); /* @var HttpClientFactoryInterface $factory */
+                return $factory->get();
             },
 
             // Response

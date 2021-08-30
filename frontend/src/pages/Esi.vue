@@ -18,6 +18,11 @@
                                  :show-no-results="false"
                                  @search-change="charSearch">
                     </multiselect>
+                    <br>
+                    <label for="eveLogin">ESI Token (EVE Login Name)</label>
+                    <select id="eveLogin" class="form-control" v-model="selectedLoginName">
+                        <option v-for="eveLogin in eveLogins" v-bind:value="eveLogin.name">{{ eveLogin.name }}</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -87,7 +92,7 @@
 import _ from 'lodash';
 import $ from 'jquery';
 import Multiselect from '@suadelabs/vue3-multiselect';
-import {ESIApi, CharacterApi} from 'neucore-js-client';
+import {ESIApi, CharacterApi, SettingsApi} from 'neucore-js-client';
 
 export default {
     components: {
@@ -102,6 +107,8 @@ export default {
             charSearchIsLoading: false,
             charSearchResult: [],
             selectedCharacter: '',
+            eveLogins: [],
+            selectedLoginName: this.loginNames.default,
             paths: [],
             pathsGet: [],
             pathsPost: [],
@@ -116,27 +123,8 @@ export default {
     mounted: function() {
         window.scrollTo(0,0);
 
-        const vm = this;
-        vm.ajaxLoading(true);
-        $.get(this.$root.envVars.baseUrl+'esi-paths-http-get.json').then(data => {
-            vm.pathsGet = data;
-            result();
-        });
-        $.get(this.$root.envVars.baseUrl+'esi-paths-http-post.json').then(data => {
-            vm.pathsPost = data;
-            result();
-        });
-        function result() {
-            if (vm.pathsGet.length > 0 && vm.pathsPost.length > 0) {
-                vm.ajaxLoading(false);
-                for (const path of vm.pathsGet) {
-                    vm.paths.push({ name: `GET ${path}`, path: path});
-                }
-                for (const path of vm.pathsPost) {
-                    vm.paths.push({ name: `POST ${path}`, path: path});
-                }
-            }
-        }
+        getEveLogin(this);
+        getPaths(this);
     },
 
     watch: {
@@ -180,6 +168,7 @@ export default {
             const api = new ESIApi();
             const params = {
                 'character': this.selectedCharacter.character_id,
+                'login': this.selectedLoginName,
                 'route': this.esiRoute,
                 'debug': this.debug ? 'true' : 'false',
             };
@@ -199,6 +188,38 @@ export default {
                 api.requestPost(vm.requestBody, params, callback);
             } else {
                 api.request(params, callback);
+            }
+        }
+    }
+}
+
+function getEveLogin(vm) {
+    new SettingsApi().userSettingsEveLoginList((error, data) => {
+        if (error) {
+            return;
+        }
+        vm.eveLogins = data;
+    });
+}
+
+function getPaths(vm) {
+    vm.ajaxLoading(true);
+    $.get(vm.$root.envVars.baseUrl+'esi-paths-http-get.json').then(data => {
+        vm.pathsGet = data;
+        result();
+    });
+    $.get(vm.$root.envVars.baseUrl+'esi-paths-http-post.json').then(data => {
+        vm.pathsPost = data;
+        result();
+    });
+    function result() {
+        if (vm.pathsGet.length > 0 && vm.pathsPost.length > 0) {
+            vm.ajaxLoading(false);
+            for (const path of vm.pathsGet) {
+                vm.paths.push({ name: `GET ${path}`, path: path});
+            }
+            for (const path of vm.pathsPost) {
+                vm.paths.push({ name: `POST ${path}`, path: path});
             }
         }
     }

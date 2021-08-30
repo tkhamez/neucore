@@ -351,7 +351,6 @@ class EveMail
      * @param string $body max length 10000
      * @param int[] $characterRecipients EVE character IDs
      * @return string Error message or empty string on success
-     * @see OAuthToken::getToken()
      */
     private function sendMail(
         int $senderId,

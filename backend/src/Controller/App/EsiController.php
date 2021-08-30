@@ -10,6 +10,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
 use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
@@ -18,7 +19,6 @@ use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
 use OpenApi\Annotations as OA;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
@@ -57,9 +57,9 @@ class EsiController extends BaseController
     private $config;
 
     /**
-     * @var ClientInterface
+     * @var HttpClientFactoryInterface
      */
-    private $httpClient;
+    private $httpClientFactory;
 
     /**
      * @var AppAuth
@@ -79,7 +79,7 @@ class EsiController extends BaseController
         LoggerInterface $log,
         OAuthToken $tokenService,
         Config $config,
-        ClientInterface $httpClient,
+        HttpClientFactoryInterface $httpClientFactory,
         AppAuth $appAuth
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
@@ -88,7 +88,7 @@ class EsiController extends BaseController
         $this->log = $log;
         $this->tokenService = $tokenService;
         $this->config = $config;
-        $this->httpClient = $httpClient;
+        $this->httpClientFactory = $httpClientFactory;
         $this->appAuth = $appAuth;
     }
 
@@ -175,7 +175,8 @@ class EsiController extends BaseController
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         description="The EVE character ID those token should be used to make the ESI request",
+     *         description="The EVE character ID those token should be used to make the ESI request. Optionally
+                            followed by a colon and the name of an EVE login to use an alternative ESI token.",
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
@@ -266,7 +267,8 @@ class EsiController extends BaseController
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         description="The EVE character ID those token should be used to make the ESI request",
+     *         description="The EVE character ID those token should be used to make the ESI request. Optionally
+                            followed by a colon and the name of an EVE login to use an alternative ESI token.",
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\RequestBody(
@@ -279,7 +281,7 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="Same as GET ​/app​/v1​/esi, see there for details.",
+     *         description="Same as GET /app/v1/esi, see there for details.",
      *         @OA\JsonContent(type="string"),
      *         @OA\Header(
      *             header="Expires",
@@ -362,7 +364,16 @@ class EsiController extends BaseController
 
         // get/validate input
         list($esiPath, $esiParams) = $this->getEsiPathAndQueryParams($request, $path);
-        $characterId = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
+        $dataSource = $this->getQueryParam($request, self::PARAM_DATASOURCE, '');
+        if (strpos($dataSource, ':') !== false) {
+            $dataSourceTmp = explode(':', $dataSource);
+            $characterId = $dataSourceTmp[0];
+            $eveLoginName = isset($dataSourceTmp[1]) && !empty($dataSourceTmp[1]) ?
+                $dataSourceTmp[1] : EveLogin::NAME_DEFAULT;
+        } else {
+            $characterId = $dataSource;
+            $eveLoginName = EveLogin::NAME_DEFAULT;
+        }
         if (empty($esiPath) || $this->isPublicPath($esiPath) || empty($characterId)) {
             if (empty($esiPath)) {
                 $reason = 'Path cannot be empty.';
@@ -381,13 +392,13 @@ class EsiController extends BaseController
         }
 
         // Get the token - This executes an ESI request to refresh the token as needed.
-        $token = $this->tokenService->getToken($character);
+        $token = $this->tokenService->getToken($character, $eveLoginName);
         if ($token === '') {
             return $this->response->withStatus(400, 'Character has no valid token.');
         }
 
         $body = $method === 'POST' ? $request->getBody()->__toString() : null;
-        $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $method, $body);
+        $esiResponse = $this->sendRequest($esiPath, $esiParams, $token, $eveLoginName, $method, $body);
 
         return $this->buildResponse($esiResponse);
     }
@@ -451,6 +462,7 @@ class EsiController extends BaseController
         string $esiPath,
         array $esiParams,
         string $token,
+        string $cacheKey,
         string $method,
         string $body = null
     ): ResponseInterface {
@@ -464,8 +476,10 @@ class EsiController extends BaseController
             'body' => $body
         ];
 
+        $httpClient = $this->httpClientFactory->get($cacheKey);
+
         try {
-            $esiResponse = $this->httpClient->request($method, $url, $options);
+            $esiResponse = $httpClient->request($method, $url, $options);
         } catch (RequestException $re) {
             $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $re->getMessage());
             $esiResponse = $re->getResponse(); // may still be null

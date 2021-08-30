@@ -14,7 +14,6 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\EsiToken;
-use Neucore\Entity\EveLogin;
 use Neucore\Log\Context;
 use Psr\Log\LoggerInterface;
 
@@ -167,11 +166,12 @@ class OAuthToken
      * refresh token and stored in the database for the character.
      *
      * @param Character $character The entity should already be saved to the database.
+     * @param string $eveLoginName An EveLogin->$name
      * @return string The access token or empty string on error or if the character has no default token.
      */
-    public function getToken(Character $character): string
+    public function getToken(Character $character, string $eveLoginName): string
     {
-        $esiToken = $character->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken = $character->getEsiToken($eveLoginName);
         if ($esiToken === null) {
             return '';
         }

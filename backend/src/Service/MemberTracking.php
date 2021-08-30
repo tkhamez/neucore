@@ -12,6 +12,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
 use Neucore\Entity\EsiType;
+use Neucore\Entity\EveLogin;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
@@ -346,7 +347,7 @@ class MemberTracking
         if ($location === null) {
             $character = $this->repositoryFactory->getCharacterRepository()->find($memberData->getCharacterId());
             if ($character !== null) {
-                $characterAccessToken = $this->oauthToken->getToken($character);
+                $characterAccessToken = $this->oauthToken->getToken($character, EveLogin::NAME_DEFAULT);
                 $location = $this->esiData->fetchStructure($structureId, $characterAccessToken, false);
             }
         }

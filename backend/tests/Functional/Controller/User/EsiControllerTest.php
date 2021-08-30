@@ -6,10 +6,11 @@ namespace Tests\Functional\Controller\User;
 
 use GuzzleHttp\Psr7\Response;
 use Neucore\Entity\Role;
-use GuzzleHttp\ClientInterface;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 use Tests\Client;
+use Tests\HttpClientFactory;
 
 class EsiControllerTest extends WebTestCase
 {
@@ -23,29 +24,48 @@ class EsiControllerTest extends WebTestCase
         $this->setupDb();
 
         $response1 = $this->runApp('GET', '/api/user/esi/request');
-        $this->assertEquals(403, $response1->getStatusCode());
+        $this->assertSame(403, $response1->getStatusCode());
 
         $this->loginUser(6);
 
         $response2 = $this->runApp('GET', '/api/user/esi/request');
-        $this->assertEquals(403, $response2->getStatusCode());
+        $this->assertSame(403, $response2->getStatusCode());
     }
 
-    public function testRequest400()
+    public function testRequest400_MissingParameter()
     {
         $this->setupDb();
         $this->loginUser(7);
 
-        $response1 = $this->runApp('GET', '/api/user/esi/request');
-        $this->assertEquals(400, $response1->getStatusCode());
-        $this->assertEquals('Missing route and/or character parameter.', $this->parseJsonBody($response1));
+        $response = $this->runApp('GET', '/api/user/esi/request');
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('Missing route and/or character parameter.', $this->parseJsonBody($response));
+    }
 
-        $response2 = $this->runApp(
+    public function testRequest400_CharacterNotFound()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $response = $this->runApp(
             'GET',
             '/api/user/esi/request?character=123&route=/characters/{character_id}'
         );
-        $this->assertEquals(400, $response2->getStatusCode());
-        $this->assertEquals('Character not found.', $this->parseJsonBody($response2));
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('Character not found.', $this->parseJsonBody($response));
+    }
+
+    public function testRequest400_MissingToken()
+    {
+        $this->setupDb();
+        $this->loginUser(7);
+
+        $response = $this->runApp(
+            'GET',
+            '/api/user/esi/request?character=6&route=/characters/{character_id}&login=test-1'
+        );
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('Character has no valid token.', $response->getReasonPhrase());
     }
 
     public function testRequest200()
@@ -69,10 +89,10 @@ class EsiControllerTest extends WebTestCase
             '/api/user/esi/request?character=6&route=/characters/{character_id}',
             null,
             null,
-            [ClientInterface::class => $httpClient]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
         );
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([
             'headers' => [
                 ['Expires', 'Sat, 02 Mar 2019 12:26:53 GMT'],
                 ['X-Esi-Error-Limit-Remain', '100'],
@@ -99,10 +119,10 @@ class EsiControllerTest extends WebTestCase
             '/api/user/esi/request?character=6&route=/latest/characters/affiliation/',
             ['body' => [96061222]],
             null,
-            [ClientInterface::class => $httpClient]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
         );
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([
             'headers' => [],
             'body' => [
                 "alliance_id" => 99003214,

@@ -8,9 +8,9 @@ namespace Tests\Functional\Controller\App;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Middleware\Guzzle\EsiHeaders;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
@@ -18,6 +18,7 @@ use Neucore\Storage\Variables;
 use Neucore\Storage\SystemVariableStorage;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
+use Tests\HttpClientFactory;
 use Tests\Logger;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
@@ -113,7 +114,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response2->getStatusCode());
     }
 
-    public function testEsiV1400()
+    public function testEsiV1400_MissingParameters()
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
@@ -133,18 +134,9 @@ class EsiControllerTest extends WebTestCase
             'The datasource parameter cannot be empty, it must contain an EVE character ID',
             $response2->getReasonPhrase()
         );
-
-        $response3 = $this->runApp(
-            'GET',
-            '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=96061222',
-            null,
-            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
-        );
-        $this->assertSame(400, $response3->getStatusCode());
-        $this->assertSame('Character not found.', $response3->getReasonPhrase());
     }
 
-    public function testEsiV1400PublicRoute()
+    public function testEsiV1400_PublicRoute()
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
@@ -160,6 +152,37 @@ class EsiControllerTest extends WebTestCase
         $response3 = $this->runApp('GET', '/api/app/v1/esi/latest/killmails/123456/123abc/', null, $headers);
         $this->assertSame(400, $response3->getStatusCode());
         $this->assertSame('Public ESI routes are not allowed.', $response3->getReasonPhrase());
+    }
+
+    public function testEsiV1400_CharacterNotFound()
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=96061222',
+            null,
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('Character not found.', $response->getReasonPhrase());
+    }
+
+    public function testEsiV1400_MissingToken()
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi/latest/characters/96061222/stats/?datasource=123%3Atest-1',
+            null,
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('Character has no valid token.', $response->getReasonPhrase());
     }
 
     public function testEsiV1429()
@@ -252,13 +275,13 @@ class EsiControllerTest extends WebTestCase
 
         $response = $this->runApp(
             'GET',
-            '/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=123',
+            '/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=123:core.default',
             [],
             [
                 'Authorization' => 'Bearer '.base64_encode($appId.':s1'),
                 'If-None-Match' => '686897696a7c876b7e'
             ],
-            [ClientInterface::class => $httpClient]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
         );
 
         $this->assertSame(200, $response->getStatusCode());
@@ -293,7 +316,10 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=123',
             [],
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
-            [ClientInterface::class => $httpClient, StorageInterface::class => $this->storage]
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
+                StorageInterface::class => $this->storage,
+            ]
         );
 
         $this->assertSame(200, $response->getStatusCode());
@@ -322,7 +348,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v1/esi?esi-path-query='. urlencode('/v3/characters/96061222/assets/?page=1') . '&datasource=123',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
-            [ClientInterface::class => $httpClient]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
         );
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
@@ -357,7 +383,7 @@ class EsiControllerTest extends WebTestCase
             '/api/app/v1/esi/v1/characters/96061222/assets/names/?datasource=123',
             [123456],
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
-            [ClientInterface::class => $httpClient]
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
         );
 
         $this->assertSame(200, $response->getStatusCode());

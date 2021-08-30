@@ -239,7 +239,7 @@ class OAuthTokenTest extends TestCase
 
     public function testGetToken_NoToken()
     {
-        $token = $this->es->getToken(new Character());
+        $token = $this->es->getToken(new Character(), 'test-1');
         $this->assertSame('', $token);
     }
 
@@ -247,7 +247,7 @@ class OAuthTokenTest extends TestCase
     {
         $char = $this->setUpCharacterWithToken('');
 
-        $token = $this->es->getToken($char);
+        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
 
         $this->assertSame('', $token);
     }
@@ -259,7 +259,7 @@ class OAuthTokenTest extends TestCase
         // response for refreshAccessToken()
         $this->client->setResponse(new Response(400, [], '{"error": "invalid_grant"}'));
 
-        $token = $this->es->getToken($char);
+        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
 
         $this->assertSame('', $token);
     }
@@ -274,7 +274,7 @@ class OAuthTokenTest extends TestCase
             '{"access_token": "rt", "expires_in": 0, "refresh_token": "", "expires": 1519933900}'
         ));
 
-        $token = $this->es->getToken($char);
+        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
 
         $this->assertSame('', $token);
     }
@@ -292,7 +292,7 @@ class OAuthTokenTest extends TestCase
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));
 
-        $token = $this->es->getToken($char);
+        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
 
         $this->assertSame('new-token', $token);
         $this->assertSame('new-token', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
@@ -324,7 +324,7 @@ class OAuthTokenTest extends TestCase
             "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
         ));
 
-        $token = $this->es->getToken($char);
+        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
 
         $this->assertSame('', $token);
     }

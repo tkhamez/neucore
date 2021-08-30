@@ -9,11 +9,12 @@ namespace Neucore\Controller\User;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Utils;
 use Neucore\Controller\BaseController;
+use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
+use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Service\Config;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\OAuthToken;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Neucore\Service\ObjectManager;
@@ -35,9 +36,9 @@ class EsiController extends BaseController
     private $tokenService;
 
     /**
-     * @var ClientInterface
+     * @var HttpClientFactoryInterface
      */
-    private $httpClient;
+    private $httpClientFactory;
 
     /**
      * @var Config
@@ -49,13 +50,13 @@ class EsiController extends BaseController
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         OAuthToken $tokenService,
-        ClientInterface $httpClient,
+        HttpClientFactoryInterface $httpFactory,
         Config $config
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->tokenService = $tokenService;
-        $this->httpClient = $httpClient;
+        $this->httpClientFactory = $httpFactory;
         $this->config = $config;
     }
 
@@ -76,6 +77,12 @@ class EsiController extends BaseController
      *         in="query",
      *         description="EVE character ID.",
      *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="login",
+     *         in="query",
+     *         description="The EVE login name.",
+     *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="route",
@@ -108,6 +115,7 @@ class EsiController extends BaseController
     public function request(ServerRequestInterface $request, string $method = 'GET'): ResponseInterface
     {
         $charId = $this->getQueryParam($request, 'character', '');
+        $eveLoginName = $this->getQueryParam($request, 'login', EveLogin::NAME_DEFAULT);
         $route = $this->getQueryParam($request, 'route', '');
         $debug = $this->getQueryParam($request, 'debug') === 'true';
 
@@ -139,19 +147,23 @@ class EsiController extends BaseController
         );
         $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'];
 
+        $httpClient = $this->httpClientFactory->get($eveLoginName);
+
         // make request
         if ($debug) {
             /* @phan-suppress-next-line PhanDeprecatedFunction */
-            $stack = $this->httpClient->getConfig('handler'); # TODO find another way
+            $stack = $httpClient->getConfig('handler'); # TODO find another way
             if ($stack instanceof HandlerStack) {
                 /* @phan-suppress-next-line PhanUndeclaredFunctionInCallable */
                 $stack->remove('cache');
             }
         }
-        $token = $this->tokenService->getToken($character);
-        $response = null;
+        $token = $this->tokenService->getToken($character, $eveLoginName);
+        if ($token === '') {
+            return $this->response->withStatus(400, 'Character has no valid token.');
+        }
         try {
-            $response = $this->httpClient->request($method, $baseUri . $path, [
+            $response = $httpClient->request($method, $baseUri . $path, [
                 'headers' => ['Authorization' => 'Bearer ' . $token],
                 'body' => $body,
             ]);
@@ -162,13 +174,11 @@ class EsiController extends BaseController
         }
 
         // get body from response
-        $json = null;
         try {
             $json = $response->getBody()->getContents();
         } catch (RuntimeException $re) {
             return $this->prepareResponse($re->getMessage(), $debug, $response, 400);
         }
-        $body = null;
         try {
             $body = Utils::jsonDecode($json);
         } catch (\InvalidArgumentException $iae) {
