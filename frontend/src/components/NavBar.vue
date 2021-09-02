@@ -99,8 +99,8 @@
                            class="dropdown-item" :class="{ active: page === 'Esi' }"
                            href="#Esi">ESI</a>
                         <a v-if="hasRole('user-chars')"
-                           class="dropdown-item" :class="{ active: page === 'FindAlts' }"
-                           href="#FindAlts">Find Alts</a>
+                           class="dropdown-item" :class="{ active: page === 'Characters' }"
+                           href="#Characters">Characters</a>
                     </div>
                 </li>
             </ul>
@@ -143,7 +143,7 @@ export default {
             adminPages: [
                 'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings', 'Statistics'
             ],
-            memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'FindAlts'],
+            memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'Characters'],
             page: '',
             selectedTheme: '',
         }

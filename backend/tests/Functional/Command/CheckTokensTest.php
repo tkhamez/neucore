@@ -168,7 +168,6 @@ class CheckTokensTest extends ConsoleTestCase
         list($token, $keySet) = Helper::generateToken();
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
-            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
@@ -207,7 +206,6 @@ class CheckTokensTest extends ConsoleTestCase
                 [],
                 '{"access_token": '.json_encode($token).', "refresh_token": "rt", "expires": '.(time()+60*60).'}'
             ),
-            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
@@ -246,11 +244,6 @@ class CheckTokensTest extends ConsoleTestCase
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
         $this->helper->createOrUpdateEsiToken($c, 123456, $token)->setValidToken(false);
-
-        $this->client->setResponse(
-            // Token has no expire time, so no call to GenericProvider->getAccessToken()
-            new Response(200, [], '{"keys": ' . json_encode($keySet) . '}') // for SSO JWT key set
-        );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,

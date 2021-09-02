@@ -49,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-8">
+        <div v-cloak v-if="groupId" class="col-lg-8">
             <div class="card border-secondary mb-3" >
                 <div class="card-header">
                     <h4>{{groupName}}</h4>
@@ -67,24 +67,24 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
-                            :class="{ 'active': contentType === 'alliances' }"
-                            :href="'#GroupAdmin/' + groupId + '/alliances'">
+                       :class="{ 'active': contentType === 'alliances' }"
+                       :href="'#GroupAdmin/' + groupId + '/alliances'">
                         Alliances
                         <span class="far fa-plus-square add-alli-corp"
-                           @mouseover="mouseover"
-                           @mouseleave="mouseleave"
-                            v-on:click="showAddAlliCorpModal('Alliance')"></span>
+                              @mouseover="mouseover"
+                              @mouseleave="mouseleave"
+                              v-on:click="showAddAlliCorpModal('Alliance')"></span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
-                            :class="{ 'active': contentType === 'corporations' }"
-                            :href="'#GroupAdmin/' + groupId + '/corporations'">
+                       :class="{ 'active': contentType === 'corporations' }"
+                       :href="'#GroupAdmin/' + groupId + '/corporations'">
                         Corporations
                         <span class="far fa-plus-square add-alli-corp"
-                           @mouseover="mouseover"
-                           @mouseleave="mouseleave"
-                            v-on:click="showAddAlliCorpModal('Corporation')"></span>
+                              @mouseover="mouseover"
+                              @mouseleave="mouseleave"
+                              v-on:click="showAddAlliCorpModal('Corporation')"></span>
                     </a>
                 </li>
                 <li class="nav-item">

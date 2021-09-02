@@ -14,24 +14,19 @@
                     <div class="list-group">
                         <a v-for="corporation in corporations" class="list-group-item list-group-item-action"
                            :class="{ active: corporationId === corporation.id }"
-                           :href="'#TrackingAdmin/' + corporation.id + '/' + contentType">
-                            [{{ corporation.ticker }}]
-                            {{ corporation.name }}
+                           :href="'#TrackingAdmin/' + corporation.id">
+                            [{{ corporation.ticker }}] {{ corporation.name }}
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
-                <ul class="nav nav-pills nav-fill">
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           :class="{ 'active': contentType === 'groups' }"
-                           :href="'#TrackingAdmin/' + corporationId + '/groups'">Groups</a>
-                    </li>
-                </ul>
+            <div v-cloak v-if="corporationId" class="col-lg-8">
+                <div class="card border-secondary mb-3" >
+                    <h4 class="card-header">Groups</h4>
+                </div>
 
                 <admin v-cloak v-if="corporationId" ref="admin"
-                       :player="player" :contentType="contentType" :typeId="corporationId" :settings="settings"
+                       :player="player" :contentType="'groups'" :typeId="corporationId" :settings="settings"
                        :type="'Corporation'"></admin>
 
             </div>
@@ -58,19 +53,18 @@ export default {
         return {
             corporations: [],
             corporationId: null, // current corporation
-            contentType: '',
         }
     },
 
     mounted: function() {
         window.scrollTo(0,0);
         this.getCorporations();
-        this.setCorporationIdAndContentType();
+        this.setCorporationId();
     },
 
     watch: {
         route: function() {
-            this.setCorporationIdAndContentType();
+            this.setCorporationId();
         },
     },
 
@@ -85,11 +79,8 @@ export default {
             });
         },
 
-        setCorporationIdAndContentType: function() {
+        setCorporationId: function() {
             this.corporationId = this.route[1] ? parseInt(this.route[1], 10) : null;
-            if (this.corporationId) {
-                this.contentType = this.route[2] ? this.route[2] : 'groups';
-            }
         },
     },
 }

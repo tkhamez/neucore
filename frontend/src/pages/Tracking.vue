@@ -74,7 +74,13 @@
         </div>
 
         <div class="row mt-3">
-            <div class="col-lg-12 text-right">
+            <div class="col-lg-6">
+                <p class="small text-muted">
+                    Last update:
+                    <span v-if="corporation.trackingLastUpdate">{{ formatDate(corporation.trackingLastUpdate) }}</span>
+                </p>
+            </div>
+            <div class="col-lg-6 text-right">
                 <div class="dropdown">
                     <span class="small">Search in:</span>
                     <button title="Columns" class="btn btn-secondary btn-sm dropdown-toggle"
@@ -94,7 +100,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
+        <div class="row">
             <div class="col-lg-12">
                 <table class="table table-hover nc-table-sm member-table" aria-describedby="Corporation members">
                     <thead class="thead-light">
@@ -110,12 +116,7 @@
                         </tr>
                     </thead>
                 </table>
-                <p class="small text-muted">
-                    Last update:
-                    <span v-if="corporation.trackingLastUpdate">{{ formatDate(corporation.trackingLastUpdate) }}</span>
-                    <br>
-                    All dates and times are in GMT.
-                </p>
+                <p class="small text-muted">All dates and times are in GMT.</p>
             </div>
         </div>
 

@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-8">
+        <div v-cloak v-if="appId" class="col-lg-8">
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header">{{appName}}</h4>
             </div>

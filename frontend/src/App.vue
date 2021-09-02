@@ -11,7 +11,7 @@
 
         <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :route="route" :settings="settings"></nav-bar>
 
-        <characters ref="charactersModal"></characters>
+        <charactersModal ref="charactersModal"></charactersModal>
 
         <component v-if="settingsLoaded" v-cloak v-bind:is="page"
                    :route="route"
@@ -29,7 +29,7 @@
             </div>
             <div class="container-fluid small">
                 "EVE", "EVE Online", "CCP" and all related logos and images are trademarks or registered trademarks of
-                <a href="http://www.ccpgames.com/" target="_blank" rel="noopener noreferrer">CCP hf</a>.
+                <a href="https://www.ccpgames.com/" target="_blank" rel="noopener noreferrer">CCP hf</a>.
             </div>
         </footer>
     </div>
@@ -39,7 +39,7 @@
 import { ApiClient, AuthApi, CharacterApi, PlayerApi, SettingsApi } from 'neucore-js-client';
 import superAgentPlugin from './superagent-plugin.js';
 import NavBar from './components/NavBar.vue';
-import Characters from './components/Characters.vue';
+import CharactersModal from './components/Characters.vue';
 import Home from './pages/Home.vue';
 import Groups from './pages/Groups.vue';
 import Service from './pages/Service.vue';
@@ -57,14 +57,14 @@ import SystemSettings from './pages/SystemSettings.vue';
 import Tracking from './pages/Tracking.vue';
 import Watchlist from './pages/Watchlist.vue';
 import WatchlistAdmin from './pages/WatchlistAdmin.vue';
-import FindAlts from './pages/FindAlts.vue';
+import Characters from './pages/Characters.vue';
 
 export default {
     name: 'app',
 
     components: {
         NavBar,
-        Characters,
+        CharactersModal,
         Home,
         Groups,
         Service,
@@ -82,7 +82,7 @@ export default {
         Tracking,
         Watchlist,
         WatchlistAdmin,
-        FindAlts,
+        Characters,
     },
 
     props: {
@@ -119,7 +119,7 @@ export default {
                 'Tracking',
                 'Watchlist',
                 'WatchlistAdmin',
-                'FindAlts',
+                'Characters',
             ],
 
             /**

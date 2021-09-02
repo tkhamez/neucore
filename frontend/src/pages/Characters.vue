@@ -2,7 +2,7 @@
 <div class="container-fluid">
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
-            <h1>Find Alts</h1>
+            <h1>Characters</h1>
         </div>
     </div>
     <div class="row">

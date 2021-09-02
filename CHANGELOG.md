@@ -6,10 +6,14 @@ dd mm yyyy
 
 - *Note* This update includes a big database update, make sure to create a backup before updating.
 - New: Multiple ESI tokens with configurable scopes. [#32][i32]
+- Added token status change date to character modal.
+- Added reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
+- Renamed "Find Alts" page to "Characters".
 - Removed "invalid token" and "no token" account lists from user admin page.
 - Removed "managed-alt" login link on home page for managed accounts.
-- Added reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
-- Small text improvements for the service admin page and better error handling if the service configuration is invalid.
+- Small text improvements for the service admin page and better error handling when the service configuration 
+  is invalid.
+- Other small UI improvements.
 - Updated dependencies.
 
 [i32]: https://github.com/tkhamez/neucore/issues/32

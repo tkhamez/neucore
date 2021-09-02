@@ -32,13 +32,26 @@ Modal window with all characters of one player.
                                         </div>
                                         <div class="col-6 text-right">
                                             <span v-if="character.validToken"
-                                                  class="badge badge-success ml-1">Valid token</span>
+                                                  class="badge badge-success ml-1"
+                                                  :class="{'text-with-tooltip': character.validTokenTime}"
+                                                  data-toggle="tooltip"
+                                                  :title="'Status changed: ' + formatDate(character.validTokenTime)">
+                                                Valid token
+                                            </span>
                                             <span v-if="character.validToken === false"
-                                                  class="badge badge-danger ml-1">
+                                                  class="badge badge-danger ml-1"
+                                                  :class="{'text-with-tooltip': character.validTokenTime}"
+                                                  data-toggle="tooltip"
+                                                  :title="'Status changed: ' + formatDate(character.validTokenTime)">
                                                 Invalid token
                                             </span>
                                             <span v-if="character.validToken === null"
-                                                  class="badge badge-info ml-1">No token</span>
+                                                  class="badge badge-info ml-1"
+                                                  :class="{'text-with-tooltip': character.validTokenTime}"
+                                                  data-toggle="tooltip"
+                                                  :title="'Status changed: ' + formatDate(character.validTokenTime)">
+                                                No token
+                                            </span>
                                             <a class="badge badge-secondary ml-1"
                                                :href="'https://evewho.com/character/' + character.id"
                                                target="_blank" rel="noopener noreferrer">Eve Who</a>
@@ -144,12 +157,16 @@ export default {
         CharacterNameChanges,
     },
 
-    data() {
+    data () {
         return {
             selectedPlayer: null,
             characterMovements: [],
             unauthorized: null,
         }
+    },
+
+    updated () {
+        $('#playerModal [data-toggle="tooltip"]').tooltip();
     },
 
     methods: {

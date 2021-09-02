@@ -97,11 +97,14 @@ export default {
         },
 
         /**
-         * @param {Date} date
+         * @param {Date|null} date
          * @param {boolean} [dateOnly]
          * @returns {string}
          */
         formatDate: function(date, dateOnly) {
+            if (!date) {
+                return '';
+            }
             let str = date.toISOString();
             str = str.replace('T', ' ').replace('.000Z', '');
             str = str.substr(0, str.length - 3); // remove seconds

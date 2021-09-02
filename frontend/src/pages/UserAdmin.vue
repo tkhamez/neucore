@@ -137,13 +137,11 @@
             </div>
         </div>
 
-        <div class="col-lg-8">
+        <div v-cloak v-if="playerEdit" class="col-lg-8">
             <div class="card border-secondary mb-3" >
                 <h3 class="card-header">
                     Player Account:
-                    <span v-cloak v-if="playerEdit">
-                        {{ playerEdit.name }} #{{ playerEdit.id }}
-                    </span>
+                    {{ playerEdit.name }} #{{ playerEdit.id }}
                     <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
                           v-on:click="updateCharacters"
                           role="img" class="fas fa-sync update-char"
@@ -208,7 +206,6 @@
                         <table class="table table-hover nc-table-sm" aria-describedby="Characters">
                             <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Corporation</th>
                                     <th scope="col">Alliance</th>
@@ -221,7 +218,6 @@
                             </thead>
                             <tbody>
                                 <tr v-for="character in playerEdit.characters">
-                                    <td>{{ character.id }}</td>
                                     <td>
                                         <a :href="'https://evewho.com/character/' + character.id"
                                            title="Eve Who" target="_blank" rel="noopener noreferrer">
@@ -275,7 +271,6 @@
                             <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col">Character ID</th>
                                         <th scope="col">Character Name</th>
                                         <th scope="col">Date moved (GMT)</th>
                                         <th scope="col">Reason</th>
@@ -285,7 +280,6 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="movedCharacter in characterMovements">
-                                        <td>{{ movedCharacter.characterId }}</td>
                                         <td>
                                             <a :href="'https://evewho.com/character/' + movedCharacter.characterId"
                                                title="Eve Who" target="_blank" rel="noopener noreferrer">
@@ -332,7 +326,12 @@
                         <tbody>
                             <tr v-for="group in playerEdit.groups">
                                 <td>{{ group.id }}</td>
-                                <td :class="{ 'groups-disabled': playerEditDeactivated }">{{ group.name }}</td>
+                                <td :class="{ 'groups-disabled': playerEditDeactivated }">
+                                    <a v-if="hasRole('group-admin')"
+                                       :href="'#GroupAdmin/'+group.id+'/members'"
+                                       title="Group Administration">{{ group.name }}</a>
+                                    <span v-else>{{ group.name }}</span>
+                                </td>
                                 <td>{{ group.visibility }}</td>
                             </tr>
                         </tbody>
