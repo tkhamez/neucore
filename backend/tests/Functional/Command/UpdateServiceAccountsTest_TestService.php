@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 
 class UpdateServiceAccountsTest_TestService implements ServiceInterface
 {
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, string $configurationData)
     {
     }
 

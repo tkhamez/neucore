@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07b385f4ad00c52aeb8b9f315db79c01",
+    "content-hash": "065de7d0f5363ac32ffb67d583b41c2f",
     "packages": [
         {
             "name": "brick/math",
@@ -4624,16 +4624,16 @@
         },
         {
             "name": "tkhamez/neucore-plugin",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/neucore-plugin.git",
-                "reference": "84cfc330aefd27ac51a96e56e8e3fc0f6016f25e"
+                "reference": "e876be84f792bf22acf398acfc1ab08f3f2669aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/84cfc330aefd27ac51a96e56e8e3fc0f6016f25e",
-                "reference": "84cfc330aefd27ac51a96e56e8e3fc0f6016f25e",
+                "url": "https://api.github.com/repos/tkhamez/neucore-plugin/zipball/e876be84f792bf22acf398acfc1ab08f3f2669aa",
+                "reference": "e876be84f792bf22acf398acfc1ab08f3f2669aa",
                 "shasum": ""
             },
             "require": {
@@ -4658,9 +4658,9 @@
             "description": "Necessary classes to write a Neucore plugin.",
             "support": {
                 "issues": "https://github.com/tkhamez/neucore-plugin/issues",
-                "source": "https://github.com/tkhamez/neucore-plugin/tree/0.2.0"
+                "source": "https://github.com/tkhamez/neucore-plugin/tree/0.3.0"
             },
-            "time": "2021-01-29T15:25:00+00:00"
+            "time": "2021-09-03T19:54:02+00:00"
         },
         {
             "name": "tkhamez/slim-role-auth",
@@ -8818,5 +8818,5 @@
     "platform-overrides": {
         "php": "7.3.0"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.1.0"
 }

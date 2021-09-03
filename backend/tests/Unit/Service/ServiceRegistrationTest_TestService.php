@@ -15,7 +15,7 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 {
     public static $lastGroup;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, string $configurationData)
     {
     }
 

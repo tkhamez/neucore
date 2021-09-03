@@ -14,7 +14,7 @@ class PlayerControllerTest_TestService implements ServiceInterface
 {
     public static $lastGroups;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, string $configurationData)
     {
     }
 

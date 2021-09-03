@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
+use Tests\Unit\Service\ServiceRegistration_AutoloadTest\TestService;
 
 class ServiceRegistrationTest extends TestCase
 {
@@ -158,12 +159,14 @@ class ServiceRegistrationTest extends TestCase
         $conf->phpClass = self::PSR_PREFIX.'\TestService';
         $conf->psr4Prefix = self::PSR_PREFIX;
         $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest';
+        $conf->configurationData = 'other: data';
         $service->setConfiguration($conf);
 
-        $this->assertInstanceOf(
-            ServiceInterface::class,
-            $this->serviceRegistration->getServiceImplementation($service)
-        );
+        /* @var TestService $implementation */
+        $implementation = $this->serviceRegistration->getServiceImplementation($service);
+
+        $this->assertInstanceOf(ServiceInterface::class, $implementation);
+        $this->assertSame('other: data', $implementation->getConfigurationData());
 
         $this->assertSame(
             ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest'],
@@ -175,7 +178,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->assertSame(
             [],
-            $this->serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService($this->log), [])
+            $this->serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService($this->log, ''), [])
         );
     }
 
@@ -183,7 +186,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $player = (new Player())->addGroup(new Group());
         $actual = $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log),
+            new ServiceRegistrationTest_TestService($this->log, ''),
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
@@ -208,7 +211,7 @@ class ServiceRegistrationTest extends TestCase
 
         $player = (new Player())->addGroup(new Group())->addCharacter($character);
         $actual = $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log),
+            new ServiceRegistrationTest_TestService($this->log, ''),
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
@@ -220,7 +223,7 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->expectException(Exception::class);
         $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log),
+            new ServiceRegistrationTest_TestService($this->log, ''),
             [(new Character())->setId(999)->setPlayer(new Player())]
         );
     }

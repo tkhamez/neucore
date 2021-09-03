@@ -31,6 +31,7 @@ class ServiceTest extends TestCase
                 'textTop' => '',
                 'textRegister' => '',
                 'textPending' => '',
+                'configurationData' => '',
             ]],
             $service->jsonSerialize(false)
         );
@@ -48,6 +49,7 @@ class ServiceTest extends TestCase
                 'textTop' => '',
                 'textRegister' => '',
                 'textPending' => '',
+                'configurationData' => '',
             ]],
             $service->jsonSerialize(false, false)
         );
@@ -85,6 +87,7 @@ class ServiceTest extends TestCase
         $data->textTop = 'text t';
         $data->textRegister = 'text r';
         $data->textPending = 'text p';
+        $data->configurationData = 'other: data';
         $this->assertNotSame($data, $service->setConfiguration($data)->getConfiguration());
         $this->assertEquals($data, $service->setConfiguration($data)->getConfiguration());
     }

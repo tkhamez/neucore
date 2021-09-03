@@ -30,6 +30,7 @@ class ServiceConfigurationTest extends TestCase
         $configuration->textTop = 'text t';
         $configuration->textRegister = 'text r';
         $configuration->textPending = 'text p';
+        $configuration->configurationData = 'other: data';
 
         $array = $configuration->jsonSerialize();
 
@@ -46,6 +47,7 @@ class ServiceConfigurationTest extends TestCase
             'textTop' => 'text t',
             'textRegister' => 'text r',
             'textPending' => 'text p',
+            'configurationData' => 'other: data',
         ], $array);
 
         $result = ServiceConfiguration::fromArray($array);

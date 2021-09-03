@@ -12,8 +12,19 @@ use Psr\Log\LoggerInterface;
 
 class TestService implements ServiceInterface
 {
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var string
+     */
+    private $configurationData;
+
+    public function __construct(LoggerInterface $logger, string $configurationData)
     {
+        $this->configurationData = $configurationData;
+    }
+
+    public function getConfigurationData(): string
+    {
+        return $this->configurationData;
     }
 
     public function getAccounts(array $characters, array $groups): array

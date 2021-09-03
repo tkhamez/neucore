@@ -9,7 +9,9 @@ namespace Neucore\Entity;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\Schema(required={"properties", "actions", "URLs", "textAccount", "textTop", "textRegister", "textPending"})
+ * @OA\Schema(required={
+ *     "properties", "actions", "URLs", "textAccount", "textTop", "textRegister", "textPending", "configurationData"
+ * })
  */
 class ServiceConfiguration implements \JsonSerializable
 {
@@ -84,6 +86,12 @@ class ServiceConfiguration implements \JsonSerializable
      * @var string
      */
     public $textPending = '';
+
+    /**
+     * @OA\Property()
+     * @var string
+     */
+    public $configurationData = '';
 
     public static function fromArray(array $data): self
     {

@@ -155,6 +155,12 @@
                                       v-model="activeService.configuration.textPending"></textarea>
                             <small class="form-text text-muted">Text below an account with status "pending"</small>
                         </label>
+                        <label class="col-form-label w-100">
+                            Configuration Data
+                            <textarea class="form-control" rows="5"
+                                      v-model="activeService.configuration.configurationData"></textarea>
+                            <small class="form-text text-muted">Additional configuration for the plugin.</small>
+                        </label>
                     </div>
                     <button class="btn btn-success" v-on:click.prevent="saveConfiguration">save</button>
                 </div> <!-- card-body -->

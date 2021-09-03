@@ -55,6 +55,7 @@ class ServiceRegistration
         }
 
         foreach ($serviceConfig->requiredGroups as $group) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
             $group = (int)$group;
             if ($group > 0 && !$character->getPlayer()->hasGroup($group)) {
                 return false;
@@ -107,7 +108,7 @@ class ServiceRegistration
             return null;
         }
 
-        return new $serviceConfig->phpClass($this->log);
+        return new $serviceConfig->phpClass($this->log, $serviceConfig->configurationData);
     }
 
     /**

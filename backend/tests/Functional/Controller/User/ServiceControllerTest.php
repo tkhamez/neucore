@@ -133,6 +133,7 @@ class ServiceControllerTest extends WebTestCase
                     'textTop' => '',
                     'textRegister' => '',
                     'textPending' => '',
+                    'configurationData' => '',
                 ]
             ],
             $this->parseJsonBody($response)
@@ -159,6 +160,7 @@ class ServiceControllerTest extends WebTestCase
                     'textTop' => '',
                     'textRegister' => '',
                     'textPending' => '',
+                    'configurationData' => '',
                 ]
             ],
             $this->parseJsonBody($response)

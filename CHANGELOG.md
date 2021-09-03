@@ -4,7 +4,10 @@
 
 dd mm yyyy
 
-- *Note* This update includes a big database update, make sure to create a backup before updating.
+- **Note** This update includes a big database update, make sure to create a backup before updating.
+- **BC break**: Updated tkhamez/neucore-plugin to 0.3.0. All plugins must be updated, or they will stop working.
+  This adds "Configuration Data" to the service plugin configuration. This data is available in the class
+  implementing Neucore\Plugin\ServiceInterface.
 - New: Multiple ESI tokens with configurable scopes. [#32][i32]
 - Added token status change date to character modal.
 - Added reason "moved-owner-changed" (used instead of "moved" if applicable) to "RemovedCharacter".
