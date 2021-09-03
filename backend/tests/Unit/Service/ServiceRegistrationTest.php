@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Tests\Unit\Service\ServiceRegistration_AutoloadTest\TestService;
 
 class ServiceRegistrationTest extends TestCase
@@ -166,6 +167,7 @@ class ServiceRegistrationTest extends TestCase
         $implementation = $this->serviceRegistration->getServiceImplementation($service);
 
         $this->assertInstanceOf(ServiceInterface::class, $implementation);
+        /* @phan-suppress-next-line PhanUndeclaredMethod */
         $this->assertSame('other: data', $implementation->getConfigurationData());
 
         $this->assertSame(
