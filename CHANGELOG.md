@@ -2,7 +2,7 @@
 
 ## next
 
-dd mm yyyy
+3 Sep 2021
 
 - **Note** This update includes a big database update, make sure to create a backup before updating.
 - **BC break**: Updated tkhamez/neucore-plugin to 0.3.0. All plugins must be updated, or they will stop working.
