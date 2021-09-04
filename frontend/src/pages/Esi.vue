@@ -108,7 +108,7 @@ export default {
             charSearchResult: [],
             selectedCharacter: '',
             eveLogins: [],
-            selectedLoginName: this.loginNames.default,
+            selectedLoginName: '',
             paths: [],
             pathsGet: [],
             pathsPost: [],
@@ -199,6 +199,7 @@ function getEveLogin(vm) {
             return;
         }
         vm.eveLogins = data;
+        vm.selectedLoginName = vm.loginNames.default;
     });
 }
 
