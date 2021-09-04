@@ -40,7 +40,7 @@ class ServiceConfiguration implements \JsonSerializable
     public $requiredGroups = [];
 
     /**
-     * @OA\Property(enum={"username", "password", "email", "status"})
+     * @OA\Property(enum={"username", "password", "email", "status", "displayName"})
      * @var string[]
      */
     public $properties = [];

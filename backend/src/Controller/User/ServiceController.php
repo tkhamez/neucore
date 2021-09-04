@@ -29,13 +29,14 @@ use Psr\Log\LoggerInterface;
  * The schema for Neucore\Plugin\ServiceAccountData:
  * @OA\Schema(
  *     schema="ServiceAccountData",
- *     required={"characterId", "username", "password", "email", "status"},
+ *     required={"characterId", "username", "password", "email", "status", "displayName"},
  *     @OA\Property(property="characterId", type="integer", format="int64"),
  *     @OA\Property(property="username", type="string", nullable=true),
  *     @OA\Property(property="password", type="string", nullable=true),
  *     @OA\Property(property="email", type="string", nullable=true),
  *     @OA\Property(property="status", type="string", nullable=true,
- *                  enum={"Pending", "Active", "Deactivated", "Unknown"})
+ *                  enum={"Pending", "Active", "Deactivated", "Unknown"}),
+ *     @OA\Property(property="displayName", type="string", nullable=true),
  * )
  */
 class ServiceController extends BaseController

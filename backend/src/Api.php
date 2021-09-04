@@ -20,13 +20,14 @@ use OpenApi\Annotations as OA;
  *
  * @OA\Schema(
  *     schema="ServiceAccount",
- *     required={"serviceId", "serviceName", "characterId", "username", "status"},
+ *     required={"serviceId", "serviceName", "characterId", "username", "status", "displayName"},
  *     @OA\Property(property="serviceId", type="integer"),
  *     @OA\Property(property="serviceName", type="string", nullable=true),
  *     @OA\Property(property="characterId", type="integer", format="int64"),
  *     @OA\Property(property="username", type="string", nullable=true),
  *     @OA\Property(property="status", type="string", nullable=true,
- *                  enum={"Pending", "Active", "Deactivated", "Unknown"})
+ *                  enum={"Pending", "Active", "Deactivated", "Unknown"}),
+ *     @OA\Property(property="displayName", type="string", nullable=true),
  * )
  */
 class Api

@@ -82,7 +82,8 @@
                             Account Properties
                             <input type="text" class="form-control" v-model="properties">
                             <small class="form-text text-muted">
-                                Comma separated list of properties, possible values: username, password, email, status
+                                Comma separated list of properties, possible values: username, password, email, status,
+                                displayName
                             </small>
                         </label>
                     </div>

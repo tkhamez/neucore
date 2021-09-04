@@ -58,6 +58,7 @@
                 <thead class="thead-light">
                     <tr class="table-active">
                         <th scope="col" v-if="hasProperty('username')">Username</th>
+                        <th scope="col" v-if="hasProperty('displayName')">Display Name</th>
                         <th scope="col" v-if="hasProperty('password') && service.configuration.showPassword">
                             Password
                         </th>
@@ -70,6 +71,7 @@
                 <tbody>
                     <tr>
                         <td v-if="hasProperty('username')">{{ account.username }}</td>
+                        <td v-if="hasProperty('displayName')">{{ account.displayName }}</td>
                         <td v-if="hasProperty('password') && service.configuration.showPassword">
                             <span>{{ account.password }}</span>
                         </td>

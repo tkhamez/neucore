@@ -97,6 +97,7 @@ Modal window with all characters of one player.
                                     Service: {{ serviceAccount.serviceName }}<br>
                                     Character: {{ characterName(serviceAccount.characterId) }}<br>
                                     Username:  {{ serviceAccount.username }}<br>
+                                    Display Name:  {{ serviceAccount.displayName }}<br>
                                     Status: {{ serviceAccount.status }}<br>
                                 </li>
                             </ul>

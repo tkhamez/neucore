@@ -388,6 +388,7 @@
                                 <th scope="col">Service</th>
                                 <th scope="col">Character</th>
                                 <th scope="col">Username</th>
+                                <th scope="col">Display Name</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
@@ -398,6 +399,7 @@
                                     [{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}
                                 </td>
                                 <td>{{ serviceAccount.username }}</td>
+                                <td>{{ serviceAccount.displayName }}</td>
                                 <td>{{ serviceAccount.status }}</td>
                             </tr>
                         </tbody>
@@ -663,6 +665,7 @@ function getPlayer(vm) {
             vm.playerEdit = null;
             return;
         }
+        console.log(data);
         vm.playerEdit = data;
         vm.characterMovements = vm.buildCharacterMovements(data);
     });

@@ -25,7 +25,7 @@ class ServiceControllerTest_TestService implements ServiceInterface
             throw new Exception();
         }
         return [
-            new ServiceAccountData(1, 'u', 'p', 'e', ServiceAccountData::STATUS_ACTIVE),
+            new ServiceAccountData(1, 'u', 'p', 'e', ServiceAccountData::STATUS_ACTIVE, 'dn'),
             new ServiceAccountData(3),
         ];
     }
@@ -42,7 +42,7 @@ class ServiceControllerTest_TestService implements ServiceInterface
         } elseif (count($groups) === 2 && $groups[1]->name === 'G5') {
             throw new Exception('test');
         } else {
-            return new ServiceAccountData($character->id, 'u2', 'p2', 'e2', ServiceAccountData::STATUS_ACTIVE);
+            return new ServiceAccountData($character->id, 'u2', 'p2', 'e2', ServiceAccountData::STATUS_ACTIVE, 'dn');
         }
     }
 

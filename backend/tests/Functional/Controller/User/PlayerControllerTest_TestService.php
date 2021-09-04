@@ -21,7 +21,7 @@ class PlayerControllerTest_TestService implements ServiceInterface
     public function getAccounts(array $characters, array $groups): array
     {
         return [
-            new ServiceAccountData(12, 'user_name', null, null, ServiceAccountData::STATUS_ACTIVE),
+            new ServiceAccountData(12, 'user_name', null, null, ServiceAccountData::STATUS_ACTIVE, 'A Name'),
         ];
     }
 

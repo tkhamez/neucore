@@ -1228,13 +1228,14 @@ class PlayerController extends BaseController
                 }
             }
             foreach ($accounts as $account) {
-                // This is the OpenAPI schema defined in Neucore\Api class
+                // This is the OpenAPI schema "ServiceAccount" defined in Neucore\Api class
                 $result[] = [
                     'serviceId' => $service->getId(),
                     'serviceName' => $service->getName(),
                     'characterId' => $account->getCharacterId(),
                     'username' => $account->getUsername(),
                     'status' => $account->getStatus(),
+                    'displayName' => $account->getDisplayName(),
                 ];
             }
         }

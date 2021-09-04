@@ -210,8 +210,9 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['characterId' => 1, 'username' => 'u', 'password' => 'p', 'email' => 'e',
-                'status' => ServiceAccountData::STATUS_ACTIVE],
-            ['characterId' => 3, 'username' => null, 'password' => null, 'email' => null, 'status' => null],
+                'status' => ServiceAccountData::STATUS_ACTIVE, 'displayName' => 'dn'],
+            ['characterId' => 3, 'username' => null, 'password' => null, 'email' => null,
+                'status' => null, 'displayName' => null],
         ], $this->parseJsonBody($response));
         $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
     }
@@ -307,6 +308,7 @@ class ServiceControllerTest extends WebTestCase
             'password' => 'p2',
             'email' => 'e2',
             'status' => ServiceAccountData::STATUS_ACTIVE,
+            'displayName' => 'dn',
         ], $this->parseJsonBody($response));
         $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
     }
