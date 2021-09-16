@@ -373,14 +373,13 @@ export default {
                     return;
                 }
                 if (vm.contentType === 'eveLogins') {
-                    for (const eveLogin of data) {
-                        if (eveLogin.name !== vm.loginNames.default) {
-                            vm.selectContent.push(eveLogin);
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].name === vm.loginNames.default) {
+                            data.splice(i, 1);
                         }
                     }
-                } else {
-                    vm.selectContent = data;
                 }
+                vm.selectContent = data;
             }]);
         },
 

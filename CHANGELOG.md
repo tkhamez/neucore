@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Fix: EVE Logins dropdown was empty on App Administration page
+ 
 ## 1.24.0
 
 4 Sep 2021
