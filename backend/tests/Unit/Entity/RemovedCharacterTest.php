@@ -31,7 +31,7 @@ class RemovedCharacterTest extends TestCase
             'removedDate' => '2018-04-26T18:59:35Z',
             'reason' => RemovedCharacter::REASON_MOVED,
             'deletedBy' => ['id' => null, 'name' => 'Deleted By'],
-            'newPlayerId' => null,
+            'newPlayerId' => 0,
             'newPlayerName' => 'New Player',
         ], json_decode((string) json_encode($char), true));
     }

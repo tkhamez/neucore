@@ -299,7 +299,10 @@ class Application
         ));
 
         $app->add(new RoleMiddleware($this->container->get(AppAuth::class), ['route_pattern' => ['/api/app']]));
-        $app->add(new RoleMiddleware($this->container->get(UserAuth::class), ['route_pattern' => ['/api/user']]));
+        $app->add(new RoleMiddleware(
+            $this->container->get(UserAuth::class),
+            ['route_pattern' => ['/api/user', '/plugin']]
+        ));
 
         $hsts = $config['HSTS']['max_age'];
         if (trim($hsts) !== '') {
@@ -310,8 +313,8 @@ class Application
             SessionMiddleware::OPTION_NAME                   => 'neucore',
             SessionMiddleware::OPTION_SECURE                 => $config['session']['secure'],
             SessionMiddleware::OPTION_SAME_SITE              => $config['session']['same_site'],
-            SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login'],
-            SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login'],
+            SessionMiddleware::OPTION_ROUTE_INCLUDE_PATTERN  => ['/api/user', '/login', '/plugin'],
+            SessionMiddleware::OPTION_ROUTE_BLOCKING_PATTERN => ['/api/user/auth', '/login', '/plugin'],
         ]));
 
         // Add routing middleware after SecureRouteMiddleware, RoleMiddleware and NonBlockingSession,
@@ -382,6 +385,7 @@ class Application
         ini_set('session.gc_divisor', '100');
 
         $pdo = $this->container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
+        /* @phan-suppress-next-line PhanTypeMismatchArgument */
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
 
         session_set_save_handler($sessionHandler, true);

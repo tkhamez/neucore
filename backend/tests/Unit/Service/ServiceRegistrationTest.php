@@ -79,7 +79,7 @@ class ServiceRegistrationTest extends TestCase
         $this->helper->getEm()->persist($group);
         $this->helper->getEm()->flush();
 
-        // no required group, no logged in user
+        // no required group, no logged-in user
         $service = new Service();
         $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
 
@@ -101,11 +101,9 @@ class ServiceRegistrationTest extends TestCase
         // add another require group
         $conf->requiredGroups[] = 2;
         $service->setConfiguration($conf);
-        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
+        $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
 
-        // remove 2nd group again and "deactivate" account
-        unset($conf->requiredGroups[1]);
-        $service->setConfiguration($conf);
+        // "deactivate" account
         $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
         $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
         $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
@@ -160,6 +158,7 @@ class ServiceRegistrationTest extends TestCase
         $conf->phpClass = self::PSR_PREFIX.'\TestService';
         $conf->psr4Prefix = self::PSR_PREFIX;
         $conf->psr4Path = __DIR__ .  '/ServiceRegistration_AutoloadTest';
+        $conf->requiredGroups = [1, 2];
         $conf->configurationData = 'other: data';
         $service->setConfiguration($conf);
 
@@ -168,7 +167,10 @@ class ServiceRegistrationTest extends TestCase
 
         $this->assertInstanceOf(ServiceInterface::class, $implementation);
         /* @phan-suppress-next-line PhanUndeclaredMethod */
-        $this->assertSame('other: data', $implementation->getConfigurationData());
+        $configuration = $implementation->getServiceConfiguration();
+        $this->assertSame(0, $configuration->id);
+        $this->assertSame([1, 2], $configuration->requiredGroups);
+        $this->assertSame('other: data', $configuration->configurationData);
 
         $this->assertSame(
             ['/some/path', __DIR__ .  '/ServiceRegistration_AutoloadTest'],
@@ -180,7 +182,13 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->assertSame(
             [],
-            $this->serviceRegistration->getAccounts(new ServiceRegistrationTest_TestService($this->log, ''), [])
+            $this->serviceRegistration->getAccounts(
+                new ServiceRegistrationTest_TestService(
+                    $this->log,
+                    new \Neucore\Plugin\ServiceConfiguration(0, [], '')
+                ),
+                []
+            )
         );
     }
 
@@ -188,14 +196,13 @@ class ServiceRegistrationTest extends TestCase
     {
         $player = (new Player())->addGroup(new Group());
         $actual = $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log, ''),
+            new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
         $this->assertSame(1, count($actual));
         $this->assertInstanceOf(ServiceAccountData::class, $actual[0]);
         $this->assertSame(123, $actual[0]->getCharacterId());
-        $this->assertEquals([new CoreGroup(0, '')], ServiceRegistrationTest_TestService::$lastGroup);
 
         $this->assertSame(
             "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects.",
@@ -213,19 +220,18 @@ class ServiceRegistrationTest extends TestCase
 
         $player = (new Player())->addGroup(new Group())->addCharacter($character);
         $actual = $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log, ''),
+            new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
             [(new Character())->setId(123)->setPlayer($player)]
         );
 
         $this->assertSame(1, count($actual));
-        $this->assertEquals([], ServiceRegistrationTest_TestService::$lastGroup);
     }
 
     public function testGetAccounts_Exception()
     {
         $this->expectException(Exception::class);
         $this->serviceRegistration->getAccounts(
-            new ServiceRegistrationTest_TestService($this->log, ''),
+            new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
             [(new Character())->setId(999)->setPlayer(new Player())]
         );
     }

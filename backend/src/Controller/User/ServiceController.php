@@ -176,7 +176,7 @@ class ServiceController extends BaseController
      */
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $response = $this->getServiceAndServiceImplementation((int) $id, false);
+        $response = $this->getServiceAndServiceImplementation((int) $id);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
@@ -256,26 +256,36 @@ class ServiceController extends BaseController
             return $this->response->withStatus(409, 'no_main');
         }
 
-        $result = $this->getServiceAndServiceImplementation((int) $id, false);
+        $result = $this->getServiceAndServiceImplementation((int) $id);
         if ($result instanceof ResponseInterface) {
             return $result;
         }
 
-        // check if account exists and has a valid state
+        // check if a new account may be created
+        $oneAccountOnly = $this->service->getConfiguration()->oneAccount;
+        if ($oneAccountOnly) {
+            $characters = $player->getCharacters();
+        } else {
+            $characters = [$main];
+        }
         try {
-            $accounts = $this->serviceRegistration->getAccounts($this->serviceImplementation, [$main], false);
+            $accounts = $this->serviceRegistration->getAccounts($this->serviceImplementation, $characters, false);
         } catch (Exception $e) {
             return $this->response->withStatus(500);
         }
         if (
             !empty($accounts) &&
-            !in_array(
-                $accounts[0]->getStatus(),
-                [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN]
+            (
+                $oneAccountOnly ||
+                !in_array( // check status of main character
+                    $accounts[0]->getStatus(),
+                    [ServiceAccountData::STATUS_DEACTIVATED, ServiceAccountData::STATUS_UNKNOWN]
+                )
             )
         ) {
-            return $this->response->withStatus(409, 'already_registered');
+            return $this->response->withStatus(409, $oneAccountOnly ? 'second_account': 'already_registered');
         }
+
         try {
             $accountData = $this->serviceImplementation->register(
                 $main->toCoreCharacter(),
@@ -328,6 +338,10 @@ class ServiceController extends BaseController
      *         description="Service, character or character's service account not found."
      *     ),
      *     @OA\Response(
+     *         response="409",
+     *         description="Different errors, check reason phrase."
+     *     ),
+     *     @OA\Response(
      *         response="500",
      *         description="Error during update."
      *     )
@@ -340,14 +354,24 @@ class ServiceController extends BaseController
             return $response;
         }
 
+        $main = null;
+        if ($this->validCharacter->getPlayer()->getMain() !== null) {
+            $main = $this->validCharacter->getPlayer()->getMain()->toCoreCharacter();
+        }
+
         // update account
         try {
             $this->serviceImplementation->updateAccount(
                 $this->validCharacter->toCoreCharacter(),
-                $this->serviceRegistration->getCoreGroups($this->validCharacter->getPlayer())
+                $this->serviceRegistration->getCoreGroups($this->validCharacter->getPlayer()),
+                $main
             );
         } catch (Exception $e) {
-            return $this->response->withStatus(500);
+            if ($e->getMessage() !== '') {
+                return $this->response->withStatus(409, $e->getMessage());
+            } else {
+                return $this->response->withStatus(500);
+            }
         }
 
         return $this->response->withStatus(204);
@@ -432,9 +456,9 @@ class ServiceController extends BaseController
         return null;
     }
 
-    private function getServiceAndServiceImplementation(int $id, bool $allowAdmin): ?ResponseInterface
+    private function getServiceAndServiceImplementation(int $id): ?ResponseInterface
     {
-        $response = $this->getService((int) $id, $allowAdmin);
+        $response = $this->getService($id, false);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
@@ -460,7 +484,7 @@ class ServiceController extends BaseController
     ): ?ResponseInterface {
         $character = null;
         foreach ($this->getUser($userAuth)->getPlayer()->getCharacters() as $char) {
-            if ($char->getId() === (int)$characterId) {
+            if ($char->getId() === $characterId) {
                 $character = $char;
                 break;
             }
@@ -470,7 +494,7 @@ class ServiceController extends BaseController
         }
         $this->validCharacter = $character;
 
-        $response1 = $this->getServiceAndServiceImplementation((int) $id, false);
+        $response1 = $this->getServiceAndServiceImplementation($id);
         if ($response1 instanceof ResponseInterface) {
             return $response1;
         }

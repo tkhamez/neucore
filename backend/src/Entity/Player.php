@@ -52,7 +52,7 @@ class Player implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
+     * @var integer|null
      */
     private $id;
 
@@ -237,7 +237,7 @@ class Player implements \JsonSerializable
      */
     public function getId()
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
     public function setName(string $name): self

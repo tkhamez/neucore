@@ -55,6 +55,47 @@ export default {
         },
 
         /**
+         * @param {string} name
+         * @returns {string|null}
+         */
+        getHashParameter: function(name) {
+            const parts = window.location.hash.substring(1).split('?');
+            if (parts.length < 2) {
+                return null;
+            }
+            const parameters = parts[1].split('&');
+            for (let i = 0; i < parameters.length; i++) {
+                const parameterParts = parameters[i].split('=');
+                if (parameterParts[0] === name) {
+                    if (!parameterParts[1]) {
+                        return '';
+                    }
+                    return decodeURIComponent(parameterParts[1]);
+                }
+            }
+            return null;
+        },
+
+        /**
+         * @param {string} name
+         */
+        removeHashParameter: function(name) {
+            const parts = window.location.hash.substring(1).split('?');
+            if (parts.length < 2) {
+                return null;
+            }
+            const remainingVariables = [];
+            const parameters = parts[1].split('&');
+            for (let i = 0; i < parameters.length; i++) {
+                const parameterParts = parameters[i].split('=');
+                if (parameterParts[0] !== name) {
+                    remainingVariables.push(parameters[i]);
+                }
+            }
+            window.location.hash = parts[0] + '?' + remainingVariables.join('&');
+        },
+
+        /**
          * @param {string} text
          * @param {string} [type] One of: error, warning, info or success
          * @param {number} [timeout]

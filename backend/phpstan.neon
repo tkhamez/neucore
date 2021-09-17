@@ -23,6 +23,9 @@ parameters:
 			message: '#Method (.*) should return (.*) but returns (.*)\|null.#'
 			path: %currentWorkingDirectory%/tests/Functional/Controller/User/PlayerControllerTest.php
 		-
+			message: '#(.*)has an unused parameter \$serviceConfiguration#'
+			path: %currentWorkingDirectory%/tests/*
+		-
 			message: '#should return array(.*)but returns array#'
 			path: %currentWorkingDirectory%/tests/Unit/Service/ServiceRegistrationTest_TestService.php
 		-

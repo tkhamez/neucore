@@ -85,6 +85,7 @@ This is also where the name "Neucore" (new Core) comes from.
 ### Related Software
 
 - Neucore plugin package https://github.com/tkhamez/neucore-plugin
+- Neucore Discord plugin https://github.com/tkhamez/neucore-discord-plugin
 - Neucore plugins: Brave Collective
   [Slack](https://github.com/bravecollective/neucore-plugin-slack),
   [Mumble](https://github.com/bravecollective/neucore-plugin-mumble),

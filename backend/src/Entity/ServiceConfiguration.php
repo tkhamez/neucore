@@ -35,6 +35,12 @@ class ServiceConfiguration implements \JsonSerializable
 
     /**
      * @OA\Property()
+     * @var bool
+     */
+    public $oneAccount = false;
+
+    /**
+     * @OA\Property()
      * @var int[]
      */
     public $requiredGroups = [];

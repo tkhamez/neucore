@@ -7,6 +7,7 @@ use Neucore\Controller\App\CharController;
 use Neucore\Controller\App\TrackingController as AppCorporationController;
 use Neucore\Controller\App\EsiController as AppEsiController;
 use Neucore\Controller\App\GroupController as AppGroupController;
+use Neucore\Controller\PluginController;
 use Neucore\Controller\User\AllianceController;
 use Neucore\Controller\User\AppController;
 use Neucore\Controller\User\AuthController;
@@ -25,6 +26,8 @@ use Neucore\Controller\User\WatchlistController;
 return [
     '/login/{name}'      => ['GET', [AuthController::class, 'login']],
     '/login-callback'    => ['GET', [AuthController::class, 'callback']],
+
+    '/plugin/{id}/{name}'   => ['GET', [PluginController::class, 'request']],
 
     '/api/user/auth/callback'   => ['GET',  [AuthController::class, 'callback']], // only for backwards compatibility
     '/api/user/auth/result'     => ['GET',  [AuthController::class, 'result']],

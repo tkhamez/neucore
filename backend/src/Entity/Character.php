@@ -347,6 +347,7 @@ class Character implements \JsonSerializable
             null;
         return new CoreCharacter(
             $this->getId(),
+            $this->getPlayer()->getId(),
             $this->getMain(),
             $this->getName() !== '' ? $this->getName() : null,
             $this->getCharacterOwnerHash(),

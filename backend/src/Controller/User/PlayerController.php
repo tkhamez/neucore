@@ -1224,7 +1224,7 @@ class PlayerController extends BaseController
                 try {
                     $accounts = $serviceRegistration->getAccounts($implementation, $player->getCharacters());
                 } catch (Exception $e) {
-                    // do nothing, service needs to log it's errors
+                    // do nothing, service needs to log its errors
                 }
             }
             foreach ($accounts as $account) {

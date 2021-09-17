@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service\ServiceRegistration_AutoloadTest;
+namespace Tests\Functional\Controller;
 
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
@@ -13,26 +13,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TestService implements ServiceInterface
+class PluginControllerTest_TestService implements ServiceInterface
 {
-    /**
-     * @var ServiceConfiguration
-     */
-    private $serviceConfiguration;
 
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
-        $this->serviceConfiguration = $serviceConfiguration;
-    }
-
-    public function getServiceConfiguration(): ServiceConfiguration
-    {
-        return $this->serviceConfiguration;
     }
 
     public function getAccounts(array $characters): array
     {
-        return [];
+        throw new Exception();
     }
 
     public function register(
@@ -69,9 +59,14 @@ class TestService implements ServiceInterface
 
     public function request(
         CoreCharacter $coreCharacter,
-        string $name, ServerRequestInterface $request,
+        string $name,
+        ServerRequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-        throw new Exception();
+        if (($request->getQueryParams()['error'] ?? '') === '1') {
+            throw new Exception('Exception from plugin.');
+        }
+        $response->getBody()->write('Response from plugin.');
+        return $response;
     }
 }

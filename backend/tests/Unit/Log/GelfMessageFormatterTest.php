@@ -18,7 +18,7 @@ class GelfMessageFormatterTest extends TestCase
             'level' => Logger::DEBUG,
             'level_name' => Logger::getLevelName(Logger::DEBUG),
             'channel' => 'channel',
-            'datetime' => new \DateTime(),
+            'datetime' => new \DateTimeImmutable(),
             'extra' => [],
         );
         $formatter = new GelfMessageFormatter();

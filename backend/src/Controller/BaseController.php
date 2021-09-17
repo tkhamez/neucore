@@ -112,7 +112,7 @@ abstract class BaseController
      * @param string $reasonPhrase Ignored if data is not null
      * @return ResponseInterface
      */
-    protected function flushAndReturn(int $status, $data = null, $reasonPhrase = ''): ResponseInterface
+    protected function flushAndReturn(int $status, $data = null, string $reasonPhrase = ''): ResponseInterface
     {
         if (! $this->objectManager->flush()) {
             return $this->response->withStatus(500);
@@ -136,5 +136,10 @@ abstract class BaseController
     protected function getUser(UserAuth $userAuth): Character
     {
         return $userAuth->getUser();
+    }
+
+    protected function getBodyWithHomeLink(string $message): string
+    {
+        return $message.'<br><br><a href="/">Home</a>';
     }
 }

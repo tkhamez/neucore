@@ -1,9 +1,15 @@
 # Changelog
 
-## next
+## 1.25.0
 
+17 Sep 2021
+
+- **BC break**: Updated tkhamez/neucore-plugin to 0.5.0, all plugins must be updated, or they will stop working.
+- **BC break**: The "Required Groups" configuration was changed from AND to OR, so only one is now required
+  instead of all of them.
+- Implemented everything that is necessary for the [Discord plugin](https://github.com/tkhamez/neucore-discord-plugin)
 - Fix: EVE Logins dropdown was empty on App Administration page
- 
+
 ## 1.24.0
 
 4 Sep 2021

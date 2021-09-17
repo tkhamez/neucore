@@ -219,6 +219,7 @@ class CharacterTest extends TestCase
         $character = (new Character())
             ->setId(100)
             ->setName('char name')
+            ->setPlayer((new Player())->setId(1))
             ->setCorporation((new Corporation())
                 ->setId(10)
                 ->setName('corp name')
@@ -233,6 +234,7 @@ class CharacterTest extends TestCase
         $coreCharacter = $character->toCoreCharacter();
 
         $this->assertSame(100, $coreCharacter->id);
+        $this->assertSame(1, $coreCharacter->playerId);
         $this->assertSame('char name', $coreCharacter->name);
         $this->assertSame(10, $coreCharacter->corporationId);
         $this->assertSame('corp name', $coreCharacter->corporationName);

@@ -112,7 +112,7 @@ class PlayerTest extends TestCase
 
     public function testSetGetId()
     {
-        $this->assertNull((new Player())->getId());
+        $this->assertSame(0, (new Player())->getId());
         $this->assertSame(5, (new Player())->setId(5)->getId());
     }
 

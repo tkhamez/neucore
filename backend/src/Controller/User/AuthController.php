@@ -127,10 +127,7 @@ class AuthController extends BaseController
             }
         }
         if (empty($loginName)) {
-            $this->response->getBody()->write(
-                'Login not found.<br><br>' .
-                '<a href="/">Home</a>'
-            );
+            $this->response->getBody()->write($this->getBodyWithHomeLink('Login not found.'));
             return $this->response->withStatus(404, 'Login not found.');
         }
 

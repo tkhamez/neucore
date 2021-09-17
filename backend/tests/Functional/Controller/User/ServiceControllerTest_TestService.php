@@ -7,21 +7,25 @@ namespace Tests\Functional\Controller\User;
 use Neucore\Plugin\CoreCharacter;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\ServiceConfiguration;
 use Neucore\Plugin\ServiceInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class ServiceControllerTest_TestService implements ServiceInterface
 {
     public static $lastGroups;
 
-    public function __construct(LoggerInterface $logger, string $configurationData)
+    public static $throw = false;
+
+    public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
     }
 
-    public function getAccounts(array $characters, array $groups): array
+    public function getAccounts(array $characters): array
     {
-        self::$lastGroups = $groups;
-        if (count($groups) === 2 && $groups[1]->name === 'G4') {
+        if (self::$throw) {
             throw new Exception();
         }
         return [
@@ -46,12 +50,16 @@ class ServiceControllerTest_TestService implements ServiceInterface
         }
     }
 
-    public function updateAccount(CoreCharacter $character, array $groups): void
+    public function updateAccount(CoreCharacter $character, array $groups, ?CoreCharacter $mainCharacter): void
     {
         self::$lastGroups = $groups;
         if ($character->id === 3) {
             throw new Exception();
         }
+    }
+
+    public function updatePlayerAccount(CoreCharacter $mainCharacter, array $groups): void
+    {
     }
 
     public function resetPassword(int $characterId): string
@@ -65,6 +73,19 @@ class ServiceControllerTest_TestService implements ServiceInterface
 
     public function getAllAccounts(): array
     {
+        throw new Exception();
+    }
+
+    public function getAllPlayerAccounts(): array
+    {
+        throw new Exception();
+    }
+
+    public function request(
+        CoreCharacter $coreCharacter,
+        string $name, ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ResponseInterface {
         throw new Exception();
     }
 }

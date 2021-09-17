@@ -48,9 +48,15 @@ class ServiceControllerTest extends WebTestCase
      */
     private $player;
 
+    /**
+     * @var Service
+     */
+    private $service1;
+
     // entity IDs
     private $g1;
     private $g2;
+    private $g7;
     private $s1;
     private $s2;
     private $s3;
@@ -62,6 +68,11 @@ class ServiceControllerTest extends WebTestCase
         $this->helper->emptyDb();
         $this->em = $this->helper->getEm();
         $this->log = new Logger('Test');
+    }
+
+    protected function tearDown(): void
+    {
+        ServiceControllerTest_TestService::$throw = false;
     }
 
     public function testGet403()
@@ -124,7 +135,8 @@ class ServiceControllerTest extends WebTestCase
                     'phpClass' => 'Tests\Functional\Controller\User\ServiceControllerTest_TestService',
                     'psr4Prefix' => '',
                     'psr4Path' => '',
-                    'requiredGroups' => [$this->g1, $this->g2],
+                    'oneAccount' => false,
+                    'requiredGroups' => [$this->g2, $this->g7],
                     'properties' => [],
                     'showPassword' => false,
                     'actions' => [],
@@ -152,6 +164,7 @@ class ServiceControllerTest extends WebTestCase
                 'id' => $this->s1,
                 'name' => 'S1',
                 'configuration' => [
+                    'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,
                     'actions' => [],
@@ -214,7 +227,6 @@ class ServiceControllerTest extends WebTestCase
             ['characterId' => 3, 'username' => null, 'password' => null, 'email' => null,
                 'status' => null, 'displayName' => null],
         ], $this->parseJsonBody($response));
-        $this->assertEquals([new CoreGroup($this->g1, 'G1')], ServiceControllerTest_TestService::$lastGroups);
     }
 
     public function testAccounts200_DeactivatedGroups()
@@ -225,7 +237,6 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
 
     public function testAccounts500_NoServiceImplementation()
@@ -245,12 +256,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        // and add a group, so that ServiceControllerTest_TestService can throw an exception
-        $group4 = (new Group())->setName('G4');
-        $this->player->addGroup($group4);
-        $this->em->persist($group4);
-        $this->em->flush();
-        $this->em->clear();
+        ServiceControllerTest_TestService::$throw = true;
 
         $response = $this->runApp('GET', "/api/user/service/$this->s1/accounts");
         $this->assertEquals(500, $response->getStatusCode());
@@ -353,6 +359,26 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals('already_registered', $response->getReasonPhrase());
     }
 
+    public function testRegister409_SecondAccount()
+    {
+        $this->setupDb();
+        $this->loginUser(1);
+
+        // switch main, so that a new account can be registered
+        // and change service configuration to "oneAccount"
+        $this->player->getCharacters()[0]->setMain(false);
+        $this->player->getCharacters()[1]->setMain(true);
+        $configuration = $this->service1->getConfiguration();
+        $configuration->oneAccount = true;
+        $this->service1->setConfiguration($configuration);
+        $this->em->flush();
+        $this->em->clear();
+
+        $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertEquals('second_account', $response->getReasonPhrase());
+    }
+
     public function testRegister409_RegisterFailed()
     {
         $this->setupDb();
@@ -410,12 +436,9 @@ class ServiceControllerTest extends WebTestCase
         $this->loginUser(1);
 
         // change main, so that a new account can be added
-        // and add a group, so that ServiceControllerTest_TestService throws an exception
+        ServiceControllerTest_TestService::$throw = true;
         $this->player->getCharacters()[0]->setMain(false);
         $this->player->getCharacters()[1]->setMain(true);
-        $group4 = (new Group())->setName('G4');
-        $this->player->addGroup($group4);
-        $this->em->persist($group4);
         $this->em->flush();
         $this->em->clear();
 
@@ -513,12 +536,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        // and add a group, so that ServiceControllerTest_TestService throws an exception
-        $group4 = (new Group())->setName('G4');
-        $this->player->addGroup($group4);
-        $this->em->persist($group4);
-        $this->em->flush();
-        $this->em->clear();
+        ServiceControllerTest_TestService::$throw = true;
 
         $response = $this->runApp('PUT', "/api/user/service/$this->s1/update-account/1");
         $this->assertEquals(500, $response->getStatusCode());
@@ -612,12 +630,7 @@ class ServiceControllerTest extends WebTestCase
         $this->setupDb();
         $this->loginUser(1);
 
-        // and add a group, so that ServiceControllerTest_TestService throws an exception
-        $group4 = (new Group())->setName('G4');
-        $this->player->addGroup($group4);
-        $this->em->persist($group4);
-        $this->em->flush();
-        $this->em->clear();
+        ServiceControllerTest_TestService::$throw = true;
 
         $response = $this->runApp('PUT', "/api/user/service/$this->s1/reset-password/1");
         $this->assertEquals(500, $response->getStatusCode());
@@ -636,8 +649,10 @@ class ServiceControllerTest extends WebTestCase
     {
         $group1 = (new Group())->setName('G1');
         $group2 = (new Group())->setName('G2');
+        $group7 = (new Group())->setName('G7');
         $this->em->persist($group1);
         $this->em->persist($group2);
+        $this->em->persist($group7);
         $this->em->flush();
 
         $conf1 = new ServiceConfiguration();
@@ -645,7 +660,7 @@ class ServiceControllerTest extends WebTestCase
         if (!$noRequiredGroupsForService1) {
             $conf1->requiredGroups = [$group1->getId()];
         }
-        $service1 = (new Service())->setName('S1')->setConfiguration($conf1);
+        $this->service1 = (new Service())->setName('S1')->setConfiguration($conf1);
 
         $conf2 = new ServiceConfiguration();
         $conf2->phpClass = ServiceController::class;
@@ -653,10 +668,10 @@ class ServiceControllerTest extends WebTestCase
 
         $conf3 = new ServiceConfiguration();
         $conf3->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
-        $conf3->requiredGroups = [$group1->getId(), $group2->getId()];
+        $conf3->requiredGroups = [$group2->getId(), $group7->getId()];
         $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
 
-        $this->em->persist($service1);
+        $this->em->persist($this->service1);
         $this->em->persist($service2);
         $this->em->persist($service3);
         $this->em->flush();
@@ -669,7 +684,8 @@ class ServiceControllerTest extends WebTestCase
 
         $this->g1 = $group1->getId();
         $this->g2 = $group2->getId();
-        $this->s1 = $service1->getId();
+        $this->g7 = $group7->getId();
+        $this->s1 = $this->service1->getId();
         $this->s2 = $service2->getId();
         $this->s3 = $service3->getId();
     }

@@ -23,6 +23,7 @@ class ServiceTest extends TestCase
         );
         $this->assertSame(
             ['id' => 0, 'name' => 's1', 'configuration' => [
+                'oneAccount' => false,
                 'properties' => [],
                 'showPassword' => false,
                 'actions' => [],
@@ -40,6 +41,7 @@ class ServiceTest extends TestCase
                 'phpClass' => '',
                 'psr4Prefix' => '',
                 'psr4Path' => '',
+                'oneAccount' => false,
                 'requiredGroups' => [],
                 'properties' => [],
                 'showPassword' => false,
@@ -78,6 +80,7 @@ class ServiceTest extends TestCase
         $data->phpClass = 'class';
         $data->psr4Prefix = 'prefix';
         $data->psr4Path = 'path';
+        $data->oneAccount = true;
         $data->requiredGroups = [1, 2];
         $data->properties = ['username', 'status'];
         $data->showPassword = true;

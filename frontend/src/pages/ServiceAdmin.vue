@@ -70,11 +70,26 @@
                                 Full path to the directory containing the classes of the above namespace.
                             </small>
                         </label>
+                    </div>
+
+                    <div class="custom-control custom-checkbox mb-2">
+                        <input class="custom-control-input" type="checkbox" id="configOneAccount"
+                               v-model="activeService.configuration.oneAccount">
+                        <label class="custom-control-label" for="configOneAccount">
+                            Limit to one service account<br>
+                            <small class="form-text text-muted">
+                                Check this if the service allows only  one account per player instead of
+                                one per character.
+                            </small>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-form-label w-100">
                             Required Groups
                             <input type="text" class="form-control" v-model="requiredGroups">
                             <small class="form-text text-muted">
-                                Comma-separated list of group IDs that an account must have (all of them)
+                                Comma-separated list of group IDs that an account must have (one of them)
                                 to see this service.
                             </small>
                         </label>
@@ -158,7 +173,7 @@
                         </label>
                         <label class="col-form-label w-100">
                             Configuration Data
-                            <textarea class="form-control" rows="5"
+                            <textarea class="form-control" rows="10"
                                       v-model="activeService.configuration.configurationData"></textarea>
                             <small class="form-text text-muted">Additional configuration for the plugin.</small>
                         </label>

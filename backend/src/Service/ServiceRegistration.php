@@ -11,6 +11,7 @@ use Neucore\Entity\Service;
 use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
+use Neucore\Plugin\ServiceConfiguration;
 use Neucore\Plugin\ServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -54,15 +55,16 @@ class ServiceRegistration
             return false;
         }
 
+        $hasOneGroup = empty($serviceConfig->requiredGroups);
         foreach ($serviceConfig->requiredGroups as $group) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $group = (int)$group;
-            if ($group > 0 && !$character->getPlayer()->hasGroup($group)) {
-                return false;
+            if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
+                $hasOneGroup = true;
             }
         }
 
-        return true;
+        return $hasOneGroup;
     }
 
     /**
@@ -108,7 +110,15 @@ class ServiceRegistration
             return null;
         }
 
-        return new $serviceConfig->phpClass($this->log, $serviceConfig->configurationData);
+        // ServiceInterface::__construct
+        return new $serviceConfig->phpClass(
+            $this->log,
+            new ServiceConfiguration(
+                $service->getId(),
+                array_map('intval', $serviceConfig->requiredGroups),
+                $serviceConfig->configurationData
+            )
+        );
     }
 
     /**
@@ -135,8 +145,7 @@ class ServiceRegistration
             $coreCharacters[] = $character->toCoreCharacter();
             $characterIds[] = $character->getId();
         }
-        $coreGroups = $this->getCoreGroups($characters[0]->getPlayer());
-        foreach ($service->getAccounts($coreCharacters, $coreGroups) as $account) {
+        foreach ($service->getAccounts($coreCharacters) as $account) {
             if (!$account instanceof ServiceAccountData) {
                 $this->log->error(
                     "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects."

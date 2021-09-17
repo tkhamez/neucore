@@ -11,14 +11,16 @@
             <div v-if="failedToLoadAccounts" class="alert alert-danger">
                 Failed to load Accounts. Please try again.
             </div>
-            <p>A new account can only be registered for your main character.</p>
+            <p v-if="service && !service.configuration.oneAccount">
+                A new account can only be registered for your main character.
+            </p>
             <p v-if="service && service.configuration.textTop">
                 <span style="white-space: pre-line;">{{ service.configuration.textTop }}</span>
             </p>
         </div>
     </div>
 
-    <div v-if="player && service" v-for="account in accounts" class="card border-secondary mb-3">
+    <div v-if="player && service" v-for="account in getAccounts()" class="card border-secondary mb-3">
         <div class="card-header">
             {{ characterName(account.characterId) }}
             <span v-if="account.characterId === getMainCharacterId()"> - Main</span>
@@ -26,8 +28,7 @@
         <div class="card-body">
 
             <!-- register -->
-            <div v-if="account.characterId === getMainCharacterId() &&
-                       (!isAccount(account) || isInactive(account))">
+            <div v-if="account.characterId === getMainCharacterId() && (!isAccount(account) || isInactive(account))">
                 <div v-if="hasProperty('email')" class="form-group">
                     <label class="col-form-label col-form-label-sm" for="formEmail">E-Mail address</label>
                     <input class="form-control form-control-sm" type="text" id="formEmail"
@@ -85,28 +86,31 @@
                             </a>
                         </td>
                         <td v-if="service.configuration.actions.length > 0">
-                            <button v-if="isActive(account) && hasAction('update-account')"
+                            <span v-if="hasAction('update-account') &&
+                                        (isActive(account) || account.status === 'Nonmember')">
+                                <button
                                     type="submit" class="btn btn-sm btn-info"
                                     v-on:click.prevent="updateAccount(account.characterId)"
                                     :disabled="updateAccountButtonDisabled">
-                                Update Account
-                            </button>
-                            <br>
-                            <small class="text-muted">
-                                Update groups and corporation affiliation.
-                            </small>
-                            <br>
-                            <br>
-                            <button v-if="isActive(account) && hasAction('reset-password')"
-                                    type="submit" class="btn btn-sm btn-warning"
-                                    v-on:click.prevent="resetPassword(account.characterId)"
-                                    :disabled="resetPasswordButtonDisabled">
-                                Reset Password
-                            </button>
-                            <br>
-                            <small class="text-muted">
-                                Generate a new password.
-                            </small>
+                                    Update Account
+                                </button>
+                                <br>
+                                <small class="text-muted">Update groups and corporation affiliation.</small>
+                            </span>
+                            <span v-if="hasAction('update-account') &&
+                                        hasAction('reset-password') &&
+                                        isActive(account)">
+                                <br><br>
+                            </span>
+                            <span v-if="isActive(account) && hasAction('reset-password')">
+                                <button type="submit" class="btn btn-sm btn-warning"
+                                        v-on:click.prevent="resetPassword(account.characterId)"
+                                        :disabled="resetPasswordButtonDisabled">
+                                    Reset Password
+                                </button>
+                                <br>
+                                <small class="text-muted">Generate a new password.</small>
+                            </span>
                         </td>
                     </tr>
                 </tbody>
@@ -154,6 +158,13 @@ export default {
         window.scrollTo(0, 0);
         this.registerSuccess = false;
         getData(this);
+
+        // Message from redirect
+        const message = this.getHashParameter('message');
+        this.removeHashParameter('message');
+        if (message) {
+            this.message(message);
+        }
     },
 
     watch: {
@@ -199,6 +210,27 @@ export default {
             return characterId; // should never reach this
         },
 
+        /**
+         * This does not return an empty main account for registration
+         * if "oneAccount" option is active and there is already another service account.
+         */
+        getAccounts() {
+            if (!this.service.configuration.oneAccount || this.accounts.length === 1) {
+                return this.accounts;
+            }
+
+            const accounts = [];
+            for (const account of this.accounts) {
+                if (
+                    account.characterId !== this.getMainCharacterId() ||
+                    (this.isAccount(account) && !this.isInactive(account))
+                ) {
+                    accounts.push(account);
+                }
+            }
+            return accounts;
+        },
+
         isAccount(account) {
             return account.username !== null || account.email !== null;
         },
@@ -218,7 +250,7 @@ export default {
             const api = new ServiceApi();
             api.serviceRegister(getServiceId(vm), {email: vm.formEmail}, (error, data, response) => {
                 if (response.statusCode === 200) {
-                    vm.message('Successfully registered with service.', 'success', 2500);
+                    vm.message('Account successfully registered or initialized.', 'success', 2500);
                     vm.registerSuccess = true;
                     vm.newPassword[data.characterId] = data.password;
                     getAccountData(vm, api);
@@ -236,6 +268,8 @@ export default {
                         vm.message('This e-mail address belongs to another account.', 'warning');
                     } else if (response.statusText === 'invite_wait') {
                         vm.message("You've already requested an invite recently, please wait.", 'warning');
+                    } else if (response.statusText === 'second_account') {
+                        vm.message('You cannot register a second account.', 'warning');
                     } else {
                         vm.message(response.statusText, 'warning');
                     }
@@ -251,9 +285,13 @@ export default {
             vm.updateAccountButtonDisabled = true;
             vm.newPassword = {}
             const api = new ServiceApi();
-            api.serviceUpdateAccount(getServiceId(vm), characterId, (error) => {
+            api.serviceUpdateAccount(getServiceId(vm), characterId, (error, data, response) => {
                 if (error) {
-                    vm.message('Error. Please try again.', 'error');
+                    if (response.statusCode === 409) {
+                        vm.message(response.statusText, 'warning');
+                    } else {
+                        vm.message('Error. Please try again.', 'error');
+                    }
                 } else {
                     vm.message('Account successfully updated.', 'success', 2500);
                     getAccountData(vm, api);

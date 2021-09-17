@@ -22,15 +22,19 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         ]);
 
         $actual = explode("\n", $output);
-        $this->assertSame(5, count($actual));
+        $this->assertSame(9, count($actual));
         $this->assertStringEndsWith('Started "update-service-accounts"', $actual[0]);
+        $this->assertStringEndsWith('  Updating S1 ...', $actual[1]);
+        $this->assertStringEndsWith('  Test exception.', $actual[2]);
+        $this->assertStringEndsWith('  updatePlayerAccount exception', $actual[3]);
         $this->assertStringEndsWith(
-            '  Updated S1: 1 accounts updated, 1 updates failed, 1 without a character.',
-            $actual[1]
+            '  Updated S1: 2 accounts updated, 2 updates failed, 2 characters or players not found.',
+            $actual[4]
         );
-        $this->assertStringEndsWith('Service implementation not found for S2', $actual[2]);
-        $this->assertStringEndsWith('Finished "update-service-accounts"', $actual[3]);
-        $this->assertSame('', $actual[4]);
+        $this->assertStringEndsWith('  Updating S2 ...', $actual[5]);
+        $this->assertStringEndsWith('Service implementation not found for S2', $actual[6]);
+        $this->assertStringEndsWith('Finished "update-service-accounts"', $actual[7]);
+        $this->assertSame('', $actual[8]);
     }
 
     private function setUpDb(): void
@@ -39,7 +43,9 @@ class UpdateServiceAccountsTest extends ConsoleTestCase
         $helper->emptyDb();
         $em = $helper->getEm();
 
-        $helper->addCharacterMain('C1', 101);
+        $player = $helper->addCharacterMain('C1', 101)->getPlayer();
+
+        UpdateServiceAccountsTest_TestService::$playerId = $player->getId();
 
         $conf1 = new ServiceConfiguration();
         $conf1->phpClass = 'Tests\Functional\Command\UpdateServiceAccountsTest_TestService';
