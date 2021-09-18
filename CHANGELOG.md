@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- **BC break**: Removed `run-jobs2.sh`.
+
 ## 1.25.0
 
 17 Sep 2021

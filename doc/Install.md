@@ -99,11 +99,8 @@ If you have cloned the repository, you must install the dependencies and build t
 
 Adjust `web/dist/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user tracking.
 
-Set up necessary cron jobs, e.g. update characters every 2 hours and the rest 3 times daily 
-using a lock file (adjust user and paths):
-
+Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user and paths):
 ```
-0 0,2,6,8,10,14,16,18,22 * * * neucore /var/www/neucore/backend/bin/run-jobs2.sh
 0 4,12,20 * * * neucore /usr/bin/flock -n /tmp/neucore-run-jobs.lock /var/www/neucore/backend/bin/run-jobs.sh
 ```
 
