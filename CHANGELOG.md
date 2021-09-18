@@ -3,6 +3,7 @@
 ## next
 
 - **BC break**: Removed `run-jobs2.sh`.
+- Updated dependencies.
 
 ## 1.25.0
 
