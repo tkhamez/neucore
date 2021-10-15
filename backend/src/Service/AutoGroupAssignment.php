@@ -120,6 +120,8 @@ class AutoGroupAssignment
         foreach ($addIds as $addId) {
             $addGroup = $this->groupRepo->find($addId);
             if ($addGroup) {
+                // Note: do not check Player::isAllowedMember here because that can only be checked once all
+                // groups were added - and is checked in Account::updateGroups via self::checkRequiredGroups.
                 $player->addGroup($addGroup);
             }
         }
