@@ -322,7 +322,8 @@ class Account
         $eveAuth = $this->tokenService->getEveAuth($token);
         if ($eveAuth === null) {
             // Fails if a SSOv1 access token is still valid (up to ~20 minutes after it was created).
-            // Should not happen otherwise. Don't change the valid flag in this case.
+            // Should not happen otherwise, but could if for some reason the access token cannot be parsed.
+            // Don't change the valid flag in this case.
             return self::CHECK_TOKEN_PARSE_ERROR;
         }
 

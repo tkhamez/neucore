@@ -70,6 +70,42 @@ class OAuthToken
     }
 
     /**
+     * Refreshes the access token if necessary and stores the new refresh token.
+     */
+    public function refreshEsiToken(EsiToken $esiToken): bool
+    {
+        $existingToken = $this->createAccessToken($esiToken);
+        if ($existingToken === null) {
+            return false;
+        }
+
+        try {
+            $token = $this->refreshAccessToken($existingToken);
+        } catch (IdentityProviderException $e) {
+            // Delete invalid refresh token so that it cannot be used again.
+            $esiToken->setAccessToken('');
+            $esiToken->setRefreshToken('');
+            $esiToken->setValidToken(false);
+            $this->objectManager->flush();
+            return false;
+        }
+
+        if ($token->getToken() !== $existingToken->getToken()) {
+            if (!is_numeric($token->getExpires()) || !is_string($token->getRefreshToken())) {
+                return false;
+            }
+            $esiToken->setAccessToken($token->getToken());
+            $esiToken->setExpires($token->getExpires());
+            $esiToken->setRefreshToken($token->getRefreshToken());
+            if (!$this->objectManager->flush()) {
+                return false; // old token is invalid, new token could not be saved
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Refreshes the access token if necessary.
      *
      * @param AccessTokenInterface $existingToken
@@ -175,30 +211,10 @@ class OAuthToken
         if ($esiToken === null) {
             return '';
         }
-        $existingToken = $this->createAccessToken($esiToken);
-        if ($existingToken === null) {
-            return '';
-        }
 
-        try {
-            $token = $this->refreshAccessToken($existingToken);
-        } catch (IdentityProviderException $e) {
-            return '';
-        }
+        $success = $this->refreshEsiToken($esiToken);
 
-        if ($token->getToken() !== $existingToken->getToken()) {
-            if (!is_numeric($token->getExpires()) || !is_string($token->getRefreshToken())) {
-                return '';
-            }
-            $esiToken->setAccessToken($token->getToken());
-            $esiToken->setExpires($token->getExpires());
-            $esiToken->setRefreshToken($token->getRefreshToken());
-            if (!$this->objectManager->flush()) {
-                return ''; // old token is invalid, new token could not be saved
-            }
-        }
-
-        return $token->getToken();
+        return $success ? $esiToken->getAccessToken() : '';
     }
 
     /**
@@ -208,24 +224,15 @@ class OAuthToken
      */
     public function updateEsiToken(EsiToken $esiToken): ?AccessTokenInterface
     {
-        $token = null;
-        if (($existingToken = $this->createAccessToken($esiToken)) !== null) {
-            try {
-                $token = $this->refreshAccessToken($existingToken);
-            } catch (IdentityProviderException $e) {
-                // do nothing
-            }
-        }
-        if ($token === null) {
-            $esiToken->setAccessToken('');
-            $esiToken->setRefreshToken('');
-            $esiToken->setValidToken(false);
-            $this->objectManager->flush();
+        $success = $this->refreshEsiToken($esiToken);
+        if (!$success) {
             return null;
         }
 
-        // token is valid here, check scopes
-        // (scopes should not change after login since you cannot revoke individual scopes)
+        $token = $this->createAccessToken($esiToken);
+
+        // The access token should be valid here, but in theory it's still possible that it cannot be parsed.
+        // Check scopes (scopes should not change after login since you cannot revoke individual scopes)
         $eveAuth = $this->getEveAuth($token);
         if ($eveAuth !== null) { // null = decoding the token failed, change nothing in this case
             if (
@@ -236,9 +243,6 @@ class OAuthToken
                 $esiToken->setValidToken(); // treat no scopes as if there was no token
             } else {
                 $esiToken->setValidToken(true);
-                $esiToken->setAccessToken($token->getToken());
-                $esiToken->setExpires($token->getExpires());
-                $esiToken->setRefreshToken($token->getRefreshToken());
             }
             $this->objectManager->flush();
         }

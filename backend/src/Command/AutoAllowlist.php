@@ -222,8 +222,7 @@ class AutoAllowlist extends Command
                     $esiToken->getValidToken() &&
                     in_array(EveLogin::SCOPE_MEMBERSHIP, $this->tokenService->getScopesFromToken($esiToken))
                 ) {
-                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] =
-                        $this->tokenService->createAccessToken($esiToken);
+                    $accountsData[$playerId][$corporationId][self::KEY_TOKEN] = $esiToken;
                 }
             }
             if (empty($accountsData[$playerId])) {
@@ -255,11 +254,11 @@ class AutoAllowlist extends Command
 
                 $this->checkForErrors();
 
-                try {
-                    $token = $this->tokenService->refreshAccessToken($characters[self::KEY_TOKEN]);
-                } catch (IdentityProviderException $e) {
+                $esiToken = $characters[self::KEY_TOKEN];
+                if (!$this->tokenService->refreshEsiToken($esiToken)) {
                     continue;
                 }
+                $token = $this->tokenService->createAccessToken($esiToken);
 
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
 

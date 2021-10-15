@@ -14,6 +14,8 @@ use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Repository\CharacterRepository;
+use Neucore\Repository\EsiTokenRepository;
 use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
@@ -58,6 +60,16 @@ class OAuthTokenTest extends TestCase
      */
     private $es;
 
+    /**
+     * @var CharacterRepository
+     */
+    private $charRepo;
+
+    /**
+     * @var EsiTokenRepository
+     */
+    private $tokenRepo;
+
     public static function setupBeforeClass(): void
     {
         self::$writeErrorListener = new WriteErrorListener();
@@ -88,6 +100,9 @@ class OAuthTokenTest extends TestCase
             $this->client,
             $config
         );
+
+        $this->charRepo = (new RepositoryFactory($this->em))->getCharacterRepository();
+        $this->tokenRepo = (new RepositoryFactory($this->em))->getEsiTokenRepository();
     }
 
     public function tearDown(): void
@@ -95,10 +110,101 @@ class OAuthTokenTest extends TestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
+    public function testRefreshEsiToken_FailCreate()
+    {
+        $esiToken = new EsiToken();
+        $this->assertFalse($this->es->refreshEsiToken($esiToken));
+    }
+
+    public function testRefreshEsiToken_FailRefresh()
+    {
+        $esiToken = $this->helper->addCharacterMain('Name', 1)->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken->setExpires(1349067601);
+
+        // response for refreshAccessToken() -> IdentityProviderException
+        $this->client->setResponse(new Response(400, [], '{"error": "invalid_grant"}'));
+
+        $this->assertFalse($this->es->refreshEsiToken($esiToken));
+
+        $this->assertSame('', $esiToken->getAccessToken()); // updated
+        $this->assertSame('', $esiToken->getRefreshToken()); // updated
+        $this->assertSame(1349067601, $esiToken->getExpires());
+
+        $this->em->clear();
+        $tokenFromDd = $this->tokenRepo->find($esiToken->getId());
+        $this->assertSame('', $tokenFromDd->getAccessToken()); // updated
+    }
+
+    public function testRefreshEsiToken_InvalidData()
+    {
+        $esiToken = $this->helper->addCharacterMain('Name', 1)->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken->setExpires(time() - 60);
+
+        $this->client->setResponse(new Response(
+            200,
+            [],
+            '{"access_token": "new_token", "expires_in": 60, "refresh_token": null}')
+        );
+
+        $this->assertFalse($this->es->refreshEsiToken($esiToken));
+
+        $this->em->clear();
+        $tokenFromDd = $this->tokenRepo->find($esiToken->getId());
+        $this->assertSame('at', $tokenFromDd->getAccessToken()); // not updated
+    }
+
+    public function testRefreshEsiToken_FailStore()
+    {
+        $esiToken = $this->helper->addCharacterMain('Name', 1)->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken->setExpires(time() - 60);
+
+        $newTokenTime = time() + 60;
+        $this->client->setResponse(new Response(200, [], '{
+            "access_token": "new_token", 
+            "refresh_token": "rt2", 
+            "expires": '.$newTokenTime.'
+        }'));
+
+        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
+
+        $this->assertFalse($this->es->refreshEsiToken($esiToken));
+
+        $this->em->clear();
+        $tokenFromDd = $this->tokenRepo->find($esiToken->getId());
+        $this->assertSame('at', $tokenFromDd->getAccessToken()); // not updated
+    }
+
+    public function testRefreshEsiToken_Ok()
+    {
+        $esiToken = $this->helper->addCharacterMain('Name', 1)->getEsiToken(EveLogin::NAME_DEFAULT);
+        $esiToken->setExpires(time() - 60);
+
+        $newTokenTime = time() + 60;
+        $this->client->setResponse(new Response(200, [], '{
+            "access_token": "new_token", 
+            "refresh_token": "rt2", 
+            "expires": '.$newTokenTime.'
+        }'));
+
+        $this->assertTrue($this->es->refreshEsiToken($esiToken));
+
+        $this->assertSame('new_token', $esiToken->getAccessToken());
+        $this->assertSame('rt2', $esiToken->getRefreshToken());
+        $this->assertSame($newTokenTime, $esiToken->getExpires());
+
+        $this->em->clear();
+        $tokenFromDd = $this->tokenRepo->find($esiToken->getId());
+        $this->assertSame('new_token', $tokenFromDd->getAccessToken());
+        $this->assertSame('rt2', $tokenFromDd->getRefreshToken());
+        $this->assertSame($newTokenTime, $tokenFromDd->getExpires());
+
+        $this->assertSame(0, count($this->log->getHandler()->getRecords()));
+    }
+
     /**
      * @throws \Exception
      */
-    public function testRefreshAccessTokenNewTokenException()
+    public function testRefreshAccessToken_NewTokenException()
     {
         $this->client->setResponse(new Response(500));
 
@@ -120,7 +226,7 @@ class OAuthTokenTest extends TestCase
     /**
      * @throws IdentityProviderException
      */
-    public function testRefreshAccessTokenIdentityProviderException()
+    public function testRefreshAccessToken_IdentityProviderException()
     {
         $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
 
@@ -138,7 +244,7 @@ class OAuthTokenTest extends TestCase
     /**
      * @throws IdentityProviderException
      */
-    public function testRefreshAccessTokenNotExpired()
+    public function testRefreshAccessToken_NotExpired()
     {
         $token = new AccessToken([
             'access_token' => 'old-token',
@@ -152,7 +258,7 @@ class OAuthTokenTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testRefreshAccessTokenNewToken()
+    public function testRefreshAccessToken_NewToken()
     {
         $this->client->setResponse(new Response(
             200,
@@ -243,36 +349,9 @@ class OAuthTokenTest extends TestCase
         $this->assertSame('', $token);
     }
 
-    public function testGetToken_InvalidToken1()
+    public function testGetToken_InvalidToken()
     {
         $char = $this->setUpCharacterWithToken('');
-
-        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
-
-        $this->assertSame('', $token);
-    }
-
-    public function testGetToken_InvalidToken2()
-    {
-        $char = $this->setUpCharacterWithToken();
-
-        // response for refreshAccessToken()
-        $this->client->setResponse(new Response(400, [], '{"error": "invalid_grant"}'));
-
-        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
-
-        $this->assertSame('', $token);
-    }
-
-    public function testGetToken_InvalidToken3()
-    {
-        $char = $this->setUpCharacterWithToken();
-
-        $this->client->setResponse(new Response(
-            200,
-            [],
-            '{"access_token": "rt", "expires_in": 0, "refresh_token": "", "expires": 1519933900}'
-        ));
 
         $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
 
@@ -298,38 +377,9 @@ class OAuthTokenTest extends TestCase
         $this->assertSame('new-token', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
         $this->assertGreaterThan(1519933900, $char->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires());
         $this->assertSame('gEy...fM0', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
-
-        $this->em->clear();
-        $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
-        $this->assertSame('new-token', $charFromDB->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
-
-        $this->assertSame(0, count($this->log->getHandler()->getRecords()));
     }
 
-    public function testGetToken_NewTokenUpdateDatabaseError()
-    {
-        $this->em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
-
-        $esiToken = (new EsiToken())->setEveLogin((new EveLogin())->setName(EveLogin::NAME_DEFAULT))
-            ->setAccessToken('old-token')->setRefreshToken('r')
-            ->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
-        $char = (new Character())->addEsiToken($esiToken);
-        $esiToken->setCharacter($char);
-
-        $this->client->setResponse(new Response(
-            200,
-            [],
-            '{"access_token": "new-token",
-            "refresh_token": "r",
-            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
-        ));
-
-        $token = $this->es->getToken($char, EveLogin::NAME_DEFAULT);
-
-        $this->assertSame('', $token);
-    }
-
-    public function testUpdateEsiToken_InvalidGrant()
+    public function testUpdateEsiToken_FailRefresh()
     {
         $char = $this->setUpCharacterWithToken();
         $esiToken = $this->getToken($char);
@@ -362,11 +412,36 @@ class OAuthTokenTest extends TestCase
         $this->assertSame('invalid', $token->getToken()); // new token with data from response
 
         $this->em->clear();
-        $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
+        $charFromDB = $this->charRepo->find(123);
         $this->assertSame(
-            'old-token', // was not updated
+            'invalid', // was updated, even if it is possible that it is invalid
             $charFromDB->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()
         );
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function testUpdateEsiToken_NoScopes()
+    {
+        $char = $this->setUpCharacterWithToken();
+        $esiToken = $this->getToken($char);
+
+        list($token) = Helper::generateToken([]);
+        $this->client->setResponse(new Response(
+            200,
+            [],
+            '{"access_token": ' . json_encode($token) . ',
+            "expires_in": 1200,
+            "refresh_token": "gEy...fM0",
+            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
+        ));
+
+        $token = $this->es->updateEsiToken($esiToken);
+
+        $this->assertInstanceOf(AccessTokenInterface::class, $token);
+        $this->assertNull($esiToken->getValidToken());
     }
 
     /**
@@ -390,13 +465,11 @@ class OAuthTokenTest extends TestCase
         $token = $this->es->updateEsiToken($esiToken);
 
         $this->assertInstanceOf(AccessTokenInterface::class, $token);
-        $this->assertNotSame('new-token', $token->getToken());
-        $this->assertGreaterThan(1519933900, $token->getExpires());
-        $this->assertSame('gEy...fM0', $token->getRefreshToken());
+        $this->assertTrue($esiToken->getValidToken());
 
         $this->em->clear();
-        $charFromDB = (new RepositoryFactory($this->em))->getCharacterRepository()->find(123);
-        $this->assertNotSame('new-token', $charFromDB->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
+        $charFromDB = $this->charRepo->find(123);
+        $this->assertNotSame('old-token', $charFromDB->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken());
     }
 
     /**

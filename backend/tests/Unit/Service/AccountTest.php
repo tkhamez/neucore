@@ -425,10 +425,7 @@ class AccountTest extends TestCase
     {
         $this->client->setResponse(
             // for refreshAccessToken()
-            new Response(200, [], '{"access_token": "new-at"}'),
-
-            // for getResourceOwner()
-            new Response(500)
+            new Response(200, [], '{"access_token": "new-at", "refresh_token" => "r-t", "expires" => 1}'),
         );
 
         $expires = time() - 1000;
@@ -445,8 +442,14 @@ class AccountTest extends TestCase
     public function testCheckCharacter_ValidTokenNoScopes()
     {
         list($token) = Helper::generateToken([]);
+        $newExpires = time() + 60;
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . json_encode($token) . '}') // for getAccessToken()
+            // for getAccessToken()
+            new Response(200, [], '{
+                "access_token": ' . json_encode($token) . ', 
+                "refresh_token": "r-t", 
+                "expires": '.$newExpires.'
+            }')
         );
 
         $expires = time() - 1000;
@@ -458,9 +461,9 @@ class AccountTest extends TestCase
         $this->om->clear();
         $character = $this->charRepo->find(31);
         $this->assertNull($character->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
-        $this->assertSame('at', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()); // not updated
-        $this->assertSame('rt', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken()); // not updated
-        $this->assertSame($expires, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires()); // not updated
+        $this->assertSame($token, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()); // updated
+        $this->assertSame('r-t', $character->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken()); // updated
+        $this->assertSame($newExpires, $character->getEsiToken(EveLogin::NAME_DEFAULT)->getExpires()); // updated
     }
 
     /**

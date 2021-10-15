@@ -165,9 +165,13 @@ class CheckTokensTest extends ConsoleTestCase
         $this->om->persist($player);
         $this->helper->createOrUpdateEsiToken($c, time() - 60*60)->setValidToken(false);
 
-        list($token, $keySet) = Helper::generateToken();
+        list($token) = Helper::generateToken();
         $this->client->setResponse(
-            new Response(200, [], '{"access_token": ' . json_encode($token) . '}'), // for getAccessToken()
+            new Response(200, [], '{
+                "access_token": ' . json_encode($token) . ', 
+                "refresh_token": "rt", 
+                "expires": '.(time()+60*60).'
+            }') // for getAccessToken()
         );
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
@@ -199,7 +203,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->helper->addNewPlayerToCharacterAndFlush($c);
         $this->helper->createOrUpdateEsiToken($c, time() - 60*60)->setValidToken(false);
 
-        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
+        list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
         $this->client->setResponse(
             new Response( // for getAccessToken()
                 200,
@@ -239,7 +243,7 @@ class CheckTokensTest extends ConsoleTestCase
      */
     public function testExecuteValidTokenUnexpectedData()
     {
-        list($token, $keySet) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
+        list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
 
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
