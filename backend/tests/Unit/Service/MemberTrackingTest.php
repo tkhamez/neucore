@@ -8,6 +8,7 @@ use Eve\Sso\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use Neucore\Data\DirectorToken;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
@@ -141,6 +142,8 @@ class MemberTrackingTest extends TestCase
             'refresh' => null,
             'expires' => null,
             'scopes' => ['s1'],
+            'characterId' => null,
+            'systemVariableName' => null,
         ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 2)->getValue(), true));
     }
 
@@ -180,6 +183,8 @@ class MemberTrackingTest extends TestCase
             'refresh' => null,
             'expires' => null,
             'scopes' => ['s1', 's2'],
+            'characterId' => null,
+            'systemVariableName' => null,
         ], \json_decode($sysVarRepo->find(SystemVariable::DIRECTOR_TOKEN . 1)->getValue(), true));
     }
 
@@ -239,35 +244,71 @@ class MemberTrackingTest extends TestCase
         $this->om->persist($token);
         $this->om->flush();
 
-        $this->assertSame([
-            'access' => 'at',
-            'refresh' => 'rt',
-            'expires' => 1568471332,
-            'character_id' => 100,
-         ], $this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1));
+        $tokenData = $this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1);
+
+        $this->assertSame('at', $tokenData->access);
+        $this->assertSame('rt', $tokenData->refresh);
+        $this->assertSame(1568471332, $tokenData->expires);
+        $this->assertSame(100, $tokenData->characterId);
     }
 
-    public function testRefreshDirectorTokenIdentityProviderException()
+    public function testRefreshDirectorToken_IdentityProviderException()
     {
+        $token = new DirectorToken();
+        $token->access = 'at';
+        $token->refresh = 'rt';
+        $token->expires = 1568471332;
+        $token->characterId = 100;
+        $token->systemVariableName = SystemVariable::DIRECTOR_TOKEN . 1;
+
+        $var = (new SystemVariable($token->systemVariableName))->setValue(json_encode($token));
+        $this->om->persist($var);
+        $this->om->flush();
+
         $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
 
-        $this->assertNull($this->memberTracking->refreshDirectorToken([
-            'access' => 'at',
-            'refresh' => 'rt',
-            'expires' => 1568471332,
-            'character_id' => 100,
-        ]));
+        $this->assertNull($this->memberTracking->refreshDirectorToken($token));
+
+        $this->om->clear();
+        $varLoaded = $this->repositoryFactory->getSystemVariableRepository()->find($token->systemVariableName);
+        $varData = json_decode($varLoaded->getValue());
+
+        $this->assertSame(null, $varData->access);
+        $this->assertSame(null, $varData->refresh);
+        $this->assertSame(null, $varData->expires);
     }
 
-    public function testRefreshDirectorTokenSuccess()
+    public function testRefreshDirectorToken_Success()
     {
-        $result = $this->memberTracking->refreshDirectorToken([
-            'access' => 'at',
-            'refresh' => 'rt',
-            'expires' => time() + 60*20,
-            'character_id' => 100,
-        ]);
+        $token = new DirectorToken();
+        $token->access = 'at';
+        $token->refresh = 'rt';
+        $token->expires = time() - 300;
+        $token->characterId = 100;
+        $token->systemVariableName = SystemVariable::DIRECTOR_TOKEN . 1;
+
+        $var = (new SystemVariable($token->systemVariableName))->setValue(json_encode($token));
+        $this->om->persist($var);
+        $this->om->flush();
+
+        $newTokenTime = time() + 300;
+        $this->client->setResponse(new Response(200, [], '{
+            "access_token": "new_token", 
+            "refresh_token": "rt2", 
+            "expires": '.$newTokenTime.'
+        }'));
+
+        $result = $this->memberTracking->refreshDirectorToken($token);
+
         $this->assertInstanceOf(AccessTokenInterface::class, $result);
+
+        $this->om->clear();
+        $varLoaded = $this->repositoryFactory->getSystemVariableRepository()->find($token->systemVariableName);
+        $varData = json_decode($varLoaded->getValue());
+
+        $this->assertSame('new_token', $varData->access);
+        $this->assertSame('rt2', $varData->refresh);
+        $this->assertSame($newTokenTime, $varData->expires);
     }
 
     public function testFetchDataCorpNotFound()
@@ -331,7 +372,12 @@ class MemberTrackingTest extends TestCase
             }') // structure
         );
 
-        $this->memberTracking->updateStructure($data, new AccessToken(['access_token' => 'at']));
+        $tokenData = new DirectorToken();
+        $tokenData->access = 'at';
+        $tokenData->refresh = 'rf';
+        $tokenData->expires = time() + 60;
+        $tokenData->characterId = 1;
+        $this->memberTracking->updateStructure($data, $tokenData);
         $this->om->flush();
 
         $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);

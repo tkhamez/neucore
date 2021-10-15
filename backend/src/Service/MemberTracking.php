@@ -8,6 +8,7 @@ use Eve\Sso\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
+use Neucore\Data\DirectorToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\CorporationMember;
 use Neucore\Entity\EsiLocation;
@@ -163,7 +164,7 @@ class MemberTracking
      * @param string $name
      * @return array|null The value from the system variable plus "character_id"
      */
-    public function getDirectorTokenVariableData(string $name): ?array
+    public function getDirectorTokenVariableData(string $name): ?DirectorToken
     {
         $number = (int) explode('_', $name)[2];
 
@@ -174,39 +175,63 @@ class MemberTracking
         $characterData = \json_decode($characterVar ? $characterVar->getValue() : '', true);
         $tokenData = \json_decode($tokenVar ? $tokenVar->getValue() : '', true);
         if (
-            ! isset($characterData[SystemVariable::VALUE_CHARACTER_ID]) ||
-            ! isset($tokenData[SystemVariable::TOKEN_ACCESS])
+            !isset($characterData[SystemVariable::VALUE_CHARACTER_ID]) ||
+            !isset($tokenData[SystemVariable::TOKEN_ACCESS])
         ) {
             return null;
         }
 
-        $tokenData[SystemVariable::VALUE_CHARACTER_ID] = $characterData[SystemVariable::VALUE_CHARACTER_ID];
+        $directorToken = new DirectorToken();
+        $directorToken->access = $tokenData[SystemVariable::TOKEN_ACCESS];
+        $directorToken->refresh = $tokenData[SystemVariable::TOKEN_REFRESH];
+        $directorToken->expires = $tokenData[SystemVariable::TOKEN_EXPIRES];
+        $directorToken->systemVariableName = SystemVariable::DIRECTOR_TOKEN . $number;
+        $directorToken->characterId = $characterData[SystemVariable::VALUE_CHARACTER_ID];
 
-        return $tokenData;
+        return $directorToken;
     }
 
     /**
-     * @param array $tokenData The result from getDirectorTokenVariableData()
      * @return ResourceOwnerAccessTokenInterface|null Token including the resource_owner_id property.
-     * @see MemberTracking::getDirectorTokenVariableData()
      */
-    public function refreshDirectorToken(array $tokenData): ?ResourceOwnerAccessTokenInterface
+    public function refreshDirectorToken(DirectorToken $tokenData): ?ResourceOwnerAccessTokenInterface
     {
         try {
             $token = $this->oauthToken->refreshAccessToken(new AccessToken([
-                OAuthToken::OPTION_ACCESS_TOKEN => $tokenData[SystemVariable::TOKEN_ACCESS],
-                OAuthToken::OPTION_REFRESH_TOKEN => $tokenData[SystemVariable::TOKEN_REFRESH],
-                OAuthToken::OPTION_EXPIRES => (int) $tokenData[SystemVariable::TOKEN_EXPIRES],
+                OAuthToken::OPTION_ACCESS_TOKEN => $tokenData->access,
+                OAuthToken::OPTION_REFRESH_TOKEN => $tokenData->refresh,
+                OAuthToken::OPTION_EXPIRES => (int) $tokenData->expires,
             ]));
         } catch (IdentityProviderException $e) {
+            // Delete invalid refresh token so that it cannot be used again.
+            $systemVar = $this->repositoryFactory->getSystemVariableRepository()->find($tokenData->systemVariableName);
+            if ($systemVar) {
+                $systemVar->setValue((string) \json_encode(new DirectorToken()));
+                $this->entityManager->flush();
+            }
             return null;
+        }
+
+        if ($tokenData->expires !== $token->getExpires()) {
+            // Store updated tokens
+            $systemVar = $this->repositoryFactory->getSystemVariableRepository()->find($tokenData->systemVariableName);
+            if ($systemVar) {
+                $sysData = \json_decode($systemVar->getValue(), true);
+                $updated = new DirectorToken();
+                $updated->access = $token->getToken();
+                $updated->refresh = $token->getRefreshToken();
+                $updated->expires = $token->getExpires();
+                $updated->scopes = $sysData[SystemVariable::TOKEN_SCOPES];
+                $systemVar->setValue((string) \json_encode($updated));
+                $this->entityManager->flush();
+            }
         }
 
         return new AccessToken([
             OAuthToken::OPTION_ACCESS_TOKEN => $token->getToken(),
             OAuthToken::OPTION_REFRESH_TOKEN => $token->getRefreshToken(),
             OAuthToken::OPTION_EXPIRES => $token->getExpires(),
-            OAuthToken::OPTION_RESOURCE_OWNER_ID => $tokenData[SystemVariable::VALUE_CHARACTER_ID],
+            OAuthToken::OPTION_RESOURCE_OWNER_ID => $tokenData->characterId,
         ]);
     }
 
@@ -325,24 +350,22 @@ class MemberTracking
      *  This method does not flush the entity manager.
      *
      * @param GetCorporationsCorporationIdMembertracking200Ok $memberData
-     * @param ResourceOwnerAccessTokenInterface|null $directorToken Director char access token as primary token to
-     *        resolve structure IDs to names.
+     * @param DirectorToken|null $tokenData Director char access token as primary token to resolve structure
+     *        IDs to names.
      */
     public function updateStructure(
         GetCorporationsCorporationIdMembertracking200Ok $memberData,
-        ResourceOwnerAccessTokenInterface $directorToken = null
+        ?DirectorToken $tokenData
     ): void {
         $structureId = (int) $memberData->getLocationId();
 
         // fetch ESI data, try director token first, then character's token if available
         $location = null;
-        if ($directorToken) {
-            try {
-                $directorAccessToken = $this->oauthToken->refreshAccessToken($directorToken)->getToken();
-            } catch (IdentityProviderException $e) {
-                $directorAccessToken = '';
+        if ($tokenData) {
+            $directorAccessToken = $this->refreshDirectorToken($tokenData);
+            if ($directorAccessToken !== null) {
+                $location = $this->esiData->fetchStructure($structureId, $directorAccessToken->getToken(), false);
             }
-            $location = $this->esiData->fetchStructure($structureId, $directorAccessToken, false);
         }
         if ($location === null) {
             $character = $this->repositoryFactory->getCharacterRepository()->find($memberData->getCharacterId());
@@ -481,12 +504,12 @@ class MemberTracking
             SystemVariable::VALUE_CORPORATION_TICKER => $corporation->getTicker()
         ]));
         $directorToken->setScope(SystemVariable::SCOPE_BACKEND);
-        $directorToken->setValue((string) json_encode([
-            SystemVariable::TOKEN_ACCESS => $eveAuth->getToken()->getToken(),
-            SystemVariable::TOKEN_REFRESH => $eveAuth->getToken()->getRefreshToken(),
-            SystemVariable::TOKEN_EXPIRES => $eveAuth->getToken()->getExpires(),
-            SystemVariable::TOKEN_SCOPES => $eveAuth->getScopes(),
-        ]));
+        $token = new DirectorToken();
+        $token->access = $eveAuth->getToken()->getToken();
+        $token->refresh = $eveAuth->getToken()->getRefreshToken();
+        $token->expires = $eveAuth->getToken()->getExpires();
+        $token->scopes = $eveAuth->getScopes();
+        $directorToken->setValue((string) json_encode($token));
 
         return $this->entityManager->flush();
     }

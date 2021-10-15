@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Neucore\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
+use Neucore\Data\DirectorToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\EsiData;
@@ -137,7 +137,7 @@ class UpdateMemberTracking extends Command
             $this->writeLine('  Start updating ' . $corporation->getId(), false);
 
             $trackingData = $this->memberTracking->fetchData($token->getToken(), $corporation->getId());
-            if (! is_array($trackingData)) {
+            if (!is_array($trackingData)) {
                 $this->writeLine(
                     '  Error getting member tracking data from ESI for ' . $characterVariable->getName(),
                     false
@@ -145,10 +145,10 @@ class UpdateMemberTracking extends Command
                 continue;
             }
 
-            if (! isset($tokenData['scopes']) || ! in_array(EveLogin::SCOPE_STRUCTURES, $tokenData['scopes'])) {
-                $token = null;
+            if (!in_array(EveLogin::SCOPE_STRUCTURES, $tokenData->scopes)) {
+                $tokenData = null;
             }
-            $this->processData($corporation->getId(), $trackingData, $token);
+            $this->processData($corporation->getId(), $trackingData, $tokenData);
 
             // set last update date - get corp again because "processData" may clear the ObjectManager
             $corporation = $corporationRepository->find($character->corporation_id);
@@ -178,13 +178,10 @@ class UpdateMemberTracking extends Command
     /**
      * @param int $corporationId
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $trackingData
-     * @param ResourceOwnerAccessTokenInterface|null $token Used to resolve structure IDs to names if available
+     * @param DirectorToken|null $tokenData Used to resolve structure IDs to names if available
      */
-    private function processData(
-        int $corporationId,
-        array $trackingData,
-        ResourceOwnerAccessTokenInterface $token = null
-    ): void {
+    private function processData(int $corporationId, array $trackingData, ?DirectorToken $tokenData): void
+    {
         if (empty($trackingData)) {
             return;
         }
@@ -220,7 +217,7 @@ class UpdateMemberTracking extends Command
         $this->memberTracking->updateNames($typeIds, $systemIds, $stationIds, $this->sleep);
         $this->writeLine('  Updated ship/system/station names');
 
-        $this->updateStructures($structures, $token);
+        $this->updateStructures($structures, $tokenData);
         $this->writeLine('  Updated structure names');
 
         $charNames = $this->memberTracking->fetchCharacterNames($charIds);
@@ -230,9 +227,8 @@ class UpdateMemberTracking extends Command
 
     /**
      * @param GetCorporationsCorporationIdMembertracking200Ok[] $structures
-     * @param ResourceOwnerAccessTokenInterface|null $token
      */
-    private function updateStructures($structures, $token): void
+    private function updateStructures(array $structures, ?DirectorToken $tokenData): void
     {
         foreach ($structures as $num => $memberData) {
             if (! $this->entityManager->isOpen()) {
@@ -241,7 +237,7 @@ class UpdateMemberTracking extends Command
             }
             $this->checkForErrors();
 
-            $this->memberTracking->updateStructure($memberData, $token);
+            $this->memberTracking->updateStructure($memberData, $tokenData);
 
             if ($num > 0 && $num % 20 === 0) {
                 $this->entityManager->flush();
