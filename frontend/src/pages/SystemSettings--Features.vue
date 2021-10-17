@@ -12,7 +12,7 @@
                 for a player account if one or more of its characters have an invalid token
                 (no token or tokens without any scopes count as invalid), "managed" accounts
                 are excluded from this.<br>
-                This also affects groups given to Neucore plugins.
+                This also affects groups passed to Neucore plugins.
             </label>
         </div>
         <label class="mt-2 display-block">
