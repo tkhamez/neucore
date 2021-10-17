@@ -41,28 +41,16 @@ class EsiApiFactory
         return $this->getInstance(AllianceApi::class);
     }
 
-    /**
-     * @see \League\OAuth2\Client\Token\AccessToken::getToken()
-     * @see \Neucore\Service\OAuthToken::refreshAccessToken()
-     */
     public function getCorporationApi(string $accessToken = ''): CorporationApi
     {
         return $this->getInstance(CorporationApi::class, $accessToken);
     }
 
-    /**
-     * @see \League\OAuth2\Client\Token\AccessToken::getToken()
-     * @see \Neucore\Service\OAuthToken::refreshAccessToken()
-     */
     public function getCharacterApi(string $accessToken = ''): CharacterApi
     {
         return $this->getInstance(CharacterApi::class, $accessToken);
     }
 
-    /**
-     * @see \League\OAuth2\Client\Token\AccessToken::getToken()
-     * @see \Neucore\Service\OAuthToken::refreshAccessToken()
-     */
     public function getMailApi(string $accessToken): MailApi
     {
         return $this->getInstance(MailApi::class, $accessToken);
@@ -80,7 +68,7 @@ class EsiApiFactory
      */
     private function getInstance(string $class, string $token = '')
     {
-        $key = $class.$token;
+        $key = $class.hash('sha256', $token);
 
         if (! isset($this->instances[$key])) {
             $configuration = new Configuration();
