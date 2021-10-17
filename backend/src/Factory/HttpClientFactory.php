@@ -68,6 +68,7 @@ class HttpClientFactory implements HttpClientFactoryInterface
             foreach ($r->getHeaders() as $name => $val) {
                 $headers[$name] = $val[0];
             }
+            $this->logger->debug($r->getBody()->getContents());
             $this->logger->debug(print_r($headers, true));
             return $r;
         };
