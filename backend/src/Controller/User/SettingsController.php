@@ -144,11 +144,14 @@ class SettingsController extends BaseController
      *         description="Variable not found."
      *     )
      * )
+     *
+     * @see EveMail::deleteToken();
      */
     public function systemChange(
         string $name,
         ServerRequestInterface $request,
-        MemberTracking $memberTracking
+        MemberTracking $memberTracking,
+        EveMail $eveMail
     ): ResponseInterface {
         $variable = $this->repositoryFactory->getSystemVariableRepository()->find($name);
 
@@ -159,10 +162,7 @@ class SettingsController extends BaseController
         if ($variable->getName() === SystemVariable::MAIL_CHARACTER) {
             // if the mail character has been removed, delete the corresponding token as well
             $variable->setValue(''); // only removal is allowed here
-            $var2 = $this->repositoryFactory->getSystemVariableRepository()->find(SystemVariable::MAIL_TOKEN);
-            if ($var2) {
-                $var2->setValue('');
-            }
+            $eveMail->deleteToken();
         } elseif (strpos($variable->getName(), SystemVariable::DIRECTOR_CHAR) !== false) {
             if ($memberTracking->removeDirector($variable)) {
                 $variable = null;

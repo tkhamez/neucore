@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Always update the refresh token in the database after successfully refreshed the access token.
+- Always delete invalid refresh token from the database after unsuccessfully requesting a new access token.
+
 ## 1.26.0
 
 18 Sep 2021

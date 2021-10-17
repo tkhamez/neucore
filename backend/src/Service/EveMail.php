@@ -7,6 +7,7 @@ namespace Neucore\Service;
 use Eve\Sso\EveAuthentication;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
@@ -64,6 +65,9 @@ class EveMail
         $this->sysVarRepo = $this->repositoryFactory->getSystemVariableRepository();
     }
 
+    /**
+     * @see EveMail::updateToken();
+     */
     public function storeMailCharacter(EveAuthentication $eveAuth): bool
     {
         $char = $this->sysVarRepo->find(SystemVariable::MAIL_CHARACTER);
@@ -82,6 +86,15 @@ class EveMail
         ]));
 
         return $this->objectManager->flush();
+    }
+
+    public function deleteToken(): void
+    {
+        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
+        if ($token) {
+            $token->setValue('');
+            $this->objectManager->flush();
+        }
     }
 
     /**
@@ -329,10 +342,16 @@ class EveMail
             $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
                 OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
                 OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
-                OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES]
+                OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES],
             ]));
         } catch (IdentityProviderException $e) {
+            // Delete invalid refresh token so that it cannot be used again.
+            $this->deleteToken();
             return 'Invalid token.';
+        }
+
+        if ($tokenValues[SystemVariable::TOKEN_REFRESH] !== $accessToken->getExpires()) {
+            $this->updateToken($accessToken, (int)$tokenValues[SystemVariable::TOKEN_ID]);
         }
 
         return $this->sendMail(
@@ -394,16 +413,36 @@ class EveMail
         $tokenValues = json_decode($token->getValue(), true);
 
         if (
-            ! is_array($tokenValues) ||
-            ! isset($tokenValues[SystemVariable::TOKEN_ID]) ||
-            ! isset($tokenValues[SystemVariable::TOKEN_ACCESS]) ||
-            ! isset($tokenValues[SystemVariable::TOKEN_REFRESH]) ||
-            ! isset($tokenValues[SystemVariable::TOKEN_EXPIRES])
+            !is_array($tokenValues) ||
+            !isset($tokenValues[SystemVariable::TOKEN_ID]) ||
+            !isset($tokenValues[SystemVariable::TOKEN_ACCESS]) ||
+            !isset($tokenValues[SystemVariable::TOKEN_REFRESH]) ||
+            !isset($tokenValues[SystemVariable::TOKEN_EXPIRES])
 
         ) {
             return null;
         }
 
         return $tokenValues;
+    }
+
+    /**
+     * @see EveMail::storeMailCharacter();
+     */
+    private function updateToken(AccessTokenInterface $accessToken, int $characterId): void
+    {
+        $token = $this->sysVarRepo->find(SystemVariable::MAIL_TOKEN);
+        if ($token === null) {
+            return;
+        }
+
+        $token->setValue((string) json_encode([
+            SystemVariable::TOKEN_ID => $characterId,
+            SystemVariable::TOKEN_ACCESS => $accessToken->getToken(),
+            SystemVariable::TOKEN_REFRESH => $accessToken->getRefreshToken(),
+            SystemVariable::TOKEN_EXPIRES => $accessToken->getExpires(),
+        ]));
+
+        $this->objectManager->flush();
     }
 }

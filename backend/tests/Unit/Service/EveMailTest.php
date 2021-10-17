@@ -314,7 +314,7 @@ class EveMailTest extends TestCase
         $this->assertSame('', $result);
     }
 
-    public function testInvalidTokenSendMissingCharacterOrTokenData()
+    public function testInvalidTokenSend_MissingCharacterOrTokenData()
     {
         $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Missing character that can send mails or missing token data.', $result);
@@ -327,7 +327,7 @@ class EveMailTest extends TestCase
         $this->assertSame('Missing character that can send mails or missing token data.', $result);
     }
 
-    public function testInvalidTokenSendInvalidToken()
+    public function testInvalidTokenSend_InvalidToken()
     {
         $varSubject = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_SUBJECT))->setValue('s');
         $varBody = (new SystemVariable(SystemVariable::MAIL_INVALID_TOKEN_BODY))->setValue('b');
@@ -350,9 +350,13 @@ class EveMailTest extends TestCase
 
         $result = $this->eveMail->invalidTokenSend(123);
         $this->assertSame('Invalid token.', $result);
+
+        $this->om->clear();
+        $token = $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::MAIL_TOKEN);
+        $this->assertSame('', $token->getValue());
     }
 
-    public function testInvalidTokenSend()
+    public function testInvalidTokenSend_Ok()
     {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
         $varToken->setValue((string) \json_encode([
@@ -374,7 +378,7 @@ class EveMailTest extends TestCase
                 200,
                 [],
                 '{"access_token": "new-token",
-                "refresh_token": "",
+                "refresh_token": "new-rf",
                 "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
             ),
 
@@ -384,6 +388,15 @@ class EveMailTest extends TestCase
 
         $result = $this->eveMail->invalidTokenSend(456);
         $this->assertSame('', $result);
+
+        $this->om->clear();
+        $token = $this->repoFactory->getSystemVariableRepository()->find(SystemVariable::MAIL_TOKEN);
+        $this->assertSame([
+            SystemVariable::TOKEN_ID => 123,
+            SystemVariable::TOKEN_ACCESS => 'new-token',
+            SystemVariable::TOKEN_REFRESH => 'new-rf',
+            SystemVariable::TOKEN_EXPIRES => 1519933900,
+        ], json_decode($token->getValue(), true));
     }
 
     public function testInvalidTokenMailSent()
@@ -456,15 +469,18 @@ class EveMailTest extends TestCase
         $this->assertSame('', $this->eveMail->missingCharacterMaySend(101));
     }
 
-    public function testMissingCharacterSend()
+    public function testMissingCharacterSend_MissingMailChar()
     {
         $this->assertSame(
             'Missing character that can send mails or missing token data.',
             $this->eveMail->missingCharacterSend(101)
         );
+    }
 
+    public function testMissingCharacterSend_MissingSubjectOrBody()
+    {
         $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
-        $varToken->setValue((string) \json_encode([
+        $varToken->setValue((string)\json_encode([
             'id' => 123,
             'access' => 'access-token',
             'refresh' => 'refresh-token',
@@ -474,9 +490,20 @@ class EveMailTest extends TestCase
         $this->om->flush();
 
         $this->assertSame('Missing subject or body text.', $this->eveMail->missingCharacterSend(101));
+    }
 
+    public function testMissingCharacterSend_InvalidGrant()
+    {
+        $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $varToken->setValue((string) \json_encode([
+            'id' => 123,
+            'access' => 'access-token',
+            'refresh' => 'refresh-token',
+            'expires' => 1542546430,
+        ]));
         $varSubject = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT))->setValue('s');
         $varBody = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_BODY))->setValue('b');
+        $this->om->persist($varToken);
         $this->om->persist($varSubject);
         $this->om->persist($varBody);
         $this->om->flush();
@@ -487,6 +514,23 @@ class EveMailTest extends TestCase
         );
 
         $this->assertSame('Invalid token.', $this->eveMail->missingCharacterSend(101));
+    }
+
+    public function testMissingCharacterSend_OK()
+    {
+        $varToken = new SystemVariable(SystemVariable::MAIL_TOKEN);
+        $varToken->setValue((string) \json_encode([
+            'id' => 123,
+            'access' => 'access-token',
+            'refresh' => 'refresh-token',
+            'expires' => 1542546430,
+        ]));
+        $varSubject = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT))->setValue('s');
+        $varBody = (new SystemVariable(SystemVariable::MAIL_MISSING_CHARACTER_BODY))->setValue('b');
+        $this->om->persist($varToken);
+        $this->om->persist($varSubject);
+        $this->om->persist($varBody);
+        $this->om->flush();
 
         $this->client->setResponse(
             new Response( // for getAccessToken() (refresh)
