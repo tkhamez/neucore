@@ -146,7 +146,7 @@ class OAuthToken
         try {
             $response = $this->client->request('POST', $urls['revoke'], [
                 'auth' => [$conf['client_id'], $conf['secret_key'], 'basic'],
-                'json' => [
+                'form_params' => [
                     'token'           => $existingToken->getRefreshToken(),
                     'token_type_hint' => self::OPTION_REFRESH_TOKEN
                 ],
