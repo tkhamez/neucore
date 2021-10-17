@@ -28,7 +28,6 @@ use Swagger\Client\Eve\Model\GetCorporationsCorporationIdMembertracking200Ok;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
-use Tests\OAuthProvider;
 
 class MemberTrackingTest extends TestCase
 {
@@ -68,6 +67,7 @@ class MemberTrackingTest extends TestCase
         $this->repositoryFactory = new RepositoryFactory($this->om);
         $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $esiApiFactory = new EsiApiFactory($this->client, $config);
+        $authProvider = $this->helper->getAuthenticationProvider($this->client);
         $this->memberTracking = new MemberTracking(
             $logger,
             $esiApiFactory,
@@ -81,13 +81,8 @@ class MemberTrackingTest extends TestCase
                 new \Neucore\Service\Character($objectManager, $this->repositoryFactory),
                 $config
             ),
-            new OAuthToken(
-                new OAuthProvider($this->client),
-                $objectManager,
-                $logger,
-                $this->client,
-                $config
-            ),
+            new OAuthToken($authProvider, $objectManager, $logger),
+            $authProvider,
             $config
         );
     }

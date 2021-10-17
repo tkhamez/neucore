@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ObjectManager;
+use Eve\Sso\AuthenticationProvider;
 use GuzzleHttp\Psr7\Response;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\KeyManagement\JWKFactory;
@@ -140,6 +141,21 @@ class Helper
         return self::$em;
     }
 
+    public function getAuthenticationProvider(Client $client): AuthenticationProvider {
+        $authProvider = new AuthenticationProvider([
+            'clientId' => '123',
+            'clientSecret' => 'abc',
+            'redirectUri' => 'http',
+            'urlAuthorize' => 'http',
+            'urlAccessToken' => 'http',
+            'urlResourceOwnerDetails' => '',
+            'urlKeySet' => '',
+            'urlRevoke' => 'http',
+        ]);
+        $authProvider->getProvider()->setHttpClient($client);
+        return $authProvider;
+    }
+
     public function getAccountService(Logger $logger, Client $client): Account
     {
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
@@ -149,7 +165,7 @@ class Helper
         $esiApiFactory = new EsiApiFactory($client, $config);
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
         $autoGroups = new AutoGroupAssignment($repoFactory);
-        $token = new OAuthToken(new OAuthProvider($client), $objectManager, $logger, $client, $config);
+        $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
         return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $characterService, $token);
     }
 

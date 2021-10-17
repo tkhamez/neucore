@@ -7,6 +7,7 @@ dd mm yyyy
 - Always update the refresh token in the database after successfully refreshed the access token.
 - Always delete invalid refresh token from the database after unsuccessfully requesting a new access token.
 - Fixed revoke token request.
+- Updated dependencies.
 
 ## 1.26.0
 

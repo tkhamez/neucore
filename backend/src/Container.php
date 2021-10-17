@@ -11,7 +11,6 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
 use GuzzleHttp\ClientInterface;
-use League\OAuth2\Client\Provider\GenericProvider;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
@@ -87,24 +86,21 @@ class Container
             },
 
             // EVE OAuth
-            GenericProvider::class => function (ContainerInterface $c) {
+            AuthenticationProvider::class => function (ContainerInterface $c) {
                 $conf = $c->get(Config::class)['eve'];
                 $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
-                return new GenericProvider([
+                $provider = new AuthenticationProvider([
                     'clientId'                => $conf['client_id'],
                     'clientSecret'            => $conf['secret_key'],
                     'redirectUri'             => $conf['callback_url'],
                     'urlAuthorize'            => $urls['authorize'],
                     'urlAccessToken'          => $urls['token'],
                     'urlResourceOwnerDetails' => $urls['verify'],
-                ], [
-                    'httpClient' => $c->get(ClientInterface::class)
+                    'urlKeySet'               => $urls['jwks'],
+                    'urlRevoke'               => $urls['revoke'],
                 ]);
-            },
-            AuthenticationProvider::class => function (ContainerInterface $c) {
-                $conf = $c->get(Config::class)['eve'];
-                $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
-                return new AuthenticationProvider($c->get(GenericProvider::class), [], $urls['jwks']);
+                $provider->getProvider()->setHttpClient($c->get(ClientInterface::class));
+                return $provider;
             },
 
             // Monolog

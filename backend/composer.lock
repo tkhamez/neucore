@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4ca07fbf5851644d3a1b1ec5a06eea5",
+    "content-hash": "2679e213dd56031bfea1507a5b209a68",
     "packages": [
         {
             "name": "brick/math",
@@ -4591,16 +4591,16 @@
         },
         {
             "name": "tkhamez/eve-sso",
-            "version": "2.0.2",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/eve-sso-php.git",
-                "reference": "f5b703edeeac35c7c059febc250337220f83c7f2"
+                "reference": "b01fba19cf75b1d2c227a8008240e28b45adf837"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/eve-sso-php/zipball/f5b703edeeac35c7c059febc250337220f83c7f2",
-                "reference": "f5b703edeeac35c7c059febc250337220f83c7f2",
+                "url": "https://api.github.com/repos/tkhamez/eve-sso-php/zipball/b01fba19cf75b1d2c227a8008240e28b45adf837",
+                "reference": "b01fba19cf75b1d2c227a8008240e28b45adf837",
                 "shasum": ""
             },
             "require": {
@@ -4631,9 +4631,9 @@
             ],
             "description": "EVE Online - SSO",
             "support": {
-                "source": "https://github.com/tkhamez/eve-sso-php/tree/2.0.2"
+                "source": "https://github.com/tkhamez/eve-sso-php/tree/3.0.0"
             },
-            "time": "2021-07-17T13:52:55+00:00"
+            "time": "2021-10-17T20:45:25+00:00"
         },
         {
             "name": "tkhamez/neucore-plugin",

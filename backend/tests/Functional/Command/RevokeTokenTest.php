@@ -102,7 +102,7 @@ class RevokeTokenTest extends ConsoleTestCase
 
         $actual = explode("\n", $output);
         $this->assertSame(2, count($actual));
-        $this->assertSame('Error, check log.', $actual[0]);
+        $this->assertSame('Error: Error revoking token: 400 Bad Request', $actual[0]);
         $this->assertSame('', $actual[1]);
     }
 }

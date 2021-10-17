@@ -7,7 +7,6 @@ namespace Tests\Unit\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Eve\Sso\EveAuthentication;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
@@ -16,7 +15,6 @@ use Neucore\Entity\Role;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\EsiTokenRepository;
-use Neucore\Service\Config;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use GuzzleHttp\Psr7\Response;
@@ -24,7 +22,6 @@ use League\OAuth2\Client\Token\AccessToken;
 use PHPUnit\Framework\TestCase;
 use Tests\Helper;
 use Tests\Logger;
-use Tests\OAuthProvider;
 use Tests\Client;
 use Tests\WriteErrorListener;
 
@@ -84,21 +81,11 @@ class OAuthTokenTest extends TestCase
         $this->em = $this->helper->getEm();
 
         $this->log = new Logger('Test');
-
         $this->client = new Client();
-        $config = new Config(['eve' => [
-            'datasource' => '',
-            'oauth_urls_tq' => ['revoke' => ''],
-            'client_id' => '',
-            'secret_key' => '',
-        ]]);
-
         $this->es = new OAuthToken(
-            new OAuthProvider($this->client),
+            $this->helper->getAuthenticationProvider($this->client),
             new ObjectManager($this->em, $this->log),
-            $this->log,
-            $this->client,
-            $config
+            $this->log
         );
 
         $this->charRepo = (new RepositoryFactory($this->em))->getCharacterRepository();
@@ -199,111 +186,6 @@ class OAuthTokenTest extends TestCase
         $this->assertSame($newTokenTime, $tokenFromDd->getExpires());
 
         $this->assertSame(0, count($this->log->getHandler()->getRecords()));
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testRefreshAccessToken_NewTokenException()
-    {
-        $this->client->setResponse(new Response(500));
-
-        $token = new AccessToken([
-            'access_token' => 'at',
-            'refresh_token' => '',
-            'expires' => 1349067601 // 2012-10-01 + 1
-        ]);
-
-        $tokenResult = $this->es->refreshAccessToken($token);
-
-        $this->assertSame($token, $tokenResult);
-        $this->assertStringStartsWith(
-            'An OAuth server error ',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-    }
-
-    /**
-     * @throws IdentityProviderException
-     */
-    public function testRefreshAccessToken_IdentityProviderException()
-    {
-        $this->client->setResponse(new Response(400, [], '{ "error": "invalid_grant" }'));
-
-        $token = new AccessToken([
-            'access_token' => 'at',
-            'refresh_token' => 'rt',
-            'expires' => 1349067601 // 2012-10-01 + 1
-        ]);
-
-        $this->expectException(IdentityProviderException::class);
-
-        $this->es->refreshAccessToken($token);
-    }
-
-    /**
-     * @throws IdentityProviderException
-     */
-    public function testRefreshAccessToken_NotExpired()
-    {
-        $token = new AccessToken([
-            'access_token' => 'old-token',
-            'refresh_token' => 're-tk',
-            'expires' => time() + 10000
-        ]);
-
-        $this->assertSame('old-token', $this->es->refreshAccessToken($token)->getToken());
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function testRefreshAccessToken_NewToken()
-    {
-        $this->client->setResponse(new Response(
-            200,
-            [],
-            '{"access_token": "new-token",
-            "refresh_token": "",
-            "expires": 1519933900}' // 03/01/2018 @ 7:51pm (UTC)
-        ));
-
-        $token = new AccessToken([
-            'access_token' => 'old-token',
-            'refresh_token' => '',
-            'expires' => 1519933545 // 03/01/2018 @ 7:45pm (UTC)
-        ]);
-
-        $tokenResult = $this->es->refreshAccessToken($token);
-
-        $this->assertNotSame($token, $tokenResult);
-        $this->assertSame('new-token', $tokenResult->getToken());
-    }
-
-    public function testRevokeAccessTokenFailure()
-    {
-        $this->client->setResponse(new Response(400));
-
-        $token = new AccessToken(['access_token' => 'at', 'refresh_token' => 'rt']);
-
-        $result = $this->es->revokeRefreshToken($token);
-
-        $this->assertFalse($result);
-        $this->assertStringStartsWith(
-            'Error revoking token: 400 Bad Request',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-    }
-
-    public function testRevokeAccessToken()
-    {
-        $this->client->setResponse(new Response(200));
-
-        $token = new AccessToken(['access_token' => 'at', 'refresh_token' => 'rt']);
-
-        $result = $this->es->revokeRefreshToken($token);
-
-        $this->assertTrue($result);
     }
 
     public function testCreateAccessToken()

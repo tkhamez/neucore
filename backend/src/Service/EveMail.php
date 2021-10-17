@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Eve\Sso\AuthenticationProvider;
 use Eve\Sso\EveAuthentication;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Eve\Sso\InvalidGrantException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\EveLogin;
@@ -13,7 +14,9 @@ use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Log\Context;
 use Neucore\Repository\SystemVariableRepository;
+use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailMail;
 use Swagger\Client\Eve\Model\PostCharactersCharacterIdMailRecipient;
 
@@ -35,9 +38,14 @@ class EveMail
     private $objectManager;
 
     /**
-     * @var OAuthToken
+     * @var AuthenticationProvider
      */
-    private $oauthToken;
+    private $authenticationProvider;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $log;
 
     /**
      * @var EsiApiFactory
@@ -52,13 +60,15 @@ class EveMail
     public function __construct(
         RepositoryFactory $repositoryFactory,
         ObjectManager $objectManager,
-        OAuthToken $oauthToken,
+        AuthenticationProvider $authenticationProvider,
+        LoggerInterface $log,
         EsiApiFactory $esiApiFactory,
         Config $config
     ) {
         $this->repositoryFactory = $repositoryFactory;
         $this->objectManager = $objectManager;
-        $this->oauthToken = $oauthToken;
+        $this->authenticationProvider = $authenticationProvider;
+        $this->log = $log;
         $this->esiApiFactory = $esiApiFactory;
 
         $this->datasource = $config['eve']['datasource'];
@@ -133,7 +143,7 @@ class EveMail
      * @param int|null $characterId
      * @param bool $ignoreAlreadySentAndStatus If set to true, allow the mail even if it has already been sent
      *             or if the account status is managed.
-     * @return string The reason why the mail may not be send or empty
+     * @return string The reason why the mail may not be sent, or empty.
      */
     public function invalidTokenMaySend(?int $characterId, bool $ignoreAlreadySentAndStatus = false): string
     {
@@ -338,16 +348,20 @@ class EveMail
             return 'Missing subject or body text.';
         }
 
+        $existingToken = new AccessToken([
+            OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
+            OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
+            OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES],
+        ]);
         try {
-            $accessToken = $this->oauthToken->refreshAccessToken(new AccessToken([
-                OAuthToken::OPTION_ACCESS_TOKEN => $tokenValues[SystemVariable::TOKEN_ACCESS],
-                OAuthToken::OPTION_REFRESH_TOKEN => $tokenValues[SystemVariable::TOKEN_REFRESH],
-                OAuthToken::OPTION_EXPIRES => (int)$tokenValues[SystemVariable::TOKEN_EXPIRES],
-            ]));
-        } catch (IdentityProviderException $e) {
+            $accessToken = $this->authenticationProvider->refreshAccessToken($existingToken);
+        } catch (InvalidGrantException $e) {
             // Delete invalid refresh token so that it cannot be used again.
             $this->deleteToken();
             return 'Invalid token.';
+        } catch (\RuntimeException $e) {
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            $accessToken = $existingToken;
         }
 
         if ($tokenValues[SystemVariable::TOKEN_REFRESH] !== $accessToken->getExpires()) {

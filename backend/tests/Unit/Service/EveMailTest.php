@@ -21,12 +21,10 @@ use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Config;
 use Neucore\Service\EveMail;
-use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
-use Tests\OAuthProvider;
 
 class EveMailTest extends TestCase
 {
@@ -65,13 +63,11 @@ class EveMailTest extends TestCase
 
         $esiFactory = new EsiApiFactory($this->client, $config);
 
-        $oauth = new OAuthProvider($this->client);
-        $oauthToken = new OAuthToken($oauth, $objManager, $logger, $this->client, $config);
-
         $this->eveMail = new EveMail(
             $this->repoFactory,
             $objManager,
-            $oauthToken,
+            $helper->getAuthenticationProvider($this->client),
+            $logger,
             $esiFactory,
             $config
         );

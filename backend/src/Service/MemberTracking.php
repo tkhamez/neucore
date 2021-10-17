@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Eve\Sso\AuthenticationProvider;
 use Eve\Sso\EveAuthentication;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Eve\Sso\InvalidGrantException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 use Neucore\Data\DirectorToken;
@@ -56,6 +57,11 @@ class MemberTracking
     private $oauthToken;
 
     /**
+     * @var AuthenticationProvider
+     */
+    private $authenticationProvider;
+
+    /**
      * @var string
      */
     private $datasource;
@@ -67,6 +73,7 @@ class MemberTracking
         EntityManager $entityManager,
         EsiData $esiData,
         OAuthToken $oauthToken,
+        AuthenticationProvider $authenticationProvider,
         Config $config
     ) {
         $this->log = $log;
@@ -75,6 +82,7 @@ class MemberTracking
         $this->entityManager = $entityManager;
         $this->esiData = $esiData;
         $this->oauthToken = $oauthToken;
+        $this->authenticationProvider = $authenticationProvider;
 
         $this->datasource = $config['eve']['datasource'];
     }
@@ -196,13 +204,14 @@ class MemberTracking
      */
     public function refreshDirectorToken(DirectorToken $tokenData): ?ResourceOwnerAccessTokenInterface
     {
+        $existingToken = new AccessToken([
+            OAuthToken::OPTION_ACCESS_TOKEN => $tokenData->access,
+            OAuthToken::OPTION_REFRESH_TOKEN => $tokenData->refresh,
+            OAuthToken::OPTION_EXPIRES => (int) $tokenData->expires,
+        ]);
         try {
-            $token = $this->oauthToken->refreshAccessToken(new AccessToken([
-                OAuthToken::OPTION_ACCESS_TOKEN => $tokenData->access,
-                OAuthToken::OPTION_REFRESH_TOKEN => $tokenData->refresh,
-                OAuthToken::OPTION_EXPIRES => (int) $tokenData->expires,
-            ]));
-        } catch (IdentityProviderException $e) {
+            $token = $this->authenticationProvider->refreshAccessToken($existingToken);
+        } catch (InvalidGrantException $e) {
             // Delete invalid refresh token so that it cannot be used again.
             $systemVar = $this->repositoryFactory->getSystemVariableRepository()->find($tokenData->systemVariableName);
             if ($systemVar) {
@@ -210,6 +219,9 @@ class MemberTracking
                 $this->entityManager->flush();
             }
             return null;
+        } catch (\RuntimeException $e) {
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            $token = $existingToken;
         }
 
         if ($tokenData->expires !== $token->getExpires()) {

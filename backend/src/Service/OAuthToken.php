@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Neucore\Service;
 
+use Eve\Sso\AuthenticationProvider;
 use Eve\Sso\EveAuthentication;
+use Eve\Sso\InvalidGrantException;
 use Eve\Sso\JsonWebToken;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Character;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Neucore\Entity\EsiToken;
 use Neucore\Log\Context;
@@ -31,7 +29,7 @@ class OAuthToken
     public const OPTION_RESOURCE_OWNER_ID = 'resource_owner_id';
 
     /**
-     * @var GenericProvider
+     * @var AuthenticationProvider
      */
     private $oauth;
 
@@ -45,28 +43,11 @@ class OAuthToken
      */
     private $log;
 
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    public function __construct(
-        GenericProvider $oauth,
-        ObjectManager $objectManager,
-        LoggerInterface $log,
-        ClientInterface $client,
-        Config $config
-    ) {
+    public function __construct(AuthenticationProvider $oauth, ObjectManager $objectManager, LoggerInterface $log)
+    {
         $this->oauth = $oauth;
         $this->objectManager = $objectManager;
         $this->log = $log;
-        $this->client = $client;
-        $this->config = $config;
     }
 
     /**
@@ -80,14 +61,17 @@ class OAuthToken
         }
 
         try {
-            $token = $this->refreshAccessToken($existingToken);
-        } catch (IdentityProviderException $e) {
+            $token = $this->oauth->refreshAccessToken($existingToken);
+        } catch (InvalidGrantException $e) {
             // Delete invalid refresh token so that it cannot be used again.
             $esiToken->setAccessToken('');
             $esiToken->setRefreshToken('');
             $esiToken->setValidToken(false);
             $this->objectManager->flush();
             return false;
+        } catch (\RuntimeException $e) {
+            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+            $token = $existingToken;
         }
 
         if ($token->getToken() !== $existingToken->getToken()) {
@@ -103,65 +87,6 @@ class OAuthToken
         }
 
         return true;
-    }
-
-    /**
-     * Refreshes the access token if necessary.
-     *
-     * @param AccessTokenInterface $existingToken
-     * @return AccessTokenInterface A new object if the token was refreshed
-     * @throws IdentityProviderException For "invalid_grant" error, other exceptions are caught.
-     */
-    public function refreshAccessToken(AccessTokenInterface $existingToken): AccessTokenInterface
-    {
-        $newToken = null;
-        if ($existingToken->getExpires() && $existingToken->hasExpired()) {
-            try {
-                $newToken = $this->oauth->getAccessToken(self::OPTION_REFRESH_TOKEN, [
-                    self::OPTION_REFRESH_TOKEN => (string) $existingToken->getRefreshToken()
-                ]);
-            } catch (\Exception $e) {
-                if ($e instanceof IdentityProviderException && $e->getMessage() === 'invalid_grant') {
-                    // invalid_grant = e. g. invalid or revoked refresh token
-                    throw $e;
-                } else {
-                    $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-                }
-            }
-        }
-
-        return $newToken ?? $existingToken;
-    }
-
-    /**
-     * @param AccessTokenInterface $existingToken
-     * @return bool
-     * @see https://github.com/esi/esi-docs/blob/master/docs/sso/revoking_refresh_tokens.md
-     */
-    public function revokeRefreshToken(AccessTokenInterface $existingToken)
-    {
-        $conf = $this->config['eve'];
-        $urls = $conf['datasource'] === 'singularity' ? $conf['oauth_urls_sisi'] : $conf['oauth_urls_tq'];
-
-        try {
-            $response = $this->client->request('POST', $urls['revoke'], [
-                'auth' => [$conf['client_id'], $conf['secret_key'], 'basic'],
-                'form_params' => [
-                    'token'           => $existingToken->getRefreshToken(),
-                    'token_type_hint' => self::OPTION_REFRESH_TOKEN
-                ],
-            ]);
-        } catch (GuzzleException $e) {
-            $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
-            return false;
-        }
-
-        if ($response->getStatusCode() === 200) {
-            return true;
-        }
-
-        $this->log->error('Error revoking token: ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
-        return false;
     }
 
     public function createAccessToken(EsiToken $esiToken): ?AccessTokenInterface

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
+use Eve\Sso\AuthenticationProvider;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
@@ -25,12 +26,21 @@ class RevokeToken extends Command
      */
     private $tokenService;
 
-    public function __construct(RepositoryFactory $repositoryFactory, OAuthToken $tokenService)
-    {
+    /**
+     * @var AuthenticationProvider
+     */
+    private $authenticationProvider;
+
+    public function __construct(
+        RepositoryFactory $repositoryFactory,
+        OAuthToken $tokenService,
+        AuthenticationProvider $authenticationProvider
+    ) {
         parent::__construct();
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
         $this->tokenService = $tokenService;
+        $this->authenticationProvider = $authenticationProvider;
     }
 
     protected function configure(): void
@@ -40,7 +50,7 @@ class RevokeToken extends Command
             ->addArgument('id', InputArgument::REQUIRED, 'EVE character ID.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = intval($input->getArgument('id'));
         $character = $this->charRepo->find($id);
@@ -60,12 +70,14 @@ class RevokeToken extends Command
             return 0;
         }
 
-        if ($this->tokenService->revokeRefreshToken($token)) {
-            $output->writeln('Success.');
-        } else {
-            $output->writeln('Error, check log.');
+        try {
+            $this->authenticationProvider->revokeRefreshToken($token);
+        } catch (\Throwable $e) {
+            $output->writeln('Error: ' . $e->getMessage());
+            return 0;
         }
 
+        $output->writeln('Success.');
         return 0;
     }
 }
