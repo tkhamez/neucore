@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -17,9 +18,6 @@ final class Version20191119192648 extends AbstractMigration
         return '';
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -40,9 +38,6 @@ final class Version20191119192648 extends AbstractMigration
         $this->addSql('ALTER TABLE watchlist_group ADD CONSTRAINT FK_C313DF29FE54D947 FOREIGN KEY (group_id) REFERENCES groups_tbl (id) ON DELETE CASCADE');
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs

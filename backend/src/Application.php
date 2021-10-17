@@ -10,6 +10,7 @@ use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
 use DI\DependencyException;
 use DI\NotFoundException;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\ErrorHandler;
 use Neucore\Command\AssureMain;
@@ -372,6 +373,7 @@ class Application
      *
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws Exception
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
     private function sessionHandler(): void
@@ -384,7 +386,11 @@ class Application
         ini_set('session.gc_probability', '1');
         ini_set('session.gc_divisor', '100');
 
-        $pdo = $this->container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
+        /* @noinspection PhpFullyQualifiedNameUsageInspection */
+        /* @var \Doctrine\DBAL\Driver\PDO\Connection $conn */
+        $conn = $this->container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
+        /* @phan-suppress-next-line PhanUndeclaredMethod */
+        $pdo =  $conn->getWrappedConnection();
         /* @phan-suppress-next-line PhanTypeMismatchArgument */
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
 

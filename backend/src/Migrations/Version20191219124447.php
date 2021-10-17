@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -17,9 +18,6 @@ final class Version20191219124447 extends AbstractMigration
         return '';
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -28,9 +26,6 @@ final class Version20191219124447 extends AbstractMigration
         $this->addSql('ALTER TABLE corporations ADD tracking_last_update DATETIME DEFAULT NULL');
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs

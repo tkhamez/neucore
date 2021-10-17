@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -17,9 +18,6 @@ final class Version20191225101615 extends AbstractMigration
         return '';
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -28,9 +26,6 @@ final class Version20191225101615 extends AbstractMigration
         $this->addSql('ALTER TABLE corporation_members ADD missing_character_mail_sent DATETIME DEFAULT NULL');
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs

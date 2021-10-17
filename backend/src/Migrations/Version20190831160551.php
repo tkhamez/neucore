@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -17,9 +18,6 @@ final class Version20190831160551 extends AbstractMigration
         return '';
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -32,9 +30,6 @@ final class Version20190831160551 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_4E085D3457A0D84 ON corporation_members (shipType_id)');
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs

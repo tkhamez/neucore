@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 
 declare(strict_types=1);
 
@@ -17,9 +18,6 @@ final class Version20190915112518 extends AbstractMigration
         return '';
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -30,9 +28,6 @@ final class Version20190915112518 extends AbstractMigration
         $this->addSql('ALTER TABLE corporation_group_tracking ADD CONSTRAINT FK_17E61049FE54D947 FOREIGN KEY (group_id) REFERENCES groups_tbl (id) ON DELETE CASCADE');
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
