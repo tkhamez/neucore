@@ -76,6 +76,7 @@ class EsiApiFactory
                 $configuration->setAccessToken($token);
             }
             $configuration->setHost($this->config['eve']['esi_host']);
+            $configuration->setUserAgent(''); // remove library default, so that it does not use it for its requests
             $this->instances[$key] = new $class($this->client, $configuration);
         }
 
