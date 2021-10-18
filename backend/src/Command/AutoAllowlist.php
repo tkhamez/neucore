@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Command;
 
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
@@ -255,10 +254,10 @@ class AutoAllowlist extends Command
                 $this->checkForErrors();
 
                 $esiToken = $characters[self::KEY_TOKEN];
-                if (!$this->tokenService->refreshEsiToken($esiToken)) {
+                $token = $this->tokenService->refreshEsiToken($esiToken);
+                if (!$token) {
                     continue;
                 }
-                $token = $this->tokenService->createAccessToken($esiToken);
 
                 $members = $this->esiData->fetchCorporationMembers($corporationId, $token->getToken());
 

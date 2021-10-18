@@ -53,11 +53,11 @@ class OAuthToken
     /**
      * Refreshes the access token if necessary and stores the new refresh token.
      */
-    public function refreshEsiToken(EsiToken $esiToken): bool
+    public function refreshEsiToken(EsiToken $esiToken): ?AccessTokenInterface
     {
         $existingToken = $this->createAccessToken($esiToken);
         if ($existingToken === null) {
-            return false;
+            return null;
         }
 
         try {
@@ -68,7 +68,7 @@ class OAuthToken
             $esiToken->setRefreshToken('');
             $esiToken->setValidToken(false);
             $this->objectManager->flush();
-            return false;
+            return null;
         } catch (\RuntimeException $e) {
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             $token = $existingToken;
@@ -76,17 +76,17 @@ class OAuthToken
 
         if ($token->getToken() !== $existingToken->getToken()) {
             if (!is_numeric($token->getExpires()) || !is_string($token->getRefreshToken())) {
-                return false;
+                return null;
             }
             $esiToken->setAccessToken($token->getToken());
             $esiToken->setExpires($token->getExpires());
             $esiToken->setRefreshToken($token->getRefreshToken());
             if (!$this->objectManager->flush()) {
-                return false; // old token is invalid, new token could not be saved
+                return null; // old token is invalid, new token could not be saved
             }
         }
 
-        return true;
+        return $token;
     }
 
     public function createAccessToken(EsiToken $esiToken): ?AccessTokenInterface
@@ -121,7 +121,7 @@ class OAuthToken
     }
 
     /**
-     * Returns the default access token for an EVE character.
+     * Returns an access token for an EVE character.
      *
      * When the existing token has expired, a new one is fetched using the
      * refresh token and stored in the database for the character.
@@ -137,9 +137,9 @@ class OAuthToken
             return '';
         }
 
-        $success = $this->refreshEsiToken($esiToken);
+        $token = $this->refreshEsiToken($esiToken);
 
-        return $success ? $esiToken->getAccessToken() : '';
+        return $token ? $token->getToken() : '';
     }
 
     /**
@@ -149,12 +149,10 @@ class OAuthToken
      */
     public function updateEsiToken(EsiToken $esiToken): ?AccessTokenInterface
     {
-        $success = $this->refreshEsiToken($esiToken);
-        if (!$success) {
+        $token = $this->refreshEsiToken($esiToken);
+        if (!$token) {
             return null;
         }
-
-        $token = $this->createAccessToken($esiToken);
 
         // The access token should be valid here, but in theory it's still possible that it cannot be parsed.
         // Check scopes (scopes should not change after login since you cannot revoke individual scopes)

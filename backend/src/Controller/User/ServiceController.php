@@ -283,7 +283,7 @@ class ServiceController extends BaseController
                 )
             )
         ) {
-            return $this->response->withStatus(409, $oneAccountOnly ? 'second_account': 'already_registered');
+            return $this->response->withStatus(409, $oneAccountOnly ? 'second_account' : 'already_registered');
         }
 
         try {

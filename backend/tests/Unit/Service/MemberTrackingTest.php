@@ -241,10 +241,14 @@ class MemberTrackingTest extends TestCase
 
         $tokenData = $this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1);
 
-        $this->assertSame('at', $tokenData->access);
-        $this->assertSame('rt', $tokenData->refresh);
-        $this->assertSame(1568471332, $tokenData->expires);
-        $this->assertSame(100, $tokenData->characterId);
+        if ($tokenData === null) {
+            $this->fail();
+        } else {
+            $this->assertSame('at', $tokenData->access);
+            $this->assertSame('rt', $tokenData->refresh);
+            $this->assertSame(1568471332, $tokenData->expires);
+            $this->assertSame(100, $tokenData->characterId);
+        }
     }
 
     public function testRefreshDirectorToken_IdentityProviderException()
@@ -256,7 +260,7 @@ class MemberTrackingTest extends TestCase
         $token->characterId = 100;
         $token->systemVariableName = SystemVariable::DIRECTOR_TOKEN . 1;
 
-        $var = (new SystemVariable($token->systemVariableName))->setValue(json_encode($token));
+        $var = (new SystemVariable($token->systemVariableName))->setValue((string)json_encode($token));
         $this->om->persist($var);
         $this->om->flush();
 
@@ -282,7 +286,7 @@ class MemberTrackingTest extends TestCase
         $token->characterId = 100;
         $token->systemVariableName = SystemVariable::DIRECTOR_TOKEN . 1;
 
-        $var = (new SystemVariable($token->systemVariableName))->setValue(json_encode($token));
+        $var = (new SystemVariable($token->systemVariableName))->setValue((string)json_encode($token));
         $this->om->persist($var);
         $this->om->flush();
 

@@ -129,7 +129,7 @@ class UpdateMemberTracking extends Command
             if ($tokenData) {
                 $token = $this->memberTracking->refreshDirectorToken($tokenData);
             }
-            if ($token === null) {
+            if ($tokenData === null || $token === null) {
                 $this->writeLine('  Error refreshing token for ' . $characterVariable->getName(), false);
                 continue;
             }

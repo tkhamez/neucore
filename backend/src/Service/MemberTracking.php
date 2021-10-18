@@ -170,7 +170,7 @@ class MemberTracking
 
     /**
      * @param string $name
-     * @return array|null The value from the system variable plus "character_id"
+     * @return DirectorToken|null The value from the system variable plus "character_id"
      */
     public function getDirectorTokenVariableData(string $name): ?DirectorToken
     {
@@ -228,7 +228,7 @@ class MemberTracking
             // Store updated tokens
             $systemVar = $this->repositoryFactory->getSystemVariableRepository()->find($tokenData->systemVariableName);
             if ($systemVar) {
-                $sysData = \json_decode($systemVar->getValue(), true);
+                $sysData = (array)\json_decode($systemVar->getValue(), true);
                 $updated = new DirectorToken();
                 $updated->access = $token->getToken();
                 $updated->refresh = $token->getRefreshToken();
