@@ -19,7 +19,12 @@ class Variables
     public const ESI_ERROR_LIMIT = 'esi_error_limit';
 
     /**
-     * https://github.com/esi/esi-issues/issues/1227
+     * Time to wait when hitting a 429 response (unix timestamp).
+     */
+    public const ESI_RATE_LIMIT = 'esi_rate_limit';
+
+    /**
+     * Value: 1 or 0
      */
     public const ESI_THROTTLED = 'esi_throttled';
 

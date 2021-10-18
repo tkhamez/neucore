@@ -48,7 +48,7 @@ class EsiHeaders
 
     private function handleResponseHeaders(string $requestUri, ResponseInterface $response): void
     {
-        /// update ESI error limit
+        // Update ESI error limit
         if ($response->hasHeader('X-Esi-Error-Limit-Remain') && $response->hasHeader('X-Esi-Error-Limit-Reset')) {
             $remain = (int) $response->getHeader('X-Esi-Error-Limit-Remain')[0];
             $reset = (int) $response->getHeader('X-Esi-Error-Limit-Reset')[0];
@@ -59,7 +59,7 @@ class EsiHeaders
             ]));
         }
 
-        // log deprecated warnings
+        // Log deprecated warnings
         if ($response->hasHeader('warning')) {
             $warning = $response->getHeader('warning')[0];
             if (strpos($warning, '299') !== false) { // i. e. "299 - This route is deprecated"

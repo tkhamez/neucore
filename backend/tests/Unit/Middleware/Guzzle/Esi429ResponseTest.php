@@ -47,7 +47,7 @@ class Esi429ResponseTest extends TestCase
         $this->obj = new Esi429Response($logger, $this->storage);
     }
 
-    public function testInvoke()
+    public function testInvoke_500()
     {
         $response1 = new Response(500, [], (string)\json_encode([
             'error' => 'Undefined 429 response. Original message: Too many errors.You have been temporarily throttled.'
@@ -60,5 +60,19 @@ class Esi429ResponseTest extends TestCase
         $function2 = $this->obj->__invoke($this->helper->getGuzzleHandler($response2));
         $function2(new Request('GET', 'https://local.host/esi/path'), []);
         $this->assertSame('0', $this->storage->get(Variables::ESI_THROTTLED));
+    }
+
+    public function testInvoke_429()
+    {
+        $waitUntil = time() + 60;
+        $response1 = new Response(429, ['Retry-After' => [date('D, d M Y H:i:s \G\M\T', $waitUntil)]]);
+        $function1 = $this->obj->__invoke($this->helper->getGuzzleHandler($response1));
+        $function1(new Request('GET', 'https://local.host/esi/path'), []);
+        $this->assertSame("$waitUntil", $this->storage->get(Variables::ESI_RATE_LIMIT));
+
+        $response2 = new Response(429, ['Retry-After' => ['60']]);
+        $function2 = $this->obj->__invoke($this->helper->getGuzzleHandler($response2));
+        $function2(new Request('GET', 'https://local.host/esi/path'), []);
+        $this->assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_RATE_LIMIT));
     }
 }

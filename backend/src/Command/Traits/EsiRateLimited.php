@@ -44,8 +44,19 @@ trait EsiRateLimited
 
     protected function checkForErrors(): void
     {
+        $this->checkRateLimit();
         $this->checkThrottled();
         $this->checkErrorLimit();
+    }
+
+    protected function checkRateLimit(): void
+    {
+        $timestamp = (int) $this->storage->get(Variables::ESI_RATE_LIMIT);
+        if ($timestamp > time()) {
+            $sleep = (int) max(1, $timestamp - time());
+            $this->logger->info("EsiRateLimited: rate limit hit, sleeping $sleep second(s).");
+            $this->sleep($sleep);
+        }
     }
 
     private function checkThrottled(): void
@@ -88,7 +99,7 @@ trait EsiRateLimited
             $this->sleepInSeconds =  $seconds;
         } else {
             for ($i = 0; $i < 100; $i++) {
-                usleep($seconds * 1000 * 10); // seconds * 1000000 / 100
+                usleep($seconds * 10000); // seconds * 1,000,000 / 100
             }
         }
     }

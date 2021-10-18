@@ -6,6 +6,7 @@ dd mm yyyy
 
 - Always update the refresh token in the database after successfully refreshed the access token.
 - Always delete invalid refresh token from the database after unsuccessfully requesting a new access token.
+- Implemented wait time (Retry-After header) after a 429 response from ESI/SSO.
 - Fixed HTTP User-Agent header for requests with the OpenAPI client.
 - Fixed revoke token request.
 - Updated dependencies.
