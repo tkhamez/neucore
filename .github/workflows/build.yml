@@ -27,6 +27,9 @@ jobs:
         env:
           NEUCORE_APP_ENV: dev
           NEUCORE_TEST_DATABASE_URL: 'sqlite:///:memory:'
+          NEUCORE_EVE_CLIENT_ID: '123'
+          NEUCORE_EVE_SECRET_KEY: 'abc'
+          NEUCORE_EVE_CALLBACK_URL: 'http://localhost'
         run: cd backend && vendor/bin/phpunit --coverage-clover var/logs/clover.xml
       - name: Setup SonarQube
         if: ${{ github.repository_owner == 'tkhamez' && matrix.php-versions == '7.4' }}
