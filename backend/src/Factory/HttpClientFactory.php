@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Neucore\Factory;
 
-use Doctrine\Common\Cache\FilesystemCache;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
 use Kevinrob\GuzzleCache\CacheMiddleware;
-use Kevinrob\GuzzleCache\Storage\DoctrineCacheStorage;
+use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use Neucore\Middleware\Guzzle\Esi429Response;
 use Neucore\Middleware\Guzzle\EsiHeaders;
@@ -18,6 +17,7 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class HttpClientFactory implements HttpClientFactoryInterface
 {
@@ -55,9 +55,11 @@ class HttpClientFactory implements HttpClientFactoryInterface
 
     /**
      * @param string $cacheKey Optional subdirectory for file system cache, defaults to "default"
+     * @see \Neucore\Command\CleanHttpCache::execute()
      */
     public function get(string $cacheKey = ''): ClientInterface
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $debugFunc = function (MessageInterface $r) {
             if ($r instanceof RequestInterface) {
                 $this->logger->debug($r->getMethod() . ' ' . $r->getUri());
@@ -77,10 +79,9 @@ class HttpClientFactory implements HttpClientFactoryInterface
         #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
 
         $cacheKey = empty($cacheKey) ? 'default' : $cacheKey;
-        $cache = new CacheMiddleware(new PrivateCacheStrategy(new DoctrineCacheStorage(
-            # TODO find replacement, consider CleanHttpCache command
-            /* @phan-suppress-next-line PhanDeprecatedClass */
-            new FilesystemCache($this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey)
+        $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
+            // 86400 = one day lifetime
+            new FilesystemAdapter('', 86400, $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey)
         )));
         /* @phan-suppress-next-line PhanTypeMismatchArgument */
         $stack->push($cache, 'cache');
