@@ -267,7 +267,7 @@ class Account
      * The character is saved if it was changed.
      *
      * @param Character $char An instance that is attached to the Doctrine entity manager.
-     * @return int self::TOKEN_NOK, self::TOKEN_OK or self::CHARACTER_DELETED
+     * @return int self::TOKEN_NOK, self::TOKEN_OK or self::CHARACTER_DELETED based on the default token
      */
     public function checkCharacter(Character $char): int
     {
