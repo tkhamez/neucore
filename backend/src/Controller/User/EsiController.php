@@ -153,7 +153,7 @@ class EsiController extends BaseController
         // make request
         $token = $this->tokenService->getToken($character, $eveLoginName);
         if ($token === '') {
-            return $this->response->withStatus(400, 'Character has no valid token.');
+            return $this->withJson('Character has no valid token.', 400);
         }
         $request = $this->httpClientFactory->createRequest(
             $method,

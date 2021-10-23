@@ -46,7 +46,6 @@ class AuthControllerTest extends WebTestCase
     {
         $response = $this->runApp('GET', '/login/invalid');
         $this->assertSame(404, $response->getStatusCode());
-        $this->assertSame('Login not found.', $response->getReasonPhrase());
         $this->assertSame('Login not found.<br><br><a href="/">Home</a>', $response->getBody()->__toString());
     }
 
@@ -96,10 +95,8 @@ class AuthControllerTest extends WebTestCase
 
         $this->assertSame(403, $response1->getStatusCode());
         $this->assertSame(403, $response2->getStatusCode());
-        $this->assertSame('Forbidden', $response1->getReasonPhrase());
-        $this->assertSame('Forbidden', $response2->getReasonPhrase());
-        $this->assertSame('Forbidden', $response1->getBody()->__toString());
-        $this->assertSame('Forbidden', $response2->getBody()->__toString());
+        $this->assertSame('Forbidden.', $response1->getBody()->__toString());
+        $this->assertSame('Forbidden.', $response2->getBody()->__toString());
     }
 
     public function testLogin_Managed()

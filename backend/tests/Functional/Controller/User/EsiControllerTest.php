@@ -65,7 +65,7 @@ class EsiControllerTest extends WebTestCase
             '/api/user/esi/request?character=6&route=/characters/{character_id}&login=test-1'
         );
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertSame('Character has no valid token.', $response->getReasonPhrase());
+        $this->assertSame('"Character has no valid token."', $response->getBody()->__toString());
     }
 
     public function testRequest200()

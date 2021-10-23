@@ -128,7 +128,7 @@ class AuthController extends BaseController
         }
         if (empty($loginName)) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Login not found.'));
-            return $this->response->withStatus(404, 'Login not found.');
+            return $this->response->withStatus(404);
         }
 
         // check "allow managed login" settings
@@ -136,8 +136,8 @@ class AuthController extends BaseController
             $allowLoginManaged = $this->repositoryFactory->getSystemVariableRepository()
                 ->findOneBy(['name' => SystemVariable::ALLOW_LOGIN_MANAGED]);
             if (!$allowLoginManaged || $allowLoginManaged->getValue() !== '1') {
-                $this->response->getBody()->write('Forbidden');
-                return $this->response->withStatus(403, 'Forbidden');
+                $this->response->getBody()->write('Forbidden.');
+                return $this->response->withStatus(403);
             }
         }
 

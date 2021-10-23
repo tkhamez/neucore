@@ -346,7 +346,7 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
-        $this->assertEquals('no_main', $response->getReasonPhrase());
+        $this->assertEquals('"no_main"', $response->getBody()->__toString());
     }
 
     public function testRegister409_AlreadyRegistered()
@@ -356,7 +356,7 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
-        $this->assertEquals('already_registered', $response->getReasonPhrase());
+        $this->assertEquals('"already_registered"', $response->getBody()->__toString());
     }
 
     public function testRegister409_SecondAccount()
@@ -376,7 +376,7 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
-        $this->assertEquals('second_account', $response->getReasonPhrase());
+        $this->assertEquals('"second_account"', $response->getBody()->__toString());
     }
 
     public function testRegister409_RegisterFailed()
@@ -396,7 +396,7 @@ class ServiceControllerTest extends WebTestCase
 
         $response = $this->runApp('POST', "/api/user/service/$this->s1/register");
         $this->assertEquals(409, $response->getStatusCode());
-        $this->assertEquals('test', $response->getReasonPhrase());
+        $this->assertEquals('"test"', $response->getBody()->__toString());
     }
 
     public function testRegister500_RegisterFailed()

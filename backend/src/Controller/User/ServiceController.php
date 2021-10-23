@@ -237,7 +237,8 @@ class ServiceController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="409",
-     *         description="Different errors, check reason phrase."
+     *         description="Different errors, see body text.",
+     *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="500",
@@ -253,7 +254,7 @@ class ServiceController extends BaseController
         $player = $this->getUser($userAuth)->getPlayer();
         $main = $player->getMain();
         if (!$main) {
-            return $this->response->withStatus(409, 'no_main');
+            return $this->withJson('no_main', 409);
         }
 
         $result = $this->getServiceAndServiceImplementation((int) $id);
@@ -283,7 +284,7 @@ class ServiceController extends BaseController
                 )
             )
         ) {
-            return $this->response->withStatus(409, $oneAccountOnly ? 'second_account' : 'already_registered');
+            return $this->withJson($oneAccountOnly ? 'second_account' : 'already_registered', 409);
         }
 
         try {
@@ -295,7 +296,7 @@ class ServiceController extends BaseController
             );
         } catch (Exception $e) {
             if ($e->getMessage() !== '') {
-                return $this->response->withStatus(409, $e->getMessage());
+                return $this->withJson($e->getMessage(), 409);
             } else {
                 return $this->response->withStatus(500);
             }
@@ -339,7 +340,8 @@ class ServiceController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="409",
-     *         description="Different errors, check reason phrase."
+     *         description="Different errors, see body text.",
+     *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="500",
@@ -368,7 +370,7 @@ class ServiceController extends BaseController
             );
         } catch (Exception $e) {
             if ($e->getMessage() !== '') {
-                return $this->response->withStatus(409, $e->getMessage());
+                return $this->withJson($e->getMessage(), 409);
             } else {
                 return $this->response->withStatus(500);
             }

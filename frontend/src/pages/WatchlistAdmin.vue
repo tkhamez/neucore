@@ -176,7 +176,7 @@ export default {
             const vm = this;
             new WatchlistApi().watchlistDelete(id, (error) => {
                 if (error) {
-                    vm.message('Error deleting watchlist', 'error');
+                    vm.message('Error deleting watchlist.', 'error');
                 } else {
                     vm.$refs.editModal.hideModal();
                     vm.message('Watchlist deleted.', 'success');

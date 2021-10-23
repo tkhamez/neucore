@@ -34,8 +34,6 @@ class WatchlistController extends BaseController
 
     private const ACTION_REMOVE = 'remove';
 
-    private const ERROR_404 = 'Watchlist not found.';
-
     /**
      * @var Watchlist
      */
@@ -168,7 +166,7 @@ class WatchlistController extends BaseController
 
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            return $this->response->withStatus(404, self::ERROR_404);
+            return $this->response->withStatus(404);
         }
 
         $watchlist->setName($name);
@@ -209,7 +207,7 @@ class WatchlistController extends BaseController
     {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            return $this->response->withStatus(404, self::ERROR_404);
+            return $this->response->withStatus(404);
         }
 
         $this->objectManager->remove($watchlist);
@@ -257,7 +255,7 @@ class WatchlistController extends BaseController
     {
         $watchlist = $this->watchlistRepository->find($id);
         if ($watchlist === null) {
-            return $this->response->withStatus(404, self::ERROR_404);
+            return $this->response->withStatus(404);
         }
 
         $watchlist->setLockWatchlistSettings((bool) $lock);

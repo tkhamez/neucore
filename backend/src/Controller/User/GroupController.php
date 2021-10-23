@@ -25,8 +25,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class GroupController extends BaseController
 {
-    private const ERROR_GROUP_NOT_FOUND = 'Group not found.';
-
     private const TYPE_MANAGERS = 'managers';
 
     private const TYPE_MEMBERS = 'members';
@@ -625,7 +623,7 @@ class GroupController extends BaseController
     public function requiredGroups(string $id): ResponseInterface
     {
         if (!$this->findGroup($id)) {
-            return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
+            return $this->response->withStatus(404);
         }
 
         return $this->withJson($this->group->getRequiredGroups());
@@ -672,7 +670,7 @@ class GroupController extends BaseController
     {
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
         if (!$this->findGroup($id) || ! $requiredGroup) {
-            return $this->response->withStatus(404, 'Group(s) not found.');
+            return $this->response->withStatus(404);
         }
 
         $hasGroup = false;
@@ -729,7 +727,7 @@ class GroupController extends BaseController
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         if (!$this->findGroup($id)) {
-            return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
+            return $this->response->withStatus(404);
         }
 
         $removed = false;
@@ -742,7 +740,7 @@ class GroupController extends BaseController
         }
 
         if (!$removed) {
-            return $this->response->withStatus(404, self::ERROR_GROUP_NOT_FOUND);
+            return $this->response->withStatus(404);
         }
 
         return $this->flushAndReturn(204, $this->group);

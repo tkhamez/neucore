@@ -258,20 +258,21 @@ export default {
                     vm.message('Service not found or not authorized.', 'warning');
                     vm.registerButtonDisabled = false;
                 } else if (response.statusCode === 409) {
-                    if (response.statusText === 'no_main') {
+                    const body = JSON.parse(response.text);
+                    if (body === 'no_main') {
                         vm.message('This account does not have a main character.', 'warning');
-                    } else if (response.statusText === 'already_registered') {
+                    } else if (body === 'already_registered') {
                         vm.message('There is already an account for this character.', 'warning');
-                    } else if (response.statusText === 'missing_email') {
+                    } else if (body === 'missing_email') {
                         vm.message('Please provide an e-mail address.', 'warning');
-                    } else if (response.statusText === 'email_mismatch') {
+                    } else if (body === 'email_mismatch') {
                         vm.message('This e-mail address belongs to another account.', 'warning');
-                    } else if (response.statusText === 'invite_wait') {
+                    } else if (body === 'invite_wait') {
                         vm.message("You've already requested an invite recently, please wait.", 'warning');
-                    } else if (response.statusText === 'second_account') {
+                    } else if (body === 'second_account') {
                         vm.message('You cannot register a second account.', 'warning');
                     } else {
-                        vm.message(response.statusText, 'warning');
+                        vm.message(body, 'warning');
                     }
                     vm.registerButtonDisabled = false;
                 } else { // 500
@@ -288,7 +289,7 @@ export default {
             api.serviceUpdateAccount(getServiceId(vm), characterId, (error, data, response) => {
                 if (error) {
                     if (response.statusCode === 409) {
-                        vm.message(response.statusText, 'warning');
+                        vm.message(JSON.parse(response.text), 'warning');
                     } else {
                         vm.message('Error. Please try again.', 'error');
                     }
