@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Command;
 
-use Neucore\Entity\Character;
 use GuzzleHttp\ClientInterface;
+use Neucore\Entity\Character;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Client;

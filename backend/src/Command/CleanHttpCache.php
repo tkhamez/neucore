@@ -37,7 +37,7 @@ class CleanHttpCache extends Command
     }
 
     /**
-     * @see \Neucore\Factory\HttpClientFactory::get()
+     * @see \Neucore\Factory\HttpClientFactory::getClient()
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

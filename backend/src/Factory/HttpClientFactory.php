@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Neucore\Factory;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use Neucore\Middleware\Guzzle\Esi429Response;
 use Neucore\Middleware\Guzzle\EsiHeaders;
 use Neucore\Service\Config;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -54,10 +56,35 @@ class HttpClientFactory implements HttpClientFactoryInterface
     }
 
     /**
-     * @param string $cacheKey Optional subdirectory for file system cache, defaults to "default"
+     * @param string|null $cacheKey Optional subdirectory for file system cache (defaults to "default") or null
+     *        to disable cache.
      * @see \Neucore\Command\CleanHttpCache::execute()
      */
-    public function get(string $cacheKey = ''): ClientInterface
+    public function get(?string $cacheKey = 'default'): ClientInterface
+    {
+        return $this->getClient($cacheKey);
+    }
+
+    public function getGuzzleClient(?string $cacheKey = 'default'): \GuzzleHttp\ClientInterface
+    {
+        return $this->getClient($cacheKey);
+    }
+
+    public function createRequest(
+        string $method,
+        string $url,
+        array $headers = [],
+        string $body = null
+    ): RequestInterface {
+        return new Request($method, $url, $headers, $body);
+    }
+
+    public function createResponse($status = 200, array $headers = [], $body = null, $reason = null): ResponseInterface
+    {
+        return new Response($status, $headers, $body, '1.1', $reason);
+    }
+
+    private function getClient(?string $cacheKey): Client
     {
         /** @noinspection PhpUnusedLocalVariableInspection */
         $debugFunc = function (MessageInterface $r) {
@@ -78,13 +105,18 @@ class HttpClientFactory implements HttpClientFactoryInterface
         $stack = HandlerStack::create();
         #$stack->push(\GuzzleHttp\Middleware::mapRequest($debugFunc));
 
-        $cacheKey = empty($cacheKey) ? 'default' : $cacheKey;
-        $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
-            // 86400 = one day lifetime
-            new FilesystemAdapter('', 86400, $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey)
-        )));
-        /* @phan-suppress-next-line PhanTypeMismatchArgument */
-        $stack->push($cache, 'cache');
+        if (!empty($cacheKey)) {
+            $cache = new CacheMiddleware(new PrivateCacheStrategy(new Psr6CacheStorage(
+                // 86400 = one day lifetime
+                new FilesystemAdapter(
+                    '',
+                    86400,
+                    $this->config['guzzle']['cache']['dir'] . DIRECTORY_SEPARATOR . $cacheKey
+                )
+            )));
+            /* @phan-suppress-next-line PhanTypeMismatchArgument */
+            $stack->push($cache, 'cache');
+        }
 
         $stack->push($this->esiHeaders);
         $stack->push($this->esi429Response);

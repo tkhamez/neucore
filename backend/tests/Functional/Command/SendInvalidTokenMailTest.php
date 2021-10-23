@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
+use GuzzleHttp\ClientInterface;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
@@ -13,7 +14,6 @@ use Neucore\Entity\Player;
 use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 use Tests\Client;

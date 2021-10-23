@@ -47,13 +47,12 @@ class Client extends \GuzzleHttp\Client
 
     public function request(string $method, $uri = '', array $options = []): ResponseInterface
     {
-        $response = array_shift($this->responses);
-        if (! $response) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw new \Exception('Missing Response');
-        }
-        $this->callMiddleware(new Request($method, $uri), $response);
-        return $response;
+        return $this->send(new Request($method, $uri), $options);
+    }
+
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->send($request);
     }
 
     private function callMiddleware(RequestInterface $request, ResponseInterface $response): void

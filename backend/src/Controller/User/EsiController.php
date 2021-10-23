@@ -6,8 +6,6 @@ declare(strict_types=1);
 
 namespace Neucore\Controller\User;
 
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Utils;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\EveLogin;
 use Neucore\Exception\RuntimeException;
@@ -15,10 +13,9 @@ use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Service\Config;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\OAuthToken;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Neucore\Service\ObjectManager;
 use OpenApi\Annotations as OA;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -147,30 +144,27 @@ class EsiController extends BaseController
         );
         $path .= (strpos($path, '?') ? '&' : '?') . 'datasource=' . $this->config['eve']['datasource'];
 
-        $httpClient = $this->httpClientFactory->get($eveLoginName);
+        if ($debug) {
+            $httpClient = $this->httpClientFactory->get(null);
+        } else {
+            $httpClient = $this->httpClientFactory->get($eveLoginName);
+        }
 
         // make request
-        if ($debug) {
-            /* @phan-suppress-next-line PhanDeprecatedFunction */
-            $stack = $httpClient->getConfig('handler'); # TODO find another way
-            if ($stack instanceof HandlerStack) {
-                /* @phan-suppress-next-line PhanUndeclaredFunctionInCallable */
-                $stack->remove('cache');
-            }
-        }
         $token = $this->tokenService->getToken($character, $eveLoginName);
         if ($token === '') {
             return $this->response->withStatus(400, 'Character has no valid token.');
         }
+        $request = $this->httpClientFactory->createRequest(
+            $method,
+            $baseUri . $path,
+            ['Authorization' => 'Bearer ' . $token],
+            $body
+        );
         try {
-            $response = $httpClient->request($method, $baseUri . $path, [
-                'headers' => ['Authorization' => 'Bearer ' . $token],
-                'body' => $body,
-            ]);
-        } catch (ClientException $ce) {
-            return $this->prepareResponse($ce->getMessage(), $debug, $ce->getResponse(), 400);
-        } catch (GuzzleException $ge) {
-            return $this->prepareResponse($ge->getMessage(), $debug, null, 400);
+            $response = $httpClient->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            return $this->prepareResponse($e->getMessage(), $debug, null, 500);
         }
 
         // get body from response
@@ -179,13 +173,12 @@ class EsiController extends BaseController
         } catch (RuntimeException $re) {
             return $this->prepareResponse($re->getMessage(), $debug, $response, 400);
         }
-        try {
-            $body = Utils::jsonDecode($json);
-        } catch (\InvalidArgumentException $iae) {
-            return $this->prepareResponse($iae->getMessage(), $debug, $response, 400);
+        $body = \json_decode($json, false);
+        if (\JSON_ERROR_NONE !== \json_last_error()) {
+            return $this->prepareResponse('json_decode error: ' . \json_last_error_msg(), $debug, $response, 400);
         }
 
-        return $this->prepareResponse($body, $debug, $response);
+        return $this->prepareResponse($body, $debug, $response, $response->getStatusCode());
     }
 
     /**
@@ -253,7 +246,7 @@ class EsiController extends BaseController
         $body,
         bool $debug,
         ResponseInterface $response = null,
-        $code = 200
+        int $code = 200
     ): ResponseInterface {
         return $this->withJson([
             'headers' => $this->extractHeaders($debug, $response),

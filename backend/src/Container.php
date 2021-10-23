@@ -10,7 +10,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
-use GuzzleHttp\ClientInterface;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
@@ -29,6 +28,7 @@ use Neucore\Storage\ApcuStorage;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\SystemVariableStorage;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -99,7 +99,7 @@ class Container
                     'urlKeySet'               => $urls['jwks'],
                     'urlRevoke'               => $urls['revoke'],
                 ]);
-                $provider->getProvider()->setHttpClient($c->get(ClientInterface::class));
+                $provider->getProvider()->setHttpClient($c->get(\GuzzleHttp\ClientInterface::class));
                 return $provider;
             },
 
@@ -153,6 +153,10 @@ class Container
             ClientInterface::class => function (ContainerInterface $c) {
                 $factory = $c->get(HttpClientFactoryInterface::class); /* @var HttpClientFactoryInterface $factory */
                 return $factory->get();
+            },
+            \GuzzleHttp\ClientInterface::class => function (ContainerInterface $c) {
+                $factory = $c->get(HttpClientFactoryInterface::class); /* @var HttpClientFactoryInterface $factory */
+                return $factory->getGuzzleClient();
             },
 
             // Response

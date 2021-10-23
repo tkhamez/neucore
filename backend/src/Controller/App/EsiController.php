@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neucore\Controller\App;
 
-use GuzzleHttp\Psr7\Response;
 use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
@@ -19,8 +18,7 @@ use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
 use OpenApi\Annotations as OA;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -473,28 +471,30 @@ class EsiController extends BaseController
             (strpos($esiPath, '?') ? '&' : '?') .
             self::PARAM_DATASOURCE . '=' . $eveConfig['datasource'] .
             (! empty($esiParams) ? '&' . implode('&', $esiParams) : '');
-        $options = [
-            'headers' => ['Authorization' => 'Bearer ' . $token],
-            'body' => $body
-        ];
 
-        $httpClient = $this->httpClientFactory->get($cacheKey);
-
+        $request = $this->httpClientFactory->createRequest(
+            $method,
+            $url,
+            ['Authorization' => 'Bearer ' . $token],
+            $body
+        );
         try {
-            $esiResponse = $httpClient->request($method, $url, $options);
-        } catch (RequestException $re) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $re->getMessage());
-            $esiResponse = $re->getResponse(); // may still be null
-        } catch (GuzzleException $ge) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $ge->getMessage());
-            $esiResponse = new Response(
+            $esiResponse = $this->httpClientFactory->get($cacheKey)->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $e->getMessage());
+            $esiResponse =  $this->httpClientFactory->createResponse(
                 500, // status
                 [], // header
-                $ge->getMessage() // body
+                $e->getMessage() // body
             );
         }
 
-        return $esiResponse ?: $this->response->withStatus(500, 'Unknown error.');
+        if ($esiResponse->getStatusCode() < 200 || $esiResponse->getStatusCode() > 299) {
+            $message = $esiResponse->getBody()->getContents();
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . "$url: $message");
+        }
+
+        return $esiResponse;
     }
 
     private function buildResponse(ResponseInterface $esiResponse): ResponseInterface
