@@ -96,6 +96,7 @@ This is also where the name "Neucore" (new Core) comes from.
 - [slack-channel-manage](https://github.com/bravecollective/slack-channel-manage) A Slack app to 
   manage channel members based on Neucore groups.
 - [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
+- [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
 - [Neucore connector boilerplate](https://github.com/bravecollective/neucore-connector-boilerplate) 
   An example application that uses EVE SSO and Neucore groups for access control.
 - A [TimerBoard](https://github.com/tkhamez/neucore-timerboard) (based on the boilerplate).
