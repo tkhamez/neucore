@@ -285,7 +285,10 @@ class Account
                 continue;
             }
             if ($eveLogin->getName() !== EveLogin::NAME_DEFAULT) {
-                $this->tokenService->updateEsiToken($esiToken);
+                $token = $this->tokenService->updateEsiToken($esiToken);
+                if (!$token) {
+                    continue; // can't check roles without a valid token
+                }
                 $oldHasRoles = $esiToken->getHasRoles();
                 if (empty($eveLogin->getEveRoles())) {
                     $esiToken->setHasRoles();
