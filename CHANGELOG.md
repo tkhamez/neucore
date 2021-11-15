@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.27.1
+
+15 Nov 2021
+
+- Adjustment of detection of deleted characters after ESI change.
+- Do not try to get roles from ESI of characters without ESI token.
+
 ## 1.27.0
 
 23 Oct 2021
