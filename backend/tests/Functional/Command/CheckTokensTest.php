@@ -12,6 +12,7 @@ use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
+use Neucore\Service\EsiData;
 use Psr\Log\LoggerInterface;
 use Tests\Client;
 use Tests\Functional\ConsoleTestCase;
@@ -79,7 +80,7 @@ class CheckTokensTest extends ConsoleTestCase
     public function testExecuteDeleteCharBiomassed()
     {
         $player = (new Player())->setName('p');
-        $corp = (new Corporation())->setId(1000001);
+        $corp = (new Corporation())->setId(EsiData::CORPORATION_DOOMHEIM_ID);
         $char = (new Character())->setId(3)->setName('char1')->setCorporation($corp)->setPlayer($player);
         $this->om->persist($player);
         $this->om->persist($corp);

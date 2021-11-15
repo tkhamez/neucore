@@ -186,13 +186,13 @@ class EsiDataTest extends TestCase
         $this->assertSame('alli name', $char->getCorporation()->getAlliance()->getName());
     }
 
-    public function testFetchCharacterInvalidId()
+    public function testFetchCharacter_InvalidId()
     {
         $char = $this->esiData->fetchCharacter(-1);
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterNotInDB()
+    public function testFetchCharacter_NotInDB()
     {
         $this->testHelper->emptyDb();
 
@@ -200,22 +200,54 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterNotFound()
+    public function testFetchCharacter_404NotFound()
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 123, []);
 
         $this->client->setResponse(new Response(404));
-
         $char = $this->esiData->fetchCharacter(123);
+
+        $this->assertStringContainsString('404', $this->log->getHandler()->getRecords()[0]['message']);
         $this->assertNull($char);
         $this->assertStringStartsWith('[404] Error ', $this->log->getHandler()->getRecords()[0]['message']);
+    }
+
+    public function testFetchCharacter_404Deleted()
+    {
+        $this->testHelper->emptyDb();
+        $char = $this->testHelper->addCharacterMain('old char name', 123, []);
+        $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
+        $this->em->flush();
+
+        $this->client->setResponse(
+            new Response(404, [], '{"error":"Character has been deleted!"}'),
+            new Response(200, [], '[{
+                "character_id": 123,
+                "corporation_id": '.EsiData::CORPORATION_DOOMHEIM_ID.'
+            }]')
+        );
+        $char = $this->esiData->fetchCharacter(123);
+
+        $this->assertFalse(isset($this->log->getHandler()->getRecords()[0]));
+
+        $this->assertSame(123, $char->getId());
+        $this->assertSame('old char name', $char->getName());
+        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $char->getCorporation()->getId());
+        $this->assertNull($char->getCorporation()->getName());
+
+        $this->em->clear();
+        $charDb = $this->repoFactory->getCharacterRepository()->find(123);
+        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $charDb->getCorporation()->getId());
+        $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
+        $this->assertGreaterThan('2021-11-15 14:29:31', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
+        $this->assertSame('old char name', $charDb->getName());
     }
 
     /**
      * @throws \Exception
      */
-    public function testFetchCharacterNoFlush()
+    public function testFetchCharacter_NoFlush()
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('newChar', 123, []);
@@ -247,7 +279,7 @@ class EsiDataTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testFetchCharacter()
+    public function testFetchCharacter_Ok()
     {
         $this->testHelper->emptyDb();
         $char = $this->testHelper->addCharacterMain('old char name', 123, []);
@@ -282,7 +314,7 @@ class EsiDataTest extends TestCase
         $this->assertSame('old char name', $charDb->getCharacterNameChanges()[0]->getOldName());
     }
 
-    public function testFetchCharactersAffiliation()
+    public function testFetchCharacters_Affiliation()
     {
         $this->client->setResponse(new Response(200, [], '[{
             "alliance_id": 11,

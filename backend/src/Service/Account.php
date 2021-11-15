@@ -272,7 +272,7 @@ class Account
     public function checkCharacter(Character $char): int
     {
         // check if character is in Doomheim (biomassed)
-        if ($char->getCorporation() !== null && $char->getCorporation()->getId() === 1000001) {
+        if ($char->getCorporation() !== null && $char->getCorporation()->getId() === EsiData::CORPORATION_DOOMHEIM_ID) {
             $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BIOMASSED);
             $this->objectManager->flush();
             return self::CHECK_CHAR_DELETED;

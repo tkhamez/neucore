@@ -31,6 +31,7 @@ use Neucore\Repository\PlayerLoginsRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\Account;
+use Neucore\Service\EsiData;
 use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
@@ -368,7 +369,7 @@ class AccountTest extends TestCase
 
     public function testCheckCharacter_DeletesBiomassedChar()
     {
-        $corp = (new Corporation())->setId(1000001); // Doomheim
+        $corp = (new Corporation())->setId(EsiData::CORPORATION_DOOMHEIM_ID);
         $player = (new Player())->setName('p');
         $char = (new Character())->setId(31)->setName('n31')->setCorporation($corp)->setPlayer($player);
         $this->om->persist($corp);

@@ -13,8 +13,8 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
 use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
+use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
-use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
@@ -26,6 +26,8 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
  */
 class EsiData
 {
+    public const CORPORATION_DOOMHEIM_ID = 1000001;
+
     /**
      * @var LoggerInterface
      */
@@ -147,43 +149,59 @@ class EsiData
 
         // get data from ESI
         $this->lastErrorCode = null;
+        $eveChar = null;
         try {
-            // cache = 24 hours
+            // ESI cache = 24 hours
             $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
-        } catch (\Exception $e) {
+        } catch (ApiException $e) {
+            // Do not log and continue if character was deleted/biomassed
+            if ($e->getCode() !== 404 || strpos($e->getResponseBody(), 'Character has been deleted') === false) {
+                $this->lastErrorCode = $e->getCode();
+                $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
+                return null;
+            }
+        } catch (\Exception $e) { // e.g. InvalidArgumentException
             $this->lastErrorCode = $e->getCode();
             $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return null;
         }
-        if (!$eveChar instanceof GetCharactersCharacterIdOk) {
-            return null;
-        }
+
+        $updated = false;
 
         // update char (and player) name
-        /** @noinspection PhpCastIsUnnecessaryInspection */
-        $this->characterService->setCharacterName($char, (string)$eveChar->getName());
-        if ($char->getMain()) {
-            $char->getPlayer()->setName($char->getName());
+        if ($eveChar) {
+            /** @noinspection PhpCastIsUnnecessaryInspection */
+            $this->characterService->setCharacterName($char, (string)$eveChar->getName());
+            if ($char->getMain()) {
+                $char->getPlayer()->setName($char->getName());
+            }
+            $updated = true;
         }
 
-        try {
-            $char->setLastUpdate(new \DateTime());
-        } catch (\Exception $e) {
-            // ignore
-        }
-
-        // update char with corp entity
-        $affiliation = $this->fetchCharactersAffiliation([$id]); // cache = 1 hour
+        // update char with corp entity - ESI cache = 1 hour
+        $affiliation = $this->fetchCharactersAffiliation([$id]);
+        $corpId = null;
         if (isset($affiliation[0])) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $corpId = (int) $affiliation[0]->getCorporationId();
-        } else {
+        } elseif ($eveChar) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $corpId = (int) $eveChar->getCorporationId();
         }
-        $corp = $this->getCorporationEntity($corpId);
-        $char->setCorporation($corp);
-        $corp->addCharacter($char);
+        if ($corpId) {
+            $corp = $this->getCorporationEntity($corpId);
+            $char->setCorporation($corp);
+            $corp->addCharacter($char);
+            $updated = true;
+        }
+
+        if ($updated) {
+            try {
+                $char->setLastUpdate(new \DateTime());
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
 
         // flush
         if ($flush && ! $this->objectManager->flush()) {
