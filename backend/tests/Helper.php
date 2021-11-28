@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Persistence\ObjectManager;
@@ -180,9 +182,16 @@ class Helper
     public function getDbName(): string
     {
         try {
-            return $this->getEm()->getConnection()->getDatabasePlatform()->getName();
+            $connection = $this->getEm()->getConnection()->getDatabasePlatform();
         } catch (Exception $e) {
             return 'error';
+        }
+        if ($connection instanceof SqlitePlatform) {
+            return 'sqlite';
+        } elseif ($connection instanceof MySQLPlatform) {
+            return 'mysql';
+        } else {
+            return 'other';
         }
     }
 

@@ -20,7 +20,6 @@ final class Version20191220122206 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         // rename watchlist_player -> watchlist_exemption
         $this->addSql('ALTER TABLE watchlist_player DROP FOREIGN KEY FK_310B07AD83DD0D94');
@@ -50,7 +49,6 @@ final class Version20191220122206 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         // rename watchlist_exemption -> watchlist_player
         $this->addSql('ALTER TABLE watchlist_exemption DROP FOREIGN KEY FK_6DE889883DD0D94');

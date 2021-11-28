@@ -18,7 +18,6 @@ class Version20180301173519 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE characters CHANGE expires expires INT DEFAULT NULL, CHANGE refresh_token refresh_token TEXT DEFAULT NULL');
     }
@@ -29,7 +28,6 @@ class Version20180301173519 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE characters CHANGE expires expires INT NOT NULL, CHANGE refresh_token refresh_token TEXT NOT NULL COLLATE utf8_unicode_ci');
     }

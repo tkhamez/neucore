@@ -22,7 +22,6 @@ final class Version20190811124721 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE removed_characters ADD deleted_by INT DEFAULT NULL');
         $this->addSql('ALTER TABLE removed_characters ADD CONSTRAINT FK_129104F71F6FA0AF FOREIGN KEY (deleted_by) REFERENCES players (id)');
@@ -32,7 +31,6 @@ final class Version20190811124721 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE removed_characters DROP FOREIGN KEY FK_129104F71F6FA0AF');
         $this->addSql('DROP INDEX IDX_129104F71F6FA0AF ON removed_characters');

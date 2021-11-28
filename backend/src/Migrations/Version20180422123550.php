@@ -18,7 +18,6 @@ class Version20180422123550 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE alliances (id BIGINT NOT NULL, name VARCHAR(255) NOT NULL, ticker VARCHAR(16) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE corporations (id BIGINT NOT NULL, alliance_id BIGINT DEFAULT NULL, name VARCHAR(255) NOT NULL, ticker VARCHAR(16) NOT NULL, INDEX IDX_6F3B37C710A0EA3F (alliance_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
@@ -39,7 +38,6 @@ class Version20180422123550 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE characters DROP FOREIGN KEY FK_3A29410E10A0EA3F');
         $this->addSql('ALTER TABLE corporations DROP FOREIGN KEY FK_6F3B37C710A0EA3F');

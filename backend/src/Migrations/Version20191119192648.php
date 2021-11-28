@@ -22,7 +22,6 @@ final class Version20191119192648 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE watchlists (id INT NOT NULL, name VARCHAR(32) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE watchlist_player (watchlist_id INT NOT NULL, player_id INT NOT NULL, INDEX IDX_310B07AD83DD0D94 (watchlist_id), INDEX IDX_310B07AD99E6F5DF (player_id), PRIMARY KEY(watchlist_id, player_id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB');
@@ -42,7 +41,6 @@ final class Version20191119192648 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE watchlist_player DROP FOREIGN KEY FK_310B07AD83DD0D94');
         $this->addSql('ALTER TABLE watchlist_corporation DROP FOREIGN KEY FK_A47DFD6683DD0D94');
