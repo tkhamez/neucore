@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- **BC break**: Increased min. PHP version to 7.4.
+- Increased min. Node.js version to 14.15.
+
 ## 1.27.1
 
 15 Nov 2021

@@ -17,7 +17,7 @@ services:
 
   neucore_java:
     container_name: neucore_java
-    image: openjdk:11
+    image: openjdk:11-jre-slim
     volumes: [".:/app"]
     user: ${UID}
 
@@ -25,8 +25,7 @@ services:
     container_name: neucore_node
     build:
       context: doc
-      dockerfile: Dockerfile-node12
-      #dockerfile: Dockerfile-node14
+      dockerfile: Dockerfile-node14
       #dockerfile: Dockerfile-node16
     volumes: [".:/app"]
     environment:
@@ -40,8 +39,7 @@ services:
     container_name: neucore_php
     build:
       context: doc
-      dockerfile: Dockerfile-php73-fpm
-      #dockerfile: Dockerfile-php74-fpm
+      dockerfile: Dockerfile-php74-fpm
       #dockerfile: Dockerfile-php80-fpm
     depends_on: [neucore_db]
     volumes: [

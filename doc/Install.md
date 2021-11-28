@@ -32,7 +32,7 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.3.0, see `backend/composer.json` for necessary extensions and `composer.json` in the root directory for 
+* PHP >=7.4.0, see `backend/composer.json` for necessary extensions and `composer.json` in the root directory for 
   suggested extensions (APCu highly recommended).
 * MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases 
   supported by [Doctrine ORM](https://www.doctrine-project.org/projects/orm.html) may work if you generate the 
@@ -46,8 +46,8 @@ To run the application:
 
 Additionally, to build the application:
 * Composer 2.
-* Node.js >=12.13 with npm >=6.12 (only tested with LTS releases v12 and v14 and v16).
-* Java runtime >=8 to generate the OpenAPI JavaScript client.
+* Node.js >=14.15 with npm >=6.14.8, only tested with LTS releases v14 and v16.
+* Java runtime >=8 (but only tested with v11) to generate the OpenAPI JavaScript client.
 
 ### Install/Update
 
