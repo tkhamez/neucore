@@ -15,6 +15,7 @@ use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 use Swagger\Client\Eve\ApiException;
 use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
+use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
 use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
@@ -155,7 +156,8 @@ class EsiData
             $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
         } catch (ApiException $e) {
             // Do not log and continue if character was deleted/biomassed
-            if ($e->getCode() !== 404 || strpos($e->getResponseBody(), 'Character has been deleted') === false) {
+            $body = $e->getResponseBody();
+            if ($e->getCode() !== 404 || (is_string($body) && strpos($body, 'Character has been deleted') === false)) {
                 $this->lastErrorCode = $e->getCode();
                 $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
                 return null;
@@ -169,7 +171,7 @@ class EsiData
         $updated = false;
 
         // update char (and player) name
-        if ($eveChar) {
+        if ($eveChar instanceof GetCharactersCharacterIdOk) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $this->characterService->setCharacterName($char, (string)$eveChar->getName());
             if ($char->getMain()) {
@@ -184,7 +186,7 @@ class EsiData
         if (isset($affiliation[0])) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $corpId = (int) $affiliation[0]->getCorporationId();
-        } elseif ($eveChar) {
+        } elseif ($eveChar instanceof GetCharactersCharacterIdOk) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $corpId = (int) $eveChar->getCorporationId();
         }

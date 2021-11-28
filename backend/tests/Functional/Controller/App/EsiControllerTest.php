@@ -265,9 +265,9 @@ class EsiControllerTest extends WebTestCase
             [
                 'Content-Type' => ['application/json; charset=UTF-8'],
                 'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
-                'X-Esi-Error-Limit-Remain' => [100],
-                'X-Esi-Error-Limit-Reset' => [60],
-                'X-Pages' => [3],
+                'X-Esi-Error-Limit-Remain' => ['100'],
+                'X-Esi-Error-Limit-Reset' => ['60'],
+                'X-Pages' => ['3'],
                 'warning' => ['199 - This route has an upgrade available'],
             ],
             '{"key": "value"}'
@@ -308,7 +308,7 @@ class EsiControllerTest extends WebTestCase
         );
         $httpClient->setResponse(new Response(
             200,
-            ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
+            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']]
         ));
 
         $response = $this->runApp(

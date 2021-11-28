@@ -79,8 +79,12 @@ class HttpClientFactory implements HttpClientFactoryInterface
         return new Request($method, $url, $headers, $body);
     }
 
-    public function createResponse($status = 200, array $headers = [], $body = null, $reason = null): ResponseInterface
-    {
+    public function createResponse(
+        int $status = 200,
+        array $headers = [],
+        string $body = null,
+        string $reason = null
+    ): ResponseInterface {
         return new Response($status, $headers, $body, '1.1', $reason);
     }
 

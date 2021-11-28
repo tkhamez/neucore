@@ -56,7 +56,7 @@ class EsiHeadersTest extends TestCase
     {
         $response = new Response(
             200,
-            ['X-Esi-Error-Limit-Remain' => [100], 'X-Esi-Error-Limit-Reset' => [60]]
+            ['X-Esi-Error-Limit-Remain' => ['100'], 'X-Esi-Error-Limit-Reset' => ['60']]
         );
 
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));

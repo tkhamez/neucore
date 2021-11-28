@@ -65,7 +65,7 @@ class Esi429Response
                 $this->logger->warning("Esi429Response Retry-After: $retryAfter");
                 if (is_numeric($retryAfter)) {
                     // e.g.: 120
-                    $waitUntil = time() + $retryAfter;
+                    $waitUntil = time() + ceil((float) $retryAfter);
                 } else {
                     // e.g.: Wed, 21 Oct 2015 07:28:00 GMT
                     $datetime = \DateTime::createFromFormat('D, d M Y H:i:s T', $retryAfter);

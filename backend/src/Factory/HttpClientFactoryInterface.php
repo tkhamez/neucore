@@ -19,5 +19,10 @@ interface HttpClientFactoryInterface
         string $body = null
     ): RequestInterface;
 
-    public function createResponse($status = 200, array $headers = [], $body = null, $reason = null): ResponseInterface;
+    public function createResponse(
+        int $status = 200,
+        array $headers = [],
+        string $body = null,
+        string $reason = null
+    ): ResponseInterface;
 }
