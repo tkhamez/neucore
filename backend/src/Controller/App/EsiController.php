@@ -8,7 +8,6 @@ use Neucore\Application;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\App;
 use Neucore\Entity\EveLogin;
-use Neucore\Exception\RuntimeException;
 use Neucore\Factory\HttpClientFactoryInterface;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\AppAuth;
