@@ -4,7 +4,7 @@
     "license": "MIT",
     "description": "For Heroku and AWS Beanstalk to setup the PHP environment and install the backend and frontend.",
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^7.4",
         "ext-apcu": "*",
         "ext-curl": "*",
         "ext-dom": "*",
