@@ -481,7 +481,7 @@ class EsiController extends BaseController
         try {
             $esiResponse = $this->httpClientFactory->get($cacheKey)->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $e->getMessage());
+            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . '): ' . $e->getMessage());
             $esiResponse =  $this->httpClientFactory->createResponse(
                 500, // status
                 [], // header

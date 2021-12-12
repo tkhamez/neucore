@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\App;
 
+use GuzzleHttp\Exception\TransferException;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
@@ -252,6 +253,36 @@ class EsiControllerTest extends WebTestCase
         );
 
         $this->assertNotSame(429, $response->getStatusCode());
+    }
+
+    public function testEsiV1500_ClientException()
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $httpClient = new Client();
+        $httpClient->setMiddleware(function () {
+            throw new TransferException("error message", 500);
+        });
+        $httpClient->setResponse(new Response());
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi/latest/universe/structures/1/?page=1&datasource=123:core.default',
+            [],
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
+                LoggerInterface::class => $this->logger
+            ]
+        );
+
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame('error message', $response->getBody()->__toString());
+        $this->assertSame(
+            'App\EsiController: (application ' . $appId . ' "A1"): error message',
+            $this->logger->getHandler()->getRecords()[0]['message']
+        );
     }
 
     public function testEsiV1200()
