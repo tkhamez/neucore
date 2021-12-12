@@ -17,7 +17,7 @@ services:
 
   neucore_java:
     container_name: neucore_java
-    image: openjdk:11-jre-slim
+    image: openjdk:11-jre
     volumes: [".:/app"]
     user: ${UID}
 
