@@ -285,6 +285,42 @@ class EsiControllerTest extends WebTestCase
         );
     }
 
+    public function testEsiV1_EsiError()
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(
+            400,
+            [],
+            '{"error": "not a potential structure_id (id < 100000000)"}'
+        ));
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v1/esi/latest/universe/structures/1/?page=1&datasource=123:core.default',
+            [],
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            [
+                HttpClientFactoryInterface::class => new HttpClientFactory($httpClient),
+                LoggerInterface::class => $this->logger
+            ]
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame(
+            '{"error": "not a potential structure_id (id < 100000000)"}',
+            $response->getBody()->__toString()
+        );
+        $this->assertSame(
+            'App\EsiController: (application ' . $appId . ' "A1") ' .
+            'https://esi.evetech.net/latest/universe/structures/1/?datasource=tranquility&page=1: '  .
+            '{"error": "not a potential structure_id (id < 100000000)"}',
+            $this->logger->getHandler()->getRecords()[0]['message']
+        );
+    }
+
     public function testEsiV1200()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);

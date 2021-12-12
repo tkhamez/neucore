@@ -499,15 +499,8 @@ class EsiController extends BaseController
 
     private function buildResponse(ResponseInterface $esiResponse): ResponseInterface
     {
-        $body = null;
-        try {
-            $body = $esiResponse->getBody()->getContents();
-        } catch (RuntimeException $e) {
-            $this->log->error(self::ERROR_MESSAGE_PREFIX . '(' . $this->appString() . ') ' . $e->getMessage());
-        }
-        if ($body !== null) {
-            $this->response->getBody()->write($body);
-        }
+        $body = $esiResponse->getBody()->__toString();
+        $this->response->getBody()->write($body);
 
         $response = $this->response->withStatus($esiResponse->getStatusCode(), $esiResponse->getReasonPhrase());
 
