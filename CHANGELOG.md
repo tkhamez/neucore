@@ -1,10 +1,13 @@
 # Changelog
 
-## next
+## 1.28.0
+
+12 Dec 2021
 
 - **BC break**: Increased min. PHP version to 7.4.
 - Increased min. Node.js version to 14.15.
-- Fix: App API ESI response did not contain error message in body.
+- Fixed: App API ESI response did not contain error message in body.
+- Updated dependencies.
 
 ## 1.27.1
 
