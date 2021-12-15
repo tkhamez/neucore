@@ -16,6 +16,9 @@ steps:
       NEUCORE_APP_ENV: prod
       NEUCORE_DATABASE_URL: mysql://root:@database/test
       NEUCORE_TEST_DATABASE_URL: mysql://root:@database/test
+      NEUCORE_EVE_CLIENT_ID: '123'
+      NEUCORE_EVE_SECRET_KEY: 'abc'
+      NEUCORE_EVE_CALLBACK_URL: 'http://localhost'
     commands:
       - apt-get update -y && apt-get -y install libgmp-dev
       - docker-php-ext-install pdo_mysql
