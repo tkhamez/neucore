@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- Added optional environment variable NEUCORE_ERROR_REPORTING to change the error reporting level.
+
 ## 1.28.0
 
 12 Dec 2021

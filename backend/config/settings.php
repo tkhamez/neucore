@@ -8,13 +8,14 @@ use Neucore\Application;
 return [
 
     'env_var_defaults' => [
-        'NEUCORE_EVE_DATASOURCE' => 'tranquility',
-        'NEUCORE_LOG_PATH'       => Application::ROOT_DIR . '/var/logs',
-        'NEUCORE_LOG_ROTATION'   => 'weekly',
-        'NEUCORE_LOG_FORMAT'     => 'multiline',
-        'NEUCORE_CACHE_DIR'      => Application::ROOT_DIR . '/var/cache',
-        'NEUCORE_SESSION_SECURE' => 1,
+        'NEUCORE_EVE_DATASOURCE'    => 'tranquility',
+        'NEUCORE_LOG_PATH'          => Application::ROOT_DIR . '/var/logs',
+        'NEUCORE_LOG_ROTATION'      => 'weekly',
+        'NEUCORE_LOG_FORMAT'        => 'multiline',
+        'NEUCORE_CACHE_DIR'         => Application::ROOT_DIR . '/var/cache',
+        'NEUCORE_SESSION_SECURE'    => 1,
         'NEUCORE_SESSION_SAME_SITE' => 'Lax',
+        'NEUCORE_ERROR_REPORTING'   => E_ALL,
     ],
 
     'monolog' => [
@@ -39,6 +40,8 @@ return [
             'mysql_verify_server_cert' => '${NEUCORE_MYSQL_VERIFY_SERVER_CERT}',
         ],
     ],
+
+    'error_reporting' => '${NEUCORE_ERROR_REPORTING}',
 
     'CORS' => [
         'allow_origin' => '${NEUCORE_ALLOW_ORIGIN}',

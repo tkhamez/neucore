@@ -8,8 +8,6 @@ use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
-use DI\DependencyException;
-use DI\NotFoundException;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\ErrorHandler;
@@ -42,7 +40,9 @@ use Neucore\Slim\SessionMiddleware;
 use Neucore\Service\AppAuth;
 use Neucore\Service\Config;
 use Neucore\Service\UserAuth;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
@@ -90,29 +90,22 @@ class Application
 
     /**
      * App setting from the config dir.
-     *
-     * @var Config|null
      */
-    private $config;
+    private ?Config $config = null;
 
     /**
      * The current environment.
      *
      * self::ENV_PROD or self::ENV_DEV
-     *
-     * @var string
      */
-    private $env;
+    private string $env;
 
     /**
-     * @var string|null self::RUN_WEB or self::RUN_CONSOLE
+     * self::RUN_WEB or self::RUN_CONSOLE
      */
-    private $runEnv;
+    private ?string $runEnv = null;
 
-    /**
-     * @var Container
-     */
-    private $container;
+    private ?Container $container = null;
 
     public function __construct()
     {
@@ -223,7 +216,7 @@ class Application
      * Creates the Slim app
      *
      * @param array $mocks Replaces dependencies in the DI container
-     * @throws \Exception
+     * @throws \Throwable
      * @return App
      */
     public function getApp(array $mocks = []): App
@@ -257,7 +250,7 @@ class Application
      * Creates the Symfony console app.
      *
      * @param array $mocks Replaces dependencies in the DI container
-     * @throws \Exception
+     * @throws \Throwable
      * @return ConsoleApplication
      */
     public function getConsoleApp(array $mocks = []): ConsoleApplication
@@ -276,8 +269,8 @@ class Application
 
     /**
      * @param App $app
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     private function addMiddleware(App $app): void
     {
@@ -371,8 +364,8 @@ class Application
      *
      * (not for CLI)
      *
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      * @throws Exception
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
@@ -400,12 +393,12 @@ class Application
     /**
      * Setup error handling.
      *
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     private function errorHandling(): void
     {
-        error_reporting(E_ALL);
+        error_reporting((int)$this->config['error_reporting']);
 
         // logs errors that are not handled by Slim
         ErrorHandler::register($this->container->get(LoggerInterface::class));
@@ -446,8 +439,8 @@ class Application
     }
 
     /**
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      * @throws LogicException
      */
     private function addCommands(ConsoleApplication $console): void
@@ -476,7 +469,7 @@ class Application
         if ($this->container instanceof ContainerInterface) {
             try {
                 $log = $this->container->get(LoggerInterface::class);
-            } catch (DependencyException | NotFoundException $e) {
+            } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
                 // do nothing
             }
         }
