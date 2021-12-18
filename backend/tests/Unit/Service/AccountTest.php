@@ -867,14 +867,13 @@ class AccountTest extends TestCase
     {
         $this->service->syncTrackingRole();
         $this->service->syncTrackingRole(new Player, new Corporation);
-        
+
         $this->assertSame(
-            'Account::syncTrackingRole(): Invalid function call.',
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-        $this->assertSame(
-            'Account::syncTrackingRole(): Invalid function call.',
-            $this->log->getHandler()->getRecords()[1]['message']
+            [
+                'Account::syncTrackingRole(): Invalid function call.',
+                'Account::syncTrackingRole(): Invalid function call.',
+            ],
+            $this->log->getMessages()
         );
     }
 

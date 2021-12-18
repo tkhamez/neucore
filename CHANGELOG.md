@@ -2,6 +2,7 @@
 
 ## next
 
+- PHP 8.1 compatibility.
 - Added optional environment variable NEUCORE_ERROR_REPORTING to change the error reporting level.
 
 ## 1.28.0

@@ -143,7 +143,7 @@ class Container
                     }
                 }
                 $handler = (new StreamHandler($path, Logger::DEBUG))->setFormatter($formatter);
-                return (new Logger('app'))->pushHandler($handler);
+                return (new Log\Logger('app'))->pushHandler($handler);
             },
 
             // Guzzle

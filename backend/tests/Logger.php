@@ -6,7 +6,7 @@ namespace Tests;
 
 use Monolog\Handler\TestHandler;
 
-class Logger extends \Monolog\Logger
+class Logger extends \Neucore\Log\Logger
 {
     public function __construct(string $name, $handlers = array(), $processors = array())
     {
@@ -19,5 +19,15 @@ class Logger extends \Monolog\Logger
     {
         $handler = parent::getHandlers()[0];
         return $handler instanceof TestHandler ? $handler : null;
+    }
+
+    public function getMessages(): array
+    {
+        if (($handler = $this->getHandler()) !== null) {
+            return array_map(function (array $item) {
+                return $item['message'];
+            }, $handler->getRecords());
+        }
+        return [];
     }
 }

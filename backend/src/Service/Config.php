@@ -9,10 +9,7 @@ namespace Neucore\Service;
  */
 class Config implements \ArrayAccess
 {
-    /**
-     * @var array
-     */
-    private $config;
+    private array $config;
 
     public function __construct(array $config)
     {
@@ -23,15 +20,16 @@ class Config implements \ArrayAccess
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->config);
     }
 
     /**
      * @param mixed $offset
-     * @return mixed|null
+     * @return array|string|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->offsetExists($offset) ? $this->replaceEnvVars($this->config[$offset]) : null;

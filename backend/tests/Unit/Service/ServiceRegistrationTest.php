@@ -205,12 +205,11 @@ class ServiceRegistrationTest extends TestCase
         $this->assertSame(123, $actual[0]->getCharacterId());
 
         $this->assertSame(
-            "ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects.",
-            $this->log->getHandler()->getRecords()[0]['message']
-        );
-        $this->assertSame(
-            "ServiceController: Character ID does not match.",
-            $this->log->getHandler()->getRecords()[1]['message']
+            [
+                'ServiceController: ServiceInterface::getAccounts must return an array of AccountData objects.',
+                'ServiceController: Character ID does not match.'
+            ],
+            $this->log->getMessages()
         );
     }
 
