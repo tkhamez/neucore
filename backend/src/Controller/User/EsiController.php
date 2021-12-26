@@ -169,16 +169,16 @@ class EsiController extends BaseController
 
         // get body from response
         try {
-            $json = $response->getBody()->getContents();
+            $bodyContent = $response->getBody()->getContents();
         } catch (RuntimeException $re) {
             return $this->prepareResponse($re->getMessage(), $debug, $response, 400);
         }
-        $body = \json_decode($json, false);
-        if (\JSON_ERROR_NONE !== \json_last_error()) {
-            return $this->prepareResponse('json_decode error: ' . \json_last_error_msg(), $debug, $response, 400);
+        $responseBody = \json_decode($bodyContent, false);
+        if (\json_last_error() !== \JSON_ERROR_NONE) {
+            $responseBody = $bodyContent;
         }
 
-        return $this->prepareResponse($body, $debug, $response, $response->getStatusCode());
+        return $this->prepareResponse($responseBody, $debug, $response, $response->getStatusCode());
     }
 
     /**
