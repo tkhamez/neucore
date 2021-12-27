@@ -224,7 +224,10 @@ export default {
             if (this.route[0] === 'logout') {
                 this.logout();
                 window.location.hash = '';
-            } else if (['login', 'login-alt', 'login-director', 'login-custom'].indexOf(this.route[0]) !== -1) {
+            } else if (
+                ['login-unknown', 'login', 'login-alt', 'login-director', 'login-custom']
+                    .indexOf(this.route[0]) !== -1
+            ) {
                 authResult(
                     ['login-director', 'login-custom'].indexOf(this.route[0]) !== -1 ?
                         'success' :

@@ -325,7 +325,7 @@ class AuthController extends BaseController
     private function getRedirectUrl(string $loginId): string
     {
         if (empty($loginId)) {
-            return '/';
+            return '/#login-unknown';
         } elseif (in_array($loginId, [EveLogin::NAME_DEFAULT, EveLogin::NAME_MANAGED])) {
             return '/#login';
         } elseif (in_array($loginId, [EveLogin::NAME_ALT, EveLogin::NAME_MANAGED_ALT])) {
