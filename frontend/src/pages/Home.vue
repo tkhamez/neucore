@@ -16,27 +16,29 @@
                     <strong>Do not use these logins unless you were asked to do so</strong>.<br>
                     If you want to add more characters to your account use the EVE login button on the main page.
                 </p>
-                <table class="table">
-                    <tr>
-                        <td>Name</td>
-                        <td>Description</td>
-                        <td>Scopes</td>
-                        <td title="Required roles in the game" class="text-with-tooltip">Roles</td>
-                        <td>Link</td>
-                    </tr>
-                    <tr v-for="eveLogin in filteredEveLogins()">
-                        <td>{{ eveLogin.name }}</td>
-                        <td>{{ eveLogin.description }}</td>
-                        <td>{{ eveLogin.esiScopes.split(' ').join(', ') }}</td>
-                        <td>{{ eveLogin.eveRoles.join(', ') }}</td>
-                        <td>
-                            <a :href="loginHost + '/login/' + eveLogin.name"
-                               class="ml-1 char-login-button" title="Login">
-                                <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
-                            </a>
-                        </td>
-                    </tr>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <td>Name</td>
+                            <td>Login</td>
+                            <td>Description</td>
+                            <td>Scopes</td>
+                            <td title="Required roles in the game" class="text-with-tooltip">Roles</td>
+                        </tr>
+                        <tr v-for="eveLogin in filteredEveLogins()">
+                            <td>{{ eveLogin.name }}</td>
+                            <td>
+                                <a :href="loginHost + '/login/' + eveLogin.name"
+                                   class="ml-1 char-login-button" title="EVE SSO Login">
+                                    <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                </a>
+                            </td>
+                            <td>{{ eveLogin.description }}</td>
+                            <td>{{ eveLogin.esiScopes.split(' ').join(', ') }}</td>
+                            <td>{{ eveLogin.eveRoles.join(', ') }}</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
