@@ -21,16 +21,19 @@ Modal window with all characters of one player.
                         <div class="col-lg-7">
                             <h6>Characters</h6>
                             <ul class="list-group">
-                                <li v-for="character in selectedPlayer.characters" class="list-group-item">
+                                <li v-for="character in selectedPlayer.characters"
+                                    class="list-group-item p-1 pb-2 pt-2">
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-1">
                                             <img :src="characterPortrait(character.id, 32)" alt="portrait">
-                                            {{ character.name }}
-                                            <character-name-changes :character="character"></character-name-changes>
+                                        </div>
+                                        <div class="col-6">
                                             <span v-if="character.main" role="img"
                                                   class="fas fa-star text-warning" title="Main"></span>
+                                            {{ character.name }}
+                                            <character-name-changes :character="character"></character-name-changes>
                                         </div>
-                                        <div class="col-6 text-right">
+                                        <div class="col-5 text-right">
                                             <span v-if="character.validToken"
                                                   class="badge badge-success ml-1"
                                                   :class="{'text-with-tooltip': character.validTokenTime}"
@@ -58,25 +61,31 @@ Modal window with all characters of one player.
                                         </div>
                                     </div>
                                     <div class="small row">
-                                        <div class="col-2 text-muted">
-                                            Corporation:<br>
-                                            Alliance:
-                                        </div>
-                                        <div class="col-6">
-                                            <span v-if="character.corporation">
-                                                [{{ character.corporation.ticker }}]
-                                                {{ character.corporation.name }}
-                                                <span v-if="character.corporation.id < 2000000"
-                                                      class="badge badge-info">NPC</span>
-                                            </span>
-                                            <br>
-                                            <span v-if="character.corporation && character.corporation.alliance">
-                                                [{{ character.corporation.alliance.ticker }}]
-                                                {{ character.corporation.alliance.name }}
-                                            </span>
+                                        <div class="col-8">
+                                            <div class="row">
+                                                <div class="col-3 text-muted">Corporation:</div>
+                                                <div class="col-9">
+                                                    <span v-if="character.corporation">
+                                                    [{{ character.corporation.ticker }}]
+                                                    {{ character.corporation.name }}
+                                                    <span v-if="character.corporation.id < 2000000"
+                                                          class="badge badge-info">NPC</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3 text-muted">Alliance:</div>
+                                                <div class="col-9">
+                                                    <span v-if="character.corporation &&
+                                                                character.corporation.alliance">
+                                                        [{{ character.corporation.alliance.ticker }}]
+                                                        {{ character.corporation.alliance.name }}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-4 text-right">
-                                            <span class="text-muted">Added:</span>
+                                            <span class="text-muted">Added: </span>
                                             <span v-if="character.created">{{ formatDate(character.created) }}</span>
                                         </div>
                                     </div>
