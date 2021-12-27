@@ -4,7 +4,7 @@ Tooltip with list of name changes.
 
 <template>
     <span v-if="character.characterNameChanges.length > 0"
-          class="character-name-changes" data-toggle="tooltip"
+          class="character-name-changes" data-toggle="tooltip2"
           :title="getNameChangesHtml(character.characterNameChanges)">
         <span role="img" class="fas fa-info-circle"></span>
     </span>
@@ -20,7 +20,7 @@ export default {
 
     mounted () {
         window.setTimeout(() => {
-            $('.character-name-changes[data-toggle="tooltip"]').tooltip({
+            $('.character-name-changes[data-toggle="tooltip2"]').tooltip({
                 html: true,
                 customClass: 'character-name-changes'
             });
