@@ -106,7 +106,7 @@
                    :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
                    :type="'Group'" :searchCurrentOnly="true"></admin>
 
-            <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3">
+            <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3 table-responsive">
                 <table class="table table-hover mb-0 nc-table-sm" aria-describedby="Members">
                     <thead>
                         <tr>

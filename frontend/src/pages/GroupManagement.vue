@@ -71,34 +71,37 @@
                         v-on:add="addPlayer($event)" v-on:remove="removePlayer($event)"></character-result>
 
                 </div>
-                <table v-cloak v-if="groupId" class="table table-hover mb-0 nc-table-sm" aria-describedby="members">
-                    <thead>
-                        <tr>
-                            <th scope="col">Player ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Corporation</th>
-                            <th scope="col" v-if="hasRole('user-chars')">Characters</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="member in groupMembers">
-                            <td>{{ member.id }}</td>
-                            <td>{{ member.name }}</td>
-                            <td>{{ member.corporationName }}</td>
-                            <td v-if="hasRole('user-chars')">
-                                <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
-                                    Show characters
-                                </button>
-                            </td>
-                            <td>
-                                <button class="btn btn-danger btn-sm" v-on:click="removePlayer(member.id)">
-                                    Remove from group
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table v-cloak v-if="groupId" class="table table-hover mb-0 nc-table-sm"
+                           aria-describedby="members">
+                        <thead>
+                            <tr>
+                                <th scope="col">Player ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Corporation</th>
+                                <th scope="col" v-if="hasRole('user-chars')">Characters</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="member in groupMembers">
+                                <td>{{ member.id }}</td>
+                                <td>{{ member.name }}</td>
+                                <td>{{ member.corporationName }}</td>
+                                <td v-if="hasRole('user-chars')">
+                                    <button class="btn btn-info btn-sm" v-on:click="showCharacters(member.id)">
+                                        Show characters
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" v-on:click="removePlayer(member.id)">
+                                        Remove from group
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div> <!-- card members -->
 
             <div v-if="contentType === 'applications'" class="card border-secondary mb-3"
@@ -106,37 +109,39 @@
                 <div class="card-body">
                     <h5>{{ status }} ({{ groupApplicationsByStatus(status).length }})</h5>
                 </div>
-                <table v-cloak v-if="groupId" class="table table-hover mb-0"
-                       :aria-describedby="status + ' applications'">
-                    <thead>
-                        <tr>
-                            <th scope="col">Player</th>
-                            <th scope="col">Created (GMT)</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="application in groupApplicationsByStatus(status)">
-                            <td>{{ application.player.name + ' #' + application.player.id }}</td>
-                            <td>{{ formatDate(application.created) }}</td>
-                            <td>
-                                <button v-if="application.status === 'pending' || application.status === 'denied'"
-                                        class="btn btn-success btn-sm"
-                                        v-on:click="accept(application.id, application.player.id)">
-                                    Accept
-                                </button>
-                            </td>
-                            <td>
-                                <button v-if="application.status === 'pending'"
-                                        class="btn btn-warning btn-sm"
-                                        v-on:click="deny(application.id)">
-                                    Deny
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table v-cloak v-if="groupId" class="table table-hover mb-0"
+                           :aria-describedby="status + ' applications'">
+                        <thead>
+                            <tr>
+                                <th scope="col">Player</th>
+                                <th scope="col">Created (GMT)</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="application in groupApplicationsByStatus(status)">
+                                <td>{{ application.player.name + ' #' + application.player.id }}</td>
+                                <td>{{ formatDate(application.created) }}</td>
+                                <td>
+                                    <button v-if="application.status === 'pending' || application.status === 'denied'"
+                                            class="btn btn-success btn-sm"
+                                            v-on:click="accept(application.id, application.player.id)">
+                                        Accept
+                                    </button>
+                                </td>
+                                <td>
+                                    <button v-if="application.status === 'pending'"
+                                            class="btn btn-warning btn-sm"
+                                            v-on:click="deny(application.id)">
+                                        Deny
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div> <!-- card applications -->
 
         </div> <!-- col  -->

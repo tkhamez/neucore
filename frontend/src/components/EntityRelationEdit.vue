@@ -97,9 +97,10 @@ Select and table to add and remove objects from other objects.
 
         </div>
 
-        <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
-               aria-describedby="Elements already added">
-            <thead class="thead-light" :class="{ 'sticky' : sticky > 0}">
+        <div :class="{ 'table-responsive': !sticky}">
+            <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
+                   aria-describedby="Elements already added">
+                <thead class="thead-light" :class="{ 'sticky': sticky > 0}">
                 <tr>
                     <th scope="col" :style="stickyTop" v-if="
                             contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||
@@ -122,8 +123,8 @@ Select and table to add and remove objects from other objects.
                         (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
                     <th scope="col" :style="stickyTop">Action</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr v-for="row in tableContent">
                     <td v-if="
                             contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||
@@ -177,8 +178,9 @@ Select and table to add and remove objects from other objects.
                         </button>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
         <p v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'" class="small text-muted ml-1 mt-1">
             * Corporations are automatically added (and removed accordingly) if all their members belong to
             the same account.

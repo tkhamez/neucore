@@ -7,41 +7,43 @@
             <br>
             This is used to get the <a href="#Tracking">Member Tracking</a> data from ESI.
         </p>
-        <table class="table table-hover table-sm" aria-describedby="directors">
-            <thead>
-                <tr>
-                    <th scope="col">Character</th>
-                    <th scope="col" colspan="3">Corporation</th>
-                    <th scope="col" colspan="2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="director in directors">
-                    <td>
-                        <a :href="'https://evewho.com/character/' + director.value['character_id']"
-                           title="Eve Who" target="_blank" rel="noopener noreferrer">
-                            {{ director.value['character_name'] }}
-                        </a>
-                    </td>
-                    <td>{{ director.value['corporation_ticker'] }}</td>
-                    <td :title="director.value['corporation_id']">{{ director.value['corporation_name'] }}</td>
-                    <td>
-                        <button type="button" class="btn btn-info"
-                                v-on:click="validateDirector(director.name)">
-                            <span role="img" class="fas fa-check"></span>
-                            validate
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger"
-                                v-on:click="removeDirector(director.name)">
-                            <span role="img" class="fas fa-minus-circle"></span>
-                            remove
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm" aria-describedby="directors">
+                <thead>
+                    <tr>
+                        <th scope="col">Character</th>
+                        <th scope="col" colspan="3">Corporation</th>
+                        <th scope="col" colspan="2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="director in directors">
+                        <td>
+                            <a :href="'https://evewho.com/character/' + director.value['character_id']"
+                               title="Eve Who" target="_blank" rel="noopener noreferrer">
+                                {{ director.value['character_name'] }}
+                            </a>
+                        </td>
+                        <td>{{ director.value['corporation_ticker'] }}</td>
+                        <td :title="director.value['corporation_id']">{{ director.value['corporation_name'] }}</td>
+                        <td>
+                            <button type="button" class="btn btn-info"
+                                    v-on:click="validateDirector(director.name)">
+                                <span role="img" class="fas fa-check"></span>
+                                validate
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger"
+                                    v-on:click="removeDirector(director.name)">
+                                <span role="img" class="fas fa-minus-circle"></span>
+                                remove
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </template>

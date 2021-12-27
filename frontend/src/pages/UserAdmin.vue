@@ -315,50 +315,54 @@
                         Groups for this account are disabled (or will be disabled soon)
                         because one or more characters do not have a valid ESI token.
                     </p>
-                    <table class="table table-hover nc-table-sm" aria-describedby="Member of groups">
-                        <thead class="thead-light">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Visibility</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="group in playerEdit.groups">
-                                <td>{{ group.id }}</td>
-                                <td :class="{ 'groups-disabled': playerEditDeactivated }">
-                                    <a v-if="hasRole('group-admin')"
-                                       :href="'#GroupAdmin/'+group.id+'/members'"
-                                       title="Group Administration">{{ group.name }}</a>
-                                    <span v-else>{{ group.name }}</span>
-                                </td>
-                                <td>{{ group.visibility }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover nc-table-sm" aria-describedby="Member of groups">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Visibility</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="group in playerEdit.groups">
+                                    <td>{{ group.id }}</td>
+                                    <td :class="{ 'groups-disabled': playerEditDeactivated }">
+                                        <a v-if="hasRole('group-admin')"
+                                           :href="'#GroupAdmin/'+group.id+'/members'"
+                                           title="Group Administration">{{ group.name }}</a>
+                                        <span v-else>{{ group.name }}</span>
+                                    </td>
+                                    <td>{{ group.visibility }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <h4>Group Manager</h4>
-                    <table class="table table-hover nc-table-sm" aria-describedby="Manager of groups">
-                        <thead class="thead-light">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Visibility</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="managerGroup in playerEdit.managerGroups">
-                                <td>{{ managerGroup.id }}</td>
-                                <td>
-                                    <a v-if="hasRole('group-admin')"
-                                       :href="'#GroupAdmin/'+managerGroup.id+'/managers'"
-                                       title="Group Administration">{{ managerGroup.name }}</a>
-                                    <span v-else>{{ managerGroup.name }}</span>
-                                </td>
-                                <td>{{ managerGroup.visibility }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover nc-table-sm" aria-describedby="Manager of groups">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Visibility</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="managerGroup in playerEdit.managerGroups">
+                                    <td>{{ managerGroup.id }}</td>
+                                    <td>
+                                        <a v-if="hasRole('group-admin')"
+                                           :href="'#GroupAdmin/'+managerGroup.id+'/managers'"
+                                           title="Group Administration">{{ managerGroup.name }}</a>
+                                        <span v-else>{{ managerGroup.name }}</span>
+                                    </td>
+                                    <td>{{ managerGroup.visibility }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <h4>App Manager</h4>
                     <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
@@ -382,28 +386,30 @@
                     </table>
 
                     <h4>Service Accounts</h4>
-                    <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
-                        <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Service</th>
-                                <th scope="col">Character</th>
-                                <th scope="col">Username</th>
-                                <th scope="col">Display Name</th>
-                                <th scope="col">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="serviceAccount in playerEdit.serviceAccounts">
-                                <td>[{{ serviceAccount.serviceId }}] {{ serviceAccount.serviceName }}</td>
-                                <td>
-                                    [{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}
-                                </td>
-                                <td>{{ serviceAccount.username }}</td>
-                                <td>{{ serviceAccount.displayName }}</td>
-                                <td>{{ serviceAccount.status }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Service</th>
+                                    <th scope="col">Character</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Display Name</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="serviceAccount in playerEdit.serviceAccounts">
+                                    <td>[{{ serviceAccount.serviceId }}] {{ serviceAccount.serviceName }}</td>
+                                    <td>
+                                        [{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}
+                                    </td>
+                                    <td>{{ serviceAccount.username }}</td>
+                                    <td>{{ serviceAccount.displayName }}</td>
+                                    <td>{{ serviceAccount.status }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div> <!-- card-body -->
             </div> <!-- card -->

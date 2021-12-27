@@ -54,67 +54,69 @@
             </div>
 
             <!-- account -->
-            <table v-if="isAccount(account)" v-cloak class="table table-bordered mb-0"
-                   aria-describedby="Account data">
-                <thead class="thead-light">
-                    <tr class="table-active">
-                        <th scope="col" v-if="hasProperty('username')">Username</th>
-                        <th scope="col" v-if="hasProperty('displayName')">Display Name</th>
-                        <th scope="col" v-if="hasProperty('password') && service.configuration.showPassword">
-                            Password
-                        </th>
-                        <th scope="col" v-if="hasProperty('email')">E-mail</th>
-                        <th scope="col" v-if="hasProperty('status')">Status</th>
-                        <th scope="col" v-if="service.configuration.URLs.length > 0"></th>
-                        <th scope="col" v-if="service.configuration.actions.length > 0"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td v-if="hasProperty('username')">{{ account.username }}</td>
-                        <td v-if="hasProperty('displayName')">{{ account.displayName }}</td>
-                        <td v-if="hasProperty('password') && service.configuration.showPassword">
-                            <span>{{ account.password }}</span>
-                        </td>
-                        <td v-if="hasProperty('email')">{{ account.email }}</td>
-                        <td v-if="hasProperty('status')">{{ account.status }}</td>
-                        <td v-if="service.configuration.URLs.length > 0">
-                            <a v-for="url in service.configuration.URLs" :href="urlReplace(url.url, account)"
-                               class="btn btn-sm btn-primary mr-1 mb-1"
-                               :target="url.target" rel="noopener noreferrer">
-                                {{ url.title }}
-                            </a>
-                        </td>
-                        <td v-if="service.configuration.actions.length > 0">
-                            <span v-if="hasAction('update-account') &&
-                                        (isActive(account) || account.status === 'Nonmember')">
-                                <button
-                                    type="submit" class="btn btn-sm btn-info"
-                                    v-on:click.prevent="updateAccount(account.characterId)"
-                                    :disabled="updateAccountButtonDisabled">
-                                    Update Account
-                                </button>
-                                <br>
-                                <small class="text-muted">Update groups and corporation affiliation.</small>
-                            </span>
-                            <span v-if="hasAction('update-account') &&
-                                        hasAction('reset-password') &&
-                                        isActive(account)">
-                                <br><br>
-                            </span>
-                            <span v-if="isActive(account) && hasAction('reset-password')">
-                                <button type="submit" class="btn btn-sm btn-warning"
-                                        v-on:click.prevent="resetPassword(account.characterId)"
-                                        :disabled="resetPasswordButtonDisabled">
-                                    Reset Password
-                                </button>
-                                <br>
-                                <small class="text-muted">Generate a new password.</small>
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table v-if="isAccount(account)" v-cloak class="table table-bordered mb-0"
+                       aria-describedby="Account data">
+                    <thead class="thead-light">
+                        <tr class="table-active">
+                            <th scope="col" v-if="hasProperty('username')">Username</th>
+                            <th scope="col" v-if="hasProperty('displayName')">Display Name</th>
+                            <th scope="col" v-if="hasProperty('password') && service.configuration.showPassword">
+                                Password
+                            </th>
+                            <th scope="col" v-if="hasProperty('email')">E-mail</th>
+                            <th scope="col" v-if="hasProperty('status')">Status</th>
+                            <th scope="col" v-if="service.configuration.URLs.length > 0"></th>
+                            <th scope="col" v-if="service.configuration.actions.length > 0"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td v-if="hasProperty('username')">{{ account.username }}</td>
+                            <td v-if="hasProperty('displayName')">{{ account.displayName }}</td>
+                            <td v-if="hasProperty('password') && service.configuration.showPassword">
+                                <span>{{ account.password }}</span>
+                            </td>
+                            <td v-if="hasProperty('email')">{{ account.email }}</td>
+                            <td v-if="hasProperty('status')">{{ account.status }}</td>
+                            <td v-if="service.configuration.URLs.length > 0">
+                                <a v-for="url in service.configuration.URLs" :href="urlReplace(url.url, account)"
+                                   class="btn btn-sm btn-primary mr-1 mb-1"
+                                   :target="url.target" rel="noopener noreferrer">
+                                    {{ url.title }}
+                                </a>
+                            </td>
+                            <td v-if="service.configuration.actions.length > 0">
+                                <span v-if="hasAction('update-account') &&
+                                            (isActive(account) || account.status === 'Nonmember')">
+                                    <button
+                                        type="submit" class="btn btn-sm btn-info"
+                                        v-on:click.prevent="updateAccount(account.characterId)"
+                                        :disabled="updateAccountButtonDisabled">
+                                        Update Account
+                                    </button>
+                                    <br>
+                                    <small class="text-muted">Update groups and corporation affiliation.</small>
+                                </span>
+                                <span v-if="hasAction('update-account') &&
+                                            hasAction('reset-password') &&
+                                            isActive(account)">
+                                    <br><br>
+                                </span>
+                                <span v-if="isActive(account) && hasAction('reset-password')">
+                                    <button type="submit" class="btn btn-sm btn-warning"
+                                            v-on:click.prevent="resetPassword(account.characterId)"
+                                            :disabled="resetPasswordButtonDisabled">
+                                        Reset Password
+                                    </button>
+                                    <br>
+                                    <small class="text-muted">Generate a new password.</small>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <p v-if="isAccount(account) && service.configuration.textAccount" class="mt-3 mb-0">
                 <span style="white-space: pre-line;">{{ service.configuration.textAccount }}</span>
             </p>
