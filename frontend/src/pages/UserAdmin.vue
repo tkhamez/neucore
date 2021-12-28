@@ -671,7 +671,6 @@ function getPlayer(vm) {
             vm.playerEdit = null;
             return;
         }
-        console.log(data);
         vm.playerEdit = data;
         vm.characterMovements = vm.buildCharacterMovements(data);
     });
