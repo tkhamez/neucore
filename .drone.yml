@@ -36,7 +36,7 @@ steps:
       - ./openapi.sh
 
   - name: frontend-build
-    image: node:10
+    image: node:14
     commands:
       - node -v && npm -v
       - cd frontend/neucore-js-client
