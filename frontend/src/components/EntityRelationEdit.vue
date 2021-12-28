@@ -13,9 +13,7 @@ Select and table to add and remove objects from other objects.
                             [{{ showGroupsEntity.ticker }}]
                             {{ showGroupsEntity.name }}
                         </h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <ul class="list-group">
                         <li v-for="group in showGroupsEntity.groups" class="list-group-item">
@@ -23,7 +21,7 @@ Select and table to add and remove objects from other objects.
                         </li>
                     </ul>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -49,7 +47,7 @@ Select and table to add and remove objects from other objects.
                 <p class="col-9">
                     The application can only see the membership of players to groups that are listed here.
                 </p>
-                <div class="col-3 text-right">
+                <div class="col-3 text-end">
                     <button class="btn btn-sm btn-outline-warning" v-on:click="addAllGroupsToApp()">
                         Add all groups to app
                     </button>
@@ -100,88 +98,91 @@ Select and table to add and remove objects from other objects.
         <div :class="{ 'table-responsive': !sticky}">
             <table v-cloak v-if="typeId" class="table table-hover mb-0 nc-table-sm"
                    aria-describedby="Elements already added">
-                <thead class="thead-light" :class="{ 'sticky': sticky > 0}">
-                <tr>
-                    <th scope="col" :style="stickyTop" v-if="
-                            contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||
-                            contentType === 'corporations' || contentType === 'alliances'">
-                        <span v-if="
-                            contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage'">
-                            ID
-                        </span>
-                        <span v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</span>
-                    </th>
-                    <th scope="col" :style="stickyTop" v-if="
-                        contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
-                    <th scope="col" :style="stickyTop">Name</th>
-                    <th scope="col" :style="stickyTop" v-if="contentType === 'managers'">Characters</th>
-                    <th scope="col" :style="stickyTop" v-if="contentType === 'corporations'">Alliance</th>
-                    <th scope="col" :style="stickyTop" class="text-nowrap" v-if="
-                        contentType === 'corporations' && type === 'WatchlistAllowlist'">auto *</th>
-                    <th scope="col" :style="stickyTop" v-if="
-                        (type === 'Group' || type === 'App') &&
-                        (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
-                    <th scope="col" :style="stickyTop">Action</th>
-                </tr>
+                <thead class="table-light" :class="{ 'sticky': sticky > 0}">
+                    <tr>
+                        <th scope="col" :style="stickyTop" v-if="
+                                contentType === 'managers' || contentType === 'groups' ||
+                                contentType === 'groupsManage' || contentType === 'corporations' ||
+                                contentType === 'alliances'">
+                            <span v-if="
+                                contentType === 'managers' || contentType === 'groups' ||
+                                contentType === 'groupsManage'">
+                                ID
+                            </span>
+                            <span v-if="contentType === 'corporations' || contentType === 'alliances'">EVE ID</span>
+                        </th>
+                        <th scope="col" :style="stickyTop" v-if="
+                            contentType === 'corporations' || contentType === 'alliances'">Ticker</th>
+                        <th scope="col" :style="stickyTop">Name</th>
+                        <th scope="col" :style="stickyTop" v-if="contentType === 'managers'">Characters</th>
+                        <th scope="col" :style="stickyTop" v-if="contentType === 'corporations'">Alliance</th>
+                        <th scope="col" :style="stickyTop" class="text-nowrap" v-if="
+                            contentType === 'corporations' && type === 'WatchlistAllowlist'">auto *</th>
+                        <th scope="col" :style="stickyTop" v-if="
+                            (type === 'Group' || type === 'App') &&
+                            (contentType === 'corporations' || contentType === 'alliances')">Groups</th>
+                        <th scope="col" :style="stickyTop">Action</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr v-for="row in tableContent">
-                    <td v-if="
-                            contentType === 'managers' || contentType === 'groups' || contentType === 'groupsManage' ||
-                            contentType === 'corporations' || contentType === 'alliances'">
-                        {{ row.id }}
-                    </td>
-                    <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
-                    <td>
-                        <a v-if="contentType === 'corporations'" :href="'https://evewho.com/corporation/' + row.id"
-                           target="_blank" rel="noopener noreferrer">
-                            {{ row.name }}
-                        </a>
-                        <a v-else-if="contentType === 'alliances'" :href="'https://evewho.com/alliance/' + row.id"
-                           target="_blank" rel="noopener noreferrer">
-                            {{ row.name }}
-                        </a>
-                        <a v-else-if="contentType === 'managers' && hasRole('user-admin')"
-                           :href="'#UserAdmin/' + row.id" title="User Administration">{{ row.name }}</a>
-                        <span v-else>{{ row.name }}</span>
-                    </td>
-                    <td v-if="contentType === 'managers'">
-                        <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
-                            Show characters
-                        </button>
-                    </td>
-                    <td v-if="contentType === 'corporations'">
-                        <a v-if="row.alliance" :href="'https://evewho.com/alliance/' + row.alliance.id"
-                           target="_blank" rel="noopener noreferrer">
-                            [{{ row.alliance.ticker }}]
-                            {{ row.alliance.name }}
-                        </a>
-                    </td>
-                    <td v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'">
-                        {{ row.autoAllowlist }}
-                    </td>
-                    <td v-if="
-                            (type === 'Group' || type === 'App') &&
-                            (contentType === 'corporations' || contentType === 'alliances')">
-                        <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">Show groups</button>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger btn-sm"
-                                v-on:click="addOrRemoveEntityToEntity(row.id, 'remove')">
-                            Remove
-                            <span v-if="contentType === 'corporations'">corporation</span>
-                            <span v-if="contentType === 'alliances'">alliance</span>
-                            <span v-if="contentType === 'managers'">manager</span>
-                            <span v-if="contentType === 'groups'">group</span>
-                            <span v-if="contentType === 'roles'">role</span>
-                            <span v-if="contentType === 'eveLogins'">EVE login</span>
-                        </button>
-                    </td>
-                </tr>
+                    <tr v-for="row in tableContent">
+                        <td v-if="
+                                contentType === 'managers' || contentType === 'groups' ||
+                                contentType === 'groupsManage' || contentType === 'corporations' ||
+                                contentType === 'alliances'">
+                            {{ row.id }}
+                        </td>
+                        <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
+                        <td>
+                            <a v-if="contentType === 'corporations'" :href="'https://evewho.com/corporation/' + row.id"
+                               target="_blank" rel="noopener noreferrer">
+                                {{ row.name }}
+                            </a>
+                            <a v-else-if="contentType === 'alliances'" :href="'https://evewho.com/alliance/' + row.id"
+                               target="_blank" rel="noopener noreferrer">
+                                {{ row.name }}
+                            </a>
+                            <a v-else-if="contentType === 'managers' && hasRole('user-admin')"
+                               :href="'#UserAdmin/' + row.id" title="User Administration">{{ row.name }}</a>
+                            <span v-else>{{ row.name }}</span>
+                        </td>
+                        <td v-if="contentType === 'managers'">
+                            <button class="btn btn-info btn-sm" v-on:click="showCharacters(row.id)">
+                                Show characters
+                            </button>
+                        </td>
+                        <td v-if="contentType === 'corporations'">
+                            <a v-if="row.alliance" :href="'https://evewho.com/alliance/' + row.alliance.id"
+                               target="_blank" rel="noopener noreferrer">
+                                [{{ row.alliance.ticker }}]
+                                {{ row.alliance.name }}
+                            </a>
+                        </td>
+                        <td v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'">
+                            {{ row.autoAllowlist }}
+                        </td>
+                        <td v-if="
+                                (type === 'Group' || type === 'App') &&
+                                (contentType === 'corporations' || contentType === 'alliances')">
+                            <button class="btn btn-info btn-sm" v-on:click="showGroups(row.id)">Show groups</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger btn-sm"
+                                    v-on:click="addOrRemoveEntityToEntity(row.id, 'remove')">
+                                Remove
+                                <span v-if="contentType === 'corporations'">corporation</span>
+                                <span v-if="contentType === 'alliances'">alliance</span>
+                                <span v-if="contentType === 'managers'">manager</span>
+                                <span v-if="contentType === 'groups'">group</span>
+                                <span v-if="contentType === 'roles'">role</span>
+                                <span v-if="contentType === 'eveLogins'">EVE login</span>
+                            </button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        <p v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'" class="small text-muted ml-1 mt-1">
+        <p v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'" class="small text-muted ms-1 mt-1">
             * Corporations are automatically added (and removed accordingly) if all their members belong to
             the same account.
         </p>
@@ -189,7 +190,7 @@ Select and table to add and remove objects from other objects.
 </template>
 
 <script>
-import $ from 'jquery';
+import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, AppApi, CorporationApi, GroupApi, PlayerApi, SettingsApi, WatchlistApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
@@ -527,7 +528,7 @@ export default {
                 }
             }
             window.setTimeout(function() {
-                $('#showGroupsModal').modal('show');
+                new Modal('#showGroupsModal').show();
             }, 10);
         },
 

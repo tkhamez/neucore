@@ -37,11 +37,11 @@
                         </a>
                         <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt mr-1"
+                                  class="fas fa-pencil-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
                                   v-on:click="showEditGroupModal(group)"></span>
                             <span role="img" aria-label="delete" title="delete"
-                                  class="far fa-trash-alt mr-1"
+                                  class="far fa-trash-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
                                   v-on:click="showDeleteGroupModal(group)"></span>
                         </span>
@@ -53,7 +53,7 @@
             <div class="card border-secondary mb-3" >
                 <div class="card-header">
                     <h4>{{groupName}}</h4>
-                    <label for="groupDescription">Description</label>
+                    <label class="form-label" for="groupDescription">Description</label>
                     <textarea maxlength="1024" v-model="groupDescription" class="form-control"
                               v-on:input="changeDescriptionDelayed($event.target.value)"
                               id="groupDescription" rows="2"></textarea>

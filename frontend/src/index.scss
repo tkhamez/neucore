@@ -37,55 +37,26 @@ body.neucore {
 }
 
 /**
- * class for the body background color
- */
-.bg-body {
-    background-color: #fff;
-}
-.cyborg .bg-body {
-    background-color: #060606;
-}
-.darkly .bg-body {
-    background-color: #222;
-}
-.slate .bg-body {
-    background-color: #272B30;
-}
-.simplex .bg-body {
-    background-color: #FCFCFC;
-}
-.solar .bg-body {
-    background-color: #002B36;
-}
-.superhero .bg-body {
-    background-color: #2B3E50;
-}
-
-/**
  * Change "light" table head for some dark themes
  */
-.cyborg .table .thead-light th {
-    // colors from .thead-dark
+.cyborg .table .table-light th {
+    // colors from .table-dark
     color: #fff;
     background-color: #888;
-    border-color: #757575;
 }
-.darkly .table .thead-light th {
+.darkly .table .table-light th {
     color: #fff;
-    background-color: #404040; // a little bit lighter than .thead-dark
-    border-color: #434343;
+    background-color: #404040; // a little bit lighter than .table-dark
 }
-.slate .table .thead-light th {
-    // colors from .thead-dark
+.slate .table .table-light th {
+    // colors from .table-dark
     color: #fff;
     background-color: rgb(58, 63, 68);
-    border-color: rgba(0, 0, 0, 0.6);
 }
-.solar .table .thead-light th {
-    // colors from .thead-dark
+.solar .table .table-light th {
+    // colors from .table-dark
     color: #002B36;
     background-color: #adb5bd;
-    border-color: #a5adb6;
 }
 
 /**
@@ -95,15 +66,15 @@ body.neucore {
 .darkly,
 .slate {
     .form-control,
-    .custom-select,
-    .custom-control-label::before,
+    .form-select,
     .multiselect__tags,
     .multiselect__input,
     .multiselect__spinner {
         color: #fff;
         background-color: #666;
     }
-    .multiselect__single {
+    .multiselect__single,
+    .form-check-input:not(:checked) {
         background-color: #666;
     }
     .multiselect__input::placeholder,
@@ -127,15 +98,15 @@ body.neucore {
 .superhero {
     // colors from .solar
     .form-control,
-    .custom-select,
-    .custom-control-label::before,
+    .form-select,
     .multiselect__tags,
     .multiselect__input,
     .multiselect__spinner {
         color: #495057;
         background-color: #A9BDBD;
     }
-    .multiselect__single {
+    .multiselect__single,
+    .form-check-input:not(:checked) {
         background-color: #A9BDBD;
     }
     .multiselect__input::placeholder,
@@ -163,6 +134,17 @@ body.neucore {
     td .btn-sm {
         padding: 0.01rem 0.25rem;
     }
+}
+
+/**
+ * Smaller button than .btn-sm, like a badge
+ */
+.nc-btn-xs {
+    padding: .25rem .4rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    line-height: 1;
+    font-weight: 700;
 }
 
 /**
@@ -199,4 +181,11 @@ body.neucore {
 .text-with-tooltip {
     text-decoration: underline;
     text-decoration-style: dotted;
+}
+
+/**
+ * Bootstrap 5 changed all links to be underlined, revert
+ */
+a {
+    text-decoration: none;
 }

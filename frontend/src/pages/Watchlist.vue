@@ -3,8 +3,8 @@
     <div class="row mb-3 mt-3">
         <div class="col-lg-12">
             <h1>Watchlist</h1>
-            <label class="watchlist-selection ml-3 mb-0">
-                <select class="form-control" v-model="selectedId">
+            <label class="watchlist-selection ms-3 mb-0">
+                <select class="form-select" v-model="selectedId">
                     <option v-for="watchlist in watchlists" v-bind:value="watchlist.id">{{ watchlist.name }}</option>
                 </select>
             </label>

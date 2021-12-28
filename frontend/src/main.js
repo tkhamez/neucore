@@ -1,20 +1,19 @@
 
-// bootstrap JS (css is included via theme* entry point) with required jquery and popper.js
-import $ from 'jquery';
-import 'popper.js'; // initialization needs o be done after the component was rendered
+// bootstrap JS (css is included via theme* entry point)
 import 'bootstrap';
 
+import $ from 'jquery';
+
 // data tables
-//import df from 'datatables.net';
-import bs4 from 'datatables.net-bs4';
-bs4(window, $);
-import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
+import bs5 from 'datatables.net-bs5';
+bs5(window, $);
+import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
 
 // fontawesome (contains font files)
 import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 
 // Vue.js
-import{ createApp, h } from 'vue';
+import {createApp, h} from 'vue';
 
 // vue3-multiselect (Component is imported where it is used)
 import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';

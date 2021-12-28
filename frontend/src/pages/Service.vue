@@ -29,11 +29,12 @@
 
             <!-- register -->
             <div v-if="account.characterId === getMainCharacterId() && (!isAccount(account) || isInactive(account))">
-                <div v-if="hasProperty('email')" class="form-group">
+                <div v-if="hasProperty('email')">
                     <label class="col-form-label col-form-label-sm" for="formEmail">E-Mail address</label>
                     <input class="form-control form-control-sm" type="text" id="formEmail"
                            v-model="formEmail">
                 </div>
+                <br>
                 <button type="submit" class="btn btn-success mb-1" v-on:click.prevent="register()"
                         :disabled="registerButtonDisabled">
                     Register
@@ -57,8 +58,8 @@
             <div class="table-responsive">
                 <table v-if="isAccount(account)" v-cloak class="table table-bordered mb-0"
                        aria-describedby="Account data">
-                    <thead class="thead-light">
-                        <tr class="table-active">
+                    <thead class="table-light">
+                        <tr>
                             <th scope="col" v-if="hasProperty('username')">Username</th>
                             <th scope="col" v-if="hasProperty('name')">Name</th>
                             <th scope="col" v-if="hasProperty('password') && service.configuration.showPassword">
@@ -81,7 +82,7 @@
                             <td v-if="hasProperty('status')">{{ account.status }}</td>
                             <td v-if="service.configuration.URLs.length > 0">
                                 <a v-for="url in service.configuration.URLs" :href="urlReplace(url.url, account)"
-                                   class="btn btn-sm btn-primary mr-1 mb-1"
+                                   class="btn btn-sm btn-primary me-1 mb-1"
                                    :target="url.target" rel="noopener noreferrer">
                                     {{ url.title }}
                                 </a>

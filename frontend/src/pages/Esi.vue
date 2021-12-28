@@ -5,68 +5,66 @@
             <div class="col-lg-12">
                 <h1>ESI</h1>
 
-                <div class="form-group">
-                    <label for="selectedCharacter">EVE Character</label>
-                    <multiselect v-model="selectedCharacter" :options="charSearchResult"
-                                 id="selectedCharacter"
-                                 label="character_name" track-by="character_id"
-                                 placeholder="Type to search (min. 3 characters)"
-                                 :searchable="true"
-                                 :loading="charSearchIsLoading"
-                                 :internal-search="false"
-                                 :max-height="600"
-                                 :show-no-results="false"
-                                 @search-change="charSearch">
-                    </multiselect>
-                    <br>
-                    <label for="eveLogin">ESI Token (EVE Login Name)</label>
-                    <select id="eveLogin" class="form-control" v-model="selectedLoginName">
-                        <option v-for="eveLogin in eveLogins" v-bind:value="eveLogin.name">{{ eveLogin.name }}</option>
-                    </select>
-                </div>
+                <label for="selectedCharacter">EVE Character</label>
+                <multiselect v-model="selectedCharacter" :options="charSearchResult"
+                             id="selectedCharacter"
+                             label="character_name" track-by="character_id"
+                             placeholder="Type to search (min. 3 characters)"
+                             :searchable="true"
+                             :loading="charSearchIsLoading"
+                             :internal-search="false"
+                             :max-height="600"
+                             :show-no-results="false"
+                             @search-change="charSearch">
+                </multiselect>
+                <br>
+                <label for="eveLogin">ESI Token (EVE Login Name)</label>
+                <select id="eveLogin" class="form-select" v-model="selectedLoginName">
+                    <option v-for="eveLogin in eveLogins" v-bind:value="eveLogin.name">{{ eveLogin.name }}</option>
+                </select>
 
-                <div class="form-group">
-                    <label for="esiRoute">ESI route</label>
-                    <small class="text-muted">
-                        see also
-                        <a href="https://esi.evetech.net/ui" target="_blank" rel="noopener noreferrer">
-                            https://esi.evetech.net/ui
-                        </a>,
-                        only GET and POST request are implemented.
-                    </small>
-                    <multiselect v-model="selectedPath" :options="paths" :loading="false"
-                                 label="name" track-by="path" id="esiRoute"
-                                 placeholder="Select route"></multiselect>
-                    <br>
-                    <select class="form-control" v-model="httpMethod">
-                        <option>GET</option>
-                        <option>POST</option>
-                    </select>
-                    <input class="form-control" v-model="esiRoute">
-                    <small class="form-text text-muted">
-                        Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically
-                        replaced with the corresponding IDs of the selected character, other placeholders
-                        must be replaced manually.<br>
-                        If the result contains an "X-Pages" header, you can request the other pages by
-                        adding "?page=2" etc. to the route.
-                    </small>
-                </div>
+                <br>
 
-                <div class="form-group">
-                    <label for="requestBody">
-                        Body (for POST requests)
+                <label for="esiRoute">ESI route</label>
+                <small class="text-muted">
+                    see also
+                    <a href="https://esi.evetech.net/ui" target="_blank" rel="noopener noreferrer">
+                        https://esi.evetech.net/ui
+                    </a>,
+                    only GET and POST request are implemented.
+                </small>
+                <multiselect v-model="selectedPath" :options="paths" :loading="false"
+                             label="name" track-by="path" id="esiRoute"
+                             placeholder="Select route"></multiselect>
+                <br>
+                <select class="form-select" v-model="httpMethod">
+                    <option>GET</option>
+                    <option>POST</option>
+                </select>
+                <input class="form-control" v-model="esiRoute">
+                <span class="form-text">
+                    Placeholder: {character_id}, {corporation_id} and {alliance_id} are automatically
+                    replaced with the corresponding IDs of the selected character, other placeholders
+                    must be replaced manually.<br>
+                    If the result contains an "X-Pages" header, you can request the other pages by
+                    adding "?page=2" etc. to the route.
+                </span>
+
+                <br>
+                <br>
+                <label for="requestBody">
+                    Body (for POST requests)
+                </label>
+                <textarea v-model="requestBody" id="requestBody" class="form-control"></textarea>
+
+                <br>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" v-model="debug">
+                        Debug (show all headers, no cache)
                     </label>
-                    <textarea v-model="requestBody" id="requestBody" class="form-control"></textarea>
                 </div>
-
-                <div class="form-group">
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" v-model="debug">
-                            Debug (show all headers, no cache)
-                        </label>
-                    </div>
-                </div>
+                <br>
 
                 <button type="submit" class="btn btn-primary"
                         :class="{ disabled: selectedCharacter === '' || esiRoute === '' }"

@@ -13,7 +13,7 @@
                               :admin="true"></character-result>
         </div>
         <div class="col-lg-6 col2">
-            <div class="form-group">
+            <p>
                 <label>
                     Paste a list of character names, one name per line.
                     <textarea class="form-control" v-model="input" rows="10"></textarea>
@@ -25,9 +25,9 @@
                 </small>
                 <br>
                 <button type="submit" class="btn btn-primary" v-on:click.prevent="find()">Submit</button>
-            </div>
+            </p>
             <table class="table table-hover table-sm mb-0" aria-describedby="Characters grouped by account">
-                <thead class="thead-light">
+                <thead class="table-light">
                     <tr>
                         <th scope="col">Main</th>
                         <th scope="col">Alts</th>

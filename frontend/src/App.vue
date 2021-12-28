@@ -2,11 +2,9 @@
     <div id="app">
         <div v-if="loadingCount > 0" v-cloak id="loader"></div>
 
-        <div v-if="messageTxt" v-cloak class="alert fade show app-alert" :class="[messageType]">
+        <div v-if="messageTxt" v-cloak class="alert alert-dismissible fade show app-alert" :class="[messageType]">
             {{ messageTxt }}
-            <button type="button" class="close" v-on:click="messageTxt = ''" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close" v-on:click="messageTxt = ''" aria-label="Close"></button>
         </div>
 
         <nav-bar v-if="settingsLoaded" v-cloak :auth-char="authChar" :route="route" :settings="settings"></nav-bar>

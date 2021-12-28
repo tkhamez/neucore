@@ -23,7 +23,7 @@
                     </a>
                     <span v-if="login.name.indexOf(protectedLoginsPrefix) === -1" v-cloak class="entity-actions">
                         <span role="img" aria-label="delete" title="delete"
-                              class="far fa-trash-alt mr-1"
+                              class="far fa-trash-alt me-1"
                               @mouseover="mouseover" @mouseleave="mouseleave"
                               v-on:click="showDeleteModal(login)"></span>
                     </span>
@@ -39,27 +39,27 @@
                 <p v-if="activeLogin" v-cloak>
                     Login URL <a :href="loginUrl">{{ loginUrl }}</a>.
                 </p>
-                <div v-if="activeLogin" v-cloak class="form-group mb-0">
-                    <label class="col-form-label w-100">
+                <div v-if="activeLogin" v-cloak>
+                    <label class="col-form-label w-100 pb-1">
                         Name
                         <input type="text" class="form-control" :disabled="disabled"
                                v-model="activeLogin.name" maxlength="20">
-                        <small class="form-text text-muted small-line-height">
-                            {{ messages.itemNameAllowedCharsHelp }}<br>
-                            Maximum length 20.
-                        </small>
                     </label>
+                    <p class="text-muted small lh-sm">
+                        {{ messages.itemNameAllowedCharsHelp }}<br>
+                        Maximum length 20.
+                    </p>
                     <label class="col-form-label w-100">
                         Description
                         <input type="text" class="form-control" :disabled="disabled"
                                v-model="activeLogin.description" maxlength="1024">
-                        <small class="form-text text-muted">Maximum length 1024.</small>
+                        <span class="form-text">Maximum length 1024.</span>
                     </label>
                     <label class="col-form-label w-100">
                         ESI Scopes
                         <input type="text" class="form-control" :disabled="disabled"
                                v-model="activeLogin.esiScopes" maxlength="8192">
-                        <small class="form-text text-muted">Separated by one space, maximum length 8192.</small>
+                        <span class="form-text">Separated by one space, maximum length 8192.</span>
                     </label>
                     <label class="col-form-label w-100 pb-1">
                         EVE Roles
@@ -67,7 +67,7 @@
                                      :disabled="disabled" :loading="false" :searchable="true" placeholder="Select roles">
                         </multiselect>
                     </label>
-                    <p class="text-muted small small-line-height">
+                    <p class="text-muted small lh-sm">
                         Select required in-game roles. This requires the
                         <strong>esi-characters.read_corporation_roles.v1</strong> ESI scope.<br>
                         This is only for "normal" roles, not roles at base/hq/other.
@@ -222,9 +222,5 @@ function getLogin(vm) {
     .add-login {
         float: right;
         cursor: pointer;
-    }
-
-    .small-line-height {
-        line-height: 1.25;
     }
 </style>

@@ -8,9 +8,7 @@
             <div v-cloak v-if="charToDelete" class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Delete Character</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>
@@ -18,47 +16,43 @@
                         <span class="text-warning">{{ charToDelete.name }}</span>
                     </p>
                     <p>If so, please choose a reason:</p>
-                    <div class="form-group">
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="reason" value="deleted-owner-changed" v-model="deleteReason">
-                                Character Owner Changed<br>
-                                <span class="text-muted small">
-                                    Choose this if the character was sold to another player, check the
-                                    <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
-                                       target="_blank" rel="noopener noreferrer">Character Bazaar</a>.<br>
-                                    Creates an appropriate "removed character" entry.
-                                </span>
-                            </label>
+                    <div class="radio">
+                        <label class="mb-3">
+                            <input type="radio" name="reason" value="deleted-owner-changed" v-model="deleteReason">
+                            Character Owner Changed<br>
+                            <span class="text-muted small">
+                                Choose this if the character was sold to another player, check the
+                                <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
+                                   target="_blank" rel="noopener noreferrer">Character Bazaar</a>.<br>
+                                Creates an appropriate "removed character" entry.
+                            </span>
+                        </label>
+                        <label class="mb-3">
+                            <input type="radio" name="reason" value="deleted-manually" v-model="deleteReason">
+                            Simon says<br>
+                            <span class="text-muted small">
+                                 Creates a "removed character" entry with the reason "deleted-manually".
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="reason" value="deleted-by-admin" v-model="deleteReason">
+                            <span title="see no evil">&#x1F648</span>
+                            <span title="hear no evil">&#x1F649</span>
+                            <span title="speak no evil">&#x1F64A</span>
+                            <span class="small"> - Nope</span>
                             <br>
-                            <label>
-                                <input type="radio" name="reason" value="deleted-manually" v-model="deleteReason">
-                                Simon says<br>
-                                <span class="text-muted small">
-                                     Creates a "removed character" entry with the reason "deleted-manually".
-                                </span>
-                            </label>
-                            <br>
-                            <label>
-                                <input type="radio" name="reason" value="deleted-by-admin" v-model="deleteReason">
-                                <span title="see no evil">&#x1F648</span>
-                                <span title="hear no evil">&#x1F649</span>
-                                <span title="speak no evil">&#x1F64A</span>
-                                <span class="small"> - Nope</span>
-                                <br>
-                                <span class="text-muted small">
-                                    Does <em>not</em> create a "removed character" entry.
-                                </span>
-                            </label>
-                        </div>
+                            <span class="text-muted small">
+                                Does <em>not</em> create a "removed character" entry.
+                            </span>
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
                             :disabled="deleteReason === ''" v-on:click="deleteChar()">
                         DELETE character
                     </button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Close
                     </button>
                 </div>
@@ -102,7 +96,7 @@
                            target="_blank" rel="noopener noreferrer">doc/API.md</a>
                         for permissions for each role.
                     </p>
-                    <select class="form-control" id="roleList"
+                    <select class="form-select" id="roleList"
                             v-model="activeRole" @change="getPlayerByRole(activeRole)">
                         <option value="">select a role</option>
                         <option v-for="role in availableRoles">{{ role }}</option>
@@ -119,7 +113,7 @@
             <div class="card border-secondary mb-3" >
                 <h4 class="card-header"><label for="accountList">Player accounts ...</label></h4>
                 <div class="card-body">
-                    <select class="form-control" id="accountList"
+                    <select class="form-select" id="accountList"
                             v-model="activeList" @change="getPlayers(activeList)">
                         <option value="">select a list</option>
                         <option value="withCharacters">with characters</option>
@@ -151,10 +145,8 @@
                 <div v-cloak v-if="playerEdit" class="card-body">
                     <h4>Roles</h4>
                     <div class="input-group mb-1">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="userAdminSelectRole">Add role</label>
-                        </div>
-                        <select class="custom-select" v-model="newRole" id="userAdminSelectRole">
+                        <label class="input-group-text" for="userAdminSelectRole">Add role</label>
+                        <select class="form-select" v-model="newRole" id="userAdminSelectRole">
                             <option value="">Select role ...</option>
                             <option v-for="role in assignableRoles" v-bind:value="role">
                                 {{ role }}
@@ -163,7 +155,7 @@
                     </div>
 
                     <table class="table table-hover nc-table-sm" aria-describedby="Roles">
-                        <thead class="thead-light">
+                        <thead class="table-light">
                             <tr>
                                 <th scope="col">Role</th>
                                 <th scope="col">Action</th>
@@ -174,7 +166,7 @@
                                 <td>{{ role }}</td>
                                 <td>
                                     <button v-if="autoRoles.indexOf(role) === -1"
-                                            type="button" class="btn btn-danger btn-sm mr-5"
+                                            type="button" class="btn btn-danger btn-sm me-5"
                                             :disabled="role === 'user-admin' && playerEdit.id === player.id"
                                             v-on:click="removeRole(role)">
                                         <span role="img" class="fas fa-minus-circle"></span>
@@ -204,7 +196,7 @@
                     <h4>Characters</h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Characters">
-                            <thead class="thead-light">
+                            <thead class="table-light">
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Corporation</th>
@@ -269,7 +261,7 @@
                         <h4>Moved Characters</h4>
                         <div class="table-responsive">
                             <table class="table table-hover nc-table-sm" aria-describedby="'Moved Characters'">
-                                <thead class="thead-light">
+                                <thead class="table-light">
                                     <tr>
                                         <th scope="col">Character Name</th>
                                         <th scope="col">Date moved (GMT)</th>
@@ -317,7 +309,7 @@
                     </p>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Member of groups">
-                            <thead class="thead-light">
+                            <thead class="table-light">
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
@@ -342,7 +334,7 @@
                     <h4>Group Manager</h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Manager of groups">
-                            <thead class="thead-light">
+                            <thead class="table-light">
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
@@ -366,7 +358,7 @@
 
                     <h4>App Manager</h4>
                     <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
-                        <thead class="thead-light">
+                        <thead class="table-light">
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Name</th>
@@ -388,7 +380,7 @@
                     <h4>Service Accounts</h4>
                     <div class="table-responsive">
                         <table class="table table-hover nc-table-sm" aria-describedby="Manager of apps">
-                            <thead class="thead-light">
+                            <thead class="table-light">
                                 <tr>
                                     <th scope="col">Service</th>
                                     <th scope="col">Character</th>
@@ -419,7 +411,7 @@
 </template>
 
 <script>
-import $ from 'jquery';
+import {Modal} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
@@ -481,6 +473,7 @@ export default {
             ],
             newRole: '',
             searchResult: [],
+            deleteCharModal: null,
             charToDelete: null,
             deleteReason: '',
         }
@@ -643,7 +636,8 @@ export default {
                 name: characterName,
             };
             this.deleteReason = '';
-            $('#deleteCharModal').modal('show');
+            this.deleteCharModal = new Modal('#deleteCharModal');
+            this.deleteCharModal.show();
         },
 
         deleteChar () {
@@ -657,7 +651,9 @@ export default {
                     });
                 }
             });
-            $('#deleteCharModal').modal('hide');
+            if (this.deleteCharModal) {
+                this.deleteCharModal.hide();
+            }
             this.charToDelete = null;
         },
     },

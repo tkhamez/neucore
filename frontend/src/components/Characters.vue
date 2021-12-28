@@ -11,9 +11,7 @@ Modal window with all characters of one player.
                     <span v-if="selectedPlayer">{{ selectedPlayer.name }} #{{ selectedPlayer.id }}</span>
                     <span v-if="unauthorized" class="text-warning">Unauthorized.</span>
                 </h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div v-cloak v-if="selectedPlayer" class="modal-body">
                 <div class="container-fluid">
@@ -33,35 +31,35 @@ Modal window with all characters of one player.
                                             {{ character.name }}
                                             <character-name-changes :character="character"></character-name-changes>
                                         </div>
-                                        <div class="col-5 text-right">
+                                        <div class="col-5 text-end">
                                             <span v-if="character.validToken"
-                                                  class="badge badge-success ml-1"
+                                                  class="badge bg-success ms-1"
                                                   :class="{'text-with-tooltip': character.validTokenTime}"
-                                                  data-toggle="tooltip"
+                                                  data-bs-toggle="tooltip"
                                                   :title="'Status changed: ' + formatDate(character.validTokenTime)">
                                                 Valid token
                                             </span>
                                             <span v-if="character.validToken === false"
-                                                  class="badge badge-danger ml-1"
+                                                  class="badge bg-danger ms-1"
                                                   :class="{'text-with-tooltip': character.validTokenTime}"
-                                                  data-toggle="tooltip"
+                                                  data-bs-toggle="tooltip"
                                                   :title="'Status changed: ' + formatDate(character.validTokenTime)">
                                                 Invalid token
                                             </span>
                                             <span v-if="character.validToken === null"
-                                                  class="badge badge-info ml-1"
+                                                  class="badge bg-info ms-1"
                                                   :class="{'text-with-tooltip': character.validTokenTime}"
-                                                  data-toggle="tooltip"
+                                                  data-bs-toggle="tooltip"
                                                   :title="'Status changed: ' + formatDate(character.validTokenTime)">
                                                 No token
                                             </span>
-                                            <a class="badge badge-secondary ml-1"
+                                            <a class="btn btn-secondary nc-btn-xs ms-1"
                                                :href="'https://evewho.com/character/' + character.id"
                                                target="_blank" rel="noopener noreferrer">Eve Who</a>
                                         </div>
                                     </div>
                                     <div class="small row">
-                                        <div class="col-8">
+                                        <div class="small col-8">
                                             <div class="row">
                                                 <div class="col-3 text-muted">Corporation:</div>
                                                 <div class="col-9">
@@ -69,7 +67,7 @@ Modal window with all characters of one player.
                                                     [{{ character.corporation.ticker }}]
                                                     {{ character.corporation.name }}
                                                     <span v-if="character.corporation.id < 2000000"
-                                                          class="badge badge-info">NPC</span>
+                                                          class="badge bg-info">NPC</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -84,7 +82,7 @@ Modal window with all characters of one player.
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-4 text-right">
+                                        <div class="small col-4 text-end">
                                             <span class="text-muted">Added: </span>
                                             <span v-if="character.created">{{ formatDate(character.created) }}</span>
                                         </div>
@@ -149,7 +147,7 @@ Modal window with all characters of one player.
                     <span role="img" class="fas fa-sync" title="Update from ESI"></span>
                     Update from ESI
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -157,7 +155,7 @@ Modal window with all characters of one player.
 </template>
 
 <script>
-import $ from 'jquery';
+import {Tooltip, Modal} from 'bootstrap';
 import {PlayerApi} from 'neucore-js-client';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Character from '../classes/Character.js';
@@ -176,7 +174,9 @@ export default {
     },
 
     updated () {
-        $('#playerModal [data-toggle="tooltip"]').tooltip();
+        document.querySelectorAll('#playerModal [data-bs-toggle="tooltip"]').forEach(tooltip => {
+            new Tooltip(tooltip)
+        });
     },
 
     methods: {
@@ -190,7 +190,7 @@ export default {
         },
 
         showCharacters(playerId) {
-            $('#playerModal').modal('show');
+            new Modal('#playerModal').show();
             this.fetchCharacters(playerId);
         },
 

@@ -5,10 +5,10 @@
                 <h1>Member Tracking</h1>
 
                 <div class="input-group">
-                    <label class="input-group-prepend" for="corporation-select">
+                    <label for="corporation-select">
                         <span class="input-group-text">Select corporation</span>
                     </label>
-                    <select class="custom-select" v-model="corporation" id="corporation-select">
+                    <select class="form-select" v-model="corporation" id="corporation-select">
                         <option value=""></option>
                         <option v-for="option in corporations" v-bind:value="option">
                             {{ option.name }} [{{ option.ticker }}]
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-sm-12 col-md-6">
                 <label class="small">
-                    <select class="form-control form-control-sm input-option" v-model="formOptions.account">
+                    <select class="form-select form-select-sm input-option" v-model="formOptions.account">
                         <option></option>
                         <option value="true">with</option>
                         <option value="false">without</option>
@@ -47,7 +47,7 @@
             </div>
             <div class="col-sm-12 col-md-6">
                 <label class="small">
-                    <select class="form-control form-control-sm input-option" v-model="formOptions.validToken">
+                    <select class="form-select form-select-sm input-option" v-model="formOptions.validToken">
                         <option></option>
                         <option value="true">valid</option>
                         <option value="false">invalid</option>
@@ -80,21 +80,22 @@
                     <span v-if="corporation.trackingLastUpdate">{{ formatDate(corporation.trackingLastUpdate) }}</span>
                 </p>
             </div>
-            <div class="col-lg-6 text-right">
+            <div class="col-lg-6 text-end">
                 <div class="dropdown">
-                    <span class="small">Search in:</span>
+                    <span class="small">Search in: &nbsp;</span>
                     <button title="Columns" class="btn btn-secondary btn-sm dropdown-toggle"
-                            type="button" data-toggle="dropdown" aria-label="Columns" aria-expanded="false">
+                            type="button" data-bs-toggle="dropdown" aria-label="Columns" aria-expanded="false">
                         <span role="img" class="fa fa-th-list"></span>
                         <span class="caret"></span>
                     </button>
                     <div class="dropdown-menu" v-on:click.stop="">
                         <span class="dropdown-item small">Search in:</span>
-                        <div class="dropdown-item form-check small" v-for="(column, idx) in columns"
+                        <div class="dropdown-item small" v-for="(column, idx) in columns"
                              v-on:click="toggleSearchableColumn(idx)">
                             <!--suppress HtmlFormInputWithoutLabel -->
                             <input class="form-check-input" type="checkbox" v-model="column.searchable">
-                            <label class="form-check-label">{{ column.name }}</label>
+                            &nbsp;
+                            <label class="">{{ column.name }}</label>
                         </div>
                     </div>
                 </div>
@@ -103,7 +104,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <table class="table table-hover nc-table-sm member-table" aria-describedby="Corporation members">
-                    <thead class="thead-light">
+                    <thead class="table-light">
                         <tr>
                             <th scope="col">Character</th>
                             <th scope="col">Account</th>
@@ -126,6 +127,7 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import {Tooltip} from 'bootstrap';
 import {CorporationApi} from 'neucore-js-client';
 
 export default {
@@ -309,7 +311,10 @@ function configureDataTable(vm) {
         deferRender: true,
         order: [[3, "desc"]],
         'drawCallback': function() {
-            $('.page-tracking [data-toggle="tooltip"]').tooltip();
+            document.querySelectorAll('.page-tracking [data-bs-toggle="tooltip"]')
+                .forEach(tooltip => {
+                    new Tooltip(tooltip)
+                });
             $('a[data-player-id]').on('click', (evt) => {
                 $.Event(evt).preventDefault();
                 vm.showCharacters(evt.target.dataset.playerId);
@@ -332,7 +337,7 @@ function configureDataTable(vm) {
                         </a>`;
                 } else if (row.missingCharacterMailSentNumber > 0) {
                     return `
-                        <div class="text-with-tooltip" data-toggle="tooltip" data-html="true" title="
+                        <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="
                             Number mails sent: ${row.missingCharacterMailSentNumber}<br>
                             Last mail: ${vm.$root.formatDate(row.missingCharacterMailSentDate)}<br>
                             Result: ${row.missingCharacterMailSentResult ? row.missingCharacterMailSentResult : ''}
@@ -356,7 +361,7 @@ function configureDataTable(vm) {
                 }
                 if (row.character.validTokenTime) {
                     return `
-                        <div class="text-with-tooltip" data-toggle="tooltip" data-html="true"
+                        <div class="text-with-tooltip" data-bs-toggle="tooltip"
                               title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}">
                             ${text}
                         </div>`;

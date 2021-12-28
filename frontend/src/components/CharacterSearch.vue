@@ -4,17 +4,13 @@ Input element to search for characters
 
 <template>
 <div class="input-group input-group-sm mb-1">
-    <div class="input-group-prepend">
-        <label class="input-group-text" for="characterSearchInput">
-            Search {{ admin ? 'Character' : 'Player' }}
-        </label>
-    </div>
+    <label class="input-group-text" for="characterSearchInput">
+        Search {{ admin ? 'Character' : 'Player' }}
+    </label>
     <input type="text" class="form-control" id="characterSearchInput" ref="searchInput"
            placeholder="Name (min. 3 characters)" title="Name (min. 3 characters)"
            v-model="searchTerm" v-on:click="findCharacter" v-on:input="findCharacter($event.target.value)">
-    <div class="input-group-append">
-        <button class="btn" type="button" v-on:click="findCharacter('')" title="Clear input">&times;</button>
-    </div>
+    <button class="btn" type="button" v-on:click="findCharacter('')" title="Clear input">&times;</button>
 </div>
 </template>
 

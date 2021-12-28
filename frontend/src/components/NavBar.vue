@@ -1,28 +1,28 @@
+<!--suppress HtmlUnknownAnchorTarget -->
 <template>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container-fluid">
         <a v-cloak class="navbar-brand" :href="settings.customization_website">
-            <img v-if="settings.customization_nav_logo" class="align-top mr-2 align-middle" alt="Logo"
+            <img v-if="settings.customization_nav_logo" class="align-top me-2 align-middle" alt="Logo"
                  :src="settings.customization_nav_logo">
             {{ settings.customization_nav_title }}
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbar01" aria-controls="navbar01"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbar01" aria-controls="navbar01"
                 aria-expanded="true" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div v-if="hasRole('user')" v-cloak class="navbar-collapse collapse" id="navbar01">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item" :class="{ active: page === 'Home' }">
-                    <a class="nav-link" href="#Home">Home</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" :class="{ active: page === 'Home' }" href="#Home">Home</a>
                 </li>
-                <li v-if="settings.navigationShowGroups === '1'"
-                    class="nav-item" :class="{ active: page === 'Groups' }">
-                    <a class="nav-link" href="#Groups">Groups</a>
+                <li v-if="settings.navigationShowGroups === '1'" class="nav-item">
+                    <a class="nav-link" :class="{ active: page === 'Groups' }" href="#Groups">Groups</a>
                 </li>
-                <li v-if="settings.navigationServices.length > 0"
-                    class="nav-item dropdown" :class="{ active: page === 'Service' }">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <li v-if="settings.navigationServices.length > 0" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" :class="{ active: page === 'Service' }" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Services
                     </a>
                     <div class="dropdown-menu">
@@ -31,10 +31,9 @@
                            :href="'#Service/'+service.id">{{ service.name }}</a>
                     </div>
                 </li>
-                <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])"
-                    class="nav-item dropdown" :class="{ active: managePages.indexOf(page) !== -1 }">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" :class="{ active: managePages.indexOf(page) !== -1 }"
+                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Management
                     </a>
                     <div class="dropdown-menu">
@@ -51,10 +50,11 @@
                 </li>
                 <li v-if="hasAnyRole([
                         'group-admin', 'app-admin', 'user-admin', 'tracking-admin', 'settings', 'statistics'
-                    ])"
-                    class="nav-item dropdown" :class="{ active: adminPages.indexOf(page) !== -1 }">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>
+                    ])" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" :class="{ active: adminPages.indexOf(page) !== -1 }"
+                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Administration
+                    </a>
                     <div class="dropdown-menu">
                         <a v-if="hasRole('group-admin')"
                             class="dropdown-item" :class="{ active: page === 'GroupAdmin' }"
@@ -83,9 +83,9 @@
                     </div>
                 </li>
                 <li v-if="hasAnyRole(['tracking', 'watchlist', 'watchlist-manager', 'esi', 'user-chars'])"
-                    class="nav-item dropdown" :class="{ active: memberDataPages.indexOf(page) !== -1 }">
-                    <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" :class="{ active: memberDataPages.indexOf(page) !== -1 }"
+                       href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Member Data
                     </a>
                     <div class="dropdown-menu">
@@ -106,9 +106,9 @@
             </ul>
 
             <img v-if="authChar" :src="characterPortrait(authChar.id, 32)"
-                 class="d-inline-block align-top mr-2" alt="portrait">
+                 class="d-inline-block align-top me-2" alt="portrait">
             <div v-if="authChar" class="dropdown">
-                <button class="btn btn-primary dropdown-toggle mr-3" data-toggle="dropdown"
+                <button class="btn btn-primary dropdown-toggle me-3" data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                     {{ authChar.name }}
                 </button>
@@ -124,11 +124,13 @@
                 <span role="img" class="fas fa-sign-out-alt"></span>
             </a>
         </div>
-    </nav>
+    </div>
+</nav>
 </template>
 
 <script>
 import $ from 'jquery';
+import {Collapse, Dropdown} from 'bootstrap';
 
 export default {
     props: {
@@ -191,36 +193,32 @@ export default {
 
 function addNavBehaviour() {
     const $navMain = $("#navbar01");
-    const dropDown = '.dropdown';
-    const dropDownToggle = '.dropdown-toggle';
-    const dropDownMenu = '.dropdown-menu';
-    const ariaExpanded = 'aria-expanded';
-    const visible = ':visible';
-    $navMain.on("click", "a:not([data-toggle])", null, function() {
-        $navMain.collapse('hide');
-        $(this).closest(dropDown).removeClass('show');
-        $(this).closest(dropDownToggle).attr(ariaExpanded, true);
-        $(this).closest(dropDownMenu).removeClass('show');
-    });
-    $navMain.on('mouseover', dropDown, null, function() {
-        if ($('.navbar .navbar-toggler').is(visible)) {
+    const collapse = new Collapse('#navbar01', {toggle: false });
+
+    // Close the un-collapsed navigation on click on a navigation item
+    $navMain.on('click', 'a:not([data-bs-toggle])', null, function() {
+        if ($('.navbar .navbar-toggler').is(':visible')) {
+            collapse.hide();
+        }
+    })
+
+    // Open/close dropdown on mouse over/out.
+    $navMain.on('mouseover mouseout', '.dropdown', null, function(evt) {
+        if ($('.navbar .navbar-toggler').is(':visible')) {
             return;
         }
-        $(this).addClass('show');
-        $(this).find(dropDownToggle).attr(ariaExpanded, true);
-        $(this).find(dropDownMenu).addClass('show');
-    });
-    $navMain.on('mouseout', dropDown, null, function() {
-        if ($('.navbar .navbar-toggler').is(visible)) {
-            return;
+        // Can't use toggle(), that gets it wrong sometimes.
+        if (evt.type === 'mouseover') {
+            new Dropdown($(this).find('.dropdown-toggle')).show();
+        } else {
+            new Dropdown($(this).find('.dropdown-toggle')).hide();
+            document.activeElement.blur(); // sometimes needed for some reason to remove the "active" font color
         }
-        $(this).removeClass('show');
-        $(this).find(dropDownToggle).attr(ariaExpanded, false);
-        $(this).find(dropDownMenu).removeClass('show');
     });
 }
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
     .navbar {
         padding-top: 0.25rem;

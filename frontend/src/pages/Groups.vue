@@ -6,9 +6,7 @@
                 <div v-cloak v-if="groupToLeave" class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Leave Group</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p>
@@ -18,10 +16,10 @@
                         <p class="text-warning">{{ groupToLeave.name }}</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="leave()">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" v-on:click="leave()">
                             LEAVE group
                         </button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -31,7 +29,7 @@
             <div class="col-lg-12">
                 <h1>Requestable Groups</h1>
                 <table class="table table-hover table-sm" aria-describedby="groups">
-                    <thead class="thead-light">
+                    <thead class="table-light">
                         <tr>
                             <th scope="col">Name</th>
                             <th scope="col">Description</th>
@@ -73,7 +71,7 @@
 </template>
 
 <script>
-import $ from 'jquery';
+import {Modal} from "bootstrap";
 import {GroupApi, PlayerApi} from 'neucore-js-client';
 
 export default {
@@ -86,6 +84,7 @@ export default {
             groups: null,
             applications: null,
             groupToLeave: null,
+            leaveGroupModal: null,
         }
     },
 
@@ -155,7 +154,8 @@ export default {
             if (autoAccept) {
                 this.leave();
             } else {
-                $('#leaveGroupModal').modal('show');
+                this.leaveGroupModal = new Modal('#leaveGroupModal');
+                this.leaveGroupModal.show();
             }
         },
 
@@ -165,7 +165,9 @@ export default {
                 vm.emitter.emit('playerChange');
                 vm.getApplications();
             });
-            $('#leaveGroupModal').modal('hide');
+            if (this.leaveGroupModal) {
+                this.leaveGroupModal.hide();
+            }
             this.groupToLeave = null;
         }
     }

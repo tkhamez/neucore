@@ -31,11 +31,11 @@
                         </a>
                         <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt mr-1"
+                                  class="fas fa-pencil-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
                                   v-on:click="showEditWatchlistModal(watchlist)"></span>
                             <span role="img" aria-label="delete" title="delete"
-                                  class="far fa-trash-alt mr-1"
+                                  class="far fa-trash-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
                                   v-on:click="showDeleteWatchlistModal(watchlist)"></span>
                         </span>
@@ -70,14 +70,14 @@
 
             <div v-cloak v-if="currentWatchlist && contentType === 'setting'" class="card border-secondary mb-3">
                 <div class="card-body mb-0">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" value="1"
+                    <div class="form-check">
+                        <label class="form-check-label" for="lockWatchlistSettings">
+                            <strong>Lock Watchlist settings.</strong>
+                        </label>
+                        <input class="form-check-input" type="checkbox" value="1"
                                id="lockWatchlistSettings" name="lockWatchlistSettings"
                                :checked="currentWatchlist.lockWatchlistSettings === true"
                                @change="saveLockWatchlistSettings($event.target.checked)">
-                        <label class="custom-control-label" for="lockWatchlistSettings">
-                            <strong>Lock Watchlist settings.</strong>
-                        </label>
                         <p class="mb-0">
                             If checked, only watchlist admins can add or remove corporations and alliances from
                             the watchlist. This has no effect on the kick and allow list settings.

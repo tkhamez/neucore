@@ -10,7 +10,7 @@
         </span>
         <span v-else>
             <span class="text-info">{{ settings.mail_character }}</span>
-            <button type="button" class="btn btn-danger btn-sm ml-1" v-on:click="removeMailChar()">remove</button>
+            <button type="button" class="btn btn-danger btn-sm ms-1" v-on:click="removeMailChar()">remove</button>
         </span>
         <br>
         <span class="small">The character is used for all mails.</span>
@@ -24,43 +24,39 @@
         </p>
         <button class="btn btn-success btn-sm" v-on:click="sendInvalidTokenTestMail()">Send test mail</button>
         <small>The mail is sent to the logged-in user.</small>
-        <div class="custom-control custom-checkbox mb-2 mt-3">
-            <input class="custom-control-input" type="checkbox" value="1"
+        <div class="form-check mb-4 mt-4">
+            <label class="form-check-label" for="mail_invalid_token_active">Activate mail</label>
+            <input class="form-check-input" type="checkbox" value="1"
                    id="mail_invalid_token_active" name="mail_invalid_token_active"
                    :checked="settings.mail_invalid_token_active === '1'"
                    @change="$emit('changeSetting', 'mail_invalid_token_active', $event.target.checked ? '1' : '0')">
-            <label class="custom-control-label" for="mail_invalid_token_active">Activate mail</label>
         </div>
-        <div class="form-group">
-            <p class="form-text mt-3 mb-0">
-                The mail is only sent if at least one character in a player account
-                belongs to one of the following alliances or corporations:
-            </p>
-            <label class="col-form-label">Alliances</label>
-            <multiselect v-model="mailInvalidTokenAlliances" :options="allAlliances"
-                         label="name" track-by="id" :multiple="true"
-                         :loading="false" :searchable="true"
-                         placeholder="Select alliances">
-            </multiselect>
-            <label class="col-form-label">Corporations</label>
-            <multiselect v-model="mailInvalidTokenCorporations" :options="allCorporations"
-                         label="name" track-by="id" :multiple="true"
-                         :loading="false" :searchable="true"
-                         placeholder="Select corporations">
-            </multiselect>
-        </div>
-        <div class="form-group">
-            <label class="col-form-label" for="mailInvalidTokenSubject">Subject</label>
-            <input id="mailInvalidTokenSubject" type="text" class="form-control"
-                   v-model="settings.mail_invalid_token_subject"
-                   v-on:input="$emit('changeSettingDelayed', 'mail_invalid_token_subject', $event.target.value)">
-        </div>
-        <div class="form-group">
-            <label for="mailInvalidTokenBody">Message</label>
-            <textarea v-model="settings.mail_invalid_token_body" class="form-control"
-                      v-on:input="$emit('changeSettingDelayed', 'mail_invalid_token_body', $event.target.value)"
-                      id="mailInvalidTokenBody" rows="6"></textarea>
-        </div>
+        <p class="mt-3 mb-0">
+            The mail is only sent if at least one character in a player account
+            belongs to one of the following alliances or corporations:
+        </p>
+        <label class="col-form-label">Alliances</label>
+        <multiselect v-model="mailInvalidTokenAlliances" :options="allAlliances"
+                     label="name" track-by="id" :multiple="true"
+                     :loading="false" :searchable="true"
+                     placeholder="Select alliances">
+        </multiselect>
+        <label class="col-form-label">Corporations</label>
+        <multiselect v-model="mailInvalidTokenCorporations" :options="allCorporations"
+                     label="name" track-by="id" :multiple="true"
+                     :loading="false" :searchable="true"
+                     placeholder="Select corporations">
+        </multiselect>
+        <br>
+        <label class="col-form-label" for="mailInvalidTokenSubject">Subject</label>
+        <input id="mailInvalidTokenSubject" type="text" class="form-control"
+               v-model="settings.mail_invalid_token_subject"
+               v-on:input="$emit('changeSettingDelayed', 'mail_invalid_token_subject', $event.target.value)">
+        <br>
+        <label for="mailInvalidTokenBody">Message</label>
+        <textarea v-model="settings.mail_invalid_token_body" class="form-control"
+                  v-on:input="$emit('changeSettingDelayed', 'mail_invalid_token_body', $event.target.value)"
+                  id="mailInvalidTokenBody" rows="6"></textarea>
     </div>
 
     <div class="card-header">Missing Character</div>
@@ -68,14 +64,14 @@
         <p>This EVE mail is sent to characters that have not been added to an account.</p>
         <button class="btn btn-success btn-sm" v-on:click="sendMissingCharacterTestMail()">Send test mail</button>
         <small>The mail is sent to the logged-in user.</small>
-        <div class="custom-control custom-checkbox mb-2 mt-3">
-            <input class="custom-control-input" type="checkbox" value="1"
+        <div class="form-check mb-2 mt-3">
+            <label class="form-check-label" for="mail_missing_character_active">Activate mail</label>
+            <input class="form-check-input" type="checkbox" value="1"
                    id="mail_missing_character_active" name="mail_missing_character_active"
                    :checked="settings.mail_missing_character_active === '1'"
                    @change="$emit('changeSetting', 'mail_missing_character_active', $event.target.checked ? '1' : '0')">
-            <label class="custom-control-label" for="mail_missing_character_active">Activate mail</label>
         </div>
-        <label class="mt-2">
+        <label class="mt-3">
             <input type="text" pattern="[0-9]*" class="form-control input-resend"
                    v-model="settings.mail_missing_character_resend"
                    v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_resend', $event.target.value)">
@@ -83,7 +79,7 @@
             Also the minimum number of days that must pass before the mail is resent.
             Must be greater 0.
         </label>
-        <div class="form-group">
+        <div class="mt-3">
             <label class="col-form-label">
                 The mail is sent to characters from one of the following corporations<br>
             </label>
@@ -92,18 +88,18 @@
                          :loading="false" :searchable="true"
                          placeholder="Select corporations">
             </multiselect>
-            <small class="form-text text-muted">
+            <span class="form-text">
                 Only corporations with member tracking enabled, see
                 <a href="#SystemSettings/Directors">SystemSettings -> Directors</a>
-            </small>
+            </span>
         </div>
-        <div class="form-group">
+        <div class="mt-3">
             <label class="col-form-label" for="mailMissingCharacterSubject">Subject</label>
             <input id="mailMissingCharacterSubject" type="text" class="form-control"
                    v-model="settings.mail_missing_character_subject"
                    v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_subject', $event.target.value)">
         </div>
-        <div class="form-group">
+        <div class="mt-4">
             <label for="mailMissingCharacterBody">Message</label>
             <textarea v-model="settings.mail_missing_character_body" class="form-control"
                       v-on:input="$emit('changeSettingDelayed', 'mail_missing_character_body', $event.target.value)"

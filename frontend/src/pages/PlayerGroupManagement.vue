@@ -66,7 +66,7 @@
                         </h4>
                         <p>
                             Status: {{ playerData.status }}
-                            <a class="badge badge-info ml-1" href=""
+                            <a class="btn btn-info nc-btn-xs ms-1" href=""
                                v-on:click.prevent="showCharacters(playerData.id)">
                                 Show characters
                             </a>
@@ -83,10 +83,8 @@
                             All groups will be removed from the player account when the status is changed!
                         </p>
                         <div class="input-group mb-1">
-                            <div class="input-group-prepend">
-                                <label class="input-group-text" for="userAdminSetStatus">status</label>
-                            </div>
-                            <select class="custom-select" id="userAdminSetStatus"
+                            <label class="input-group-text" for="userAdminSetStatus">status</label>
+                            <select class="form-select" id="userAdminSetStatus"
                                     v-model="playerData.status"
                                     v-on:change="setAccountStatus()">
                                 <option value="standard">standard</option>

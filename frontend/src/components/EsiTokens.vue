@@ -4,9 +4,7 @@
         <div v-cloak v-if="character && eveLogins" class="modal-content">
             <div class="modal-header">
                 {{ character.name }} - ESI Tokens
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div v-if="showInvalid">
@@ -25,41 +23,45 @@
                 </div>
 
                 <table class="table">
-                    <tr>
-                        <td>Name</td>
-                        <td>Status</td>
-                        <td v-if="page === 'UserAdmin'">Status changed*</td>
-                        <td>Has required in-game roles</td>
-                    </tr>
-                    <tr v-for="esiToken in character.esiTokens">
-                        <td>
-                            <a v-if="page === 'UserAdmin' && hasRole('settings')" href="#"
-                               v-on:click.prevent="showEveLogin(esiToken.eveLoginId)">
-                                {{ loginName(esiToken.eveLoginId) }}
-                            </a>
-                            <span v-else>{{ loginName(esiToken.eveLoginId) }}</span>
-                        </td>
-                        <td>
-                            <span v-if="esiToken.validToken">valid</span>
-                            <span v-if="esiToken.validToken === false">invalid</span>
-                            <span v-if="esiToken.validToken === null">n/a</span>
-                        </td>
-                        <td v-if="page === 'UserAdmin'">
-                            <span v-if="esiToken.validTokenTime">
-                                {{ formatDate(esiToken.validTokenTime) }}
-                            </span>
-                        </td>
-                        <td>
-                            <span v-if="esiToken.hasRoles">Yes</span>
-                            <span v-if="esiToken.hasRoles === false">No</span>
-                            <span v-if="esiToken.hasRoles === null">n/a</span>
-                        </td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <td>Name</td>
+                            <td>Status</td>
+                            <td v-if="page === 'UserAdmin'">Status changed*</td>
+                            <td>Has required in-game roles</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="esiToken in character.esiTokens">
+                            <td>
+                                <a v-if="page === 'UserAdmin' && hasRole('settings')" href="#"
+                                   v-on:click.prevent="showEveLogin(esiToken.eveLoginId)">
+                                    {{ loginName(esiToken.eveLoginId) }}
+                                </a>
+                                <span v-else>{{ loginName(esiToken.eveLoginId) }}</span>
+                            </td>
+                            <td>
+                                <span v-if="esiToken.validToken">valid</span>
+                                <span v-if="esiToken.validToken === false">invalid</span>
+                                <span v-if="esiToken.validToken === null">n/a</span>
+                            </td>
+                            <td v-if="page === 'UserAdmin'">
+                                <span v-if="esiToken.validTokenTime">
+                                    {{ formatDate(esiToken.validTokenTime) }}
+                                </span>
+                            </td>
+                            <td>
+                                <span v-if="esiToken.hasRoles">Yes</span>
+                                <span v-if="esiToken.hasRoles === false">No</span>
+                                <span v-if="esiToken.hasRoles === null">n/a</span>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
                 <p v-if="page === 'UserAdmin'" class="small text-muted">* Time is GMT</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -67,7 +69,7 @@
 </template>
 
 <script>
-import $ from 'jquery';
+import {Modal} from "bootstrap";
 
 export default {
     props: {
@@ -80,6 +82,7 @@ export default {
             character: null,
             showInvalid: false,
             loginHost: '',
+            esiTokensModal: null,
         }
     },
 
@@ -95,11 +98,14 @@ export default {
         showModal (character, showInvalid) {
             this.showInvalid = !!showInvalid;
             this.character = character;
-            $('#esiTokensModal').modal('show');
+            this.esiTokensModal = new Modal('#esiTokensModal');
+            this.esiTokensModal.show();
         },
 
         showEveLogin (id) {
-            $('#esiTokensModal').modal('hide');
+            if (this.esiTokensModal) {
+                this.esiTokensModal.hide();
+            }
             window.location.hash = `#SystemSettings/EveLogins/${id}`;
         },
 

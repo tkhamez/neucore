@@ -1,8 +1,8 @@
 <template>
     <div>
         <a :href="settings.customization_website">
-            <img v-if="settings.customization_home_logo" class="float-right" alt="Logo"
-                 :src="settings.customization_home_logo">
+            <img v-if="settings.customization_home_logo" :src="settings.customization_home_logo" alt="Logo"
+                 class="float-end ms-3">
         </a>
         <h1 class="display-3">{{ settings.customization_home_headline }}</h1>
         <p class="lead">{{ settings.customization_home_description }}</p>
@@ -21,7 +21,7 @@ export default {
 <style scoped>
     @media (max-width: 767px) {
         img {
-            max-width: 50%;
+            max-width: 35%;
         }
         h1 {
             font-size: 2.2rem;

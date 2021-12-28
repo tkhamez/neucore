@@ -31,11 +31,11 @@
                         </a>
                         <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"
-                                  class="fas fa-pencil-alt mr-1"
+                                  class="fas fa-pencil-alt me-1"
                                   @mouseover="mouseover" @mouseleave="mouseleave"
                                   v-on:click="showRenameAppModal(app)"></span>
                             <span role="img" aria-label="delete" title="delete"
-                                  class="far fa-trash-alt mr-1"
+                                  class="far fa-trash-alt me-1"
                                   @mouseover="mouseover"  @mouseleave="mouseleave"
                                   v-on:click="showDeleteAppModal(app)"></span>
                         </span>

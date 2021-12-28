@@ -7,8 +7,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Add additional ESI Tokens</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
@@ -18,30 +17,34 @@
                 </p>
                 <div class="table-responsive">
                     <table class="table">
-                        <tr>
-                            <td>Name</td>
-                            <td>Login</td>
-                            <td>Description</td>
-                            <td>Scopes</td>
-                            <td title="Required roles in the game" class="text-with-tooltip">Roles</td>
-                        </tr>
-                        <tr v-for="eveLogin in filteredEveLogins()">
-                            <td>{{ eveLogin.name }}</td>
-                            <td>
-                                <a :href="loginHost + '/login/' + eveLogin.name"
-                                   class="ml-1 char-login-button" title="EVE SSO Login">
-                                    <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
-                                </a>
-                            </td>
-                            <td>{{ eveLogin.description }}</td>
-                            <td>{{ eveLogin.esiScopes.split(' ').join(', ') }}</td>
-                            <td>{{ eveLogin.eveRoles.join(', ') }}</td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <td>Name</td>
+                                <td>Login</td>
+                                <td>Description</td>
+                                <td>Scopes</td>
+                                <td title="Required roles in the game" class="text-with-tooltip">Roles</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="eveLogin in filteredEveLogins()">
+                                <td>{{ eveLogin.name }}</td>
+                                <td>
+                                    <a :href="loginHost + '/login/' + eveLogin.name"
+                                       class="ms-1 char-login-button" title="EVE SSO Login">
+                                        <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                    </a>
+                                </td>
+                                <td>{{ eveLogin.description }}</td>
+                                <td>{{ eveLogin.esiScopes.split(' ').join(', ') }}</td>
+                                <td>{{ eveLogin.eveRoles.join(', ') }}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -52,9 +55,7 @@
         <div v-if="charToDelete" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Delete Character</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -64,17 +65,17 @@
                 <p class="text-warning">{{ charToDelete.name }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteChar()">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" v-on:click="deleteChar()">
                     DELETE character
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container-fluid">
-    <div v-cloak v-if="! authChar" class="jumbotron mt-3">
+    <div v-cloak v-if="! authChar" class="mt-3">
         <title-logo :settings="settings"></title-logo>
         <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
         <!--suppress JSUnresolvedVariable -->
@@ -103,10 +104,10 @@
                          title="Login to add another character.">
                 </a>
             </p>
-            <a href="#" class="badge badge-secondary font-weight-normal p-2"
-               data-toggle="modal" data-target="#eveLoginsModal">
+            <button href="#" class="btn btn-secondary nc-btn-xs fw-normal p-2"
+               data-bs-toggle="modal" data-bs-target="#eveLoginsModal">
                 Add additional ESI tokens
-            </a>
+            </button>
         </div>
     </div>
 
@@ -123,56 +124,58 @@
         <div class="row">
             <div class="col-lg-8">
                 <h2>Characters</h2>
-                <div class="card-columns">
-                    <div v-for="char in player.characters" class="card border-secondary">
-                        <div class="card-header">
-                            <img :src="characterPortrait(char.id, 32)" alt="portrait">
-                            {{ char.name }}
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">
-                                <span class="text-muted">Corporation: </span>
-                                    <span v-if="char.corporation">{{ char.corporation.name }}</span>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-xxl-4 g-4">
+                    <div v-for="char in player.characters" class="col border-secondary">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <img :src="characterPortrait(char.id, 32)" alt="portrait">
+                                {{ char.name }}
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <span class="text-muted">Corporation: </span>
+                                        <span v-if="char.corporation">{{ char.corporation.name }}</span>
+                                    <br>
+                                    <span class="text-muted">Alliance: </span>
+                                    <span v-if="char.corporation && char.corporation.alliance">
+                                        {{ char.corporation.alliance.name }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <span v-if="char.main" class="badge bg-warning me-1">Main</span>
+                                <a v-if="! char.main" class="btn btn-primary nc-btn-xs fw-normal me-1" href="#"
+                                   v-on:click.prevent="makeMain(char.id)">Make Main</a>
+
+                                <a class="btn btn-primary nc-btn-xs fw-normal me-1" href="#"
+                                   v-on:click.prevent="update(char.id)">Update character</a>
+                                <a v-if="authChar && authChar.id !== char.id &&
+                                         settings.allow_character_deletion === '1'"
+                                   class="btn btn-danger nc-btn-xs"
+                                   v-on:click.prevent="askDeleteChar(char.id, char.name)"
+                                   href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
+
                                 <br>
-                                <span class="text-muted">Alliance: </span>
-                                <span v-if="char.corporation && char.corporation.alliance">
-                                    {{ char.corporation.alliance.name }}
-                                </span>
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <span v-if="char.main" class="badge badge-warning">Main</span>
-                            <a v-if="! char.main" class="badge badge-primary font-weight-normal" href="#"
-                               v-on:click.prevent="makeMain(char.id)">Make Main</a>
 
-                            <a class="badge badge-primary ml-1 font-weight-normal" href="#"
-                               v-on:click.prevent="update(char.id)">Update character</a>
-                            <a v-if="authChar && authChar.id !== char.id &&
-                                     settings.allow_character_deletion === '1'"
-                               class="badge badge-danger ml-1"
-                               v-on:click.prevent="askDeleteChar(char.id, char.name)"
-                               href="#" title="Delete"><span role="img" class="fas fa-trash-alt"></span></a>
-
-                            <br>
-
-                            <a href="#" class="font-weight-normal"
-                               v-on:click.prevent="showEsiTokens(char, char.validToken === false)"
-                               :class="{
-                                      'badge badge-success': char.validToken,
-                                      'badge badge-info': char.validToken === null,
-                                      'btn btn-danger btn-sm mt-1': char.validToken === false,
-                               }"
-                               :title="char.validToken ? 'Valid default ESI token' :
-                                       (char.validToken === null ? 'No default ESI token' :
-                                        'Invalid default ESI token')"
-                            >
-                                ESI tokens
-                            </a>
-                            <!--suppress JSUnresolvedVariable -->
-                            <a v-if="char.validToken === false" :href="loginHost + '/login/' + loginNames.alt"
-                               class="ml-1 char-login-button" :title="'Login in with: ' + char.name">
-                                <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
-                            </a>
+                                <a href="#" class="fw-normal me-1"
+                                   v-on:click.prevent="showEsiTokens(char, char.validToken === false)"
+                                   :class="{
+                                          'btn btn-success nc-btn-xs': char.validToken,
+                                          'btn btn--info nc-btn-xs': char.validToken === null,
+                                          'btn btn-danger btn-sm mt-1': char.validToken === false,
+                                   }"
+                                   :title="char.validToken ? 'Valid default ESI token' :
+                                           (char.validToken === null ? 'No default ESI token' :
+                                            'Invalid default ESI token')"
+                                >
+                                    ESI tokens
+                                </a>
+                                <!--suppress JSUnresolvedVariable -->
+                                <a v-if="char.validToken  == false" :href="loginHost + '/login/' + loginNames.alt"
+                                   class="char-login-button" :title="'Login in with: ' + char.name">
+                                    <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -206,7 +209,7 @@
 </template>
 
 <script>
-import $ from 'jquery';
+import {Modal} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import markdownIt from 'markdown-it';
 import mdEmoji from 'markdown-it-emoji/light';
@@ -241,6 +244,7 @@ export default {
             markdownLoginText: '',
             loginHost: '',
             eveLogins: null,
+            deleteCharModal: null,
         }
     },
 
@@ -311,7 +315,8 @@ export default {
                 id: characterId,
                 name: characterName,
             };
-            $('#deleteCharModal').modal('show');
+            this.deleteCharModal = new Modal('#deleteCharModal');
+            this.deleteCharModal.show();
         },
 
         deleteChar() {
@@ -319,7 +324,9 @@ export default {
             (new Character(vm)).deleteCharacter(this.charToDelete.id, null, function() {
                 vm.update(vm.authChar.id);
             });
-            $('#deleteCharModal').modal('hide');
+            if (this.deleteCharModal) {
+                this.deleteCharModal.hide();
+            }
             this.charToDelete = null;
         },
 

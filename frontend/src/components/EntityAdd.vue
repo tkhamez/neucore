@@ -8,36 +8,32 @@ Modal window to add alliances or corporations to the database.
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add {{ addType }} to local database</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label>Search {{ addType }}</label>
-                        <multiselect v-model="searchSelected" :options="searchResults"
-                                     label="name" track-by="id"
-                                     placeholder="Type to search"
-                                     :searchable="true"
-                                     :loading="searchIsLoading"
-                                     :internal-search="false"
-                                     :max-height="600"
-                                     :show-no-results="false"
-                                     @search-change="searchAlliCorp">
-                        </multiselect>
-                        <div class="form-check mt-2">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" value="" v-model="searchStrict">
-                                Strict search
-                            </label>
-                        </div>
+                    <label class="form-label">Search {{ addType }}</label>
+                    <multiselect v-model="searchSelected" :options="searchResults"
+                                 label="name" track-by="id"
+                                 placeholder="Type to search"
+                                 :searchable="true"
+                                 :loading="searchIsLoading"
+                                 :internal-search="false"
+                                 :max-height="600"
+                                 :show-no-results="false"
+                                 @search-change="searchAlliCorp">
+                    </multiselect>
+                    <div class="form-check mt-2">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" value="" v-model="searchStrict">
+                            Strict search
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary"
                             :disabled="searchError"
                             v-on:click="addAlliCorp()">Add</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -47,6 +43,7 @@ Modal window to add alliances or corporations to the database.
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import {Modal} from "bootstrap";
 import Multiselect from '@suadelabs/vue3-multiselect';
 import {AllianceApi, CorporationApi} from 'neucore-js-client';
 
@@ -67,6 +64,7 @@ export default {
             searchSelected: null,
             searchStrict: false,
             searchError: false,
+            addAlliCorpModal: null,
         }
     },
 
@@ -75,7 +73,8 @@ export default {
             this.addType = addType;
             this.searchResults = [];
             this.searchSelected = null;
-            $('#addAlliCorpModal').modal('show');
+            this.addAlliCorpModal = new Modal('#addAlliCorpModal');
+            this.addAlliCorpModal.show();
         },
 
         searchAlliCorp (query) {
@@ -108,7 +107,7 @@ export default {
                 } else if (error) {
                     vm.message(`Error adding ${vm.addType}.`, 'error');
                 } else {
-                    $('#addAlliCorpModal').modal('hide');
+                    vm.addAlliCorpModal.hide();
                     vm.message(`${vm.addType} "[${data.ticker}] ${data.name}" added.`, 'success');
                     vm.$emit('success');
                 }
