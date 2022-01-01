@@ -1235,7 +1235,7 @@ class PlayerController extends BaseController
                     'characterId' => $account->getCharacterId(),
                     'username' => $account->getUsername(),
                     'status' => $account->getStatus(),
-                    'displayName' => $account->getDisplayName(),
+                    'name' => $account->getName(),
                 ];
             }
         }

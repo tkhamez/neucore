@@ -962,7 +962,7 @@ class PlayerControllerTest extends WebTestCase
                     'characterId' => 12,
                     'username' => 'user_name',
                     'status' => ServiceAccountData::STATUS_ACTIVE,
-                    'displayName' => 'A Name',
+                    'name' => 'A Name',
                 ]
             ],
         ], $this->parseJsonBody($response));

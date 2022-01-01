@@ -404,7 +404,7 @@
                                         [{{ serviceAccount.characterId }}] {{ characterName(serviceAccount.characterId) }}
                                     </td>
                                     <td>{{ serviceAccount.username }}</td>
-                                    <td>{{ serviceAccount.displayName }}</td>
+                                    <td>{{ serviceAccount.name }}</td>
                                     <td>{{ serviceAccount.status }}</td>
                                 </tr>
                             </tbody>
