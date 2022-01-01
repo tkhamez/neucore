@@ -197,6 +197,9 @@ export default {
 
 function addNavBehaviour() {
     const $navMain = $("#navbar01");
+    if ($navMain.length === 0) {
+        return;
+    }
     const collapse = new Collapse('#navbar01', {toggle: false });
 
     // Close the un-collapsed navigation on click on a navigation item
