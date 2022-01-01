@@ -1,7 +1,11 @@
 # Changelog
 
-## next
+## 1.29.0
 
+1 Jan 2022
+
+- **BC Break** Updated tkhamez/neucore-plugin to 0.6.0: One account property changed its name, from 
+  `displayName` to `name`. This needs to be adjusted on the Service configuration page if it is used.
 - PHP 8.1 compatibility.
 - Added optional environment variable NEUCORE_ERROR_REPORTING to change the error reporting level.
 - Update to Bootstrap 5 (from 4).
