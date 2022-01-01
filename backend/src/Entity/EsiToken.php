@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
 
@@ -27,23 +28,20 @@ class EsiToken implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer|null
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Character", inversedBy="esiTokens")
      * @ORM\JoinColumn(nullable=false, name="character_id", onDelete="CASCADE")
-     * @var Character|null
      */
-    private $character;
+    private ?Character $character = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="EveLogin", inversedBy="esiTokens")
      * @ORM\JoinColumn(nullable=false, name="eve_login_id", onDelete="CASCADE")
-     * @var EveLogin|null
      */
-    private $eveLogin;
+    private ?EveLogin $eveLogin = null;
 
     /**
      * The OAuth refresh token.
@@ -51,15 +49,13 @@ class EsiToken implements \JsonSerializable
      * Empty string if the token became invalid.
      *
      * @ORM\Column(type="text", length=65535, name="refresh_token")
-     * @var string|null
      */
-    private $refreshToken;
+    private ?string $refreshToken = null;
 
     /**
      * @ORM\Column(type="text", length=65535, name="access_token")
-     * @var string|null
      */
-    private $accessToken;
+    private ?string $accessToken = null;
 
     /**
      * Shows if the refresh token is valid or not.
@@ -69,18 +65,16 @@ class EsiToken implements \JsonSerializable
      *
      * @OA\Property
      * @ORM\Column(type="boolean", name="valid_token", nullable=true)
-     * @var bool|null
      */
-    private $validToken;
+    private ?bool $validToken = null;
 
     /**
      * Date and time when the valid token property was last changed.
      *
      * @OA\Property
      * @ORM\Column(type="datetime", name="valid_token_time", nullable=true)
-     * @var \DateTime|null
      */
-    private $validTokenTime;
+    private ?\DateTime $validTokenTime = null;
 
     /**
      * Shows if the EVE character has all required roles for the login.
@@ -89,24 +83,23 @@ class EsiToken implements \JsonSerializable
      *
      * @OA\Property
      * @ORM\Column(type="boolean", name="has_roles", nullable=true)
-     * @var bool|null
      */
-    private $hasRoles = null;
+    private ?bool $hasRoles = null;
 
     /**
      * Unix timestamp when access token expires.
      *
      * @ORM\Column(type="integer")
-     * @var int|null
      */
-    private $expires;
+    private ?int $expires = null;
 
     public function jsonSerialize(): array
     {
         return [
             'eveLoginId' => $this->eveLogin ? $this->eveLogin->getId() : 0,
             'validToken' => $this->validToken,
-            'validTokenTime' => $this->validTokenTime !== null ? $this->validTokenTime->format(Api::DATE_FORMAT) : null,
+            'validTokenTime' => $this->validTokenTime !== null ?
+                $this->validTokenTime->format(Api::DATE_FORMAT) : null,
             'hasRoles' => $this->hasRoles,
         ];
     }
@@ -183,11 +176,7 @@ class EsiToken implements \JsonSerializable
     public function setValidToken(?bool $validToken = null): self
     {
         if ($this->validToken !== $validToken) {
-            try {
-                $this->validTokenTime = new \DateTime();
-            } catch (\Exception $e) {
-                // ignore
-            }
+            $this->validTokenTime = new \DateTime();
         }
         $this->validToken = $validToken;
         return $this;

@@ -10,7 +10,6 @@ use Neucore\Command\Traits\LogOutput;
 use Neucore\Data\DirectorToken;
 use Neucore\Entity\EveLogin;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\EsiData;
 use Neucore\Service\MemberTracking;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
@@ -26,40 +25,20 @@ class UpdateMemberTracking extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
+
+    private MemberTracking $memberTracking;
+
+    private EntityManagerInterface $entityManager;
 
     /**
-     * @var MemberTracking
+     * Time in milliseconds
      */
-    private $memberTracking;
-
-    /**
-     * @var EsiData
-     */
-    private $esiData;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var int milliseconds
-     */
-    private $sleep;
+    private int $sleep;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
         MemberTracking $memberTracking,
-        EsiData $esiData,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         StorageInterface $storage
@@ -70,8 +49,6 @@ class UpdateMemberTracking extends Command
 
         $this->repositoryFactory = $repositoryFactory;
         $this->memberTracking = $memberTracking;
-        $this->esiData = $esiData;
-        $this->logger = $logger;
         $this->entityManager = $entityManager;
     }
 
@@ -92,7 +69,7 @@ class UpdateMemberTracking extends Command
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $corpId = intval($input->getArgument('corporation'));
         $this->sleep = intval($input->getOption('sleep'));

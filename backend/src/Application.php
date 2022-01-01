@@ -197,7 +197,7 @@ class Application
     public function buildContainer(array $mocks = []): ContainerInterface
     {
         $this->loadSettings();
-        $this->createContainer($mocks);
+        $this->container = $this->createContainer($mocks);
 
         return $this->container;
     }
@@ -271,6 +271,7 @@ class Application
      * @param App $app
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     private function addMiddleware(App $app): void
     {
@@ -338,7 +339,7 @@ class Application
      *
      * @throws \Exception
      */
-    private function createContainer(array $mocks = []): void
+    private function createContainer(array $mocks = []): Container
     {
         $containerBuilder = new ContainerBuilder();
 
@@ -351,12 +352,14 @@ class Application
 
         $containerBuilder->addDefinitions(\Neucore\Container::getDefinitions());
 
-        $this->container = $containerBuilder->build();
-        $this->container->set(Config::class, $this->config);
+        $container = $containerBuilder->build();
+        $container->set(Config::class, $this->config);
 
         foreach ($mocks as $class => $value) {
-            $this->container->set($class, $value);
+            $container->set($class, $value);
         }
+
+        return $container;
     }
 
     /**
@@ -367,6 +370,7 @@ class Application
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws Exception
+     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
     private function sessionHandler(): void
@@ -395,6 +399,7 @@ class Application
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     private function errorHandling(): void
     {
@@ -442,6 +447,7 @@ class Application
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws LogicException
+     * @phan-suppress PhanTypeInvalidThrowsIsInterface
      */
     private function addCommands(ConsoleApplication $console): void
     {

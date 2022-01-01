@@ -24,7 +24,7 @@ class CorsTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertSame([
             'Access-Control-Allow-Origin' => ['https://domain1.tld'],
-            'Access-Control-Allow-Headers' => [CSRFToken::CSRF_HEADER_NAME, 'Content-Type'],
+            'Access-Control-Allow-Headers' => [CSRFToken::CSRF_HEADER_NAME, 'Content-Type', 'User-Agent'],
             'Access-Control-Allow-Credentials' => ['true'],
             'Access-Control-Allow-Methods' => ['GET, POST, PUT, DELETE, OPTIONS'],
         ], $headers);

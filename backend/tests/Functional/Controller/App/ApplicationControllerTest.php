@@ -5,27 +5,17 @@ declare(strict_types=1);
 namespace Tests\Functional\Controller\App;
 
 use Neucore\Entity\Role;
-use Neucore\Factory\RepositoryFactory;
 use Neucore\Entity\Group;
 use Tests\Functional\WebTestCase;
 use Tests\Helper;
 
 class ApplicationControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
-
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private Helper $helper;
 
     protected function setUp(): void
     {
         $this->helper = new Helper();
-        $this->repoFactory = new RepositoryFactory($this->helper->getObjectManager());
     }
 
     public function testShowV1403()

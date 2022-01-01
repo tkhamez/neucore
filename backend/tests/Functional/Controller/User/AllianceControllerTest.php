@@ -25,40 +25,23 @@ use Tests\WriteErrorListener;
 
 class AllianceControllerTest extends WebTestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    private $alliId1;
+    private int $alliId1;
 
-    private $alliId2;
+    private int $groupId1;
 
-    private $groupId1;
+    private int $groupId2;
 
-    private $groupId2;
+    private AllianceRepository $alliRepo;
 
-    /**
-     * @var AllianceRepository
-     */
-    private $alliRepo;
+    private Client $client;
 
-    /**
-     * @var Client
-     */
-    private $client;
-
-    private $log;
+    private LoggerInterface $log;
 
     public static function setupBeforeClass(): void
     {
@@ -388,7 +371,6 @@ class AllianceControllerTest extends WebTestCase
         $this->em->flush();
 
         $this->alliId1 = $alli1->getId();
-        $this->alliId2 = $alli2->getId();
 
         $this->groupId1 = $group1->getId();
         $this->groupId2 = $group2->getId();
