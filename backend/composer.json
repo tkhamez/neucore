@@ -34,7 +34,7 @@
         "tkhamez/neucore-plugin": "^0.6.0",
         "tkhamez/slim-role-auth": "^3.0",
         "tkhamez/swagger-eve-php": "^7.1",
-        "zircote/swagger-php": "^4.0"
+        "zircote/swagger-php": "~4.0.0"
     },
     "require-dev": {
         "drenso/phan-extensions": "~3.1.0",
