@@ -77,6 +77,9 @@
                         <a v-if="hasRole('settings')"
                            class="dropdown-item" :class="{ active: page === 'SystemSettings' }"
                            href="#SystemSettings">Settings</a>
+                        <a v-if="hasRole('settings')"
+                           class="dropdown-item" :class="{ active: page === 'EVELogins' }"
+                           href="#EVELogins">EVE Logins</a>
                         <a v-if="hasRole('statistics')"
                            class="dropdown-item" :class="{ active: page === 'Statistics' }"
                            href="#Statistics">Statistics</a>
@@ -95,12 +98,12 @@
                         <a v-if="hasAnyRole(['watchlist', 'watchlist-manager'])"
                            class="dropdown-item" :class="{ active: page === 'Watchlist' }"
                            href="#Watchlist">Watchlist</a>
-                        <a v-if="hasRole('esi')"
-                           class="dropdown-item" :class="{ active: page === 'Esi' }"
-                           href="#Esi">ESI</a>
                         <a v-if="hasRole('user-chars')"
                            class="dropdown-item" :class="{ active: page === 'Characters' }"
                            href="#Characters">Characters</a>
+                        <a v-if="hasRole('esi')"
+                           class="dropdown-item" :class="{ active: page === 'Esi' }"
+                           href="#Esi">ESI</a>
                     </div>
                 </li>
             </ul>
@@ -143,7 +146,8 @@ export default {
         return {
             managePages: ['GroupManagement', 'AppManagement', 'PlayerGroupManagement'],
             adminPages: [
-                'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings', 'Statistics'
+                'GroupAdmin', 'ServiceAdmin', 'AppAdmin', 'UserAdmin', 'TrackingAdmin', 'SystemSettings',
+                'EVELogins', 'Statistics'
             ],
             memberDataPages: ['Tracking', 'Watchlist', 'Esi', 'Characters'],
             page: '',

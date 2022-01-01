@@ -46,16 +46,17 @@ import AppManagement from './pages/AppManagement.vue';
 import PlayerGroupManagement from './pages/PlayerGroupManagement.vue';
 import GroupAdmin from './pages/GroupAdmin.vue';
 import AppAdmin from './pages/AppAdmin.vue';
+import ServiceAdmin from './pages/ServiceAdmin.vue';
 import UserAdmin from './pages/UserAdmin.vue';
 import TrackingAdmin from './pages/TrackingAdmin.vue';
-import ServiceAdmin from './pages/ServiceAdmin.vue';
-import Statistics from './pages/Statistics.vue';
-import Esi from './pages/Esi.vue';
+import WatchlistAdmin from './pages/WatchlistAdmin.vue';
 import SystemSettings from './pages/SystemSettings.vue';
+import EVELogins from './pages/EVELogins.vue';
+import Statistics from './pages/Statistics.vue';
 import Tracking from './pages/Tracking.vue';
 import Watchlist from './pages/Watchlist.vue';
-import WatchlistAdmin from './pages/WatchlistAdmin.vue';
 import Characters from './pages/Characters.vue';
+import Esi from './pages/Esi.vue';
 
 export default {
     name: 'app',
@@ -71,16 +72,17 @@ export default {
         PlayerGroupManagement,
         GroupAdmin,
         AppAdmin,
+        ServiceAdmin,
         UserAdmin,
         TrackingAdmin,
-        ServiceAdmin,
-        Statistics,
+        WatchlistAdmin,
         SystemSettings,
-        Esi,
+        EVELogins,
+        Statistics,
         Tracking,
         Watchlist,
-        WatchlistAdmin,
         Characters,
+        Esi,
     },
 
     props: {
@@ -108,16 +110,17 @@ export default {
                 'PlayerGroupManagement',
                 'GroupAdmin',
                 'AppAdmin',
+                'ServiceAdmin',
                 'UserAdmin',
                 'TrackingAdmin',
-                'ServiceAdmin',
-                'Statistics',
-                'Esi',
+                'WatchlistAdmin',
                 'SystemSettings',
+                'EVELogins',
+                'Statistics',
                 'Tracking',
                 'Watchlist',
-                'WatchlistAdmin',
                 'Characters',
+                'Esi',
             ],
 
             /**

@@ -24,21 +24,16 @@
             <a class="nav-link" :class="{ 'active': tab === 'Directors' }"
                :href="'#SystemSettings/Directors'">Directors</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" :class="{ 'active': tab === 'EveLogins' }"
-               :href="'#SystemSettings/EveLogins'">EVE Logins</a>
-        </li>
     </ul>
 
     <!-- "allAlliances" and "allCorporations" are only for "Features" and "Mails" tabs -->
-    <component v-if="tab !== 'EveLogins'" v-bind:is="tab"
+    <component v-bind:is="tab"
                :settings="settings"
                :allAlliances="alliances"
                :allCorporations="corporations"
                @changeSettingDelayed="changeSettingDelayed"
                @changeSetting="changeSetting"
     ></component>
-    <eve-logins v-if="tab === 'EveLogins'" :route="route"></eve-logins>
 
 </div>
 </template>
@@ -48,7 +43,6 @@ import _ from 'lodash';
 import {AllianceApi, CorporationApi, SettingsApi} from 'neucore-js-client';
 import Customization from './SystemSettings--Customization.vue';
 import Directors from './SystemSettings--Directors.vue';
-import EveLogins from './SystemSettings--EveLogins.vue';
 import Features from './SystemSettings--Features.vue';
 import Mails from './SystemSettings--Mails.vue';
 
@@ -56,7 +50,6 @@ export default {
     components: {
         Customization,
         Directors,
-        EveLogins,
         Features,
         Mails,
     },
@@ -78,18 +71,14 @@ export default {
         window.scrollTo(0,0);
         setTab(this);
 
-        // Make sure the data is up to date, but not needed for EveLogins.
-        if (this.route[1] !== 'EveLogins') {
-            this.emitter.emit('settingsChange');
-        }
+        // Make sure the data is up-to-date.
+        this.emitter.emit('settingsChange');
     },
 
     watch: {
         route () {
             setTab(this);
-            if (this.route[1] !== 'EveLogins') {
-                this.emitter.emit('settingsChange');
-            }
+            this.emitter.emit('settingsChange');
         },
     },
 
@@ -192,7 +181,7 @@ export default {
 }
 
 function setTab(vm) {
-    const tabs = ['Customization', 'Directors', 'EveLogins', 'Features', 'Mails'];
+    const tabs = ['Customization', 'Directors', 'Features', 'Mails'];
     if (tabs.indexOf(vm.route[1]) !== -1) {
         vm.tab = vm.route[1];
     }
