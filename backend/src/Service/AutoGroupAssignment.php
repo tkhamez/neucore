@@ -127,7 +127,9 @@ class AutoGroupAssignment
     }
 
     /**
-     * Removes groups from player if they are not a member of at least one of the required groups.
+     * Removes groups from player if they are
+     * - not a member of at least one of the required groups.
+     * - a member of any of the forbidden groups.
      *
      * Does not flush the entity manager.
      */

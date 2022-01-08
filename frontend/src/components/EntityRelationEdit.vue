@@ -31,8 +31,11 @@ Select and table to add and remove objects from other objects.
             <p v-cloak v-if="type === 'Group' && contentType === 'managers'">
                 Managers can add and remove players to a group.
             </p>
-            <p v-cloak v-if="type === 'Group' && contentType === 'groups'">
-                Add groups that are a prerequisite (<em>one</em> of them) for being a member of this group.
+            <p v-cloak v-if="type === 'Group' && contentType === 'requiredGroups'">
+                Add groups that are a prerequisite (<em>one</em> of them) to be a member of that group.
+            </p>
+            <p v-cloak v-if="type === 'Group' && contentType === 'forbiddenGroups'">
+                Add groups that an account cannot be a member of (<em>any</em> of them) to be a member of that group.
             </p>
             <p v-cloak v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.
@@ -102,10 +105,12 @@ Select and table to add and remove objects from other objects.
                     <tr>
                         <th scope="col" :style="stickyTop" v-if="
                                 contentType === 'managers' || contentType === 'groups' ||
-                                contentType === 'groupsManage' || contentType === 'corporations' ||
-                                contentType === 'alliances'">
+                                contentType === 'requiredGroups' || contentType === 'forbiddenGroups' ||
+                                contentType === 'groupsManage' ||
+                                contentType === 'corporations' || contentType === 'alliances'">
                             <span v-if="
                                 contentType === 'managers' || contentType === 'groups' ||
+                                contentType === 'requiredGroups' || contentType === 'forbiddenGroups' ||
                                 contentType === 'groupsManage'">
                                 ID
                             </span>
@@ -128,6 +133,7 @@ Select and table to add and remove objects from other objects.
                     <tr v-for="row in tableContent">
                         <td v-if="
                                 contentType === 'managers' || contentType === 'groups' ||
+                                contentType === 'requiredGroups' || contentType === 'forbiddenGroups' ||
                                 contentType === 'groupsManage' || contentType === 'corporations' ||
                                 contentType === 'alliances'">
                             {{ row.id }}
@@ -173,7 +179,8 @@ Select and table to add and remove objects from other objects.
                                 <span v-if="contentType === 'corporations'">corporation</span>
                                 <span v-if="contentType === 'alliances'">alliance</span>
                                 <span v-if="contentType === 'managers'">manager</span>
-                                <span v-if="contentType === 'groups'">group</span>
+                                <span v-if="contentType === 'groups' || contentType === 'requiredGroups' ||
+                                            contentType === 'forbiddenGroups'">group</span>
                                 <span v-if="contentType === 'roles'">role</span>
                                 <span v-if="contentType === 'eveLogins'">EVE login</span>
                             </button>
@@ -311,7 +318,10 @@ export default {
                 this.placeholder = 'Add alliance';
             } else if (this.contentType === 'corporations') {
                 this.placeholder = 'Add corporation';
-            } else if (this.contentType === 'groups' || this.contentType === 'groupsManage') {
+            } else if (
+                this.contentType === 'groups' || this.contentType === 'groupsManage' ||
+                this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
+            ) {
                 this.placeholder = 'Add group';
             } else if (this.contentType === 'roles') {
                 this.placeholder = 'Add role';
@@ -352,7 +362,10 @@ export default {
             } else if (vm.contentType === 'alliances') {
                 api = new AllianceApi();
                 method = 'all';
-            } else if (vm.contentType === 'groups' || vm.contentType === 'groupsManage') {
+            } else if (
+                vm.contentType === 'groups' || vm.contentType === 'groupsManage' ||
+                this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
+            ) {
                 api = new GroupApi();
                 method = 'all';
             } else if (vm.contentType === 'roles') {
@@ -420,8 +433,10 @@ export default {
                 method = 'show';
             } else if ((this.type === 'App' || this.type === 'Player') && this.contentType === 'groups') {
                 method = 'showById';
-            } else if (this.type === 'Group' && this.contentType === 'groups') {
+            } else if (this.type === 'Group' && this.contentType === 'requiredGroups') {
                 method = 'requiredGroups';
+            } else if (this.type === 'Group' && this.contentType === 'forbiddenGroups') {
+                method = 'userGroupForbiddenGroups';
             } else if (this.type === 'Corporation' && this.contentType === 'groups') {
                 method = 'getGroupsTracking';
             } else if (this.type === 'Watchlist' && this.contentType === 'groups') {
@@ -573,9 +588,16 @@ export default {
                 method = action === 'add' ? 'addGroup' : 'removeGroup';
                 param1 = id;
                 param2 = this.typeId;
-            } else if (this.type === 'Group' && this.contentType === 'groups') {
+            } else if (
+                this.type === 'Group' &&
+                (this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups')
+            ) {
                 api = new GroupApi();
-                method = action === 'add' ? 'addRequiredGroup' : 'removeRequiredGroup';
+                if (this.contentType === 'requiredGroups') {
+                    method = action === 'add' ? 'addRequiredGroup' : 'removeRequiredGroup';
+                } else {
+                    method = action === 'add' ? 'userGroupAddForbiddenGroup' : 'userGroupRemoveForbiddenGroup';
+                }
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.contentType === 'managers') {
@@ -679,7 +701,7 @@ export default {
 function callApi(vm, api, method, param1, param2, callback) {
     api[method].apply(api, [param1, param2, function(error, data, response) {
         if (vm.type === 'Player' && method === 'addMember' && response.statusCode === 400) {
-            vm.message(vm.messages.errorMissingRequiredGroup, 'warning');
+            vm.message(vm.messages.errorRequiredForbiddenGroup, 'warning');
         }
         if (error) { // 403 usually
             return;

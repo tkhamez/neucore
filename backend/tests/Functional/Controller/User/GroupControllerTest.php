@@ -47,6 +47,8 @@ class GroupControllerTest extends WebTestCase
 
     private int $gid4;
 
+    private int $gidForbidden;
+
     private int $pid;
 
     private int $pid2;
@@ -96,6 +98,8 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
             [
+                ['id' => $this->gidForbidden, 'name' => 'forbidden-group', 'description' => null,
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
                     'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->gid2, 'name' => 'group-public', 'description' => null,
@@ -724,12 +728,138 @@ class GroupControllerTest extends WebTestCase
         $this->loginUser(8);
 
         $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . $this->gidReq);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-required/' . $this->gidReq);
         $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
 
         $this->em->clear();
 
         $group = $this->groupRepo->find($this->gid);
         $this->assertSame(0, count($group->getRequiredGroups()));
+    }
+
+    public function testForbiddenGroup403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('GET', '/api/user/group/' . $this->gid . '/forbidden-groups');
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(6); // not a group admin or manager
+        $response2 = $this->runApp('GET', '/api/user/group/' . $this->gid . '/forbidden-groups');
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testForbiddenGroup404()
+    {
+        $this->setupDb();
+
+        $this->loginUser(8);
+        $response = $this->runApp('GET', '/api/user/group/' . ($this->gid + 9) . '/forbidden-groups');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testForbiddenGroup200()
+    {
+        $this->setupDb();
+
+        $this->loginUser(8);
+        $response = $this->runApp('GET', '/api/user/group/' . $this->gid . '/forbidden-groups');
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertSame(
+            [['id' => $this->gidForbidden, 'name' => 'forbidden-group', 'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
+            $this->parseJsonBody($response)
+        );
+    }
+
+    public function testAddForbiddenGroup403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-forbidden/' . $this->gid2);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(6); // not a group admin
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-forbidden/' . $this->gid2);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testAddForbiddenGroup404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . ($this->gid + 9) . '/add-forbidden/' . $this->gid2);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-forbidden/' . ($this->gid2 + 9));
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testAddForbiddenGroup204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-forbidden/' . $this->gid2);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/add-forbidden/' . $this->gid2);
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $group = $this->groupRepo->find($this->gid);
+        $actual = $group->getForbiddenGroups();
+        $this->assertSame(2, count($actual));
+        $this->assertSame($this->gidForbidden, $actual[0]->getId());
+        $this->assertSame($this->gid2, $actual[1]->getId());
+    }
+
+    public function testRemoveForbiddenGroup403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-forbidden/' . $this->gidReq);
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(6); // not a group admin
+
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-forbidden/' . $this->gidReq);
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testRemoveForbiddenGroup404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp(
+            'PUT',
+            '/api/user/group/' . ($this->gid + 9) . '/remove-forbidden/' . $this->gidForbidden
+        );
+        $response2 = $this->runApp(
+            'PUT',
+            '/api/user/group/' . $this->gid . '/remove-forbidden/' . ($this->gidForbidden + 9)
+        );
+        $this->assertEquals(404, $response1->getStatusCode());
+        $this->assertEquals(404, $response2->getStatusCode());
+    }
+
+    public function testRemoveForbiddenGroup204()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-forbidden/' . $this->gidForbidden);
+        $response2 = $this->runApp('PUT', '/api/user/group/' . $this->gid . '/remove-forbidden/' . $this->gidForbidden);
+        $this->assertEquals(204, $response1->getStatusCode());
+        $this->assertEquals(204, $response2->getStatusCode());
+
+        $this->em->clear();
+
+        $group = $this->groupRepo->find($this->gid);
+        $this->assertSame(0, count($group->getForbiddenGroups()));
     }
 
     public function testAddManager403()
@@ -1143,13 +1273,17 @@ class GroupControllerTest extends WebTestCase
     {
         $this->helper->emptyDb();
 
-        $g = $this->helper->addGroups(['group-one', 'group-public', 'required-group', 'group-public2']);
+        $g = $this->helper->addGroups([
+            'group-one', 'group-public', 'required-group', 'group-public2', 'forbidden-group'
+        ]);
         $this->gid = $g[0]->getId();
         $this->gid2 = $g[1]->getId();
         $this->gidReq = $g[2]->getId();
         $this->gid4 = $g[3]->getId();
+        $this->gidForbidden = $g[4]->getId();
         $g[0]->addRequiredGroup($g[2]);
         $g[3]->addRequiredGroup($g[2]);
+        $g[0]->addForbiddenGroup($g[4]);
         $g[1]->setVisibility(Group::VISIBILITY_PUBLIC);
         $g[3]->setVisibility(Group::VISIBILITY_PUBLIC);
 

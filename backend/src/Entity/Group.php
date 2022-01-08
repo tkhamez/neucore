@@ -30,9 +30,8 @@ class Group implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer|null
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * A unique group name (can be changed).
@@ -116,10 +115,9 @@ class Group implements \JsonSerializable
     private $alliances;
 
     /**
-     * A player must be a member of one of these groups in order to be a member of this group
-     * (API: not included by default).
+     * A player must be a member of one of these groups in order to be a member of this group.
      *
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="requiredBy")
+     * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="group_required_groups")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
@@ -127,14 +125,14 @@ class Group implements \JsonSerializable
     private $requiredGroups;
 
     /**
-     * Groups for which this group is required.
-     * (API: not included by default).
+     * A player must not be a member of any of these groups in order to be a member of this group.
      *
-     * @ORM\ManyToMany(targetEntity="Group", mappedBy="requiredGroups")
+     * @ORM\ManyToMany(targetEntity="Group")
+     * @ORM\JoinTable(name="group_forbidden_groups")
      * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection
      */
-    private $requiredBy;
+    private $forbiddenGroups;
 
     /**
      * Contains only information that is of interest for clients.
@@ -163,7 +161,7 @@ class Group implements \JsonSerializable
         $this->corporations = new ArrayCollection();
         $this->alliances = new ArrayCollection();
         $this->requiredGroups = new ArrayCollection();
-        $this->requiredBy = new ArrayCollection();
+        $this->forbiddenGroups = new ArrayCollection();
     }
 
     public function getId(): int
@@ -364,6 +362,11 @@ class Group implements \JsonSerializable
 
     public function addRequiredGroup(Group $requiredGroup): self
     {
+        foreach ($this->getRequiredGroups() as $entity) {
+            if ($entity->getId() === $requiredGroup->getId()) {
+                return $this;
+            }
+        }
         $this->requiredGroups[] = $requiredGroup;
 
         return $this;
@@ -387,9 +390,14 @@ class Group implements \JsonSerializable
         return $this->requiredGroups->toArray();
     }
 
-    public function addRequiredBy(Group $requiredBy): self
+    public function addForbiddenGroup(Group $forbiddenGroups): self
     {
-        $this->requiredBy[] = $requiredBy;
+        foreach ($this->getForbiddenGroups() as $entity) {
+            if ($entity->getId() === $forbiddenGroups->getId()) {
+                return $this;
+            }
+        }
+        $this->forbiddenGroups[] = $forbiddenGroups;
 
         return $this;
     }
@@ -397,16 +405,18 @@ class Group implements \JsonSerializable
     /**
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeRequiredBy(Group $requiredBy): bool
+    public function removeForbiddenGroup(Group $forbiddenGroups): bool
     {
-        return $this->requiredBy->removeElement($requiredBy);
+        return $this->forbiddenGroups->removeElement($forbiddenGroups);
     }
 
     /**
+     * Get forbiddenGroups, ordered by name asc.
+     *
      * @return Group[]
      */
-    public function getRequiredBy(): array
+    public function getForbiddenGroups(): array
     {
-        return $this->requiredBy->toArray();
+        return $this->forbiddenGroups->toArray();
     }
 }

@@ -526,8 +526,7 @@ class Player implements \JsonSerializable
     }
 
     /**
-     * Returns true if the group does not have any required group of if the player is
-     * member of at least one required group.
+     * Checks required and forbidden groups.
      */
     public function isAllowedMember(Group $group): bool
     {
@@ -539,6 +538,13 @@ class Player implements \JsonSerializable
                 break;
             }
         }
+
+        foreach ($group->getForbiddenGroups() as $forbiddenGroup) {
+            if ($this->hasGroup($forbiddenGroup->getId())) {
+                return false;
+            }
+        }
+
         return !$notAllowed;
     }
 

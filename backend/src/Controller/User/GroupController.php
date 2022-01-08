@@ -81,7 +81,7 @@ class GroupController extends BaseController
      * @OA\Get(
      *     path="/user/group/public",
      *     operationId="userGroupPublic",
-     *     summary="List all public groups.",
+     *     summary="List all public groups that the player can join.",
      *     description="Needs role: user",
      *     tags={"Group"},
      *     security={{"Session"={}}},
@@ -714,16 +714,7 @@ class GroupController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        $hasGroup = false;
-        foreach ($this->group->getRequiredGroups() as $existingGroup) {
-            if ($existingGroup->getId() === (int) $groupId) {
-                $hasGroup = true;
-                break;
-            }
-        }
-        if (!$hasGroup) {
-            $this->group->addRequiredGroup($requiredGroup);
-        }
+        $this->group->addRequiredGroup($requiredGroup);
 
         return $this->flushAndReturn(204, $this->group);
     }
@@ -767,22 +758,149 @@ class GroupController extends BaseController
      */
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
+        $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        if (!$this->findGroup($id) || !$requiredGroup) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->group->removeRequiredGroup($requiredGroup);
+
+        return $this->flushAndReturn(204, $this->group);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Get(
+     *     path="/user/group/{id}/forbidden-groups",
+     *     operationId="userGroupForbiddenGroups",
+     *     summary="List all forbidden groups of a group.",
+     *     description="Needs role: group-admin, group-manager",
+     *     tags={"Group"},
+     *     security={{"Session"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Group ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="List of groups ordered by name.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Group"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     )
+     * )
+     */
+    public function forbiddenGroups(string $id): ResponseInterface
+    {
         if (!$this->findGroup($id)) {
             return $this->response->withStatus(404);
         }
 
-        $removed = false;
-        foreach ($this->group->getRequiredGroups() as $requiredGroup) {
-            if ($requiredGroup->getId() === (int) $groupId) {
-                $this->group->removeRequiredGroup($requiredGroup);
-                $removed = true;
-                break;
-            }
-        }
+        return $this->withJson($this->group->getForbiddenGroups());
+    }
 
-        if (!$removed) {
+    /**
+     * @OA\Put(
+     *     path="/user/group/{id}/add-forbidden/{groupId}",
+     *     operationId="userGroupAddForbiddenGroup",
+     *     summary="Add forbidden group to a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group to add.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Group added."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group(s) not found."
+     *     )
+     * )
+     */
+    public function addForbiddenGroup(string $id, string $groupId): ResponseInterface
+    {
+        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
+        if (!$this->findGroup($id) || ! $forbiddenGroup) {
             return $this->response->withStatus(404);
         }
+
+        $this->group->addForbiddenGroup($forbiddenGroup);
+
+        return $this->flushAndReturn(204, $this->group);
+    }
+
+    /**
+     * @noinspection PhpUnused
+     * @OA\Put(
+     *     path="/user/group/{id}/remove-forbidden/{groupId}",
+     *     operationId="userGroupRemoveForbiddenGroup",
+     *     summary="Remove forbidden group from a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="groupId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group to remove.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="204",
+     *         description="Group removed."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group(s) not found."
+     *     )
+     * )
+     */
+    public function removeForbiddenGroup(string $id, string $groupId): ResponseInterface
+    {
+        $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
+        if (!$this->findGroup($id) || !$forbiddenGroup) {
+            return $this->response->withStatus(404);
+        }
+
+        $this->group->removeForbiddenGroup($forbiddenGroup);
 
         return $this->flushAndReturn(204, $this->group);
     }

@@ -58,11 +58,22 @@
                         <span v-for="requiredGroup in requiredGroups" class="text-info">
                             {{ requiredGroup.name }},
                         </span>
-                        <span v-if="requiredGroups.length === 0">none</span>
+                        <span v-if="requiredGroups.length === 0" class="text-info">(none)</span>
                         <br>
-                        <span class="text-muted" v-if="requiredGroups.length > 0">
+                        <span class="text-muted">
                             Any member who is not also a member of at least <em>one</em> of these groups is
                             automatically removed.
+                        </span>
+                    </p>
+                    <p class="small">
+                        Groups that an account cannot be a member of to be a member of this group:
+                        <span v-for="forbiddenGroup in forbiddenGroups" class="text-info">
+                            {{ forbiddenGroup.name }},
+                        </span>
+                        <span v-if="forbiddenGroups.length === 0" class="text-info">(none)</span>
+                        <br>
+                        <span class="text-muted">
+                            Any member who is a member of <em>any</em> of these groups is automatically removed.
                         </span>
                     </p>
 
@@ -175,6 +186,7 @@ export default {
             groupApplications: [],
             searchResult: [],
             requiredGroups: [],
+            forbiddenGroups: [],
             groupManagers: [],
             contentType: ''
         }
@@ -203,6 +215,7 @@ export default {
             this.groupMembersLoaded = false;
             this.searchResult = [];
             this.requiredGroups = [];
+            this.forbiddenGroups = [];
             this.groupManagers = [];
             this.contentType = '';
 
@@ -223,6 +236,7 @@ export default {
             if (this.contentType === 'members') {
                 getMembers(this);
                 getRequiredGroups(this);
+                getForbiddenGroups(this);
                 getGroupManager(this);
             } else if (this.contentType === 'applications') {
                 getApplications(this);
@@ -236,7 +250,7 @@ export default {
             const vm = this;
             new GroupApi().addMember(this.groupId, playerId, function(error, data, response) {
                 if (response.statusCode === 400) {
-                    vm.message(vm.messages.errorMissingRequiredGroup, 'warning');
+                    vm.message(vm.messages.errorRequiredForbiddenGroup, 'warning');
                 }
                 addRemoveResult(vm, playerId, error);
             });
@@ -291,6 +305,15 @@ function getRequiredGroups(vm) {
             return;
         }
         vm.requiredGroups = data;
+    });
+}
+
+function getForbiddenGroups(vm) {
+    new GroupApi().userGroupForbiddenGroups(vm.groupId, function(error, data) {
+        if (error) {
+            return;
+        }
+        vm.forbiddenGroups = data;
     });
 }
 

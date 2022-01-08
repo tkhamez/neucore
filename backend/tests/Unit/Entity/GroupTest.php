@@ -176,25 +176,25 @@ class GroupTest extends TestCase
 
         $group->addRequiredGroup($required1);
         $group->addRequiredGroup($required2);
-        $this->assertSame([$required1, $required2], $group->getRequiredGroups());
-
-        $group->removeRequiredGroup($required2);
         $this->assertSame([$required1], $group->getRequiredGroups());
+
+        $group->removeRequiredGroup($required1);
+        $this->assertSame([], $group->getRequiredGroups());
     }
 
-    public function testAddGetRemoveRequiredBy()
+    public function testAddGetRemoveForbiddenGroups()
     {
         $group = new Group();
-        $dependent1 = new Group();
-        $dependent2 = new Group();
+        $forbidden1 = new Group();
+        $forbidden2 = new Group();
 
-        $this->assertSame([], $group->getRequiredBy());
+        $this->assertSame([], $group->getForbiddenGroups());
 
-        $group->addRequiredBy($dependent1);
-        $group->addRequiredBy($dependent2);
-        $this->assertSame([$dependent1, $dependent2], $group->getRequiredBy());
+        $group->addForbiddenGroup($forbidden1);
+        $group->addForbiddenGroup($forbidden2);
+        $this->assertSame([$forbidden1], $group->getForbiddenGroups());
 
-        $group->removeRequiredBy($dependent2);
-        $this->assertSame([$dependent1], $group->getRequiredBy());
+        $group->removeForbiddenGroup($forbidden1);
+        $this->assertSame([], $group->getForbiddenGroups());
     }
 }

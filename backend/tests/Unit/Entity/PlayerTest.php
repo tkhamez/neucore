@@ -438,12 +438,14 @@ class PlayerTest extends TestCase
         $group1 = new Group();
         $group2 = new Group();
         $group3 = new Group();
+        $group4 = new Group();
 
         $rp = new \ReflectionProperty(Group::class, 'id');
         $rp->setAccessible(true);
         $rp->setValue($group1, 1);
         $rp->setValue($group2, 2);
-        $rp->setValue($group3, 2);
+        $rp->setValue($group3, 3);
+        $rp->setValue($group4, 4);
 
         $this->assertTrue($player->isAllowedMember($group1));
 
@@ -455,6 +457,12 @@ class PlayerTest extends TestCase
 
         $group1->addRequiredGroup($group3);
         $this->assertTrue($player->isAllowedMember($group1));
+
+        $group1->addForbiddenGroup($group4);
+        $this->assertTrue($player->isAllowedMember($group1));
+
+        $player->addGroup($group4);
+        $this->assertFalse($player->isAllowedMember($group1));
     }
 
     public function testAddGetRemoveManagerGroups()

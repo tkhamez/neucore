@@ -64,7 +64,7 @@ Character API
 - Update a character with data from ESI. `PUT /user/character/{id}/update`
 
 Group API
-- List all public groups. `GET /user/group/public`
+- List all public groups that the player can join. `GET /user/group/public`
 
 Player API
 - Return the logged in player with all properties. `GET /user/player/show`
@@ -170,6 +170,9 @@ Group API
 - List all required groups of a group. `GET /user/group/{id}/required-groups`
 - Add required group to a group. `PUT /user/group/{id}/add-required/{groupId}`
 - Remove required group from a group. `PUT /user/group/{id}/remove-required/{groupId}`
+- List all forbidden groups of a group. `GET /user/group/{id}/forbidden-groups`
+- Add forbidden group to a group. `PUT /user/group/{id}/add-forbidden/{groupId}`
+- Remove forbidden group from a group. `PUT /user/group/{id}/remove-forbidden/{groupId}`
 - Assign a player as manager to a group. `PUT /user/group/{id}/add-manager/{pid}`
 - Remove a manager (player) from a group. `PUT /user/group/{id}/remove-manager/{pid}`
 - List all members of a group. `GET /user/group/{id}/members`
@@ -189,6 +192,7 @@ Character API
 Group API
 - List all managers of a group. `GET /user/group/{id}/managers`
 - List all required groups of a group. `GET /user/group/{id}/required-groups`
+- List all forbidden groups of a group. `GET /user/group/{id}/forbidden-groups`
 - List all applications of a group. `GET /user/group/{id}/applications`
 - Accept a player's request to join a group. `PUT /user/group/accept-application/{id}`
 - Deny a player's request to join a group. `PUT /user/group/deny-application/{id}`

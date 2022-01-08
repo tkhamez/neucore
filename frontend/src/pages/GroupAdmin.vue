@@ -105,7 +105,12 @@
             </ul>
 
             <admin v-cloak v-if="groupId && contentType !== 'members'" ref="admin"
-                   :player="player" :contentType="contentType" :typeId="groupId" :settings="settings"
+                   :player="player" :contentType="(contentType !== 'groups' ? contentType : 'requiredGroups')"
+                   :typeId="groupId" :settings="settings"
+                   :type="'Group'" :searchCurrentOnly="true"></admin>
+
+            <admin v-cloak v-if="groupId && contentType === 'groups'" ref="admin"
+                   :player="player" :contentType="'forbiddenGroups'" :typeId="groupId" :settings="settings"
                    :type="'Group'" :searchCurrentOnly="true"></admin>
 
             <div v-cloak v-if="contentType === 'members'" class="card border-secondary mb-3 table-responsive">

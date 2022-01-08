@@ -3,7 +3,9 @@
 ## next
 
 - New: Groups can now be marked as default, which adds them to any account. The configuration of the required 
-  groups is still respected. They will not be removed again if they are no longer marked as default.
+  groups is still respected. Members will not be removed if a group is no longer marked as default.
+- New: "Forbidden" groups have been added in the group configuration. An account is removed from a group if it is a 
+  member of one of its forbidden groups.
 
 ## 1.29.0
 
