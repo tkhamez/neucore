@@ -17,22 +17,19 @@ use Neucore\Entity\Alliance;
 
 class GroupControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    private $appId;
+    private int $appId;
 
-    private $group0Id;
+    private int $group0Id;
 
-    private $group1Id;
+    private int $group1Id;
 
-    private $group2Id;
+    private int $group2Id;
 
-    private $group4Id;
+    private int $group4Id;
 
-    private $group5Id;
+    private int $group5Id;
 
     protected function setUp(): void
     {
@@ -103,7 +100,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
         ], $body1);
     }
 
@@ -142,7 +139,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([
             ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
         ], $this->parseJsonBody($response));
     }
 
@@ -186,7 +183,7 @@ class GroupControllerTest extends WebTestCase
             'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
             'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
             ],
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
@@ -196,9 +193,9 @@ class GroupControllerTest extends WebTestCase
             ]],
             'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ],
         ]];
         $this->assertSame($expected, $body);
@@ -231,7 +228,7 @@ class GroupControllerTest extends WebTestCase
             'character' => ['id' => 123, 'name' => 'C1', 'corporation' => null],
             'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
             ],
         ], [
             'character' => ['id' => 789, 'name' => 'C3', 'corporation' => [
@@ -301,9 +298,9 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
         ], $this->parseJsonBody($response));
     }
 
@@ -346,16 +343,16 @@ class GroupControllerTest extends WebTestCase
         $expected = [[
             'id' => 500, 'name' => 'five', 'ticker' => '-5-', 'groups' => [
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ]
         ], [
             'id' => 501, 'name' => 'f1', 'ticker' => '-51-', 'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ]
         ]];
         $this->assertSame($expected, $body);
@@ -418,9 +415,9 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame([
             ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ['id' => $this->group5Id, 'name' => 'g5', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
         ], $this->parseJsonBody($response));
     }
 
@@ -463,16 +460,16 @@ class GroupControllerTest extends WebTestCase
         $expected = [[
             'id' => 100, 'name' => 'one', 'ticker' => '-1-', 'groups' => [
                 ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group5Id, 'name' => 'g5', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ]
         ], [
             'id' => 101, 'name' => 'o1', 'ticker' => '-11-', 'groups' => [
                 ['id' => $this->group0Id, 'name' => 'g0', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ]
         ]];
         $this->assertSame($expected, $body);
@@ -510,7 +507,7 @@ class GroupControllerTest extends WebTestCase
         $body = $this->parseJsonBody($response);
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
         ], $body);
     }
 
@@ -535,11 +532,11 @@ class GroupControllerTest extends WebTestCase
         $body = $this->parseJsonBody($response);
         $this->assertSame([
             ['id' => $this->group1Id, 'name' => 'g1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ['id' => $this->group4Id, 'name' => 'g4', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ['id' => $this->group5Id, 'name' => 'g5', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
         ], $body);
     }
 

@@ -162,6 +162,7 @@ Group API
 - Update group description. `PUT /user/group/{id}/update-description`
 - Change visibility of a group. `PUT /user/group/{id}/set-visibility/{choice}`
 - Change the auto-accept setting of a group. `PUT /user/group/{id}/set-auto-accept/{choice}`
+- Change the is-default setting of a group. `PUT /user/group/{id}/set-is-default/{choice}`
 - Delete a group. `DELETE /user/group/{id}/delete`
 - List all managers of a group. `GET /user/group/{id}/managers`
 - List all corporations of a group. `GET /user/group/{id}/corporations`

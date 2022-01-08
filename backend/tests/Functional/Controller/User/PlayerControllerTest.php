@@ -215,9 +215,9 @@ class PlayerControllerTest extends WebTestCase
             ]],
             'groups' => [
                 ['id' => $groups[1]->getId(), 'name' => 'another-group', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $groups[0]->getId(), 'name' => 'group1', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
             ],
             'managerGroups' => [],
             'managerApps' => [],
@@ -352,7 +352,7 @@ class PlayerControllerTest extends WebTestCase
             'id' => $ga->getId(),
             'player' => ['id' => $this->player3Id, 'name' => 'Admin'],
             'group' => ['id' => $this->groupId, 'name' => 'test-pub', 'description' => null,
-                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => null,
         ]], $this->parseJsonBody($response));
@@ -950,6 +950,7 @@ class PlayerControllerTest extends WebTestCase
                 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
+                'isDefault' => false,
             ]],
             'managerGroups' => [],
             'managerApps' => [],
@@ -1049,6 +1050,7 @@ class PlayerControllerTest extends WebTestCase
                 'description' => null,
                 'visibility' => Group::VISIBILITY_PRIVATE,
                 'autoAccept' => false,
+                'isDefault' => false,
             ]],
             'removedCharacters' => [],
             'incomingCharacters' => [],

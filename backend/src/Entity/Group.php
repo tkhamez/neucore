@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
 
@@ -38,30 +39,32 @@ class Group implements \JsonSerializable
      *
      * @OA\Property(maxLength=64, pattern="^[-._a-zA-Z0-9]+$")
      * @ORM\Column(type="string", unique=true, length=64)
-     * @var string|null
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @OA\Property(maxLength=1024)
      * @ORM\Column(type="string", length=1024, nullable=true)
-     * @var string|null
      */
-    private $description;
+    private ?string $description = null;
 
     /**
      * @OA\Property(enum={"private", "public"})
      * @ORM\Column(type="string", length=16, options={"default" : "private"})
-     * @var string
      */
-    private $visibility = self::VISIBILITY_PRIVATE;
+    private string $visibility = self::VISIBILITY_PRIVATE;
 
     /**
      * @OA\Property()
      * @ORM\Column(type="boolean", name="auto_accept")
-     * @var bool
      */
-    private $autoAccept = false;
+    private bool $autoAccept = false;
+
+    /**
+     * @OA\Property()
+     * @ORM\Column(type="boolean", name="is_default")
+     */
+    private bool $isDefault = false;
 
     /**
      * @ORM\OneToMany(targetEntity="GroupApplication", mappedBy="group", cascade={"remove"})
@@ -147,6 +150,7 @@ class Group implements \JsonSerializable
             'description' => $this->description,
             'visibility' => $this->visibility,
             'autoAccept' => $this->autoAccept,
+            'isDefault' => $this->isDefault,
         ];
     }
 
@@ -222,6 +226,18 @@ class Group implements \JsonSerializable
     public function getAutoAccept(): bool
     {
         return $this->autoAccept;
+    }
+
+    public function setIsDefault(bool $isDefault): self
+    {
+        $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    public function getIsDefault(): bool
+    {
+        return $this->isDefault;
     }
 
     public function addApplication(GroupApplication $application): self

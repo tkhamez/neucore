@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
 
@@ -29,30 +30,15 @@ class GroupController extends BaseController
 
     private const TYPE_MEMBERS = 'members';
 
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
+    private UserAuth $userAuth;
 
-    /**
-     * @var Account
-     */
-    private $account;
+    private Account $account;
 
-    /**
-     * @var string
-     */
-    private $namePattern = "/^[-._a-zA-Z0-9]+$/";
+    private string $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
-    /**
-     * @var Group
-     */
-    private $group;
+    private ?Group $group = null;
 
-    /**
-     * @var Player
-     */
-    private $player;
+    private ?Player $player = null;
 
     public function __construct(
         ResponseInterface $response,
@@ -428,6 +414,61 @@ class GroupController extends BaseController
         }
 
         $this->group->setAutoAccept($choice === 'on');
+
+        return $this->flushAndReturn(200, $this->group);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/user/group/{id}/set-is-default/{choice}",
+     *     operationId="userGroupSetIsDefault",
+     *     summary="Change the is-default setting of a group.",
+     *     description="Needs role: group-admin",
+     *     tags={"Group"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the group.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="choice",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"on", "off"})
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Is-default changed.",
+     *         @OA\JsonContent(ref="#/components/schemas/Group")
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid 'choice' parameter."
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Group not found."
+     *     )
+     * )
+     */
+    public function setIsDefault(string $id, string $choice): ResponseInterface
+    {
+        if (!$this->findGroup($id)) {
+            return $this->response->withStatus(404);
+        }
+
+        if (!in_array($choice, ['on', 'off'])) {
+            return $this->response->withStatus(400);
+        }
+
+        $this->group->setIsDefault($choice === 'on');
 
         return $this->flushAndReturn(200, $this->group);
     }

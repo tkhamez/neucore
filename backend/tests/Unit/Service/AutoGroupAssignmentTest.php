@@ -20,55 +20,33 @@ use Neucore\Entity\Alliance;
 
 class AutoGroupAssignmentTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $th;
+    private Helper $th;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
+    private PlayerRepository $playerRepo;
 
-    /**
-     * @var AutoGroupAssignment
-     */
-    private $aga;
+    private AutoGroupAssignment $aga;
 
-    private $playerId;
+    private Player $player;
 
-    private $playerManagedId;
+    private int $playerId;
 
-    /**
-     * @var Group
-     */
-    private $group1;
+    private int $playerManagedId;
 
-    /**
-     * @var Group
-     */
-    private $group2;
+    private Group $group1;
 
-    /**
-     * @var Group
-     */
-    private $group3;
+    private Group $group2;
 
-    /**
-     * @var Group
-     */
-    private $group4;
+    private Group $group3;
 
-    private $group5Id;
+    private Group $group4;
 
-    private $group6Id;
+    private int $group5Id;
 
-    private $group7Id;
+    private int $group6Id;
+
+    private int $group7Id;
 
     protected function setUp(): void
     {
@@ -136,6 +114,20 @@ class AutoGroupAssignmentTest extends TestCase
         $this->assertGreaterThan('2018-04-28 17:56:54', $playerDb->getLastUpdate()->format('Y-m-d H:i:s'));
     }
 
+    public function testAddDefaultGroups()
+    {
+        $this->setUpData();
+        $this->assertSame([$this->group4->getId(), $this->group5Id], $this->player->getGroupIds());
+
+        $this->aga->assignDefaultGroups($this->player);
+
+        $this->om->flush();
+        $this->om->clear();
+
+        $playerDb = $this->playerRepo->find($this->playerId);
+        $this->assertSame([$this->group4->getId(), $this->group5Id, $this->group7Id], $playerDb->getGroupIds());
+    }
+
     public function testCheckRequiredGroups()
     {
         $this->setUpData();
@@ -185,7 +177,7 @@ class AutoGroupAssignmentTest extends TestCase
         $group4 = (new Group())->setName('g4');
         $group5 = (new Group())->setName('g5');
         $group6 = (new Group())->setName('g6');
-        $group7 = (new Group())->setName('g7');
+        $group7 = (new Group())->setName('g7')->setIsDefault(true);
         $alliance = (new Alliance())->setId(1)->setName('a1')->setTicker('ta1')->addGroup($group6)->addGroup($group7);
         $corp1 = (new Corporation())->setId(1)->setName('c1')->setTicker('t1')->addGroup($group1)->addGroup($group2);
         $corp2 = (new Corporation())->setId(2)->setName('c2')->setTicker('t2')->addGroup($group1)->addGroup($group3)
@@ -228,6 +220,7 @@ class AutoGroupAssignmentTest extends TestCase
         $this->om->persist($playerManaged);
         $this->om->flush();
 
+        $this->player = $player;
         $this->playerId = $player->getId();
         $this->playerManagedId = $playerManaged->getId();
         $this->group1 = $group1;

@@ -22,7 +22,7 @@ class GroupApplicationTest extends TestCase
             'id' => null,
             'player' => ['id' => null, 'name' => 'p'],
             'group' => ['id' => null, 'name' => 'g', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             'status' => GroupApplication::STATUS_PENDING,
             'created' => '2019-04-06T16:09:24Z'
         ], json_decode((string) json_encode($groupApp), true));
@@ -66,9 +66,9 @@ class GroupApplicationTest extends TestCase
         $groupApp = new GroupApplication();
 
         $groupApp->setStatus('invalid');
-        $this->assertSame($groupApp->getStatus(), GroupApplication::STATUS_PENDING);
+        $this->assertSame(GroupApplication::STATUS_PENDING, $groupApp->getStatus());
 
         $groupApp->setStatus(GroupApplication::STATUS_DENIED);
-        $this->assertSame($groupApp->getStatus(), GroupApplication::STATUS_DENIED);
+        $this->assertSame(GroupApplication::STATUS_DENIED, $groupApp->getStatus());
     }
 }

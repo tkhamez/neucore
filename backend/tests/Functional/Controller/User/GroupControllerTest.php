@@ -27,49 +27,31 @@ use Tests\WriteErrorListener;
 
 class GroupControllerTest extends WebTestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var GroupRepository
-     */
-    private $groupRepo;
+    private GroupRepository $groupRepo;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
+    private PlayerRepository $playerRepo;
 
-    /**
-     * @var GroupApplicationRepository
-     */
-    private $groupAppRepo;
+    private GroupApplicationRepository $groupAppRepo;
 
-    private $gid;
+    private int $gid;
 
-    private $gid2;
+    private int $gid2;
 
-    private $gidReq;
+    private int $gidReq;
 
-    private $gid4;
+    private int $gid4;
 
-    private $pid;
+    private int $pid;
 
-    private $pid2;
+    private int $pid2;
 
-    private $groupAppID;
+    private int $groupAppID;
 
     public static function setupBeforeClass(): void
     {
@@ -115,13 +97,13 @@ class GroupControllerTest extends WebTestCase
         $this->assertSame(
             [
                 ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->gid2, 'name' => 'group-public', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->gid4, 'name' => 'group-public2', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
                 ['id' => $this->gidReq, 'name' => 'required-group', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             ],
             $this->parseJsonBody($response1)
         );
@@ -142,7 +124,7 @@ class GroupControllerTest extends WebTestCase
         $this->assertEquals(200, $response1->getStatusCode());
         $this->assertSame(
             [['id' => $this->gid2, 'name' => 'group-public', 'description' => null,
-                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false]],
+                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false]],
             $this->parseJsonBody($response1)
         );
     }
@@ -195,7 +177,7 @@ class GroupControllerTest extends WebTestCase
         $ng = $this->groupRepo->findOneBy(['name' => 'new-g']);
         $this->assertSame(
             ['id' => $ng->getId(), 'name' => 'new-g', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             $this->parseJsonBody($response)
         );
     }
@@ -262,13 +244,13 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             $this->parseJsonBody($response1)
         );
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'new-name', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             $this->parseJsonBody($response2)
         );
 
@@ -316,7 +298,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => "A\ndescription",
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             $this->parseJsonBody($response)
         );
 
@@ -364,7 +346,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PUBLIC, 'autoAccept' => false, 'isDefault' => false],
             $this->parseJsonBody($response)
         );
 
@@ -416,7 +398,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => true],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => true, 'isDefault' => false],
             $this->parseJsonBody($response2)
         );
 
@@ -424,6 +406,58 @@ class GroupControllerTest extends WebTestCase
 
         $changed = $this->groupRepo->find($this->gid);
         $this->assertTrue($changed->getAutoAccept());
+    }
+
+    public function testSetIsDefault403()
+    {
+        $response = $this->runApp('PUT', '/api/user/group/66/set-is-default/on');
+        $this->assertEquals(403, $response->getStatusCode());
+
+        $this->setupDb();
+        $this->loginUser(6); // not a group-admin
+
+        $response = $this->runApp('PUT', '/api/user/group/66/set-is-default/on');
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testSetIsDefault404()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('PUT', '/api/user/group/'.($this->gid + 5).'/set-is-default/on');
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testSetIsDefault400()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/set-is-default/invalid');
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testSetIsDefault200()
+    {
+        $this->setupDb();
+        $this->loginUser(8);
+
+        $response1 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/set-is-default/off');
+        $response2 = $this->runApp('PUT', '/api/user/group/'.$this->gid.'/set-is-default/on');
+        $this->assertEquals(200, $response1->getStatusCode());
+        $this->assertEquals(200, $response2->getStatusCode());
+
+        $this->assertSame(
+            ['id' => $this->gid, 'name' => 'group-one', 'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => true],
+            $this->parseJsonBody($response2)
+        );
+
+        $this->em->clear();
+
+        $changed = $this->groupRepo->find($this->gid);
+        $this->assertTrue($changed->getIsDefault());
     }
 
     public function testDelete403()
@@ -613,7 +647,7 @@ class GroupControllerTest extends WebTestCase
 
         $this->assertSame(
             [['id' => $this->gidReq, 'name' => 'required-group', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
             $this->parseJsonBody($response)
         );
     }
@@ -832,7 +866,8 @@ class GroupControllerTest extends WebTestCase
                     'name' => 'group-public',
                     'description' => null,
                     'visibility' => Group::VISIBILITY_PUBLIC,
-                    'autoAccept' => false
+                    'autoAccept' => false,
+                    'isDefault' => false,
                 ],
                 'status' => GroupApplication::STATUS_PENDING,
                 'created' => null,

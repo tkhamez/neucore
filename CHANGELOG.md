@@ -1,5 +1,10 @@
 # Changelog
 
+## next
+
+- New: Groups can now be marked as default, which adds them to any account. The configuration of the required 
+  groups is still respected. They will not be removed again if they are no longer marked as default.
+
 ## 1.29.0
 
 1 Jan 2022

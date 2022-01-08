@@ -32,7 +32,9 @@
                            :href="'#GroupAdmin/' + group.id + '/' + contentType">
                             {{ group.name }}
                             <span class="text-muted small">
-                                {{ group.visibility }} {{ group.autoAccept ? 'auto-accept' : '' }}
+                                {{ group.visibility }}
+                                {{ group.autoAccept ? 'auto-accept' : '' }}
+                                {{ group.isDefault ? 'default' : '' }}
                             </span>
                         </a>
                         <span class="entity-actions">

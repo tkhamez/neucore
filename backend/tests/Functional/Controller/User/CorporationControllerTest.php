@@ -154,13 +154,13 @@ class CorporationControllerTest extends WebTestCase
             [
                 ['id' => 111, 'name' => 'corp 1', 'ticker' => 't1', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
                 ]],
                 ['id' => 222, 'name' => 'corp 2', 'ticker' => 't2', 'alliance' => null, 'groups' => [
                     ['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
                     ['id' => $this->gid2, 'name' => 'group 2', 'description' => null,
-                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                        'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
                 ]]
             ],
             $this->parseJsonBody($response)
@@ -519,7 +519,7 @@ class CorporationControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame(
             [['id' => $this->group1->getId(), 'name' => 'group 1', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
             $this->parseJsonBody($response)
         );
     }

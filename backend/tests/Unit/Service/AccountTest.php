@@ -39,100 +39,43 @@ use Tests\Logger;
 
 class AccountTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var Account
-     */
-    private $service;
+    private Account $service;
 
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private CharacterRepository $charRepo;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
+    private PlayerRepository $playerRepo;
 
-    /**
-     * @var RemovedCharacterRepository
-     */
-    private $removedCharRepo;
+    private RemovedCharacterRepository $removedCharRepo;
 
-    /**
-     * @var PlayerLoginsRepository
-     */
-    private $playerLoginsRepo;
+    private PlayerLoginsRepository $playerLoginsRepo;
 
-    /**
-     * @var CharacterNameChangeRepository
-     */
-    private $characterNameChangeRepo;
+    private CharacterNameChangeRepository $characterNameChangeRepo;
 
-    /**
-     * @var Player
-     */
-    private $player1;
+    private Player $player1;
 
-    /**
-     * @var Player
-     */
-    private $player2;
+    private Player $player2;
 
-    /**
-     * @var Corporation
-     */
-    private $corp1;
+    private Corporation $corp1;
 
-    /**
-     * @var Corporation
-     */
-    private $corp2;
+    private Corporation $corp2;
 
-    /**
-     * @var Watchlist
-     */
-    private $watchlist1;
+    private Watchlist $watchlist1;
 
-    /**
-     * @var Watchlist
-     */
-    private $watchlist2;
+    private Watchlist $watchlist2;
 
-    /**
-     * @var Group
-     */
-    private $group1;
+    private Group $group1;
 
-    /**
-     * @var Group
-     */
-    private $group2;
+    private Group $group2;
 
-    /**
-     * @var Role
-     */
-    private $role1;
+    private Role $role1;
 
     /**
      * @var Role
@@ -852,6 +795,8 @@ class AccountTest extends TestCase
 
     public function testUpdateGroups()
     {
+        $this->setUpUpdateGroupsData(); // adds 2 default group, one with a required group
+
         $player = $this->helper->addCharacterMain('Player 1', 1, [Role::GROUP_MANAGER])->getPlayer();
         $this->assertSame([Role::GROUP_MANAGER], $player->getRoleNames());
 
@@ -861,6 +806,7 @@ class AccountTest extends TestCase
         $this->assertTrue($result);
         $player = $this->playerRepo->find($player->getId());
         $this->assertSame([], $player->getRoleNames());
+        $this->assertSame([$this->group2->getId()], $player->getGroupIds());
     }
 
     public function testSyncTrackingRoleInvalidCall()
@@ -1059,6 +1005,19 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::GROUP_MANAGER));
         $this->assertTrue($players[0]->hasRole(Role::APP_MANAGER));
         $this->assertFalse($players[1]->hasRole(Role::APP_MANAGER));
+    }
+
+    private function setUpUpdateGroupsData(): void
+    {
+        $group1 = (new Group())->setName('group 1');
+        $this->group2 = (new Group())->setName('group 2')->setIsDefault(true);
+        $group3 = (new Group())->setName('group 3')->setIsDefault(true)->addRequiredGroup($group1);
+
+        $this->om->persist($group1);
+        $this->om->persist($this->group2);
+        $this->om->persist($group3);
+
+        $this->om->flush();
     }
 
     private function setUpTrackingData(): void

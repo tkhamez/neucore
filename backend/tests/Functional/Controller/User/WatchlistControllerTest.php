@@ -908,6 +908,7 @@ class WatchlistControllerTest extends WebTestCase
             'description' => null,
             'visibility' => Group::VISIBILITY_PRIVATE,
             'autoAccept' => false,
+            'isDefault' => false,
         ]], $this->parseJsonBody($response));
     }
 
@@ -1015,6 +1016,7 @@ class WatchlistControllerTest extends WebTestCase
             'description' => null,
             'visibility' => Group::VISIBILITY_PRIVATE,
             'autoAccept' => false,
+            'isDefault' => false,
         ]], $this->parseJsonBody($response));
     }
 

@@ -90,7 +90,14 @@ Modal windows to create, delete and edit entities
                             Automatically accept applications
                         </label>
                         <input class="form-check-input" type="checkbox" id="entityEditAutoAccept"
-                               v-model="groupAutoAccept" v-on:change="setAutoAccept()">
+                               v-model="groupAutoAccept" v-on:change="toggleGroupCheckbox('auto-accept')">
+                    </div>
+                    <div v-cloak v-if="type === 'Group'" class="form-check mt-2">
+                        <label class="form-check-label" for="entityEditIsDefault">
+                            Default (add to every account)
+                        </label>
+                        <input class="form-check-input" type="checkbox" id="entityEditIsDefault"
+                               v-model="groupIsDefault" v-on:change="toggleGroupCheckbox('is-default')">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -120,6 +127,7 @@ export default {
             newName: '',
             groupVisibility: '',
             groupAutoAccept: '',
+            groupIsDefault: '',
             item: null,
             createModal: null,
             deleteModal: null,
@@ -154,6 +162,7 @@ export default {
             if (this.type === 'Group') {
                 this.groupVisibility = item.visibility;
                 this.groupAutoAccept = item.autoAccept;
+                this.groupIsDefault = item.isDefault;
             }
             this.editModal = new Modal('#editModal');
             this.editModal.show();
@@ -185,17 +194,23 @@ export default {
             });
         },
 
-        setAutoAccept() {
+        toggleGroupCheckbox(name) {
             const vm = this;
-            new GroupApi().userGroupSetAutoAccept(this.item.id, this.groupAutoAccept ? 'on' : 'off', (error) => {
+            const callback = (error) => {
                 if (error) {
-                    vm.message('Error saving auto-accept.', 'error');
+                    vm.message(`Error saving ${name}.`, 'error');
                 } else {
-                    vm.message('Auto-accept saved.', 'success');
+                    vm.message(`${name} saved.`, 'success');
                     vm.$emit('groupChange');
                 }
-            });
-        }
+            };
+            const api = new GroupApi();
+            if (name === 'auto-accept') {
+                api.userGroupSetAutoAccept(this.item.id, this.groupAutoAccept ? 'on' : 'off', callback);
+            } else if (name === 'is-default') {
+                api.userGroupSetIsDefault(this.item.id, this.groupIsDefault ? 'on' : 'off', callback);
+            }
+        },
     },
 }
 </script>

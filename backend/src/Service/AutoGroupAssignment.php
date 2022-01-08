@@ -14,47 +14,40 @@ use Neucore\Repository\GroupRepository;
 
 class AutoGroupAssignment
 {
-    /**
-     * @var AllianceRepository
-     */
-    private $allianceRepo;
+    private AllianceRepository $allianceRepo;
 
-    /**
-     * @var CorporationRepository
-     */
-    private $corpRepo;
+    private CorporationRepository $corpRepo;
 
-    /**
-     * @var GroupRepository
-     */
-    private $groupRepo;
+    private GroupRepository $groupRepo;
 
     /**
      * Alliance ID to group IDs mapping.
-     *
-     * @var array
      */
-    private $allianceMapping;
+    private array $allianceMapping = [];
 
     /**
      * Corporation ID to group IDs mapping.
-     *
-     * @var array
      */
-    private $corpMapping;
+    private array $corpMapping = [];
 
     /**
      * All group IDs from the corporation and alliance to group configuration.
-     *
-     * @var array
      */
-    private $autoGroups;
+    private ?array $autoGroups = null;
 
     public function __construct(RepositoryFactory $repositoryFactory)
     {
         $this->allianceRepo = $repositoryFactory->getAllianceRepository();
         $this->corpRepo = $repositoryFactory->getCorporationRepository();
         $this->groupRepo = $repositoryFactory->getGroupRepository();
+    }
+
+    public function assignDefaultGroups(Player $player): void
+    {
+        $defaultGroups = $this->groupRepo->findBy(['isDefault' => true]);
+        foreach ($defaultGroups as $defaultGroup) {
+            $player->addGroup($defaultGroup);
+        }
     }
 
     /**

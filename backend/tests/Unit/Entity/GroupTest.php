@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -21,7 +22,7 @@ class GroupTest extends TestCase
 
         $this->assertSame(
             ['id' => null, 'name' => 'g.name', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false],
             json_decode((string) json_encode($group), true)
         );
     }
@@ -64,10 +65,19 @@ class GroupTest extends TestCase
 
     public function testSetGetAutoAccept()
     {
-        $char = new Group();
-        $this->assertFalse($char->getAutoAccept());
-        $char->setAutoAccept(true);
-        $this->assertTrue($char->getAutoAccept());
+        $group = new Group();
+        $this->assertFalse($group->getAutoAccept());
+        $group->setAutoAccept(true);
+        $this->assertTrue($group->getAutoAccept());
+    }
+
+
+    public function testSetGetIsDefault()
+    {
+        $group = new Group();
+        $this->assertFalse($group->getIsDefault());
+        $group->setIsDefault(true);
+        $this->assertTrue($group->getIsDefault());
     }
 
     public function testAddGetRemoveApplication()

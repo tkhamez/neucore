@@ -496,6 +496,7 @@ class Account
             return false;
         }
 
+        $this->autoGroupAssignment->assignDefaultGroups($player);
         $this->autoGroupAssignment->assign($player);
         $this->autoGroupAssignment->checkRequiredGroups($player);
         $this->syncManagerRole($player, Role::GROUP_MANAGER); // fix roles that were not remove due to errors

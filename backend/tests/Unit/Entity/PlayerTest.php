@@ -79,10 +79,10 @@ class PlayerTest extends TestCase
             ]],
             'groups' => [
                 ['id' => null, 'name' => 'group2', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]
+                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
             ],
             'managerGroups' => [['id' => null, 'name' => 'gName', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false]],
+                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [], 'eveLogins' => []]],
         ];
         $this->assertSame($expected1, json_decode((string) json_encode($play), true));
