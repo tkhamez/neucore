@@ -100,23 +100,6 @@
                         </span>
                     </label>
 
-                    <label class="col-form-label w-100">
-                        Required Groups
-                        <input type="text" class="form-control" v-model="requiredGroups">
-                        <span class="form-text">
-                            Comma-separated list of group IDs that an account must have (one of them)
-                            to see this service.
-                        </span>
-                    </label>
-                    <label class="col-form-label w-100">
-                        Account Properties
-                        <input type="text" class="form-control" v-model="properties">
-                        <span class="form-text">
-                            Comma separated list of properties, possible values: username, password, email, status,
-                            name
-                        </span>
-                    </label>
-
                     <div class="form-check">
                         <label class="form-check-label" for="configShowPassword">
                             Show password to user<br>
@@ -139,7 +122,7 @@
 
                     <p class="mb-0">Link Buttons</p>
                     <small class="text-muted">Placeholders for URL: {username}, {password}, {email}</small><br>
-                    <div class="row" v-for="(url, idx) in URLs">
+                    <div class="row mb-2" v-for="(url, idx) in URLs">
                         <label class="text-muted col-sm-2 col-form-label" :for="'configUrl'+idx">URL</label>
                         <div class="col-sm-10">
                             <!--suppress HtmlFormInputWithoutLabel -->
