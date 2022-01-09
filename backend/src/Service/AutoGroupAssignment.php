@@ -44,6 +44,10 @@ class AutoGroupAssignment
 
     public function assignDefaultGroups(Player $player): void
     {
+        if ($player->getStatus() === Player::STATUS_MANAGED) {
+            return;
+        }
+
         $defaultGroups = $this->groupRepo->findBy(['isDefault' => true]);
         foreach ($defaultGroups as $defaultGroup) {
             $player->addGroup($defaultGroup);
