@@ -233,7 +233,8 @@ class GroupController extends BaseController
      */
     public function rename(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -298,7 +299,8 @@ class GroupController extends BaseController
      */
     public function updateDescription(string $id, ServerRequestInterface $request): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -350,7 +352,8 @@ class GroupController extends BaseController
      */
     public function setVisibility(string $id, string $choice): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -405,7 +408,8 @@ class GroupController extends BaseController
      */
     public function setAutoAccept(string $id, string $choice): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -460,7 +464,8 @@ class GroupController extends BaseController
      */
     public function setIsDefault(string $id, string $choice): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -504,7 +509,8 @@ class GroupController extends BaseController
      */
     public function delete(string $id): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -584,7 +590,8 @@ class GroupController extends BaseController
      */
     public function corporations(string $id): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -623,7 +630,8 @@ class GroupController extends BaseController
      */
     public function alliances(string $id): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -663,7 +671,8 @@ class GroupController extends BaseController
      */
     public function requiredGroups(string $id): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -710,7 +719,8 @@ class GroupController extends BaseController
     public function addRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
-        if (!$this->findGroup($id) || ! $requiredGroup) {
+        $this->findGroup($id);
+        if (!$this->group || ! $requiredGroup) {
             return $this->response->withStatus(404);
         }
 
@@ -759,7 +769,8 @@ class GroupController extends BaseController
     public function removeRequiredGroup(string $id, string $groupId): ResponseInterface
     {
         $requiredGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
-        if (!$this->findGroup($id) || !$requiredGroup) {
+        $this->findGroup($id);
+        if (!$this->group || !$requiredGroup) {
             return $this->response->withStatus(404);
         }
 
@@ -801,7 +812,8 @@ class GroupController extends BaseController
      */
     public function forbiddenGroups(string $id): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -847,7 +859,8 @@ class GroupController extends BaseController
     public function addForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
         $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int) $groupId);
-        if (!$this->findGroup($id) || ! $forbiddenGroup) {
+        $this->findGroup($id);
+        if (!$this->group || !$forbiddenGroup) {
             return $this->response->withStatus(404);
         }
 
@@ -896,7 +909,8 @@ class GroupController extends BaseController
     public function removeForbiddenGroup(string $id, string $groupId): ResponseInterface
     {
         $forbiddenGroup = $this->repositoryFactory->getGroupRepository()->find((int)$groupId);
-        if (!$this->findGroup($id) || !$forbiddenGroup) {
+        $this->findGroup($id);
+        if (!$this->group || !$forbiddenGroup) {
             return $this->response->withStatus(404);
         }
 
@@ -1021,7 +1035,8 @@ class GroupController extends BaseController
      */
     public function applications(string $id): ResponseInterface
     {
-        if (!$this->findGroup($id)) {
+        $this->findGroup($id);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -1258,7 +1273,8 @@ class GroupController extends BaseController
         bool $onlyIfManager,
         bool $withRoles
     ): ResponseInterface {
-        if (!$this->findGroup($groupId)) {
+        $this->findGroup($groupId);
+        if (!$this->group) {
             return $this->response->withStatus(404);
         }
 
@@ -1301,7 +1317,8 @@ class GroupController extends BaseController
         bool $onlyIfManager,
         Account $account
     ): ResponseInterface {
-        if (!$this->findGroupAndPlayer($groupId, $playerId)) {
+        $this->findGroupAndPlayer($groupId, $playerId);
+        if (!$this->group || !$this->player) {
             return $this->response->withStatus(404);
         }
 
@@ -1333,7 +1350,8 @@ class GroupController extends BaseController
         bool $onlyIfManager,
         Account $account
     ): ResponseInterface {
-        if (!$this->findGroupAndPlayer($groupId, $playerId)) {
+        $this->findGroupAndPlayer($groupId, $playerId);
+        if (!$this->group || !$this->player) {
             return $this->response->withStatus(404);
         }
 

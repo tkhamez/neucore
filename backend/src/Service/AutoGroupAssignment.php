@@ -97,7 +97,7 @@ class AutoGroupAssignment
         $groupIds = array_unique($groupIds);
 
         // find what to remove and what to add
-        $hasIds = array_intersect($player->getGroupIds(), $this->autoGroups);
+        $hasIds = array_intersect($player->getGroupIds(), $this->autoGroups ?? []);
         $removeIds = array_diff($hasIds, $groupIds);
         $addIds = array_diff($groupIds, $hasIds);
 
@@ -175,7 +175,7 @@ class AutoGroupAssignment
                 if (! in_array($gId, $map)) {
                     $map[$eId][] = $gId;
                 }
-                if (! in_array($gId, $this->autoGroups)) {
+                if (!in_array($gId, $this->autoGroups ?? [])) {
                     $this->autoGroups[] = $gId;
                 }
             }
