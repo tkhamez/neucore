@@ -135,6 +135,8 @@ export default {
 
             messageTxt: '',
 
+            messageTimeout: null,
+
             messageType: '',
 
             settingsLoaded: false,
@@ -210,8 +212,12 @@ export default {
             this.messageTxt = text;
             this.messageType = `alert-${type}`;
             if (timeout) {
+                if (this.messageTimeout) {
+                    window.clearTimeout(this.messageTimeout);
+                    this.messageTimeout = null;
+                }
                 const vm = this;
-                window.setTimeout(function() {
+                this.messageTimeout = window.setTimeout(() => {
                     vm.messageTxt = '';
                 }, timeout);
             }
