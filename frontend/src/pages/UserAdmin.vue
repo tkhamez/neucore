@@ -137,9 +137,9 @@
                     Player Account:
                     {{ playerEdit.name }} #{{ playerEdit.id }}
                     <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
-                          v-on:click="updateCharacters"
+                          v-on:click="updateAccount"
                           role="img" class="fas fa-sync update-char"
-                          title="update characters"></span>
+                          title="Update characters, groups and service accounts"></span>
                 </h3>
 
                 <div v-cloak v-if="playerEdit" class="card-body">
@@ -619,7 +619,7 @@ export default {
             }]);
         },
 
-        updateCharacters () {
+        updateAccount () {
             if (! this.playerEdit) {
                 return;
             }

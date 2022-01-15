@@ -21,7 +21,7 @@ class ServiceConfigurationTest extends TestCase
         $configuration->requiredGroups = [1, 2];
         $configuration->properties = ['username', 'status'];
         $configuration->showPassword = true;
-        $configuration->actions = ['update-account'];
+        $configuration->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
         $url = new ServiceConfigurationURL();
         $url->url = 'http';
         $url->title = 'title';
@@ -43,7 +43,7 @@ class ServiceConfigurationTest extends TestCase
             'requiredGroups' => [1, 2],
             'properties' => ['username', 'status'],
             'showPassword' => true,
-            'actions' => ['update-account'],
+            'actions' => [ServiceConfiguration::ACTION_UPDATE_ACCOUNT],
             'URLs' => [['url' => 'http', 'title' => 'title', 'target' => '_blank']],
             'textAccount' => 'text a',
             'textTop' => 'text t',

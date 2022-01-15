@@ -227,13 +227,7 @@ class CharacterController extends BaseController
 
         // find character
         $char = null;
-        if (
-            $player->hasRole(Role::USER_ADMIN) ||
-            $player->hasRole(Role::USER_MANAGER) ||
-            $player->hasRole(Role::GROUP_ADMIN) ||
-            $player->hasRole(Role::APP_ADMIN) ||
-            $player->hasRole(Role::USER_CHARS)
-        ) {
+        if ($player->mayUpdateOtherPlayer()) {
             $char = $this->repositoryFactory->getCharacterRepository()->find((int) $id);
         } else {
             foreach ($player->getCharacters() as $c) {

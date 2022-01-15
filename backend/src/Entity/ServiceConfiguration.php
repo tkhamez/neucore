@@ -1,6 +1,5 @@
 <?php
-
-/** @noinspection PhpUnused */
+/** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
 
@@ -15,89 +14,83 @@ use OpenApi\Annotations as OA;
  */
 class ServiceConfiguration implements \JsonSerializable
 {
-    /**
-     * @OA\Property()
-     * @var string
-     */
-    public $phpClass = '';
+    const ACTION_UPDATE_ACCOUNT = 'update-account';
+
+    const ACTION_RESET_PASSWORD = 'reset-password';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $psr4Prefix = '';
+    public ?string $phpClass = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $psr4Path = '';
+    public ?string $psr4Prefix = '';
 
     /**
      * @OA\Property()
-     * @var bool
      */
-    public $oneAccount = false;
+    public ?string $psr4Path = '';
+
+    /**
+     * @OA\Property()
+     */
+    public ?bool $oneAccount = false;
 
     /**
      * @OA\Property()
      * @var int[]
      */
-    public $requiredGroups = [];
+    public ?array $requiredGroups = [];
 
     /**
      * @OA\Property(enum={"username", "password", "email", "status", "name"})
      * @var string[]
      */
-    public $properties = [];
+    public ?array $properties = [];
 
     /**
      * @OA\Property()
-     * @var bool
      */
-    public $showPassword = false;
+    public ?bool $showPassword = false;
 
     /**
      * @OA\Property(enum={"update-account", "reset-password"})
      * @var string[]
      */
-    public $actions = [];
+    public ?array $actions = [];
 
     /**
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/ServiceConfigurationURL"))
      * @var ServiceConfigurationURL[]
      */
-    public $URLs = [];
+    public ?array $URLs = [];
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $textAccount = '';
+    public ?string $textAccount = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $textTop = '';
+    public ?string $textTop = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $textRegister = '';
+    public ?string $textRegister = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $textPending = '';
+    public ?string $textPending = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $configurationData = '';
+    public string $configurationData = '';
 
     public static function fromArray(array $data): self
     {

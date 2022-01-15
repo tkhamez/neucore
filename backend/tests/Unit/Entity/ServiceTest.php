@@ -84,7 +84,7 @@ class ServiceTest extends TestCase
         $data->requiredGroups = [1, 2];
         $data->properties = ['username', 'status'];
         $data->showPassword = true;
-        $data->actions = ['update-account'];
+        $data->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
         $data->URLs = [];
         $data->textAccount = 'text a';
         $data->textTop = 'text t';

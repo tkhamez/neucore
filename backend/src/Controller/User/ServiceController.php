@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
 
@@ -8,6 +9,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Entity\Role;
 use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
@@ -38,43 +40,29 @@ use Psr\Log\LoggerInterface;
  *                  enum={"Pending", "Active", "Deactivated", "Unknown"}),
  *     @OA\Property(property="name", type="string", nullable=true),
  * )
+ *
+ * @OA\Schema(
+ *     schema="UpdateAccountsResult",
+ *     required={"serviceName", "characterId"},
+ *     @OA\Property(property="serviceName", type="string"),
+ *     @OA\Property(property="characterId", type="integer"),
+ * )
  */
 class ServiceController extends BaseController
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var ServiceRegistration
-     */
-    private $serviceRegistration;
+    private ServiceRegistration $serviceRegistration;
 
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
+    private UserAuth $userAuth;
 
-    /**
-     * @var Character
-     */
-    private $validCharacter;
+    private ?Character $validCharacter = null;
 
-    /**
-     * @var Service
-     */
-    private $service;
+    private ?Service $service = null;
 
-    /**
-     * @var ServiceInterface
-     */
-    private $serviceImplementation;
+    private ?ServiceInterface $serviceImplementation = null;
 
-    /**
-     * @var ServiceAccountData
-     */
-    private $account;
+    private ?ServiceAccountData $account = null;
 
     public function __construct(
         ResponseInterface $response,
@@ -356,27 +344,100 @@ class ServiceController extends BaseController
             return $response;
         }
 
-        $main = null;
-        if ($this->validCharacter->getPlayer()->getMain() !== null) {
-            $main = $this->validCharacter->getPlayer()->getMain()->toCoreCharacter();
-        }
-
         // update account
-        try {
-            $this->serviceImplementation->updateAccount(
-                $this->validCharacter->toCoreCharacter(),
-                $this->serviceRegistration->getCoreGroups($this->validCharacter->getPlayer()),
-                $main
-            );
-        } catch (Exception $e) {
-            if ($e->getMessage() !== '') {
-                return $this->withJson($e->getMessage(), 409);
-            } else {
-                return $this->response->withStatus(500);
-            }
+        $error = $this->updateServiceAccount($this->validCharacter, $this->serviceImplementation);
+        if (!empty($error)) {
+            return $this->withJson($error, 409);
+        } elseif ($error === '') {
+            return $this->response->withStatus(500);
         }
 
         return $this->response->withStatus(204);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/user/service/update-all-accounts/{playerId}",
+     *     operationId="serviceUpdateAllAccounts",
+     *     summary="Update all service accounts of one player.",
+     *     description="Needs role: user-admin, user-manager, group-admin, app-admin or user-chars",
+     *     tags={"Service"},
+     *     security={{"Session"={}, "CSRF"={}}},
+     *     @OA\Parameter(
+     *         name="playerId",
+     *         in="path",
+     *         required=true,
+     *         description="The player ID.",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Account(s) updated.",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/UpdateAccountsResult"))
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Not authorized."
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Player not found."
+     *     )
+     * )
+     */
+    public function updateAllAccounts(string $playerId, UserAuth $userAuth): ResponseInterface
+    {
+        $loggedInPlayer = $this->getUser($userAuth)->getPlayer();
+        if (!$loggedInPlayer->mayUpdateOtherPlayer()) {
+            return $this->response->withStatus(403);
+        }
+
+        $player = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
+        if (!$player) {
+            return $this->response->withStatus(404);
+        }
+
+        $updated = [];
+
+        $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
+        foreach ($services as $service) {
+            // Check if service has the "update-account" action
+            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, $service->getConfiguration()->actions)) {
+                continue;
+            }
+
+            $implementation = $this->serviceRegistration->getServiceImplementation($service);
+            if (!$implementation) {
+                continue;
+            }
+
+            $accounts = [];
+            try {
+                $accounts = $this->serviceRegistration->getAccounts($implementation, $player->getCharacters());
+            } catch (Exception $e) {
+                // Do nothing, service should log its errors
+            }
+
+            foreach ($accounts as $account) {
+                $character = $player->getCharacter($account->getCharacterId());
+                if (!$character) {
+                    $this->log->error('ServiceController::updateAllAccounts: Character not found on account.');
+                    continue;
+                }
+                $error = $this->updateServiceAccount($character, $implementation);
+                if ($error === null) {
+                    $updated[] = [
+                        'serviceName' => $service->getName(),
+                        'characterId' => $account->getCharacterId()
+                    ];
+                } else {
+                    $serviceName = $service->getName();
+                    $this->log->error("ServiceController::updateAllAccounts: $serviceName: $error");
+                }
+            }
+        }
+
+        return $this->withJson($updated);
     }
 
     /**
@@ -515,6 +576,29 @@ class ServiceController extends BaseController
             return $this->response->withStatus(404);
         }
         $this->account = $account[0];
+
+        return null;
+    }
+
+    /**
+     * @return string|null Error message (can be empty) or null on success.
+     */
+    private function updateServiceAccount(Character $character, ServiceInterface $serviceImplementation): ?string
+    {
+        $main = null;
+        if ($character->getPlayer()->getMain() !== null) {
+            $main = $character->getPlayer()->getMain()->toCoreCharacter();
+        }
+
+        try {
+            $serviceImplementation->updateAccount(
+                $character->toCoreCharacter(),
+                $this->serviceRegistration->getCoreGroups($character->getPlayer()),
+                $main
+            );
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
 
         return null;
     }

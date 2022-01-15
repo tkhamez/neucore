@@ -128,8 +128,10 @@ return [
     '/api/user/watchlist/{id}/allowlist-alliance/'        => [Role::WATCHLIST_MANAGER], # add, remove
     '/api/user/watchlist'                                 => [Role::WATCHLIST_ADMIN], # several admin functions
 
-    '/api/user/service-admin/'  => [Role::SERVICE_ADMIN],
-    '/api/user/service/'        => [Role::USER],
+    '/api/user/service-admin/'              => [Role::SERVICE_ADMIN],
+    '/api/user/service/update-all-accounts' => [Role::USER_ADMIN, Role::USER_MANAGER, Role::GROUP_ADMIN,
+                                                Role::APP_ADMIN, Role::USER_CHARS],
+    '/api/user/service/'                    => [Role::USER],
 
     '/api/user/statistics/'     => [Role::STATISTICS],
 

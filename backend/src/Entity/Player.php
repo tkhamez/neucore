@@ -323,6 +323,16 @@ class Player implements \JsonSerializable
         return in_array($name, $this->getRoleNames());
     }
 
+    public function mayUpdateOtherPlayer(): bool
+    {
+        return
+            $this->hasRole(Role::USER_ADMIN) ||
+            $this->hasRole(Role::USER_MANAGER) ||
+            $this->hasRole(Role::GROUP_ADMIN) ||
+            $this->hasRole(Role::APP_ADMIN) ||
+            $this->hasRole(Role::USER_CHARS);
+    }
+
     public function addCharacter(Character $character): self
     {
         $this->characters[] = $character;

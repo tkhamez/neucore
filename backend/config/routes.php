@@ -212,6 +212,7 @@ return [
     '/api/user/service/{id}/register'                       => ['POST', [ServiceController::class, 'register']],
     '/api/user/service/{id}/update-account/{characterId}'   => ['PUT',  [ServiceController::class, 'updateAccount']],
     '/api/user/service/{id}/reset-password/{characterId}'   => ['PUT',  [ServiceController::class, 'resetPassword']],
+    '/api/user/service/update-all-accounts/{playerId}'      => ['PUT',  [ServiceController::class, 'updateAllAccounts']],
 
     '/api/user/service-admin/list'                      => ['GET',    [ServiceAdminController::class, 'list']],
     '/api/user/service-admin/create'                    => ['POST',   [ServiceAdminController::class, 'create']],

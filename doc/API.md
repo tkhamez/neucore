@@ -106,6 +106,9 @@ Player API
 - List all players with a role. `GET /user/player/with-role/{name}`
 - Lists all players with characters who have a certain status. `GET /user/player/with-status/{name}`
 
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
+
 #### user-manager
 
 Allows a player to add and remove groups from players with "managed" status.
@@ -125,6 +128,9 @@ Player API
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 - Lists all players with characters who have a certain status. `GET /user/player/with-status/{name}`
 
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
+
 #### user-chars
 
 Allows a player to view all characters of an account.
@@ -136,6 +142,9 @@ Character API
 Player API
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
 - Accepts a list of character names and returns them grouped by account. `POST /user/player/group-characters-by-account`
+
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
 
 #### group-admin
 
@@ -180,6 +189,9 @@ Group API
 Player API
 - List all players with the role group-manger. `GET /user/player/group-managers`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
+
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
 
 #### group-manager
 
@@ -247,6 +259,9 @@ Group API
 Player API
 - List all players with the role app-manger. `GET /user/player/app-managers`
 - Show player with characters, moved characters, groups and service accounts. `GET /user/player/{id}/characters`
+
+Service API
+- Update all service accounts of one player. `PUT /user/service/update-all-accounts/{playerId}`
 
 #### app-manager
 

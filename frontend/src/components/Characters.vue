@@ -143,9 +143,9 @@ Modal window with all characters of one player.
             <div v-cloak v-if="selectedPlayer" class="modal-footer">
                 <button v-cloak
                         v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])"
-                        type="button" class="btn btn-info" v-on:click="updateCharacters">
-                    <span role="img" class="fas fa-sync" title="Update from ESI"></span>
-                    Update from ESI
+                        type="button" class="btn btn-info" v-on:click="updateAccount">
+                    <span role="img" class="fas fa-sync" title="Update"></span>
+                    Update characters from ESI, groups and service accounts.
                 </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
@@ -211,7 +211,7 @@ export default {
             });
         },
 
-        updateCharacters() {
+        updateAccount() {
             const vm = this;
             if (! vm.selectedPlayer) {
                 return;

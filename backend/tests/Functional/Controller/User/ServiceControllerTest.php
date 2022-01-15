@@ -28,38 +28,23 @@ class ServiceControllerTest extends WebTestCase
         'ServiceController: The configured service class does not exist or does not implement '.
         'Neucore\Plugin\ServiceInterface.';
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
-    /**
-     * @var Player
-     */
-    private $player;
+    private Player $player;
 
-    /**
-     * @var Service
-     */
-    private $service1;
+    private Service $service1;
 
     // entity IDs
-    private $g1;
-    private $g2;
-    private $g7;
-    private $s1;
-    private $s2;
-    private $s3;
+    private int $g1;
+    private int $g2;
+    private int $g7;
+    private int $s1;
+    private int $s2;
+    private int $s3;
 
     protected function setUp(): void
     {
@@ -139,7 +124,7 @@ class ServiceControllerTest extends WebTestCase
                     'requiredGroups' => [$this->g2, $this->g7],
                     'properties' => [],
                     'showPassword' => false,
-                    'actions' => [],
+                    'actions' => [ServiceConfiguration::ACTION_UPDATE_ACCOUNT],
                     'URLs' => [],
                     'textAccount' => '',
                     'textTop' => '',
@@ -167,7 +152,7 @@ class ServiceControllerTest extends WebTestCase
                     'oneAccount' => false,
                     'properties' => [],
                     'showPassword' => false,
-                    'actions' => [],
+                    'actions' => [ServiceConfiguration::ACTION_RESET_PASSWORD],
                     'URLs' => [],
                     'textAccount' => '',
                     'textTop' => '',
@@ -519,6 +504,43 @@ class ServiceControllerTest extends WebTestCase
         $this->assertEquals([], ServiceControllerTest_TestService::$lastGroups);
     }
 
+    public function testUpdateAllAccounts_403()
+    {
+        $this->setupDb();
+
+        $response1 = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.$this->player->getId());
+        $this->assertEquals(403, $response1->getStatusCode());
+
+        $this->loginUser(1);
+        $response2 = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.$this->player->getId());
+        $this->assertEquals(403, $response2->getStatusCode());
+    }
+
+    public function testUpdateAllAccounts_404()
+    {
+        $this->setupDb();
+        $this->loginUser(4);
+
+        $response = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.($this->player->getId() + 10));
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testUpdateAllAccounts_200()
+    {
+        $this->setupDb();
+        $this->loginUser(4);
+
+        $response = $this->runApp('PUT', '/api/user/service/update-all-accounts/'.$this->player->getId(), null, null, [
+            LoggerInterface::class => $this->log
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals([['serviceName' => 'S3', 'characterId' => 1]], $this->parseJsonBody($response));
+        $this->assertSame([
+            'ServiceController::updateAllAccounts: S3: ',
+        ], $this->log->getMessages());
+    }
+
     public function testUpdateAccount500_NoServiceImplementation()
     {
         $this->setupDb();
@@ -656,6 +678,7 @@ class ServiceControllerTest extends WebTestCase
         $this->em->flush();
 
         $conf1 = new ServiceConfiguration();
+        $conf1->actions = [ServiceConfiguration::ACTION_RESET_PASSWORD];
         $conf1->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
         if (!$noRequiredGroupsForService1) {
             $conf1->requiredGroups = [$group1->getId()];
@@ -667,6 +690,7 @@ class ServiceControllerTest extends WebTestCase
         $service2 = (new Service())->setName('S2')->setConfiguration($conf2);
 
         $conf3 = new ServiceConfiguration();
+        $conf3->actions = [ServiceConfiguration::ACTION_UPDATE_ACCOUNT];
         $conf3->phpClass = 'Tests\Functional\Controller\User\ServiceControllerTest_TestService';
         $conf3->requiredGroups = [$group2->getId(), $group7->getId()];
         $service3 = (new Service())->setName('S3')->setConfiguration($conf3);
@@ -680,7 +704,7 @@ class ServiceControllerTest extends WebTestCase
             ->getPlayer();
         $this->helper->addCharacterToPlayer('Char2', 2, $this->player);
         $this->helper->addCharacterToPlayer('Char3', 3, $this->player);
-        $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::SERVICE_ADMIN]);
+        $this->helper->addCharacterMain('Admin', 4, [Role::USER, ROLE::SERVICE_ADMIN, Role::USER_ADMIN]);
 
         $this->g1 = $group1->getId();
         $this->g2 = $group2->getId();

@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- New: The "Update" button at the character modal and on the user admin page will now also update all service accounts.
+
 ## 1.30.0
 
 9 Jan 2022

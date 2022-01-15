@@ -1,5 +1,5 @@
 
-import {CharacterApi, PlayerApi} from "neucore-js-client";
+import {CharacterApi, PlayerApi, ServiceApi} from "neucore-js-client";
 
 export default class Character {
 
@@ -27,7 +27,7 @@ export default class Character {
                     'info'
                 );
             } else {
-                self.vm.message('Update done.', 'success');
+                self.vm.message('Updated character.', 'success');
             }
             if (typeof callback === typeof Function) {
                 callback();
@@ -36,7 +36,7 @@ export default class Character {
     }
 
     /**
-     * Updates all characters of the player.
+     * Updates all characters from ESI, groups and service accounts of the player.
      *
      * @param {object} player
      * @param {function} [callback]
@@ -53,13 +53,22 @@ export default class Character {
                     updateCharacters();
                 });
             } else {
+                charactersUpdateComplete()
+            }
+        }
+
+        function charactersUpdateComplete() {
+            new ServiceApi().serviceUpdateAllAccounts(player.id, (error, data) => {
+                if (!error) {
+                    self.vm.message(`Updated ${data.length} service accounts.`, 'success', 2500);
+                }
                 if (typeof callback === typeof Function) {
                     callback();
                 }
                 if (player.id === self.vm.$root.player.id) {
                     self.vm.emitter.emit('playerChange');
                 }
-            }
+            })
         }
 
         updateCharacters();
