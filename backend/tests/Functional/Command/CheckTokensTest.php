@@ -235,8 +235,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertSame('char1', $actualChars[0]->getName());
         $this->assertNull($actualChars[0]->getLastUpdate()); // token check does not change the update date
         $nameChange = $repositoryFactory->getCharacterNameChangeRepository()->findBy([]);
-        $this->assertSame(1, count($nameChange));
-        $this->assertSame('Name', $nameChange[0]->getOldName());
+        $this->assertSame(0, count($nameChange)); // change via ESI token is no longer recorded
     }
 
     /**

@@ -459,8 +459,7 @@ class AccountTest extends TestCase
         $this->assertSame('fM0...gEy', $secondToken->getRefreshToken()); // updated
 
         $characterNameChange = $this->characterNameChangeRepo->findBy([]);
-        $this->assertSame(1, count($characterNameChange));
-        $this->assertSame('Old Name', $characterNameChange[0]->getOldName());
+        $this->assertSame(0, count($characterNameChange)); // change via ESI token is no longer recorded
     }
 
     /**

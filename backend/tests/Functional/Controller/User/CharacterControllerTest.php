@@ -20,28 +20,19 @@ use Tests\Logger;
 
 class CharacterControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    private $playerId;
+    private int $playerId;
 
-    private $corpId = 234;
+    private int $corpId = 234;
 
-    private $corpName = 'The Corp.';
+    private string $corpName = 'The Corp.';
 
-    private $corpTicker = '-TTT-';
+    private string $corpTicker = '-TTT-';
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
     protected function setUp(): void
     {
@@ -306,20 +297,15 @@ class CharacterControllerTest extends WebTestCase
         $this->assertSame('auto.bni', $player->getGroups()[0]->getName());
 
         // check char, corp, name change
-        $this->assertSame(96061222, $player->getCharacters()[1]->getId());
-        $this->assertSame('The Corp updated.', $player->getCharacters()[1]->getCorporation()->getName());
-        $this->assertTrue($player->getCharacters()[1]->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
-        $nameChanges = $player->getCharacters()[1]->getCharacterNameChanges();
-        $this->assertSame(3, count($nameChanges)); // 1 from setup, 1 from test
-        if ($nameChanges[0]->getOldName() === 'User') {
-            // ordered by date, which can be the same for the first 2
-            $this->assertSame('User', $nameChanges[0]->getOldName()); // from ESI update
-            $this->assertSame('Old Name', $nameChanges[1]->getOldName()); // from access token check (token from setup)
-        } else {
-            $this->assertSame('Old Name', $nameChanges[0]->getOldName());
-            $this->assertSame('User', $nameChanges[1]->getOldName());
-        }
-        $this->assertSame("User's previous name", $nameChanges[2]->getOldName()); // from setup
+        $char1 = $player->getCharacters()[1];
+        $this->assertSame(96061222, $char1->getId());
+        $this->assertSame('Char 96061222', $char1->getName());
+        $this->assertSame('The Corp updated.', $char1->getCorporation()->getName());
+        $this->assertTrue($char1->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
+        $nameChanges = $char1->getCharacterNameChanges();
+        $this->assertSame(2, count($nameChanges)); // only 2 because there are no more changes via ESI token
+        $this->assertSame('User', $nameChanges[0]->getOldName()); // from ESI update
+        $this->assertSame("User's previous name", $nameChanges[1]->getOldName()); // from setup
     }
 
     public function testUpdate200_Admin()

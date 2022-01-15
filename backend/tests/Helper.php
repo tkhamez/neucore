@@ -168,7 +168,7 @@ class Helper
         $esiData = new EsiData($logger, $esiApiFactory, $objectManager, $repoFactory, $characterService, $config);
         $autoGroups = new AutoGroupAssignment($repoFactory);
         $token = new OAuthToken($this->getAuthenticationProvider($client), $objectManager, $logger);
-        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $characterService, $token);
+        return new Account($logger, $objectManager, $repoFactory, $esiData, $autoGroups, $token);
     }
 
     public function getUserAuthService(Logger $logger, Client $client): UserAuth

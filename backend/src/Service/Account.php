@@ -16,7 +16,6 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\Character as CharacterService;
 use Psr\Log\LoggerInterface;
 
 class Account
@@ -46,40 +45,17 @@ class Account
      */
     public const CHECK_TOKEN_NA = 5;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
-    /**
-     * @var AutoGroupAssignment
-     */
-    private $autoGroupAssignment;
+    private AutoGroupAssignment $autoGroupAssignment;
 
-    /**
-     * @var \Neucore\Service\Character
-     */
-    private $characterService;
-
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
+    private OAuthToken $tokenService;
 
     public function __construct(
         LoggerInterface $log,
@@ -87,7 +63,6 @@ class Account
         RepositoryFactory $repositoryFactory,
         EsiData $esiData,
         AutoGroupAssignment $autoGroupAssignment,
-        CharacterService $characterService,
         OAuthToken $tokenService
     ) {
         $this->log = $log;
@@ -95,7 +70,6 @@ class Account
         $this->repositoryFactory = $repositoryFactory;
         $this->esiData = $esiData;
         $this->autoGroupAssignment = $autoGroupAssignment;
-        $this->characterService = $characterService;
         $this->tokenService = $tokenService;
     }
 
@@ -336,10 +310,6 @@ class Account
         } else {
             $result = self::CHECK_TOKEN_OK;
         }
-
-        // Check name change: because of a bug the access token may still contain the old name after
-        // a recent name change, see also https://github.com/ccpgames/sso-issues/issues/68
-        $this->characterService->addCharacterNameChange($char, $eveAuth->getCharacterName());
 
         // Check owner change
         if ($eveAuth->getCharacterOwnerHash() !== '') {
