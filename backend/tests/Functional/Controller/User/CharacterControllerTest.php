@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -200,6 +201,8 @@ class CharacterControllerTest extends WebTestCase
     {
         list($token) = Helper::generateToken();
         $this->setupDb($token);
+        $this->helper->addRoles([Role::TRACKING, Role::WATCHLIST, Role::WATCHLIST_MANAGER]);
+
         $this->loginUser(96061222);
 
         $this->client->setResponse(
@@ -227,10 +230,14 @@ class CharacterControllerTest extends WebTestCase
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertSame(0, count($this->log->getHandler()->getRecords()));
 
-        // check that char was deleted (because owner hash changed)
         $this->helper->getObjectManager()->clear();
-        $char = (new RepositoryFactory($this->helper->getObjectManager()))->getCharacterRepository()->find(96061222);
-        $this->assertNull($char);
+        $repoFactory = (new RepositoryFactory($this->helper->getObjectManager()));
+
+        // check that char was deleted (because owner hash changed)
+        $this->assertNull($repoFactory->getCharacterRepository()->find(96061222));
+
+        // there would be a group if the character 96061222 were not deleted, see also next test
+        $this->assertSame([], $repoFactory->getPlayerRepository()->find($this->playerId)->getGroupIds());
     }
 
     /**

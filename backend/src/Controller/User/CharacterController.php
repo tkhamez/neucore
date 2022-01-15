@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedAliasInspection */
 
 declare(strict_types=1);
 
@@ -44,15 +45,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CharacterController extends BaseController
 {
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
+    private UserAuth $userAuth;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
     public function __construct(
         ResponseInterface $response,
@@ -253,6 +248,8 @@ class CharacterController extends BaseController
             return $this->response->withStatus(404);
         }
 
+        $updatePlayerId = $char->getPlayer()->getId();
+
         // update from ESI
         $updatedChar = $this->esiData->fetchCharacterWithCorporationAndAlliance($char->getId());
         if ($updatedChar === null) {
@@ -263,11 +260,16 @@ class CharacterController extends BaseController
         $result = $accountService->checkCharacter($updatedChar);
         if ($result === Account::CHECK_CHAR_DELETED) {
             $updatedChar = null;
+
+            // Cannot call flush a second time if a character with a name change was deleted (A new entity was
+            // found ...), clearing the entity manager fixes this. Run CharacterControllerTest::testUpdate204
+            // to reproduce with the next line is commented out.
+            $this->objectManager->clear();
         }
 
-        if ($updatedChar !== null) {
-            $accountService->updateGroups($updatedChar->getPlayer()->getId()); // flushes the entity manager
+        $accountService->updateGroups($updatePlayerId); // flushes the entity manager
 
+        if ($updatedChar !== null) {
             return $this->withJson($updatedChar);
         } else {
             return $this->response->withStatus(204);
