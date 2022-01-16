@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 
 class UpdateServiceAccountsTest_TestService implements ServiceInterface
 {
-    public static $playerId;
+    public static ?int $playerId = null;
 
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -66,8 +66,10 @@ class UpdateServiceAccountsTest_TestService implements ServiceInterface
 
     public function request(
         CoreCharacter $coreCharacter,
-        string $name, ServerRequestInterface $request,
-        ResponseInterface $response
+        string $name,
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $groups
     ): ResponseInterface {
         throw new Exception();
     }

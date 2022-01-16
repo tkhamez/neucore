@@ -15,9 +15,9 @@ use Psr\Log\LoggerInterface;
 
 class ServiceControllerTest_TestService implements ServiceInterface
 {
-    public static $lastGroups;
+    public static ?array $lastGroups = null;
 
-    public static $throw = false;
+    public static bool $throw = false;
 
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -83,8 +83,10 @@ class ServiceControllerTest_TestService implements ServiceInterface
 
     public function request(
         CoreCharacter $coreCharacter,
-        string $name, ServerRequestInterface $request,
-        ResponseInterface $response
+        string $name,
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $groups
     ): ResponseInterface {
         throw new Exception();
     }

@@ -61,7 +61,8 @@ class PluginControllerTest_TestService implements ServiceInterface
         CoreCharacter $coreCharacter,
         string $name,
         ServerRequestInterface $request,
-        ResponseInterface $response
+        ResponseInterface $response,
+        array $groups
     ): ResponseInterface {
         if (($request->getQueryParams()['error'] ?? '') === '1') {
             throw new Exception('Exception from plugin.');

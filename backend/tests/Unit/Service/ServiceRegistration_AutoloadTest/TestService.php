@@ -15,10 +15,7 @@ use Psr\Log\LoggerInterface;
 
 class TestService implements ServiceInterface
 {
-    /**
-     * @var ServiceConfiguration
-     */
-    private $serviceConfiguration;
+    private ServiceConfiguration $serviceConfiguration;
 
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
@@ -69,8 +66,10 @@ class TestService implements ServiceInterface
 
     public function request(
         CoreCharacter $coreCharacter,
-        string $name, ServerRequestInterface $request,
-        ResponseInterface $response
+        string $name,
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $groups
     ): ResponseInterface {
         throw new Exception();
     }

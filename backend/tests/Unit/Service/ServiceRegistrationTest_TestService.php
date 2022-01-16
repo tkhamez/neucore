@@ -16,8 +16,6 @@ use Psr\Log\LoggerInterface;
 
 class ServiceRegistrationTest_TestService implements ServiceInterface
 {
-    public static $lastGroup;
-
     public function __construct(LoggerInterface $logger, ServiceConfiguration $serviceConfiguration)
     {
     }
@@ -68,8 +66,10 @@ class ServiceRegistrationTest_TestService implements ServiceInterface
 
     public function request(
         CoreCharacter $coreCharacter,
-        string $name, ServerRequestInterface $request,
-        ResponseInterface $response
+        string $name,
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $groups
     ): ResponseInterface {
         throw new Exception();
     }

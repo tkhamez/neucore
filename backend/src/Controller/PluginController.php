@@ -32,6 +32,7 @@ class PluginController extends BaseController
             $this->response->getBody()->write($this->getBodyWithHomeLink('Not logged in.'));
             return $this->response->withStatus(403);
         }
+        $player = $user->getPlayer();
 
         $service = $this->repositoryFactory->getServiceRepository()->find((int) $id);
         if ($service === null) {
@@ -50,8 +51,8 @@ class PluginController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($user->getPlayer()->getMain() !== null) {
-            $coreCharacter = $user->getPlayer()->getMain()->toCoreCharacter();
+        if ($player->getMain() !== null) {
+            $coreCharacter = $player->getMain()->toCoreCharacter();
         } else {
             $this->response->getBody()->write(
                 $this->getBodyWithHomeLink('Player or main character account not found.')
@@ -60,7 +61,7 @@ class PluginController extends BaseController
         }
 
         try {
-            return $implementation->request($coreCharacter, $name, $request, $this->response);
+            return $implementation->request($coreCharacter, $name, $request, $this->response, $player->getCoreGroups());
         } catch (Exception $e) {
             $logger->error($e->getMessage(), [Context::EXCEPTION => $e]);
             return $this->response
