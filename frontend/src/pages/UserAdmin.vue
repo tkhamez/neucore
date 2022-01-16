@@ -136,10 +136,15 @@
                 <h3 class="card-header">
                     Player Account:
                     {{ playerEdit.name }} #{{ playerEdit.id }}
-                    <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
-                          v-on:click="updateAccount"
-                          role="img" class="fas fa-sync update-char"
-                          title="Update characters, groups and service accounts"></span>
+                    <span class="update-account">
+                        <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
+                              v-on:click="updatePlayer" role="img" class="fas fa-sync"
+                              title="Update characters and groups"></span>
+                        &nbsp;
+                        <span v-cloak v-if="playerEdit && playerEdit.characters.length > 0"
+                              v-on:click="updateServices" role="img" class="fas fa-sync"
+                              title="Update service accounts"></span>
+                    </span>
                 </h3>
 
                 <div v-cloak v-if="playerEdit" class="card-body">
@@ -417,6 +422,7 @@ import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import EsiTokens from '../components/EsiTokens.vue';
 import Character from "../classes/Character";
+import Player from "@/classes/Player";
 
 export default {
     components: {
@@ -619,11 +625,21 @@ export default {
             }]);
         },
 
-        updateAccount () {
-            if (! this.playerEdit) {
+        updatePlayer () {
+            const vm = this;
+            if (!vm.playerEdit) {
                 return;
             }
-            (new Character(this)).updatePlayer(this.playerEdit, () => { getPlayer(this) });
+            new Player(vm).updatePlayer(vm.playerEdit, () => {
+                getPlayer(vm)
+            });
+        },
+
+        updateServices () {
+            if (!this.playerEdit) {
+                return;
+            }
+            new Player(this).updateServices(this.playerEdit);
         },
 
         showEsiTokens (character) {
@@ -691,7 +707,7 @@ function getEveLogins(vm) {
 
 <!--suppress CssUnusedSymbol -->
 <style scoped>
-    .update-char {
+    .update-account {
         float: right;
         cursor: pointer;
     }

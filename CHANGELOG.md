@@ -4,7 +4,7 @@
 
 dd mm yyyy
 
-- New: The "Update" button at the character modal and on the user admin page will now also update all service accounts.
+- New: Added update button to update all service accounts from a player to the characters modal and user admin page.
 
 ## 1.30.0
 

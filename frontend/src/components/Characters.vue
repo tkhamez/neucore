@@ -141,12 +141,17 @@ Modal window with all characters of one player.
                 </div> <!-- container -->
             </div> <!-- modal-body -->
             <div v-cloak v-if="selectedPlayer" class="modal-footer">
-                <button v-cloak
-                        v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])"
-                        type="button" class="btn btn-info" v-on:click="updateAccount">
-                    <span role="img" class="fas fa-sync" title="Update"></span>
-                    Update characters from ESI, groups and service accounts.
-                </button>
+                <span v-if="hasAnyRole(['user-admin', 'user-manager', 'group-admin', 'app-admin', 'user-chars'])">
+                    <button v-cloak type="button" class="btn btn-info" v-on:click="updatePlayer">
+                        <span role="img" class="fas fa-sync" title="Update characters"></span>
+                        Update characters and groups
+                    </button>
+                    &nbsp;
+                    <button v-cloak type="button" class="btn btn-info" v-on:click="updateServices">
+                        <span role="img" class="fas fa-sync" title="Update services"></span>
+                        Update service accounts
+                    </button>
+                </span>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -156,9 +161,9 @@ Modal window with all characters of one player.
 
 <script>
 import {Tooltip, Modal} from 'bootstrap';
-import {PlayerApi} from 'neucore-js-client';
+import {PlayerApi, ServiceApi} from 'neucore-js-client';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
-import Character from '../classes/Character.js';
+import Player from "@/classes/Player";
 
 export default {
     components: {
@@ -211,14 +216,22 @@ export default {
             });
         },
 
-        updateAccount() {
+        updatePlayer() {
             const vm = this;
-            if (! vm.selectedPlayer) {
+            if (!vm.selectedPlayer) {
                 return;
             }
-            (new Character(vm)).updatePlayer(vm.selectedPlayer, () => {
+            new Player(vm).updatePlayer(vm.selectedPlayer, () => {
                 vm.fetchCharacters(vm.selectedPlayer.id);
             });
+        },
+
+        updateServices() {
+            const vm = this;
+            if (!vm.selectedPlayer) {
+                return;
+            }
+            new Player(vm).updateServices(vm.selectedPlayer);
         },
     }
 }
