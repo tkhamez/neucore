@@ -7,6 +7,7 @@ dd mm yyyy
 - **BC Break** Updated [tkhamez/neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.7.0.
 - New: Added update button to update all service accounts from a player to the characters modal and user admin page.
 - New: Added redirect after login to the previous URL.
+- Small bug fixes.
 
 ## 1.30.0
 

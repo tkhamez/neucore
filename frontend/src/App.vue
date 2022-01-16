@@ -246,7 +246,7 @@ export default {
                     .indexOf(this.route[0]) !== -1
             ) {
                 authResult(
-                    ['login-director', 'login-custom'].indexOf(this.route[0]) !== -1 ?
+                    ['login-alt', 'login-director', 'login-custom'].indexOf(this.route[0]) !== -1 ?
                         'success' :
                         ''
                 );

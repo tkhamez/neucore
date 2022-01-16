@@ -161,7 +161,7 @@
                                    v-on:click.prevent="showEsiTokens(char, char.validToken === false)"
                                    :class="{
                                           'btn btn-success nc-btn-xs': char.validToken,
-                                          'btn btn--info nc-btn-xs': char.validToken === null,
+                                          'btn btn-info nc-btn-xs': char.validToken === null,
                                           'btn btn-danger btn-sm mt-1': char.validToken === false,
                                    }"
                                    :title="char.validToken ? 'Valid default ESI token' :
