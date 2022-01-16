@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.31.0
 
-dd mm yyyy
+16 Jan 2022
 
 - **BC Break** Updated [tkhamez/neucore-plugin](https://github.com/tkhamez/neucore-plugin) to 0.7.0.
 - New: Added update button to update all service accounts from a player to the characters modal and user admin page.
