@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpUnusedAliasInspection */
 /** @noinspection PhpUnused */
 
 declare(strict_types=1);
@@ -22,6 +23,7 @@ use Neucore\Util\Random;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
 use OpenApi\Annotations as OA;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -63,26 +65,19 @@ class AuthController extends BaseController
 
     private const SESS_AUTH_RESULT = 'auth_result';
 
+    private const SESS_AUTH_REDIRECT = 'auth_redirect';
+
     private const KEY_RESULT_SUCCESS = 'success';
 
     private const KEY_RESULT_MESSAGE = 'message';
 
     private const STATE_PREFIX_SEPARATOR = '*';
 
-    /**
-     * @var SessionData
-     */
-    private $session;
+    private SessionData $session;
 
-    /**
-     * @var AuthenticationProvider
-     */
-    private $authProvider;
+    private AuthenticationProvider $authProvider;
 
-    /**
-     * @var Config
-     */
-    private $config;
+    private Config $config;
 
     /**
      * Returns the OAuth state prefix for an EVE login.
@@ -114,7 +109,7 @@ class AuthController extends BaseController
     /**
      * Eve logins, redirects to EVE SSO login page or fails with a 404 or 403 status code.
      */
-    public function login(string $name): ResponseInterface
+    public function login(string $name, ServerRequestInterface $request): ResponseInterface
     {
         // validate login ID
         $loginName = null;
@@ -141,6 +136,8 @@ class AuthController extends BaseController
             }
         }
 
+        $this->session->set(self::SESS_AUTH_REDIRECT, $this->getQueryParam($request,'redirect'));
+
         return $this->redirectToLoginUrl($loginName);
     }
 
@@ -157,8 +154,12 @@ class AuthController extends BaseController
         $state = (string) $this->session->get(self::SESS_AUTH_STATE);
         $loginName = $this->getLoginNameFromState($state);
         $redirectUrl = $this->getRedirectUrl($loginName);
+        if ($redirectAfterLogin = $this->session->get(self::SESS_AUTH_REDIRECT)) {
+            $redirectUrl .= '?redirect=' . $redirectAfterLogin;
+        }
 
         $this->session->delete(self::SESS_AUTH_STATE);
+        $this->session->delete(self::SESS_AUTH_REDIRECT);
         $this->authProvider->setScopes($this->getLoginScopes($state));
 
         try {

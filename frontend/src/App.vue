@@ -98,6 +98,8 @@ export default {
              */
             route: [],
 
+            loginRedirect: '',
+
             /**
              * All available pages
              */
@@ -165,6 +167,10 @@ export default {
         ApiClient.instance.basePath = `${this.$root.envVars.backendHost}/api`;
         ApiClient.instance.plugins = [superAgentPlugin(this, setCsrfHeader)];
 
+        // Store redirect param from login
+        this.loginRedirect = this.getHashParameter('redirect', '');
+        this.removeHashParameter('redirect');
+
         // initial route
         this.updateRoute();
 
@@ -224,7 +230,11 @@ export default {
         },
 
         updateRoute() {
-            this.route = window.location.hash.substr(1).split('/');
+            let hash = window.location.hash;
+            if (hash.indexOf('?') !== -1) {
+                hash = hash.substring(0, hash.indexOf('?'));
+            }
+            this.route = hash.substr(1).split('/');
 
             // handle routes that do not have a page
             const vm = this;
@@ -240,9 +250,11 @@ export default {
                         'success' :
                         ''
                 );
-                // Remove the hash value so that it does not appear in bookmarks, for example.
-                window.location.hash = '';
-            }  else if (this.route[0] === 'login-mail') {
+                // Set hash value to redirect value from login or remove it, so that it does not appear in bookmarks,
+                // for example.
+                window.location.hash = this.loginRedirect;
+                this.loginRedirect = '';
+            } else if (this.route[0] === 'login-mail') {
                 window.location.hash = 'SystemSettings/Mails';
             }
 

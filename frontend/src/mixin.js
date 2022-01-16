@@ -57,12 +57,13 @@ export default {
 
         /**
          * @param {string} name
+         * @param {string|null} [defaultValue]
          * @returns {string|null}
          */
-        getHashParameter: function(name) {
+        getHashParameter: function(name, defaultValue = null) {
             const parts = window.location.hash.substring(1).split('?');
             if (parts.length < 2) {
-                return null;
+                return defaultValue;
             }
             const parameters = parts[1].split('&');
             for (let i = 0; i < parameters.length; i++) {
@@ -74,7 +75,7 @@ export default {
                     return decodeURIComponent(parameterParts[1]);
                 }
             }
-            return null;
+            return defaultValue;
         },
 
         /**

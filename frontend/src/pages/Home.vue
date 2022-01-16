@@ -75,11 +75,11 @@
 </div>
 
 <div class="container-fluid">
-    <div v-cloak v-if="! authChar" class="mt-3">
+    <div v-cloak v-if="!authChar" class="mt-3">
         <title-logo :settings="settings"></title-logo>
         <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
         <!--suppress JSUnresolvedVariable -->
-        <a :href="loginHost + '/login/' + loginNames.default">
+        <a :href="loginHost + '/login/' + loginNames.default + redirectQuery">
             <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
         </a>
         <p class="small">
@@ -243,6 +243,7 @@ export default {
             markdownHtml: '',
             markdownLoginText: '',
             loginHost: '',
+            redirectQuery: '',
             eveLogins: null,
             deleteCharModal: null,
         }
@@ -274,6 +275,7 @@ export default {
         this.markdownHtml = md.render(this.settings.customization_home_markdown);
         this.markdownLoginText = md.render(this.settings.customization_login_text);
 
+        loginAddRedirect(this);
         checkDeactivated(this);
         getEveLogins(this);
     },
@@ -338,6 +340,25 @@ export default {
             return this.eveLogins.filter(eveLogin => eveLogin.name.indexOf('core.') !== 0);
         },
     }
+}
+
+function loginAddRedirect(vm) {
+    if (vm.authChar || window.location.hash.length <= 1) {
+        return;
+    }
+
+    vm.redirectQuery = '?redirect=' + window.location.hash.substr(1);
+
+    // Add redirect query to login links in custom markdown
+    const markdownHtml = document.createElement("div");
+    markdownHtml.innerHTML = vm.markdownLoginText;
+    for (const link of markdownHtml.getElementsByTagName('a')) {
+        const href = link.getAttribute('href');
+        if (href.indexOf('/login/') === 0) {
+            link.setAttribute('href', href + vm.redirectQuery);
+        }
+    }
+    vm.markdownLoginText = markdownHtml.innerHTML;
 }
 
 function checkDeactivated(vm) {
