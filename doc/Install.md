@@ -32,7 +32,7 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.4.0, see `backend/composer.json` for necessary extensions and `composer.json` in the root directory for 
+* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary extensions and `composer.json` in the root directory for 
   suggested extensions (APCu highly recommended).
 * MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases 
   supported by [Doctrine ORM](https://www.doctrine-project.org/projects/orm.html) may work if you generate the 

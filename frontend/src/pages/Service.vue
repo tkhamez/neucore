@@ -293,6 +293,8 @@ export default {
                 if (error) {
                     if (response.statusCode === 409) {
                         vm.message(JSON.parse(response.text), 'warning');
+                    } else if (response.statusCode === 404) {
+                        vm.message('Account not found.', 'error');
                     } else {
                         vm.message('Error. Please try again.', 'error');
                     }

@@ -56,7 +56,7 @@ export default class Player {
                 self.vm.message('Failed to update the service accounts.', 'error');
                 return;
             }
-            self.vm.message(`Updated ${data.length} service accounts.`, 'success', 2500);
+            self.vm.message(`Updated ${data.length} service account(s).`, 'success', 3000);
             if (player.id === self.vm.$root.player.id) {
                 self.vm.emitter.emit('playerChange');
             }

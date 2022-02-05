@@ -32,10 +32,10 @@ Select and table to add and remove objects from other objects.
                 Managers can add and remove players to a group.
             </p>
             <p v-cloak v-if="type === 'Group' && contentType === 'requiredGroups'">
-                Add groups that are a prerequisite (<em>one</em> of them) to be a member of that group.
+                Add groups that are a prerequisite (<em>any one</em> of them) to be a member of that group.
             </p>
             <p v-cloak v-if="type === 'Group' && contentType === 'forbiddenGroups'">
-                Add groups that an account cannot be a member of (<em>any</em> of them) to be a member of that group.
+                Add groups that an account cannot be a member of (<em>any one</em> of them) to be a member of that group.
             </p>
             <p v-cloak v-if="type === 'App' && contentType === 'managers'">
                 Managers can change the application secret.

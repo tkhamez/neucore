@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Some small text improvements.
+
 ## 1.31.0
 
 16 Jan 2022
