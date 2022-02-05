@@ -311,11 +311,12 @@ function configureDataTable(vm) {
         deferRender: true,
         order: [[3, "desc"]],
         'drawCallback': function() {
-            document.querySelectorAll('.page-tracking [data-bs-toggle="tooltip"]')
-                .forEach(tooltip => {
-                    new Tooltip(tooltip)
-                });
-            $('a[data-player-id]').on('click', (evt) => {
+            document.querySelectorAll('.page-tracking [data-bs-toggle="tooltip"]').forEach(tooltip => {
+                new Tooltip(tooltip)
+            });
+            const $link = $('a[data-player-id]');
+            $link.off('click');
+            $link.on('click', (evt) => {
                 $.Event(evt).preventDefault();
                 vm.showCharacters(evt.target.dataset.playerId);
             });
