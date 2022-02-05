@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.31.1
 
-dd mm yyyy
+5 Feb 2022
 
 - Fix Member Tracking: Background was not always removed when the character modal window was closed.
 - Some small text and layout improvements.
