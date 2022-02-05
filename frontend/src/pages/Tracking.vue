@@ -19,14 +19,14 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.daysInactive">
                     Limit to members who have been <strong>inactive</strong> for x days or longer.
                 </label>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.daysActive">
@@ -35,7 +35,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
                     <select class="form-select form-select-sm input-option" v-model="formOptions.account">
                         <option></option>
@@ -45,7 +45,7 @@
                     Limit to members with/without an <strong>account</strong>
                 </label>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
                     <select class="form-select form-select-sm input-option" v-model="formOptions.validToken">
                         <option></option>
@@ -57,14 +57,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.tokenChanged">
                     Limit to characters whose ESI <strong>token status</strong> has not changed for x days
                 </label>
             </div>
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-6 mb-1">
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.mailCount">

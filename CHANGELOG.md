@@ -5,7 +5,7 @@
 dd mm yyyy
 
 - Fix Member Tracking: Background was not always removed when the character modal window was closed.
-- Some small text improvements.
+- Some small text and layout improvements.
 
 ## 1.31.0
 
