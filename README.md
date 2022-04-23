@@ -84,16 +84,14 @@ This is also where the name "Neucore" (new Core) comes from.
 
 ### Related Software
 
-- Neucore plugin package https://github.com/tkhamez/neucore-plugin
-- Neucore Discord plugin https://github.com/tkhamez/neucore-discord-plugin
-- Neucore plugins: Brave Collective
-  [Slack](https://github.com/bravecollective/neucore-plugin-slack),
-  [Mumble](https://github.com/bravecollective/neucore-plugin-mumble),
-  [Forum](https://github.com/bravecollective/neucore-plugin-forum)
-- [neucore-api](https://github.com/bravecollective/neucore-api) PHP OpenAPI client.
-- [neucore-api-python](https://github.com/bravecollective/neucore-api-python) Python OpenAPI client.
-- [neucore-api-go](https://github.com/bravecollective/neucore-api-go) Go OpenAPI client.
-- [slack-channel-manage](https://github.com/bravecollective/slack-channel-manage) A Slack app to 
+- Plugin package: [neucore-plugin](https://github.com/tkhamez/neucore-plugin).
+- Discord auth plugin: [neucore-discord-plugin](https://github.com/tkhamez/neucore-discord-plugin).
+- Plugins from Brave Collective for [Slack](https://github.com/bravecollective/neucore-plugin-slack),
+  [Mumble](https://github.com/bravecollective/neucore-plugin-mumble) and 
+  [phpBB forum](https://github.com/bravecollective/neucore-plugin-forum).
+- OpenAPI clients: [PHP](https://github.com/tkhamez/neucore-api), 
+  [Python](https://github.com/tkhamez/neucore-api-python), [Go](https://github.com/tkhamez/neucore-api-go).
+- [slack-channel-manage](https://github.com/tkhamez/slack-channel-manage) A Slack app to 
   manage channel members based on Neucore groups.
 - [Eve Overseer](https://github.com/1adog1/eve-overseer) A fleet participation tracking application.
 - [Eve Pingboard](https://github.com/cmd-johnson/eve-pingboard) Pings/Timers/Calendar.
