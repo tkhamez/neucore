@@ -61,7 +61,7 @@ class UpdateServiceAccountsTest_TestService implements ServiceInterface
 
     public function getAllPlayerAccounts(): array
     {
-        return [self::$playerId, self::$playerId + 100];
+        return [(int)self::$playerId, self::$playerId + 100];
     }
 
     public function request(

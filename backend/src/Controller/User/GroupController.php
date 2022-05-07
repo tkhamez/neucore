@@ -14,6 +14,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -1426,15 +1427,13 @@ class GroupController extends BaseController
         return true;
     }
 
-    private function findGroupAndPlayer(string $groupId, string $playerId): bool
+    private function findGroupAndPlayer(string $groupId, string $playerId): void
     {
         $playerEntity = $this->repositoryFactory->getPlayerRepository()->find((int) $playerId);
         if (!$this->findGroup($groupId) || $playerEntity === null) {
-            return false;
+            return;
         }
         $this->player = $playerEntity;
-
-        return true;
     }
 
     /**

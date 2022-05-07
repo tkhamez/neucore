@@ -8,8 +8,8 @@ use DI\Bridge\Slim\Bridge;
 use DI\Container;
 use DI\ContainerBuilder;
 use DI\Definition\Source\SourceCache;
-use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Monolog\ErrorHandler;
 use Neucore\Command\AssureMain;
 use Neucore\Command\AutoAllowlist;
@@ -51,6 +51,7 @@ use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Dotenv\Exception\FormatException;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
+use Throwable;
 use Tkhamez\Slim\RoleAuth\RoleMiddleware;
 use Tkhamez\Slim\RoleAuth\SecureRouteMiddleware;
 
@@ -192,7 +193,7 @@ class Application
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function buildContainer(array $mocks = []): ContainerInterface
     {
@@ -207,7 +208,7 @@ class Application
         $this->runEnv = self::RUN_WEB;
         try {
             $this->getApp()->run();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logException($e);
         }
     }
@@ -216,7 +217,7 @@ class Application
      * Creates the Slim app
      *
      * @param array $mocks Replaces dependencies in the DI container
-     * @throws \Throwable
+     * @throws Throwable
      * @return App
      */
     public function getApp(array $mocks = []): App
@@ -241,7 +242,7 @@ class Application
             $app->setCatchExceptions(false);
             $app->setAutoExit(false);
             $app->run();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logException($e);
         }
     }
@@ -250,7 +251,7 @@ class Application
      * Creates the Symfony console app.
      *
      * @param array $mocks Replaces dependencies in the DI container
-     * @throws \Throwable
+     * @throws Throwable
      * @return ConsoleApplication
      */
     public function getConsoleApp(array $mocks = []): ConsoleApplication
@@ -337,7 +338,7 @@ class Application
     /**
      * Builds the DI container.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function createContainer(array $mocks = []): Container
     {
@@ -369,7 +370,6 @@ class Application
      *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws Exception
      * @phan-suppress PhanTypeInvalidThrowsIsInterface
      * @see https://symfony.com/doc/current/components/http_foundation/session_configuration.html
      */
@@ -385,9 +385,7 @@ class Application
 
         /* @noinspection PhpFullyQualifiedNameUsageInspection */
         /* @var \Doctrine\DBAL\Driver\PDO\Connection $conn */
-        $conn = $this->container->get(EntityManagerInterface::class)->getConnection()->getWrappedConnection();
-        /* @phan-suppress-next-line PhanUndeclaredMethod */
-        $pdo =  $conn->getWrappedConnection();
+        $pdo = $this->container->get(EntityManagerInterface::class)->getConnection()->getNativeConnection();
         /* @phan-suppress-next-line PhanTypeMismatchArgument */
         $sessionHandler = new PdoSessionHandler($pdo, ['lock_mode' => PdoSessionHandler::LOCK_ADVISORY]);
 
@@ -469,7 +467,7 @@ class Application
         $console->add($this->container->get(UpdateServiceAccounts::class));
     }
 
-    private function logException(\Throwable $e): void
+    private function logException(Throwable $e): void
     {
         $log = null;
         if ($this->container instanceof ContainerInterface) {

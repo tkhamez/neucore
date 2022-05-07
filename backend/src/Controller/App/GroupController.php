@@ -10,6 +10,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -43,15 +44,9 @@ class GroupController extends BaseController
 
     private const TYPE_ALLIANCE = 'Alliance';
 
-    /**
-     * @var AppAuth
-     */
-    private $appAuthService;
+    private AppAuth $appAuthService;
 
-    /**
-     * @var Account
-     */
-    private $accountService;
+    private Account $accountService;
 
     public function __construct(
         ResponseInterface $response,

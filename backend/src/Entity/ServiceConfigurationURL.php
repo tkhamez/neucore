@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
 /**
@@ -13,21 +14,18 @@ class ServiceConfigurationURL implements \JsonSerializable
 {
     /**
      * @OA\Property(description="placeholders: {username}, {password}, {email}")
-     * @var string
      */
-    public $url = '';
+    public string $url = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $title = '';
+    public string $title = '';
 
     /**
      * @OA\Property()
-     * @var string
      */
-    public $target = '';
+    public string $target = '';
 
     public function jsonSerialize(): array
     {

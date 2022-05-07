@@ -8,6 +8,7 @@ use Neucore\Controller\BaseController;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\Group;
 use Neucore\Service\EsiData;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 
@@ -19,15 +20,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AllianceController extends BaseController
 {
-    /**
-     * @var Alliance
-     */
-    private $alliance;
+    private Alliance $alliance;
 
-    /**
-     * @var Group
-     */
-    private $group;
+    private Group $group;
 
     /**
      * @OA\Get(

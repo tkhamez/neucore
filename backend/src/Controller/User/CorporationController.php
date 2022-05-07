@@ -12,6 +12,7 @@ use Neucore\Service\Account;
 use Neucore\Service\EsiData;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,25 +38,13 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CorporationController extends BaseController
 {
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
+    private UserAuth $userAuth;
 
-    /**
-     * @var Account
-     */
-    private $accountService;
+    private Account $accountService;
 
-    /**
-     * @var Corporation
-     */
-    private $corp;
+    private Corporation $corp;
 
-    /**
-     * @var Group
-     */
-    private $group;
+    private Group $group;
 
     public function __construct(
         ResponseInterface $response,

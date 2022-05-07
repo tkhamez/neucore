@@ -16,6 +16,7 @@ use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
 use Neucore\Storage\StorageInterface;
 use Neucore\Storage\Variables;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -33,40 +34,19 @@ class EsiController extends BaseController
 
     private const PARAM_DATASOURCE = 'datasource';
 
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
+    private StorageInterface $storage;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
+    private OAuthToken $tokenService;
 
-    /**
-     * @var Config
-     */
-    private $config;
+    private Config $config;
 
-    /**
-     * @var HttpClientFactoryInterface
-     */
-    private $httpClientFactory;
+    private HttpClientFactoryInterface $httpClientFactory;
 
-    /**
-     * @var AppAuth
-     */
-    private $appAuth;
+    private AppAuth $appAuth;
 
-    /**
-     * @var App|null
-     */
-    private $app;
+    private ?App $app = null;
 
     public function __construct(
         ResponseInterface $response,

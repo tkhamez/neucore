@@ -17,6 +17,7 @@ use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -56,13 +57,7 @@ class ServiceController extends BaseController
 
     private UserAuth $userAuth;
 
-    private ?Character $validCharacter = null;
-
-    private ?Service $service = null;
-
-    private ?ServiceInterface $serviceImplementation = null;
-
-    private ?ServiceAccountData $account = null;
+    private int $responseErrorCode = 200;
 
     public function __construct(
         ResponseInterface $response,
@@ -117,14 +112,14 @@ class ServiceController extends BaseController
     public function get(string $id, ServerRequestInterface $request, UserAuth $userAuth): ResponseInterface
     {
         $allowAdmin = $this->getQueryParam($request, 'allowAdmin') === 'true';
-        $response = $this->getService((int) $id, $allowAdmin);
-        if ($response instanceof ResponseInterface) {
-            return $response;
+        $service = $this->getService((int) $id, $allowAdmin);
+        if (!$service) {
+            return $this->response->withStatus($this->responseErrorCode);
         }
 
         $isAdmin = $this->getUser($userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
 
-        return $this->withJson($this->service->jsonSerialize(false, !$isAdmin));
+        return $this->withJson($service->jsonSerialize(false, !$isAdmin));
     }
 
     /**
@@ -164,14 +159,14 @@ class ServiceController extends BaseController
      */
     public function accounts(string $id, UserAuth $userAuth): ResponseInterface
     {
-        $response = $this->getServiceAndServiceImplementation((int) $id);
-        if ($response instanceof ResponseInterface) {
-            return $response;
+        $serviceImplementation = $this->getServiceAndServiceImplementation((int) $id);
+        if (!$serviceImplementation) {
+            return $this->response->withStatus($this->responseErrorCode);
         }
 
         try {
             $accountData = $this->serviceRegistration->getAccounts(
-                $this->serviceImplementation,
+                $serviceImplementation,
                 $this->getUser($userAuth)->getPlayer()->getCharacters()
             );
         } catch (Exception $e) {
@@ -245,20 +240,24 @@ class ServiceController extends BaseController
             return $this->withJson('no_main', 409);
         }
 
-        $result = $this->getServiceAndServiceImplementation((int) $id);
-        if ($result instanceof ResponseInterface) {
-            return $result;
+        $service = $this->getService((int) $id, false);
+        if (!$service) {
+            return $this->response->withStatus($this->responseErrorCode);
+        }
+        $serviceImplementation = $this->getServiceImplementation($service);
+        if (!$serviceImplementation) {
+            return $this->response->withStatus($this->responseErrorCode);
         }
 
         // check if a new account may be created
-        $oneAccountOnly = $this->service->getConfiguration()->oneAccount;
+        $oneAccountOnly = $service->getConfiguration()->oneAccount;
         if ($oneAccountOnly) {
             $characters = $player->getCharacters();
         } else {
             $characters = [$main];
         }
         try {
-            $accounts = $this->serviceRegistration->getAccounts($this->serviceImplementation, $characters, false);
+            $accounts = $this->serviceRegistration->getAccounts($serviceImplementation, $characters, false);
         } catch (Exception $e) {
             return $this->response->withStatus(500);
         }
@@ -276,7 +275,7 @@ class ServiceController extends BaseController
         }
 
         try {
-            $accountData = $this->serviceImplementation->register(
+            $accountData = $serviceImplementation->register(
                 $main->toCoreCharacter(),
                 $this->serviceRegistration->getCoreGroups($player),
                 $emailAddress,
@@ -339,13 +338,20 @@ class ServiceController extends BaseController
      */
     public function updateAccount(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
-        $response = $this->validateCharacterGetServiceImplementationAndAccount((int)$id, (int)$characterId, $userAuth);
-        if ($response instanceof ResponseInterface) {
-            return $response;
+        $serviceImplementation = $this->getServiceAndServiceImplementation((int)$id);
+        $validCharacter = $this->validateCharacter((int)$characterId, $userAuth);
+        if (!$serviceImplementation || !$validCharacter) {
+            return $this->response->withStatus($this->responseErrorCode);
         }
 
-        // update account
-        $error = $this->updateServiceAccount($this->validCharacter, $this->serviceImplementation);
+        // Check that there is an account for the character.
+        $account = $this->getAccountOfCharacter($serviceImplementation, $validCharacter);
+        if (!$account) {
+            return $this->response->withStatus($this->responseErrorCode);
+        }
+
+        // Update account.
+        $error = $this->updateServiceAccount($validCharacter, $serviceImplementation);
         if (!empty($error)) {
             return $this->withJson($error, 409);
         } elseif ($error === '') {
@@ -402,7 +408,7 @@ class ServiceController extends BaseController
         $services = $this->repositoryFactory->getServiceRepository()->findBy([]);
         foreach ($services as $service) {
             // Check if service has the "update-account" action
-            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, $service->getConfiguration()->actions)) {
+            if (!in_array(ServiceConfiguration::ACTION_UPDATE_ACCOUNT, (array)$service->getConfiguration()->actions)) {
                 continue;
             }
 
@@ -483,14 +489,18 @@ class ServiceController extends BaseController
      */
     public function resetPassword(string $id, string $characterId, UserAuth $userAuth): ResponseInterface
     {
-        $response = $this->validateCharacterGetServiceImplementationAndAccount((int)$id, (int)$characterId, $userAuth);
-        if ($response instanceof ResponseInterface) {
-            return $response;
+        $serviceImplementation = $this->getServiceAndServiceImplementation((int)$id);
+        if (!$serviceImplementation) {
+            return $this->response->withStatus($this->responseErrorCode);
+        }
+        $account = $this->validateCharacterAndGetAccount($serviceImplementation, (int)$characterId, $userAuth);
+        if (!$account) {
+            return $this->response->withStatus($this->responseErrorCode);
         }
 
         // change password
         try {
-            $newPassword = $this->serviceImplementation->resetPassword($this->account->getCharacterId());
+            $newPassword = $serviceImplementation->resetPassword($account->getCharacterId());
         } catch (Exception $e) {
             return $this->response->withStatus(500);
         }
@@ -498,53 +508,52 @@ class ServiceController extends BaseController
         return $this->withJson($newPassword);
     }
 
-    private function getService(int $id, bool $allowAdmin): ?ResponseInterface
+    private function getService(int $id, bool $allowAdmin): ?Service
     {
         // get service
         $service = $this->repositoryFactory->getServiceRepository()->find($id);
         if ($service === null) {
-            return $this->response->withStatus(404);
+            $this->responseErrorCode = 404;
+            return null;
         }
-        $this->service = $service;
 
         // check service permission
         $isAdmin = false;
         if ($allowAdmin) {
             $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
         }
-        if (!$isAdmin && !$this->serviceRegistration->hasRequiredGroups($this->service)) {
-            return $this->response->withStatus(403);
+        if (!$isAdmin && !$this->serviceRegistration->hasRequiredGroups($service)) {
+            $this->responseErrorCode = 403;
+            return null;
         }
 
-        return null;
+        return $service;
     }
 
-    private function getServiceAndServiceImplementation(int $id): ?ResponseInterface
+    private function getServiceImplementation(Service $service): ?ServiceInterface
     {
-        $response = $this->getService($id, false);
-        if ($response instanceof ResponseInterface) {
-            return $response;
-        }
-
         // get service object
-        $serviceImplementation = $this->serviceRegistration->getServiceImplementation($this->service);
+        $serviceImplementation = $this->serviceRegistration->getServiceImplementation($service);
         if ($serviceImplementation === null) {
             $this->log->error(
                 "ServiceController: The configured service class does not exist or does not implement " .
                 "Neucore\Plugin\ServiceInterface."
             );
-            return $this->response->withStatus(500);
+            $this->responseErrorCode = 500;
+            return null;
         }
-        $this->serviceImplementation = $serviceImplementation;
 
-        return null;
+        return $serviceImplementation;
     }
 
-    private function validateCharacterGetServiceImplementationAndAccount(
-        int $id,
-        int $characterId,
-        UserAuth $userAuth
-    ): ?ResponseInterface {
+    private function getServiceAndServiceImplementation(int $id): ?ServiceInterface
+    {
+        $service = $this->getService($id, false);
+        return $service ? $this->getServiceImplementation($service) : null;
+    }
+
+    private function validateCharacter(int $characterId, UserAuth $userAuth): ?Character
+    {
         $character = null;
         foreach ($this->getUser($userAuth)->getPlayer()->getCharacters() as $char) {
             if ($char->getId() === $characterId) {
@@ -553,31 +562,43 @@ class ServiceController extends BaseController
             }
         }
         if ($character === null) {
-            return $this->response->withStatus(404);
+            $this->responseErrorCode = 404;
+            return null;
         }
-        $this->validCharacter = $character;
+        return $character;
+    }
 
-        $response1 = $this->getServiceAndServiceImplementation($id);
-        if ($response1 instanceof ResponseInterface) {
-            return $response1;
-        }
-
-        // get account
+    private function getAccountOfCharacter(
+        ServiceInterface $serviceImplementation,
+        Character $validCharacter
+    ): ?ServiceAccountData {
         try {
             $account = $this->serviceRegistration->getAccounts(
-                $this->serviceImplementation,
-                [$this->validCharacter],
+                $serviceImplementation,
+                [$validCharacter],
                 false
             );
         } catch (Exception $e) {
-            return $this->response->withStatus(500);
+            $this->responseErrorCode = 500;
+            return null;
         }
         if (empty($account)) {
-            return $this->response->withStatus(404);
+            $this->responseErrorCode = 404;
+            return null;
         }
-        $this->account = $account[0];
+        return $account[0];
+    }
 
-        return null;
+    private function validateCharacterAndGetAccount(
+        ServiceInterface $serviceImplementation,
+        int $characterId,
+        UserAuth $userAuth
+    ): ?ServiceAccountData {
+        $validCharacter = $this->validateCharacter($characterId, $userAuth);
+        if (!$validCharacter) {
+            return null;
+        }
+        return $this->getAccountOfCharacter($serviceImplementation, $validCharacter);
     }
 
     /**

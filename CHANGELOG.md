@@ -1,5 +1,11 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- Updated dependencies.
+
 ## 1.31.1
 
 5 Feb 2022

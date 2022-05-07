@@ -6,6 +6,7 @@ namespace Neucore\Controller\User;
 
 use Neucore\Controller\BaseController;
 use Neucore\Entity\EveLogin;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -13,10 +14,7 @@ use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 
 class SettingsEveLoginController extends BaseController
 {
-    /**
-     * @var string
-     */
-    private $namePattern = "/^[-._a-zA-Z0-9]+$/";
+    private string $namePattern = "/^[-._a-zA-Z0-9]+$/";
 
     /**
      * @OA\Post(

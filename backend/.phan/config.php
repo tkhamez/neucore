@@ -52,6 +52,6 @@ return [
     ],
 
     'plugins' => [
-        'vendor/drenso/phan-extensions/Plugin/Annotation/SymfonyAnnotationPlugin.php'
+        //'vendor/drenso/phan-extensions/Plugin/Annotation/SymfonyAnnotationPlugin.php'
     ],
 ];

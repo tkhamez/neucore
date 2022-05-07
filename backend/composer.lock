@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "865e49c75d54c6383a12073fbd2f66b9",
+    "content-hash": "04c4648ba3934f033f13f922cd9fde13",
     "packages": [
         {
             "name": "brick/math",
@@ -6041,54 +6041,6 @@
                 "source": "https://github.com/dnoegel/php-xdg-base-dir/tree/v0.1.1"
             },
             "time": "2019-12-04T15:06:13+00:00"
-        },
-        {
-            "name": "drenso/phan-extensions",
-            "version": "v3.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Drenso/PhanExtensions.git",
-                "reference": "639169d38f4508ce9d1aa7136f7a472a1d71a683"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/639169d38f4508ce9d1aa7136f7a472a1d71a683",
-                "reference": "639169d38f4508ce9d1aa7136f7a472a1d71a683",
-                "shasum": ""
-            },
-            "require-dev": {
-                "phan/phan": "~2|~3"
-            },
-            "type": "project",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bob van de Vijver",
-                    "email": "bob@drenso.nl"
-                },
-                {
-                    "name": "Tobias Feijten",
-                    "email": "tobias@drenso.nl"
-                }
-            ],
-            "description": "This project contains several extensions (stubs/plugins) to be used with Phan for static PHP analysis",
-            "homepage": "https://github.com/Drenso/PhanExtensions",
-            "keywords": [
-                "phan",
-                "plugin",
-                "plugins",
-                "stub",
-                "stubs",
-                "symfony"
-            ],
-            "support": {
-                "issues": "https://github.com/Drenso/PhanExtensions/issues",
-                "source": "https://github.com/Drenso/PhanExtensions/tree/master"
-            },
-            "time": "2020-06-17T08:01:34+00:00"
         },
         {
             "name": "felixfbecker/advanced-json-rpc",

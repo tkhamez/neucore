@@ -9,6 +9,7 @@ namespace Neucore\Controller\App;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Character;
 use Neucore\Entity\Player;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

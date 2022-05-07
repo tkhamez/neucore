@@ -14,6 +14,7 @@ use Neucore\Service\Config;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\OAuthToken;
 use Neucore\Service\ObjectManager;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,20 +28,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class EsiController extends BaseController
 {
-    /**
-     * @var OAuthToken
-     */
-    private $tokenService;
+    private OAuthToken $tokenService;
 
-    /**
-     * @var HttpClientFactoryInterface
-     */
-    private $httpClientFactory;
+    private HttpClientFactoryInterface $httpClientFactory;
 
-    /**
-     * @var Config
-     */
-    private $config;
+    private Config $config;
 
     public function __construct(
         ResponseInterface $response,

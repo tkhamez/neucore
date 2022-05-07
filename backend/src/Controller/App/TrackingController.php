@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\App;
 
 use Neucore\Controller\BaseController;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

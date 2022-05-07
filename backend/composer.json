@@ -37,7 +37,6 @@
         "zircote/swagger-php": "4.2.9"
     },
     "require-dev": {
-        "drenso/phan-extensions": "~3.1.0",
         "friendsofphp/php-cs-fixer": "^3.0",
         "phan/phan": "^5.2",
         "phpstan/phpstan": "^1.3",

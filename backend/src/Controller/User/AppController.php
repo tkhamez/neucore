@@ -13,6 +13,7 @@ use Neucore\Entity\Role;
 use Neucore\Service\Account;
 use Neucore\Util\Random;
 use Neucore\Service\UserAuth;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,35 +27,17 @@ use Psr\Log\LoggerInterface;
  */
 class AppController extends BaseController
 {
-    /**
-     * @var App
-     */
-    private $application;
+    private App $application;
 
-    /**
-     * @var Player
-     */
-    private $player;
+    private Player $player;
 
-    /**
-     * @var Group
-     */
-    private $group;
+    private Group $group;
 
-    /**
-     * @var Role
-     */
-    private $role;
+    private Role $role;
 
-    /**
-     * @var EveLogin
-     */
-    private $eveLogin;
+    private EveLogin $eveLogin;
 
-    /**
-     * @var array
-     */
-    private $availableRoles = [
+    private array $availableRoles = [
         Role::APP_GROUPS,
         Role::APP_CHARS,
         Role::APP_TRACKING,

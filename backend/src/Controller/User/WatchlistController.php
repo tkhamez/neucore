@@ -18,6 +18,7 @@ use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\UserAuth;
 use Neucore\Service\Watchlist;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,15 +35,9 @@ class WatchlistController extends BaseController
 
     private const ACTION_REMOVE = 'remove';
 
-    /**
-     * @var Watchlist
-     */
-    private $watchlistService;
+    private Watchlist $watchlistService;
 
-    /**
-     * @var WatchlistRepository
-     */
-    private $watchlistRepository;
+    private WatchlistRepository $watchlistRepository;
 
     public function __construct(
         ResponseInterface $response,
@@ -1591,8 +1586,8 @@ class WatchlistController extends BaseController
         int $id,
         UserAuth $userAuth,
         string $roleName = null,
-        $admin = false,
-        $checkSettingsLock = false
+        bool $admin = false,
+        bool $checkSettingsLock = false
     ): bool {
         $watchlist = $this->repositoryFactory->getWatchlistRepository()->find($id);
         if ($watchlist === null) {

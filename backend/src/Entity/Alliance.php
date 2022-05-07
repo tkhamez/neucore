@@ -6,7 +6,9 @@ namespace Neucore\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
 /**
@@ -27,43 +29,38 @@ class Alliance implements \JsonSerializable
      * @ORM\ID
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * EVE alliance name.
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * Alliance ticker.
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="string", length=16, nullable=true)
-     * @var string
      */
-    private $ticker;
+    private ?string $ticker = null;
 
     /**
      * Last ESI update.
      *
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
-     * @var \DateTime
      */
-    private $lastUpdate;
+    private ?\DateTime $lastUpdate = null;
 
     /**
      *
      * @ORM\OneToMany(targetEntity="Corporation", mappedBy="alliance")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $corporations;
+    private Collection $corporations;
 
     /**
      * Groups for automatic assignment (API: not included by default).
@@ -72,9 +69,8 @@ class Alliance implements \JsonSerializable
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="alliances")
      * @ORM\JoinTable(name="alliance_group")
      * @ORM\OrderBy({"name" = "ASC"})
-     * @var Collection
      */
-    private $groups;
+    private Collection $groups;
 
     /**
      * Contains only information that is of interest for clients.
@@ -91,6 +87,7 @@ class Alliance implements \JsonSerializable
             // API: groups are not included by default
         ];
     }
+
     /**
      * Constructor
      */
@@ -100,85 +97,44 @@ class Alliance implements \JsonSerializable
         $this->corporations = new ArrayCollection();
     }
 
-    /**
-     * Set id.
-     *
-     * @param int $id
-     *
-     * @return Alliance
-     */
-    public function setId(int $id)
+    public function setId(int $id): Alliance
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get id.
-     */
     public function getId(): int
     {
-        // cast to int because Doctrine creates string for type bigint, also make sure it's no null
+        // Cast to int because Doctrine creates string for type bigint, also make sure it's not null.
         return (int) $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Alliance
-     */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * Set ticker.
-     *
-     * @param string $ticker
-     *
-     * @return Alliance
-     */
-    public function setTicker(string $ticker)
+    public function setTicker(string $ticker): self
     {
         $this->ticker = $ticker;
 
         return $this;
     }
 
-    /**
-     * Get ticker.
-     *
-     * @return string
-     */
-    public function getTicker()
+    public function getTicker(): ?string
     {
         return $this->ticker;
     }
 
-    /**
-     * Set lastUpdate.
-     *
-     * @param \DateTime $lastUpdate
-     *
-     * @return Alliance
-     */
-    public function setLastUpdate($lastUpdate)
+    public function setLastUpdate(\DateTime $lastUpdate): self
     {
         $this->lastUpdate = clone $lastUpdate;
 
@@ -187,22 +143,13 @@ class Alliance implements \JsonSerializable
 
     /**
      * Get lastUpdate.
-     *
-     * @return \DateTime|null
      */
-    public function getLastUpdate()
+    public function getLastUpdate(): ?\DateTime
     {
         return $this->lastUpdate;
     }
 
-    /**
-     * Add corporation.
-     *
-     * @param Corporation $corporation
-     *
-     * @return Alliance
-     */
-    public function addCorporation(Corporation $corporation)
+    public function addCorporation(Corporation $corporation): self
     {
         $this->corporations[] = $corporation;
 
@@ -210,35 +157,22 @@ class Alliance implements \JsonSerializable
     }
 
     /**
-     * Remove corporation.
-     *
-     * @param Corporation $corporation
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCorporation(Corporation $corporation)
+    public function removeCorporation(Corporation $corporation): bool
     {
         return $this->corporations->removeElement($corporation);
     }
 
     /**
-     * Get corporations.
-     *
      * @return Corporation[]
      */
-    public function getCorporations()
+    public function getCorporations(): array
     {
         return $this->corporations->toArray();
     }
 
-    /**
-     * Add group.
-     *
-     * @param Group $group
-     *
-     * @return Alliance
-     */
-    public function addGroup(Group $group)
+    public function addGroup(Group $group): self
     {
         $this->groups[] = $group;
 
@@ -246,23 +180,17 @@ class Alliance implements \JsonSerializable
     }
 
     /**
-     * Remove group.
-     *
-     * @param Group $group
-     *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeGroup(Group $group)
+    public function removeGroup(Group $group): bool
     {
         return $this->groups->removeElement($group);
     }
 
     /**
-     * Get groups.
-     *
      * @return Group[]
      */
-    public function getGroups()
+    public function getGroups(): array
     {
         return $this->groups->toArray();
     }

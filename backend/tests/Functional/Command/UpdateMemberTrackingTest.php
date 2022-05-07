@@ -19,15 +19,9 @@ use Tests\Logger;
 
 class UpdateMemberTrackingTest extends ConsoleTestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     protected function setUp(): void
     {
@@ -160,7 +154,7 @@ class UpdateMemberTrackingTest extends ConsoleTestCase
         $this->assertStringEndsWith('', $actual[8]);
 
         $this->om->clear();
-        $corps = (new RepositoryFactory($this->om))->getCorporationRepository()->findAll();
+        $corps = (new RepositoryFactory($this->om))->getCorporationRepository()->findBy([]);
         $this->assertSame(2, count($corps));
         $this->assertNotNull($corps[0]->getTrackingLastUpdate());
         $this->assertNotNull($corps[1]->getTrackingLastUpdate());

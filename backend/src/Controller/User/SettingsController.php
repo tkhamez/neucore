@@ -15,6 +15,7 @@ use Neucore\Service\EveMail;
 use Neucore\Service\MemberTracking;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,10 +34,7 @@ class SettingsController extends BaseController
 
     private const COLUMN_VALUE = 'value';
 
-    /**
-     * @var array
-     */
-    private $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
+    private array $validScopes = [SystemVariable::SCOPE_PUBLIC, SystemVariable::SCOPE_SETTINGS];
 
     /**
      * @noinspection PhpUnused

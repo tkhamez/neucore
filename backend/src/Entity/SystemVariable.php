@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Neucore\Entity;
 
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use Doctrine\ORM\Mapping as ORM;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
 /**

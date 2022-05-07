@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neucore;
 
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
 /**

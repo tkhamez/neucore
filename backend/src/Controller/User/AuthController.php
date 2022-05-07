@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Neucore\Controller\User;
 
 use Eve\Sso\AuthenticationProvider;
+use Exception;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
@@ -22,8 +23,8 @@ use Neucore\Service\ObjectManager;
 use Neucore\Util\Random;
 use Neucore\Service\SessionData;
 use Neucore\Service\UserAuth;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -168,7 +169,7 @@ class AuthController extends BaseController
                 $state,
                 $this->getQueryParam($request, 'code', '')
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->session->set(self::SESS_AUTH_RESULT, [
                 self::KEY_RESULT_SUCCESS => false,
                 self::KEY_RESULT_MESSAGE => $e->getMessage(),
@@ -313,7 +314,7 @@ class AuthController extends BaseController
         if (empty($token)) {
             try {
                 $token = Random::chars(39);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->response->getBody()->write('Error.');
                 return $this->response->withStatus(500);
             }
@@ -343,7 +344,7 @@ class AuthController extends BaseController
     {
         try {
             $randomString = Random::chars(12);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->response->getBody()->write('Error.');
             return $this->response->withStatus(500);
         }

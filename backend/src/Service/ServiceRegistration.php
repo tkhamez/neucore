@@ -17,20 +17,11 @@ use Psr\Log\LoggerInterface;
 
 class ServiceRegistration
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
+    private UserAuth $userAuth;
 
-    /**
-     * @var Account
-     */
-    private $account;
+    private Account $account;
 
     public function __construct(LoggerInterface $log, UserAuth $userAuth, Account $account)
     {
@@ -56,8 +47,7 @@ class ServiceRegistration
         }
 
         $hasOneGroup = empty($serviceConfig->requiredGroups);
-        foreach ($serviceConfig->requiredGroups as $group) {
-            /** @noinspection PhpCastIsUnnecessaryInspection */
+        foreach ((array)$serviceConfig->requiredGroups as $group) {
             $group = (int)$group;
             if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
                 $hasOneGroup = true;
@@ -85,8 +75,8 @@ class ServiceRegistration
 
         // configure autoloader
         $psr4Paths = (array) $serviceConfig->psr4Path;
-        if ($serviceConfig->psr4Prefix !== '' && $psr4Paths !== []) {
-            if (substr($serviceConfig->psr4Prefix, -1) !== '\\') {
+        if (!empty($serviceConfig->psr4Prefix) && $psr4Paths !== []) {
+            if (substr((string)$serviceConfig->psr4Prefix, -1) !== '\\') {
                 $serviceConfig->psr4Prefix .= '\\';
             }
             /** @noinspection PhpFullyQualifiedNameUsageInspection */
@@ -101,21 +91,23 @@ class ServiceRegistration
             $loader->setPsr4($serviceConfig->psr4Prefix, $psr4Paths);
         }
 
-        if (!class_exists($serviceConfig->phpClass)) {
+        $phpClass = (string)$serviceConfig->phpClass;
+
+        if (!class_exists($phpClass)) {
             return null;
         }
 
-        $implements = class_implements($serviceConfig->phpClass);
+        $implements = class_implements($phpClass);
         if (!is_array($implements) || !in_array(ServiceInterface::class, $implements)) {
             return null;
         }
 
         // ServiceInterface::__construct
-        return new $serviceConfig->phpClass(
+        return new $phpClass(
             $this->log,
             new ServiceConfiguration(
                 $service->getId(),
-                array_map('intval', $serviceConfig->requiredGroups),
+                array_map('intval', (array)$serviceConfig->requiredGroups),
                 $serviceConfig->configurationData
             )
         );

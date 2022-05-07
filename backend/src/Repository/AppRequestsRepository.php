@@ -6,6 +6,7 @@ namespace Neucore\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Neucore\Entity\AppRequests;
+/* @phan-suppress-next-line PhanUnreferencedUseNormal */
 use OpenApi\Annotations as OA;
 
 /**
