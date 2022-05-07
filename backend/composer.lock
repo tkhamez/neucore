@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4796c7fe2a3833d9f56a75053ec9c8c",
+    "content-hash": "d9ed112775cab9e985fb0954190f1ec5",
     "packages": [
         {
             "name": "brick/math",
@@ -5473,16 +5473,16 @@
         },
         {
             "name": "zircote/swagger-php",
-            "version": "4.0.5",
+            "version": "4.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zircote/swagger-php.git",
-                "reference": "31210d89e8c4df86e01a428bdbd2943fc8fc09b2"
+                "reference": "867cfdcf31fec8bf44b2d7107a2f51b4bab00601"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/31210d89e8c4df86e01a428bdbd2943fc8fc09b2",
-                "reference": "31210d89e8c4df86e01a428bdbd2943fc8fc09b2",
+                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/867cfdcf31fec8bf44b2d7107a2f51b4bab00601",
+                "reference": "867cfdcf31fec8bf44b2d7107a2f51b4bab00601",
                 "shasum": ""
             },
             "require": {
@@ -5542,9 +5542,9 @@
             ],
             "support": {
                 "issues": "https://github.com/zircote/swagger-php/issues",
-                "source": "https://github.com/zircote/swagger-php/tree/4.0.5"
+                "source": "https://github.com/zircote/swagger-php/tree/4.2.9"
             },
-            "time": "2021-12-20T01:09:47+00:00"
+            "time": "2022-02-20T21:16:53+00:00"
         }
     ],
     "packages-dev": [
