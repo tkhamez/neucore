@@ -204,7 +204,7 @@ function setAppIdAndContentType(vm) {
 }
 
 function getApps(vm) {
-    new AppApi().all(function(error, data) {
+    new AppApi().userAppAll(function(error, data) {
         if (error) { // 403 usually
             return;
         }

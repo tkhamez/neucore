@@ -303,7 +303,7 @@ export default {
 
         getAuthenticatedCharacter: function(ping) {
             const vm = this;
-            new CharacterApi().show(function(error, data) {
+            new CharacterApi().userCharacterShow(function(error, data) {
                 if (error) { // 403 usually
                     vm.authChar = null;
                     vm.$root.player = null;

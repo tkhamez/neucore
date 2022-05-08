@@ -565,7 +565,7 @@ export default {
             ) {
                 api = new AppApi();
                 if (this.contentType === 'groups') {
-                    method = action === 'add' ? 'addGroup' : 'removeGroup';
+                    method = action === 'add' ? 'userAppAddGroup' : 'userAppRemoveGroup';
                 } else if (this.contentType === 'roles') {
                     method = action === 'add' ? 'addRole' : 'removeRole';
                 } else if (this.contentType === 'eveLogins') {
@@ -689,7 +689,7 @@ export default {
                 if (groups.length > 0) {
                     const id = groups[0].id;
                     groups.splice(0, 1);
-                    callApi(vm, api, 'addGroup', vm.typeId, id, function() {
+                    callApi(vm, api, 'userAppAddGroup', vm.typeId, id, function() {
                         addGroup();
                     });
                 } else {

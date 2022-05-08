@@ -65,7 +65,7 @@ class CharacterController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/character/show",
-     *     operationId="show",
+     *     operationId="userCharacterShow",
      *     summary="Return the logged in EVE character.",
      *     description="Needs role: user",
      *     tags={"Character"},

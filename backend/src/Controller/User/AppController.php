@@ -47,7 +47,7 @@ class AppController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/app/all",
-     *     operationId="all",
+     *     operationId="userAppAll",
      *     summary="List all apps.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
@@ -463,7 +463,7 @@ class AppController extends BaseController
     /**
      * @OA\Put(
      *     path="/user/app/{id}/add-group/{gid}",
-     *     operationId="addGroup",
+     *     operationId="userAppAddGroup",
      *     summary="Add a group to an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
@@ -516,7 +516,7 @@ class AppController extends BaseController
     /**
      * @OA\Put(
      *     path="/user/app/{id}/remove-group/{gid}",
-     *     operationId="removeGroup",
+     *     operationId="userAppRemoveGroup",
      *     summary="Remove a group from an app.",
      *     description="Needs role: app-admin",
      *     tags={"App"},
