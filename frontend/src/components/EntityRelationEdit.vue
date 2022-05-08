@@ -358,7 +358,7 @@ export default {
                 }
             } else if (vm.contentType === 'corporations') {
                 api = new CorporationApi();
-                method = 'all';
+                method = 'userCorporationAll';
             } else if (vm.contentType === 'alliances') {
                 api = new AllianceApi();
                 method = 'all';
@@ -506,15 +506,17 @@ export default {
             vm.withGroups = [];
 
             let api;
+            let method = 'withGroups';
             if (this.contentType === 'corporations') {
                 api = new CorporationApi();
+                method = 'userCorporationWithGroups';
             } else if (this.contentType === 'alliances') {
                 api = new AllianceApi();
             } else {
                 return;
             }
 
-            api['withGroups'].apply(api, [function(error, data) {
+            api[method].apply(api, [function(error, data) {
                 if (error) { // 403 usually
                     return;
                 }
@@ -584,10 +586,11 @@ export default {
             ) {
                 if (this.contentType === 'corporations') {
                     api = new CorporationApi();
+                    method = action === 'add' ? 'userCorporationAddGroup' : 'userCorporationRemoveGroup';
                 } else if (this.contentType === 'alliances') {
                     api = new AllianceApi();
+                    method = action === 'add' ? 'addGroup' : 'removeGroup';
                 }
-                method = action === 'add' ? 'addGroup' : 'removeGroup';
                 param1 = id;
                 param2 = this.typeId;
             } else if (

@@ -91,15 +91,17 @@ export default {
 
             const vm = this;
             let api;
+            let method = 'add';
             if (this.addType === 'Corporation') {
                 api = new CorporationApi();
+                method = 'userCorporationAdd';
             } else if (this.addType === 'Alliance') {
                 api = new AllianceApi();
             } else {
                 return;
             }
 
-            api['add'].apply(api, [this.searchSelected.id, function(error, data, response) {
+            api[method].apply(api, [this.searchSelected.id, function(error, data, response) {
                 if (response.statusCode === 409) {
                     vm.message(`${vm.addType} already exist.`, 'warning');
                 } else if (response.statusCode === 404) {

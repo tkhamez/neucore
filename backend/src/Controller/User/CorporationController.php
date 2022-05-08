@@ -62,7 +62,7 @@ class CorporationController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/corporation/all",
-     *     operationId="all",
+     *     operationId="userCorporationAll",
      *     summary="List all corporations.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
@@ -89,7 +89,7 @@ class CorporationController extends BaseController
      * @noinspection PhpUnused
      * @OA\Get(
      *     path="/user/corporation/with-groups",
-     *     operationId="withGroups",
+     *     operationId="userCorporationWithGroups",
      *     summary="List all corporations that have groups assigned.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
@@ -121,7 +121,7 @@ class CorporationController extends BaseController
     /**
      * @OA\Post(
      *     path="/user/corporation/add/{id}",
-     *     operationId="add",
+     *     operationId="userCorporationAdd",
      *     summary="Add an EVE corporation to the database.",
      *     description="Needs role: group-admin, watchlist-manager
      *                  This makes an ESI request and adds the corporation only if it exists.
@@ -192,7 +192,7 @@ class CorporationController extends BaseController
     /**
      * @OA\Put(
      *     path="/user/corporation/{id}/add-group/{gid}",
-     *     operationId="addGroup",
+     *     operationId="userCorporationAddGroup",
      *     summary="Add a group to the corporation.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},
@@ -241,7 +241,7 @@ class CorporationController extends BaseController
     /**
      * @OA\Put(
      *     path="/user/corporation/{id}/remove-group/{gid}",
-     *     operationId="removeGroup",
+     *     operationId="userCorporationRemoveGroup",
      *     summary="Remove a group from the corporation.",
      *     description="Needs role: group-admin",
      *     tags={"Corporation"},

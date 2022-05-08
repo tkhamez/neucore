@@ -133,7 +133,7 @@ export default {
             });
 
             // get corporations
-            new CorporationApi().all((error, data) => {
+            new CorporationApi().userCorporationAll((error, data) => {
                 if (error) { // 403 usually
                     return;
                 }
