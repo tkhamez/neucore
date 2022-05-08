@@ -25,8 +25,7 @@ services:
     container_name: neucore_node
     build:
       context: doc
-      dockerfile: Dockerfile-node14
-      #dockerfile: Dockerfile-node16
+      dockerfile: Dockerfile-node
     volumes: [".:/app"]
     environment:
       BACKEND_HOST: http://localhost:8080

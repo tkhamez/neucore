@@ -1,3 +1,5 @@
+# Note: this file is no longer maintained.
+
 kind: pipeline
 type: docker
 name: default

@@ -5,7 +5,7 @@ cd backend || exit
 if hash composer 2>/dev/null; then
     COMPOSER_CMD=composer
 else
-    # for AWS Beanstalk
+    # for AWS Beanstalk (may not work anymore)
     COMPOSER_CMD=composer.phar
 fi
 if [[ $1 = prod ]]; then

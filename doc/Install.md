@@ -46,7 +46,7 @@ To run the application:
 
 Additionally, to build the application:
 * Composer 2.
-* Node.js >=14.15 with npm >=6.14.8, only tested with LTS releases v14 and v16.
+* Node.js, only tested with version 16.13.0 with npm 8.1.0.
 * Java runtime >=8 (but only tested with v11) to generate the OpenAPI JavaScript client.
 
 ### Install/Update
@@ -150,4 +150,4 @@ heroku buildpacks:add heroku/php
 
 ### Deploy on AWS Beanstalk
 
-See [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk).
+See [bravecollective/neucore-beanstalk](https://github.com/bravecollective/neucore-beanstalk) for an example.

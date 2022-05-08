@@ -5,6 +5,8 @@
 dd mm yyyy
 
 - Updated dependencies.
+- Dev: Removed Node.js 14 support.
+- Dev: (Re)moved .drone.yml.
 
 ## 1.31.1
 

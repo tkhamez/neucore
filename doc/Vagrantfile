@@ -1,6 +1,5 @@
 #
-# NOTE: This is outdated since Neucore needs at least PHP 7.3 now.
-#       But it should be relatively easy to adjust it for "ubuntu2004" with PHP 7.4.
+# NOTE: This is outdated because Neucore needs a higher PHP version now.
 #
 
 # Only tested on Linux with Vagrant 2 + libvirt.
