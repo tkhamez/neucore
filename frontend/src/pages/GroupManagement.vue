@@ -290,7 +290,7 @@ export default {
 }
 
 function getMembers(vm) {
-    new GroupApi().members(vm.groupId, function(error, data) {
+    new GroupApi().userGroupMembers(vm.groupId, function(error, data) {
         if (error) { // 403 usually
             return;
         }
@@ -318,7 +318,7 @@ function getForbiddenGroups(vm) {
 }
 
 function getGroupManager(vm) {
-    new GroupApi().managers(vm.groupId, function(error, data) {
+    new GroupApi().userGroupManagers(vm.groupId, function(error, data) {
         if (error) {
             return;
         }

@@ -57,7 +57,7 @@ class GroupController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/group/all",
-     *     operationId="all",
+     *     operationId="userGroupAll",
      *     summary="List all groups.",
      *     description="Needs role: app-admin, group-admin or user-manager",
      *     tags={"Group"},
@@ -119,7 +119,7 @@ class GroupController extends BaseController
     /**
      * @OA\Post(
      *     path="/user/group/create",
-     *     operationId="create",
+     *     operationId="userGroupCreate",
      *     summary="Create a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
@@ -181,7 +181,7 @@ class GroupController extends BaseController
     /**
      * @OA\Put(
      *     path="/user/group/{id}/rename",
-     *     operationId="rename",
+     *     operationId="userGroupRename",
      *     summary="Rename a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
@@ -482,7 +482,7 @@ class GroupController extends BaseController
     /**
      * @OA\Delete(
      *     path="/user/group/{id}/delete",
-     *     operationId="delete",
+     *     operationId="userGroupDelete",
      *     summary="Delete a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
@@ -523,7 +523,7 @@ class GroupController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/group/{id}/managers",
-     *     operationId="managers",
+     *     operationId="userGroupManagers",
      *     summary="List all managers of a group.",
      *     description="Needs role: group-admin, group-manager",
      *     tags={"Group"},
@@ -924,7 +924,7 @@ class GroupController extends BaseController
      * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/add-manager/{pid}",
-     *     operationId="addManager",
+     *     operationId="userGroupAddManager",
      *     summary="Assign a player as manager to a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
@@ -966,7 +966,7 @@ class GroupController extends BaseController
      * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/group/{id}/remove-manager/{pid}",
-     *     operationId="removeManager",
+     *     operationId="userGroupRemoveManager",
      *     summary="Remove a manager (player) from a group.",
      *     description="Needs role: group-admin",
      *     tags={"Group"},
@@ -1211,7 +1211,7 @@ class GroupController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/group/{id}/members",
-     *     operationId="members",
+     *     operationId="userGroupMembers",
      *     summary="List all members of a group.",
      *     description="Needs role: group-admin, group-manager",
      *     tags={"Group"},

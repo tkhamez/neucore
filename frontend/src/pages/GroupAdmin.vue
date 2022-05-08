@@ -222,7 +222,7 @@ export default {
 
         create (name) {
             const vm = this;
-            new GroupApi().create(name, (error, data, response) => {
+            new GroupApi().userGroupCreate(name, (error, data, response) => {
                 if (response.status === 409) {
                     vm.message('A group with this name already exists.', 'error');
                 } else if (response.status === 400) {
@@ -240,7 +240,7 @@ export default {
 
         deleteIt (id) {
             const vm = this;
-            new GroupApi().callDelete(id, (error) => {
+            new GroupApi().userGroupDelete(id, (error) => {
                 if (error) {
                     vm.message('Error deleting group', 'error');
                 } else {
@@ -258,7 +258,7 @@ export default {
 
         rename (id, name) {
             const vm = this;
-            new GroupApi().rename(id, name, (error, data, response) => {
+            new GroupApi().userGroupRename(id, name, (error, data, response) => {
                 if (response.status === 409) {
                     vm.message('A group with this name already exists.', 'error');
                 } else if (response.status === 400) {
@@ -304,7 +304,7 @@ function setGroupIdAndContentType(vm) {
 }
 
 function getGroups(vm) {
-    new GroupApi().all(function(error, data) {
+    new GroupApi().userGroupAll(function(error, data) {
         if (error) { // 403 usually
             return;
         }
@@ -324,7 +324,7 @@ function setActiveGroupData(vm) {
 function fetchMembers(vm) {
     vm.members = [];
     vm.membersLoaded = false;
-    new GroupApi().members(vm.groupId, function(error, data) {
+    new GroupApi().userGroupMembers(vm.groupId, function(error, data) {
         if (error) {
             return;
         }

@@ -367,7 +367,7 @@ export default {
                 this.contentType === 'requiredGroups' || this.contentType === 'forbiddenGroups'
             ) {
                 api = new GroupApi();
-                method = 'all';
+                method = 'userGroupAll';
             } else if (vm.contentType === 'roles') {
                 vm.selectContent = [
                     { id: 'app-groups', name: 'app-groups' },
@@ -420,7 +420,9 @@ export default {
             ) {
                 api = new WatchlistApi();
             }
-            if ((this.type === 'Group' || this.type === 'App') && this.contentType === 'managers') {
+            if (this.type === 'Group' && this.contentType === 'managers') {
+                method = 'userGroupManagers';
+            } else if (this.type === 'App' && this.contentType === 'managers') {
                 method = 'managers';
             } else if (this.type === 'Group' && this.contentType === 'corporations') {
                 method = 'corporations';
@@ -603,10 +605,11 @@ export default {
             } else if (this.contentType === 'managers') {
                 if (this.type === 'Group') {
                     api = new GroupApi();
+                    method = action === 'add' ? 'userGroupAddManager' : 'userGroupRemoveManager';
                 } else if (this.type === 'App') {
                     api = new AppApi();
+                    method = action === 'add' ? 'addManager' : 'removeManager';
                 }
-                method = action === 'add' ? 'addManager' : 'removeManager';
                 param1 = this.typeId;
                 param2 = id;
             } else if (this.type === 'Corporation') {
