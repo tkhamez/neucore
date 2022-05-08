@@ -316,7 +316,7 @@ export default {
 
         getPlayer: function() {
             const vm = this;
-            new PlayerApi().show(function(error, data) {
+            new PlayerApi().userPlayerShow(function(error, data) {
                 if (error) { // 403 usually
                     vm.$root.player = null;
                     return;

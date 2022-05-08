@@ -600,11 +600,11 @@ export default {
         },
 
         addRole (roleName) {
-            this.changePlayerAttribute('addRole', roleName);
+            this.changePlayerAttribute('userPlayerAddRole', roleName);
         },
 
         removeRole (roleName) {
-            this.changePlayerAttribute('removeRole', roleName);
+            this.changePlayerAttribute('userPlayerRemoveRole', roleName);
         },
 
         changePlayerAttribute (method, param) {

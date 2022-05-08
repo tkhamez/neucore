@@ -108,7 +108,7 @@ class PlayerController extends BaseController
     /**
      * @OA\Get(
      *     path="/user/player/show",
-     *     operationId="show",
+     *     operationId="userPlayerShow",
      *     summary="Return the logged in player with all properties.",
      *     description="Needs role: user",
      *     tags={"Player"},
@@ -720,7 +720,7 @@ class PlayerController extends BaseController
     /**
      * @OA\Put(
      *     path="/user/player/{id}/add-role/{name}",
-     *     operationId="addRole",
+     *     operationId="userPlayerAddRole",
      *     summary="Add a role to the player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
@@ -777,7 +777,7 @@ class PlayerController extends BaseController
      * @noinspection PhpUnused
      * @OA\Put(
      *     path="/user/player/{id}/remove-role/{name}",
-     *     operationId="removeRole",
+     *     operationId="userPlayerRemoveRole",
      *     summary="Remove a role from a player.",
      *     description="Needs role: user-admin",
      *     tags={"Player"},
