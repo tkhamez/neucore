@@ -18,5 +18,4 @@ java -jar ${DIR}/${FILENAME} generate \
     -c ${DIR}/neucore-js-client-config.json \
     -i ${DIR}/../web/frontend-api-3.yml \
     -g javascript \
-    -o ${DIR}/neucore-js-client \
-    --skip-validate-spec
+    -o ${DIR}/neucore-js-client
