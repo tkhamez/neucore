@@ -2,9 +2,6 @@ const path = require('path');
 const CompressionPlugin = require("compression-webpack-plugin");
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 
-// TODO dev mode for api.html
-// TODO watch mode does not fully work
-
 const themes = {
     'theme-basic': './src/themes/basic.scss',
     'theme-cerulean': './src/themes/cerulean.scss',
@@ -31,21 +28,17 @@ const themes = {
 };
 
 module.exports = () => {
-    const watch = process.env.npm_lifecycle_event === 'watch';
     const production = process.env.NODE_ENV === 'production';
     // noinspection JSUnusedGlobalSymbols
     const config = {
         outputDir: path.resolve(__dirname, '../web/dist'),
-        publicPath: production || watch ? 'dist/' : '',
+        publicPath: production ? 'dist/' : '',
         css: {
             extract: true, // necessary to switch themes in dev mode
         },
         configureWebpack: config => {
             config.entry = themes;
-            config.entry.main =  './src/main.js';
-            if (production || watch) {
-                config.entry.api =  './src/swagger-ui.js';
-            }
+            config.entry.main = './src/main.js';
             if (production) {
                 config.plugins.push(new CompressionPlugin({ // v7 needs webpack 5
                     test: /\.(js|css)$/,
@@ -79,27 +72,15 @@ module.exports = () => {
                     return options
                 })
             }
-            if (watch) {
-                config.plugin('html').tap(args => {
-                    args[0].filename = path.resolve(__dirname, '../web/index.html');
-                    return args;
-                });
-            }
         },
-        //devServer: { https: true },
     };
     if (production) {
         config.pages = {
             main: {
-                filename: production ? path.resolve(__dirname, '../web/index.html') : '',
+                filename: path.resolve(__dirname, '../web/index.html'),
                 template: 'public/index.html',
                 entry: 'src/main.js',
                 chunks: ['chunk-vendors', 'chunk-common', 'main'].concat(Object.getOwnPropertyNames(themes))
-            },
-            api: {
-                filename: path.resolve(__dirname, '../web/api.html'),
-                template: 'public/api.html',
-                entry: 'src/swagger-ui.js',
             },
         };
     }

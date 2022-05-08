@@ -2,6 +2,7 @@
   "name": "tkhamez-neucore",
   "private": true,
   "scripts": {
+    "postinstall": "node bin/install-swagger-ui.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "watch": "vue-cli-service build --watch"
