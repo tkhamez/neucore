@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--suppress ES6ConvertVarToLetConst, HtmlUnknownTarget -->
+<!--suppress HtmlUnknownTarget -->
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -23,8 +23,8 @@
         <script type="text/javascript">
             function setTheme(theme) {
                 window.APP_DEFAULT_THEME = theme;
-                var links = document.getElementsByTagName('link');
-                for (var i = 0; i < links.length; i++) {
+                const links = document.getElementsByTagName('link');
+                for (let i = 0; i < links.length; i++) {
                     if (links[i].getAttribute('href').indexOf('css/theme-' + theme.toLowerCase()) !== -1) {
                         links[i].disabled = false;
                         links[i].setAttribute('rel', 'stylesheet');
@@ -37,22 +37,28 @@
     </head>
 
     <body class="neucore" style="background-color: #333333; color: #dddddd">
-        <h1 id="headline" class="text-center">Neucore - Alliance Services</h1>
+
         <noscript><h5 class="text-center">You need to enable JavaScript to run this application.</h5></noscript>
+
         <h5 id="unsupportedBrowser" class="text-center" style="display: none">
             You are using an <em>outdated</em> browser. Please
             <a href="https://browsehappy.com/" target="_blank" rel="noopener noreferrer"
                style="color: #3291CB">upgrade your browser</a> to improve your experience and security.
         </h5>
-        <script type="text/javascript">
-            document.getElementById('unsupportedBrowser').style.display = 'block';
+        <!--suppress JSUnusedGlobalSymbols -->
+        <script>
+            const isBrowserSupported = () => 1;
         </script>
-        <script type="text/javascript">
-            const supported = () => function () {};
-            document.getElementById('headline').remove();
-            document.getElementById('unsupportedBrowser').remove();
-            document.body.removeAttribute('style');
+        <script>
+            if (typeof isBrowserSupported !== typeof Function) {
+                document.getElementById('unsupportedBrowser').style.display = 'block';
+            } else {
+                document.getElementById('unsupportedBrowser').remove();
+                document.body.removeAttribute('style');
+            }
         </script>
+
         <div id="app"></div>
+
     </body>
 </html>
