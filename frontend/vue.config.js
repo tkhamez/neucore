@@ -1,3 +1,4 @@
+const { defineConfig } = require('@vue/cli-service')
 const path = require('path');
 const CompressionPlugin = require("compression-webpack-plugin");
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
@@ -27,20 +28,22 @@ const themes = {
     'theme-yeti': './src/themes/yeti.scss',
 };
 
-module.exports = () => {
+module.exports = defineConfig(() => {
     const production = process.env.NODE_ENV === 'production';
-    // noinspection JSUnusedGlobalSymbols
-    const config = {
+    return {
         outputDir: path.resolve(__dirname, '../web/dist'),
         publicPath: production ? 'dist/' : '',
         css: {
-            extract: true, // necessary to switch themes in dev mode
+            extract: true, // necessary for themes in dev mode
         },
         configureWebpack: config => {
+            config.resolve = {
+                fallback: { 'querystring': require.resolve('querystring-es3') },
+            };
             config.entry = themes;
             config.entry.main = './src/main.js';
             if (production) {
-                config.plugins.push(new CompressionPlugin({ // v7 needs webpack 5
+                config.plugins.push(new CompressionPlugin({
                     test: /\.(js|css)$/,
                     threshold: 1,
                     compressionOptions: { level: 6 },
@@ -49,11 +52,6 @@ module.exports = () => {
                     perChunkOutput: false,
                 }));
             }
-            config.optimization = {
-                splitChunks: {
-                    minSize: 1, // = no common chunk-vendors for both pages
-                }
-            };
         },
         chainWebpack: config => {
             config.module
@@ -65,24 +63,17 @@ module.exports = () => {
                     additionalCode: 'var define = false;', // Disable AMD
                 })
                 .end()
-            if (!production) {
-                config.plugin('preload').tap(options => {
-                    options[0].fileBlacklist.push(/css\/theme-/);
-                    options[0].fileBlacklist.push(/js\/theme-/);
-                    return options
-                })
+            config.plugin('html').tap(args => {
+                args[0].inject = false; // files are manually injected in index.html
+                if (production) {
+                    args[0].filename = path.resolve(__dirname, '../web/index.html');
+                }
+                return args;
+            });
+            if (production) {
+                // noinspection NpmUsedModulesInstalled
+                config.plugin("progress").use(require("webpack/lib/ProgressPlugin"))
             }
         },
     };
-    if (production) {
-        config.pages = {
-            main: {
-                filename: path.resolve(__dirname, '../web/index.html'),
-                template: 'public/index.html',
-                entry: 'src/main.js',
-                chunks: ['chunk-vendors', 'chunk-common', 'main'].concat(Object.getOwnPropertyNames(themes))
-            },
-        };
-    }
-    return config;
-};
+});

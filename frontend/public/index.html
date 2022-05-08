@@ -7,20 +7,20 @@
         <link rel="shortcut icon" href="<%= BASE_URL %>favicon.ico">
         <title></title>
         <%
-        // Handle theme CSS files
-        const cssFiles = [];
-        for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
-            const file = htmlWebpackPlugin.files.css[i];
-            if (file.match(/css\/theme-/)) {
-                %><link href="/<%= file %>" rel="alternate stylesheet"><%
-            } else {
-                cssFiles.push(file);
+        // Manually inject required files
+        for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
+            const file = htmlWebpackPlugin.files.js[i];
+            if (!file.match(/js\/theme-/)) {
+                %><script defer src="<%= file %>"></script><%
             }
         }
-        htmlWebpackPlugin.files.css = cssFiles;
+        for (let i = 0; i < htmlWebpackPlugin.files.css.length; i++) {
+            const file = htmlWebpackPlugin.files.css[i];
+            const alternate = file.match(/css\/theme-/) ? 'alternate' : '';
+            %><link href="<%= file %>" rel="<%= alternate %> stylesheet"><%
+        }
         %>
         <script type="text/javascript">
-            // noinspection JSUnusedGlobalSymbols
             function setTheme(theme) {
                 window.APP_DEFAULT_THEME = theme;
                 var links = document.getElementsByTagName('link');
@@ -35,8 +35,8 @@
         </script>
         <script type="text/javascript" src="<%= BASE_URL %>theme.js"></script>
     </head>
-    <body class="neucore" style="background-color: #333333; color: #dddddd">
 
+    <body class="neucore" style="background-color: #333333; color: #dddddd">
         <h1 id="headline" class="text-center">Neucore - Alliance Services</h1>
         <noscript><h5 class="text-center">You need to enable JavaScript to run this application.</h5></noscript>
         <h5 id="unsupportedBrowser" class="text-center" style="display: none">
@@ -53,19 +53,6 @@
             document.getElementById('unsupportedBrowser').remove();
             document.body.removeAttribute('style');
         </script>
-
         <div id="app"></div>
-
-        <%
-        // Handle theme JS files (remove them)
-        const jsFiles = [];
-        for (let i = 0; i < htmlWebpackPlugin.files.js.length; i++) {
-            const file = htmlWebpackPlugin.files.js[i];
-            if (!file.match(/js\/theme-/)) {
-                jsFiles.push(file);
-            }
-        }
-        htmlWebpackPlugin.files.js = jsFiles;
-        %>
     </body>
 </html>

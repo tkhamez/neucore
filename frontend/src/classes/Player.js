@@ -1,6 +1,6 @@
 
 import {ServiceApi} from "neucore-js-client";
-import Character from "@/classes/Character";
+import Character from "./Character";
 
 export default class Player {
 

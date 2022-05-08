@@ -422,7 +422,7 @@ import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import EsiTokens from '../components/EsiTokens.vue';
 import Character from "../classes/Character";
-import Player from "@/classes/Player";
+import Player from "../classes/Player";
 
 export default {
     components: {

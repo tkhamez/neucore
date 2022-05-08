@@ -39,12 +39,13 @@
     "markdown-it-sup": "^1.0.0",
     "mitt": "^3.0.0",
     "neucore-js-client": "file:neucore-js-client",
+    "querystring-es3": "^0.2.1",
     "swagger-ui-dist": "^4.11.0",
     "vue": "^3.2.33"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.5.17",
-    "@vue/cli-service": "^4.5.17",
+    "@vue/cli-plugin-babel": "^5.0.4",
+    "@vue/cli-service": "^5.0.4",
     "@vue/compiler-sfc": "^3.2.33",
     "compression-webpack-plugin": "^6.0.5",
     "imports-loader": "^1.2.0",
