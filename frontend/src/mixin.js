@@ -166,6 +166,9 @@ export default {
         },
 
         buildCharacterMovements(data) {
+            if (!data) {
+                return [];
+            }
             const movements = [];
             for (const removed of data.removedCharacters) {
                 if (removed.reason === 'moved') {
