@@ -32,8 +32,8 @@
 A Linux server (others may work, but are not tested).
 
 To run the application:
-* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary extensions and `composer.json` in the root directory for 
-  suggested extensions (APCu highly recommended).
+* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary extensions and `composer.json` in the 
+  root directory for suggested extensions (APCu highly recommended).
 * MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases 
   supported by [Doctrine ORM](https://www.doctrine-project.org/projects/orm.html) may work if you generate the 
   database schema yourself (see [backend README](../backend/README.md)), but there are only migration files for 
@@ -97,7 +97,8 @@ If you have cloned the repository, you must install the dependencies and build t
 
 ### Post Installation
 
-Adjust `web/dist/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user tracking.
+Adjust `web/dist/theme.js` if you want another default theme, or add additional JavaScript code, e.g. for user 
+tracking.
 
 Set up necessary cron jobs, e.g. every 8 hours using a lock file (adjust user and paths):
 ```
@@ -122,8 +123,8 @@ the database host is `db`.
 - Install the app:  
   `export UID && ./install-docker.sh`
 - Run tests and other commands in the php and node containers:  
-    `export UID && docker-compose exec neucore_php /bin/sh`  
-    `export UID && docker-compose run --service-ports neucore_node /bin/sh`
+  `export UID && docker-compose exec neucore_php /bin/sh`  
+  `export UID && docker-compose run --service-ports neucore_node /bin/sh`
 
 The web application is available at http://localhost:8080, the frontend development server at http://localhost:3000.
 The database is also available at `127.0.0.1:30306` and it's data is stored in the `.db` subdirectory.
