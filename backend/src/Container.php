@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Neucore;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\AuthenticationProvider;
 use Monolog\Formatter\HtmlFormatter;
@@ -51,15 +50,11 @@ class Container
                 } else {
                     $conf = $config['doctrine'] ?? []; // it should always be set
                 }
-                $metaConfig = Setup::createAnnotationMetadataConfiguration(
+                $metaConfig = ORMSetup::createAnnotationMetadataConfiguration(
                     $conf['meta']['entity_paths'],
                     $conf['meta']['dev_mode'],
-                    $conf['meta']['proxy_dir'],
-                    null,
-                    false
+                    $conf['meta']['proxy_dir']
                 );
-                /* @phan-suppress-next-line PhanDeprecatedFunction */
-                AnnotationRegistry::registerLoader('class_exists');
                 $options = $conf['driver_options'];
                 $caFile = (string) $options['mysql_ssl_ca'];
                 $verify = (bool) $options['mysql_verify_server_cert'];
@@ -129,17 +124,17 @@ class Container
                     $formatter = new HtmlFormatter();
                 } elseif ($format === 'json') {
                     $formatter = new JsonFormatter();
-                    $formatter->includeStacktraces(true);
+                    $formatter->includeStacktraces();
                 } elseif ($format === 'loggly') {
                     $formatter = new LogglyFormatter(JsonFormatter::BATCH_MODE_JSON, true);
-                    $formatter->includeStacktraces(true);
+                    $formatter->includeStacktraces();
                 } elseif ($format === 'logstash') {
                     $formatter = new LogstashFormatter('Neucore');
                 } else { // multiline or line
                     $formatter = new LineFormatter();
-                    $formatter->ignoreEmptyContextAndExtra(true);
+                    $formatter->ignoreEmptyContextAndExtra();
                     if ($format === 'multiline') {
-                        $formatter->includeStacktraces(true);
+                        $formatter->includeStacktraces();
                     }
                 }
                 $handler = (new StreamHandler($path, Logger::DEBUG))->setFormatter($formatter);

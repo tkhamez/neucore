@@ -26,7 +26,7 @@ class Alliance implements \JsonSerializable
      * EVE alliance ID.
      *
      * @OA\Property(format="int64")
-     * @ORM\ID
+     * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
      */

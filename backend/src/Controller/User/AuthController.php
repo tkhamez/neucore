@@ -80,18 +80,6 @@ class AuthController extends BaseController
 
     private Config $config;
 
-    /**
-     * Returns the OAuth state prefix for an EVE login.
-     *
-     * (Only public for unit tests.)
-     *
-     * @param string $eveLoginName The name of an EveLogin record.
-     */
-    public static function getStatePrefix(string $eveLoginName): string
-    {
-        return $eveLoginName . self::STATE_PREFIX_SEPARATOR;
-    }
-
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
@@ -348,7 +336,7 @@ class AuthController extends BaseController
             $this->response->getBody()->write('Error.');
             return $this->response->withStatus(500);
         }
-        $state = self::getStatePrefix($loginName) . $randomString;
+        $state = $loginName . self::STATE_PREFIX_SEPARATOR . $randomString;
 
         $this->session->set(self::SESS_AUTH_STATE, $state);
 

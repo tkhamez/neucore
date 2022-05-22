@@ -401,19 +401,17 @@ class Application
      */
     private function errorHandling(): void
     {
-        error_reporting((int)$this->config['error_reporting']);
-
-        // logs errors that are not handled by Slim
-        ErrorHandler::register($this->container->get(LoggerInterface::class));
-
-        // php settings
-        ini_set('display_errors', '0');
-        ini_set('log_errors', '0'); // all errors are logged with Monolog
-
+        // PHP settings.
         $path = realpath($this->container->get(Config::class)['monolog']['path']);
         if ($path !== false && is_writable($path)) {
             ini_set('error_log', $path . '/error.log');
         }
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '0'); // all errors are logged with Monolog
+        error_reporting((int)$this->config['error_reporting']);
+
+        // Logs errors that are not handled by Slim and for CLI
+        ErrorHandler::register($this->container->get(LoggerInterface::class));
     }
 
     private function registerRoutes(App $app): void
