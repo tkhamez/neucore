@@ -68,7 +68,8 @@
                 <label class="small">
                     <input type="text" pattern="[0-9]*" class="form-control form-control-sm input-option"
                            v-model="formOptions.mailCount">
-                    Limit to characters whose <strong>mail count</strong> is greater than or equal to x.
+                    Limit to characters whose "missing character" <strong>mail count</strong> is greater than or
+                    equal to x.
                 </label>
             </div>
         </div>

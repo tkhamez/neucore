@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: The user agent for the HTTP client is now configurable (optional).
+- Text improvements.
 - Updated dependencies.
 - Dev: Removed Node.js 14 support.
 - Dev: (Re)moved .drone.yml.
