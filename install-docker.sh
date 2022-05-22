@@ -8,7 +8,7 @@ else
 fi
 docker-compose exec neucore_php bin/console clear-cache
 if [[ $1 = prod ]]; then
-    docker-compose exec neucore_php vendor/bin/doctrine orm:generate-proxies
+    docker-compose exec neucore_php bin/doctrine orm:generate-proxies
 fi
 docker-compose exec neucore_php composer openapi
 
@@ -19,7 +19,9 @@ docker-compose run neucore_node npm run build --prefix /app/frontend/neucore-js-
 
 # Build frontend
 docker-compose run neucore_node npm install
-docker-compose run neucore_node npm run build
+if [[ $1 = prod ]]; then
+    docker-compose run neucore_node npm run build
+fi
 
 # Update the database schema and seed data
 docker-compose exec neucore_php vendor/bin/doctrine-migrations migrations:migrate --no-interaction

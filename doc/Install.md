@@ -75,7 +75,7 @@ If you are using a different cache directory, you must first copy or generate th
 cp -R backend/var/cache/proxies /path/to/your/cache/proxies
 # or
 cd backend
-vendor/bin/doctrine orm:generate-proxies
+bin/doctrine orm:generate-proxies
 ```
 
 Then execute (adjust cache path if necessary)

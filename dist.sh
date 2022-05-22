@@ -16,7 +16,7 @@ fi
 
 cd dist/build/backend || exit
 composer install --no-dev --optimize-autoloader --no-interaction
-vendor/bin/doctrine orm:generate-proxies
+bin/doctrine orm:generate-proxies
 composer openapi
 
 cd ../frontend || exit

@@ -149,17 +149,17 @@ composer start
 
 Generate proxy classes:
 ```
-vendor/bin/doctrine orm:generate-proxies
+bin/doctrine orm:generate-proxies
 ```
 
-Generate constructor, getters and setters:
+Generate constructor, getters and setters (deprecated):
 ```
-vendor/bin/doctrine orm:generate-entities src
+bin/doctrine orm:generate-entities src
 ```
 
 Validate the mapping files:
 ```
-vendor/bin/doctrine orm:validate-schema
+bin/doctrine orm:validate-schema
 ```
 
 Generate a migration by comparing the current database to the mapping information.  
@@ -169,7 +169,7 @@ Set the server version to something below 5.7 to generate MariaDB 10.2 compatibl
 vendor/bin/doctrine-migrations migrations:diff
 ```
 
-Execute a single migration:
+Execute a single migration, e.g.:
 ```
 vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --up
 vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20210123141218 --down
@@ -177,10 +177,10 @@ vendor/bin/doctrine-migrations migrations:execute Neucore\\Migrations\\Version20
 
 Create/sync the database schema - Don't do this unless you know what you're doing and backup your database first!
 ```
-vendor/bin/doctrine orm:schema-tool:update
+bin/doctrine orm:schema-tool:update
 ```
 
 Check reserved words:
 ```
-vendor/bin/doctrine dbal:reserved-words
+bin/doctrine dbal:reserved-words
 ```

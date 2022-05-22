@@ -10,9 +10,11 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo_mysql": "*",
-        "doctrine/common": "^3.0",
-        "doctrine/migrations": "^3.0",
-        "doctrine/orm": "^2.6",
+        "doctrine/cache": "^2.2",
+        "doctrine/common": "^3.3",
+        "doctrine/deprecations": "^1.0",
+        "doctrine/migrations": "^3.5",
+        "doctrine/orm": "^2.12",
         "doctrine/persistence": "^3.0",
         "graylog2/gelf-php": "^1.6",
         "guzzlehttp/guzzle": "^7.2",
@@ -68,7 +70,7 @@
         ],
         "compile:prod": [
             "bin/console clear-cache",
-            "doctrine orm:generate-proxies",
+            "bin/doctrine orm:generate-proxies",
             "@db:migrate",
             "@db:seed",
             "@openapi"

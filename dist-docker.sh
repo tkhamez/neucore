@@ -15,7 +15,7 @@ if [[ -f backend/.env ]]; then
 fi
 
 docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer install --no-dev --optimize-autoloader --no-interaction"
-docker-compose exec neucore_php sh -c "cd ../dist/build/backend && vendor/bin/doctrine orm:generate-proxies"
+docker-compose exec neucore_php sh -c "cd ../dist/build/backend && bin/doctrine orm:generate-proxies"
 docker-compose exec neucore_php sh -c "cd ../dist/build/backend && composer openapi"
 
 docker-compose run neucore_java /app/dist/build/frontend/openapi.sh
