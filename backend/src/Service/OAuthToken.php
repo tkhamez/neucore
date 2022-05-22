@@ -28,20 +28,11 @@ class OAuthToken
 
     public const OPTION_RESOURCE_OWNER_ID = 'resource_owner_id';
 
-    /**
-     * @var AuthenticationProvider
-     */
-    private $oauth;
+    private AuthenticationProvider $oauth;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
     public function __construct(AuthenticationProvider $oauth, ObjectManager $objectManager, LoggerInterface $log)
     {
@@ -149,6 +140,11 @@ class OAuthToken
      */
     public function updateEsiToken(EsiToken $esiToken): ?AccessTokenInterface
     {
+        if (!$esiToken->getValidToken() || empty($esiToken->getRefreshToken())) {
+            // Do not try to refresh an already invalid token.
+            return null;
+        }
+
         $token = $this->refreshEsiToken($esiToken);
         if (!$token) {
             return null;

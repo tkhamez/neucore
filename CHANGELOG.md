@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: The user agent for the HTTP client is now configurable (optional).
+- Change: ESI tokens that are marked as invalid are no longer checked.
 - Text improvements.
 - Updated dependencies.
 - Dev: Removed Node.js 14 support.

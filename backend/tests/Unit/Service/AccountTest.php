@@ -435,7 +435,7 @@ class AccountTest extends TestCase
         );
 
         $expires = time() - 1000;
-        $char = $this->setUpCharacterWithToken($expires, false, 'hash', true);
+        $char = $this->setUpCharacterWithToken($expires, true, 'hash', true);
 
         $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_TOKEN_OK, $result);
@@ -477,7 +477,7 @@ class AccountTest extends TestCase
         );
 
         $expires = time() - 1000;
-        $char = $this->setUpCharacterWithToken($expires, null, 'old-hash');
+        $char = $this->setUpCharacterWithToken($expires, true, 'old-hash');
 
         $result = $this->service->checkCharacter($char);
         $this->assertSame(Account::CHECK_CHAR_DELETED, $result);
@@ -1080,7 +1080,7 @@ class AccountTest extends TestCase
         $esiToken->setCharacter($char);
         if ($addSecondToken) {
             $eveLogin2 = (new EveLogin())->setName('custom.1')->setEveRoles(['Accountant']);
-            $esiToken2 = (new EsiToken())->setEveLogin($eveLogin2)
+            $esiToken2 = (new EsiToken())->setEveLogin($eveLogin2)->setValidToken(true)
                 ->setAccessToken('at')->setRefreshToken('rt')->setExpires($expires);
             $char->addEsiToken($esiToken2);
             $esiToken2->setCharacter($char);

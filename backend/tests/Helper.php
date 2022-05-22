@@ -51,17 +51,11 @@ use Neucore\Service\UserAuth;
 
 class Helper
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private static $em;
+    private static ?EntityManagerInterface $em = null;
 
-    /**
-     * @var int
-     */
-    private static $roleSequence = 0;
+    private static int $roleSequence = 0;
 
-    private $entities = [
+    private array $entities = [
         Service::class,
         Watchlist::class,
         GroupApplication::class,
@@ -379,7 +373,8 @@ class Helper
     public function createOrUpdateEsiToken(
         Character $character,
         int $expires = 123456,
-        string $accessToken = 'at'
+        string $accessToken = 'at',
+        ?bool $valid = null
     ): EsiToken {
         $om = $this->getObjectManager();
 
@@ -398,6 +393,9 @@ class Helper
 
         $esiToken->setExpires($expires);
         $esiToken->setAccessToken($accessToken);
+        if ($valid !== null) {
+            $esiToken->setValidToken($valid);
+        }
 
         $om->persist($esiToken);
         $om->persist($character);
@@ -431,11 +429,13 @@ class Helper
     {
         return function () use ($response) {
             return new class($response) {
-                private $response;
+                private Response $response;
+
                 public function __construct(Response $response)
                 {
                     $this->response = $response;
                 }
+
                 public function then(callable $onFulfilled): void
                 {
                     $onFulfilled($this->response);

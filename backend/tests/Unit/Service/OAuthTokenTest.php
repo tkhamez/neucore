@@ -27,45 +27,21 @@ use Tests\WriteErrorListener;
 
 class OAuthTokenTest extends TestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var OAuthToken
-     */
-    private $es;
+    private OAuthToken $es;
 
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private CharacterRepository $charRepo;
 
-    /**
-     * @var EsiTokenRepository
-     */
-    private $tokenRepo;
+    private EsiTokenRepository $tokenRepo;
 
     public static function setupBeforeClass(): void
     {
@@ -261,6 +237,21 @@ class OAuthTokenTest extends TestCase
         $this->assertSame('gEy...fM0', $char->getEsiToken(EveLogin::NAME_DEFAULT)->getRefreshToken());
     }
 
+    public function testUpdateEsiToken_AlreadyInvalid()
+    {
+        $char = $this->setUpCharacterWithToken();
+        $esiToken = $this->getToken($char);
+
+        $esiToken->setValidToken(false);
+        $token1 = $this->es->updateEsiToken($esiToken);
+        $this->assertNull($token1);
+
+        $esiToken->setValidToken(true);
+        $esiToken->setRefreshToken('');
+        $token2 = $this->es->updateEsiToken($esiToken);
+        $this->assertNull($token2);
+    }
+
     public function testUpdateEsiToken_FailRefresh()
     {
         $char = $this->setUpCharacterWithToken();
@@ -300,7 +291,6 @@ class OAuthTokenTest extends TestCase
             $charFromDB->getEsiToken(EveLogin::NAME_DEFAULT)->getAccessToken()
         );
     }
-
 
     /**
      * @throws \Exception
@@ -371,7 +361,7 @@ class OAuthTokenTest extends TestCase
     {
         $eveLogin = (new EveLogin())->setName(EveLogin::NAME_DEFAULT);
         $esiToken = (new EsiToken())->setEveLogin($eveLogin)->setAccessToken($accessToken)->setRefreshToken('r')
-            ->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
+            ->setValidToken(true)->setExpires(1519933545); // 03/01/2018 @ 7:45pm (UTC)
         $char = (new Character())->setId(123)->setName('n')->setMain(true)->setCharacterOwnerHash('coh')
             ->addEsiToken($esiToken);
         $esiToken->setCharacter($char);

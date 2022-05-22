@@ -21,25 +21,13 @@ use Tests\Logger;
 
 class CheckTokensTest extends ConsoleTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     protected function setUp(): void
     {
@@ -112,7 +100,7 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->helper->createOrUpdateEsiToken($c);
+        $this->helper->createOrUpdateEsiToken($c, 123456, 'at', true);
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,
@@ -164,7 +152,7 @@ class CheckTokensTest extends ConsoleTestCase
         $player = (new Player())->setName('p');
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3')->setPlayer($player);
         $this->om->persist($player);
-        $this->helper->createOrUpdateEsiToken($c, time() - 60*60)->setValidToken(false);
+        $this->helper->createOrUpdateEsiToken($c, time() - 60*60, 'at', true);
 
         list($token) = Helper::generateToken();
         $this->client->setResponse(
@@ -202,7 +190,7 @@ class CheckTokensTest extends ConsoleTestCase
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->helper->createOrUpdateEsiToken($c, time() - 60*60)->setValidToken(false);
+        $this->helper->createOrUpdateEsiToken($c, time() - 60*60, 'at', true);
 
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3');
         $this->client->setResponse(
@@ -247,7 +235,7 @@ class CheckTokensTest extends ConsoleTestCase
 
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
-        $this->helper->createOrUpdateEsiToken($c, 123456, $token)->setValidToken(false);
+        $this->helper->createOrUpdateEsiToken($c, 123456, $token, true);
 
         $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0], [
             ClientInterface::class => $this->client,

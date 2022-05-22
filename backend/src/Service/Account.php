@@ -246,56 +246,60 @@ class Account
     public function checkCharacter(Character $char): int
     {
         // check if character is in Doomheim (biomassed)
-        if ($char->getCorporation() !== null && $char->getCorporation()->getId() === EsiData::CORPORATION_DOOMHEIM_ID) {
+        if (
+            $char->getCorporation() !== null &&
+            $char->getCorporation()->getId() === EsiData::CORPORATION_DOOMHEIM_ID
+        ) {
             $this->deleteCharacter($char, RemovedCharacter::REASON_DELETED_BIOMASSED);
             $this->objectManager->flush();
             return self::CHECK_CHAR_DELETED;
         }
 
-        // update all non-default tokens and check required in-game roles
+        // Update all non-default tokens and check required in-game roles
         foreach ($char->getEsiTokens() as $esiToken) {
             $eveLogin = $esiToken->getEveLogin();
             if ($eveLogin === null) { // should not happen
                 continue;
             }
-            if ($eveLogin->getName() !== EveLogin::NAME_DEFAULT) {
-                $token = $this->tokenService->updateEsiToken($esiToken);
-                if (!$token) {
-                    continue; // can't check roles without a valid token
-                }
-                $oldHasRoles = $esiToken->getHasRoles();
-                if (empty($eveLogin->getEveRoles())) {
-                    $esiToken->setHasRoles();
-                } elseif ($this->esiData->verifyRoles(
-                    $eveLogin->getEveRoles(),
-                    $char->getId(),
-                    $esiToken->getAccessToken()
-                )) {
-                    $esiToken->setHasRoles(true);
-                } else {
-                    $esiToken->setHasRoles(false);
-                }
-                if ($oldHasRoles !== $esiToken->getHasRoles()) {
-                    $this->objectManager->flush();
-                }
+            if ($eveLogin->getName() === EveLogin::NAME_DEFAULT) {
+                continue;
+            }
+            $token = $this->tokenService->updateEsiToken($esiToken);
+            if (!$token) {
+                continue; // can't check roles without a valid token
+            }
+            $oldHasRoles = $esiToken->getHasRoles();
+            if (empty($eveLogin->getEveRoles())) {
+                $esiToken->setHasRoles();
+            } elseif ($this->esiData->verifyRoles(
+                $eveLogin->getEveRoles(),
+                $char->getId(),
+                $esiToken->getAccessToken()
+            )) {
+                $esiToken->setHasRoles(true);
+            } else {
+                $esiToken->setHasRoles(false);
+            }
+            if ($oldHasRoles !== $esiToken->getHasRoles()) {
+                $this->objectManager->flush();
             }
         }
 
         $defaultEsiToken = $char->getEsiToken(EveLogin::NAME_DEFAULT);
 
-        // does the char have a default token?
+        // Does the char have a default token?
         if ($defaultEsiToken === null) {
             // Only true for SSOv1 without scopes or if the character was added directly to the database.
             return self::CHECK_TOKEN_NA;
         }
 
-        // validate token - modifies $defaultEsiToken
+        // Validate default token - modifies $defaultEsiToken
         $token = $this->tokenService->updateEsiToken($defaultEsiToken);
         if ($token === null) {
             return self::CHECK_TOKEN_NOK;
         }
 
-        // get token data
+        // Get token data
         $eveAuth = $this->tokenService->getEveAuth($token);
         if ($eveAuth === null) {
             // Fails if a SSOv1 access token is still valid (up to ~20 minutes after it was created).

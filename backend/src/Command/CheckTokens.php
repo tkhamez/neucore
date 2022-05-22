@@ -26,25 +26,13 @@ class CheckTokens extends Command
 
     private const CHARACTER = '  Character ';
 
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private CharacterRepository $charRepo;
 
-    /**
-     * @var Account
-     */
-    private $charService;
+    private Account $charService;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var int
-     */
-    private $sleep;
+    private ?int $sleep = null;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -80,7 +68,7 @@ class CheckTokens extends Command
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $charId = intval($input->getArgument('character'));
         $this->sleep = intval($input->getOption('sleep'));
@@ -104,7 +92,7 @@ class CheckTokens extends Command
             } else {
                 $charIds = array_map(function (Character $char) {
                     return $char->getId();
-                }, $this->charRepo->findBy([], ['lastUpdate' => 'ASC'], $dbResultLimit, $offset));
+                }, $this->charRepo->findBy([], [], $dbResultLimit, $offset));
             }
 
             foreach ($charIds as $charId) {
@@ -119,8 +107,8 @@ class CheckTokens extends Command
                 if ($char === null) {
                     $this->writeLine('Character ' . $charId.': not found.');
                 } else {
-
-                    // check token, corporation Doomheim and character owner hash - this may delete the character!
+                    // Check token, corporation Doomheim and character owner hash - this may delete the character!
+                    // This does not update the "lastUpdate" property from the character.
                     $result = $this->charService->checkCharacter($char);
                     if ($result === Account::CHECK_TOKEN_NA) {
                         $this->writeLine(self::CHARACTER . $charId.': token N/A');
