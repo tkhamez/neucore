@@ -66,7 +66,8 @@ class CharacterControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => true,
                 'validTokenTime' => '2019-08-03T23:12:45Z',
-                'corporation' => null
+                'tokenLastChecked' => null,
+                'corporation' => null,
             ],
             $this->parseJsonBody($response)
         );
@@ -280,6 +281,7 @@ class CharacterControllerTest extends WebTestCase
             'created' => null,
             'validToken' => true,
             'validTokenTime' => '2019-08-03T23:12:45Z',
+            'tokenLastChecked' => null,
             'corporation' => [
                 'id' => $this->corpId,
                 'name' => 'The Corp updated.',
@@ -290,7 +292,7 @@ class CharacterControllerTest extends WebTestCase
         $actual = $this->parseJsonBody($response);
 
         $this->assertMatchesRegularExpression(
-            '/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/',
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/',
             $actual['lastUpdate']
         );
         unset($actual['lastUpdate']);

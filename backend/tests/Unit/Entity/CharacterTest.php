@@ -35,6 +35,7 @@ class CharacterTest extends TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'validTokenTime' => null,
+            'tokenLastChecked' => null,
             'corporation' => $corp->jsonSerialize(),
         ], json_decode((string) json_encode($char), true));
 
@@ -46,6 +47,7 @@ class CharacterTest extends TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'validTokenTime' => null,
+            'tokenLastChecked' => null,
             'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => null]],
         ], json_decode((string) json_encode($char->jsonSerialize(false, false, true)), true));
 
@@ -57,6 +59,7 @@ class CharacterTest extends TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'validTokenTime' => null,
+            'tokenLastChecked' => null,
         ], $char->jsonSerialize(false, false));
 
         $this->assertSame([
@@ -72,6 +75,7 @@ class CharacterTest extends TestCase
             'lastUpdate' => null,
             'validToken' => null,
             'validTokenTime' => null,
+            'tokenLastChecked' => null,
             'corporation' => $corp->jsonSerialize(),
             'esiTokens' => [$token->jsonSerialize()],
         ], json_decode((string) json_encode($char->jsonSerialize(false, true, false, true)), true));

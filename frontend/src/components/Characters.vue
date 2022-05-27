@@ -32,26 +32,21 @@ Modal window with all characters of one player.
                                             <character-name-changes :character="character"></character-name-changes>
                                         </div>
                                         <div class="col-5 text-end">
-                                            <span v-if="character.validToken"
-                                                  class="badge bg-success ms-1"
-                                                  :class="{'text-with-tooltip': character.validTokenTime}"
+                                            <span
+                                                  class="badge ms-1"
+                                                  :class="{
+                                                      'text-with-tooltip': character.validTokenTime,
+                                                      'bg-success': character.validToken,
+                                                      'bg-danger': character.validToken === false,
+                                                      'bg-info': character.validToken === null,
+                                                  }"
                                                   data-bs-toggle="tooltip"
-                                                  :title="'Status changed: ' + formatDate(character.validTokenTime)">
-                                                Valid token
-                                            </span>
-                                            <span v-if="character.validToken === false"
-                                                  class="badge bg-danger ms-1"
-                                                  :class="{'text-with-tooltip': character.validTokenTime}"
-                                                  data-bs-toggle="tooltip"
-                                                  :title="'Status changed: ' + formatDate(character.validTokenTime)">
-                                                Invalid token
-                                            </span>
-                                            <span v-if="character.validToken === null"
-                                                  class="badge bg-info ms-1"
-                                                  :class="{'text-with-tooltip': character.validTokenTime}"
-                                                  data-bs-toggle="tooltip"
-                                                  :title="'Status changed: ' + formatDate(character.validTokenTime)">
-                                                No token
+                                                  data-bs-html="true"
+                                                  data-bs-custom-class="character-token"
+                                                  :title="getTokenTitle(character)">
+                                                <span v-if="character.validToken">Valid token</span>
+                                                <span v-if="character.validToken === false">Invalid token</span>
+                                                <span v-if="character.validToken === null">No token</span>
                                             </span>
                                             <a class="btn btn-secondary nc-btn-xs ms-1"
                                                :href="'https://evewho.com/character/' + character.id"
@@ -161,7 +156,7 @@ Modal window with all characters of one player.
 
 <script>
 import {Tooltip, Modal} from 'bootstrap';
-import {PlayerApi, ServiceApi} from 'neucore-js-client';
+import {PlayerApi} from 'neucore-js-client';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
 import Player from "../classes/Player";
 
@@ -233,6 +228,11 @@ export default {
             }
             new Player(vm).updateServices(vm.selectedPlayer);
         },
+
+        getTokenTitle(character) {
+            return 'Status changed: ' + this.formatDate(character.validTokenTime) +
+                '<br>Last checked: ' + this.formatDate(character.tokenLastChecked);
+        }
     }
 }
 </script>

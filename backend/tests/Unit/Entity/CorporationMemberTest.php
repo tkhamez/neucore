@@ -67,6 +67,7 @@ class CorporationMemberTest extends TestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
             ],
             'player' => [
                 'id' => null,

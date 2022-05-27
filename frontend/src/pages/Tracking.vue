@@ -363,8 +363,9 @@ function configureDataTable(vm) {
                 }
                 if (row.character.validTokenTime) {
                     return `
-                        <div class="text-with-tooltip" data-bs-toggle="tooltip"
-                              title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}">
+                        <div class="text-with-tooltip" data-bs-toggle="tooltip" data-bs-html="true"
+                              title="Token status change date: ${vm.$root.formatDate(row.character.validTokenTime)}<br>
+                                    Token's last check date: ${vm.$root.formatDate(row.character.tokenLastChecked)}">
                             ${text}
                         </div>`;
                 } else {

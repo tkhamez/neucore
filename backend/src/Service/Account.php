@@ -166,6 +166,7 @@ class Account
             $esiToken->setAccessToken($token->getToken());
             $esiToken->setExpires($token->getExpires());
             $esiToken->setRefreshToken($token->getRefreshToken());
+            $esiToken->setLastChecked(new \DateTime());
         } else {
             $char->removeEsiToken($esiToken);
             $this->objectManager->remove($esiToken);
@@ -238,7 +239,7 @@ class Account
      *
      * This updates the validToken property (true/false) and the token itself.
      *
-     * The character is saved if it was changed.
+     * The tokens are saved if they were changed.
      *
      * @param Character $char An instance that is attached to the Doctrine entity manager.
      * @return int One of the self::CHECK_* constants, based on the default token
@@ -258,10 +259,7 @@ class Account
         // Update all non-default tokens and check required in-game roles
         foreach ($char->getEsiTokens() as $esiToken) {
             $eveLogin = $esiToken->getEveLogin();
-            if ($eveLogin === null) { // should not happen
-                continue;
-            }
-            if ($eveLogin->getName() === EveLogin::NAME_DEFAULT) {
+            if ($eveLogin === null || $eveLogin->getName() === EveLogin::NAME_DEFAULT) { // should not be null
                 continue;
             }
             $token = $this->tokenService->updateEsiToken($esiToken);

@@ -405,3 +405,12 @@ function setCsrfHeader(vm, request) {
         float: right;
     }
 </style>
+
+<!--suppress CssUnusedSymbol -->
+<style>
+    .character-name-changes .tooltip-inner,
+    .character-token .tooltip-inner {
+        max-width: initial;
+        text-align: left;
+    }
+</style>

@@ -37,100 +37,49 @@ use Tests\WriteErrorListener;
 
 class PlayerControllerTest extends WebTestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $h;
+    private Helper $h;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    private $player1Id;
+    private int $player1Id;
 
-    private $player4Id;
+    private int $player4Id;
 
-    private $player5;
+    private int $player5;
 
-    /**
-     * @var int
-     */
-    private $eveLoginId;
+    private int $eveLoginId;
 
-    private $managerId;
+    private int $managerId;
 
-    private $emptyAccId;
+    private int $emptyAccId;
 
-    /**
-     * @var int
-     */
-    private $corpId;
+    private int $corpId;
 
-    /**
-     * @var int
-     */
-    private $player3Id;
+    private int $player3Id;
 
-    /**
-     * @var int
-     */
-    private $groupId;
+    private int $groupId;
 
-    /**
-     * @var int
-     */
-    private $gPrivateId;
+    private int $gPrivateId;
 
-    /**
-     * @var int
-     */
-    private $requiredGroupId;
+    private int $requiredGroupId;
 
-    /**
-     * @var int
-     */
-    private $autoAcceptGroupId;
+    private int $autoAcceptGroupId;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
+    private PlayerRepository $playerRepo;
 
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private CharacterRepository $charRepo;
 
-    /**
-     * @var CorporationRepository
-     */
-    private $corpRepo;
+    private CorporationRepository $corpRepo;
 
-    /**
-     * @var RemovedCharacterRepository
-     */
-    private $removedCharRepo;
+    private RemovedCharacterRepository $removedCharRepo;
 
-    /**
-     * @var GroupApplicationRepository
-     */
-    private $groupAppRepo;
+    private GroupApplicationRepository $groupAppRepo;
 
-    /**
-     * @var GroupRepository
-     */
-    private $groupRepo;
+    private GroupRepository $groupRepo;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
     public static function setupBeforeClass(): void
     {
@@ -201,6 +150,7 @@ class PlayerControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => [
                     'id' => 456, 'name' => 'corp1', 'ticker' => 'MT', 'alliance' => [
                         'id' => 123, 'name' => 'alli1', 'ticker' => 'ATT'
@@ -210,7 +160,8 @@ class PlayerControllerTest extends WebTestCase
                     'eveLoginId' => $char->getEsiTokens()[0]->getEveLogin()->getId(),
                     'validToken' => null,
                     'validTokenTime' => null,
-                    'hasRoles' => null
+                    'hasRoles' => null,
+                    'lastChecked' => null,
                 ]],
             ]],
             'groups' => [
@@ -436,6 +387,7 @@ class PlayerControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => true,
                 'validTokenTime' => '2019-08-03T23:12:45Z',
+                'tokenLastChecked' => null,
                 'corporation' => null
             ],
             $this->parseJsonBody($response)
@@ -915,6 +867,7 @@ class PlayerControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => false,
                 'validTokenTime' => '2019-08-03T23:12:45Z',
+                'tokenLastChecked' => null,
                 'corporation' => [
                     'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                         'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
@@ -924,7 +877,8 @@ class PlayerControllerTest extends WebTestCase
                     'eveLoginId' => $this->eveLoginId,
                     'validToken' => false,
                     'validTokenTime' => '2019-08-03T23:12:45Z', // same as above (character.validTokenTime)
-                    'hasRoles' => null
+                    'hasRoles' => null,
+                    'lastChecked' => null,
                 ]],
                 'characterNameChanges' => [['oldName' => 'old name', 'changeDate' => '2021-08-27T21:48:03Z']],
             ], [
@@ -935,12 +889,14 @@ class PlayerControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => true,
                 'validTokenTime' => '2019-08-03T23:12:45Z',
+                'tokenLastChecked' => null,
                 'corporation' => null,
                 'esiTokens' => [[
                     'eveLoginId' => $this->eveLoginId,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
-                    'hasRoles' => null
+                    'hasRoles' => null,
+                    'lastChecked' => null,
                 ]],
                 'characterNameChanges' => [],
             ]],
@@ -1025,6 +981,7 @@ class PlayerControllerTest extends WebTestCase
                     'lastUpdate' => null,
                     'validToken' => false,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
+                    'tokenLastChecked' => null,
                     'corporation' => [
                         'id' => 234, 'name' => 'ccc', 'ticker' => 'c-c', 'alliance' => [
                             'id' => 123, 'name' => 'aaa', 'ticker' => 'a-a'
@@ -1040,6 +997,7 @@ class PlayerControllerTest extends WebTestCase
                     'lastUpdate' => null,
                     'validToken' => true,
                     'validTokenTime' => '2019-08-03T23:12:45Z',
+                    'tokenLastChecked' => null,
                     'corporation' => null,
                     'characterNameChanges' => [],
                 ],

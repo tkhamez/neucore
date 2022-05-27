@@ -5,6 +5,7 @@
 dd mm yyyy
 
 - New: The user agent for the HTTP client is now configurable (optional).
+- New: The time of the last check was added to the ESI tokens.
 - Change: ESI tokens that are marked as invalid are no longer checked.
 - Text improvements.
 - Updated dependencies.

@@ -169,6 +169,7 @@ class CorporationMemberRepository extends EntityRepository
                 'c.lastUpdate',
                 'e.validToken',
                 'e.validTokenTime',
+                'e.lastChecked',
                 'p.id AS playerId',
                 'p.name AS playerName'
             )
@@ -262,6 +263,9 @@ class CorporationMemberRepository extends EntityRepository
                 }
                 if ($r['validTokenTime']) {
                     $defaultToken->setValidTokenTime($r['validTokenTime']);
+                }
+                if ($r['lastChecked']) {
+                    $defaultToken->setLastChecked($r['lastChecked']);
                 }
                 $member->setCharacter($character);
 

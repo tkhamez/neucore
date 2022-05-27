@@ -14,23 +14,26 @@ class EsiTokenTest extends TestCase
 {
     public function testJsonSerialize()
     {
-        $type = new EsiToken();
-        $type->setValidToken(true);
+        $token = new EsiToken();
+        $token->setValidToken(true);
 
         $this->assertSame([
             'eveLoginId' => 0,
             'validToken' => true,
-            'validTokenTime' => $type->getValidTokenTime()->format(Api::DATE_FORMAT),
+            'validTokenTime' => $token->getValidTokenTime()->format(Api::DATE_FORMAT),
             'hasRoles' => null,
-        ], json_decode((string) json_encode($type), true));
+            'lastChecked' => null,
+        ], json_decode((string) json_encode($token), true));
 
-        $type->setEveLogin((new EveLogin())->setId(1));
+        $token->setEveLogin((new EveLogin())->setId(1));
+        $token->setLastChecked(new \DateTime());
         $this->assertSame([
             'eveLoginId' => 1,
             'validToken' => true,
-            'validTokenTime' => $type->getValidTokenTime()->format(Api::DATE_FORMAT),
+            'validTokenTime' => $token->getValidTokenTime()->format(Api::DATE_FORMAT),
             'hasRoles' => null,
-        ], json_decode((string) json_encode($type), true));
+            'lastChecked' => $token->getLastChecked()->format(Api::DATE_FORMAT),
+        ], json_decode((string) json_encode($token), true));
     }
 
     public function testSetGetId()
@@ -121,6 +124,18 @@ class EsiTokenTest extends TestCase
 
         $this->assertNotSame($dt1, $dt2);
         $this->assertSame('2018-04-26T18:59:35+00:00', $dt2->format(\DateTimeInterface::ATOM));
+    }
+
+    public function testSetGetLastChecked()
+    {
+        $dt1 = new \DateTime('2022-05-27 15:59:36');
+
+        $token = new EsiToken();
+        $token->setLastChecked($dt1);
+        $dt2 = $token->getLastChecked();
+
+        $this->assertNotSame($dt1, $dt2);
+        $this->assertSame('2022-05-27T15:59:36+00:00', $dt2->format(\DateTimeInterface::ATOM));
     }
 
     public function testSetGetHasRoles()

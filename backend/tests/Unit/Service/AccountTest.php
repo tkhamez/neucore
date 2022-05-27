@@ -219,6 +219,7 @@ class AccountTest extends TestCase
         $this->assertSame($token[0], $esiToken->getAccessToken());
         $this->assertSame('r-t', $esiToken->getRefreshToken());
         $this->assertSame($expires, $esiToken->getExpires());
+        $this->assertLessThanOrEqual(time(), $esiToken->getLastChecked()->getTimestamp());
         $this->assertTrue($character->getEsiToken(EveLogin::NAME_DEFAULT)->getValidToken());
         $this->assertSame(['s1', 's2'], (new JsonWebToken(new AccessToken([
             'access_token' => $esiToken->getAccessToken(),

@@ -26,35 +26,17 @@ use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
  */
 class UserAuth implements RoleProviderInterface
 {
-    /**
-     * @var SessionData
-     */
-    private $session;
+    private SessionData $session;
 
-    /**
-     * @var Account
-     */
-    private $accountService;
+    private Account $accountService;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var Character|null
-     */
-    private $user;
+    private ?Character $user = null;
 
     public function __construct(
         SessionData $session,
@@ -93,10 +75,8 @@ class UserAuth implements RoleProviderInterface
 
     /**
      * Loads and returns current logged in user from the database.
-     *
-     * @return NULL|Character
      */
-    public function getUser()
+    public function getUser(): ?Character
     {
         if ($this->user === null) {
             $this->loadUser();
@@ -222,6 +202,7 @@ class UserAuth implements RoleProviderInterface
         $token = $eveAuth->getToken();
         $esiToken->setAccessToken($token->getToken());
         $esiToken->setRefreshToken((string)$token->getRefreshToken());
+        $esiToken->setLastChecked(new \DateTime());
         $esiToken->setExpires((int)$token->getExpires());
         $esiToken->setValidToken(true);
         if (!empty($eveLogin->getEveRoles())) {

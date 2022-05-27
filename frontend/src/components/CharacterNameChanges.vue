@@ -37,11 +37,3 @@ export default {
     }
 }
 </script>
-
-<!--suppress CssUnusedSymbol -->
-<style>
-    .character-name-changes .tooltip-inner {
-        max-width: initial;
-        text-align: left;
-    }
-</style>

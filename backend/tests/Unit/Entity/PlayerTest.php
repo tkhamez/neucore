@@ -62,9 +62,13 @@ class PlayerTest extends TestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
-                'corporation' => ['id' => 0, 'name' => 'corp1', 'ticker' => 'ABC', 'alliance' => [
-                    'id' => 0, 'name' => 'alli1', 'ticker' => 'DEF'
-                ]],
+                'tokenLastChecked' => null,
+                'corporation' => [
+                    'id' => 0,
+                    'name' => 'corp1',
+                    'ticker' => 'ABC',
+                    'alliance' => ['id' => 0, 'name' => 'alli1', 'ticker' => 'DEF']
+                ],
                #'characterNameChanges' => [],
             ], [
                 'id' => 234,
@@ -74,15 +78,26 @@ class PlayerTest extends TestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null,
                 #'characterNameChanges' => [],
             ]],
-            'groups' => [
-                ['id' => null, 'name' => 'group2', 'description' => null,
-                    'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]
-            ],
-            'managerGroups' => [['id' => null, 'name' => 'gName', 'description' => null,
-                'visibility' => Group::VISIBILITY_PRIVATE, 'autoAccept' => false, 'isDefault' => false]],
+            'groups' => [[
+                'id' => null,
+                'name' => 'group2',
+                'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE,
+                'autoAccept' => false,
+                'isDefault' => false
+            ]],
+            'managerGroups' => [[
+                'id' => null,
+                'name' => 'gName',
+                'description' => null,
+                'visibility' => Group::VISIBILITY_PRIVATE,
+                'autoAccept' => false,
+                'isDefault' => false
+            ]],
             'managerApps' => [['id' => null, 'name' => 'app-one', 'groups' => [], 'roles' => [], 'eveLogins' => []]],
         ];
         $this->assertSame($expected1, json_decode((string) json_encode($play), true));
@@ -95,9 +110,13 @@ class PlayerTest extends TestCase
         $this->assertSame($expected2, json_decode((string) json_encode($play->jsonSerialize(false, true)), true));
 
         $expected3 = $expected1;
-        $expected3['characters'][0]['esiTokens'] = [
-            ['eveLoginId' => 1, 'validToken' => null, 'validTokenTime' => null, 'hasRoles' => null]
-        ];
+        $expected3['characters'][0]['esiTokens'] = [[
+            'eveLoginId' => 1,
+            'validToken' => null,
+            'validTokenTime' => null,
+            'hasRoles' => null,
+            'lastChecked' => null
+        ]];
         $expected3['characters'][1]['esiTokens'] = [];
         $this->assertSame(
             $expected3,

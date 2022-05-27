@@ -95,6 +95,14 @@ class EsiToken implements \JsonSerializable
      */
     private ?int $expires = null;
 
+    /**
+     * When the refresh token was last checked for validity.
+     *
+     * @OA\Property
+     * @ORM\Column(type="datetime", name="last_checked", nullable=true)
+     */
+    private ?\DateTime $lastChecked = null;
+
     public function jsonSerialize(): array
     {
         return [
@@ -103,6 +111,7 @@ class EsiToken implements \JsonSerializable
             'validTokenTime' => $this->validTokenTime !== null ?
                 $this->validTokenTime->format(Api::DATE_FORMAT) : null,
             'hasRoles' => $this->hasRoles,
+            'lastChecked' => $this->lastChecked !== null ? $this->lastChecked->format(Api::DATE_FORMAT) : null,
         ];
     }
 
@@ -209,5 +218,16 @@ class EsiToken implements \JsonSerializable
     public function getHasRoles(): ?bool
     {
         return $this->hasRoles;
+    }
+
+    public function setLastChecked(\DateTime $lastChecked): self
+    {
+        $this->lastChecked = clone $lastChecked;
+        return $this;
+    }
+
+    public function getLastChecked(): ?\DateTime
+    {
+        return $this->lastChecked;
     }
 }

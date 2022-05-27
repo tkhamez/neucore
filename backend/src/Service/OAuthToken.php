@@ -57,6 +57,7 @@ class OAuthToken
             // Delete invalid refresh token so that it cannot be used again.
             $esiToken->setAccessToken('');
             $esiToken->setRefreshToken('');
+            $esiToken->setLastChecked(new \DateTime());
             $esiToken->setValidToken(false);
             $this->objectManager->flush();
             return null;
@@ -70,8 +71,9 @@ class OAuthToken
                 return null;
             }
             $esiToken->setAccessToken($token->getToken());
-            $esiToken->setExpires($token->getExpires());
             $esiToken->setRefreshToken($token->getRefreshToken());
+            $esiToken->setLastChecked(new \DateTime());
+            $esiToken->setExpires($token->getExpires());
             if (!$this->objectManager->flush()) {
                 return null; // old token is invalid, new token could not be saved
             }

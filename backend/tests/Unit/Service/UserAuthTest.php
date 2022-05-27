@@ -24,40 +24,19 @@ use Tests\Logger;
 
 class UserAuthTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
-    /**
-     * @var UserAuth
-     */
-    private $service;
+    private UserAuth $service;
 
-    /**
-     * @var RemovedCharacterRepository
-     */
-    private $removedCharRepo;
+    private RemovedCharacterRepository $removedCharRepo;
 
-    /**
-     * @var EsiTokenRepository
-     */
-    private $esiTokenRepo;
+    private EsiTokenRepository $esiTokenRepo;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     protected function setUp(): void
     {
@@ -406,6 +385,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(1525456785, $tokens[1]->getExpires());
         $this->assertTrue($tokens[1]->getValidToken());
         $this->assertLessThanOrEqual(time(), $tokens[1]->getValidTokenTime()->getTimestamp());
+        $this->assertLessThanOrEqual(time(), $tokens[1]->getLastChecked()->getTimestamp());
         $this->assertTrue($tokens[1]->getHasRoles());
     }
 }

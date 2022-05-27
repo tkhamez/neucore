@@ -111,6 +111,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ],
             $body1
@@ -203,6 +204,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ],[
                 'id' => 456,
@@ -212,6 +214,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ]],
             $body1
@@ -308,6 +311,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
             ],[
                 'id' => 789,
                 'name' => 'C3',
@@ -316,6 +320,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
             ]
         ], $this->parseJsonBody($response));
     }
@@ -362,6 +367,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ],[
                 'id' => 456,
@@ -371,6 +377,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ]],
             $body
@@ -420,6 +427,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ],[
                 'id' => 456,
@@ -429,6 +437,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
                 'corporation' => null
             ]]
         ], $this->parseJsonBody($response));
@@ -641,6 +650,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
             ],[
                 'id' => 789,
                 'name' => 'C3',
@@ -649,6 +659,7 @@ class CharControllerTest extends WebTestCase
                 'lastUpdate' => null,
                 'validToken' => null,
                 'validTokenTime' => null,
+                'tokenLastChecked' => null,
             ]
         ], $this->parseJsonBody($response1));
         $this->assertSame([], $this->parseJsonBody($response2));

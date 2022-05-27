@@ -21,12 +21,9 @@ use Tests\Helper;
 
 class CorporationMemberRepositoryTest extends TestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private static $om;
+    private static ObjectManager $om;
 
-    private static $values;
+    private static \stdClass $values;
 
     public static function setupBeforeClass(): void
     {
@@ -36,6 +33,7 @@ class CorporationMemberRepositoryTest extends TestCase
 
         self::$values = new \stdClass();
         self::$values->validtokenTime1 = new \DateTime('now -240 hours');
+        self::$values->lastCheckedTime = new \DateTime('now -241 hours');
         self::$values->loginTime1 = new \DateTime('now -111 days +1 hour');
         self::$values->logoffTime1 = new \DateTime('now -111 days');
         self::$values->createdTime1 = new \DateTime("now -30 days");
@@ -52,7 +50,8 @@ class CorporationMemberRepositoryTest extends TestCase
         $token1 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
             ->setValidToken(true)->setCharacter($char1);
         $token2 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
-            ->setValidToken(false)->setValidTokenTime(self::$values->validtokenTime1)->setCharacter($char2);
+            ->setValidToken(false)->setValidTokenTime(self::$values->validtokenTime1)
+            ->setLastChecked(self::$values->lastCheckedTime)->setCharacter($char2);
         $token5 = (new EsiToken())->setEveLogin($eveLogin)->setRefreshToken('')->setAccessToken('')->setExpires(0)
             ->setValidToken(true)->setCharacter($char5);
         $corp1 = (new Corporation())->setId(1)->setName('Corp 1')->setTicker('C1');
@@ -195,6 +194,7 @@ class CorporationMemberRepositoryTest extends TestCase
                 'lastUpdate' => date_format(self::$values->updatedTime1, Api::DATE_FORMAT),
                 'validToken' => false,
                 'validTokenTime' => date_format(self::$values->validtokenTime1, Api::DATE_FORMAT),
+                'tokenLastChecked' => date_format(self::$values->lastCheckedTime, Api::DATE_FORMAT),
             ],
             'player' => [
                 'id' => self::$values->playerId1,

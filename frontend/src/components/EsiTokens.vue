@@ -1,6 +1,6 @@
 <template>
 <div v-cloak class="modal fade" id="esiTokensModal">
-    <div class="modal-dialog" :class="{ 'modal-lg': page === 'UserAdmin'}">
+    <div class="modal-dialog modal-lg">
         <div v-cloak v-if="character && eveLogins" class="modal-content">
             <div class="modal-header">
                 {{ character.name }} - ESI Tokens
@@ -28,6 +28,7 @@
                             <td>Name</td>
                             <td>Status</td>
                             <td v-if="page === 'UserAdmin'">Status changed*</td>
+                            <td>Last check*</td>
                             <td>Has required in-game roles</td>
                         </tr>
                     </thead>
@@ -51,6 +52,11 @@
                                 </span>
                             </td>
                             <td>
+                                <span v-if="esiToken.lastChecked">
+                                    {{ formatDate(esiToken.lastChecked) }}
+                                </span>
+                            </td>
+                            <td>
                                 <span v-if="esiToken.hasRoles">Yes</span>
                                 <span v-if="esiToken.hasRoles === false">No</span>
                                 <span v-if="esiToken.hasRoles === null">n/a</span>
@@ -58,7 +64,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p v-if="page === 'UserAdmin'" class="small text-muted">* Time is GMT</p>
+                <p class="small text-muted">* Time is GMT</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

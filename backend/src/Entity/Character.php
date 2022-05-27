@@ -31,7 +31,14 @@ use OpenApi\Annotations as OA;
  *         type="string",
  *         format="date-time",
  *         nullable=true,
- *         description="Date and time when the valid token property was last changed."
+ *         description="Date and time when the valid token property of the default token was last changed."
+ *     ),
+ *     @OA\Property(
+ *         property="tokenLastChecked",
+ *         type="string",
+ *         format="date-time",
+ *         nullable=true,
+ *         description="Date and time when the default token was last checked."
  *     )
  * )
  * @ORM\Entity
@@ -46,31 +53,27 @@ class Character implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * EVE character name.
      *
      * @OA\Property()
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @OA\Property()
      * @ORM\Column(type="boolean")
-     * @var bool
      */
-    private $main = false;
+    private bool $main = false;
 
     /**
      * @ORM\Column(type="text", length=65535, name="character_owner_hash", nullable=true)
-     * @var string|null
      */
-    private $characterOwnerHash;
+    private ?string $characterOwnerHash = null;
 
     /**
      * ESI tokens of the character (API: not included by default).
@@ -78,45 +81,39 @@ class Character implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/EsiToken"))
      * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="character")
      * @ORM\OrderBy({"id" = "ASC"})
-     * @var Collection
      */
-    private $esiTokens;
+    private Collection $esiTokens;
 
     /**
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="created", nullable=true)
-     * @var \DateTime|null
      */
-    private $created;
+    private ?\DateTime $created = null;
 
     /**
      * @ORM\Column(type="datetime", name="last_login", nullable=true)
-     * @var \DateTime|null
      */
-    private $lastLogin;
+    private ?\DateTime $lastLogin = null;
 
     /**
      * Last ESI update.
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
-     * @var \DateTime
      */
-    private $lastUpdate;
+    private ?\DateTime $lastUpdate = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="characters")
      * @ORM\JoinColumn(nullable=false)
-     * @var Player
      */
-    private $player;
+    private Player $player;
 
     /**
      * @OA\Property(ref="#/components/schemas/Corporation", nullable=true)
      * @ORM\ManyToOne(targetEntity="Corporation", inversedBy="characters")
-     * @var Corporation|null
      */
-    private $corporation;
+    private ?Corporation $corporation = null;
 
     /**
      * List of previous character names (API: not included by default).
@@ -124,9 +121,8 @@ class Character implements \JsonSerializable
      * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/CharacterNameChange"))
      * @ORM\OneToMany(targetEntity="CharacterNameChange", mappedBy="character")
      * @ORM\OrderBy({"changeDate" = "DESC"})
-     * @var Collection
      */
-    private $characterNameChanges;
+    private Collection $characterNameChanges;
 
     /**
      * Contains only information that is of interest for clients.
@@ -156,6 +152,8 @@ class Character implements \JsonSerializable
             'validToken' => $this->getDefaultTokenValid(),
             'validTokenTime' => $this->getDefaultTokenValidTime() !== null ?
                 $this->getDefaultTokenValidTime()->format(Api::DATE_FORMAT) : null,
+            'tokenLastChecked' => $this->getDefaultTokenLastChecked() !== null ?
+                $this->getDefaultTokenLastChecked()->format(Api::DATE_FORMAT) : null,
         ];
         if ($withCorporation) {
             $result['corporation'] = $this->corporation;
@@ -186,7 +184,6 @@ class Character implements \JsonSerializable
     public function getId(): int
     {
         // cast to int because Doctrine creates string for type bigint, also make sure it's no null
-        /** @noinspection PhpCastIsUnnecessaryInspection */
         return (int) $this->id;
     }
 
@@ -372,5 +369,11 @@ class Character implements \JsonSerializable
     {
         $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
         return $token ? $token->getValidTokenTime() : null;
+    }
+
+    private function getDefaultTokenLastChecked(): ?\DateTime
+    {
+        $token = $this->getEsiToken(EveLogin::NAME_DEFAULT);
+        return $token ? $token->getLastChecked() : null;
     }
 }
