@@ -219,7 +219,7 @@
                                         <a :href="'https://evewho.com/character/' + character.id"
                                            title="Eve Who" target="_blank" rel="noopener noreferrer">
                                             {{ character.name }}
-                                        </a>
+                                        </a>&nbsp;
                                         <character-name-changes :character="character"></character-name-changes>
                                     </td>
                                     <td>
@@ -416,7 +416,7 @@
 </template>
 
 <script>
-import {Modal} from "bootstrap";
+import {Modal, Tooltip} from "bootstrap";
 import {PlayerApi, SettingsApi} from 'neucore-js-client';
 import CharacterSearch from '../components/CharacterSearch.vue';
 import CharacterNameChanges from '../components/CharacterNameChanges.vue';
@@ -508,6 +508,12 @@ export default {
             getPlayer(this);
         }
         getEveLogins(this);
+    },
+
+    updated () {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(tooltip => {
+            new Tooltip(tooltip)
+        });
     },
 
     watch: {
