@@ -75,4 +75,38 @@ class CharacterRepository extends EntityRepository
             ];
         }, $qb->getQuery()->getResult());
     }
+
+    /**
+     * @param int[] $playerIds
+     * @return int[]
+     */
+    public function getCharacterIdsFromPlayers(array $playerIds, ?int $dbResultLimit = null, int $offset = 0): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select('c.id')
+            ->where($qb->expr()->in('c.player', ':ids'))
+            ->setParameter('ids', $playerIds)
+            ->addOrderBy('c.id')
+            ->setMaxResults($dbResultLimit)
+            ->setFirstResult($offset);
+
+        return array_map(function (array $row) {
+            return (int) $row['id'];
+        }, $qb->getQuery()->getResult());
+    }
+
+    public function getCharacterIdsNotFromPlayers(array $playerIds, ?int $dbResultLimit = null, int $offset = 0): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select('c.id')
+            ->where($qb->expr()->notIn('c.player', ':ids'))
+            ->setParameter('ids', $playerIds)
+            ->addOrderBy('c.id')
+            ->setMaxResults($dbResultLimit)
+            ->setFirstResult($offset);
+
+        return array_map(function (array $row) {
+            return (int) $row['id'];
+        }, $qb->getQuery()->getResult());
+    }
 }

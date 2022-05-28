@@ -18,24 +18,25 @@ class SystemVariablesFixtureLoader
         $pathToImages = Application::ROOT_DIR . '/var';
         $imagePrefix = 'data:image/png;base64,';
         $vars = [
-            SystemVariable::GROUPS_REQUIRE_VALID_TOKEN          => ['0', SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::ACCOUNT_DEACTIVATION_DELAY          => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES      => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS   => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::ALLOW_CHARACTER_DELETION            => ['0', SystemVariable::SCOPE_PUBLIC],
-            SystemVariable::ALLOW_LOGIN_MANAGED                 => ['0', SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_INVALID_TOKEN_ACTIVE           => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES        => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS     => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_INVALID_TOKEN_BODY             => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_INVALID_TOKEN_SUBJECT          => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE       => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_MISSING_CHARACTER_CORPORATIONS => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_MISSING_CHARACTER_BODY         => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT      => ['',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::GROUPS_REQUIRE_VALID_TOKEN          => ['0',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::ACCOUNT_DEACTIVATION_DELAY          => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES      => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS   => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::ACCOUNT_DEACTIVATION_ACTIVE_DAYS    => ['30', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::ALLOW_CHARACTER_DELETION            => ['0',  SystemVariable::SCOPE_PUBLIC],
+            SystemVariable::ALLOW_LOGIN_MANAGED                 => ['0',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_INVALID_TOKEN_ACTIVE           => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_INVALID_TOKEN_ALLIANCES        => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_INVALID_TOKEN_CORPORATIONS     => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_INVALID_TOKEN_BODY             => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_INVALID_TOKEN_SUBJECT          => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_MISSING_CHARACTER_ACTIVE       => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_MISSING_CHARACTER_CORPORATIONS => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_MISSING_CHARACTER_BODY         => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_MISSING_CHARACTER_SUBJECT      => ['',   SystemVariable::SCOPE_SETTINGS],
             SystemVariable::MAIL_MISSING_CHARACTER_RESEND       => ['0',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_CHARACTER                      => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::MAIL_TOKEN                          => ['',  SystemVariable::SCOPE_BACKEND],
+            SystemVariable::MAIL_CHARACTER                      => ['',   SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::MAIL_TOKEN                          => ['',   SystemVariable::SCOPE_BACKEND],
             SystemVariable::CUSTOMIZATION_DOCUMENT_TITLE        => [
                 'Alliance Core Services',
                 SystemVariable::SCOPE_PUBLIC
@@ -68,9 +69,9 @@ class SystemVariablesFixtureLoader
                 'https://github.com/tkhamez/neucore',
                 SystemVariable::SCOPE_PUBLIC
             ],
-            SystemVariable::API_RATE_LIMIT_MAX_REQUESTS         => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::API_RATE_LIMIT_RESET_TIME           => ['',  SystemVariable::SCOPE_SETTINGS],
-            SystemVariable::API_RATE_LIMIT_ACTIVE               => ['',  SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::API_RATE_LIMIT_MAX_REQUESTS         => ['', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::API_RATE_LIMIT_RESET_TIME           => ['', SystemVariable::SCOPE_SETTINGS],
+            SystemVariable::API_RATE_LIMIT_ACTIVE               => ['', SystemVariable::SCOPE_SETTINGS],
         ];
         foreach ($vars as $name => $data) {
             $var = $repository->find($name);

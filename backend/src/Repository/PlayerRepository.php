@@ -61,10 +61,48 @@ class PlayerRepository extends EntityRepository
     }
 
     /**
+     * @param int[] $allianceIds
+     * @return int[] Player IDs
+     */
+    public function findInAlliances(array $allianceIds): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id')
+            ->distinct()
+            ->leftJoin('p.characters', 'char')
+            ->leftJoin('char.corporation', 'corp')
+            ->andWhere($qb->expr()->in('corp.alliance', ':ids'))
+            ->setParameter('ids', $allianceIds);
+
+        return array_map(function (array $player) {
+            return (int) $player['id'];
+        }, $qb->getQuery()->getResult());
+    }
+
+    /**
+     * @param int[] $corporationIds
+     * @return int[] Player IDs
+     */
+    public function findInCorporations(array $corporationIds): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id')
+            ->distinct()
+            ->leftJoin('p.characters', 'c')
+            ->andWhere($qb->expr()->in('c.corporation', ':ids'))
+            ->setParameter('ids', $corporationIds);
+
+        return array_map(function (array $player) {
+            return (int) $player['id'];
+        }, $qb->getQuery()->getResult());
+    }
+
+    /**
      * @return Player[]
      */
     public function findInCorporation(int $corporationId): array
     {
+        // Note: getResult() eliminates duplicates.
         return $this->createQueryBuilder('p')
             ->leftJoin('p.characters', 'c')
             ->andWhere('c.id IS NOT NULL')
@@ -254,6 +292,9 @@ class PlayerRepository extends EntityRepository
         }, array_values($result));
     }
 
+    /**
+     * @return int[] Player IDs
+     */
     public function findPlayersOfCharacters(array $characterIds): array
     {
         $qb = $this->createQueryBuilder('p');
@@ -262,8 +303,24 @@ class PlayerRepository extends EntityRepository
             ->where($qb->expr()->in('c.id', ':ids'))
             ->setParameter('ids', $characterIds);
 
-        return array_map(function (array $char) {
-            return (int) $char['id'];
+        return array_map(function (array $player) {
+            return (int) $player['id'];
+        }, $qb->getQuery()->getResult());
+    }
+
+    /**
+     * @return int[] Player IDs
+     */
+    public function findPlayersOfRecentlyAddedCharacters(int $createdWithinDays): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id')->distinct()
+            ->leftJoin('p.characters', 'c')
+            ->where('c.created >= :days')
+            ->setParameter('days', date_create("now -$createdWithinDays days")->format('Y-m-d H:i:s'));
+
+        return array_map(function (array $player) {
+            return (int) $player['id'];
         }, $qb->getQuery()->getResult());
     }
 }

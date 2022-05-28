@@ -95,4 +95,12 @@ class CharacterRepositoryTest extends TestCase
             ['id' => 20, 'playerId' => self::$player2->getId()],
         ], self::$repository->getAllCharactersFromPlayers([self::$player1->getId(), self::$player2->getId()]));
     }
+
+    public function testGetCharacterIdsFromPlayers()
+    {
+        $this->assertSame(
+            [10, 20, 101],
+            self::$repository->getCharacterIdsFromPlayers([self::$player1->getId(), self::$player2->getId()])
+        );
+    }
 }

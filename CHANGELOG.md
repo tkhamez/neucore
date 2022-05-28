@@ -6,7 +6,9 @@ dd mm yyyy
 
 - New: The user agent for the HTTP client is now configurable (optional).
 - New: The time of the last check was added to the ESI tokens.
-- Change: ESI tokens that are marked as invalid are no longer checked.
+- New: Added "characters" option to the `check-token` command to optionally reduce the number of ESI tokens that
+  are validated.
+- Change: ESI tokens that are marked as invalid are no longer validated.
 - Text improvements.
 - Updated dependencies.
 - Dev: Removed Node.js 14 support.

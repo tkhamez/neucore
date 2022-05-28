@@ -303,7 +303,8 @@ class Helper
         int $charId,
         array $roles = [],
         array $groups = [],
-        bool $withEsiToken = true
+        bool $withEsiToken = true,
+        ?\DateTime $created = null
     ): Character {
         $om = $this->getObjectManager();
 
@@ -316,6 +317,9 @@ class Helper
         $char->setName($name);
         $char->setMain(true);
         $char->setCharacterOwnerHash('123');
+        if ($created) {
+            $char->setCreated($created);
+        }
         $om->persist($char);
 
         $char->setPlayer($player);
@@ -338,8 +342,12 @@ class Helper
         return $char;
     }
 
-    public function addCharacterToPlayer(string $name, int $charId, Player $player, bool $withEsiToken = false): Character
-    {
+    public function addCharacterToPlayer(
+        string $name,
+        int $charId,
+        Player $player,
+        bool $withEsiToken = false
+    ): Character {
         $alt = new Character();
         $alt->setId($charId);
         $alt->setName($name);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repository;
 
+use Neucore\Entity\Alliance;
 use Neucore\Entity\CharacterNameChange;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
@@ -19,35 +20,17 @@ use Tests\Helper;
 
 class PlayerRepositoryTest extends TestCase
 {
-    /**
-     * @var Group
-     */
-    private static $group1;
+    private static Group $group1;
     
-    /**
-     * @var Group
-     */
-    private static $group2;
+    private static Group $group2;
 
-    /**
-     * @var Player
-     */
-    private static $player1;
+    private static Player$player1;
 
-    /**
-     * @var Player
-     */
-    private static $player4;
+    private static Player$player4;
 
-    /**
-     * @var Player
-     */
-    private static $player6;
+    private static Player $player6;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $repo;
+    private PlayerRepository $repo;
 
     public static function setupBeforeClass(): void
     {
@@ -63,10 +46,12 @@ class PlayerRepositoryTest extends TestCase
         $roleTracking = (new Role(10))->setName(Role::TRACKING);
         $om->persist($roleTracking);
 
-        $corp1 = (new Corporation())->setId(98000101)->setName('corp1');
+        $alliance = (new Alliance())->setId(1000)->setName('alli1');
+        $corp1 = (new Corporation())->setId(98000101)->setName('corp1')->setAlliance($alliance);
         $corp2 = (new Corporation())->setId(98000102)->setName('corp2');
-        $corp3 = (new Corporation())->setId(98000103)->setName('corp3');
+        $corp3 = (new Corporation())->setId(98000103)->setName('corp3')->setAlliance($alliance);
         $corp4 = (new Corporation())->setId(1000500)->setName('corp4'); // NPC corp
+        $om->persist($alliance);
         $om->persist($corp1);
         $om->persist($corp2);
         $om->persist($corp3);
@@ -74,8 +59,9 @@ class PlayerRepositoryTest extends TestCase
 
         self::$player1 = $helper->addCharacterMain('c1', 1)->getPlayer();
         self::$player1->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
-        self::$player1->getCharacters()[0]->setCorporation($corp1);
+        self::$player1->getCharacters()[0]->setCorporation($corp1)->setCreated(new \DateTime());
         $char1b = $helper->addCharacterToPlayer('c1b', 12, self::$player1, true)->setCorporation($corp2);
+        $char1b->setCorporation($corp1);
         $char1b->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
         $char1c = $helper->addCharacterToPlayer('c1c', 1313, self::$player1, true)->setCorporation($corp4);
         $char1c->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
@@ -96,7 +82,7 @@ class PlayerRepositoryTest extends TestCase
         self::$player4 = $helper->addCharacterMain('c4', 3)->getPlayer();
         self::$player4->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         self::$player4->addRole($roleTracking);
-        self::$player4->getCharacters()[0]->setCorporation($corp3);
+        self::$player4->getCharacters()[0]->setCorporation($corp3)->setCreated(date_create('now -7 days'));
 
         $player5 = (new Player())->setName('p5');
 
@@ -192,8 +178,21 @@ class PlayerRepositoryTest extends TestCase
         $this->assertSame('c4', $actual[1]->getName());
     }
 
+    public function testFindInAlliances()
+    {
+        $actual = $this->repo->findInAlliances([1000]);
+        $this->assertSame([self::$player1->getId(), self::$player4->getId()], $actual);
+    }
+
+    public function testFindInCorporations()
+    {
+        $actual = $this->repo->findInCorporations([98000101, 98000103]);
+        $this->assertSame([self::$player1->getId(), self::$player4->getId()], $actual);
+    }
+
     public function testFindInCorporation()
     {
+        // There are 2 characters in this corporation from the same account
         $actual = $this->repo->findInCorporation(98000101);
 
         $this->assertSame(1, count($actual));
@@ -351,5 +350,11 @@ class PlayerRepositoryTest extends TestCase
             [self::$player1->getId(), self::$player4->getId()],
             $this->repo->findPlayersOfCharacters([1, 12, 3])
         );
+    }
+
+    public function testFindPlayersOfRecentlyAddedCharacters()
+    {
+        $actual = $this->repo->findPlayersOfRecentlyAddedCharacters(30);
+        $this->assertSame([self::$player1->getId(), self::$player4->getId()], $actual);
     }
 }

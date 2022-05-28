@@ -8,8 +8,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Neucore\Command\Traits\EsiRateLimited;
 use Neucore\Command\Traits\LogOutput;
 use Neucore\Entity\Character;
+use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Repository\CharacterRepository;
+use Neucore\Repository\PlayerRepository;
+use Neucore\Repository\SystemVariableRepository;
 use Neucore\Service\Account;
 use Neucore\Storage\StorageInterface;
 use Psr\Log\LoggerInterface;
@@ -28,11 +31,19 @@ class CheckTokens extends Command
 
     private CharacterRepository $charRepo;
 
+    private PlayerRepository $playerRepo;
+
+    private SystemVariableRepository $sysVarRepo;
+
     private Account $charService;
 
     private EntityManagerInterface $entityManager;
 
+    private ?string $characters = null;
+
     private ?int $sleep = null;
+
+    private array $activePlayerIds = [];
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -46,6 +57,8 @@ class CheckTokens extends Command
         $this->esiRateLimited($storage, $logger);
 
         $this->charRepo = $repositoryFactory->getCharacterRepository();
+        $this->playerRepo = $repositoryFactory->getPlayerRepository();
+        $this->sysVarRepo = $repositoryFactory->getSystemVariableRepository();
         $this->charService = $charService;
         $this->entityManager = $entityManager;
     }
@@ -59,6 +72,17 @@ class CheckTokens extends Command
             )
             ->addArgument('character', InputArgument::OPTIONAL, 'Check only one char.')
             ->addOption(
+                'characters',
+                'c',
+                InputOption::VALUE_OPTIONAL,
+                'Which characters should be checked: all, active, other. ' .
+                    'Active refers to all characters added in the last x days (x comes from the ' .
+                    '"Groups Deactivation" configuration) or from player accounts where at ' .
+                    'least one character is a member of one of the alliances or corporations configured for ' .
+                    'the "Groups Deactivation" feature.',
+                'all'
+            )
+            ->addOption(
                 'sleep',
                 's',
                 InputOption::VALUE_OPTIONAL,
@@ -71,6 +95,7 @@ class CheckTokens extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $charId = intval($input->getArgument('character'));
+        $this->characters = $input->getOption('characters');
         $this->sleep = intval($input->getOption('sleep'));
         $this->executeLogOutput($input, $output);
 
@@ -90,13 +115,10 @@ class CheckTokens extends Command
             if ($characterId !== 0) {
                 $charIds = [$characterId];
             } else {
-                $charIds = array_map(function (Character $char) {
-                    return $char->getId();
-                }, $this->charRepo->findBy([], [], $dbResultLimit, $offset));
+                $charIds = $this->getCharacters($dbResultLimit, $offset);
             }
-
             foreach ($charIds as $charId) {
-                if (! $this->entityManager->isOpen()) {
+                if (!$this->entityManager->isOpen()) {
                     $this->logger->critical('CheckTokens: cannot continue without an open entity manager.');
                     break;
                 }
@@ -128,5 +150,59 @@ class CheckTokens extends Command
                 usleep($this->sleep * 1000);
             }
         } while (count($charIds) === $dbResultLimit);
+    }
+
+    /**
+     * @return int[]
+     */
+    private function getCharacters(int $dbResultLimit, int $offset): array
+    {
+        $characterIds = [];
+
+        if ($this->characters === 'all') {
+            $characterIds = array_map(function (Character $char) {
+                return $char->getId();
+            }, $this->charRepo->findBy([], [], $dbResultLimit, $offset));
+        } else {
+            if (empty($this->activePlayerIds)) {
+                $days = 0;
+                $daysVar = $this->sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_ACTIVE_DAYS);
+                if ($daysVar !== null && !empty($daysVar->getValue())) {
+                    $days = (int) $daysVar->getValue();
+                }
+
+                $allianceIds = [];
+                $corpIds = [];
+                $allianceVar = $this->sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES);
+                $corporationVar = $this->sysVarRepo->find(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS);
+                if ($allianceVar !== null && !empty($allianceVar->getValue())) {
+                    $allianceIds = array_map('intval', explode(',', $allianceVar->getValue()));
+                }
+                if ($corporationVar !== null && !empty($corporationVar->getValue())) {
+                    $corpIds = array_map('intval', explode(',', $corporationVar->getValue()));
+                }
+
+                $playerIds1 = $this->playerRepo->findInAlliances($allianceIds);
+                $playerIds2 = $this->playerRepo->findInCorporations($corpIds);
+                $playerIds3 = $this->playerRepo->findPlayersOfRecentlyAddedCharacters($days);
+
+                $this->activePlayerIds = array_unique(array_merge($playerIds1, $playerIds2, $playerIds3));
+            }
+            if ($this->characters === 'active') {
+                $characterIds = $this->charRepo->getCharacterIdsFromPlayers(
+                    $this->activePlayerIds,
+                    $dbResultLimit,
+                    $offset
+                );
+            } elseif ($this->characters === 'other') {
+                $characterIds = $this->charRepo->getCharacterIdsNotFromPlayers(
+                    $this->activePlayerIds,
+                    $dbResultLimit,
+                    $offset
+                );
+            }
+        }
+
+        return $characterIds;
     }
 }

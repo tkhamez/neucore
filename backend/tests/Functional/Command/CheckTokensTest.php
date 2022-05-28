@@ -7,9 +7,11 @@ namespace Tests\Functional\Command;
 
 use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\ClientInterface;
+use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\Player;
+use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use GuzzleHttp\Psr7\Response;
 use Neucore\Service\EsiData;
@@ -42,7 +44,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecuteUpdateCharNoToken()
+    public function testExecute_UpdateCharNoToken()
     {
         $c = (new Character())->setId(1)->setName('c1')->setCharacterOwnerHash('coh1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -59,13 +61,13 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 1: token N/A', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     /**
      * @throws \Exception
      */
-    public function testExecuteDeleteCharBiomassed()
+    public function testExecute_DeleteCharBiomassed()
     {
         $player = (new Player())->setName('p');
         $corp = (new Corporation())->setId(EsiData::CORPORATION_DOOMHEIM_ID);
@@ -82,7 +84,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 3: character deleted', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         # read result
         $this->om->clear();
@@ -96,7 +98,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecuteErrorUpdateToken()
+    public function testExecute_ErrorUpdateToken()
     {
         $c = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -112,13 +114,13 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token parse error', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     /**
      * @throws \Exception
      */
-    public function testExecuteInvalidToken()
+    public function testExecute_InvalidToken()
     {
         $c = (new Character())->setId(3)->setName('char1');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -138,13 +140,13 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token NOK', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
     }
 
     /**
      * @throws \Exception
      */
-    public function testExecuteCharacterDeleted()
+    public function testExecute_CharacterDeleted()
     {
         // This should not be possible in real scenario because the
         // tokens should already be invalid after a character transfer - right!?.
@@ -172,7 +174,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 3: character deleted', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         # read result
         $this->om->clear();
@@ -186,7 +188,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecuteValidToken()
+    public function testExecute_ValidToken()
     {
         $c = (new Character())->setId(3)->setName('char1')->setCharacterOwnerHash('coh3');
         $this->helper->addNewPlayerToCharacterAndFlush($c);
@@ -210,7 +212,7 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token OK', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
 
         # read result
         $this->om->clear();
@@ -229,7 +231,7 @@ class CheckTokensTest extends ConsoleTestCase
     /**
      * @throws \Exception
      */
-    public function testExecuteValidTokenUnexpectedData()
+    public function testExecute_ValidTokenUnexpectedData()
     {
         list($token) = Helper::generateToken(['scope1', 'scope2'], 'Name', 'coh3', 'invalid');
 
@@ -247,10 +249,66 @@ class CheckTokensTest extends ConsoleTestCase
         $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
         $this->assertStringEndsWith('  Character 3: token OK', $actual[1]);
         $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
-        $this->assertStringEndsWith('', $actual[3]);
+        $this->assertSame('', $actual[3]);
         $this->assertSame(
             'Unexpected JWT data, missing character owner hash.',
             $this->log->getHandler()->getRecords()[0]['message']
         );
+    }
+
+    public function testExecute_ActiveChars()
+    {
+        $this->setupActive();
+
+        // Note: None of the tokens are valid so this test does not need the test client.
+        $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0, '--characters' => 'active']);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(7, count($actual));
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 100101: token NOK', $actual[1]);
+        $this->assertStringEndsWith('  Character 100102: token N/A', $actual[2]);
+        $this->assertStringEndsWith('  Character 200101: token NOK', $actual[3]);
+        $this->assertStringEndsWith('  Character 300101: token NOK', $actual[4]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[5]);
+        $this->assertSame('', $actual[6]);
+    }
+
+    public function testExecute_OtherChars()
+    {
+        $this->setupActive();
+
+        // Note: None of the tokens are valid so this test does not need the test client.
+        $output = $this->runConsoleApp('check-tokens', ['--sleep' => 0, '--characters' => 'other']);
+
+        $actual = explode("\n", $output);
+        $this->assertSame(4, count($actual));
+        $this->assertStringEndsWith('Started "check-tokens"', $actual[0]);
+        $this->assertStringEndsWith('  Character 400101: token NOK', $actual[1]);
+        $this->assertStringEndsWith('Finished "check-tokens"', $actual[2]);
+        $this->assertSame('', $actual[3]);
+    }
+
+    private function setupActive()
+    {
+        $alliance = (new Alliance())->setId(101)->setName('Alliance 1');
+        $corporation1 = (new Corporation())->setId(1001)->setName('Corp 1')->setAlliance($alliance);
+        $corporation2 = (new Corporation())->setId(2001)->setName('Corp 3');
+        $this->om->persist($alliance);
+        $this->om->persist($corporation1);
+        $this->om->persist($corporation2);
+
+        $setting1 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('101');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('1001,2001');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ACTIVE_DAYS))->setValue('30');
+        $this->om->persist($setting1);
+        $this->om->persist($setting2);
+        $this->om->persist($setting3);
+
+        $main1 = $this->helper->addCharacterMain('Main 1', 100101)->setCorporation($corporation1);
+        $this->helper->addCharacterToPlayer('Alt 1', 100102, $main1->getPlayer());
+        $this->helper->addCharacterMain('Main 2', 200101)->setCorporation($corporation2);
+        $this->helper->addCharacterMain('Main 3', 300101, [], [], true, date_create('now -7 days'));
+        $this->helper->addCharacterMain('Main 4', 400101);
     }
 }

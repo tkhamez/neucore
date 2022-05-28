@@ -5,7 +5,7 @@
         <div class="form-check">
             <label class="form-check-label" for="groups_require_valid_token">
                 Check this if the API for applications should not return groups
-                for a player account if one or more of its characters have an invalid token
+                for a player account if one or more of its characters have an invalid ESI token
                 (no token or tokens without any scopes count as invalid), "managed" accounts
                 are excluded from this.<br>
                 This also affects groups passed to Neucore plugins.
@@ -16,7 +16,7 @@
                    @change="$emit('changeSetting', 'groups_require_valid_token', $event.target.checked ? '1' : '0')">
         </div>
         <label class="mt-2 display-block">
-            <input type="text" pattern="[0-9]*" class="form-control input-inline"  name="account_deactivation_delay"
+            <input type="text" pattern="[0-9]*" class="form-control input-inline" name="account_deactivation_delay"
                    v-model="settings.account_deactivation_delay"
                    v-on:input="$emit('changeSettingDelayed', 'account_deactivation_delay', $event.target.value)">
             Delay the deactivation after a token became invalid (hours).
@@ -37,6 +37,13 @@
                      :loading="false" :searchable="true"
                      placeholder="Select corporations">
         </multiselect>
+        <label class="mt-4 display-block">
+            <input type="text" pattern="[0-9]*" class="form-control input-inline"
+                   name="account_deactivation_active_days"
+                   v-model="settings.account_deactivation_active_days"
+                   v-on:input="$emit('changeSettingDelayed', 'account_deactivation_active_days', $event.target.value)">
+            Number of days for the "check-tokens" command with the "characters = active" option.
+        </label>
     </div>
 
     <div class="card-header">"Managed" Logins</div>

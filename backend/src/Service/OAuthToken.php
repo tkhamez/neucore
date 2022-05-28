@@ -42,7 +42,7 @@ class OAuthToken
     }
 
     /**
-     * Refreshes the access token if necessary and stores the new refresh token.
+     * Refreshes the access token if necessary and stores the new access and refresh token.
      */
     public function refreshEsiToken(EsiToken $esiToken): ?AccessTokenInterface
     {

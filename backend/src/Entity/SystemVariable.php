@@ -93,6 +93,13 @@ class SystemVariable implements \JsonSerializable
     public const ACCOUNT_DEACTIVATION_CORPORATIONS = 'account_deactivation_corporations';
 
     /**
+     * Number of days for the "check-tokens" command with the "characters = active" option.
+     *
+     * Scope = settings
+     */
+    public const ACCOUNT_DEACTIVATION_ACTIVE_DAYS = 'account_deactivation_active_days';
+
+    /**
      * EVE character name for the character that can be used to send mails.
      *
      * Scope = settings
