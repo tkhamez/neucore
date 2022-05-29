@@ -2,8 +2,8 @@
     "name": "neucore/examples",
     "type": "project",
     "require": {
-        "bravecollective/neucore-api": "^1.0",
+        "bravecollective/neucore-api": "^1.31",
         "eveseat/eseye": "^2.4",
-        "tkhamez/swagger-eve-php": "^6.1"
+        "tkhamez/swagger-eve-php": "^7.1"
     }
 }
