@@ -31,30 +31,15 @@ use Tests\Logger;
 
 class MemberTrackingTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var \Doctrine\Persistence\ObjectManager
-     */
-    private $om;
+    private \Doctrine\Persistence\ObjectManager $om;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var MemberTracking
-     */
-    private $memberTracking;
+    private MemberTracking $memberTracking;
 
     protected function setUp(): void
     {
@@ -356,7 +341,7 @@ class MemberTrackingTest extends TestCase
         $this->assertLessThanOrEqual(time(), $resultLocations[1]->getLastUpdate()->getTimestamp());
     }
 
-    public function testUpdateStructures()
+    public function testUpdateStructures_DirectorSuccess()
     {
         $data =  new GetCorporationsCorporationIdMembertracking200Ok([
             'character_id' => 102,
@@ -387,6 +372,35 @@ class MemberTrackingTest extends TestCase
         $this->assertSame(123, $resultLocations[0]->getOwnerId());
         $this->assertSame(456, $resultLocations[0]->getSystemId());
         $this->assertLessThanOrEqual(time(), $resultLocations[0]->getLastUpdate()->getTimestamp());
+        $this->assertSame(0, $resultLocations[0]->getErrorCount());
+    }
+
+    public function testUpdateStructures_DoubleError()
+    {
+        $char = $this->helper->addCharacterMain('C1', 102204, [], [], false);
+        $this->helper->createOrUpdateEsiToken($char, time() + 1000, 'at', true);
+
+        $data =  new GetCorporationsCorporationIdMembertracking200Ok([
+            'character_id' => 102204,
+            'location_id' => 1023100200300,
+        ]);
+
+        $this->client->setResponse(
+            new Response(403) // structure
+        );
+
+        $this->memberTracking->updateStructure($data, null);
+        $this->om->flush();
+
+        $resultLocations = $this->repositoryFactory->getEsiLocationRepository()->findBy([]);
+        $this->assertSame(1, count($resultLocations));
+        $this->assertSame(1023100200300, $resultLocations[0]->getId());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $resultLocations[0]->getCategory());
+        $this->assertSame('', $resultLocations[0]->getName());
+        $this->assertNull($resultLocations[0]->getOwnerId());
+        $this->assertNull($resultLocations[0]->getSystemId());
+        $this->assertLessThanOrEqual(time(), $resultLocations[0]->getLastUpdate()->getTimestamp());
+        $this->assertSame(1, $resultLocations[0]->getErrorCount());
     }
 
     public function testFetchCharacterNames()

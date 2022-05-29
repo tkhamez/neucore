@@ -31,47 +31,46 @@ class EsiLocation implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @OA\Property(enum={"system", "station", "structure"})
      * @ORM\Column(type="string", length=16)
-     * @var string
      */
-    private $category;
+    private ?string $category = null;
 
     /**
      * @OA\Property()
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * Optional owner for category = structure.
      *
      * @ORM\Column(type="integer", name="owner_id", nullable=true)
-     * @var integer|null
      */
-    private $ownerId;
+    private ?int $ownerId = null;
 
     /**
      * Optional system for category = structure.
      *
      * @ORM\Column(type="integer", name="system_id", nullable=true)
-     * @var integer|null
      */
-    private $systemId;
+    private ?int $systemId = null;
 
     /**
      * Last ESI update.
      *
      * @ORM\Column(type="datetime", name="last_update", nullable=true)
-     * @var \DateTime|null
      */
-    private $lastUpdate;
+    private ?\DateTime $lastUpdate = null;
+
+    /**
+     * @ORM\Column(type="integer", name="error_count", nullable=true)
+     */
+    private ?int $errorCount = null;
 
     public function jsonSerialize(): array
     {
@@ -159,5 +158,17 @@ class EsiLocation implements \JsonSerializable
     public function getLastUpdate(): ?\DateTime
     {
         return $this->lastUpdate;
+    }
+
+    public function setErrorCount(int $errorCount): self
+    {
+        $this->errorCount = $errorCount;
+
+        return $this;
+    }
+
+    public function getErrorCount(): int
+    {
+        return $this->errorCount !== null ? $this->errorCount : 0;
     }
 }

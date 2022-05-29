@@ -18,7 +18,6 @@ use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
-use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
@@ -29,40 +28,19 @@ class EsiData
 {
     public const CORPORATION_DOOMHEIM_ID = 1000001;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var EsiApiFactory
-     */
-    private $esiApiFactory;
+    private EsiApiFactory $esiApiFactory;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var \Neucore\Service\Character
-     */
-    private $characterService;
+    private \Neucore\Service\Character $characterService;
 
-    /**
-     * @var int|null
-     */
-    private $lastErrorCode;
+    private ?int $lastErrorCode = null;
 
-    /**
-     * @var string
-     */
-    private $datasource;
+    private string $datasource;
 
     public function __construct(
         LoggerInterface $log,
@@ -93,9 +71,8 @@ class EsiData
      * Returns null if any of the ESI requests fails.
      *
      * @param int|null $id EVE character ID
-     * @return NULL|Character
      */
-    public function fetchCharacterWithCorporationAndAlliance(?int $id)
+    public function fetchCharacterWithCorporationAndAlliance(?int $id): ?Character
     {
         $char = $this->fetchCharacter($id, false);
         if ($char === null || $char->getCorporation() === null) { // corp is never null here, but that's not obvious
@@ -218,7 +195,7 @@ class EsiData
      * @return PostCharactersAffiliation200Ok[]
      * @see https://esi.evetech.net/ui/#/Character/post_characters_affiliation
      */
-    public function fetchCharactersAffiliation(array $ids)
+    public function fetchCharactersAffiliation(array $ids): array
     {
         $affiliations = [];
         while (! empty($ids)) {
@@ -250,7 +227,7 @@ class EsiData
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Corporation An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchCorporation(?int $id, bool $flush = true)
+    public function fetchCorporation(?int $id, bool $flush = true): ?Corporation
     {
         if ($id === null || $id <= 0) {
             return null;
@@ -312,7 +289,7 @@ class EsiData
      * @param bool $flush Optional write data to database, defaults to true
      * @return null|Alliance An instance that is attached to the Doctrine entity manager.
      */
-    public function fetchAlliance(?int $id, bool $flush = true)
+    public function fetchAlliance(?int $id, bool $flush = true): ?Alliance
     {
         if ($id === null || $id <= 0) {
             return null;
@@ -376,46 +353,60 @@ class EsiData
     }
 
     /**
-     * Fetch structure info from ESI and create/update DB entry on success.
+     * Fetch structure info from ESI and create/update DB entry.
      */
-    public function fetchStructure(int $id, string $accessToken, bool $flush = true): ?EsiLocation
-    {
+    public function fetchStructure(
+        int $id,
+        string $accessToken,
+        bool $flush,
+        bool $increaseErrorCount
+    ): EsiLocation {
+        $location = $this->repositoryFactory->getEsiLocationRepository()->find($id);
+        if ($location === null) {
+            $location = new EsiLocation();
+            $location->setId($id);
+            $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+            $this->objectManager->persist($location);
+        }
+        $location->setLastUpdate(new \DateTime());
+
         if ($accessToken === '') {
-            return null;
+            if ($flush) {
+                $this->objectManager->flush();
+            }
+            return $location;
         }
 
+        $result = null;
+        $authError = false;
         try {
             $result = $this->esiApiFactory->getUniverseApi($accessToken)
                 ->getUniverseStructuresStructureId($id, $this->datasource);
         } catch (\Exception $e) {
             if (in_array($e->getCode(), [401, 403])) {
                 $this->log->info("EsiData::fetchStructure: ". $e->getCode() . " Unauthorized/Forbidden: $id");
+                if ($increaseErrorCount) {
+                    $authError = true;
+                }
             } else {
                 $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
             }
-            return null;
         }
 
-        $location = null;
-        if ($result instanceof GetUniverseStructuresStructureIdOk) {
-            $location = $this->repositoryFactory->getEsiLocationRepository()->find($id);
-            if ($location === null) {
-                $location = new EsiLocation();
-                $location->setId($id);
-                $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
-                $this->objectManager->persist($location);
-            }
+        if ($result) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setName((string) $result->getName());
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setOwnerId((int) $result->getOwnerId());
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setSystemId((int) $result->getSolarSystemId());
-            $location->setLastUpdate(new \DateTime());
+            $location->setErrorCount(0);
+        } elseif ($authError) {
+            $location->setErrorCount($location->getErrorCount() + 1);
+        }
 
-            if ($flush) {
-                $this->objectManager->flush();
-            }
+        if ($flush) {
+            $this->objectManager->flush();
         }
 
         return $location;

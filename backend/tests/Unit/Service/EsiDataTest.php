@@ -1,4 +1,5 @@
 <?php
+/** @noinspection DuplicatedCode */
 
 declare(strict_types=1);
 
@@ -27,40 +28,19 @@ use Tests\WriteErrorListener;
 
 class EsiDataTest extends TestCase
 {
-    /**
-     * @var WriteErrorListener
-     */
-    private static $writeErrorListener;
+    private static WriteErrorListener $writeErrorListener;
 
-    /**
-     * @var Helper
-     */
-    private $testHelper;
+    private Helper $testHelper;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repoFactory;
+    private RepositoryFactory $repoFactory;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
     public static function setupBeforeClass(): void
     {
@@ -497,7 +477,7 @@ class EsiDataTest extends TestCase
             "ticker": "-A-"
         }'));
 
-        $alli = $this->esiData->fetchAlliance(345, true);
+        $alli = $this->esiData->fetchAlliance(345);
         $this->assertNull($alli);
     }
 
@@ -524,7 +504,25 @@ class EsiDataTest extends TestCase
         $this->assertSame(PostUniverseNames200Ok::CATEGORY_INVENTORY_TYPE, $names[1]->getCategory());
     }
 
-    public function testFetchStructure()
+    public function testFetchStructure_NoToken()
+    {
+        $this->testHelper->emptyDb();
+
+        $location = $this->esiData->fetchStructure(1023100200300, '', false, true);
+
+        $resultLocations = $this->repoFactory->getEsiLocationRepository()->findBy([]);
+        $this->assertSame(0, count($resultLocations));
+
+        $this->assertSame(1023100200300, $location->getId());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
+        $this->assertSame('', $location->getName());
+        $this->assertNull($location->getOwnerId());
+        $this->assertNull($location->getSystemId());
+        $this->assertLessThanOrEqual(time(), $location->getLastUpdate()->getTimestamp());
+        $this->assertSame(0, $location->getErrorCount());
+    }
+
+    public function testFetchStructure_Success()
     {
         $this->testHelper->emptyDb();
 
@@ -534,17 +532,15 @@ class EsiDataTest extends TestCase
             "solar_system_id": 30000142
         }'));
 
-        $location = $this->esiData->fetchStructure(1023100200300, 'access-token');
+        $location = $this->esiData->fetchStructure(1023100200300, 'access-token', true, true);
 
         $this->assertSame(1023100200300, $location->getId());
         $this->assertSame('V-3YG7 VI - The Capital', $location->getName());
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
         $this->assertSame(109299958, $location->getOwnerId());
         $this->assertSame(30000142, $location->getSystemId());
-        $this->assertGreaterThan(
-            '2019-11-18T19:34:14+00:00',
-            $location->getLastUpdate()->format(\DateTimeInterface::ATOM)
-        );
+        $this->assertLessThanOrEqual(time(), $location->getLastUpdate()->getTimestamp());
+        $this->assertSame(0, $location->getErrorCount());
 
         $this->em->clear();
 
@@ -554,6 +550,26 @@ class EsiDataTest extends TestCase
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $locationDb->getCategory());
         $this->assertSame(109299958, $locationDb->getOwnerId());
         $this->assertSame(30000142, $locationDb->getSystemId());
+        $this->assertLessThanOrEqual(time(), $locationDb->getLastUpdate()->getTimestamp());
+        $this->assertSame(0, $locationDb->getErrorCount());
+    }
+
+    public function testFetchStructure_Error()
+    {
+        $this->testHelper->emptyDb();
+
+        $this->client->setResponse(new Response(401));
+
+        $this->esiData->fetchStructure(1023100200300, 'access-token', true, true);
+        $this->em->clear();
+
+        $locationDb = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
+        $this->assertSame(1023100200300, $locationDb->getId());
+        $this->assertSame('', $locationDb->getName());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $locationDb->getCategory());
+        $this->assertNull($locationDb->getOwnerId());
+        $this->assertNull($locationDb->getSystemId());
+        $this->assertSame(1, $locationDb->getErrorCount());
     }
 
     public function testFetchCorporationMembersNoToken()

@@ -26,45 +26,21 @@ use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
 class MemberTracking
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var EsiApiFactory
-     */
-    private $esiApiFactory;
+    private EsiApiFactory $esiApiFactory;
 
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private EntityManager $entityManager;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
-    /**
-     * @var OAuthToken
-     */
-    private $oauthToken;
+    private OAuthToken $oauthToken;
 
-    /**
-     * @var AuthenticationProvider
-     */
-    private $authenticationProvider;
+    private AuthenticationProvider $authenticationProvider;
 
-    /**
-     * @var string
-     */
-    private $datasource;
+    private string $datasource;
 
     public function __construct(
         LoggerInterface $log,
@@ -84,7 +60,7 @@ class MemberTracking
         $this->oauthToken = $oauthToken;
         $this->authenticationProvider = $authenticationProvider;
 
-        $this->datasource = $config['eve']['datasource'];
+        $this->datasource = (string) $config['eve']['datasource'];
     }
 
     /**
@@ -277,13 +253,8 @@ class MemberTracking
      * Resolves ESI IDs to names and creates/updates database entries.
      *
      * This flushes and clears the ObjectManager every 100 IDs.
-     *
-     * @param array $typeIds
-     * @param array $systemIds
-     * @param array $stationIds
-     * @param int $sleep
      */
-    public function updateNames(array $typeIds, array $systemIds, array $stationIds, $sleep = 0): void
+    public function updateNames(array $typeIds, array $systemIds, array $stationIds, int $sleep = 0): void
     {
         // get ESI data
         $esiNames = []; /* @var PostUniverseNames200Ok[] $esiNames */
@@ -376,23 +347,20 @@ class MemberTracking
         if ($tokenData) {
             $directorAccessToken = $this->refreshDirectorToken($tokenData);
             if ($directorAccessToken !== null) {
-                $location = $this->esiData->fetchStructure($structureId, $directorAccessToken->getToken(), false);
+                $location = $this->esiData->fetchStructure(
+                    $structureId,
+                    $directorAccessToken->getToken(),
+                    false,
+                    false
+                );
             }
         }
-        if ($location === null) {
+        if (!$location || empty($location->getName())) {
             $character = $this->repositoryFactory->getCharacterRepository()->find($memberData->getCharacterId());
             if ($character !== null) {
                 $characterAccessToken = $this->oauthToken->getToken($character, EveLogin::NAME_DEFAULT);
-                $location = $this->esiData->fetchStructure($structureId, $characterAccessToken, false);
+                $this->esiData->fetchStructure($structureId, $characterAccessToken, false, true);
             }
-        }
-
-        // if ESI failed, create location db entry with ID only
-        if ($location === null && $this->repositoryFactory->getEsiLocationRepository()->find($structureId) === null) {
-            $location = new EsiLocation();
-            $location->setId($structureId);
-            $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
-            $this->entityManager->persist($location);
         }
     }
 
