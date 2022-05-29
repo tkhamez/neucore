@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0c3209a80e9c2ceffdd0b16af18905e",
+    "content-hash": "825e6e6069796ac2c85f104992b6eaf5",
     "packages": [
         {
             "name": "brick/math",
@@ -4976,16 +4976,16 @@
         },
         {
             "name": "tkhamez/swagger-eve-php",
-            "version": "7.1.0",
+            "version": "8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tkhamez/swagger-eve-php.git",
-                "reference": "5005c2bfafa9042d0ecb23f268b788268a08e2c9"
+                "reference": "a02abc1ffb3053dd6a81e7130664710b723d9a5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/5005c2bfafa9042d0ecb23f268b788268a08e2c9",
-                "reference": "5005c2bfafa9042d0ecb23f268b788268a08e2c9",
+                "url": "https://api.github.com/repos/tkhamez/swagger-eve-php/zipball/a02abc1ffb3053dd6a81e7130664710b723d9a5f",
+                "reference": "a02abc1ffb3053dd6a81e7130664710b723d9a5f",
                 "shasum": ""
             },
             "require": {
@@ -4993,11 +4993,11 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^7.3",
-                "guzzlehttp/psr7": "^2.0",
-                "php": "^7.3 || ^8.0"
+                "guzzlehttp/psr7": "^1.7 || ^2.0",
+                "php": "^7.4 || ^8.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.12",
+                "friendsofphp/php-cs-fixer": "^3.5",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
@@ -5029,9 +5029,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tkhamez/swagger-eve-php/issues",
-                "source": "https://github.com/tkhamez/swagger-eve-php/tree/7.1.0"
+                "source": "https://github.com/tkhamez/swagger-eve-php/tree/8.0.0"
             },
-            "time": "2021-11-28T14:15:19+00:00"
+            "time": "2022-05-29T12:18:19+00:00"
         },
         {
             "name": "web-token/jwt-core",
