@@ -45,6 +45,8 @@ services:
     volumes: [
         ".:/app",
     ]
+    environment:
+      PHP_IDE_CONFIG: serverName=docker # for PhpStorm
     user: ${UID}
     working_dir: /app/backend
     networks: [neucore]

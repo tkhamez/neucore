@@ -99,6 +99,11 @@ Run the console app to see all available commands:
 bin/console
 ```
 
+To debug, start like this:
+```sh
+php -dxdebug.start_with_request=yes bin/console
+```
+
 #### Making yourself an admin
 
 Login with your EVE character to create an account. Then execute this command,
