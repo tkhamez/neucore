@@ -124,7 +124,7 @@ class SettingsControllerTest extends WebTestCase
         $this->assertSame([
             ['name' => SystemVariable::ALLOW_CHARACTER_DELETION, 'value' => '0'],
             ['name' => SystemVariable::ALLOW_LOGIN_MANAGED, 'value' => '0'],
-            ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": "10", "corporation_id": "101"}'],
+            ['name' => SystemVariable::DIRECTOR_CHAR . 1, 'value' => '{"character_id": 10, "corporation_id": 101}'],
             ['name' => SystemVariable::GROUPS_REQUIRE_VALID_TOKEN, 'value' => '1'],
             ['name' => SystemVariable::MAIL_CHARACTER, 'value' => 'The char'],
             ['name' => 'esiDataSource', 'value' => getenv('NEUCORE_EVE_DATASOURCE') ?: 'tranquility'],
@@ -426,7 +426,7 @@ class SettingsControllerTest extends WebTestCase
             'refresh' => 'refresh-token',
             'expires' => time() + 10000,
         ]));
-        $var6->setValue('{"character_id": "10", "corporation_id": "101"}');
+        $var6->setValue('{"character_id": 10, "corporation_id": 101}');
         $var7->setValue('{"access": "at", "refresh": "rt", "expires": '.(time() + 60*20).'}');
         $var8->setValue("0");
 

@@ -169,6 +169,7 @@ class MemberTracking
         $directorToken->access = $tokenData[SystemVariable::TOKEN_ACCESS];
         $directorToken->refresh = $tokenData[SystemVariable::TOKEN_REFRESH];
         $directorToken->expires = $tokenData[SystemVariable::TOKEN_EXPIRES];
+        $directorToken->scopes = $tokenData[SystemVariable::TOKEN_SCOPES] ?? [];
         $directorToken->systemVariableName = SystemVariable::DIRECTOR_TOKEN . $number;
         $directorToken->characterId = $characterData[SystemVariable::VALUE_CHARACTER_ID];
 

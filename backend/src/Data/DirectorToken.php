@@ -6,33 +6,18 @@ namespace Neucore\Data;
 
 class DirectorToken
 {
-    /**
-     * @var string|null
-     */
-    public $access;
+    public ?string $access = null;
 
-    /**
-     * @var string|null
-     */
-    public $refresh;
+    public ?string $refresh = null;
 
-    /**
-     * @var int|null
-     */
-    public $expires;
+    public ?int $expires = null;
 
     /**
      * @var string[]
      */
-    public $scopes = [];
+    public array $scopes = [];
 
-    /**
-     * @var int|null
-     */
-    public $characterId;
+    public ?int $characterId = null;
 
-    /**
-     * @var string|null
-     */
-    public $systemVariableName;
+    public ?string $systemVariableName = null;
 }

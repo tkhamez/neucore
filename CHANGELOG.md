@@ -9,6 +9,7 @@ dd mm yyyy
 - New: Added "characters" option to the `check-token` command to optionally reduce the number of ESI tokens that
   are validated.
 - Change: ESI tokens that are marked as invalid are no longer validated.
+- Fix: Added missing director token for structure name updates (member tracking).
 - Text improvements.
 - Updated dependencies.
 - Dev: Removed Node.js 14 support.

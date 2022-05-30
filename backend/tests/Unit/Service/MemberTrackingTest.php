@@ -213,13 +213,13 @@ class MemberTrackingTest extends TestCase
         ], $data);
     }
 
-    public function testGetDirectorTokenVariable()
+    public function testGetDirectorTokenVariableData()
     {
         $this->assertNull($this->memberTracking->getDirectorTokenVariableData(SystemVariable::DIRECTOR_CHAR . 1));
 
         $char = (new SystemVariable(SystemVariable::DIRECTOR_CHAR . 1))->setValue('{"character_id": 100}');
         $token = (new SystemVariable(SystemVariable::DIRECTOR_TOKEN . 1))
-            ->setValue('{"access": "at", "refresh": "rt", "expires": 1568471332}');
+            ->setValue('{"access": "at", "refresh": "rt", "expires": 1568471332, "scopes": ["s1", "s2"]}');
         $this->om->persist($char);
         $this->om->persist($token);
         $this->om->flush();
@@ -233,6 +233,7 @@ class MemberTrackingTest extends TestCase
             $this->assertSame('rt', $tokenData->refresh);
             $this->assertSame(1568471332, $tokenData->expires);
             $this->assertSame(100, $tokenData->characterId);
+            $this->assertSame(['s1', 's2'], $tokenData->scopes);
         }
     }
 
