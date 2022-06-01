@@ -360,7 +360,7 @@ class MemberTracking
             $character = $this->repositoryFactory->getCharacterRepository()->find($memberData->getCharacterId());
             if ($character !== null) {
                 $characterAccessToken = $this->oauthToken->getToken($character, EveLogin::NAME_DEFAULT);
-                $this->esiData->fetchStructure($structureId, $characterAccessToken, false, true);
+                $this->esiData->fetchStructure($structureId, $characterAccessToken, true, false);
             }
         }
     }

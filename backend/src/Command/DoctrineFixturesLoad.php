@@ -14,10 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DoctrineFixturesLoad extends Command
 {
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
     public function __construct(ObjectManager $objectManager)
     {

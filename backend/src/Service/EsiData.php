@@ -8,6 +8,7 @@ use Neucore\Entity\Alliance;
 use Neucore\Entity\Character;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\SystemVariable;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Log\Context;
@@ -41,6 +42,11 @@ class EsiData
     private ?int $lastErrorCode = null;
 
     private string $datasource;
+
+    /**
+     * Cache of SystemVariable::FETCH_STRUCTURE_ERROR_DAYS
+     */
+    private ?string $errorConfiguration = null;
 
     public function __construct(
         LoggerInterface $log,
@@ -354,22 +360,25 @@ class EsiData
 
     /**
      * Fetch structure info from ESI and create/update DB entry.
+     *
+     * Always returns a location object, even if the update failed or was skipped due to
      */
     public function fetchStructure(
         int $id,
         string $accessToken,
-        bool $flush,
-        bool $increaseErrorCount
+        bool $increaseErrorCount = true,
+        bool $flush = true
     ): EsiLocation {
         $location = $this->repositoryFactory->getEsiLocationRepository()->find($id);
         if ($location === null) {
             $location = new EsiLocation();
             $location->setId($id);
             $location->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+            $location->setLastUpdate(new \DateTime());
             $this->objectManager->persist($location);
         }
-        $location->setLastUpdate(new \DateTime());
 
+        // Do not continue without a token
         if ($accessToken === '') {
             if ($flush) {
                 $this->objectManager->flush();
@@ -377,13 +386,42 @@ class EsiData
             return $location;
         }
 
+        // Check error configuration
+        if ($this->errorConfiguration === null) {
+            $errorVar = $this->repositoryFactory->getSystemVariableRepository()
+                ->find(SystemVariable::FETCH_STRUCTURE_NAME_ERROR_DAYS);
+            $this->errorConfiguration = $errorVar ? $errorVar->getValue() : '';
+        }
+        if (!empty($this->errorConfiguration) && $location->getErrorCount() > 0) {
+            $configRules = explode(',', $this->errorConfiguration); // value is e.g. 3=7,10=30
+            foreach ($configRules as $configRule) {
+                $configRuleParts = explode('=', $configRule);
+                if (empty($configRuleParts[1])) {
+                    continue;
+                }
+                $configErrorCount = (int) trim($configRuleParts[0]);
+                $configErrorDays = (int) trim($configRuleParts[1]);
+                $checkDate = new \DateTime("now -$configErrorDays days");
+                if (
+                    $configErrorCount > 0 &&
+                    $location->getErrorCount() >= $configErrorCount &&
+                    $location->getLastUpdate()->getTimestamp() > $checkDate->getTimestamp()
+                ) {
+                    // Note: there's no need to flush here because this cannot be a new location object
+                    // and nothing was changed.
+                    return $location;
+                }
+            }
+        }
+
+        // Fetch name
         $result = null;
         $authError = false;
         try {
             $result = $this->esiApiFactory->getUniverseApi($accessToken)
                 ->getUniverseStructuresStructureId($id, $this->datasource);
         } catch (\Exception $e) {
-            if (in_array($e->getCode(), [401, 403])) {
+            if ((int)$e->getCode() === 403) {
                 $this->log->info("EsiData::fetchStructure: ". $e->getCode() . " Unauthorized/Forbidden: $id");
                 if ($increaseErrorCount) {
                     $authError = true;
@@ -393,6 +431,7 @@ class EsiData
             }
         }
 
+        // Set result
         if ($result) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setName((string) $result->getName());
@@ -404,11 +443,12 @@ class EsiData
         } elseif ($authError) {
             $location->setErrorCount($location->getErrorCount() + 1);
         }
+        $location->setLastUpdate(new \DateTime());
 
+        // Save and return
         if ($flush) {
             $this->objectManager->flush();
         }
-
         return $location;
     }
 

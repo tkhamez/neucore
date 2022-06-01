@@ -1,6 +1,6 @@
 <template>
 <div class="card border-secondary mb-3">
-    <div class="card-header">Sender</div>
+    <div class="card-header"><h6>Sender</h6></div>
     <div class="card-body">
         <span v-if="settings.mail_character === ''">
             <!--suppress JSUnresolvedVariable -->
@@ -16,7 +16,7 @@
         <span class="small">The character is used for all mails.</span>
     </div>
 
-    <div class="card-header">Invalid ESI token</div>
+    <div class="card-header mt-3"><h6>Invalid ESI token</h6></div>
     <div class="card-body">
         <p>
             This EVE mail is sent when an account contains a character with an invalid or no ESI token.<br>
@@ -59,7 +59,7 @@
                   id="mailInvalidTokenBody" rows="6"></textarea>
     </div>
 
-    <div class="card-header">Missing Character</div>
+    <div class="card-header mt-3"><h6>Missing Character</h6></div>
     <div class="card-body">
         <p>This EVE mail is sent to characters that have not been added to an account.</p>
         <button class="btn btn-success btn-sm" v-on:click="sendMissingCharacterTestMail()">Send test mail</button>

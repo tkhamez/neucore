@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Neucore\Entity\Alliance;
 use Neucore\Entity\EsiLocation;
+use Neucore\Entity\SystemVariable;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Entity\Corporation;
@@ -508,10 +509,7 @@ class EsiDataTest extends TestCase
     {
         $this->testHelper->emptyDb();
 
-        $location = $this->esiData->fetchStructure(1023100200300, '', false, true);
-
-        $resultLocations = $this->repoFactory->getEsiLocationRepository()->findBy([]);
-        $this->assertSame(0, count($resultLocations));
+        $location = $this->esiData->fetchStructure(1023100200300, '');
 
         $this->assertSame(1023100200300, $location->getId());
         $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
@@ -520,6 +518,66 @@ class EsiDataTest extends TestCase
         $this->assertNull($location->getSystemId());
         $this->assertLessThanOrEqual(time(), $location->getLastUpdate()->getTimestamp());
         $this->assertSame(0, $location->getErrorCount());
+
+        $this->em->clear();
+        $resultLocations = $this->repoFactory->getEsiLocationRepository()->findBy([]);
+        $this->assertSame(1, count($resultLocations));
+    }
+
+    public function testFetchStructure_ErrorConfiguration()
+    {
+        $this->testHelper->emptyDb();
+
+        $setting = (new SystemVariable(SystemVariable::FETCH_STRUCTURE_NAME_ERROR_DAYS))->setValue('3=7,10=30');
+
+        // 3 errors, updated 6 day ago
+        $updated1 = new \DateTime('now -6 days');
+        $location1 = new EsiLocation();
+        $location1->setId(1023100200300);
+        $location1->setCategory(EsiLocation::CATEGORY_STRUCTURE);
+        $location1->setLastUpdate($updated1);
+        $location1->setErrorCount(3);
+        $this->em->persist($setting);
+        $this->em->persist($location1);
+        $this->em->flush();
+        $this->em->clear();
+
+        $this->esiData->fetchStructure(1023100200300, '2F65A4');
+        $this->em->clear();
+
+        $location2 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
+        $this->assertSame(3, $location2->getErrorCount());
+        $this->assertSame('', $location2->getName());
+        $this->assertSame($updated1->getTimestamp(), $location2->getLastUpdate()->getTimestamp()); // not updated
+
+        // 3 errors, updated 7 day ago
+        $updated2 = new \DateTime('now -7 days');
+        $location2->setLastUpdate($updated2);
+        $this->em->flush();
+        $this->em->clear();
+
+        $this->client->setResponse(new Response(200, [], '{"name": "update 1"}'));
+        $this->esiData->fetchStructure(1023100200300, '2F65A4');
+        $this->em->clear();
+
+        $location3 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
+        $this->assertSame(0, $location3->getErrorCount());
+        $this->assertSame('update 1', $location3->getName());
+        $this->assertGreaterThan($updated2->getTimestamp(), $location3->getLastUpdate()->getTimestamp()); // updated
+
+        // 10 errors, updated 7 day ago
+        $updated3 = new \DateTime('now -7 day');
+        $location3->setErrorCount(10);
+        $location3->setLastUpdate($updated3);
+        $this->em->flush();
+        $this->em->clear();
+
+        $this->esiData->fetchStructure(1023100200300, '2F65A4');
+        $this->em->clear();
+
+        $location4 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
+        $this->assertSame(10, $location4->getErrorCount());
+        $this->assertSame($updated3->getTimestamp(), $location4->getLastUpdate()->getTimestamp()); // not updated
     }
 
     public function testFetchStructure_Success()
@@ -532,7 +590,7 @@ class EsiDataTest extends TestCase
             "solar_system_id": 30000142
         }'));
 
-        $location = $this->esiData->fetchStructure(1023100200300, 'access-token', true, true);
+        $location = $this->esiData->fetchStructure(1023100200300, 'access-token');
 
         $this->assertSame(1023100200300, $location->getId());
         $this->assertSame('V-3YG7 VI - The Capital', $location->getName());
@@ -543,7 +601,6 @@ class EsiDataTest extends TestCase
         $this->assertSame(0, $location->getErrorCount());
 
         $this->em->clear();
-
         $locationDb = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
         $this->assertSame(1023100200300, $locationDb->getId());
         $this->assertSame('V-3YG7 VI - The Capital', $locationDb->getName());
@@ -554,22 +611,23 @@ class EsiDataTest extends TestCase
         $this->assertSame(0, $locationDb->getErrorCount());
     }
 
-    public function testFetchStructure_Error()
+    public function testFetchStructure_AuthError()
     {
         $this->testHelper->emptyDb();
 
-        $this->client->setResponse(new Response(401));
+        $this->client->setResponse(new Response(403));
 
-        $this->esiData->fetchStructure(1023100200300, 'access-token', true, true);
+        $location = $this->esiData->fetchStructure(1023100200300, 'access-token', true, false);
+
         $this->em->clear();
+        $this->assertNull($this->repoFactory->getEsiLocationRepository()->find(1023100200300));
 
-        $locationDb = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
-        $this->assertSame(1023100200300, $locationDb->getId());
-        $this->assertSame('', $locationDb->getName());
-        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $locationDb->getCategory());
-        $this->assertNull($locationDb->getOwnerId());
-        $this->assertNull($locationDb->getSystemId());
-        $this->assertSame(1, $locationDb->getErrorCount());
+        $this->assertSame(1023100200300, $location->getId());
+        $this->assertSame('', $location->getName());
+        $this->assertSame(EsiLocation::CATEGORY_STRUCTURE, $location->getCategory());
+        $this->assertNull($location->getOwnerId());
+        $this->assertNull($location->getSystemId());
+        $this->assertSame(1, $location->getErrorCount());
     }
 
     public function testFetchCorporationMembersNoToken()

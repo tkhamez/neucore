@@ -1,6 +1,6 @@
 <template>
 <div class="card border-secondary mb-3">
-    <div class="card-header">Groups Deactivation</div>
+    <div class="card-header"><h6>Groups Deactivation</h6></div>
     <div class="card-body">
         <div class="form-check">
             <label class="form-check-label" for="groups_require_valid_token">
@@ -46,33 +46,7 @@
         </label>
     </div>
 
-    <div class="card-header">"Managed" Logins</div>
-    <div class="card-body">
-        <div class="form-check">
-            <label class="form-check-label" for="allow_login_managed">
-                Enables the login URL for managed accounts that do not require ESI scopes.
-            </label>
-            <input class="form-check-input" type="checkbox" value="1"
-                   id="allow_login_managed" name="allow_login_managed"
-                   :checked="settings.allow_login_managed === '1'"
-                   @change="$emit('changeSetting', 'allow_login_managed', $event.target.checked ? '1' : '0')">
-        </div>
-    </div>
-
-    <div class="card-header">Character Deletion</div>
-    <div class="card-body">
-        <div class="form-check">
-            <label class="form-check-label" for="allow_character_deletion">
-                Check to allow users to delete their characters.
-            </label>
-            <input class="form-check-input" type="checkbox" value="1"
-                   id="allow_character_deletion" name="allow_character_deletion"
-                   :checked="settings.allow_character_deletion === '1'"
-                   @change="$emit('changeSetting', 'allow_character_deletion', $event.target.checked ? '1' : '0')">
-        </div>
-    </div>
-
-    <div class="card-header">API Rate Limit for Apps</div>
+    <div class="card-header mt-3"><h6>API Rate Limit for Apps</h6></div>
     <div class="card-body">
         <p>
             If configured, each response will contain the headers 'X-Neucore-Rate-Limit-Remain' and
@@ -99,6 +73,50 @@
                    @change="$emit('changeSetting', 'api_rate_limit_active', $event.target.checked ? '1' : '0')">
         </div>
     </div>
+
+    <div class="card-header mt-3"><h6>Miscellaneous</h6></div>
+    <div class="card-body">
+        <p>"Managed" Logins</p>
+        <div class="form-check">
+            <label class="form-check-label" for="allow_login_managed">
+                Enables the login URL for managed accounts that do not require ESI scopes.
+            </label>
+            <input class="form-check-input" type="checkbox" value="1"
+                   id="allow_login_managed" name="allow_login_managed"
+                   :checked="settings.allow_login_managed === '1'"
+                   @change="$emit('changeSetting', 'allow_login_managed', $event.target.checked ? '1' : '0')">
+        </div>
+
+        <hr>
+        <p>Character Deletion</p>
+        <div class="form-check">
+            <label class="form-check-label" for="allow_character_deletion">
+                Check to allow users to delete their characters.
+            </label>
+            <input class="form-check-input" type="checkbox" value="1"
+                   id="allow_character_deletion" name="allow_character_deletion"
+                   :checked="settings.allow_character_deletion === '1'"
+                   @change="$emit('changeSetting', 'allow_character_deletion', $event.target.checked ? '1' : '0')">
+        </div>
+
+        <hr>
+        <p>Structure Name Updates</p>
+        <p>
+            This is to reduce 403 errors from ESI. No API request is made to update the name for a structure
+            if this has previously failed multiple times for a specified number of days.
+        </p>
+        <label class="mt-2 display-block">
+            <input type="text" pattern="[0-9]*" class="form-control" name="fetch_structure_name_error_days"
+                   v-model="settings.fetch_structure_name_error_days"
+                   v-on:input="$emit('changeSettingDelayed', 'fetch_structure_name_error_days', $event.target.value)">
+            <span class="form-text">
+                Example value "3=7,10=30":<br>
+                Skip if the update has failed 3 times or more and the last update was less than 7 days ago,<br>
+                also skip if the update has failed 10 times or more and the last update was less than 30 days ago.
+            </span>
+        </label>
+    </div>
+
 </div>
 </template>
 

@@ -100,6 +100,13 @@ class SystemVariable implements \JsonSerializable
     public const ACCOUNT_DEACTIVATION_ACTIVE_DAYS = 'account_deactivation_active_days';
 
     /**
+     * This is to reduce 403 errors from ESI for structure name update (see frontend for more details).
+     *
+     * Scope = settings
+     */
+    public const FETCH_STRUCTURE_NAME_ERROR_DAYS = 'fetch_structure_name_error_days';
+
+    /**
      * EVE character name for the character that can be used to send mails.
      *
      * Scope = settings
@@ -311,24 +318,21 @@ class SystemVariable implements \JsonSerializable
      * @ORM\Column(type="string", length=255)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * Variable value.
      *
      * @OA\Property(nullable=true)
      * @ORM\Column(type="text", length=16777215, nullable=true)
-     * @var string
      */
-    private $value;
+    private ?string $value = null;
 
     /**
      * @ORM\Column(type="string", length=16, options={"default" : "public"})
-     * @var string
      */
-    private $scope = self::SCOPE_PUBLIC;
+    private string $scope = self::SCOPE_PUBLIC;
 
     public function jsonSerialize(): array
     {
@@ -362,7 +366,7 @@ class SystemVariable implements \JsonSerializable
             case self::MAIL_INVALID_TOKEN_ACTIVE:
             case self::MAIL_MISSING_CHARACTER_ACTIVE:
             case self::API_RATE_LIMIT_ACTIVE:
-                $this->value = ((bool) $value) ? '1' : '0';
+                $this->value = $value ? '1' : '0';
                 break;
             case self::ACCOUNT_DEACTIVATION_DELAY:
             case self::MAIL_MISSING_CHARACTER_RESEND:
