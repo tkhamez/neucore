@@ -3,10 +3,10 @@ version: '3.5'
 services:
   neucore_db:
     container_name: neucore_db
-    image: mariadb:10.2
-    #image: mariadb:10.5
-    volumes: ["./.db/10.2:/var/lib/mysql"]
-    #volumes: ["./.db/10.5:/var/lib/mysql"]
+    #image: mariadb:10.2
+    image: mariadb:10.5
+    #volumes: ["./.db/10.2:/var/lib/mysql"]
+    volumes: ["./.db/10.5:/var/lib/mysql"]
     environment:
       MYSQL_ROOT_PASSWORD: neucore
       MYSQL_USER: neucore
@@ -38,9 +38,9 @@ services:
     container_name: neucore_php
     build:
       context: doc
-      dockerfile: Dockerfile-php74-fpm
+      #dockerfile: Dockerfile-php74-fpm
       #dockerfile: Dockerfile-php80-fpm
-      #dockerfile: Dockerfile-php81-fpm
+      dockerfile: Dockerfile-php81-fpm
     depends_on: [neucore_db]
     volumes: [
         ".:/app",
@@ -50,6 +50,7 @@ services:
     user: ${UID}
     working_dir: /app/backend
     networks: [neucore]
+    dns: [8.8.8.8]
 
   neucore_http:
     container_name: neucore_http
