@@ -25,30 +25,15 @@ class UpdateCharacters extends Command
     use LogOutput;
     use EsiRateLimited;
 
-    /**
-     * @var CharacterRepository
-     */
-    private $charRepo;
+    private CharacterRepository $charRepo;
 
-    /**
-     * @var EsiData
-     */
-    private $esiData;
+    private EsiData $esiData;
 
-    /**
-     * @var CharacterService
-     */
-    private $characterService;
+    private CharacterService $characterService;
 
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    private EntityManager $entityManager;
 
-    /**
-     * @var int
-     */
-    private $sleep;
+    private ?int $sleep = null;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -78,12 +63,12 @@ class UpdateCharacters extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '50'
+                '5'
             );
         $this->configureLogOutput($this);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $charId = intval($input->getArgument('character'));
         $this->sleep = intval($input->getOption('sleep'));
@@ -122,6 +107,7 @@ class UpdateCharacters extends Command
 
             $names = [];
             foreach ($this->esiData->fetchUniverseNames($charIds) as $name) {
+                /** @noinspection PhpCastIsUnnecessaryInspection */
                 $names[$name->getId()] = (string)$name->getName();
             }
 
@@ -134,7 +120,7 @@ class UpdateCharacters extends Command
             }
 
             $updateOk = [];
-            foreach ($characters as $idx => $char) {
+            foreach ($characters as $char) {
                 if (! $this->entityManager->isOpen()) {
                     $this->logger->critical('UpdateCharacters: cannot continue without an open entity manager.');
                     break;
@@ -163,9 +149,7 @@ class UpdateCharacters extends Command
                 }
 
                 $updateOk[] = $char->getId();
-                if ($idx % 4 === 0) {
-                    usleep($this->sleep * 1000); // reduce CPU usage
-                }
+                usleep($this->sleep * 1000); // reduce CPU usage
             }
             if (! empty($updateOk) && $this->entityManager->flush()) {
                 $this->writeLine('  Characters ' . implode(',', $updateOk).': update OK');

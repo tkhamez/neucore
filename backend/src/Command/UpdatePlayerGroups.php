@@ -21,20 +21,11 @@ class UpdatePlayerGroups extends Command
 {
     use LogOutput;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepo;
+    private PlayerRepository $playerRepo;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var Account
-     */
-    private $account;
+    private Account $account;
 
     public function __construct(
         RepositoryFactory $repositoryFactory,
@@ -60,7 +51,7 @@ class UpdatePlayerGroups extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '35'
+                '30'
             );
         $this->configureLogOutput($this);
     }

@@ -26,45 +26,21 @@ class UpdateServiceAccounts extends Command
 {
     use LogOutput;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var ServiceRepository
-     */
-    private $serviceRepository;
+    private ServiceRepository $serviceRepository;
 
-    /**
-     * @var CharacterRepository
-     */
-    private $characterRepository;
+    private CharacterRepository $characterRepository;
 
-    /**
-     * @var PlayerRepository
-     */
-    private $playerRepository;
+    private PlayerRepository $playerRepository;
 
-    /**
-     * @var ServiceRegistration
-     */
-    private $serviceRegistration;
+    private ServiceRegistration $serviceRegistration;
 
-    /**
-     * @var int
-     */
-    private $accountsUpdated;
+    private ?int $accountsUpdated = null;
 
-    /**
-     * @var int
-     */
-    private $updatesFailed;
+    private ?int $updatesFailed = null;
 
-    /**
-     * @var int
-     */
-    private $charactersOrPlayersNotFound;
+    private ?int $charactersOrPlayersNotFound = null;
 
     public function __construct(
         LoggerInterface $logger,
@@ -92,7 +68,7 @@ class UpdateServiceAccounts extends Command
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Time to sleep in milliseconds after each update',
-                '35'
+                '25'
             );
         $this->configureLogOutput($this);
     }

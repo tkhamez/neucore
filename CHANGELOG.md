@@ -11,6 +11,7 @@ dd mm yyyy
 - New: Added "characters" option to the `check-token` command to optionally reduce the number of ESI tokens that
   are validated.
 - Change: ESI tokens that are marked as invalid are no longer validated.
+- Change: Adjusted default sleep times for some cron jobs.
 - Fix: Re-added missing director token for structure name updates (member tracking).
 - Text improvements.
 - Updated dependencies.
