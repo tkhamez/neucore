@@ -11,20 +11,14 @@ parameters:
 			message: '#Property (.*) has no type specified.#'
 			path: %currentWorkingDirectory%/*
 		-
-			message: '#Property (.*) is never written, only read.#'
-			path: %currentWorkingDirectory%/src/*
-		-
-			message: '#Offset (.*) does not exist on (Neucore\\Service\\Config)?(array\|string)?\|null.#'
-			path: %currentWorkingDirectory%/src/*
-		-
 			message: '#Cannot call method (.*) on DI\\Container\|null.#'
 			path: %currentWorkingDirectory%/src/Application.php
 		-
-			message: '#Call to an undefined method(.*)fetchAllAssociative#'
-			path: %currentWorkingDirectory%/src/Command/DBVerifySSL.php
-		-
 			message: '#(.*)BaseController::getUser\(\)(.*)but returns Neucore\\Entity\\Character\|null.#'
 			path: %currentWorkingDirectory%/src/Controller/BaseController.php
+		-
+			message: '#Property (.*) is never written, only read.#'
+			path: %currentWorkingDirectory%/src/Entity/*
 		-
 			message: '#invalid type(.*)only iterables are supported#'
 			path: %currentWorkingDirectory%/src/Entity/ServiceConfiguration.php

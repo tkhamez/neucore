@@ -19,6 +19,7 @@ use Swagger\Client\Eve\Model\GetAlliancesAllianceIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdOk;
 use Swagger\Client\Eve\Model\GetCharactersCharacterIdRolesOk;
 use Swagger\Client\Eve\Model\GetCorporationsCorporationIdOk;
+use Swagger\Client\Eve\Model\GetUniverseStructuresStructureIdOk;
 use Swagger\Client\Eve\Model\PostCharactersAffiliation200Ok;
 use Swagger\Client\Eve\Model\PostUniverseNames200Ok;
 
@@ -413,10 +414,11 @@ class EsiData
                 $configErrorCount = (int) trim($configRuleParts[0]);
                 $configErrorDays = (int) trim($configRuleParts[1]);
                 $checkDate = new \DateTime("now -$configErrorDays days");
+                $locationDate = $location->getLastUpdate() ? $location->getLastUpdate()->getTimestamp() : 0;
                 if (
                     $configErrorCount > 0 &&
                     $location->getErrorCount() >= $configErrorCount &&
-                    $location->getLastUpdate()->getTimestamp() > $checkDate->getTimestamp()
+                    $locationDate > $checkDate->getTimestamp()
                 ) {
                     // Note: there's no need to flush here because this cannot be a new location object
                     // and nothing was changed.
@@ -443,7 +445,7 @@ class EsiData
         }
 
         // Set result
-        if ($result) {
+        if ($result instanceof GetUniverseStructuresStructureIdOk) {
             /** @noinspection PhpCastIsUnnecessaryInspection */
             $location->setName((string) $result->getName());
             /** @noinspection PhpCastIsUnnecessaryInspection */

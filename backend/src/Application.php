@@ -408,7 +408,9 @@ class Application
         }
         ini_set('display_errors', '0');
         ini_set('log_errors', '0'); // all errors are logged with Monolog
-        error_reporting((int)$this->config['error_reporting']);
+        if ($this->config) {
+            error_reporting((int)$this->config['error_reporting']);
+        }
 
         // Logs errors that are not handled by Slim and for CLI
         ErrorHandler::register($this->container->get(LoggerInterface::class));

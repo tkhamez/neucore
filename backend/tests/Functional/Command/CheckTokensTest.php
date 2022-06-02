@@ -308,7 +308,7 @@ class CheckTokensTest extends ConsoleTestCase
         $main1 = $this->helper->addCharacterMain('Main 1', 100101)->setCorporation($corporation1);
         $this->helper->addCharacterToPlayer('Alt 1', 100102, $main1->getPlayer());
         $this->helper->addCharacterMain('Main 2', 200101)->setCorporation($corporation2);
-        $this->helper->addCharacterMain('Main 3', 300101, [], [], true, date_create('now -7 days'));
+        $this->helper->addCharacterMain('Main 3', 300101, [], [], true, new \DateTime('now -7 days'));
         $this->helper->addCharacterMain('Main 4', 400101);
     }
 }

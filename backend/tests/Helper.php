@@ -134,6 +134,7 @@ class Helper
             self::$em = Container::getDefinitions()[EntityManagerInterface::class](null, $config);
         }
 
+        /* @phan-suppress-next-line PhanTypeMismatchReturnNullable */
         return self::$em;
     }
 

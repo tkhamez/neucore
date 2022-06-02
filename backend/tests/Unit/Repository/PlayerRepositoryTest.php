@@ -82,7 +82,7 @@ class PlayerRepositoryTest extends TestCase
         self::$player4 = $helper->addCharacterMain('c4', 3)->getPlayer();
         self::$player4->getCharacters()[0]->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(true);
         self::$player4->addRole($roleTracking);
-        self::$player4->getCharacters()[0]->setCorporation($corp3)->setCreated(date_create('now -7 days'));
+        self::$player4->getCharacters()[0]->setCorporation($corp3)->setCreated(new \DateTime('now -7 days'));
 
         $player5 = (new Player())->setName('p5');
 

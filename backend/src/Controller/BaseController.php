@@ -134,6 +134,7 @@ abstract class BaseController
      */
     protected function getUser(UserAuth $userAuth): Character
     {
+        /* @phan-suppress-next-line PhanTypeMismatchReturnNullable */
         return $userAuth->getUser();
     }
 

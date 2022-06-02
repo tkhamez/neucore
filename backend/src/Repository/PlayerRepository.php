@@ -317,7 +317,7 @@ class PlayerRepository extends EntityRepository
         $qb->select('p.id')->distinct()
             ->leftJoin('p.characters', 'c')
             ->where('c.created >= :days')
-            ->setParameter('days', date_create("now -$createdWithinDays days")->format('Y-m-d H:i:s'));
+            ->setParameter('days', (new \DateTime("now -$createdWithinDays days"))->format('Y-m-d H:i:s'));
 
         return array_map(function (array $player) {
             return (int) $player['id'];

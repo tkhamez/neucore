@@ -27,7 +27,9 @@ class Config implements \ArrayAccess
 
     /**
      * @param mixed $offset
-     * @return array|string|null
+     * @return mixed
+     * @noinspection PhpReturnDocTypeMismatchInspection
+     * @noinspection PhpLanguageLevelInspection
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
