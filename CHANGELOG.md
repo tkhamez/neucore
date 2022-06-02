@@ -6,10 +6,11 @@ dd mm yyyy
 
 - New: The user agent for the HTTP client is now configurable (optional).
 - New: Configuration to reduce ESI 403 errors from structure name updates (Administration -> Settings -> 
-  Features -> Structure Name Updates).
+  Features -> Structure Name Updates) (`update-member-tracking` command).
 - New: The time of the last check was added to the ESI tokens.
 - New: Added "characters" option to the `check-token` command to optionally reduce the number of ESI tokens that
   are validated.
+- Change: Structure names are no longer updated more than once during one run (`update-member-tracking` command).
 - Change: ESI tokens that are marked as invalid are no longer validated.
 - Change: Adjusted default sleep times for some cron jobs.
 - Fix: Re-added missing director token for structure name updates (member tracking).

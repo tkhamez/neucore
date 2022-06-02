@@ -44,6 +44,11 @@ class EsiData
     private string $datasource;
 
     /**
+     * @var int[]
+     */
+    private array $structuresUpdated = [];
+
+    /**
      * Cache of SystemVariable::FETCH_STRUCTURE_ERROR_DAYS
      */
     private ?string $errorConfiguration = null;
@@ -361,7 +366,7 @@ class EsiData
     /**
      * Fetch structure info from ESI and create/update DB entry.
      *
-     * Always returns a location object, even if the update failed or was skipped due to
+     * Always returns a location object, even if the update failed or was skipped.
      */
     public function fetchStructure(
         int $id,
@@ -377,6 +382,12 @@ class EsiData
             $location->setLastUpdate(new \DateTime());
             $this->objectManager->persist($location);
         }
+
+        if (in_array($id, $this->structuresUpdated)) {
+            // No need to flush here
+            return $location;
+        }
+        $this->structuresUpdated[] = $id;
 
         // Do not continue without a token
         if ($accessToken === '') {

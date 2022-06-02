@@ -43,6 +43,10 @@ class EsiDataTest extends TestCase
 
     private Logger $log;
 
+    private Config $config;
+
+    private ObjectManager $om;
+
     public static function setupBeforeClass(): void
     {
         self::$writeErrorListener = new WriteErrorListener();
@@ -56,19 +60,12 @@ class EsiDataTest extends TestCase
         $this->log = new Logger('Test');
         $this->log->pushHandler(new TestHandler());
 
-        $config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
+        $this->config = new Config(['eve' => ['datasource' => '', 'esi_host' => '']]);
         $this->client = new Client();
         $this->repoFactory = new RepositoryFactory($this->em);
 
-        $om = new ObjectManager($this->em, $this->log);
-        $this->esiData = new EsiData(
-            $this->log,
-            new EsiApiFactory($this->client, $config),
-            $om,
-            $this->repoFactory,
-            new Character($om, $this->repoFactory),
-            $config
-        );
+        $this->om = new ObjectManager($this->em, $this->log);
+        $this->esiData = $this->createESIData();
     }
 
     public function tearDown(): void
@@ -542,7 +539,7 @@ class EsiDataTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->esiData->fetchStructure(1023100200300, '2F65A4');
+        $this->createESIData()->fetchStructure(1023100200300, '2F65A4');
         $this->em->clear();
 
         $location2 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
@@ -557,7 +554,7 @@ class EsiDataTest extends TestCase
         $this->em->clear();
 
         $this->client->setResponse(new Response(200, [], '{"name": "update 1"}'));
-        $this->esiData->fetchStructure(1023100200300, '2F65A4');
+        $this->createESIData()->fetchStructure(1023100200300, '2F65A4');
         $this->em->clear();
 
         $location3 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
@@ -572,7 +569,7 @@ class EsiDataTest extends TestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->esiData->fetchStructure(1023100200300, '2F65A4');
+        $this->createESIData()->fetchStructure(1023100200300, '2F65A4');
         $this->em->clear();
 
         $location4 = $this->repoFactory->getEsiLocationRepository()->find(1023100200300);
@@ -609,6 +606,27 @@ class EsiDataTest extends TestCase
         $this->assertSame(30000142, $locationDb->getSystemId());
         $this->assertLessThanOrEqual(time(), $locationDb->getLastUpdate()->getTimestamp());
         $this->assertSame(0, $locationDb->getErrorCount());
+    }
+
+    public function testFetchStructure_AlreadyUpdated()
+    {
+        $this->testHelper->emptyDb();
+
+        $this->client->setResponse(
+            new Response(200, [], '{ "name": "Name Update 1" }'),
+            new Response(200, [], '{ "name": "Name Update 2" }'),
+        );
+
+        $location1 = $this->esiData->fetchStructure(1023100200300, 'access-token');
+        $this->assertLessThanOrEqual(time(), $location1->getLastUpdate()->getTimestamp());
+        $this->assertSame('Name Update 1', $location1->getName());
+
+        $location2 = $this->esiData->fetchStructure(1023100200300, 'access-token');
+        $this->assertSame(
+            $location1->getLastUpdate()->getTimestamp(),
+            $location2->getLastUpdate()->getTimestamp()
+        );
+        $this->assertSame('Name Update 1', $location1->getName());
     }
 
     public function testFetchStructure_AuthError()
@@ -700,5 +718,17 @@ class EsiDataTest extends TestCase
 
         $corp = $this->repoFactory->getCorporationRepository()->find(100);
         $this->assertInstanceOf(Corporation::class, $corp);
+    }
+
+    private function createESIData(): EsiData
+    {
+        return new EsiData(
+            $this->log,
+            new EsiApiFactory($this->client, $this->config),
+            $this->om,
+            $this->repoFactory,
+            new Character($this->om, $this->repoFactory),
+            $this->config
+        );
     }
 }
