@@ -1,8 +1,8 @@
 # Changelog
 
-## next
+## 1.32.0
 
-dd mm yyyy
+3 Jun 2022
 
 - New: The user agent for the HTTP client is now configurable (optional).
 - New: Configuration to reduce ESI 403 errors from structure name updates (Administration -> Settings -> 
