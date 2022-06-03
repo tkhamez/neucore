@@ -76,6 +76,12 @@ If the API rate limiting is configured (UI: Admin -> Settings -> Features), each
 the headers `X-Neucore-Rate-Limit-Remain` and `X-Neucore-Rate-Limit-Reset`. If enabled, each request results 
 in an error 429 "Too many requests" if the limit has been exceeded.
 
+### ESI Error Limit
+
+The ESI error limit of 100 errors every 60 seconds is reduced to 80 errors every 60 seconds. It is  
+shared between all applications that use the ESI API endpoint. The `X-Esi-Error-Limit-Remain` header is
+*not* modified to reflect this.
+
 ## Service Registration Plugins
 
 - Create a new PHP application with composer and install tkhamez/neucore-plugin:
