@@ -10,8 +10,8 @@
     + [Git](#git)
   * [Post Installation](#post-installation)
 - [Other Installation Methods](#other-installation-methods)
-  * [Vagrant](#vagrant)
   * [Docker - Development Environment](#docker---development-environment)
+  * [Vagrant](#vagrant)
   * [Deploy on Heroku](#deploy-on-heroku)
   * [Deploy on AWS Beanstalk](#deploy-on-aws-beanstalk)
 
