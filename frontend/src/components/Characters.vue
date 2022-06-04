@@ -49,7 +49,7 @@ Modal window with all characters of one player.
                                                 <span v-if="character.validToken === null">No token</span>
                                             </span>
                                             <a class="btn btn-secondary nc-btn-xs ms-1"
-                                               :href="'https://evewho.com/character/' + character.id"
+                                               :href="`https://evewho.com/character/${character.id}`"
                                                target="_blank" rel="noopener noreferrer">Eve Who</a>
                                         </div>
                                     </div>
@@ -230,8 +230,8 @@ export default {
         },
 
         getTokenTitle(character) {
-            return 'Status changed: ' + this.formatDate(character.validTokenTime) +
-                '<br>Last checked: ' + this.formatDate(character.tokenLastChecked);
+            return `Status changed: ${this.formatDate(character.validTokenTime)}<br>
+                Last checked: ${this.formatDate(character.tokenLastChecked)}`;
         }
     }
 }

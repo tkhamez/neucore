@@ -15,7 +15,7 @@
                         v-for="group in player.managerGroups"
                         class="list-group-item list-group-item-action"
                         :class="{ active: groupId === group.id }"
-                        :href="'#GroupManagement/' + group.id + '/' + contentType">
+                        :href="`#GroupManagement/${group.id}/${contentType}`">
                         {{ group.name }}
                         <span class="text-muted small">
                             {{ group.visibility }} {{ group.autoAccept ? 'auto-accept' : '' }}
@@ -36,14 +36,14 @@
             <ul v-if="groupId" class="nav nav-pills nav-fill">
                 <li class="nav-item">
                     <a class="nav-link" :class="{ 'active': contentType === 'members' }"
-                       :href="'#GroupManagement/' + groupId + '/members'">
+                       :href="`#GroupManagement/${groupId}/members`">
                         Members
                         <span v-if="groupMembersLoaded && contentType === 'members'">({{ groupMembers.length }})</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" :class="{ 'active': contentType === 'applications' }"
-                       :href="'#GroupManagement/' + groupId + '/applications'">Applications</a>
+                       :href="`#GroupManagement/${groupId}/applications`">Applications</a>
                 </li>
             </ul>
 
@@ -122,7 +122,7 @@
                 </div>
                 <div class="table-responsive">
                     <table v-cloak v-if="groupId" class="table table-hover mb-0"
-                           :aria-describedby="status + ' applications'">
+                           :aria-describedby="`${status} applications`">
                         <thead>
                             <tr>
                                 <th scope="col">Player</th>
@@ -133,7 +133,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="application in groupApplicationsByStatus(status)">
-                                <td>{{ application.player.name + ' #' + application.player.id }}</td>
+                                <td>{{ `${application.player.name} #${application.player.id}` }}</td>
                                 <td>{{ formatDate(application.created) }}</td>
                                 <td>
                                     <button v-if="application.status === 'pending' || application.status === 'denied'"

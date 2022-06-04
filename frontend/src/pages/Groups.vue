@@ -40,26 +40,26 @@
                     <tbody>
                         <tr v-if="player && groups && applications"
                             v-for="group in groups"
-                            :set="status = getStatus(group.id)">
+                            :set="statusText = getStatus(group.id)">
 
                             <td>{{ group.name }}</td>
                             <td style="white-space: pre-wrap;">{{ group.description }}</td>
-                            <td>{{ status }}</td>
+                            <td>{{ statusText }}</td>
                             <td>
-                                <button v-if="status === 'Member'"
+                                <button v-if="statusText === 'Member'"
                                         type="button" class="btn btn-warning btn-sm"
                                         v-on:click="askLeave(group.id, group.name, group.autoAccept)">
                                     Leave group
                                 </button>
-                                <button v-if="status === ''"
+                                <button v-if="statusText === ''"
                                         type="button" class="btn btn-primary btn-sm"
                                         v-on:click="apply(group.id)">
                                     {{ group.autoAccept ? 'Join' : 'Apply' }}
                                 </button>
-                                <button v-if="status === 'pending' || status === 'denied'"
+                                <button v-if="statusText === 'pending' || statusText === 'denied'"
                                         type="button" class="btn btn-secondary btn-sm"
                                         v-on:click="cancel(group.id)">
-                                    {{ status === 'pending' ? 'Cancel' : 'Remove' }} application
+                                    {{ statusText === 'pending' ? 'Cancel' : 'Remove' }} application
                                 </button>
                             </td>
                         </tr>

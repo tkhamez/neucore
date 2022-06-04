@@ -75,7 +75,7 @@
                     Status: <code>{{ status }}</code><br>
                     <br>
                     Headers:<br>
-                    <code v-for="header in headers">{{ header[0] + ': ' + header[1] }}<br></code>
+                    <code v-for="header in headers">{{ `${header[0]}: ${header[1]}` }}<br></code>
                     <br>
                     Body:<br>
                     <pre>{{ body }}</pre>
@@ -203,11 +203,11 @@ function getEveLogin(vm) {
 
 function getPaths(vm) {
     vm.ajaxLoading(true);
-    $.get(vm.$root.envVars.baseUrl+'esi-paths-http-get.json').then(data => {
+    $.get(`${vm.$root.envVars.baseUrl}esi-paths-http-get.json`).then(data => {
         vm.pathsGet = data;
         result();
     });
-    $.get(vm.$root.envVars.baseUrl+'esi-paths-http-post.json').then(data => {
+    $.get(`${vm.$root.envVars.baseUrl}esi-paths-http-post.json`).then(data => {
         vm.pathsPost = data;
         result();
     });

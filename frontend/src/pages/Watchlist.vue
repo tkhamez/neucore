@@ -14,19 +14,19 @@
     <ul v-cloak v-if="currentWatchlist" class="nav nav-pills nav-fill">
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'warnings' }"
-               :href="'#Watchlist/'+currentWatchlist.id+'/warnings'">Warnings</a>
+               :href="`#Watchlist/${currentWatchlist.id}/warnings`">Warnings</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'kick' }"
-               :href="'#Watchlist/'+currentWatchlist.id+'/kick'">Kicklist</a>
+               :href="`#Watchlist/${currentWatchlist.id}/kick`">Kicklist</a>
         </li>
         <li v-if="hasRole('watchlist')" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'allow' }"
-               :href="'#Watchlist/'+currentWatchlist.id+'/allow'">Allowlist</a>
+               :href="`#Watchlist/${currentWatchlist.id}/allow`">Allowlist</a>
         </li>
         <li v-if="manageIds.indexOf(currentWatchlist.id) !== -1" class="nav-item">
             <a class="nav-link" :class="{ 'active': tab === 'settings' }"
-               :href="'#Watchlist/'+currentWatchlist.id+'/settings'">Settings</a>
+               :href="`#Watchlist/${currentWatchlist.id}/settings`">Settings</a>
         </li>
     </ul>
 

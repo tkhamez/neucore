@@ -26,7 +26,7 @@
                           :class="{ active: activeService && activeService.id === service.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: activeService && activeService.id === service.id }"
-                           :href="'#ServiceAdmin/' + service.id">
+                           :href="`#ServiceAdmin/${service.id}`">
                             {{ service.name }}
                         </a>
                         <span class="entity-actions">
@@ -123,20 +123,20 @@
                     <p class="mb-0">Link Buttons</p>
                     <small class="text-muted">Placeholders for URL: {username}, {password}, {email}</small><br>
                     <div class="row mb-2" v-for="(url, idx) in URLs">
-                        <label class="text-muted col-sm-2 col-form-label" :for="'configUrl'+idx">URL</label>
+                        <label class="text-muted col-sm-2 col-form-label" :for="`configUrl${idx}`">URL</label>
                         <div class="col-sm-10">
                             <!--suppress HtmlFormInputWithoutLabel -->
-                            <input type="text" class="form-control" :id="'configUrl'+idx" v-model="url.url">
+                            <input type="text" class="form-control" :id="`configUrl${idx}`" v-model="url.url">
                         </div>
-                        <label class="text-muted col-sm-2 col-form-label" :for="'configTitle'+idx">Title</label>
+                        <label class="text-muted col-sm-2 col-form-label" :for="`configTitle${idx}`">Title</label>
                         <div class="col-sm-10">
                             <!--suppress HtmlFormInputWithoutLabel -->
-                            <input type="text" class="form-control" :id="'configTitle'+idx" v-model="url.title">
+                            <input type="text" class="form-control" :id="`configTitle${idx}`" v-model="url.title">
                         </div>
-                        <label class="text-muted col-sm-2 col-form-label" :for="'configTarget'+idx">Target</label>
+                        <label class="text-muted col-sm-2 col-form-label" :for="`configTarget${idx}`">Target</label>
                         <div class="col-sm-10">
                             <!--suppress HtmlFormInputWithoutLabel -->
-                            <input type="text" class="form-control" :id="'configTarget'+idx" v-model="url.target">
+                            <input type="text" class="form-control" :id="`configTarget${idx}`" v-model="url.target">
                         </div>
                     </div>
                     <button class="btn btn-sm btn-primary mb-2" v-on:click.prevent="addUrl()">Add link</button>

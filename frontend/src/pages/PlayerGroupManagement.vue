@@ -6,11 +6,11 @@
                 <p class="mb-0">
                     Login URLs:
                     <!--suppress JSUnresolvedVariable -->
-                    <a :href="httpBaseUrl + '/login/' + loginNames.managed">
+                    <a :href="`${httpBaseUrl}/login/${loginNames.managed}`">
                         {{ httpBaseUrl }}/login/{{ loginNames.managed }}
                     </a>,
                     <!--suppress JSUnresolvedVariable -->
-                    <a :href="httpBaseUrl + '/login/' + loginNames.managedAlt">
+                    <a :href="`${httpBaseUrl}/login/${loginNames.managedAlt}`">
                         {{ httpBaseUrl }}/login/{{ loginNames.managedAlt }}
                     </a>
                 </p>
@@ -33,7 +33,7 @@
                         <a v-for="char in searchResult"
                            class="list-group-item list-group-item-action"
                            :class="{ active: playerId === char.player_id }"
-                           :href="'#PlayerGroupManagement/' + char.player_id">
+                           :href="`#PlayerGroupManagement/${char.player_id}`">
                             {{ char.character_name }}
                         </a>
                     </div>
@@ -47,7 +47,7 @@
                         <span v-for="managedPlayer in players">
                             <a class="list-group-item list-group-item-action"
                                :class="{ active: playerId === managedPlayer.id }"
-                               :href="'#PlayerGroupManagement/' + managedPlayer.id">
+                               :href="`#PlayerGroupManagement/${managedPlayer.id}`">
                                 {{ managedPlayer.name }} #{{ managedPlayer.id }}
                             </a>
                         </span>
@@ -60,7 +60,7 @@
                     <div v-if="playerData" class="card-body">
                         <h4>
                             <span v-if="hasRole('user-admin')">
-                                <a :href="'#UserAdmin/' + playerData.id">{{ playerData.name }} #{{ playerData.id }}</a>
+                                <a :href="`#UserAdmin/${playerData.id}`">{{ playerData.name }} #{{ playerData.id }}</a>
                             </span>
                             <span v-if="! hasRole('user-admin')">{{ playerData.name }} #{{ playerData.id }}</span>
                         </h4>

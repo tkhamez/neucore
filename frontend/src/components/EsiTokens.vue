@@ -16,7 +16,7 @@
                     </p>
                     <p class="align-center">
                         <!--suppress JSUnresolvedVariable -->
-                        <a :href="loginHost + '/login/' + loginNames.alt">
+                        <a :href="`${loginHost}/login/${loginNames.alt}`">
                             <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
                         </a>
                     </p>

@@ -79,7 +79,7 @@
         <title-logo :settings="settings"></title-logo>
         <p>Click the button below to login through <em>EVE Online SSO</em>.</p>
         <!--suppress JSUnresolvedVariable -->
-        <a :href="loginHost + '/login/' + loginNames.default + redirectQuery">
+        <a :href="`${loginHost}/login/${loginNames.default}${redirectQuery}`">
             <img src="../assets/EVE_SSO_Login_Buttons_Large_Black.png" alt="LOG IN with EVE Online">
         </a>
         <p class="small">
@@ -99,7 +99,7 @@
             <p>Add your other characters by logging in with EVE SSO.</p>
             <p>
                 <!--suppress JSUnresolvedVariable -->
-                <a :href="loginHost + '/login/' + loginNames.alt">
+                <a :href="`${loginHost}/login/${loginNames.alt}`">
                     <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"
                          title="Login to add another character.">
                 </a>
@@ -171,8 +171,8 @@
                                     ESI tokens
                                 </a>
                                 <!--suppress JSUnresolvedVariable -->
-                                <a v-if="char.validToken  == false" :href="loginHost + '/login/' + loginNames.alt"
-                                   class="char-login-button" :title="'Login in with: ' + char.name">
+                                <a v-if="char.validToken === false" :href="`${loginHost}/login/${loginNames.alt}`"
+                                   class="char-login-button" :title="`Login in with: ${char.name}`">
                                     <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>
                             </div>
@@ -347,7 +347,7 @@ function loginAddRedirect(vm) {
         return;
     }
 
-    vm.redirectQuery = '?redirect=' + window.location.hash.substr(1);
+    vm.redirectQuery = '?redirect=' + window.location.hash.substring(1);
 
     // Add redirect query to login links in custom markdown
     const markdownHtml = document.createElement("div");

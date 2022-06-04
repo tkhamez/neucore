@@ -92,7 +92,7 @@
                 <div class="card-body">
                     <p v-cloak>
                         See
-                        <a :href="settings.customization_github + '/blob/master/doc/API.md'"
+                        <a :href="`${settings.customization_github}/blob/master/doc/API.md`"
                            target="_blank" rel="noopener noreferrer">doc/API.md</a>
                         for permissions for each role.
                     </p>
@@ -105,7 +105,7 @@
                 <div class="list-group">
                      <a v-for="pr in playersRole" class="list-group-item list-group-item-action"
                         :class="{ active: playerEdit && playerEdit.id === pr.id }"
-                        :href="'#UserAdmin/' + pr.id">
+                        :href="`#UserAdmin/${pr.id}`">
                         {{ pr.name }} #{{ pr.id }}
                     </a>
                 </div>
@@ -124,7 +124,7 @@
                     <a v-for="emptyAcc in playersChars"
                        class="list-group-item list-group-item-action"
                        :class="{ active: playerEdit && playerEdit.id === emptyAcc.id }"
-                       :href="'#UserAdmin/' + emptyAcc.id">
+                       :href="`#UserAdmin/${emptyAcc.id}`">
                         {{ emptyAcc.name }} #{{ emptyAcc.id }}
                     </a>
                 </div>
@@ -192,7 +192,7 @@
                         {{ playerEdit.status }}
                         <span v-if="hasRole('user-manager')" class="text-muted">
                             (change here:
-                            <a :href="'#PlayerGroupManagement/' + playerEdit.id">Player Groups Management</a>)
+                            <a :href="`#PlayerGroupManagement/${playerEdit.id}`">Player Groups Management</a>)
                         </span>
                     </p>
 
@@ -278,7 +278,7 @@
                                 <tbody>
                                     <tr v-for="movedCharacter in characterMovements">
                                         <td>
-                                            <a :href="'https://evewho.com/character/' + movedCharacter.characterId"
+                                            <a :href="`https://evewho.com/character/${movedCharacter.characterId}`"
                                                title="Eve Who" target="_blank" rel="noopener noreferrer">
                                                 {{ movedCharacter.characterName }}
                                             </a>
@@ -291,13 +291,13 @@
                                         <td>{{ movedCharacter.reason }}</td>
                                         <td>
                                             <a v-if="movedCharacter.playerName"
-                                               :href="'#UserAdmin/' + movedCharacter.playerId">
+                                               :href="`#UserAdmin/${movedCharacter.playerId}`">
                                                 {{ movedCharacter.playerName }} #{{ movedCharacter.playerId }}
                                             </a>
                                         </td>
                                         <td>
                                             <a v-if="movedCharacter.deletedBy"
-                                               :href="'#UserAdmin/' + movedCharacter.deletedBy.id">
+                                               :href="`#UserAdmin/${movedCharacter.deletedBy.id}`">
                                                 {{ movedCharacter.deletedBy.name }} #{{ movedCharacter.deletedBy.id }}
                                             </a>
                                         </td>
@@ -326,7 +326,7 @@
                                     <td>{{ group.id }}</td>
                                     <td :class="{ 'groups-disabled': playerEditDeactivated }">
                                         <a v-if="hasRole('group-admin')"
-                                           :href="'#GroupAdmin/'+group.id+'/members'"
+                                           :href="`#GroupAdmin/${group.id}/members`"
                                            title="Group Administration">{{ group.name }}</a>
                                         <span v-else>{{ group.name }}</span>
                                     </td>
@@ -351,7 +351,7 @@
                                     <td>{{ managerGroup.id }}</td>
                                     <td>
                                         <a v-if="hasRole('group-admin')"
-                                           :href="'#GroupAdmin/'+managerGroup.id+'/managers'"
+                                           :href="`#GroupAdmin/${managerGroup.id}/managers`"
                                            title="Group Administration">{{ managerGroup.name }}</a>
                                         <span v-else>{{ managerGroup.name }}</span>
                                     </td>
@@ -374,7 +374,7 @@
                                 <td>{{ managerApp.id }}</td>
                                 <td>
                                     <a v-if="hasRole('app-admin')"
-                                       :href="'#AppAdmin/'+managerApp.id+'/managers'"
+                                       :href="`#AppAdmin/${managerApp.id}/managers`"
                                        title="App Administration">{{ managerApp.name }}</a>
                                     <span v-else>{{ managerApp.name }}</span>
                                 </td>

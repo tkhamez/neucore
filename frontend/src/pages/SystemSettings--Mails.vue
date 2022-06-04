@@ -4,7 +4,7 @@
     <div class="card-body">
         <span v-if="settings.mail_character === ''">
             <!--suppress JSUnresolvedVariable -->
-            <a :href="loginHost + '/login/' + loginNames.mail">
+            <a :href="`${loginHost}/login/${loginNames.mail}`">
                 <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online">
             </a>
         </span>

@@ -14,7 +14,7 @@
                     <div class="list-group">
                         <a v-for="corporation in corporations" class="list-group-item list-group-item-action"
                            :class="{ active: corporationId === corporation.id }"
-                           :href="'#TrackingAdmin/' + corporation.id">
+                           :href="`#TrackingAdmin/${corporation.id}`">
                             [{{ corporation.ticker }}] {{ corporation.name }}
                         </a>
                     </div>

@@ -58,7 +58,7 @@ Select and table to add and remove objects from other objects.
             </div>
             <p v-cloak v-if="type === 'App' && contentType === 'roles'">
                 See
-                <a :href="settings.customization_github + '/blob/master/doc/API.md'"
+                <a :href="`${settings.customization_github}/blob/master/doc/API.md`"
                    target="_blank" rel="noopener noreferrer">doc/API.md</a>
                 for permissions for each role.
             </p>
@@ -69,7 +69,7 @@ Select and table to add and remove objects from other objects.
                 Members of these groups can view the tracking data of the selected corporation.<br>
                 Director(s):
                 <span v-for="director in directors">
-                    <a :href="'https://evewho.com/character/' + director.id" title="Eve Who" target="_blank"
+                    <a :href="`https://evewho.com/character/${director.id}`" title="Eve Who" target="_blank"
                        rel="noopener noreferrer">{{ director.name }}</a>&nbsp;
                 </span>
             </p>
@@ -140,16 +140,16 @@ Select and table to add and remove objects from other objects.
                         </td>
                         <td v-if="contentType === 'corporations' || contentType === 'alliances'">{{ row.ticker }}</td>
                         <td>
-                            <a v-if="contentType === 'corporations'" :href="'https://evewho.com/corporation/' + row.id"
+                            <a v-if="contentType === 'corporations'" :href="`https://evewho.com/corporation/${row.id}`"
                                target="_blank" rel="noopener noreferrer">
                                 {{ row.name }}
                             </a>
-                            <a v-else-if="contentType === 'alliances'" :href="'https://evewho.com/alliance/' + row.id"
+                            <a v-else-if="contentType === 'alliances'" :href="`https://evewho.com/alliance/${row.id}`"
                                target="_blank" rel="noopener noreferrer">
                                 {{ row.name }}
                             </a>
                             <a v-else-if="contentType === 'managers' && hasRole('user-admin')"
-                               :href="'#UserAdmin/' + row.id" title="User Administration">{{ row.name }}</a>
+                               :href="`#UserAdmin/${row.id}`" title="User Administration">{{ row.name }}</a>
                             <span v-else>{{ row.name }}</span>
                         </td>
                         <td v-if="contentType === 'managers'">
@@ -158,7 +158,7 @@ Select and table to add and remove objects from other objects.
                             </button>
                         </td>
                         <td v-if="contentType === 'corporations'">
-                            <a v-if="row.alliance" :href="'https://evewho.com/alliance/' + row.alliance.id"
+                            <a v-if="row.alliance" :href="`https://evewho.com/alliance/${row.alliance.id}`"
                                target="_blank" rel="noopener noreferrer">
                                 [{{ row.alliance.ticker }}]
                                 {{ row.alliance.name }}
@@ -485,9 +485,7 @@ export default {
                     }
                     vm.tableContent = roles;
                 } else if (vm.type === 'App' && vm.contentType === 'eveLogins') {
-                    for (const eveLogin of data.eveLogins) {
-                        vm.tableContent = data.eveLogins;
-                    }
+                    vm.tableContent = data.eveLogins;
                 }  else if (vm.type === 'Player') {
                     vm.tableContent = data.groups;
                     vm.$emit('activePlayer', data); // pass data to parent

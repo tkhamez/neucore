@@ -25,7 +25,7 @@
                           :class="{ active: activeLogin && activeLogin.id === login.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: activeLogin && activeLogin.id === login.id }"
-                           :href="'#EVELogins/' + login.id">
+                           :href="`#EVELogins/${login.id}`">
                             {{ login.name }}
                         </a>
                         <span v-if="login.name.indexOf(protectedLoginsPrefix) === -1" v-cloak class="entity-actions">

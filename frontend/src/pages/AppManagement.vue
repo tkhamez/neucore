@@ -14,7 +14,7 @@
                             v-for="playerApp in player.managerApps"
                             class="list-group-item list-group-item-action"
                             :class="{ active: app && app.id === playerApp.id }"
-                            :href="'#AppManagement/' + playerApp.id">
+                            :href="`#AppManagement/${playerApp.id}`">
                             {{ playerApp.name }}
                         </a>
                     </div>
@@ -37,8 +37,7 @@
                             This will <em>invalidate</em> the existing secret.<br>
                             See also
                             <a v-cloak target="_blank" rel="noopener noreferrer"
-                               :href="settings.customization_github +
-                                    '/blob/master/doc/Documentation.md#authentication'">
+                               :href="`${settings.customization_github}/blob/master/doc/Documentation.md#authentication`">
                                 Authentication of applications</a>.
                         </p>
                         <p>

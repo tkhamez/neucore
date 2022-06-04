@@ -234,7 +234,7 @@ export default {
             if (hash.indexOf('?') !== -1) {
                 hash = hash.substring(0, hash.indexOf('?'));
             }
-            this.route = hash.substr(1).split('/');
+            this.route = hash.substring(1).split('/');
 
             // handle routes that do not have a page
             const vm = this;

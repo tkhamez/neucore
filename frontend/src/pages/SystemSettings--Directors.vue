@@ -111,7 +111,7 @@ function readSettings(vm) {
         try {
             vm.directors.push({
                 'name': name,
-                'value': JSON.parse(""+value)
+                'value': JSON.parse(`${value}`)
             });
         } catch(err) {}
     }

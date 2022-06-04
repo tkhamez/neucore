@@ -28,7 +28,7 @@
                     <div class="dropdown-menu">
                         <a v-for="service in settings.navigationServices" class="dropdown-item"
                            :class="{ active: page === 'Service' && parseInt(route[1], 10) === service.id }"
-                           :href="'#Service/'+service.id">{{ service.name }}</a>
+                           :href="`#Service/${service.id}`">{{ service.name }}</a>
                     </div>
                 </li>
                 <li v-if="hasAnyRole(['group-manager', 'app-manager', 'user-manager'])" class="nav-item dropdown">

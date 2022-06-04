@@ -29,7 +29,7 @@
                     <span v-for="group in groups" class="list-item-wrap" :class="{ active: groupId === group.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: groupId === group.id }"
-                           :href="'#GroupAdmin/' + group.id + '/' + contentType">
+                           :href="`#GroupAdmin/${group.id}/${contentType}`">
                             {{ group.name }}
                             <span class="text-muted small">
                                 {{ group.visibility }}
@@ -65,12 +65,12 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'managers' }"
-                       :href="'#GroupAdmin/' + groupId + '/managers'">Managers</a>
+                       :href="`#GroupAdmin/${groupId}/managers`">Managers</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'alliances' }"
-                       :href="'#GroupAdmin/' + groupId + '/alliances'">
+                       :href="`#GroupAdmin/${groupId}/alliances`">
                         Alliances
                         <span class="far fa-plus-square add-alli-corp"
                               @mouseover="mouseover"
@@ -81,7 +81,7 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'corporations' }"
-                       :href="'#GroupAdmin/' + groupId + '/corporations'">
+                       :href="`#GroupAdmin/${groupId}/corporations`">
                         Corporations
                         <span class="far fa-plus-square add-alli-corp"
                               @mouseover="mouseover"
@@ -92,12 +92,12 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groups' }"
-                       :href="'#GroupAdmin/' + groupId + '/groups'">Groups</a>
+                       :href="`#GroupAdmin/${groupId}/groups`">Groups</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'members' }"
-                       :href="'#GroupAdmin/' + groupId + '/members'">
+                       :href="`#GroupAdmin/${groupId}/members`">
                         Members
                         <span v-if="membersLoaded && contentType === 'members'">({{ members.length }})</span>
                     </a>

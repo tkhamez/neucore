@@ -79,10 +79,10 @@
                             <td>{{ entity.ticker }}</td>
                             <td>
                                 <a v-if="listName === 'Alliance'"
-                                   :href="'https://evewho.com/alliance/' + entity.id"
+                                   :href="`https://evewho.com/alliance/${entity.id}`"
                                    target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
                                 <a v-if="listName === 'Corporation'"
-                                   :href="'https://evewho.com/corporation/' + entity.id"
+                                   :href="`https://evewho.com/corporation/${entity.id}`"
                                    target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
                             </td>
                             <td v-if="listName === 'Corporation'">

@@ -26,7 +26,7 @@
                     <span v-for="app in apps" class="list-item-wrap" :class="{ active: appId === app.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: appId === app.id }"
-                           :href="'#AppAdmin/' + app.id + '/' + contentType">
+                           :href="`#AppAdmin/${app.id}/${contentType}`">
                             {{ app.name }}
                         </a>
                         <span class="entity-actions">
@@ -51,22 +51,22 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'managers' }"
-                       :href="'#AppAdmin/' + appId + '/managers'">Managers</a>
+                       :href="`#AppAdmin/${appId}/managers`">Managers</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groups' }"
-                       :href="'#AppAdmin/' + appId + '/groups'">Groups</a>
+                       :href="`#AppAdmin/${appId}/groups`">Groups</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'roles' }"
-                       :href="'#AppAdmin/' + appId + '/roles'">Roles</a>
+                       :href="`#AppAdmin/${appId}/roles`">Roles</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'eveLogins' }"
-                       :href="'#AppAdmin/' + appId + '/eveLogins'">EVE Logins</a>
+                       :href="`#AppAdmin/${appId}/eveLogins`">EVE Logins</a>
                 </li>
             </ul>
 

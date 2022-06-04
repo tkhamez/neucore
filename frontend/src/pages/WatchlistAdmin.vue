@@ -27,7 +27,7 @@
                           :class="{ active: currentWatchlist && currentWatchlist.id === watchlist.id }">
                         <a class="list-group-item list-group-item-action"
                            :class="{ active: currentWatchlist && currentWatchlist.id === watchlist.id }"
-                           :href="'#WatchlistAdmin/' + watchlist.id + '/' + contentType">{{ watchlist.name }}
+                           :href="`#WatchlistAdmin/${watchlist.id}/${contentType}`">{{ watchlist.name }}
                         </a>
                         <span class="entity-actions">
                             <span role="img" aria-label="edit" title="edit"
@@ -51,17 +51,17 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groups' }"
-                       :href="'#WatchlistAdmin/' + currentWatchlist.id + '/groups'">View</a>
+                       :href="`#WatchlistAdmin/${currentWatchlist.id}/groups`">View</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'groupsManage' }"
-                       :href="'#WatchlistAdmin/' + currentWatchlist.id + '/groupsManage'">Manage</a>
+                       :href="`#WatchlistAdmin/${currentWatchlist.id}/groupsManage`">Manage</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{ 'active': contentType === 'setting' }"
-                       :href="'#WatchlistAdmin/' + currentWatchlist.id + '/setting'">Settings</a>
+                       :href="`#WatchlistAdmin/${currentWatchlist.id}/setting`">Settings</a>
                 </li>
             </ul>
 

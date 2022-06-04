@@ -66,8 +66,8 @@ export default {
                 return defaultValue;
             }
             const parameters = parts[1].split('&');
-            for (let i = 0; i < parameters.length; i++) {
-                const parameterParts = parameters[i].split('=');
+            for (const parameter of parameters) {
+                const parameterParts = parameter.split('=');
                 if (parameterParts[0] === name) {
                     if (!parameterParts[1]) {
                         return '';
@@ -88,13 +88,13 @@ export default {
             }
             const remainingVariables = [];
             const parameters = parts[1].split('&');
-            for (let i = 0; i < parameters.length; i++) {
-                const parameterParts = parameters[i].split('=');
+            for (const parameter of parameters) {
+                const parameterParts = parameter.split('=');
                 if (parameterParts[0] !== name) {
-                    remainingVariables.push(parameters[i]);
+                    remainingVariables.push(parameter);
                 }
             }
-            window.location.hash = parts[0] + '?' + remainingVariables.join('&');
+            window.location.hash = `${parts[0]}?${remainingVariables.join('&')}`;
         },
 
         /**
@@ -150,9 +150,10 @@ export default {
             }
             let str = date.toISOString();
             str = str.replace('T', ' ').replace('.000Z', '');
-            str = str.substr(0, str.length - 3); // remove seconds
+            str = str.substring(0, str.length - 3); // remove seconds
+            //str = str.substring(0, str.length - 3); // remove seconds
             if (dateOnly) {
-                str = str.substr(0, 10); // remove time
+                str = str.substring(0, 10); // remove time
             }
             return str;
         },
