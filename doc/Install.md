@@ -29,15 +29,15 @@
 
 ### Server Requirements
 
-A Linux server (others may work, but are not tested).
+A Linux server (others may work, but were not tested).
 
 To run the application:
-* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary extensions and `composer.json` in the 
-  root directory for suggested extensions (APCu highly recommended).
-* MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases 
-  supported by [Doctrine ORM](https://www.doctrine-project.org/projects/orm.html) may work if you generate the 
-  database schema yourself (see [backend README](../backend/README.md)), but there are only migration files for 
-  MySQL/MariaDB. Unit tests can also be run using an SQLite in-memory database.
+* PHP >=7.4.0 (64bit version), see `backend/composer.json` for necessary and suggested extensions (APCu highly 
+  recommended).
+* MariaDB or MySQL Server (currently only tested with MySQL 8.0 and MariaDB 10.2, 10.5). Other databases supported by
+  [Doctrine DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/platforms.html) 
+  may work if you generate the  database schema yourself (see [backend README](../backend/README.md)), but there are 
+  only migration files for MySQL/MariaDB. Unit tests can also be run using an SQLite in-memory database.
 * An HTTP Server with support for PHP.
     * Set the document root to the `web` directory.
     * A sample Apache configuration is included in the [Vagrantfile](./Vagrantfile) file and there 
