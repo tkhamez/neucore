@@ -117,7 +117,8 @@
 
     <div v-cloak v-if="deactivated" class="alert alert-danger">
         Groups for this account are <strong>disabled</strong> (or will be disabled soon)
-        because one or more characters do not have a valid ESI token.
+        because one or more characters do not have a valid ESI token.<br>
+        Note: Deleted characters will be removed automatically within 1 to 2 days.
     </div>
 
     <div v-cloak v-if="player">
