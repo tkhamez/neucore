@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Entity;
 
-use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
 use PHPUnit\Framework\TestCase;
@@ -105,20 +104,20 @@ class EveLoginTest extends TestCase
         $this->assertSame(['role1', 'role2'], $login->setEveRoles(['role1', 'role2'])->getEveRoles());
     }
 
-    /** @noinspection DuplicatedCode */
     public function testAddGetRemoveEsiToken()
     {
-        $char = new Character();
+        $login = new EveLogin();
+        /** @noinspection DuplicatedCode */
         $token1 = new EsiToken();
         $token2 = new EsiToken();
 
-        $this->assertSame([], $char->getEsiTokens());
+        $this->assertSame([], $login->getEsiTokens());
 
-        $char->addEsiToken($token1);
-        $char->addEsiToken($token2);
-        $this->assertSame([$token1, $token2], $char->getEsiTokens());
+        $login->addEsiToken($token1);
+        $login->addEsiToken($token2);
+        $this->assertSame([$token1, $token2], $login->getEsiTokens());
 
-        $char->removeEsiToken($token2);
-        $this->assertSame([$token1], $char->getEsiTokens());
+        $login->removeEsiToken($token2);
+        $this->assertSame([$token1], $login->getEsiTokens());
     }
 }

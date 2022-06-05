@@ -126,10 +126,10 @@ class CharacterTest extends TestCase
         $this->assertSame('abc', $char->getCharacterOwnerHash());
     }
 
-    /** @noinspection DuplicatedCode */
     public function testAddGetRemoveEsiToken()
     {
         $char = new Character();
+        /** @noinspection DuplicatedCode */
         $token1 = new EsiToken();
         $token2 = new EsiToken();
 
