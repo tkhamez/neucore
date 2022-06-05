@@ -4,14 +4,10 @@
             <div class="col-lg-12">
                 <h1>Player Groups Management</h1>
                 <p class="mb-0">
-                    Login URLs:
+                    Login URL:
                     <!--suppress JSUnresolvedVariable -->
                     <a :href="`${httpBaseUrl}/login/${loginNames.managed}`">
                         {{ httpBaseUrl }}/login/{{ loginNames.managed }}
-                    </a>,
-                    <!--suppress JSUnresolvedVariable -->
-                    <a :href="`${httpBaseUrl}/login/${loginNames.managedAlt}`">
-                        {{ httpBaseUrl }}/login/{{ loginNames.managedAlt }}
                     </a>
                 </p>
                 <p class="small text-muted">

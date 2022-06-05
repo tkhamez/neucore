@@ -37,9 +37,7 @@ export default {
 
             loginNames: {
                 default:    'core.default',
-                alt:        'core.alt',
                 managed:    'core.managed',
-                managedAlt: 'core.managed-alt',
                 mail:       'core.mail',
                 director:   'core.director',
             }

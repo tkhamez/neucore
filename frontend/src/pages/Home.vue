@@ -99,7 +99,7 @@
             <p>Add your other characters by logging in with EVE SSO.</p>
             <p>
                 <!--suppress JSUnresolvedVariable -->
-                <a :href="`${loginHost}/login/${loginNames.alt}`">
+                <a :href="`${loginHost}/login/${loginNames.default}`">
                     <img src="../assets/eve_sso.png" alt="LOG IN with EVE Online"
                          title="Login to add another character.">
                 </a>
@@ -172,7 +172,7 @@
                                     ESI tokens
                                 </a>
                                 <!--suppress JSUnresolvedVariable -->
-                                <a v-if="char.validToken === false" :href="`${loginHost}/login/${loginNames.alt}`"
+                                <a v-if="char.validToken === false" :href="`${loginHost}/login/${loginNames.default}`"
                                    class="char-login-button" :title="`Login in with: ${char.name}`">
                                     <img src="../assets/eve_sso-short.png" alt="LOG IN with EVE Online">
                                 </a>

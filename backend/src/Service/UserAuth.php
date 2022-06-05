@@ -26,6 +26,14 @@ use Tkhamez\Slim\RoleAuth\RoleProviderInterface;
  */
 class UserAuth implements RoleProviderInterface
 {
+    const LOGIN_AUTHENTICATED_SUCCESS = 1;
+
+    const LOGIN_AUTHENTICATED_FAIL = 2;
+
+    const LOGIN_CHARACTER_ADDED_SUCCESS = 3;
+
+    const LOGIN_CHARACTER_ADDED_FAIL = 4;
+
     private SessionData $session;
 
     private Account $accountService;
@@ -74,7 +82,7 @@ class UserAuth implements RoleProviderInterface
     }
 
     /**
-     * Loads and returns current logged in user from the database.
+     * Loads and returns current logged-in user from the database.
      */
     public function getUser(): ?Character
     {
@@ -85,91 +93,24 @@ class UserAuth implements RoleProviderInterface
         return $this->user;
     }
 
-    /**
-     * User login.
-     *
-     * Creates character with player account if it is missing.
-     *
-     * @param EveAuthentication $eveAuth
-     * @return bool
-     */
-    public function authenticate(EveAuthentication $eveAuth): bool
+    public function login(EveAuthentication $eveAuth): int
     {
-        $characterId = $eveAuth->getCharacterId();
-        $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-
-        $updateAutoGroups = false;
-        if ($char === null || $char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
-            // first login or changed owner, create account
-            $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
-            if (count($userRole) !== 1) {
-                $this->log->critical('UserAuth::authenticate(): Role "'.Role::USER.'" not found.');
-                return false;
-            }
-            $updateAutoGroups = true;
-            if ($char === null) {
-                $char = $this->accountService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
-            } else {
-                $oldPlayerId = $char->getPlayer()->getId();
-                $char = $this->accountService->moveCharacterToNewAccount($char);
-                $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
-            }
-            $char->getPlayer()->addRole($userRole[0]);
-        }
-
-        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth, $updateAutoGroups);
-
-        if (!$success) {
-            return false;
-        }
-
-        $this->accountService->increaseLoginCount($char->getPlayer());
-        $this->user = $char;
-        $this->session->set('character_id', $this->user->getId());
-
-        return true;
-    }
-
-    /**
-     * @param EveAuthentication $eveAuth
-     * @return bool
-     */
-    public function addAlt(EveAuthentication $eveAuth): bool
-    {
-        $characterId = $eveAuth->getCharacterId();
-
         $this->getUser();
-
-        // check if logged in
         if ($this->user === null) {
-            return false;
-        }
-
-        $player = $this->user->getPlayer();
-
-        // check if the character was already registered,
-        // if so, move it to this player account if needed, otherwise create it
-        // (there is no need to check for a changed character owner hash here)
-        $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
-        if ($alt !== null && $alt->getPlayer()->getId() !== $player->getId()) {
-            $oldPlayerId = $alt->getPlayer()->getId();
-            $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED);
-            $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
-            $alt->setMain(false);
-        } elseif ($alt === null) {
-            $alt = new Character();
-            $alt->setId($characterId);
-            try {
-                $alt->setCreated(new \DateTime());
-            } catch (\Exception $e) {
-                // ignore
+            $success = $this->authenticate($eveAuth);
+            if ($success) {
+                return self::LOGIN_AUTHENTICATED_SUCCESS;
+            } else {
+                return self::LOGIN_AUTHENTICATED_FAIL;
             }
-            $player->addCharacter($alt);
-            $alt->setPlayer($player);
-            $alt->setMain(false);
+        } else {
+            $success = $this->addAlt($eveAuth);
+            if ($success) {
+                return self::LOGIN_CHARACTER_ADDED_SUCCESS;
+            } else {
+                return self::LOGIN_CHARACTER_ADDED_FAIL;
+            }
         }
-
-        return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth, true);
     }
 
     public function findCharacterOnAccount(EveAuthentication $eveAuth): ?Character
@@ -213,6 +154,85 @@ class UserAuth implements RoleProviderInterface
     }
 
     /**
+     * User login.
+     *
+     * Creates character with player account if it is missing.
+     *
+     * @param EveAuthentication $eveAuth
+     * @return bool
+     */
+    private function authenticate(EveAuthentication $eveAuth): bool
+    {
+        $characterId = $eveAuth->getCharacterId();
+        $char = $this->repositoryFactory->getCharacterRepository()->find($characterId);
+
+        $updateAutoGroups = false;
+        if ($char === null || $char->getCharacterOwnerHash() !== $eveAuth->getCharacterOwnerHash()) {
+            // first login or changed owner, create account
+            $userRole = $this->repositoryFactory->getRoleRepository()->findBy(['name' => Role::USER]);
+            if (count($userRole) !== 1) {
+                $this->log->critical('UserAuth::authenticate(): Role "'.Role::USER.'" not found.');
+                return false;
+            }
+            $updateAutoGroups = true;
+            if ($char === null) {
+                $char = $this->accountService->createNewPlayerWithMain($characterId, $eveAuth->getCharacterName());
+            } else {
+                $oldPlayerId = $char->getPlayer()->getId();
+                $char = $this->accountService->moveCharacterToNewAccount($char);
+                $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
+            }
+            $char->getPlayer()->addRole($userRole[0]);
+        }
+
+        $success = $this->accountService->updateAndStoreCharacterWithPlayer($char, $eveAuth, $updateAutoGroups);
+
+        if (!$success) {
+            return false;
+        }
+
+        $this->accountService->increaseLoginCount($char->getPlayer());
+        $this->user = $char;
+        $this->session->set('character_id', $this->user->getId());
+
+        return true;
+    }
+
+    /**
+     * @param EveAuthentication $eveAuth
+     * @return bool
+     */
+    private function addAlt(EveAuthentication $eveAuth): bool
+    {
+        $characterId = $eveAuth->getCharacterId();
+        $player = $this->user->getPlayer();
+
+        // check if the character was already registered,
+        // if so, move it to this player account if needed, otherwise create it
+        // (there is no need to check for a changed character owner hash here)
+        $alt = $this->repositoryFactory->getCharacterRepository()->find($characterId);
+        if ($alt !== null && $alt->getPlayer()->getId() !== $player->getId()) {
+            $oldPlayerId = $alt->getPlayer()->getId();
+            $this->accountService->moveCharacter($alt, $player, RemovedCharacter::REASON_MOVED);
+            $this->accountService->updateGroups($oldPlayerId); // flushes the entity manager
+            $alt->setMain(false);
+        } elseif ($alt === null) {
+            $alt = new Character();
+            $alt->setId($characterId);
+            try {
+                $alt->setCreated(new \DateTime());
+            } catch (\Exception $e) {
+                // ignore
+            }
+            $player->addCharacter($alt);
+            $alt->setPlayer($player);
+            $alt->setMain(false);
+        }
+
+        return $this->accountService->updateAndStoreCharacterWithPlayer($alt, $eveAuth, true);
+    }
+
+    /**
      * @return void
      */
     private function loadUser()
@@ -220,7 +240,7 @@ class UserAuth implements RoleProviderInterface
         try {
             $userId = $this->session->get('character_id');
         } catch (RuntimeException $e) {
-            // session could not be started, e. g. for 404 errors.
+            // session could not be started, e.g. for 404 errors.
             return;
         }
 

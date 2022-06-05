@@ -31,19 +31,9 @@ class EveLogin implements \JsonSerializable
     public const NAME_DEFAULT = self::INTERNAL_LOGIN_PREFIX . 'default';
 
     /**
-     * Alternative character login.
-     */
-    public const NAME_ALT = self::INTERNAL_LOGIN_PREFIX . 'alt';
-
-    /**
      * Login for "managed" accounts.
      */
     public const NAME_MANAGED = self::INTERNAL_LOGIN_PREFIX . 'managed';
-
-    /**
-     * Login for "managed" alt characters.
-     */
-    public const NAME_MANAGED_ALT = self::INTERNAL_LOGIN_PREFIX . 'managed-alt';
 
     /**
      * Login of the character that is used to send mails.
@@ -60,9 +50,7 @@ class EveLogin implements \JsonSerializable
      */
     public const INTERNAL_LOGIN_NAMES = [
         self::NAME_DEFAULT,
-        self::NAME_ALT,
         self::NAME_MANAGED,
-        self::NAME_MANAGED_ALT,
         self::NAME_MAIL,
         self::NAME_DIRECTOR,
     ];
@@ -80,9 +68,8 @@ class EveLogin implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer|null
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @OA\Property(
@@ -92,23 +79,20 @@ class EveLogin implements \JsonSerializable
      *     description="Names starting with 'core.' are reserved for internal use."
      * )
      * @ORM\Column(type="string", unique=true, length=20)
-     * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @OA\Property(maxLength=1024)
      * @ORM\Column(type="string", length=1024)
-     * @var string
      */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @OA\Property(maxLength=8192)
      * @ORM\Column(type="string", name="esi_scopes", length=8192)
-     * @var string
      */
-    private $esiScopes = '';
+    private string $esiScopes = '';
 
     /**
      * @OA\Property(
@@ -117,9 +101,8 @@ class EveLogin implements \JsonSerializable
      *     description="Maximum length of all roles separated by comma: 1024."
      * )
      * @ORM\Column(type="string", name="eve_roles", length=1024)
-     * @var string
      */
-    private $eveRoles = '';
+    private string $eveRoles = '';
 
     /**
      * @ORM\OneToMany(targetEntity="EsiToken", mappedBy="eveLogin")

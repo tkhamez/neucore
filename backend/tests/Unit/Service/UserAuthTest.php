@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Doctrine\Persistence\ObjectManager;
 use Eve\Sso\EveAuthentication;
 use GuzzleHttp\Psr7\Response;
@@ -21,9 +23,14 @@ use PHPUnit\Framework\TestCase;
 use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
+use Tests\WriteErrorListener;
 
 class UserAuthTest extends TestCase
 {
+    private static EntityManagerInterface $em;
+
+    private static WriteErrorListener $writeErrorListener;
+
     private Helper $helper;
 
     private ObjectManager $om;
@@ -37,6 +44,12 @@ class UserAuthTest extends TestCase
     private EsiTokenRepository $esiTokenRepo;
 
     private Client $client;
+
+    public static function setupBeforeClass(): void
+    {
+        self::$em = (new Helper())->getEm();
+        self::$writeErrorListener = new WriteErrorListener();
+    }
 
     protected function setUp(): void
     {
@@ -54,6 +67,11 @@ class UserAuthTest extends TestCase
 
         $this->removedCharRepo = $repoFactory->getRemovedCharacterRepository();
         $this->esiTokenRepo = $repoFactory->getEsiTokenRepository();
+    }
+
+    public function tearDown(): void
+    {
+        self::$em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testGetRolesNoAuth()
@@ -88,12 +106,12 @@ class UserAuthTest extends TestCase
         $this->assertSame(9013, $user->getId());
     }
 
-    public function testAuthenticateNoUserRoleError()
+    public function testLogin_AuthenticateNoUserRoleError()
     {
         $token = new AccessToken(['access_token' => 'token']);
-        $this->assertFalse($this->service->authenticate(
-            new EveAuthentication(888, 'New User', 'char-owner-hash', $token)
-        ));
+        $result = $this->service->login(new EveAuthentication(888, 'New User', 'char-owner-hash', $token));
+
+        $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_FAIL, $result);
         $this->assertSame(
             'UserAuth::authenticate(): Role "'.Role::USER.'" not found.',
             $this->log->getHandler()->getRecords()[0]['message']
@@ -103,7 +121,7 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testAuthenticateNewUser()
+    public function testLogin_AuthenticateNewUser()
     {
         $this->helper->getEm()->persist((new EveLogin())->setName(EveLogin::NAME_DEFAULT));
         $this->helper->addRoles([Role::USER]);
@@ -121,12 +139,12 @@ class UserAuthTest extends TestCase
         $token = new AccessToken(
             ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']
         );
-        $result = $this->service->authenticate(new EveAuthentication(888, 'New User', 'coh', $token));
+        $result = $this->service->login(new EveAuthentication(888, 'New User', 'coh', $token));
 
         $this->om->clear();
 
         $user = $this->service->getUser();
-        $this->assertTrue($result);
+        $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_SUCCESS, $result);
         $this->assertSame('New User', $user->getName());
         $this->assertSame(888, $user->getId());
         $this->assertTrue($user->getMain());
@@ -144,7 +162,7 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testAuthenticateExistingUser()
+    public function testLogin_AuthenticateExistingUser()
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
@@ -164,10 +182,10 @@ class UserAuthTest extends TestCase
         $token = new AccessToken(
             ['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'refresh']
         );
-        $result = $this->service->authenticate(new EveAuthentication(9013, 'Test User Changed Name', '123', $token));
+        $result = $this->service->login(new EveAuthentication(9013, 'Test User Changed Name', '123', $token));
 
         $user = $this->service->getUser();
-        $this->assertTrue($result);
+        $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_SUCCESS, $result);
         $this->assertSame(9013, $_SESSION['character_id']);
         $this->assertSame(9013, $user->getId());
         $this->assertSame('Test User', $user->getName()); // name is *not* updated here
@@ -181,7 +199,7 @@ class UserAuthTest extends TestCase
         $this->assertSame($user->getPlayer()->getId(), $player->getId());
     }
 
-    public function testAuthenticateNewOwner()
+    public function testLogin_AuthenticateNewOwner()
     {
         SessionData::setReadOnly(false);
         $corp = (new Corporation())->setId(101);
@@ -197,12 +215,12 @@ class UserAuthTest extends TestCase
 
         // changed hash 789, was 456
         $token = new AccessToken(['access_token' => 'token', 'expires' => 1525456785, 'refresh_token' => 'refresh']);
-        $result = $this->service->authenticate(new EveAuthentication(9014, 'Test User2', '789', $token));
+        $result = $this->service->login(new EveAuthentication(9014, 'Test User2', '789', $token));
 
         $user = $this->service->getUser();
         $newPlayer = $user->getPlayer();
 
-        $this->assertTrue($result);
+        $this->assertSame(UserAuth::LOGIN_AUTHENTICATED_SUCCESS, $result);
         $this->assertSame(9014, $_SESSION['character_id']);
         $this->assertSame(9014, $user->getId());
         $this->assertSame('789', $user->getCharacterOwnerHash());
@@ -216,7 +234,7 @@ class UserAuthTest extends TestCase
         $this->assertSame(RemovedCharacter::REASON_MOVED_OWNER_CHANGED, $removedChar->getReason());
     }
 
-    public function testAddAltNoRefreshToken()
+    public function testLogin_AddAltNoRefreshToken()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main', 100, [Role::USER]);
@@ -231,8 +249,8 @@ class UserAuthTest extends TestCase
         );
 
         $token = new AccessToken(['access_token' => 'tk', 'expires' => 1525456785]);
-        $result = $this->service->addAlt(new EveAuthentication(101, 'Alt 1', 'hash', $token));
-        $this->assertTrue($result);
+        $result = $this->service->login(new EveAuthentication(101, 'Alt 1', 'hash', $token));
+        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS, $result);
 
         $chars = $player->getCharacters();
         $this->assertSame(2, count($chars));
@@ -248,7 +266,7 @@ class UserAuthTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function testAddAltExistingChar()
+    public function testLogin_AddAltExistingChar()
     {
         $_SESSION['character_id'] = 100;
         $corp = (new Corporation())->setId(101);
@@ -261,8 +279,8 @@ class UserAuthTest extends TestCase
 
         $accessToken = Helper::generateToken()[0];
         $token = new AccessToken(['access_token' => $accessToken, 'expires' => 1525456785, 'refresh_token' => 'rf']);
-        $result = $this->service->addAlt(new EveAuthentication(200, 'Main2 renamed', 'hash', $token));
-        $this->assertTrue($result);
+        $result = $this->service->login(new EveAuthentication(200, 'Main2 renamed', 'hash', $token));
+        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS, $result);
 
         $chars = $main1->getPlayer()->getCharacters();
         $this->assertSame(2, count($chars));
@@ -287,7 +305,7 @@ class UserAuthTest extends TestCase
         $this->assertNotNull($newPlayerId);
     }
 
-    public function testAddAltLoggedInChar()
+    public function testLogin_AddAltLoggedInChar()
     {
         $_SESSION['character_id'] = 100;
         $main = $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
@@ -296,21 +314,24 @@ class UserAuthTest extends TestCase
         $main->setCorporation($corp);
 
         $token = new AccessToken(['access_token' => 'tk']);
-        $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token));
-        $this->assertTrue($result);
+        $result = $this->service->login(new EveAuthentication(100, 'Main1 renamed', 'hash', $token));
+        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_SUCCESS, $result);
 
         $chars = $main->getPlayer()->getCharacters();
         $this->assertSame(1, count($chars));
         $this->assertSame('Main1', $chars[0]->getName()); // name changed but is *not* updated here
     }
 
-    public function testAddAltNotAuthenticated()
+    public function testLogin_AddAltNotAuthenticated()
     {
+        $_SESSION['character_id'] = 100;
         $this->helper->addCharacterMain('Main1', 100, [Role::USER]);
-
         $token = new AccessToken(['access_token' => 'tk']);
-        $result = $this->service->addAlt(new EveAuthentication(100, 'Main1 renamed', 'hash', $token, []));
-        $this->assertFalse($result);
+
+        self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
+        $result = $this->service->login(new EveAuthentication(101, 'Alt', 'hash', $token, []));
+
+        $this->assertSame(UserAuth::LOGIN_CHARACTER_ADDED_FAIL, $result);
     }
 
     public function testFindCharacterOnAccount_NotLoggedIn()

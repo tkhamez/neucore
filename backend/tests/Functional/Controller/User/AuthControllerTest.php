@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Controller\User;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Neucore\Entity\EveLogin;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
@@ -18,14 +20,25 @@ use Psr\Log\LoggerInterface;
 use Tests\Helper;
 use Tests\Functional\WebTestCase;
 use Tests\Client;
+use Tests\WriteErrorListener;
 
 class AuthControllerTest extends WebTestCase
 {
     private static string $state = '1jdHR64hSdYf';
 
+    private static EntityManagerInterface $em;
+
+    private static WriteErrorListener $writeErrorListener;
+
     private Client $client;
 
     private Helper $helper;
+
+    public static function setupBeforeClass(): void
+    {
+        self::$em = (new Helper())->getEm();
+        self::$writeErrorListener = new WriteErrorListener();
+    }
 
     protected function setUp(): void
     {
@@ -33,6 +46,11 @@ class AuthControllerTest extends WebTestCase
         $this->client = new Client();
         $this->helper = new Helper();
         $this->helper->emptyDb();
+    }
+
+    public function tearDown(): void
+    {
+        self::$em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
     public function testLogin_404()
@@ -59,7 +77,7 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix($loginId), $sess->get('auth_state'));
     }
 
-    public function testLogin_Default()
+    public function testLogin_DefaultOrAlt()
     {
         $response = $this->runApp('GET', '/login/'.EveLogin::NAME_DEFAULT);
 
@@ -70,29 +88,15 @@ class AuthControllerTest extends WebTestCase
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_DEFAULT), $sess->get('auth_state'));
     }
 
-    public function testLogin_Alt()
-    {
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_ALT);
-
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
-
-        $sess = new SessionData();
-        $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_ALT), $sess->get('auth_state'));
-    }
-
     public function testLogin_ManagedForbidden()
     {
-        $response1 = $this->runApp('GET', '/login/'.EveLogin::NAME_MANAGED);
-        $response2 = $this->runApp('GET', '/login/'.EveLogin::NAME_MANAGED_ALT);
+        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_MANAGED);
 
-        $this->assertSame(403, $response1->getStatusCode());
-        $this->assertSame(403, $response2->getStatusCode());
-        $this->assertSame('Forbidden.', $response1->getBody()->__toString());
-        $this->assertSame('Forbidden.', $response2->getBody()->__toString());
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertSame('Forbidden.', $response->getBody()->__toString());
     }
 
-    public function testLogin_Managed()
+    public function testLogin_ManagedOrManagedAlt()
     {
         // activate login "managed"
         $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
@@ -107,26 +111,6 @@ class AuthControllerTest extends WebTestCase
 
         $sess = new SessionData();
         $this->assertStringStartsWith($this->getStatePrefix(EveLogin::NAME_MANAGED), $sess->get('auth_state'));
-    }
-
-    public function testLogin_ManagedAlt()
-    {
-        // activate login "managed"
-        $setting = new SystemVariable(SystemVariable::ALLOW_LOGIN_MANAGED);
-        $setting->setValue('1');
-        $this->helper->getObjectManager()->persist($setting);
-        $this->helper->getObjectManager()->flush();
-
-        $response = $this->runApp('GET', '/login/'.EveLogin::NAME_MANAGED_ALT);
-
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertStringContainsString('eveonline.com/v2/oauth/authorize', $response->getHeader('location')[0]);
-
-        $sess = new SessionData();
-        $this->assertStringStartsWith(
-            $this->getStatePrefix(EveLogin::NAME_MANAGED_ALT),
-            $sess->get('auth_state')
-        );
     }
 
     public function testLogin_Mail()
@@ -452,9 +436,12 @@ class AuthControllerTest extends WebTestCase
      */
     public function testCallback_AltLoginError()
     {
+        $this->helper->addCharacterMain('User1', 654);
+        $this->loginUser(654);
+
         list($token, $keySet) = Helper::generateToken(['read-this']);
-        $state = $this->getStatePrefix(EveLogin::NAME_ALT) . self::$state;
-        $_SESSION = ['auth_state' => $state, 'auth_result' => null];
+        $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
+        $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(
             new Response(200, [], '{"access_token": ' . \json_encode($token) . '}'), // for getAccessToken()
@@ -464,6 +451,7 @@ class AuthControllerTest extends WebTestCase
         $log = new Logger('ignore');
         $log->pushHandler(new TestHandler());
 
+        self::$em->getEventManager()->addEventListener(Events::onFlush, self::$writeErrorListener);
         $response = $this->runApp(
             'GET',
             '/login-callback?state='.$state,
@@ -477,10 +465,10 @@ class AuthControllerTest extends WebTestCase
         );
         $this->assertSame(302, $response->getStatusCode());
 
-        // fails because Role "user" is missing in database
+        // Fails because flush() throws an exception.
 
         $this->assertSame(
-            ['success' => false, 'message' => 'Failed to add alt to account.'],
+            ['success' => false, 'message' => 'Failed to add character to account.'],
             $_SESSION['auth_result']
         );
     }
@@ -496,7 +484,7 @@ class AuthControllerTest extends WebTestCase
         $this->loginUser(654);
 
         list($token, $keySet) = Helper::generateToken(['read-this']);
-        $state = $this->getStatePrefix(EveLogin::NAME_ALT) . self::$state;
+        $state = $this->getStatePrefix(EveLogin::NAME_DEFAULT) . self::$state;
         $_SESSION['auth_state'] = $state;
 
         $this->client->setResponse(

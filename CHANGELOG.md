@@ -1,5 +1,12 @@
 # Changelog
 
+## next
+
+dd mm yyyy
+
+- **BC Break**: The `/core.alt` and `/core.managed-alt` login URLs have been removed. Use `core.default` and 
+  `core.managed` respectively.
+
 ## 1.32.0
 
 3 Jun 2022
