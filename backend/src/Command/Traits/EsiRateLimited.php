@@ -10,25 +10,13 @@ use Psr\Log\LoggerInterface;
 
 trait EsiRateLimited
 {
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
+    private StorageInterface $storage;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var bool
-     */
-    private $simulate;
+    private bool $simulate;
 
-    /**
-     * @var null|int
-     */
-    private $sleepInSeconds;
+    private ?int $sleepInSeconds = null;
 
     protected function esiRateLimited(StorageInterface $storage, LoggerInterface $logger, bool $simulate = false): void
     {
@@ -61,9 +49,11 @@ trait EsiRateLimited
 
     private function checkThrottled(): void
     {
-        if ($this->storage->get(Variables::ESI_THROTTLED) === '1') {
-            $this->logger->info('EsiRateLimited: hit "throttled", sleeping 60 seconds');
-            $this->sleep(60);
+        $timestamp = (int) $this->storage->get(Variables::ESI_THROTTLED);
+        if ($timestamp > time()) {
+            $sleep = (int) max(1, $timestamp - time());
+            $this->logger->info("EsiRateLimited: hit 'throttled', sleeping $sleep seconds");
+            $this->sleep($sleep);
         }
     }
 
@@ -78,7 +68,7 @@ trait EsiRateLimited
         }
 
         $data = \json_decode($var);
-        if (! $data instanceof \stdClass) {
+        if (!$data instanceof \stdClass) {
             return;
         }
 
@@ -96,7 +86,7 @@ trait EsiRateLimited
     private function sleep(int $seconds): void
     {
         if ($this->simulate) {
-            $this->sleepInSeconds =  $seconds;
+            $this->sleepInSeconds = $seconds;
         } else {
             for ($i = 0; $i < 100; $i++) {
                 usleep($seconds * 10000); // seconds * 1,000,000 / 100

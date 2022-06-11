@@ -17,15 +17,9 @@ class EsiRateLimitedTest extends TestCase
 {
     use EsiRateLimited;
 
-    /**
-     * @var Logger
-     */
-    private $testLogger;
+    private Logger $testLogger;
 
-    /**
-     * @var SystemVariableStorage
-     */
-    private $testStorage;
+    private SystemVariableStorage $testStorage;
 
     protected function setUp(): void
     {
@@ -56,22 +50,22 @@ class EsiRateLimitedTest extends TestCase
         $this->assertLessThanOrEqual(10, $this->getSleepInSeconds());
         $this->assertSame(1, count($this->testLogger->getHandler()->getRecords()));
         $this->assertMatchesRegularExpression(
-            '/sleeping [0-9]+ second/',
+            '/sleeping \d+ second/',
             $this->testLogger->getHandler()->getRecords()[0]['message']
         );
     }
 
     public function testCheckForErrors_Throttled()
     {
-        $this->testStorage->set(Variables::ESI_THROTTLED, '1');
+        $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() + 60));
 
         $this->esiRateLimited($this->testStorage, $this->testLogger, true);
 
         $this->checkForErrors();
 
         $this->assertSame(60, $this->getSleepInSeconds());
-        $this->assertSame(
-            'EsiRateLimited: hit "throttled", sleeping 60 seconds',
+        $this->assertMatchesRegularExpression(
+            "/EsiRateLimited: hit 'throttled', sleeping \d+ seconds/",
             $this->testLogger->getHandler()->getRecords()[0]['message']
         );
     }

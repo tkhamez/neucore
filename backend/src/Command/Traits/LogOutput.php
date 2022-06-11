@@ -12,25 +12,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 trait LogOutput
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private OutputInterface $output;
 
-    /**
-     * @var bool
-     */
-    private $log;
+    private bool $log;
 
-    /**
-     * @var bool
-     */
-    private $hideDetails;
+    private bool $hideDetails;
 
     protected function logOutput(LoggerInterface $logger): void
     {

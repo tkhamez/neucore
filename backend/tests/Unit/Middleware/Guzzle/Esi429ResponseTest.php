@@ -17,20 +17,11 @@ use Tests\Logger;
 
 class Esi429ResponseTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var SystemVariableStorage
-     */
-    private $storage;
+    private SystemVariableStorage $storage;
 
-    /**
-     * @var Esi429Response
-     */
-    private $obj;
+    private Esi429Response $obj;
 
     protected function setUp(): void
     {
@@ -54,12 +45,15 @@ class Esi429ResponseTest extends TestCase
         ]));
         $function1 = $this->obj->__invoke($this->helper->getGuzzleHandler($response1));
         $function1(new Request('GET', 'https://local.host/esi/path'), []);
-        $this->assertSame('1', $this->storage->get(Variables::ESI_THROTTLED));
+        $this->assertIsString($this->storage->get(Variables::ESI_THROTTLED));
+        $this->assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_THROTTLED));
+
+        $this->storage->set(Variables::ESI_THROTTLED, '');
 
         $response2 = new Response(200);
         $function2 = $this->obj->__invoke($this->helper->getGuzzleHandler($response2));
         $function2(new Request('GET', 'https://local.host/esi/path'), []);
-        $this->assertSame('0', $this->storage->get(Variables::ESI_THROTTLED));
+        $this->assertSame('', $this->storage->get(Variables::ESI_THROTTLED));
     }
 
     public function testInvoke_429()
@@ -73,6 +67,7 @@ class Esi429ResponseTest extends TestCase
         $response2 = new Response(429, ['Retry-After' => ['60']]);
         $function2 = $this->obj->__invoke($this->helper->getGuzzleHandler($response2));
         $function2(new Request('GET', 'https://local.host/esi/path'), []);
+        $this->assertIsString($this->storage->get(Variables::ESI_RATE_LIMIT));
         $this->assertLessThanOrEqual(time() + 60, $this->storage->get(Variables::ESI_RATE_LIMIT));
     }
 }

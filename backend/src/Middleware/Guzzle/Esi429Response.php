@@ -12,15 +12,9 @@ use Psr\Log\LoggerInterface;
 
 class Esi429Response
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
+    private StorageInterface $storage;
 
     public function __construct(LoggerInterface $logger, StorageInterface $storage)
     {
@@ -51,10 +45,8 @@ class Esi429Response
                 strpos($body, 'Too many errors.') !== false &&
                 strpos($body, 'You have been temporarily throttled.') !== false
             ) {
-                $this->storage->set(Variables::ESI_THROTTLED, '1');
+                $this->storage->set(Variables::ESI_THROTTLED, (string) (time() + 60));
             }
-        } else {
-            $this->storage->set(Variables::ESI_THROTTLED, '0');
         }
 
         // SSO rate limit, see also https://developers.eveonline.com/blog/article/sso-endpoint-deprecations-2
