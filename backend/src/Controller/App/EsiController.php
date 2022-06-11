@@ -48,6 +48,8 @@ class EsiController extends BaseController
 
     private ?App $app = null;
 
+    private int $errorLimitRemain = 20;
+
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
@@ -576,7 +578,7 @@ class EsiController extends BaseController
         if (($retryAt1 = $this->errorLimitRemaining()) > 0) {
             $errorMessage = 'Maximum permissible ESI error limit reached';
             $this->build429Response(
-                $errorMessage . ' (X-Esi-Error-Limit-Remain <= 20).',
+                "$errorMessage (X-Esi-Error-Limit-Remain <= $this->errorLimitRemain).",
                 $retryAt1,
                 $version,
                 "$errorMessage."
@@ -618,7 +620,7 @@ class EsiController extends BaseController
             return 0;
         }
 
-        if ($values->remain <= 20) {
+        if ($values->remain <= $this->errorLimitRemain) {
             return $resetTime;
         }
 
