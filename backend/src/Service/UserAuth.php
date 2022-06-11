@@ -8,6 +8,7 @@ use Eve\Sso\EveAuthentication;
 use Neucore\Entity\Character;
 use Neucore\Entity\EsiToken;
 use Neucore\Entity\EveLogin;
+use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Exception\RuntimeException;
@@ -97,15 +98,13 @@ class UserAuth implements RoleProviderInterface
     {
         $this->getUser();
         if ($this->user === null) {
-            $success = $this->authenticate($eveAuth);
-            if ($success) {
+            if ($this->authenticate($eveAuth)) {
                 return self::LOGIN_AUTHENTICATED_SUCCESS;
             } else {
                 return self::LOGIN_AUTHENTICATED_FAIL;
             }
         } else {
-            $success = $this->addAlt($eveAuth);
-            if ($success) {
+            if ($this->addAlt($eveAuth, $this->user->getPlayer())) {
                 return self::LOGIN_CHARACTER_ADDED_SUCCESS;
             } else {
                 return self::LOGIN_CHARACTER_ADDED_FAIL;
@@ -198,14 +197,9 @@ class UserAuth implements RoleProviderInterface
         return true;
     }
 
-    /**
-     * @param EveAuthentication $eveAuth
-     * @return bool
-     */
-    private function addAlt(EveAuthentication $eveAuth): bool
+    private function addAlt(EveAuthentication $eveAuth, Player $player): bool
     {
         $characterId = $eveAuth->getCharacterId();
-        $player = $this->user->getPlayer();
 
         // check if the character was already registered,
         // if so, move it to this player account if needed, otherwise create it
