@@ -7,8 +7,9 @@ dd mm yyyy
 - **BC Break**: The `/core.alt` and `/core.managed-alt` login URLs have been removed. Use `core.default` and 
   `core.managed` respectively.
 - Fixed type of Expires header from integer to string in OpenAPI definition file for /app/v1/esi.
-- Added /app/v2/esi and deprecated /app/v1/esi. The new version contains error messages in the body
+- Added `/app/v2/esi` and deprecated `/app/v1/esi`. The new version contains error messages in the body
   instead of the reason phrase.
+- Added `Retry-After` header for 429 errors from `/app/v2/esi` that are from Core, not ESI.
 
 ## 1.32.0
 

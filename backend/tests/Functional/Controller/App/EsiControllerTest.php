@@ -256,6 +256,7 @@ class EsiControllerTest extends WebTestCase
         );
 
         $this->assertSame(429, $response->getStatusCode());
+        $this->assertSame([], $response->getHeader('Retry-After'));
         $this->assertSame('Maximum permissible ESI error limit reached.', $response->getReasonPhrase());
     }
 
@@ -278,6 +279,8 @@ class EsiControllerTest extends WebTestCase
         );
 
         $this->assertSame(429, $response->getStatusCode());
+        $this->assertGreaterThan('0', $response->getHeaderLine('Retry-After'));
+        $this->assertLessThanOrEqual('86', $response->getHeaderLine('Retry-After'));
         $this->assertSame(
             '"Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)."',
             $response->getBody()->__toString()

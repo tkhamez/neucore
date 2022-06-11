@@ -286,7 +286,12 @@ class EsiController extends BaseController
      *     @OA\Response(
      *         response="429",
      *         description="Too many errors, see body for more.",
-     *         @OA\JsonContent(type="string")
+     *         @OA\JsonContent(type="string"),
+     *         @OA\Header(
+     *             header="Retry-After",
+     *             description="Delay in seconds.",
+     *             @OA\Schema(type="string")
+     *         )
      *     ),
      *     @OA\Response(
      *         response="500",
@@ -471,7 +476,12 @@ class EsiController extends BaseController
      *     @OA\Response(
      *         response="429",
      *         description="",
-     *         @OA\JsonContent(type="string")
+     *         @OA\JsonContent(type="string"),
+     *         @OA\Header(
+     *             header="Retry-After",
+     *             description="Delay in seconds.",
+     *             @OA\Schema(type="string")
+     *         )
      *     ),
      *     @OA\Response(
      *         response="500",
@@ -505,12 +515,13 @@ class EsiController extends BaseController
         $this->app = $this->appAuth->getApp($request);
 
         // Check error limit.
-        if ($this->errorLimitReached()) {
+        if (($retryAfter = $this->errorLimitRemaining()) > 0) {
             $errorMessage = 'Maximum permissible ESI error limit reached';
             $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString(). ": $errorMessage.");
             if ($version === 1) {
                 return $this->response->withStatus(429, "$errorMessage.");
             }
+            $this->response = $this->response->withHeader('Retry-After', "$retryAfter");
             return $this->withJson($errorMessage . ' (X-Esi-Error-Limit-Remain <= 20).', 429);
         }
 
@@ -566,23 +577,26 @@ class EsiController extends BaseController
         return $this->buildResponse($esiResponse);
     }
 
-    private function errorLimitReached(): bool
+    private function errorLimitRemaining(): int
     {
         $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
         $values = \json_decode((string) $var);
 
-        if (
-            ! $values instanceof \stdClass ||
-            (int) $values->updated + $values->reset < time()
-        ) {
-            return false;
+        if (! $values instanceof \stdClass) {
+            return 0;
+        }
+
+        $resetTime = (int)$values->updated + (int)$values->reset;
+
+        if ($resetTime < time()) {
+            return 0;
         }
 
         if ($values->remain <= 20) {
-            return true;
+            return $resetTime - time();
         }
 
-        return false;
+        return 0;
     }
 
     private function getEsiPathAndQueryParams(ServerRequestInterface $request, ?string $path): array
