@@ -50,21 +50,13 @@ echo "wrote doc/API.md", PHP_EOL;
  */
 function getRoutesForRole(string $role, array $routes, array $securityDef): array
 {
-    $skip = [
-        '/api/app/v1/esi[{path:.*}]',
-        '/api/app/v1/groups/{cid}',
-        '/api/app/v1/corp-groups/{cid}',
-        '/api/app/v1/alliance-groups/{aid}',
-        '/api/app/v1/main/{cid}',
-    ];
-
     $result = [];
     foreach ($routes as $pattern => $conf) {
         foreach ($securityDef as $secured => $roles) {
             if (strpos($pattern, $secured) !== 0) {
                 continue;
             }
-            if (in_array($role, $roles) && ! in_array($pattern, $skip)) {
+            if (in_array($role, $roles)) {
                 $apiPath = substr($pattern, strlen('/api'));
                 if (isset($conf[0])) { // e.g. ['GET', callable]
                     $result[] = [$apiPath, $conf[0]];
@@ -88,7 +80,10 @@ function getApiForRoute(array $route, array $apiPaths): ?array
         if ($route[0] !== $apiPath) {
             continue;
         }
-        if (! isset($def[$method])) { // should always be set
+        if (!isset($def[$method])) { // should always be set
+            continue;
+        }
+        if ($def[$method]['deprecated'] ?? '' === 'true') {
             continue;
         }
         $result = [

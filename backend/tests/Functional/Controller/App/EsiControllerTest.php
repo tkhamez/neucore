@@ -26,20 +26,11 @@ use Tests\Helper;
 
 class EsiControllerTest extends WebTestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var Logger
-     */
-    private $logger;
+    private Logger $logger;
 
-    /**
-     * @var SystemVariableStorage
-     */
-    private $storage;
+    private SystemVariableStorage $storage;
 
     protected function setUp(): void
     {
@@ -115,44 +106,71 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(403, $response2->getStatusCode());
     }
 
-    public function testEsiV1400_MissingParameters()
+    public function testEsiV2403()
     {
+        $response1 = $this->runApp('GET', '/api/app/v2/esi');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response2 = $this->runApp('GET', '/api/app/v2/esi', null, $headers);
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testEsiV1400_MissingParameters_ReasonPhrase()
+    {
+        // Only test the reason phrase, rest is in v2 test.
+
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
         $response1 = $this->runApp('GET', '/api/app/v1/esi', null, $headers);
         $this->assertSame(400, $response1->getStatusCode());
         $this->assertSame('Path cannot be empty.', $response1->getReasonPhrase());
+    }
+
+    public function testEsiV2400_MissingParameters()
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response1 = $this->runApp('GET', '/api/app/v2/esi', null, $headers);
+        $this->assertSame(400, $response1->getStatusCode());
+        $this->assertSame('"Path cannot be empty."', $response1->getBody()->__toString());
 
         $response2 = $this->runApp(
             'GET',
-            '/api/app/v1/esi/latest/characters/96061222/stats/',
+            '/api/app/v2/esi/latest/characters/96061222/stats/',
             null,
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
         );
         $this->assertSame(400, $response2->getStatusCode());
         $this->assertSame(
-            'The datasource parameter cannot be empty, it must contain an EVE character ID',
-            $response2->getReasonPhrase()
+            '"The datasource parameter cannot be empty, it must contain an EVE character ID"',
+            $response2->getBody()->__toString()
         );
     }
 
-    public function testEsiV1400_PublicRoute()
+    public function testEsiV2400_PublicRoute()
     {
+        // No need to test this with v1 route, the only difference is tested with
+        // testEsiV1400_MissingParameters_ReasonPhrase().
+
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
         $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
 
-        $response1 = $this->runApp('GET', '/api/app/v1/esi/latest/alliances/', null, $headers);
+        $response1 = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/', null, $headers);
         $this->assertSame(400, $response1->getStatusCode());
-        $this->assertSame('Public ESI routes are not allowed.', $response1->getReasonPhrase());
+        $this->assertSame('"Public ESI routes are not allowed."', $response1->getBody()->__toString());
 
-        $response2 = $this->runApp('GET', '/api/app/v1/esi/latest/alliances/123456/icons/', null, $headers);
+        $response2 = $this->runApp('GET', '/api/app/v2/esi/latest/alliances/123456/icons/', null, $headers);
         $this->assertSame(400, $response2->getStatusCode());
-        $this->assertSame('Public ESI routes are not allowed.', $response2->getReasonPhrase());
+        $this->assertSame('"Public ESI routes are not allowed."', $response2->getBody()->__toString());
 
-        $response3 = $this->runApp('GET', '/api/app/v1/esi/latest/killmails/123456/123abc/', null, $headers);
+        $response3 = $this->runApp('GET', '/api/app/v2/esi/latest/killmails/123456/123abc/', null, $headers);
         $this->assertSame(400, $response3->getStatusCode());
-        $this->assertSame('Public ESI routes are not allowed.', $response3->getReasonPhrase());
+        $this->assertSame('"Public ESI routes are not allowed."', $response3->getBody()->__toString());
     }
 
     public function testEsiV1400_CharacterNotFound()
@@ -168,6 +186,21 @@ class EsiControllerTest extends WebTestCase
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertSame('Character not found.', $response->getReasonPhrase());
+    }
+
+    public function testEsiV2400_CharacterNotFound()
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/latest/characters/96061222/stats/?datasource=96061222',
+            null,
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('"Character not found."', $response->getBody()->__toString());
     }
 
     public function testEsiV1400_MissingToken()
@@ -186,8 +219,26 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame('Character has no valid token.', $response->getReasonPhrase());
     }
 
+    public function testEsiV2400_MissingToken()
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/latest/characters/96061222/stats/?datasource=123%3Atest-1',
+            null,
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')]
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('"Character has no valid token."', $response->getBody()->__toString());
+    }
+
     public function testEsiV1429()
     {
+        // Only test the reason phrase, rest is in v2 test.
+
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
         // add var
@@ -206,14 +257,39 @@ class EsiControllerTest extends WebTestCase
 
         $this->assertSame(429, $response->getStatusCode());
         $this->assertSame('Maximum permissible ESI error limit reached.', $response->getReasonPhrase());
+    }
+
+    public function testEsiV2429()
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        // add var
+        $this->storage->set(
+            Variables::ESI_ERROR_LIMIT,
+            (string) \json_encode(['updated' => time(), 'remain' => 20, 'reset' => 86])
+        );
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v2/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+        );
+
+        $this->assertSame(429, $response->getStatusCode());
+        $this->assertSame(
+            '"Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)."',
+            $response->getBody()->__toString()
+        );
         $this->assertSame(
             'App\EsiController: application ' . $appId .
-                ' "A1" exceeded the maximum permissible ESI error limit',
+            ' "A1": Maximum permissible ESI error limit reached.',
             $this->logger->getHandler()->getRecords()[0]['message']
         );
     }
 
-    public function testEsiV1429NotReached()
+    public function testEsiV1429_NotReached()
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
@@ -234,7 +310,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertNotSame(429, $response->getStatusCode());
     }
 
-    public function testEsiV1429ReachedAndReset()
+    public function testEsiV1429_ReachedAndReset()
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
@@ -285,7 +361,7 @@ class EsiControllerTest extends WebTestCase
         );
     }
 
-    public function testEsiV1_EsiError()
+    public function testEsiV1400_EsiError()
     {
         $this->helper->addCharacterMain('C1', 123, [Role::USER]);
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
@@ -343,6 +419,48 @@ class EsiControllerTest extends WebTestCase
         $response = $this->runApp(
             'GET',
             '/api/app/v1/esi/v3/characters/96061222/assets/?page=1&datasource=123:core.default',
+            [],
+            [
+                'Authorization' => 'Bearer '.base64_encode($appId.':s1'),
+                'If-None-Match' => '686897696a7c876b7e'
+            ],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
+        $this->assertSame([
+            'Content-Type' => ['application/json; charset=UTF-8'],
+            'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
+            'X-Esi-Error-Limit-Remain' => ['100'],
+            'X-Esi-Error-Limit-Reset' => ['60'],
+            'X-Pages' => ['3'],
+            'warning' => ['199 - This route has an upgrade available'],
+        ], $response->getHeaders());
+    }
+
+    public function testEsiV2200()
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(
+            200,
+            [
+                'Content-Type' => ['application/json; charset=UTF-8'],
+                'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
+                'X-Esi-Error-Limit-Remain' => ['100'],
+                'X-Esi-Error-Limit-Reset' => ['60'],
+                'X-Pages' => ['3'],
+                'warning' => ['199 - This route has an upgrade available'],
+            ],
+            '{"key": "value"}'
+        ));
+
+        $response = $this->runApp(
+            'GET',
+            '/api/app/v2/esi/v3/characters/96061222/assets/?page=1&datasource=123:core.default',
             [],
             [
                 'Authorization' => 'Bearer '.base64_encode($appId.':s1'),
@@ -448,6 +566,45 @@ class EsiControllerTest extends WebTestCase
         $response = $this->runApp(
             'POST',
             '/api/app/v1/esi/v1/characters/96061222/assets/names/?datasource=123',
+            [123456],
+            ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
+            [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(
+            [['item_id' => 12345, 'name' => 'Awesome Name']],
+            \json_decode($response->getBody()->__toString(), true)
+        );
+    }
+
+    public function testEsiPostV2403()
+    {
+        $response1 = $this->runApp('POST', '/api/app/v2/esi');
+        $this->assertSame(403, $response1->getStatusCode());
+
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP])->getId();
+        $headers = ['Authorization' => 'Bearer '.base64_encode($appId.':s1')];
+
+        $response2 = $this->runApp('POST', '/api/app/v2/esi', null, $headers);
+        $this->assertSame(403, $response2->getStatusCode());
+    }
+
+    public function testEsiPostV2200()
+    {
+        $this->helper->addCharacterMain('C1', 123, [Role::USER]);
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $httpClient = new Client();
+        $httpClient->setResponse(new Response(
+            200,
+            [],
+            '[{ "item_id": 12345,"name": "Awesome Name" }]'
+        ));
+
+        $response = $this->runApp(
+            'POST',
+            '/api/app/v1/esi/v2/characters/96061222/assets/names/?datasource=123',
             [123456],
             ['Authorization' => 'Bearer '.base64_encode($appId.':s1')],
             [HttpClientFactoryInterface::class => new HttpClientFactory($httpClient)]

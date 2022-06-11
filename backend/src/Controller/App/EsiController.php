@@ -128,10 +128,94 @@ class EsiController extends BaseController
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Get(
      *     path="/app/v1/esi",
+     *     deprecated=true,
      *     operationId="esiV1",
+     *     summary="See GET /app/v2/esi",
+     *     tags={"Application - ESI"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="esi-path-query",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="datasource",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="",
+     *         @OA\JsonContent(type="string"),
+     *         @OA\Header(
+     *             header="Expires",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="304",
+     *         description="",
+     *         @OA\Header(
+     *             header="Expires",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="420",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="429",
+     *         description="",
+     *         description="Too many errors, see reason phrase for more.",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="503",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="504",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function esiV1(ServerRequestInterface $request, ?string $path = null): ResponseInterface
+    {
+        return $this->esiRequest($request, 'GET', $path, 1);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/app/v2/esi",
+     *     operationId="esiV2",
      *     summary="Makes an ESI GET request on behalf on an EVE character and returns the result.",
      *     description="Needs role: app-esi<br>
      *         Public ESI routes are not allowed.<br>
@@ -167,7 +251,7 @@ class EsiController extends BaseController
      *         @OA\Header(
      *             header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             @OA\Schema(type="integer")
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
@@ -176,7 +260,7 @@ class EsiController extends BaseController
      *         @OA\Header(
      *             header="Expires",
      *             description="RFC7231 formatted datetime string",
-     *             @OA\Schema(type="integer")
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
@@ -201,8 +285,7 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)
-                            or API rate limit exceeded.",
+     *         description="Too many errors, see body for more.",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
@@ -221,33 +304,123 @@ class EsiController extends BaseController
      *         @OA\JsonContent(type="string")
      *     )
      * )
+     * @noinspection PhpUnused
      */
-    public function esiV1(ServerRequestInterface $request, ?string $path = null): ResponseInterface
+    public function esiV2(ServerRequestInterface $request, ?string $path = null): ResponseInterface
     {
-        return $this->esiRequest($request, 'GET', $path);
+        return $this->esiRequest($request, 'GET', $path, 2);
     }
 
     /**
-     * @noinspection PhpUnused
      * @OA\Post(
      *     path="/app/v1/esi",
+     *     deprecated=true,
      *     operationId="esiPostV1",
-     *     summary="Same as GET /app/v1/esi, but for POST requests.",
+     *     summary="See POST /app/v2/esi",
      *     tags={"Application - ESI"},
      *     security={{"BearerAuth"={}}},
      *     @OA\Parameter(
      *         name="esi-path-query",
      *         in="query",
      *         required=true,
-     *         description="The ESI path and query string (without the datasource parameter).",
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="datasource",
      *         in="query",
      *         required=true,
-     *         description="The EVE character ID those token should be used to make the ESI request. Optionally
-                            followed by a colon and the name of an EVE login to use an alternative ESI token.",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="",
+     *         @OA\MediaType(
+     *             mediaType="text/plain",
+     *             @OA\Schema(type="string")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="",
+     *         @OA\JsonContent(type="string"),
+     *         @OA\Header(
+     *             header="Expires",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="304",
+     *         description="",
+     *         @OA\Header(
+     *             header="Expires",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="420",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="429",
+     *         description="",
+     *         description="Too many errors, see reason phrase for more.",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="503",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="504",
+     *         description="",
+     *         @OA\JsonContent(type="string")
+     *     )
+     * )
+     */
+    public function esiPostV1(ServerRequestInterface $request, ?string $path = null): ResponseInterface
+    {
+        return $this->esiRequest($request, 'POST', $path, 1);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/app/v2/esi",
+     *     operationId="esiPostV2",
+     *     summary="Same as GET /app/v2/esi, but for POST requests.",
+     *     tags={"Application - ESI"},
+     *     security={{"BearerAuth"={}}},
+     *     @OA\Parameter(
+     *         name="esi-path-query",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="datasource",
+     *         in="query",
+     *         required=true,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\RequestBody(
@@ -260,85 +433,85 @@ class EsiController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="200",
-     *         description="Same as GET /app/v1/esi, see there for details.",
+     *         description="",
      *         @OA\JsonContent(type="string"),
      *         @OA\Header(
      *             header="Expires",
-     *             description="RFC7231 formatted datetime string",
-     *             @OA\Schema(type="integer")
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
      *         response="304",
-     *         description="Not modified",
+     *         description="",
      *         @OA\Header(
      *             header="Expires",
-     *             description="RFC7231 formatted datetime string",
-     *             @OA\Schema(type="integer")
+     *             @OA\Schema(type="string")
      *         )
      *     ),
      *     @OA\Response(
      *         response="400",
-     *         description="Bad request, see reason phrase and/or body for more.",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="401",
-     *         description="Unauthorized",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="403",
-     *         description="Forbidden",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="420",
-     *         description="Error limited",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="429",
-     *         description="Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)
-                            or API rate limit exceeded.",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="500",
-     *         description="Internal server error",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="503",
-     *         description="Service unavailable",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     ),
      *     @OA\Response(
      *         response="504",
-     *         description="Gateway timeout",
+     *         description="",
      *         @OA\JsonContent(type="string")
      *     )
      * )
+     * @noinspection PhpUnused
      */
-    public function esiPostV1(ServerRequestInterface $request, ?string $path = null): ResponseInterface
+    public function esiPostV2(ServerRequestInterface $request, ?string $path = null): ResponseInterface
     {
-        return $this->esiRequest($request, 'POST', $path);
+        return $this->esiRequest($request, 'POST', $path, 2);
     }
 
     private function esiRequest(
         ServerRequestInterface $request,
         string $method,
-        ?string $path = null
+        ?string $path,
+        int $version
     ): ResponseInterface {
         $this->app = $this->appAuth->getApp($request);
 
-        // check error limit
+        // Check error limit.
         if ($this->errorLimitReached()) {
-            $this->log->warning(
-                self::ERROR_MESSAGE_PREFIX . $this->appString().
-                ' exceeded the maximum permissible ESI error limit'
-            );
-            return $this->response->withStatus(429, 'Maximum permissible ESI error limit reached.');
+            $errorMessage = 'Maximum permissible ESI error limit reached';
+            $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString(). ": $errorMessage.");
+            if ($version === 1) {
+                return $this->response->withStatus(429, "$errorMessage.");
+            }
+            return $this->withJson($errorMessage . ' (X-Esi-Error-Limit-Remain <= 20).', 429);
         }
 
         // get/validate input
@@ -361,19 +534,30 @@ class EsiController extends BaseController
             } else { // empty($characterId)
                 $reason = 'The datasource parameter cannot be empty, it must contain an EVE character ID';
             }
-            return $this->response->withStatus(400, $reason);
+            if ($version === 1) {
+                return $this->response->withStatus(400, $reason);
+            }
+            return $this->withJson($reason, 400);
         }
 
         // get character
         $character = $this->repositoryFactory->getCharacterRepository()->find($characterId);
         if ($character === null) {
-            return $this->response->withStatus(400, 'Character not found.');
+            $errorMessage = 'Character not found.';
+            if ($version === 1) {
+                return $this->response->withStatus(400, $errorMessage);
+            }
+            return $this->withJson($errorMessage, 400);
         }
 
         // Get the token - This executes an ESI request to refresh the token as needed.
         $token = $this->tokenService->getToken($character, $eveLoginName);
         if ($token === '') {
-            return $this->response->withStatus(400, 'Character has no valid token.');
+            $errorMessage = 'Character has no valid token.';
+            if ($version === 1) {
+                return $this->response->withStatus(400, $errorMessage);
+            }
+            return $this->withJson($errorMessage, 400);
         }
 
         $body = $method === 'POST' ? $request->getBody()->__toString() : null;
