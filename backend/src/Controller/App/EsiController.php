@@ -514,15 +514,8 @@ class EsiController extends BaseController
     ): ResponseInterface {
         $this->app = $this->appAuth->getApp($request);
 
-        // Check error limit.
-        if (($retryAfter = $this->errorLimitRemaining()) > 0) {
-            $errorMessage = 'Maximum permissible ESI error limit reached';
-            $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString(). ": $errorMessage.");
-            if ($version === 1) {
-                return $this->response->withStatus(429, "$errorMessage.");
-            }
-            $this->response = $this->response->withHeader('Retry-After', "$retryAfter");
-            return $this->withJson($errorMessage . ' (X-Esi-Error-Limit-Remain <= 20).', 429);
+        if ($this->checkErrors($version)) {
+            return $this->response;
         }
 
         // get/validate input
@@ -577,6 +570,39 @@ class EsiController extends BaseController
         return $this->buildResponse($esiResponse);
     }
 
+    private function checkErrors(int $version): bool
+    {
+        // Check error limit.
+        if (($retryAt1 = $this->errorLimitRemaining()) > 0) {
+            $errorMessage = 'Maximum permissible ESI error limit reached';
+            $this->build429Response(
+                $errorMessage . ' (X-Esi-Error-Limit-Remain <= 20).',
+                $retryAt1,
+                $version,
+                "$errorMessage."
+            );
+            return true;
+        }
+
+        // Check 429 rate limit.
+        if (($retryAt2 = (int)$this->storage->get(Variables::ESI_RATE_LIMIT)) > time()) {
+            $this->build429Response('ESI rate limit reached.', $retryAt2, $version);
+            return true;
+        }
+
+        // Check throttled.
+        if (($retryAt3 = (int)$this->storage->get(Variables::ESI_THROTTLED)) > time()) {
+            $this->build429Response(
+                'Undefined 429 response. You have been temporarily throttled.',
+                $retryAt3,
+                $version
+            );
+            return true;
+        }
+
+        return false;
+    }
+
     private function errorLimitRemaining(): int
     {
         $var = $this->storage->get(Variables::ESI_ERROR_LIMIT);
@@ -593,10 +619,21 @@ class EsiController extends BaseController
         }
 
         if ($values->remain <= 20) {
-            return $resetTime - time();
+            return $resetTime;
         }
 
         return 0;
+    }
+
+    private function build429Response(string $message, int $retryAfter, int $version, ?string $messageV1 = null): void
+    {
+        $this->log->warning(self::ERROR_MESSAGE_PREFIX . $this->appString(). ": $message");
+        if ($version === 1) {
+            $this->response = $this->response->withStatus(429, $messageV1 ?: $message);
+        } else {
+            $this->response = $this->response->withHeader('Retry-After', (string)max(1, $retryAfter - time()));
+            $this->response = $this->withJson($message, 429);
+        }
     }
 
     private function getEsiPathAndQueryParams(ServerRequestInterface $request, ?string $path): array

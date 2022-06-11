@@ -6,10 +6,14 @@ dd mm yyyy
 
 - **BC Break**: The `/core.alt` and `/core.managed-alt` login URLs have been removed. Use `core.default` and 
   `core.managed` respectively.
-- Fixed type of Expires header from integer to string in OpenAPI definition file for /app/v1/esi.
+
+ESI endpoint for apps:
 - Added `/app/v2/esi` and deprecated `/app/v1/esi`. The new version contains error messages in the body
   instead of the reason phrase.
+- Added checks for ESI 429 errors (rate limit and throttled). If these have occurred and the wait time has not 
+  yet expired, Core now returns a 429 error itself instead of making the ESI request.
 - Added `Retry-After` header for 429 errors from `/app/v2/esi` that are from Core, not ESI.
+- Fixed type of `Expires` header from `integer` to `string` in OpenAPI definition file for /app/v1/esi.
 
 ## 1.32.0
 

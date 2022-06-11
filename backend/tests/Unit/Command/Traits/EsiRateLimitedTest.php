@@ -57,13 +57,16 @@ class EsiRateLimitedTest extends TestCase
 
     public function testCheckForErrors_Throttled()
     {
-        $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() + 60));
-
         $this->esiRateLimited($this->testStorage, $this->testLogger, true);
 
+        $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() - 5));
         $this->checkForErrors();
+        $this->assertNull($this->getSleepInSeconds());
+        $this->assertSame(0, count($this->testLogger->getHandler()->getRecords()));
 
-        $this->assertSame(60, $this->getSleepInSeconds());
+        $this->testStorage->set(Variables::ESI_THROTTLED, (string)(time() + 5));
+        $this->checkForErrors();
+        $this->assertSame(5, $this->getSleepInSeconds());
         $this->assertMatchesRegularExpression(
             "/EsiRateLimited: hit 'throttled', sleeping \d+ seconds/",
             $this->testLogger->getHandler()->getRecords()[0]['message']

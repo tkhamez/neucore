@@ -260,7 +260,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame('Maximum permissible ESI error limit reached.', $response->getReasonPhrase());
     }
 
-    public function testEsiV2429()
+    public function testEsiV2429_ErrorLimit()
     {
         $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
 
@@ -279,7 +279,7 @@ class EsiControllerTest extends WebTestCase
         );
 
         $this->assertSame(429, $response->getStatusCode());
-        $this->assertGreaterThan('0', $response->getHeaderLine('Retry-After'));
+        $this->assertGreaterThan('84', $response->getHeaderLine('Retry-After'));
         $this->assertLessThanOrEqual('86', $response->getHeaderLine('Retry-After'));
         $this->assertSame(
             '"Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20)."',
@@ -287,7 +287,7 @@ class EsiControllerTest extends WebTestCase
         );
         $this->assertSame(
             'App\EsiController: application ' . $appId .
-            ' "A1": Maximum permissible ESI error limit reached.',
+            ' "A1": Maximum permissible ESI error limit reached (X-Esi-Error-Limit-Remain <= 20).',
             $this->logger->getHandler()->getRecords()[0]['message']
         );
     }
@@ -310,7 +310,7 @@ class EsiControllerTest extends WebTestCase
             [StorageInterface::class => $this->storage]
         );
 
-        $this->assertNotSame(429, $response->getStatusCode());
+        $this->assertNotEquals(429, $response->getStatusCode());
     }
 
     public function testEsiV1429_ReachedAndReset()
@@ -331,7 +331,73 @@ class EsiControllerTest extends WebTestCase
             [StorageInterface::class => $this->storage]
         );
 
-        $this->assertNotSame(429, $response->getStatusCode());
+        $this->assertNotEquals(429, $response->getStatusCode());
+    }
+
+    public function testEsiV2429_RateLimit()
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $this->storage->set(Variables::ESI_RATE_LIMIT, (string)(time() - 10));
+        $response1 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+        );
+        $this->assertNotEquals(429, $response1->getStatusCode());
+
+        $this->storage->set(Variables::ESI_RATE_LIMIT, (string)(time() + 20));
+        $response2 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+        );
+
+        $this->assertSame(429, $response2->getStatusCode());
+        $this->assertGreaterThan('18', $response2->getHeaderLine('Retry-After'));
+        $this->assertLessThanOrEqual('20', $response2->getHeaderLine('Retry-After'));
+        $errorMessage = 'ESI rate limit reached.';
+        $this->assertSame(json_encode($errorMessage), $response2->getBody()->__toString());
+        $this->assertSame(
+            "App\EsiController: application $appId \"A1\": $errorMessage",
+            $this->logger->getHandler()->getRecords()[0]['message']
+        );
+    }
+
+    public function testEsiV2429_Throttled()
+    {
+        $appId = $this->helper->addApp('A1', 's1', [Role::APP, Role::APP_ESI])->getId();
+
+        $this->storage->set(Variables::ESI_THROTTLED, (string)(time() - 5));
+        $response1 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')]
+        );
+        $this->assertNotEquals(429, $response1->getStatusCode());
+
+        $this->storage->set(Variables::ESI_THROTTLED, (string)(time() + 5));
+        $response2 = $this->runApp(
+            'GET',
+            '/api/app/v2/esi',
+            [],
+            ['Authorization' => 'Bearer ' . base64_encode($appId . ':s1')],
+            [LoggerInterface::class => $this->logger, StorageInterface::class => $this->storage]
+        );
+
+        $this->assertSame(429, $response2->getStatusCode());
+        $this->assertGreaterThan('3', $response2->getHeaderLine('Retry-After'));
+        $this->assertLessThanOrEqual('5', $response2->getHeaderLine('Retry-After'));
+        $errorMessage = 'Undefined 429 response. You have been temporarily throttled.';
+        $this->assertSame(json_encode($errorMessage), $response2->getBody()->__toString());
+        $this->assertSame(
+            "App\EsiController: application $appId \"A1\": $errorMessage",
+            $this->logger->getHandler()->getRecords()[0]['message']
+        );
     }
 
     public function testEsiV1500_ClientException()
