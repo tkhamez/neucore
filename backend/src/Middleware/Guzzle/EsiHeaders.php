@@ -12,15 +12,9 @@ use Psr\Log\LoggerInterface;
 
 class EsiHeaders
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
+    private StorageInterface $storage;
 
     public function __construct(LoggerInterface $logger, StorageInterface $storage)
     {
@@ -28,11 +22,7 @@ class EsiHeaders
         $this->storage = $storage;
     }
 
-    /**
-     * @param callable $handler
-     * @return \Closure
-     */
-    public function __invoke(callable $handler)
+    public function __invoke(callable $handler): \Closure
     {
         return function (RequestInterface $request, array $options) use ($handler) {
             $requestUri = $request->getUri()->__toString();
@@ -60,10 +50,12 @@ class EsiHeaders
         }
 
         // Log deprecated warnings
-        if ($response->hasHeader('warning')) {
-            $warning = $response->getHeader('warning')[0];
-            if (strpos($warning, '299') !== false) { // i. e. "299 - This route is deprecated"
-                $this->logger->warning($requestUri . ': ' .$warning);
+        foreach (['warning', 'Warning'] as $headerName) {
+            if ($response->hasHeader($headerName)) {
+                $warning = $response->getHeader($headerName)[0];
+                if (strpos($warning, '299') !== false) { // i. e. "299 - This route is deprecated"
+                    $this->logger->warning("$requestUri: $warning");
+                }
             }
         }
     }

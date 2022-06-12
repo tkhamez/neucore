@@ -13,6 +13,7 @@ ESI endpoint for apps:
 - Added checks for ESI 429 errors (rate limit and throttled). If these have occurred and the wait time has not 
   yet expired, Core now returns a 429 error itself instead of making the ESI request.
 - Added `Retry-After` header for 429 errors from `/app/v2/esi` that are from Core, not ESI.
+- The `Retry-After` header from ESI is now also passed through, if it is present.
 - Fixed type of `Expires` header from `integer` to `string` in OpenAPI definition file for /app/v1/esi.
 
 ## 1.32.0

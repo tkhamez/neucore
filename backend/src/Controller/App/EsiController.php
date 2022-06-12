@@ -728,6 +728,7 @@ class EsiController extends BaseController
             'X-Pages',
             'warning',
             'Warning',
+            'Retry-After',
         ];
         foreach ($esiResponse->getHeaders() as $name => $value) {
             if (in_array($name, $headerAllowList)) {

@@ -17,25 +17,13 @@ use Tests\Logger;
 
 class EsiHeadersTest extends TestCase
 {
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var Logger
-     */
-    private $logger;
+    private Logger $logger;
 
-    /**
-     * @var SystemVariableStorage
-     */
-    private $storage;
+    private SystemVariableStorage $storage;
 
-    /**
-     * @var EsiHeaders
-     */
-    private $obj;
+    private EsiHeaders $obj;
 
     protected function setUp(): void
     {
@@ -74,15 +62,20 @@ class EsiHeadersTest extends TestCase
     {
         $response = new Response(
             200,
-            ['warning' => ['299 - This route is deprecated']]
+            ['warning' => ['299 - This route is deprecated'], 'Warning' => ['299 - This route is deprecated']]
         );
 
         $function = $this->obj->__invoke($this->helper->getGuzzleHandler($response));
         $function(new Request('GET', 'https://local.host/esi/path'), []);
 
+        $this->assertSame(2, count($this->logger->getHandler()->getRecords()));
         $this->assertSame(
             'https://local.host/esi/path: 299 - This route is deprecated',
             $this->logger->getHandler()->getRecords()[0]['message']
+        );
+        $this->assertSame(
+            'https://local.host/esi/path: 299 - This route is deprecated',
+            $this->logger->getHandler()->getRecords()[1]['message']
         );
     }
 }

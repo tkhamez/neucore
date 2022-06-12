@@ -474,14 +474,7 @@ class EsiControllerTest extends WebTestCase
         $httpClient = new Client();
         $httpClient->setResponse(new Response(
             200,
-            [
-                'Content-Type' => ['application/json; charset=UTF-8'],
-                'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
-                'X-Esi-Error-Limit-Remain' => ['100'],
-                'X-Esi-Error-Limit-Reset' => ['60'],
-                'X-Pages' => ['3'],
-                'warning' => ['199 - This route has an upgrade available'],
-            ],
+            ['Warning' => ['199 - This route has an upgrade available']],
             '{"key": "value"}'
         ));
 
@@ -499,12 +492,7 @@ class EsiControllerTest extends WebTestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"key": "value"}', $response->getBody()->__toString());
         $this->assertSame([
-            'Content-Type' => ['application/json; charset=UTF-8'],
-            'Expires' => ['Sun, 10 Feb 2019 19:22:52 GMT'],
-            'X-Esi-Error-Limit-Remain' => ['100'],
-            'X-Esi-Error-Limit-Reset' => ['60'],
-            'X-Pages' => ['3'],
-            'warning' => ['199 - This route has an upgrade available'],
+            'Warning' => ['199 - This route has an upgrade available'], // capital W
         ], $response->getHeaders());
     }
 
@@ -523,6 +511,7 @@ class EsiControllerTest extends WebTestCase
                 'X-Esi-Error-Limit-Reset' => ['60'],
                 'X-Pages' => ['3'],
                 'warning' => ['199 - This route has an upgrade available'],
+                'Retry-After' => ['55']
             ],
             '{"key": "value"}'
         ));
@@ -546,7 +535,8 @@ class EsiControllerTest extends WebTestCase
             'X-Esi-Error-Limit-Remain' => ['100'],
             'X-Esi-Error-Limit-Reset' => ['60'],
             'X-Pages' => ['3'],
-            'warning' => ['199 - This route has an upgrade available'],
+            'warning' => ['199 - This route has an upgrade available'], // lower case W
+            'Retry-After' => ['55'], // lower case W
         ], $response->getHeaders());
     }
 
