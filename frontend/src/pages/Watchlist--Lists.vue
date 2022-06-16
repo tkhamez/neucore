@@ -80,10 +80,18 @@
                             <td>
                                 <a v-if="listName === 'Alliance'"
                                    :href="`https://evewho.com/alliance/${entity.id}`"
-                                   target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
+                                   target="_blank" rel="noopener noreferrer">
+                                    {{ entity.name }}
+                                    <span role="img" style="color: grey;"
+                                          class="small fa-solid fa-arrow-up-right-from-square"></span>
+                                </a>
                                 <a v-if="listName === 'Corporation'"
                                    :href="`https://evewho.com/corporation/${entity.id}`"
-                                   target="_blank" rel="noopener noreferrer">{{ entity.name }}</a>
+                                   target="_blank" rel="noopener noreferrer">
+                                    {{ entity.name }}
+                                    <span role="img" style="color: grey;"
+                                          class="small fa-solid fa-arrow-up-right-from-square"></span>
+                                </a>
                             </td>
                             <td v-if="listName === 'Corporation'">
                                 <span v-if="entity.alliance">

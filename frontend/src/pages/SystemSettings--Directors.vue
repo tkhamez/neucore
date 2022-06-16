@@ -19,9 +19,11 @@
                 <tbody>
                     <tr v-for="director in directors">
                         <td>
-                            <a :href="'https://evewho.com/character/' + director.value['character_id']"
+                            <a :href="`https://evewho.com/character/${director.value['character_id']}`"
                                title="Eve Who" target="_blank" rel="noopener noreferrer">
                                 {{ director.value['character_name'] }}
+                                <span role="img" style="color: grey;"
+                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
                             </a>
                         </td>
                         <td>{{ director.value['corporation_ticker'] }}</td>

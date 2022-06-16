@@ -328,6 +328,8 @@ function configureDataTable(vm) {
                     <a href="https://evewho.com/character/${row.id}"
                         target="_blank" rel="noopener noreferrer" title="Eve Who">
                         ${(row.name ? row.name : row.id)}
+                        <span role="img" style="color: grey;"
+                              class="small fa-solid fa-arrow-up-right-from-square"></span>
                     </a>`;
             }
         }, {

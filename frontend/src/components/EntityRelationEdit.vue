@@ -70,7 +70,11 @@ Select and table to add and remove objects from other objects.
                 Director(s):
                 <span v-for="director in directors">
                     <a :href="`https://evewho.com/character/${director.id}`" title="Eve Who" target="_blank"
-                       rel="noopener noreferrer">{{ director.name }}</a>&nbsp;
+                       rel="noopener noreferrer">
+                        {{ director.name }}
+                        <span role="img" style="color: grey;"
+                              class="small fa-solid fa-arrow-up-right-from-square"></span>
+                    </a>&nbsp;
                 </span>
             </p>
             <p v-cloak v-if="type === 'Watchlist' && contentType === 'groups'">
@@ -143,10 +147,14 @@ Select and table to add and remove objects from other objects.
                             <a v-if="contentType === 'corporations'" :href="`https://evewho.com/corporation/${row.id}`"
                                target="_blank" rel="noopener noreferrer">
                                 {{ row.name }}
+                                <span role="img" style="color: grey;"
+                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
                             </a>
                             <a v-else-if="contentType === 'alliances'" :href="`https://evewho.com/alliance/${row.id}`"
                                target="_blank" rel="noopener noreferrer">
                                 {{ row.name }}
+                                <span role="img" style="color: grey;"
+                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
                             </a>
                             <a v-else-if="contentType === 'managers' && hasRole('user-admin')"
                                :href="`#UserAdmin/${row.id}`" title="User Administration">{{ row.name }}</a>
@@ -162,6 +170,8 @@ Select and table to add and remove objects from other objects.
                                target="_blank" rel="noopener noreferrer">
                                 [{{ row.alliance.ticker }}]
                                 {{ row.alliance.name }}
+                                <span role="img" style="color: grey;"
+                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
                             </a>
                         </td>
                         <td v-if="contentType === 'corporations' && type === 'WatchlistAllowlist'">

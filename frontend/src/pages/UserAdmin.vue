@@ -219,6 +219,8 @@
                                         <a :href="'https://evewho.com/character/' + character.id"
                                            title="Eve Who" target="_blank" rel="noopener noreferrer">
                                             {{ character.name }}
+                                            <span role="img" style="color: grey;"
+                                                  class="small fa-solid fa-arrow-up-right-from-square"></span>
                                         </a>&nbsp;
                                         <character-name-changes :character="character"></character-name-changes>
                                     </td>
@@ -281,6 +283,8 @@
                                             <a :href="`https://evewho.com/character/${movedCharacter.characterId}`"
                                                title="Eve Who" target="_blank" rel="noopener noreferrer">
                                                 {{ movedCharacter.characterName }}
+                                                <span role="img" style="color: grey;"
+                                                      class="small fa-solid fa-arrow-up-right-from-square"></span>
                                             </a>
                                         </td>
                                         <td>
