@@ -332,7 +332,7 @@ class Account
     }
 
     /**
-     * Removes a character from it's current player account,
+     * Removes a character from its current player account,
      * adds it to the new player and creates a RemovedCharacter record.
      *
      * Does not flush the entity manager at the end.

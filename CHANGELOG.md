@@ -6,6 +6,7 @@ dd mm yyyy
 
 - **BC Break**: The `/core.alt` and `/core.managed-alt` login URLs have been removed. Use `core.default` and 
   `core.managed` respectively.
+- Added new reason for character deletion for admins: lost access.
 
 ESI endpoint for apps:
 - Added `/app/v2/esi` and deprecated `/app/v1/esi`. The new version contains error messages in the body

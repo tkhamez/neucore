@@ -50,25 +50,13 @@ class PlayerController extends BaseController
 
     private const COLUMN_GROUP = 'group';
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private LoggerInterface $log;
 
-    /**
-     * @var UserAuth
-     */
-    private $userAuth;
+    private UserAuth $userAuth;
 
-    /**
-     * @var Account
-     */
-    private $account;
+    private Account $account;
 
-    /**
-     * @var array
-     */
-    private $assignableRoles = [
+    private array $assignableRoles = [
         Role::APP_ADMIN,
         Role::GROUP_ADMIN,
         Role::SERVICE_ADMIN,
@@ -82,10 +70,7 @@ class PlayerController extends BaseController
         Role::WATCHLIST_ADMIN,
     ];
 
-    /**
-     * @var array
-     */
-    private $availableStatus = [
+    private array $availableStatus = [
         Player::STATUS_STANDARD,
         Player::STATUS_MANAGED,
     ];
@@ -1036,7 +1021,10 @@ class PlayerController extends BaseController
      *         in="query",
      *         description="Specifies a reason if a user admin triggered the deletion.
                             ('deleted-by-admin' will not create a 'Removed Character' entry.)",
-     *         @OA\Schema(type="string", enum={"deleted-owner-changed", "deleted-manually", "deleted-by-admin"})
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"deleted-owner-changed", "deleted-lost-access", "deleted-manually", "deleted-by-admin"}
+     *         )
      *     ),
      *     @OA\Response(
      *         response="204",
@@ -1085,11 +1073,12 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        // check for a valid reason if an admin deletes the character,
+        // Check for a valid reason if an admin deletes the character,
         // otherwise check if character belongs to the logged in player account.
-        if ($admin && ! in_array($reason, [
-            RemovedCharacter::REASON_DELETED_MANUALLY,
+        if ($admin && !in_array($reason, [
             RemovedCharacter::REASON_DELETED_OWNER_CHANGED,
+            RemovedCharacter::REASON_DELETED_LOST_ACCESS,
+            RemovedCharacter::REASON_DELETED_MANUALLY,
             RemovedCharacter::REASON_DELETED_BY_ADMIN,
         ])) {
             return $this->response->withStatus(403);

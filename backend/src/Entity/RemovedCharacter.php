@@ -34,11 +34,6 @@ class RemovedCharacter implements \JsonSerializable
     public const REASON_MOVED_OWNER_CHANGED = 'moved-owner-changed';
 
     /**
-     * User has deleted the character from their player account..
-     */
-    public const REASON_DELETED_MANUALLY = 'deleted-manually';
-
-    /**
      * EVE character was deleted/biomassed.
      */
     public const REASON_DELETED_BIOMASSED = 'deleted-biomassed';
@@ -49,6 +44,17 @@ class RemovedCharacter implements \JsonSerializable
     public const REASON_DELETED_OWNER_CHANGED = 'deleted-owner-changed';
 
     /**
+     * Deleted by admin because the player lost access to the EVE account.
+     */
+    public const REASON_DELETED_LOST_ACCESS = 'deleted-lost-access';
+
+    /**
+     * User has deleted the character from their player account, or an admin
+     * deleted it for a different reason than owner change or lost access.
+     */
+    public const REASON_DELETED_MANUALLY = 'deleted-manually';
+
+    /**
      * Character was deleted by an admin, this does not create a RemovedCharacter database entry.
      */
     public const REASON_DELETED_BY_ADMIN = 'deleted-by-admin';
@@ -57,9 +63,8 @@ class RemovedCharacter implements \JsonSerializable
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
-     * @var integer
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * The old player account.
@@ -67,55 +72,49 @@ class RemovedCharacter implements \JsonSerializable
      * @OA\Property(ref="#/components/schemas/Player", description="The old player account.")
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="removedCharacters")
      * @ORM\JoinColumn(nullable=false)
-     * @var Player
      */
-    private $player;
+    private ?Player $player = null;
 
     /**
      * The new player account.
      *
      * @ORM\ManyToOne(targetEntity="Player", inversedBy="incomingCharacters")
      * @ORM\JoinColumn(name="new_player_id")
-     * @var Player|null
      */
-    private $newPlayer;
+    private ?Player $newPlayer = null;
 
     /**
      * EVE character ID.
      *
      * @OA\Property(format="int64")
      * @ORM\Column(type="bigint", name="character_id")
-     * @var integer
      */
-    private $characterId;
+    private ?int $characterId = null;
 
     /**
      * EVE character name.
      *
      * @OA\Property()
      * @ORM\Column(type="string", name="character_name", length=255)
-     * @var string
      */
-    private $characterName;
+    private ?string $characterName = null;
 
     /**
      * Date of removal.
      *
      * @OA\Property()
      * @ORM\Column(type="datetime", name="removed_date")
-     * @var \DateTime
      */
-    private $removedDate;
+    private ?\DateTime $removedDate = null;
 
     /**
      * How it was removed (deleted or moved to another account).
      *
-     * @OA\Property(enum={"moved", "moved-owner-changed", "deleted-manually", "deleted-biomassed",
-                          "deleted-owner-changed"})
+     * @OA\Property(enum={"moved", "moved-owner-changed", "deleted-biomassed",
+                          "deleted-owner-changed", "deleted-lost-access", "deleted-manually"})
      * @ORM\Column(type="string", length=32)
-     * @var string
      */
-    private $reason;
+    private ?string $reason = null;
 
     /**
      * The player who deleted the character (only set if it was deleted via the API).
@@ -123,9 +122,8 @@ class RemovedCharacter implements \JsonSerializable
      * @OA\Property(ref="#/components/schemas/Player", nullable=true)
      * @ORM\ManyToOne(targetEntity="Player")
      * @ORM\JoinColumn(name="deleted_by")
-     * @var Player|null
      */
-    private $deletedBy;
+    private ?Player $deletedBy = null;
 
     /**
      * Contains only information that is of interest for clients.
@@ -190,8 +188,7 @@ class RemovedCharacter implements \JsonSerializable
     public function getCharacterId(): ?int
     {
         // cast to int because Doctrine creates string for type bigint
-        /** @noinspection PhpCastIsUnnecessaryInspection */
-        return $this->characterId !== null ? (int) $this->characterId : null;
+        return $this->characterId !== null ? (int)$this->characterId : null;
     }
 
     public function setCharacterName(string $characterName): self

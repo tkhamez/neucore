@@ -23,24 +23,28 @@
                             <span class="text-muted small">
                                 Choose this if the character was sold to another player, check the
                                 <a href="https://forums.eveonline.com/c/marketplace/character-bazaar"
-                                   target="_blank" rel="noopener noreferrer">Character Bazaar</a>.<br>
-                                Creates an appropriate "removed character" entry.
+                                   target="_blank" rel="noopener noreferrer">Character Bazaar</a>.
+                                Creates an "removed character" entry.
+                            </span>
+                        </label>
+                        <label class="mb-3">
+                            <input type="radio" name="reason" value="deleted-lost-access" v-model="deleteReason">
+                            Player Lost Access<br>
+                            <span class="text-muted small">
+                                Select this if the player has lost access to the EVE account that contains
+                                this character. Creates an "removed character" entry.
                             </span>
                         </label>
                         <label class="mb-3">
                             <input type="radio" name="reason" value="deleted-manually" v-model="deleteReason">
-                            Simon says<br>
+                            Other Reason<br>
                             <span class="text-muted small">
                                  Creates a "removed character" entry with the reason "deleted-manually".
                             </span>
                         </label>
                         <label>
                             <input type="radio" name="reason" value="deleted-by-admin" v-model="deleteReason">
-                            <span title="see no evil">&#x1F648</span>
-                            <span title="hear no evil">&#x1F649</span>
-                            <span title="speak no evil">&#x1F64A</span>
-                            <span class="small"> - Nope</span>
-                            <br>
+                            Without a Trace<br>
                             <span class="text-muted small">
                                 Does <em>not</em> create a "removed character" entry.
                             </span>
