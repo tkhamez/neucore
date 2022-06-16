@@ -120,14 +120,14 @@ class UpdateServiceAccounts extends Command
         $this->charactersOrPlayersNotFound = 0;
 
         foreach (array_values($allAccounts) as $i => $characterId) {
-            $this->updateAccount($characterId, $implementation);
+            $this->updateAccount((int)$characterId, $implementation);
             if ($i % 100 === 0) {
                 $this->entityManager->clear(); // reduce memory usage
             }
             usleep($sleep * 1000); // reduce CPU usage
         }
         foreach (array_values($allPlayerAccounts) as $i => $playerId) {
-            $this->updatePlayerAccount($playerId, $implementation);
+            $this->updatePlayerAccount((int)$playerId, $implementation);
             if ($i % 100 === 0) {
                 $this->entityManager->clear(); // reduce memory usage
             }
