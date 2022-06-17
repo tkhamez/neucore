@@ -11,6 +11,7 @@ use Neucore\Entity\EveLogin;
 use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
 use Neucore\Exception\RuntimeException;
 use Neucore\Factory\RepositoryFactory;
 use Psr\Http\Message\ServerRequestInterface;
@@ -150,6 +151,33 @@ class UserAuth implements RoleProviderInterface
         }
 
         return $this->objectManager->flush();
+    }
+
+    public function hasRequiredGroups(Service $service): bool
+    {
+        $character = $this->getUser();
+        if ($character === null) {
+            return false;
+        }
+
+        $serviceConfig = $service->getConfiguration();
+
+        if (
+            !empty($serviceConfig->requiredGroups) &&
+            $this->accountService->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
+        ) {
+            return false;
+        }
+
+        $hasOneGroup = empty($serviceConfig->requiredGroups);
+        foreach ((array)$serviceConfig->requiredGroups as $group) {
+            $group = (int)$group;
+            if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
+                $hasOneGroup = true;
+            }
+        }
+
+        return $hasOneGroup;
     }
 
     /**

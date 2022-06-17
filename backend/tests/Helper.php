@@ -452,4 +452,17 @@ class Helper
             };
         };
     }
+
+    public function setupDeactivateAccount(): Character
+    {
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $this->getEm()->persist($setting1);
+        $this->getEm()->persist($setting2);
+        $this->getEm()->persist($setting3);
+        $this->getEm()->flush();
+        $corporation = (new Corporation())->setId(101);
+        return (new Character())->setCorporation($corporation)->addEsiToken((new EsiToken())->setValidToken(false));
+    }
 }

@@ -25,6 +25,7 @@ use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Entity\Watchlist;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\CoreGroup;
 use Neucore\Repository\CharacterNameChangeRepository;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\PlayerLoginsRepository;
@@ -1005,6 +1006,18 @@ class AccountTest extends TestCase
         $this->assertFalse($players[1]->hasRole(Role::GROUP_MANAGER));
         $this->assertTrue($players[0]->hasRole(Role::APP_MANAGER));
         $this->assertFalse($players[1]->hasRole(Role::APP_MANAGER));
+    }
+
+    public function testGetCoreGroups()
+    {
+        $this->helper->emptyDb();
+        $character = $this->helper->setupDeactivateAccount();
+
+        $player = (new Player())->addGroup(new Group());
+        $this->assertEquals([new CoreGroup(0, '')], $this->service->getCoreGroups($player));
+
+        $player->addCharacter($character); // character with invalid ESI token
+        $this->assertEquals([], $this->service->getCoreGroups($player));
     }
 
     private function setUpUpdateGroupsData(): void

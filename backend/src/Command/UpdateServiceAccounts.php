@@ -14,6 +14,7 @@ use Neucore\Plugin\ServiceInterface;
 use Neucore\Repository\CharacterRepository;
 use Neucore\Repository\PlayerRepository;
 use Neucore\Repository\ServiceRepository;
+use Neucore\Service\Account;
 use Neucore\Service\ServiceRegistration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -36,6 +37,8 @@ class UpdateServiceAccounts extends Command
 
     private ServiceRegistration $serviceRegistration;
 
+    private Account $account;
+
     private ?int $accountsUpdated = null;
 
     private ?int $updatesFailed = null;
@@ -46,7 +49,8 @@ class UpdateServiceAccounts extends Command
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         RepositoryFactory $repositoryFactory,
-        ServiceRegistration $serviceRegistration
+        ServiceRegistration $serviceRegistration,
+        Account $account
     ) {
         parent::__construct();
         $this->logOutput($logger);
@@ -56,6 +60,7 @@ class UpdateServiceAccounts extends Command
         $this->characterRepository = $repositoryFactory->getCharacterRepository();
         $this->playerRepository = $repositoryFactory->getPlayerRepository();
         $this->serviceRegistration = $serviceRegistration;
+        $this->account = $account;
     }
 
     protected function configure(): void
@@ -151,7 +156,7 @@ class UpdateServiceAccounts extends Command
                 $main = $character->getPlayer()->getMain()->toCoreCharacter();
             }
             $coreCharacter = $character->toCoreCharacter();
-            $coreGroups = $this->serviceRegistration->getCoreGroups($character->getPlayer());
+            $coreGroups = $this->account->getCoreGroups($character->getPlayer());
         } else {
             $this->charactersOrPlayersNotFound++;
             $coreCharacter = new CoreCharacter($characterId, 0);
@@ -175,7 +180,7 @@ class UpdateServiceAccounts extends Command
         $player = $this->playerRepository->find($playerId);
         if ($player && $player->getMain() !== null) {
             $coreCharacterMain = $player->getMain()->toCoreCharacter();
-            $coreGroups = $this->serviceRegistration->getCoreGroups($player);
+            $coreGroups = $this->account->getCoreGroups($player);
         } else {
             $this->charactersOrPlayersNotFound++;
             $coreCharacterMain = new CoreCharacter(0, $playerId);

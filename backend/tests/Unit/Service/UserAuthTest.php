@@ -12,9 +12,15 @@ use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Client\Token\AccessToken;
 use Neucore\Entity\Corporation;
 use Neucore\Entity\EveLogin;
+use Neucore\Entity\Group;
+use Neucore\Entity\Player;
 use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
+use Neucore\Entity\Service;
+use Neucore\Entity\ServiceConfiguration;
+use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\CoreGroup;
 use Neucore\Repository\EsiTokenRepository;
 use Neucore\Repository\RemovedCharacterRepository;
 use Neucore\Service\SessionData;
@@ -408,5 +414,50 @@ class UserAuthTest extends TestCase
         $this->assertLessThanOrEqual(time(), $tokens[1]->getValidTokenTime()->getTimestamp());
         $this->assertLessThanOrEqual(time(), $tokens[1]->getLastChecked()->getTimestamp());
         $this->assertTrue($tokens[1]->getHasRoles());
+    }
+
+    public function testHasRequiredGroups()
+    {
+        $this->helper->emptyDb();
+        $group = (new Group())->setName('G1');
+        $this->helper->getEm()->persist($group);
+        $this->helper->getEm()->flush();
+
+        // no required group, no logged-in user
+        $service = new Service();
+        $this->assertFalse($this->service->hasRequiredGroups($service));
+
+        // log in user
+        $character = $this->helper->addCharacterMain('Test User', 800);
+        $_SESSION['character_id'] = 800;
+        $this->assertTrue($this->service->hasRequiredGroups($service));
+
+        // add require group
+        $conf = new ServiceConfiguration();
+        $conf->requiredGroups = [$group->getId()];
+        $service->setConfiguration($conf);
+        $this->assertFalse($this->service->hasRequiredGroups($service));
+
+        // add group to player
+        $character->getPlayer()->addGroup($group);
+        $this->assertTrue($this->service->hasRequiredGroups($service));
+
+        // add another require group
+        $conf->requiredGroups[] = 2;
+        $service->setConfiguration($conf);
+        $this->assertTrue($this->service->hasRequiredGroups($service));
+
+        // "deactivate" account
+        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
+        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
+        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
+        $corporation = (new Corporation())->setId(101);
+        $character->setCorporation($corporation)->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
+        $this->helper->getEm()->persist($setting1);
+        $this->helper->getEm()->persist($setting2);
+        $this->helper->getEm()->persist($setting3);
+        $this->helper->getEm()->persist($corporation);
+        $this->helper->getEm()->flush();
+        $this->assertFalse($this->service->hasRequiredGroups($service));
     }
 }

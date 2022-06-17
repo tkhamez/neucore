@@ -6,9 +6,7 @@ namespace Neucore\Service;
 
 use Neucore\Application;
 use Neucore\Entity\Character;
-use Neucore\Entity\Player;
 use Neucore\Entity\Service;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceConfiguration;
@@ -19,54 +17,9 @@ class ServiceRegistration
 {
     private LoggerInterface $log;
 
-    private UserAuth $userAuth;
-
-    private Account $account;
-
-    public function __construct(LoggerInterface $log, UserAuth $userAuth, Account $account)
+    public function __construct(LoggerInterface $log)
     {
         $this->log = $log;
-        $this->userAuth = $userAuth;
-        $this->account = $account;
-    }
-
-    public function hasRequiredGroups(Service $service): bool
-    {
-        $character = $this->userAuth->getUser();
-        if ($character === null) {
-            return false;
-        }
-
-        $serviceConfig = $service->getConfiguration();
-
-        if (
-            !empty($serviceConfig->requiredGroups) &&
-            $this->account->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
-        ) {
-            return false;
-        }
-
-        $hasOneGroup = empty($serviceConfig->requiredGroups);
-        foreach ((array)$serviceConfig->requiredGroups as $group) {
-            $group = (int)$group;
-            if ($group > 0 && $character->getPlayer()->hasGroup($group)) {
-                $hasOneGroup = true;
-            }
-        }
-
-        return $hasOneGroup;
-    }
-
-    /**
-     * @param Player $player
-     * @return CoreGroup[]
-     */
-    public function getCoreGroups(Player $player): array
-    {
-        if ($this->account->groupsDeactivated($player)) { // do not ignore delay
-            return [];
-        }
-        return $player->getCoreGroups();
     }
 
     public function getServiceImplementation(Service $service): ?ServiceInterface

@@ -14,6 +14,7 @@ use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
+use Neucore\Service\Account;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
@@ -57,6 +58,8 @@ class ServiceController extends BaseController
 
     private UserAuth $userAuth;
 
+    private Account $account;
+
     private int $responseErrorCode = 200;
 
     public function __construct(
@@ -65,12 +68,14 @@ class ServiceController extends BaseController
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log,
         ServiceRegistration $serviceRegistration,
-        UserAuth $userAuth
+        UserAuth $userAuth,
+        Account $account
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         $this->log = $log;
         $this->serviceRegistration = $serviceRegistration;
         $this->userAuth = $userAuth;
+        $this->account = $account;
     }
 
     /**
@@ -277,7 +282,7 @@ class ServiceController extends BaseController
         try {
             $accountData = $serviceImplementation->register(
                 $main->toCoreCharacter(),
-                $this->serviceRegistration->getCoreGroups($player),
+                $this->account->getCoreGroups($player),
                 $emailAddress,
                 $player->getCharactersId()
             );
@@ -522,7 +527,7 @@ class ServiceController extends BaseController
         if ($allowAdmin) {
             $isAdmin = $this->getUser($this->userAuth)->getPlayer()->hasRole(Role::SERVICE_ADMIN);
         }
-        if (!$isAdmin && !$this->serviceRegistration->hasRequiredGroups($service)) {
+        if (!$isAdmin && !$this->userAuth->hasRequiredGroups($service)) {
             $this->responseErrorCode = 403;
             return null;
         }
@@ -614,7 +619,7 @@ class ServiceController extends BaseController
         try {
             $serviceImplementation->updateAccount(
                 $character->toCoreCharacter(),
-                $this->serviceRegistration->getCoreGroups($character->getPlayer()),
+                $this->account->getCoreGroups($character->getPlayer()),
                 $main
             );
         } catch (Exception $e) {

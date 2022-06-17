@@ -40,7 +40,7 @@ class PluginController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if (!$serviceRegistration->hasRequiredGroups($service)) {
+        if (!$userAuth->hasRequiredGroups($service)) {
             $this->response->getBody()->write($this->getBodyWithHomeLink('Not allowed to use this service.'));
             return $this->response->withStatus(403);
         }

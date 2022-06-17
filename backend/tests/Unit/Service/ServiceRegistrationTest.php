@@ -8,21 +8,15 @@ namespace Tests\Unit\Service;
 use Composer\Autoload\ClassLoader;
 use Neucore\Application;
 use Neucore\Entity\Character;
-use Neucore\Entity\Corporation;
-use Neucore\Entity\EsiToken;
-use Neucore\Entity\EveLogin;
 use Neucore\Entity\Group;
 use Neucore\Entity\Player;
 use Neucore\Entity\Service;
 use Neucore\Entity\ServiceConfiguration;
-use Neucore\Entity\SystemVariable;
-use Neucore\Plugin\CoreGroup;
 use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\ServiceRegistration;
 use PHPUnit\Framework\TestCase;
-use Tests\Client;
 use Tests\Helper;
 use Tests\Logger;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -37,20 +31,11 @@ class ServiceRegistrationTest extends TestCase
      */
     private static $loader;
 
-    /**
-     * @var Logger
-     */
-    private $log;
+    private Logger $log;
 
-    /**
-     * @var Helper
-     */
-    private $helper;
+    private Helper $helper;
 
-    /**
-     * @var ServiceRegistration
-     */
-    private $serviceRegistration;
+    private ServiceRegistration $serviceRegistration;
 
     public static function setUpBeforeClass(): void
     {
@@ -62,70 +47,12 @@ class ServiceRegistrationTest extends TestCase
     {
         $this->log = new Logger('Test');
         $this->helper = new Helper();
-        $account = $this->helper->getAccountService($this->log, new Client());
-        $userAuth = $this->helper->getUserAuthService($this->log, new Client());
-        $this->serviceRegistration = new ServiceRegistration($this->log, $userAuth, $account);
+        $this->serviceRegistration = new ServiceRegistration($this->log);
     }
 
     protected function tearDown(): void
     {
         self::$loader->setPsr4(self::PSR_PREFIX.'\\', []);
-    }
-
-    public function testHasRequiredGroups()
-    {
-        $this->helper->emptyDb();
-        $group = (new Group())->setName('G1');
-        $this->helper->getEm()->persist($group);
-        $this->helper->getEm()->flush();
-
-        // no required group, no logged-in user
-        $service = new Service();
-        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
-
-        // log in user
-        $character = $this->helper->addCharacterMain('Test User', 800);
-        $_SESSION['character_id'] = 800;
-        $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
-
-        // add require group
-        $conf = new ServiceConfiguration();
-        $conf->requiredGroups = [$group->getId()];
-        $service->setConfiguration($conf);
-        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
-
-        // add group to player
-        $character->getPlayer()->addGroup($group);
-        $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
-
-        // add another require group
-        $conf->requiredGroups[] = 2;
-        $service->setConfiguration($conf);
-        $this->assertTrue($this->serviceRegistration->hasRequiredGroups($service));
-
-        // "deactivate" account
-        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
-        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $corporation = (new Corporation())->setId(101);
-        $character->setCorporation($corporation)->getEsiToken(EveLogin::NAME_DEFAULT)->setValidToken(false);
-        $this->helper->getEm()->persist($setting1);
-        $this->helper->getEm()->persist($setting2);
-        $this->helper->getEm()->persist($setting3);
-        $this->helper->getEm()->persist($corporation);
-        $this->helper->getEm()->flush();
-        $this->assertFalse($this->serviceRegistration->hasRequiredGroups($service));
-    }
-
-    public function testGetCoreGroups()
-    {
-        $character = $this->setupDeactivateAccount();
-
-        $player = (new Player())->addGroup(new Group());
-        $this->assertEquals([new CoreGroup(0, '')], $this->serviceRegistration->getCoreGroups($player));
-
-        $player->addCharacter($character); // character with invalid ESI token
-        $this->assertEquals([], $this->serviceRegistration->getCoreGroups($player));
     }
 
     public function testGetServiceImplementation_MissingPhpClass()
@@ -215,7 +142,8 @@ class ServiceRegistrationTest extends TestCase
 
     public function testGetAccounts_DeactivatedGroups()
     {
-        $character = $this->setupDeactivateAccount();
+        $this->helper->emptyDb();
+        $character = $this->helper->setupDeactivateAccount();
 
         $player = (new Player())->addGroup(new Group())->addCharacter($character);
         $actual = $this->serviceRegistration->getAccounts(
@@ -233,19 +161,5 @@ class ServiceRegistrationTest extends TestCase
             new ServiceRegistrationTest_TestService($this->log, new \Neucore\Plugin\ServiceConfiguration(0, [], '')),
             [(new Character())->setId(999)->setPlayer(new Player())]
         );
-    }
-
-    private function setupDeactivateAccount(): Character
-    {
-        $this->helper->emptyDb();
-        $setting1 = (new SystemVariable(SystemVariable::GROUPS_REQUIRE_VALID_TOKEN))->setValue('1');
-        $setting2 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_ALLIANCES))->setValue('11');
-        $setting3 = (new SystemVariable(SystemVariable::ACCOUNT_DEACTIVATION_CORPORATIONS))->setValue('101');
-        $this->helper->getEm()->persist($setting1);
-        $this->helper->getEm()->persist($setting2);
-        $this->helper->getEm()->persist($setting3);
-        $this->helper->getEm()->flush();
-        $corporation = (new Corporation())->setId(101);
-        return (new Character())->setCorporation($corporation)->addEsiToken((new EsiToken())->setValidToken(false));
     }
 }

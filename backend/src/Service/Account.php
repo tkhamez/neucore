@@ -16,6 +16,7 @@ use Neucore\Entity\RemovedCharacter;
 use Neucore\Entity\Role;
 use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
+use Neucore\Plugin\CoreGroup;
 use Psr\Log\LoggerInterface;
 
 class Account
@@ -578,6 +579,18 @@ class Account
         } elseif (! $addRole && $player->hasRole($role->getName())) {
             $player->removeRole($role);
         }
+    }
+
+    /**
+     * @param Player $player
+     * @return CoreGroup[]
+     */
+    public function getCoreGroups(Player $player): array
+    {
+        if ($this->groupsDeactivated($player)) { // do not ignore delay
+            return [];
+        }
+        return $player->getCoreGroups();
     }
 
     /**
