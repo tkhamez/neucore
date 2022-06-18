@@ -15,6 +15,7 @@ use Neucore\Plugin\Exception;
 use Neucore\Plugin\ServiceAccountData;
 use Neucore\Plugin\ServiceInterface;
 use Neucore\Service\Account;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
@@ -58,7 +59,7 @@ class ServiceController extends BaseController
 
     private UserAuth $userAuth;
 
-    private Account $account;
+    private AccountGroup $accountGroup;
 
     private int $responseErrorCode = 200;
 
@@ -69,13 +70,13 @@ class ServiceController extends BaseController
         LoggerInterface $log,
         ServiceRegistration $serviceRegistration,
         UserAuth $userAuth,
-        Account $account
+        AccountGroup $accountGroup
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
         $this->log = $log;
         $this->serviceRegistration = $serviceRegistration;
         $this->userAuth = $userAuth;
-        $this->account = $account;
+        $this->accountGroup = $accountGroup;
     }
 
     /**
@@ -282,7 +283,7 @@ class ServiceController extends BaseController
         try {
             $accountData = $serviceImplementation->register(
                 $main->toCoreCharacter(),
-                $this->account->getCoreGroups($player),
+                $this->accountGroup->getCoreGroups($player),
                 $emailAddress,
                 $player->getCharactersId()
             );
@@ -619,7 +620,7 @@ class ServiceController extends BaseController
         try {
             $serviceImplementation->updateAccount(
                 $character->toCoreCharacter(),
-                $this->account->getCoreGroups($character->getPlayer()),
+                $this->accountGroup->getCoreGroups($character->getPlayer()),
                 $main
             );
         } catch (Exception $e) {

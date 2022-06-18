@@ -15,6 +15,7 @@ use Neucore\Entity\SystemVariable;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Plugin\Exception;
 use Neucore\Service\Account;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\ObjectManager;
 use Neucore\Service\ServiceRegistration;
 use Neucore\Service\UserAuth;
@@ -134,10 +135,10 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function groupsDisabled(Account $accountService): ResponseInterface
+    public function groupsDisabled(AccountGroup $accountGroupService): ResponseInterface
     {
         // check state and ignore delay
-        if ($accountService->groupsDeactivated($this->getUser($this->userAuth)->getPlayer(), true)) {
+        if ($accountGroupService->groupsDeactivated($this->getUser($this->userAuth)->getPlayer(), true)) {
             return $this->withJson(true);
         }
 
@@ -175,7 +176,7 @@ class PlayerController extends BaseController
      *     )
      * )
      */
-    public function groupsDisabledById(string $id, Account $accountService): ResponseInterface
+    public function groupsDisabledById(string $id, AccountGroup $accountGroupService): ResponseInterface
     {
         $player = $this->repositoryFactory->getPlayerRepository()->find((int) $id);
 
@@ -183,7 +184,7 @@ class PlayerController extends BaseController
             return $this->response->withStatus(404);
         }
 
-        if ($accountService->groupsDeactivated($player, true)) { // true = ignore delay
+        if ($accountGroupService->groupsDeactivated($player, true)) { // true = ignore delay
             return $this->withJson(true);
         }
 

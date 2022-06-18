@@ -7,7 +7,7 @@ namespace Neucore\Controller\App;
 use Neucore\Controller\BaseController;
 use Neucore\Entity\Group;
 use Neucore\Factory\RepositoryFactory;
-use Neucore\Service\Account;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\AppAuth;
 use Neucore\Service\ObjectManager;
 /* @phan-suppress-next-line PhanUnreferencedUseNormal */
@@ -46,19 +46,19 @@ class GroupController extends BaseController
 
     private AppAuth $appAuthService;
 
-    private Account $accountService;
+    private AccountGroup $accountGroupService;
 
     public function __construct(
         ResponseInterface $response,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         AppAuth $appAuthService,
-        Account $accountService
+        AccountGroup $accountGroupService
     ) {
         parent::__construct($response, $objectManager, $repositoryFactory);
 
         $this->appAuthService = $appAuthService;
-        $this->accountService = $accountService;
+        $this->accountGroupService = $accountGroupService;
     }
 
     /**
@@ -626,7 +626,7 @@ class GroupController extends BaseController
             self::KEY_GROUPS => []
         ];
 
-        if ($this->accountService->groupsDeactivated($char->getPlayer())) {
+        if ($this->accountGroupService->groupsDeactivated($char->getPlayer())) {
             return $result;
         }
 

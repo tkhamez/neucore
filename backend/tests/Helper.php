@@ -42,6 +42,7 @@ use Neucore\Entity\Watchlist;
 use Neucore\Factory\EsiApiFactory;
 use Neucore\Factory\RepositoryFactory;
 use Neucore\Service\Account;
+use Neucore\Service\AccountGroup;
 use Neucore\Service\AutoGroupAssignment;
 use Neucore\Service\Config;
 use Neucore\Service\EsiData;
@@ -171,7 +172,15 @@ class Helper
         $repoFactory = RepositoryFactory::getInstance($this->getObjectManager());
         $objectManager = new \Neucore\Service\ObjectManager($this->getObjectManager(), $logger);
         $accountService = $this->getAccountService($logger, $client);
-        return new UserAuth(new SessionData(), $accountService, $objectManager, $repoFactory, $logger);
+        $accountGroupService = new AccountGroup($repoFactory);
+        return new UserAuth(
+            new SessionData(),
+            $accountService,
+            $accountGroupService,
+            $objectManager,
+            $repoFactory,
+            $logger
+        );
     }
 
     public function getDbName(): string

@@ -40,6 +40,8 @@ class UserAuth implements RoleProviderInterface
 
     private Account $accountService;
 
+    private AccountGroup $accountGroupService;
+
     private ObjectManager $objectManager;
 
     private RepositoryFactory $repositoryFactory;
@@ -50,13 +52,15 @@ class UserAuth implements RoleProviderInterface
 
     public function __construct(
         SessionData $session,
-        Account $charService,
+        Account $accountService,
+        AccountGroup $accountGroupService,
         ObjectManager $objectManager,
         RepositoryFactory $repositoryFactory,
         LoggerInterface $log
     ) {
         $this->session = $session;
-        $this->accountService = $charService;
+        $this->accountService = $accountService;
+        $this->accountGroupService = $accountGroupService;
         $this->objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->log = $log;
@@ -164,7 +168,7 @@ class UserAuth implements RoleProviderInterface
 
         if (
             !empty($serviceConfig->requiredGroups) &&
-            $this->accountService->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
+            $this->accountGroupService->groupsDeactivated($character->getPlayer(), true) // true = ignore delay
         ) {
             return false;
         }
