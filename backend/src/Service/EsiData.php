@@ -137,16 +137,20 @@ class EsiData
             return null;
         }
 
-        // get data from ESI
+        // Get data from character
         $this->lastErrorCode = null;
         $eveChar = null;
+        $corpId = null;
         try {
-            // ESI cache = 24 hours
+            // ESI cache = 24 hours.
+            // But maybe faster than /characters/affiliation/ if character was deleted.
             $eveChar = $this->esiApiFactory->getCharacterApi()->getCharactersCharacterId($id, $this->datasource);
         } catch (ApiException $e) {
             // Do not log and continue if character was deleted/biomassed
             $body = $e->getResponseBody();
-            if ($e->getCode() !== 404 || (is_string($body) && strpos($body, 'Character has been deleted') === false)) {
+            if ($e->getCode() === 404 && is_string($body) && strpos($body, 'Character has been deleted') !== false) {
+                $corpId = self::CORPORATION_DOOMHEIM_ID;
+            } else {
                 $this->lastErrorCode = $e->getCode();
                 $this->log->error($e->getMessage(), [Context::EXCEPTION => $e]);
                 return null;
@@ -169,15 +173,17 @@ class EsiData
             $updated = true;
         }
 
-        // update char with corp entity - ESI cache = 1 hour
-        $affiliation = $this->fetchCharactersAffiliation([$id]);
-        $corpId = null;
-        if (isset($affiliation[0])) {
-            /** @noinspection PhpCastIsUnnecessaryInspection */
-            $corpId = (int) $affiliation[0]->getCorporationId();
-        } elseif ($eveChar instanceof GetCharactersCharacterIdOk) {
-            /** @noinspection PhpCastIsUnnecessaryInspection */
-            $corpId = (int) $eveChar->getCorporationId();
+        // Update char with corp entity - ESI cache = 1 hour.
+        // But maybe slower than /characters/{character_id}/ if character was deleted.
+        if (!$corpId) {
+            $affiliation = $this->fetchCharactersAffiliation([$id]);
+            if (isset($affiliation[0])) {
+                /** @noinspection PhpCastIsUnnecessaryInspection */
+                $corpId = (int) $affiliation[0]->getCorporationId();
+            } elseif ($eveChar instanceof GetCharactersCharacterIdOk) {
+                /** @noinspection PhpCastIsUnnecessaryInspection */
+                $corpId = (int) $eveChar->getCorporationId();
+            }
         }
         if ($corpId) {
             $corp = $this->getCorporationEntity($corpId);
@@ -195,7 +201,7 @@ class EsiData
         }
 
         // flush
-        if ($flush && ! $this->objectManager->flush()) {
+        if ($flush && !$this->objectManager->flush()) {
             return null;
         }
 

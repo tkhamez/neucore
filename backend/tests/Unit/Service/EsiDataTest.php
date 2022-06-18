@@ -73,7 +73,7 @@ class EsiDataTest extends TestCase
         $this->em->getEventManager()->removeEventListener(Events::onFlush, self::$writeErrorListener);
     }
 
-    public function testFetchCharacterWithCorporationAndAllianceCharInvalid()
+    public function testFetchCharacterWithCorporationAndAlliance_CharInvalid()
     {
         $this->client->setResponse(
             new Response(404)
@@ -83,7 +83,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterWithCorporationAndAllianceCorpError()
+    public function testFetchCharacterWithCorporationAndAlliance_CorpError()
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10, []);
@@ -104,7 +104,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterWithCorporationAndAllianceAlliError()
+    public function testFetchCharacterWithCorporationAndAlliance_AlliError()
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10, []);
@@ -131,7 +131,7 @@ class EsiDataTest extends TestCase
         $this->assertNull($char);
     }
 
-    public function testFetchCharacterWithCorporationAndAlliance()
+    public function testFetchCharacterWithCorporationAndAlliance_Ok()
     {
         $this->testHelper->emptyDb();
         $this->testHelper->addCharacterMain('newChar', 10, []);
@@ -200,10 +200,6 @@ class EsiDataTest extends TestCase
 
         $this->client->setResponse(
             new Response(404, [], '{"error":"Character has been deleted!"}'),
-            new Response(200, [], '[{
-                "character_id": 123,
-                "corporation_id": '.EsiData::CORPORATION_DOOMHEIM_ID.'
-            }]')
         );
         $char = $this->esiData->fetchCharacter(123);
 
@@ -220,6 +216,33 @@ class EsiDataTest extends TestCase
         $this->assertSame('UTC', $charDb->getLastUpdate()->getTimezone()->getName());
         $this->assertGreaterThan('2021-11-15 14:29:31', $charDb->getLastUpdate()->format('Y-m-d H:i:s'));
         $this->assertSame('old char name', $charDb->getName());
+    }
+
+    public function testFetchCharacter_AffiliationDeleted()
+    {
+        $this->testHelper->emptyDb();
+        $char = $this->testHelper->addCharacterMain('old char name', 123, []);
+        $char->setLastUpdate(new \DateTime('2018-03-26 17:24:30'));
+        $this->em->flush();
+
+        $this->client->setResponse(
+            new Response(200, [], '{
+                "name": "new char name",
+                "corporation_id": 234
+            }'),
+            new Response(200, [], '[{
+                "character_id": 123,
+                "corporation_id": '.EsiData::CORPORATION_DOOMHEIM_ID.'
+            }]')
+        );
+        $char = $this->esiData->fetchCharacter(123);
+        $this->em->flush();
+
+        $this->assertFalse(isset($this->log->getHandler()->getRecords()[0]));
+
+        $this->assertSame(123, $char->getId());
+        $this->assertSame('new char name', $char->getName());
+        $this->assertSame(EsiData::CORPORATION_DOOMHEIM_ID, $char->getCorporation()->getId());
     }
 
     /**
